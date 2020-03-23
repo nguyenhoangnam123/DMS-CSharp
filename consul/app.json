@@ -1,27 +1,21 @@
 {
   "service": {
-    "name": "rd-portal-be",
-    "port": 80,
+    "name": "dms-backend",
+    "port": 5003,
     "tags": [
-      "rang-dong",
-      "portal-be"
+      "dms-backend"
     ],
     "connect": {
       "sidecar_service": {
         "proxy": {
-          "upstreams": [
-            {
-              "destination_name": "rd-auth",
-              "local_bind_port": 5001
-            }
-          ]
+          "upstreams": []
         }
       }
     },
     "check": {
-      "id": "rd-portal-be",
-      "name": "rd-portal-be TCP on port 80",
-      "tcp": "rd-portal-be:80",
+      "id": "dms-backend",
+      "name": "dms-backend TCP on port 5003",
+      "tcp": "dms-backend:5003",
       "interval": "5s",
       "timeout": "1s"
     }
