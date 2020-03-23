@@ -1,0 +1,29 @@
+{
+  "service": {
+    "name": "rd-portal-be",
+    "port": 80,
+    "tags": [
+      "rang-dong",
+      "portal-be"
+    ],
+    "connect": {
+      "sidecar_service": {
+        "proxy": {
+          "upstreams": [
+            {
+              "destination_name": "rd-auth",
+              "local_bind_port": 5001
+            }
+          ]
+        }
+      }
+    },
+    "check": {
+      "id": "rd-portal-be",
+      "name": "rd-portal-be TCP on port 80",
+      "tcp": "rd-portal-be:80",
+      "interval": "5s",
+      "timeout": "1s"
+    }
+  }
+}
