@@ -1,0 +1,938 @@
+using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+
+namespace DMS.Models
+{
+    public partial class DataContext : DbContext
+    {
+        public virtual DbSet<AppUserDAO> AppUser { get; set; }
+        public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
+        public virtual DbSet<BrandDAO> Brand { get; set; }
+        public virtual DbSet<DistrictDAO> District { get; set; }
+        public virtual DbSet<FieldDAO> Field { get; set; }
+        public virtual DbSet<ImageDAO> Image { get; set; }
+        public virtual DbSet<ItemDAO> Item { get; set; }
+        public virtual DbSet<MenuDAO> Menu { get; set; }
+        public virtual DbSet<OrganizationDAO> Organization { get; set; }
+        public virtual DbSet<PageDAO> Page { get; set; }
+        public virtual DbSet<PermissionDAO> Permission { get; set; }
+        public virtual DbSet<PermissionFieldMappingDAO> PermissionFieldMapping { get; set; }
+        public virtual DbSet<PermissionPageMappingDAO> PermissionPageMapping { get; set; }
+        public virtual DbSet<ProductDAO> Product { get; set; }
+        public virtual DbSet<ProductGroupingDAO> ProductGrouping { get; set; }
+        public virtual DbSet<ProductImageMappingDAO> ProductImageMapping { get; set; }
+        public virtual DbSet<ProductProductGroupingMappingDAO> ProductProductGroupingMapping { get; set; }
+        public virtual DbSet<ProductTypeDAO> ProductType { get; set; }
+        public virtual DbSet<ProvinceDAO> Province { get; set; }
+        public virtual DbSet<RoleDAO> Role { get; set; }
+        public virtual DbSet<StatusDAO> Status { get; set; }
+        public virtual DbSet<StoreDAO> Store { get; set; }
+        public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
+        public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
+        public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
+        public virtual DbSet<SupplierDAO> Supplier { get; set; }
+        public virtual DbSet<TaxTypeDAO> TaxType { get; set; }
+        public virtual DbSet<UnitOfMeasureDAO> UnitOfMeasure { get; set; }
+        public virtual DbSet<UnitOfMeasureGroupingDAO> UnitOfMeasureGrouping { get; set; }
+        public virtual DbSet<UnitOfMeasureGroupingContentDAO> UnitOfMeasureGroupingContent { get; set; }
+        public virtual DbSet<UserStatusDAO> UserStatus { get; set; }
+        public virtual DbSet<VariationDAO> Variation { get; set; }
+        public virtual DbSet<VariationGroupingDAO> VariationGrouping { get; set; }
+        public virtual DbSet<WardDAO> Ward { get; set; }
+
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=DMS;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
+            }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
+
+            modelBuilder.Entity<AppUserDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DisplayName).HasMaxLength(500);
+
+                entity.Property(e => e.Email).HasMaxLength(500);
+
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Phone).HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.UserStatus)
+                    .WithMany(p => p.AppUsers)
+                    .HasForeignKey(d => d.UserStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AppUser_UserStatus");
+            });
+
+            modelBuilder.Entity<AppUserRoleMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.AppUserId, e.RoleId })
+                    .HasName("PK_UserRoleMapping");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.AppUserRoleMappings)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AppUserRoleMapping_AppUser");
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.AppUserRoleMappings)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AppUserRoleMapping_Role");
+            });
+
+            modelBuilder.Entity<BrandDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Brands)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Brand_Status");
+            });
+
+            modelBuilder.Entity<DistrictDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Province)
+                    .WithMany(p => p.Districts)
+                    .HasForeignKey(d => d.ProvinceId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_District_Province");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Districts)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_District_Status");
+            });
+
+            modelBuilder.Entity<FieldDAO>(entity =>
+            {
+                entity.ToTable("Field", "PER");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.Menu)
+                    .WithMany(p => p.Fields)
+                    .HasForeignKey(d => d.MenuId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PermissionField_Menu");
+            });
+
+            modelBuilder.Entity<ImageDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Url)
+                    .IsRequired()
+                    .HasMaxLength(4000);
+            });
+
+            modelBuilder.Entity<ItemDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.RetailPrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.ScanCode).HasMaxLength(4000);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.Items)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Item_Product");
+            });
+
+            modelBuilder.Entity<MenuDAO>(entity =>
+            {
+                entity.ToTable("Menu", "PER");
+
+                entity.Property(e => e.Name).HasMaxLength(3000);
+
+                entity.Property(e => e.Path).HasMaxLength(3000);
+            });
+
+            modelBuilder.Entity<OrganizationDAO>(entity =>
+            {
+                entity.Property(e => e.Address).HasMaxLength(500);
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Path)
+                    .IsRequired()
+                    .HasMaxLength(400);
+
+                entity.Property(e => e.Phone).HasMaxLength(50);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.InverseParent)
+                    .HasForeignKey(d => d.ParentId)
+                    .HasConstraintName("FK_Organization_Organization");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Organizations)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Organization_Status");
+            });
+
+            modelBuilder.Entity<PageDAO>(entity =>
+            {
+                entity.ToTable("Page", "PER");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Path)
+                    .IsRequired()
+                    .HasMaxLength(3000);
+
+                entity.HasOne(d => d.Menu)
+                    .WithMany(p => p.Pages)
+                    .HasForeignKey(d => d.MenuId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Page_Menu");
+            });
+
+            modelBuilder.Entity<PermissionDAO>(entity =>
+            {
+                entity.ToTable("Permission", "PER");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.HasOne(d => d.Menu)
+                    .WithMany(p => p.Permissions)
+                    .HasForeignKey(d => d.MenuId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Permission_Menu");
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.Permissions)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Permission_Role");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Permissions)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Permission_Status");
+            });
+
+            modelBuilder.Entity<PermissionFieldMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PermissionId, e.FieldId })
+                    .HasName("PK_PermissionData");
+
+                entity.ToTable("PermissionFieldMapping", "PER");
+
+                entity.Property(e => e.Value).HasMaxLength(3000);
+
+                entity.HasOne(d => d.Field)
+                    .WithMany(p => p.PermissionFieldMappings)
+                    .HasForeignKey(d => d.FieldId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PermissionData_PermissionField");
+
+                entity.HasOne(d => d.Permission)
+                    .WithMany(p => p.PermissionFieldMappings)
+                    .HasForeignKey(d => d.PermissionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PermissionData_Permission");
+            });
+
+            modelBuilder.Entity<PermissionPageMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PermissionId, e.PageId })
+                    .HasName("PK_PermissionAction");
+
+                entity.ToTable("PermissionPageMapping", "PER");
+
+                entity.HasOne(d => d.Page)
+                    .WithMany(p => p.PermissionPageMappings)
+                    .HasForeignKey(d => d.PageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PermissionPageMapping_Page");
+
+                entity.HasOne(d => d.Permission)
+                    .WithMany(p => p.PermissionPageMappings)
+                    .HasForeignKey(d => d.PermissionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PermissionAction_Permission");
+            });
+
+            modelBuilder.Entity<ProductDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.Description).HasMaxLength(3000);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(3000);
+
+                entity.Property(e => e.RetailPrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.ScanCode).HasMaxLength(500);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.SupplierCode).HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Brand)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.BrandId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Brand");
+
+                entity.HasOne(d => d.ProductType)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.ProductTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Item_TypeItem");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Status");
+
+                entity.HasOne(d => d.Supplier)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.SupplierId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Supplier");
+
+                entity.HasOne(d => d.TaxType)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.TaxTypeId)
+                    .HasConstraintName("FK_Product_TaxType");
+
+                entity.HasOne(d => d.UnitOfMeasureGrouping)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.UnitOfMeasureGroupingId)
+                    .HasConstraintName("FK_Product_UnitOfMeasureGrouping");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Item_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<ProductGroupingDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.Description).HasMaxLength(2000);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Path)
+                    .IsRequired()
+                    .HasMaxLength(3000);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.InverseParent)
+                    .HasForeignKey(d => d.ParentId)
+                    .HasConstraintName("FK_GroupItem_GroupItem");
+            });
+
+            modelBuilder.Entity<ProductImageMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ProductId, e.ImageId });
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.ProductImageMappings)
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProductImageMapping_Image");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.ProductImageMappings)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProductImageMapping_Product");
+            });
+
+            modelBuilder.Entity<ProductProductGroupingMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ProductId, e.ProductGroupingId })
+                    .HasName("PK_ProductProductGrouping");
+
+                entity.HasOne(d => d.ProductGrouping)
+                    .WithMany(p => p.ProductProductGroupingMappings)
+                    .HasForeignKey(d => d.ProductGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProductProductGroupingMapping_ProductGrouping");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.ProductProductGroupingMappings)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProductProductGroupingMapping_Product");
+            });
+
+            modelBuilder.Entity<ProductTypeDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.Description).HasMaxLength(3000);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.ProductTypes)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProductType_Status");
+            });
+
+            modelBuilder.Entity<ProvinceDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Provinces)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Province_Status");
+            });
+
+            modelBuilder.Entity<RoleDAO>(entity =>
+            {
+                entity.ToTable("Role", "PER");
+
+                entity.Property(e => e.Code).HasMaxLength(500);
+
+                entity.Property(e => e.Name).HasMaxLength(500);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Roles)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Role_Status");
+            });
+
+            modelBuilder.Entity<StatusDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code).HasMaxLength(500);
+
+                entity.Property(e => e.Name).HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<StoreDAO>(entity =>
+            {
+                entity.Property(e => e.Address1).HasMaxLength(3000);
+
+                entity.Property(e => e.Address2).HasMaxLength(10);
+
+                entity.Property(e => e.Code).HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Name).HasMaxLength(500);
+
+                entity.Property(e => e.OwnerEmail).HasMaxLength(500);
+
+                entity.Property(e => e.OwnerName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.OwnerPhone)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.Telephone).HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.District)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.DistrictId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Store_District");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Store_Organization");
+
+                entity.HasOne(d => d.ParentStore)
+                    .WithMany(p => p.InverseParentStore)
+                    .HasForeignKey(d => d.ParentStoreId)
+                    .HasConstraintName("FK_Store_Store");
+
+                entity.HasOne(d => d.Province)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.ProvinceId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Store_Province");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Store_Status");
+
+                entity.HasOne(d => d.StoreGrouping)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.StoreGroupingId)
+                    .HasConstraintName("FK_Store_StoreGrouping");
+
+                entity.HasOne(d => d.StoreType)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.StoreTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Store_StoreType");
+
+                entity.HasOne(d => d.Ward)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.WardId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Store_Ward");
+            });
+
+            modelBuilder.Entity<StoreGroupingDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Path)
+                    .IsRequired()
+                    .HasMaxLength(400);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<StoreImageMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.StoreId, e.ImageId });
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.StoreImageMappings)
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreImageMapping_Image");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.StoreImageMappings)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreImageMapping_Store");
+            });
+
+            modelBuilder.Entity<StoreTypeDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.StoreTypes)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreType_Status");
+            });
+
+            modelBuilder.Entity<SupplierDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.TaxCode)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Suppliers)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Supplier_Status");
+            });
+
+            modelBuilder.Entity<TaxTypeDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Percentage).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.TaxTypes)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TaxType_Status");
+            });
+
+            modelBuilder.Entity<UnitOfMeasureDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.Description).HasMaxLength(3000);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.UnitOfMeasures)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UnitOfMeasure_Status");
+            });
+
+            modelBuilder.Entity<UnitOfMeasureGroupingDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.UnitOfMeasureGroupings)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UnitOfMeasureGrouping_Status");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.UnitOfMeasureGroupings)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UnitOfMeasureGrouping_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<UnitOfMeasureGroupingContentDAO>(entity =>
+            {
+                entity.HasOne(d => d.UnitOfMeasureGrouping)
+                    .WithMany(p => p.UnitOfMeasureGroupingContents)
+                    .HasForeignKey(d => d.UnitOfMeasureGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UnitOfMeasureGroupingContent_UnitOfMeasureGrouping");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.UnitOfMeasureGroupingContents)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UnitOfMeasureGroupingContent_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<UserStatusDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<VariationDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.VariationGrouping)
+                    .WithMany(p => p.Variations)
+                    .HasForeignKey(d => d.VariationGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Variation_VariationGrouping");
+            });
+
+            modelBuilder.Entity<VariationGroupingDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.VariationGroupings)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_VariationGrouping_Product");
+            });
+
+            modelBuilder.Entity<WardDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.District)
+                    .WithMany(p => p.Wards)
+                    .HasForeignKey(d => d.DistrictId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Ward_District");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Wards)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Ward_Status");
+            });
+
+            OnModelCreatingExt(modelBuilder);
+        }
+
+        partial void OnModelCreatingExt(ModelBuilder modelBuilder);
+    }
+}

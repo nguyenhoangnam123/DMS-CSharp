@@ -1,0 +1,52 @@
+using System;
+using System.Collections.Generic;
+using Common;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace DMS.Entities
+{
+    public class VariationGrouping : DataEntity,  IEquatable<VariationGrouping>
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public long ProductId { get; set; }
+        public Product Product { get; set; }
+
+        public bool Equals(VariationGrouping other)
+        {
+            return other != null && Id == other.Id;
+        }
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+    }
+
+    public class VariationGroupingFilter : FilterEntity
+    {
+        public IdFilter Id { get; set; }
+        public StringFilter Name { get; set; }
+        public IdFilter ProductId { get; set; }
+        public List<VariationGroupingFilter> OrFilter { get; set; }
+        public VariationGroupingOrder OrderBy {get; set;}
+        public VariationGroupingSelect Selects {get; set;}
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum VariationGroupingOrder
+    {
+        Id = 0,
+        Name = 1,
+        Product = 2,
+    }
+
+    [Flags]
+    public enum VariationGroupingSelect:long
+    {
+        ALL = E.ALL,
+        Id = E._0,
+        Name = E._1,
+        Product = E._2,
+    }
+}
