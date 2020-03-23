@@ -1,6 +1,6 @@
 version: "3"
 services:
-    auth:
+    dms-backend:
         image: registry.rangdong2020.ml/dms-backend:latest
         restart: always
         command: ./docker-entrypoint.sh
