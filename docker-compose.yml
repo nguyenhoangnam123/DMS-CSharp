@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
     auth:
         image: registry.rangdong2020.ml/dms-backend:latest
