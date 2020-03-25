@@ -228,7 +228,7 @@ namespace DMS.Repositories
             ProductGroupingDAO.Code = ProductGrouping.Code;
             ProductGroupingDAO.Name = ProductGrouping.Name;
             ProductGroupingDAO.ParentId = ProductGrouping.ParentId;
-            ProductGroupingDAO.Path = ProductGrouping.Path;
+            ProductGroupingDAO.Path = "";
             ProductGroupingDAO.Description = ProductGrouping.Description;
             ProductGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
             ProductGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -249,7 +249,7 @@ namespace DMS.Repositories
             ProductGroupingDAO.Code = ProductGrouping.Code;
             ProductGroupingDAO.Name = ProductGrouping.Name;
             ProductGroupingDAO.ParentId = ProductGrouping.ParentId;
-            ProductGroupingDAO.Path = ProductGrouping.Path;
+            ProductGroupingDAO.Path = "";
             ProductGroupingDAO.Description = ProductGrouping.Description;
             ProductGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
@@ -320,7 +320,7 @@ namespace DMS.Repositories
         private async Task BuildPath()
         {
             List<ProductGroupingDAO> ProductGroupingDAOs = await DataContext.ProductGrouping
-                .Where(x => x.DeletedAt != null)
+                .Where(x => x.DeletedAt == null)
                 .ToListAsync();
             Queue<ProductGroupingDAO> queue = new Queue<ProductGroupingDAO>();
             ProductGroupingDAOs.ForEach(x =>
