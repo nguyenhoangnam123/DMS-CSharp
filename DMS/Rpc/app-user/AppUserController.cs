@@ -11,6 +11,10 @@ using DMS.Entities;
 using DMS.Services.MAppUser;
 using DMS.Services.MUserStatus;
 using DMS.Services.MRole;
+using System.Text;
+using System.IO;
+using OfficeOpenXml;
+using DMS.Helpers;
 
 namespace DMS.Rpc.app_user
 {
@@ -93,13 +97,14 @@ namespace DMS.Rpc.app_user
         [Route(AppUserRoute.Get), HttpPost]
         public async Task<ActionResult<AppUser_AppUserDTO>> Get([FromBody]AppUser_AppUserDTO AppUser_AppUserDTO)
         {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+            //if (!ModelState.IsValid)
+            //    throw new BindException(ModelState);
 
-            if (!await HasPermission(AppUser_AppUserDTO.Id))
-                return Forbid();
+            //if (!await HasPermission(AppUser_AppUserDTO.Id))
+            //    return Forbid();
 
-            AppUser AppUser = await AppUserService.Get(AppUser_AppUserDTO.Id);
+            //AppUser AppUser = await AppUserService.Get(AppUser_AppUserDTO.Id);
+            AppUser AppUser = await AppUserService.Get(3);
             return new AppUser_AppUserDTO(AppUser);
         }
 
@@ -108,7 +113,7 @@ namespace DMS.Rpc.app_user
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(AppUser_AppUserDTO.Id))
                 return Forbid();
 
@@ -126,7 +131,7 @@ namespace DMS.Rpc.app_user
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(AppUser_AppUserDTO.Id))
                 return Forbid();
 
@@ -161,15 +166,11 @@ namespace DMS.Rpc.app_user
         public async Task<ActionResult<List<AppUser_AppUserDTO>>> Import(IFormFile file)
         {
             if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-            
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
+                throw new BindException(ModelState); 
+            if (file == null || file.Length == 0)
+                return Content("File Not Selected");
+            List<AppUser> AppUsers = await AppUserService.Import(file);  
 
-            List<AppUser> AppUsers = await AppUserService.Import(DataFile);
             List<AppUser_AppUserDTO> AppUser_AppUserDTOs = AppUsers
                 .Select(c => new AppUser_AppUserDTO(c)).ToList();
             return AppUser_AppUserDTOs;
@@ -189,7 +190,7 @@ namespace DMS.Rpc.app_user
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(AppUserRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

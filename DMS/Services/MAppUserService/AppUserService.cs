@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
+using DMS.Helpers;
+using Microsoft.AspNetCore.Http;
 
 namespace DMS.Services.MAppUser
 {
-    public interface IAppUserService :  IServiceScoped
+    public interface IAppUserService : IServiceScoped
     {
         Task<int> Count(AppUserFilter AppUserFilter);
         Task<List<AppUser>> List(AppUserFilter AppUserFilter);
@@ -20,7 +22,7 @@ namespace DMS.Services.MAppUser
         Task<AppUser> Update(AppUser AppUser);
         Task<AppUser> Delete(AppUser AppUser);
         Task<List<AppUser>> BulkDelete(List<AppUser> AppUsers);
-        Task<List<AppUser>> Import(DataFile DataFile);
+        Task<List<AppUser>> Import(IFormFile DataFile);
         Task<DataFile> Export(AppUserFilter AppUserFilter);
         AppUserFilter ToFilter(AppUserFilter AppUserFilter);
     }
@@ -84,7 +86,7 @@ namespace DMS.Services.MAppUser
                 return null;
             return AppUser;
         }
-       
+
         public async Task<AppUser> Create(AppUser AppUser)
         {
             if (!await AppUserValidator.Create(AppUser))
@@ -184,56 +186,55 @@ namespace DMS.Services.MAppUser
                     throw new MessageException(ex.InnerException);
             }
         }
-        
-        public async Task<List<AppUser>> Import(DataFile DataFile)
+
+        public async Task<List<AppUser>> Import(IFormFile file)
         {
-            List<AppUser> AppUsers = new List<AppUser>();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+            var lts = new List<AppUser>();
+            string fileExtension = Path.GetExtension(file.FileName);
+            if (fileExtension == ".xls" || fileExtension == ".xlsx")
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return AppUsers;
-                int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int UsernameColumn = 1 + StartColumn;
-                int PasswordColumn = 2 + StartColumn;
-                int DisplayNameColumn = 3 + StartColumn;
-                int EmailColumn = 4 + StartColumn;
-                int PhoneColumn = 5 + StartColumn;
-                int UserStatusIdColumn = 6 + StartColumn;
-                for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
+                var fileLocation = await Utils.CreateFileImport(file);
+                using (ExcelPackage package = new ExcelPackage(fileLocation))
                 {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, IdColumn].Value?.ToString()))
-                        break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string UsernameValue = worksheet.Cells[i + StartRow, UsernameColumn].Value?.ToString();
-                    string PasswordValue = worksheet.Cells[i + StartRow, PasswordColumn].Value?.ToString();
-                    string DisplayNameValue = worksheet.Cells[i + StartRow, DisplayNameColumn].Value?.ToString();
-                    string EmailValue = worksheet.Cells[i + StartRow, EmailColumn].Value?.ToString();
-                    string PhoneValue = worksheet.Cells[i + StartRow, PhoneColumn].Value?.ToString();
-                    string UserStatusIdValue = worksheet.Cells[i + StartRow, UserStatusIdColumn].Value?.ToString();
-                    AppUser AppUser = new AppUser();
-                    AppUser.Username = UsernameValue;
-                    AppUser.Password = PasswordValue;
-                    AppUser.DisplayName = DisplayNameValue;
-                    AppUser.Email = EmailValue;
-                    AppUser.Phone = PhoneValue;
-                    AppUsers.Add(AppUser);
+                    //ExcelWorksheet workSheet = package.Workbook.Worksheets["Table1"];
+                    var workSheet = package.Workbook.Worksheets.FirstOrDefault();
+                    int StartColumn = 1;
+                    int StartRow = 2;
+                    int IdColumn = 0 + StartColumn;
+                    int Username = 1 + StartColumn;
+                    int Password = 2 + StartColumn;
+                    int DisplayName = 3 + StartColumn;
+                    int Email = 4 + StartColumn;
+                    int Phone = 5 + StartColumn;
+                    int UserStatusId = 6 + StartColumn;
+                    int SexId = 7 + StartColumn;
+                    for (int i = StartRow; i <= workSheet.Dimension.Rows; i++)
+                    {
+                        AppUser item = new AppUser();
+                        item.Username = workSheet.Cells[i, Username].Value.ToString();
+                        item.Password = workSheet.Cells[i, Password].Value.ToString();
+                        item.DisplayName = workSheet.Cells[i, DisplayName].Value.ToString();
+                        item.Email = workSheet.Cells[i, Email].Value.ToString();
+                        item.Phone = workSheet.Cells[i, Phone].Value.ToString();
+                        item.UserStatusId = int.Parse(workSheet.Cells[i, UserStatusId].Value.ToString() ?? "0"); 
+
+                        await Create(item);
+                        lts.Add(item);
+                    } 
                 }
-            }
-            
-            if (!await AppUserValidator.Import(AppUsers))
-                return AppUsers;
-            
+            } 
+
+            if (!await AppUserValidator.Import(lts))
+                return lts;
+
             try
             {
                 await UOW.Begin();
-                await UOW.AppUserRepository.BulkMerge(AppUsers);
+                await UOW.AppUserRepository.BulkMerge(lts);
                 await UOW.Commit();
 
-                await Logging.CreateAuditLog(AppUsers, new { }, nameof(AppUserService));
-                return AppUsers;
+                await Logging.CreateAuditLog(lts, new { }, nameof(AppUserService));
+                return lts;
             }
             catch (Exception ex)
             {
@@ -244,7 +245,7 @@ namespace DMS.Services.MAppUser
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(AppUserFilter AppUserFilter)
         {
@@ -268,7 +269,7 @@ namespace DMS.Services.MAppUser
                 int EmailColumn = 4 + StartColumn;
                 int PhoneColumn = 5 + StartColumn;
                 int UserStatusIdColumn = 6 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(AppUser.Id);
                 worksheet.Cells[1, UsernameColumn].Value = nameof(AppUser.Username);
                 worksheet.Cells[1, PasswordColumn].Value = nameof(AppUser.Password);
@@ -277,7 +278,7 @@ namespace DMS.Services.MAppUser
                 worksheet.Cells[1, PhoneColumn].Value = nameof(AppUser.Phone);
                 worksheet.Cells[1, UserStatusIdColumn].Value = nameof(AppUser.UserStatusId);
 
-                for(int i = 0; i < AppUsers.Count; i++)
+                for (int i = 0; i < AppUsers.Count; i++)
                 {
                     AppUser AppUser = AppUsers[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = AppUser.Id;
@@ -298,7 +299,7 @@ namespace DMS.Services.MAppUser
             };
             return DataFile;
         }
-        
+
         public AppUserFilter ToFilter(AppUserFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<AppUserFilter>();
