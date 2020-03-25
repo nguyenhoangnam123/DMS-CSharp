@@ -376,7 +376,7 @@ namespace DMS.Rpc.product
                 .Select(x => new ProductProductGroupingMapping
                 {
                     ProductGroupingId = x.ProductGroupingId,
-                    ProductGrouping = new ProductGrouping
+                    ProductGrouping = x.ProductGrouping == null ? null : new ProductGrouping
                     {
                         Id = x.ProductGrouping.Id,
                         Code = x.ProductGrouping.Code,

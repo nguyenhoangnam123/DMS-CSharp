@@ -25,6 +25,8 @@ namespace DMS.Rpc.product_grouping
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
 
+        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
+
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(ProductGroupingFilter.Id), FieldType.ID },
@@ -250,7 +252,25 @@ namespace DMS.Rpc.product_grouping
             return ProductGroupingFilter;
         }
 
+        [Route(ProductGroupingRoute.SingleListProductGrouping), HttpPost]
+        public async Task<List<ProductGrouping_ProductGroupingDTO>> SingleListBrand([FromBody] ProductGrouping_ProductGroupingFilterDTO ProductGrouping_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = 20;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.ALL;
+            ProductGroupingFilter.Id = ProductGrouping_ProductGroupingFilterDTO.Id;
+            ProductGroupingFilter.Code = ProductGrouping_ProductGroupingFilterDTO.Code;
+            ProductGroupingFilter.Name = ProductGrouping_ProductGroupingFilterDTO.Name;
+            
 
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<ProductGrouping_ProductGroupingDTO> ProductGrouping_ProductGroupingDTOs = ProductGroupings
+                .Select(x => new ProductGrouping_ProductGroupingDTO(x)).ToList();
+            return ProductGrouping_ProductGroupingDTOs;
+        }
     }
 }
 
