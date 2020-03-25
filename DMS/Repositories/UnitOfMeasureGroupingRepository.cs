@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
-using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Helpers;
 
 namespace DMS.Repositories
 {
@@ -36,8 +36,12 @@ namespace DMS.Repositories
             query = query.Where(q => !q.DeletedAt.HasValue);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
+            if (filter.Code != null)
+                query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
+            if (filter.Description != null)
+                query = query.Where(q => q.Description, filter.Description);
             if (filter.UnitOfMeasureId != null)
                 query = query.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
             if (filter.StatusId != null)
@@ -56,8 +60,12 @@ namespace DMS.Repositories
                 IQueryable<UnitOfMeasureGroupingDAO> queryable = query;
                 if (filter.Id != null)
                     queryable = queryable.Where(q => q.Id, filter.Id);
+                if (filter.Code != null)
+                    queryable = queryable.Where(q => q.Code, filter.Code);
                 if (filter.Name != null)
                     queryable = queryable.Where(q => q.Name, filter.Name);
+                if (filter.Description != null)
+                    queryable = queryable.Where(q => q.Description, filter.Description);
                 if (filter.UnitOfMeasureId != null)
                     queryable = queryable.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
                 if (filter.StatusId != null)
@@ -77,8 +85,14 @@ namespace DMS.Repositories
                         case UnitOfMeasureGroupingOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
+                        case UnitOfMeasureGroupingOrder.Code:
+                            query = query.OrderBy(q => q.Code);
+                            break;
                         case UnitOfMeasureGroupingOrder.Name:
                             query = query.OrderBy(q => q.Name);
+                            break;
+                        case UnitOfMeasureGroupingOrder.Description:
+                            query = query.OrderBy(q => q.Description);
                             break;
                         case UnitOfMeasureGroupingOrder.UnitOfMeasure:
                             query = query.OrderBy(q => q.UnitOfMeasureId);
@@ -94,8 +108,14 @@ namespace DMS.Repositories
                         case UnitOfMeasureGroupingOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
                             break;
+                        case UnitOfMeasureGroupingOrder.Code:
+                            query = query.OrderByDescending(q => q.Code);
+                            break;
                         case UnitOfMeasureGroupingOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
+                            break;
+                        case UnitOfMeasureGroupingOrder.Description:
+                            query = query.OrderByDescending(q => q.Description);
                             break;
                         case UnitOfMeasureGroupingOrder.UnitOfMeasure:
                             query = query.OrderByDescending(q => q.UnitOfMeasureId);
@@ -115,7 +135,9 @@ namespace DMS.Repositories
             List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await query.Select(q => new UnitOfMeasureGrouping()
             {
                 Id = filter.Selects.Contains(UnitOfMeasureGroupingSelect.Id) ? q.Id : default(long),
+                Code = filter.Selects.Contains(UnitOfMeasureGroupingSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(UnitOfMeasureGroupingSelect.Name) ? q.Name : default(string),
+                Description = filter.Selects.Contains(UnitOfMeasureGroupingSelect.Description) ? q.Description : default(string),
                 UnitOfMeasureId = filter.Selects.Contains(UnitOfMeasureGroupingSelect.UnitOfMeasure) ? q.UnitOfMeasureId : default(long),
                 StatusId = filter.Selects.Contains(UnitOfMeasureGroupingSelect.Status) ? q.StatusId : default(long),
                 Status = filter.Selects.Contains(UnitOfMeasureGroupingSelect.Status) && q.Status != null ? new Status
@@ -158,7 +180,9 @@ namespace DMS.Repositories
             UnitOfMeasureGrouping UnitOfMeasureGrouping = await DataContext.UnitOfMeasureGrouping.Where(x => x.Id == Id).Select(x => new UnitOfMeasureGrouping()
             {
                 Id = x.Id,
+                Code = x.Code,
                 Name = x.Name,
+                Description = x.Description,
                 UnitOfMeasureId = x.UnitOfMeasureId,
                 StatusId = x.StatusId,
                 Status = x.Status == null ? null : new Status
@@ -203,7 +227,9 @@ namespace DMS.Repositories
         {
             UnitOfMeasureGroupingDAO UnitOfMeasureGroupingDAO = new UnitOfMeasureGroupingDAO();
             UnitOfMeasureGroupingDAO.Id = UnitOfMeasureGrouping.Id;
+            UnitOfMeasureGroupingDAO.Code = UnitOfMeasureGrouping.Code;
             UnitOfMeasureGroupingDAO.Name = UnitOfMeasureGrouping.Name;
+            UnitOfMeasureGroupingDAO.Description = UnitOfMeasureGrouping.Description;
             UnitOfMeasureGroupingDAO.UnitOfMeasureId = UnitOfMeasureGrouping.UnitOfMeasureId;
             UnitOfMeasureGroupingDAO.StatusId = UnitOfMeasureGrouping.StatusId;
             UnitOfMeasureGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
@@ -221,7 +247,9 @@ namespace DMS.Repositories
             if (UnitOfMeasureGroupingDAO == null)
                 return false;
             UnitOfMeasureGroupingDAO.Id = UnitOfMeasureGrouping.Id;
+            UnitOfMeasureGroupingDAO.Code = UnitOfMeasureGrouping.Code;
             UnitOfMeasureGroupingDAO.Name = UnitOfMeasureGrouping.Name;
+            UnitOfMeasureGroupingDAO.Description = UnitOfMeasureGrouping.Description;
             UnitOfMeasureGroupingDAO.UnitOfMeasureId = UnitOfMeasureGrouping.UnitOfMeasureId;
             UnitOfMeasureGroupingDAO.StatusId = UnitOfMeasureGrouping.StatusId;
             UnitOfMeasureGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -243,7 +271,9 @@ namespace DMS.Repositories
             {
                 UnitOfMeasureGroupingDAO UnitOfMeasureGroupingDAO = new UnitOfMeasureGroupingDAO();
                 UnitOfMeasureGroupingDAO.Id = UnitOfMeasureGrouping.Id;
+                UnitOfMeasureGroupingDAO.Code = UnitOfMeasureGrouping.Code;
                 UnitOfMeasureGroupingDAO.Name = UnitOfMeasureGrouping.Name;
+                UnitOfMeasureGroupingDAO.Description = UnitOfMeasureGrouping.Description;
                 UnitOfMeasureGroupingDAO.UnitOfMeasureId = UnitOfMeasureGrouping.UnitOfMeasureId;
                 UnitOfMeasureGroupingDAO.StatusId = UnitOfMeasureGrouping.StatusId;
                 UnitOfMeasureGroupingDAO.CreatedAt = StaticParams.DateTimeNow;

@@ -1,15 +1,17 @@
-using Common;
-using DMS.Entities;
-using DMS.Services.MStatus;
-using DMS.Services.MUnitOfMeasure;
-using DMS.Services.MUnitOfMeasureGrouping;
-using DMS.Services.MUnitOfMeasureGroupingContent;
-using Helpers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common;
+using Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using DMS.Entities;
+using DMS.Services.MUnitOfMeasureGrouping;
+using DMS.Services.MStatus;
+using DMS.Services.MUnitOfMeasure;
+using DMS.Services.MUnitOfMeasureGroupingContent;
 
 namespace DMS.Rpc.unit_of_measure_grouping
 {
@@ -27,14 +29,15 @@ namespace DMS.Rpc.unit_of_measure_grouping
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
-
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public const string SingleListUnitOfMeasureGroupingContent = Default + "/single-list-unit-of-measure-grouping-content";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(UnitOfMeasureGroupingFilter.Id), FieldType.ID },
+            { nameof(UnitOfMeasureGroupingFilter.Code), FieldType.STRING },
             { nameof(UnitOfMeasureGroupingFilter.Name), FieldType.STRING },
+            { nameof(UnitOfMeasureGroupingFilter.Description), FieldType.STRING },
             { nameof(UnitOfMeasureGroupingFilter.UnitOfMeasureId), FieldType.ID },
             { nameof(UnitOfMeasureGroupingFilter.StatusId), FieldType.ID },
         };
@@ -106,7 +109,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            
             if (!await HasPermission(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Id))
                 return Forbid();
 
@@ -124,7 +127,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            
             if (!await HasPermission(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Id))
                 return Forbid();
 
@@ -160,7 +163,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -187,7 +190,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-
+        
         [Route(UnitOfMeasureGroupingRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -195,6 +198,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
                 throw new BindException(ModelState);
 
             UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter();
+            UnitOfMeasureGroupingFilter = UnitOfMeasureGroupingService.ToFilter(UnitOfMeasureGroupingFilter);
             UnitOfMeasureGroupingFilter.Id = new IdFilter { In = Ids };
             UnitOfMeasureGroupingFilter.Selects = UnitOfMeasureGroupingSelect.Id;
             UnitOfMeasureGroupingFilter.Skip = 0;
@@ -227,7 +231,9 @@ namespace DMS.Rpc.unit_of_measure_grouping
         {
             UnitOfMeasureGrouping UnitOfMeasureGrouping = new UnitOfMeasureGrouping();
             UnitOfMeasureGrouping.Id = UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Id;
+            UnitOfMeasureGrouping.Code = UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Code;
             UnitOfMeasureGrouping.Name = UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Name;
+            UnitOfMeasureGrouping.Description = UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Description;
             UnitOfMeasureGrouping.UnitOfMeasureId = UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.UnitOfMeasureId;
             UnitOfMeasureGrouping.StatusId = UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.StatusId;
             UnitOfMeasureGrouping.Status = UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Status == null ? null : new Status
@@ -273,7 +279,9 @@ namespace DMS.Rpc.unit_of_measure_grouping
             UnitOfMeasureGroupingFilter.OrderType = UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO.OrderType;
 
             UnitOfMeasureGroupingFilter.Id = UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO.Id;
+            UnitOfMeasureGroupingFilter.Code = UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO.Code;
             UnitOfMeasureGroupingFilter.Name = UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO.Name;
+            UnitOfMeasureGroupingFilter.Description = UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO.Description;
             UnitOfMeasureGroupingFilter.UnitOfMeasureId = UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO.UnitOfMeasureId;
             UnitOfMeasureGroupingFilter.StatusId = UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO.StatusId;
             return UnitOfMeasureGroupingFilter;

@@ -1,24 +1,29 @@
 using Common;
-using DMS.Entities;
-using System.Collections.Generic;
+using System;
 using System.Linq;
+using System.Collections.Generic;
+using DMS.Entities;
 
 namespace DMS.Rpc.unit_of_measure_grouping
 {
     public class UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO : DataDTO
     {
         public long Id { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long StatusId { get; set; }
         public UnitOfMeasureGrouping_StatusDTO Status { get; set; }
         public UnitOfMeasureGrouping_UnitOfMeasureDTO UnitOfMeasure { get; set; }
         public List<UnitOfMeasureGrouping_UnitOfMeasureGroupingContentDTO> UnitOfMeasureGroupingContents { get; set; }
-        public UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO() { }
+        public UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO() {}
         public UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
             this.Id = UnitOfMeasureGrouping.Id;
+            this.Code = UnitOfMeasureGrouping.Code;
             this.Name = UnitOfMeasureGrouping.Name;
+            this.Description = UnitOfMeasureGrouping.Description;
             this.UnitOfMeasureId = UnitOfMeasureGrouping.UnitOfMeasureId;
             this.StatusId = UnitOfMeasureGrouping.StatusId;
             this.Status = UnitOfMeasureGrouping.Status == null ? null : new UnitOfMeasureGrouping_StatusDTO(UnitOfMeasureGrouping.Status);
@@ -30,7 +35,9 @@ namespace DMS.Rpc.unit_of_measure_grouping
     public class UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
+        public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public StringFilter Description { get; set; }
         public IdFilter UnitOfMeasureId { get; set; }
         public IdFilter StatusId { get; set; }
         public UnitOfMeasureGroupingOrder OrderBy { get; set; }
