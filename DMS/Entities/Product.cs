@@ -6,7 +6,7 @@ using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class Product : DataEntity,  IEquatable<Product>
+    public class Product : DataEntity, IEquatable<Product>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -15,14 +15,17 @@ namespace DMS.Entities
         public string Description { get; set; }
         public string ScanCode { get; set; }
         public long ProductTypeId { get; set; }
-        public long SupplierId { get; set; }
-        public long BrandId { get; set; }
+        public long? SupplierId { get; set; }
+        public long? BrandId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long? UnitOfMeasureGroupingId { get; set; }
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public long? TaxTypeId { get; set; }
         public long StatusId { get; set; }
+        public string OtherName { get; set; }
+        public string TechnicalName { get; set; }
+        public string Note { get; set; }
         public Brand Brand { get; set; }
         public ProductType ProductType { get; set; }
         public Status Status { get; set; }
@@ -62,9 +65,12 @@ namespace DMS.Entities
         public DecimalFilter RetailPrice { get; set; }
         public IdFilter TaxTypeId { get; set; }
         public IdFilter StatusId { get; set; }
+        public StringFilter OtherName { get; set; }
+        public StringFilter TechnicalName { get; set; }
+        public StringFilter Note { get; set; }
         public List<ProductFilter> OrFilter { get; set; }
-        public ProductOrder OrderBy {get; set;}
-        public ProductSelect Selects {get; set;}
+        public ProductOrder OrderBy { get; set; }
+        public ProductSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -85,10 +91,13 @@ namespace DMS.Entities
         RetailPrice = 12,
         TaxType = 13,
         Status = 14,
+        OtherName = 15,
+        TechnicalName = 16,
+        Note = 17,
     }
 
     [Flags]
-    public enum ProductSelect:long
+    public enum ProductSelect : long
     {
         ALL = E.ALL,
         Id = E._0,
@@ -106,5 +115,8 @@ namespace DMS.Entities
         RetailPrice = E._12,
         TaxType = E._13,
         Status = E._14,
+        OtherName = E._15,
+        TechnicalName = E._16,
+        Note = E._17,
     }
 }

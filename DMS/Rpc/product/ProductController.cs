@@ -298,6 +298,9 @@ namespace DMS.Rpc.product
             Product.RetailPrice = Product_ProductDTO.RetailPrice;
             Product.TaxTypeId = Product_ProductDTO.TaxTypeId;
             Product.StatusId = Product_ProductDTO.StatusId;
+            Product.OtherName = Product_ProductDTO.OtherName;
+            Product.TechnicalName = Product_ProductDTO.TechnicalName;
+            Product.Note = Product_ProductDTO.Note;
             Product.Brand = Product_ProductDTO.Brand == null ? null : new Brand
             {
                 Id = Product_ProductDTO.Brand.Id,
@@ -419,6 +422,9 @@ namespace DMS.Rpc.product
             ProductFilter.RetailPrice = Product_ProductFilterDTO.RetailPrice;
             ProductFilter.TaxTypeId = Product_ProductFilterDTO.TaxTypeId;
             ProductFilter.StatusId = Product_ProductFilterDTO.StatusId;
+            ProductFilter.OtherName = Product_ProductFilterDTO.OtherName;
+            ProductFilter.TechnicalName = Product_ProductFilterDTO.TechnicalName;
+            ProductFilter.Note = Product_ProductFilterDTO.Note;
             return ProductFilter;
         }
 

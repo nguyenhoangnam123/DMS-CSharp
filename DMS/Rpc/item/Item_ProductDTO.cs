@@ -23,9 +23,9 @@ namespace DMS.Rpc.item
         
         public long ProductTypeId { get; set; }
         
-        public long SupplierId { get; set; }
+        public long? SupplierId { get; set; }
         
-        public long BrandId { get; set; }
+        public long? BrandId { get; set; }
         
         public long UnitOfMeasureId { get; set; }
         
