@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.image
@@ -11,7 +8,7 @@ namespace DMS.Rpc.image
         public long Id { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
-        public Image_ImageDTO() {}
+        public Image_ImageDTO() { }
         public Image_ImageDTO(Image Image)
         {
             this.Id = Image.Id;

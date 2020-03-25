@@ -1,21 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using DMS.Entities;
+using DMS.Services.MDistrict;
 using DMS.Services.MOrganization;
+using DMS.Services.MProvince;
 using DMS.Services.MStatus;
 using DMS.Services.MStore;
-using DMS.Services.MDistrict;
-using DMS.Services.MProvince;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MWard;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.organization
 {
@@ -135,7 +133,7 @@ namespace DMS.Rpc.organization
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Organization_OrganizationDTO.Id))
                 return Forbid();
 
@@ -153,7 +151,7 @@ namespace DMS.Rpc.organization
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Organization_OrganizationDTO.Id))
                 return Forbid();
 
@@ -189,7 +187,7 @@ namespace DMS.Rpc.organization
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -216,7 +214,7 @@ namespace DMS.Rpc.organization
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(OrganizationRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

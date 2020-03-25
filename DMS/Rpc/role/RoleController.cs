@@ -1,17 +1,15 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Services.MMenu;
+using DMS.Services.MPermission;
+using DMS.Services.MRole;
+using DMS.Services.MStatus;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DMS.Entities;
-using DMS.Services.MRole;
-using DMS.Services.MStatus;
-using DMS.Services.MPermission;
-using DMS.Services.MMenu;
 
 namespace DMS.Rpc.role
 {
@@ -108,7 +106,7 @@ namespace DMS.Rpc.role
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Role_RoleDTO.Id))
                 return Forbid();
 
@@ -126,7 +124,7 @@ namespace DMS.Rpc.role
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Role_RoleDTO.Id))
                 return Forbid();
 
@@ -162,7 +160,7 @@ namespace DMS.Rpc.role
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -189,7 +187,7 @@ namespace DMS.Rpc.role
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(RoleRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

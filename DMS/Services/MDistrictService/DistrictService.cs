@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MDistrict
 {
-    public interface IDistrictService :  IServiceScoped
+    public interface IDistrictService : IServiceScoped
     {
         Task<int> Count(DistrictFilter DistrictFilter);
         Task<List<District>> List(DistrictFilter DistrictFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MDistrict
                 return null;
             return District;
         }
-       
+
         public async Task<District> Create(District District)
         {
             if (!await DistrictValidator.Create(District))
@@ -184,7 +184,7 @@ namespace DMS.Services.MDistrict
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<District>> Import(DataFile DataFile)
         {
             List<District> Districts = new List<District>();
@@ -215,10 +215,10 @@ namespace DMS.Services.MDistrict
                     Districts.Add(District);
                 }
             }
-            
+
             if (!await DistrictValidator.Import(Districts))
                 return Districts;
-            
+
             try
             {
                 await UOW.Begin();
@@ -237,7 +237,7 @@ namespace DMS.Services.MDistrict
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(DistrictFilter DistrictFilter)
         {
@@ -259,14 +259,14 @@ namespace DMS.Services.MDistrict
                 int PriorityColumn = 2 + StartColumn;
                 int ProvinceIdColumn = 3 + StartColumn;
                 int StatusIdColumn = 4 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(District.Id);
                 worksheet.Cells[1, NameColumn].Value = nameof(District.Name);
                 worksheet.Cells[1, PriorityColumn].Value = nameof(District.Priority);
                 worksheet.Cells[1, ProvinceIdColumn].Value = nameof(District.ProvinceId);
                 worksheet.Cells[1, StatusIdColumn].Value = nameof(District.StatusId);
 
-                for(int i = 0; i < Districts.Count; i++)
+                for (int i = 0; i < Districts.Count; i++)
                 {
                     District District = Districts[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = District.Id;
@@ -285,7 +285,7 @@ namespace DMS.Services.MDistrict
             };
             return DataFile;
         }
-        
+
         public DistrictFilter ToFilter(DistrictFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<DistrictFilter>();

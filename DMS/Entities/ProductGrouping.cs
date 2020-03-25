@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class ProductGrouping : DataEntity,  IEquatable<ProductGrouping>
+    public class ProductGrouping : DataEntity, IEquatable<ProductGrouping>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -15,6 +15,7 @@ namespace DMS.Entities
         public string Path { get; set; }
         public string Description { get; set; }
         public ProductGrouping Parent { get; set; }
+        public List<ProductProductGroupingMapping> ProductProductGroupingMappings { get; set; }
 
         public bool Equals(ProductGrouping other)
         {
@@ -35,8 +36,8 @@ namespace DMS.Entities
         public StringFilter Path { get; set; }
         public StringFilter Description { get; set; }
         public List<ProductGroupingFilter> OrFilter { get; set; }
-        public ProductGroupingOrder OrderBy {get; set;}
-        public ProductGroupingSelect Selects {get; set;}
+        public ProductGroupingOrder OrderBy { get; set; }
+        public ProductGroupingSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -51,7 +52,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum ProductGroupingSelect:long
+    public enum ProductGroupingSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

@@ -1,6 +1,4 @@
-using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace DMS.Models
 {
@@ -26,6 +24,7 @@ namespace DMS.Models
         public virtual DbSet<ProductTypeDAO> ProductType { get; set; }
         public virtual DbSet<ProvinceDAO> Province { get; set; }
         public virtual DbSet<RoleDAO> Role { get; set; }
+        public virtual DbSet<SexDAO> Sex { get; set; }
         public virtual DbSet<StatusDAO> Status { get; set; }
         public virtual DbSet<StoreDAO> Store { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
@@ -50,17 +49,17 @@ namespace DMS.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=DMS;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
+                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=dms;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
-
             modelBuilder.Entity<AppUserDAO>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Address).HasMaxLength(500);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -81,6 +80,12 @@ namespace DMS.Models
                 entity.Property(e => e.Username)
                     .IsRequired()
                     .HasMaxLength(500);
+
+                entity.HasOne(d => d.Sex)
+                    .WithMany(p => p.AppUsers)
+                    .HasForeignKey(d => d.SexId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AppUser_Sex");
 
                 entity.HasOne(d => d.UserStatus)
                     .WithMany(p => p.AppUsers)
@@ -136,9 +141,7 @@ namespace DMS.Models
             {
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.DeletedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -230,7 +233,13 @@ namespace DMS.Models
             {
                 entity.ToTable("Menu", "PER");
 
-                entity.Property(e => e.Name).HasMaxLength(3000);
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(3000);
 
                 entity.Property(e => e.Path).HasMaxLength(3000);
             });
@@ -375,15 +384,17 @@ namespace DMS.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.DeletedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Description).HasMaxLength(3000);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(3000);
+
+                entity.Property(e => e.Note).HasMaxLength(3000);
+
+                entity.Property(e => e.OtherName).HasMaxLength(1000);
 
                 entity.Property(e => e.RetailPrice).HasColumnType("decimal(18, 4)");
 
@@ -395,12 +406,13 @@ namespace DMS.Models
 
                 entity.Property(e => e.SupplierCode).HasMaxLength(500);
 
+                entity.Property(e => e.TechnicalName).HasMaxLength(1000);
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Brand)
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.BrandId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_Brand");
 
                 entity.HasOne(d => d.ProductType)
@@ -418,7 +430,6 @@ namespace DMS.Models
                 entity.HasOne(d => d.Supplier)
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_Supplier");
 
                 entity.HasOne(d => d.TaxType)
@@ -446,9 +457,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.DeletedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Description).HasMaxLength(2000);
 
@@ -507,13 +516,12 @@ namespace DMS.Models
             {
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(100);
+                    .HasMaxLength(100)
+                    .IsFixedLength();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.DeletedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Description).HasMaxLength(3000);
 
@@ -536,9 +544,7 @@ namespace DMS.Models
             {
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.DeletedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -572,6 +578,17 @@ namespace DMS.Models
                     .HasConstraintName("FK_Role_Status");
             });
 
+            modelBuilder.Entity<SexDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
             modelBuilder.Entity<StatusDAO>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -585,7 +602,9 @@ namespace DMS.Models
             {
                 entity.Property(e => e.Address1).HasMaxLength(3000);
 
-                entity.Property(e => e.Address2).HasMaxLength(10);
+                entity.Property(e => e.Address2)
+                    .HasMaxLength(10)
+                    .IsFixedLength();
 
                 entity.Property(e => e.Code).HasMaxLength(500);
 
@@ -789,17 +808,13 @@ namespace DMS.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.DeletedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Description).HasMaxLength(3000);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
-
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -905,9 +920,7 @@ namespace DMS.Models
             {
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.DeletedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -930,9 +943,9 @@ namespace DMS.Models
                     .HasConstraintName("FK_Ward_Status");
             });
 
-            OnModelCreatingExt(modelBuilder);
+            OnModelCreatingPartial(modelBuilder);
         }
 
-        partial void OnModelCreatingExt(ModelBuilder modelBuilder);
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

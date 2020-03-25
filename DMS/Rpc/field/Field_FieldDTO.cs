@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.field
@@ -14,7 +11,7 @@ namespace DMS.Rpc.field
         public long MenuId { get; set; }
         public bool IsDeleted { get; set; }
         public Field_MenuDTO Menu { get; set; }
-        public Field_FieldDTO() {}
+        public Field_FieldDTO() { }
         public Field_FieldDTO(Field Field)
         {
             this.Id = Field.Id;

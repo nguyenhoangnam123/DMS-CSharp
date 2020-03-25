@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.page
@@ -14,7 +11,7 @@ namespace DMS.Rpc.page
         public long MenuId { get; set; }
         public bool IsDeleted { get; set; }
         public Page_MenuDTO Menu { get; set; }
-        public Page_PageDTO() {}
+        public Page_PageDTO() { }
         public Page_PageDTO(Page Page)
         {
             this.Id = Page.Id;

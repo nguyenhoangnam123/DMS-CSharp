@@ -1,16 +1,14 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Services.MField;
+using DMS.Services.MMenu;
+using DMS.Services.MPage;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DMS.Entities;
-using DMS.Services.MMenu;
-using DMS.Services.MField;
-using DMS.Services.MPage;
 
 namespace DMS.Rpc.menu
 {
@@ -102,7 +100,7 @@ namespace DMS.Rpc.menu
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Menu_MenuDTO.Id))
                 return Forbid();
 
@@ -120,7 +118,7 @@ namespace DMS.Rpc.menu
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Menu_MenuDTO.Id))
                 return Forbid();
 
@@ -156,7 +154,7 @@ namespace DMS.Rpc.menu
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -183,7 +181,7 @@ namespace DMS.Rpc.menu
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(MenuRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

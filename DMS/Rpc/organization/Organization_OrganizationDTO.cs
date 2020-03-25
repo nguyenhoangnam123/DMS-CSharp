@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.organization
 {
@@ -22,7 +21,7 @@ namespace DMS.Rpc.organization
         public Organization_OrganizationDTO Parent { get; set; }
         public Organization_StatusDTO Status { get; set; }
         public List<Organization_StoreDTO> Stores { get; set; }
-        public Organization_OrganizationDTO() {}
+        public Organization_OrganizationDTO() { }
         public Organization_OrganizationDTO(Organization Organization)
         {
             this.Id = Organization.Id;

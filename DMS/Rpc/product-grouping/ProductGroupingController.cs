@@ -1,14 +1,12 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Services.MProductGrouping;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DMS.Entities;
-using DMS.Services.MProductGrouping;
 
 namespace DMS.Rpc.product_grouping
 {
@@ -26,6 +24,8 @@ namespace DMS.Rpc.product_grouping
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
+
+        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
 
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
@@ -95,7 +95,7 @@ namespace DMS.Rpc.product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(ProductGrouping_ProductGroupingDTO.Id))
                 return Forbid();
 
@@ -113,7 +113,7 @@ namespace DMS.Rpc.product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(ProductGrouping_ProductGroupingDTO.Id))
                 return Forbid();
 
@@ -149,7 +149,7 @@ namespace DMS.Rpc.product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -176,7 +176,7 @@ namespace DMS.Rpc.product_grouping
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(ProductGroupingRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -252,7 +252,25 @@ namespace DMS.Rpc.product_grouping
             return ProductGroupingFilter;
         }
 
+        [Route(ProductGroupingRoute.SingleListProductGrouping), HttpPost]
+        public async Task<List<ProductGrouping_ProductGroupingDTO>> SingleListBrand([FromBody] ProductGrouping_ProductGroupingFilterDTO ProductGrouping_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = 20;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.ALL;
+            ProductGroupingFilter.Id = ProductGrouping_ProductGroupingFilterDTO.Id;
+            ProductGroupingFilter.Code = ProductGrouping_ProductGroupingFilterDTO.Code;
+            ProductGroupingFilter.Name = ProductGrouping_ProductGroupingFilterDTO.Name;
+            
 
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<ProductGrouping_ProductGroupingDTO> ProductGrouping_ProductGroupingDTOs = ProductGroupings
+                .Select(x => new ProductGrouping_ProductGroupingDTO(x)).ToList();
+            return ProductGrouping_ProductGroupingDTOs;
+        }
     }
 }
 

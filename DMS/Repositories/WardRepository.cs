@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -48,7 +48,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<WardDAO> OrFilter(IQueryable<WardDAO> query, WardFilter filter)
+        private IQueryable<WardDAO> OrFilter(IQueryable<WardDAO> query, WardFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -69,7 +69,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<WardDAO> DynamicOrder(IQueryable<WardDAO> query, WardFilter filter)
         {
@@ -232,7 +232,7 @@ namespace DMS.Repositories
             await DataContext.Ward.Where(x => x.Id == Ward.Id).UpdateFromQueryAsync(x => new WardDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Ward> Wards)
         {
             List<WardDAO> WardDAOs = new List<WardDAO>();
@@ -264,6 +264,6 @@ namespace DMS.Repositories
         private async Task SaveReference(Ward Ward)
         {
         }
-        
+
     }
 }

@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MStore
 {
-    public interface IStoreService :  IServiceScoped
+    public interface IStoreService : IServiceScoped
     {
         Task<int> Count(StoreFilter StoreFilter);
         Task<List<Store>> List(StoreFilter StoreFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MStore
                 return null;
             return Store;
         }
-       
+
         public async Task<Store> Create(Store Store)
         {
             if (!await StoreValidator.Create(Store))
@@ -184,7 +184,7 @@ namespace DMS.Services.MStore
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Store>> Import(DataFile DataFile)
         {
             List<Store> Stores = new List<Store>();
@@ -251,10 +251,10 @@ namespace DMS.Services.MStore
                     Stores.Add(Store);
                 }
             }
-            
+
             if (!await StoreValidator.Import(Stores))
                 return Stores;
-            
+
             try
             {
                 await UOW.Begin();
@@ -273,7 +273,7 @@ namespace DMS.Services.MStore
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(StoreFilter StoreFilter)
         {
@@ -309,7 +309,7 @@ namespace DMS.Services.MStore
                 int OwnerPhoneColumn = 16 + StartColumn;
                 int OwnerEmailColumn = 17 + StartColumn;
                 int StatusIdColumn = 18 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Store.Id);
                 worksheet.Cells[1, CodeColumn].Value = nameof(Store.Code);
                 worksheet.Cells[1, NameColumn].Value = nameof(Store.Name);
@@ -330,7 +330,7 @@ namespace DMS.Services.MStore
                 worksheet.Cells[1, OwnerEmailColumn].Value = nameof(Store.OwnerEmail);
                 worksheet.Cells[1, StatusIdColumn].Value = nameof(Store.StatusId);
 
-                for(int i = 0; i < Stores.Count; i++)
+                for (int i = 0; i < Stores.Count; i++)
                 {
                     Store Store = Stores[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Store.Id;
@@ -363,7 +363,7 @@ namespace DMS.Services.MStore
             };
             return DataFile;
         }
-        
+
         public StoreFilter ToFilter(StoreFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<StoreFilter>();

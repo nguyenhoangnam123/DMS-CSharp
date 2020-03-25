@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.brand
@@ -13,7 +10,7 @@ namespace DMS.Rpc.brand
         public string Name { get; set; }
         public long StatusId { get; set; }
         public Brand_StatusDTO Status { get; set; }
-        public Brand_BrandDTO() {}
+        public Brand_BrandDTO() { }
         public Brand_BrandDTO(Brand Brand)
         {
             this.Id = Brand.Id;

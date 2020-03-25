@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -50,7 +50,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<ProductGroupingDAO> OrFilter(IQueryable<ProductGroupingDAO> query, ProductGroupingFilter filter)
+        private IQueryable<ProductGroupingDAO> OrFilter(IQueryable<ProductGroupingDAO> query, ProductGroupingFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -73,7 +73,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ProductGroupingDAO> DynamicOrder(IQueryable<ProductGroupingDAO> query, ProductGroupingFilter filter)
         {
@@ -193,6 +193,31 @@ namespace DMS.Repositories
 
             if (ProductGrouping == null)
                 return null;
+            ProductGrouping.ProductProductGroupingMappings = await DataContext.ProductProductGroupingMapping
+                .Where(x => x.ProductGrouping.Path.StartsWith(ProductGrouping.Path))
+                .Select(x => new ProductProductGroupingMapping
+                {
+                    ProductId = x.ProductId,
+                    ProductGroupingId = x.ProductGroupingId,
+                    Product = new Product
+                    {
+                        Id = x.Product.Id,
+                        Code = x.Product.Code,
+                        SupplierCode = x.Product.SupplierCode,
+                        Name = x.Product.Name,
+                        Description = x.Product.Description,
+                        ScanCode = x.Product.ScanCode,
+                        ProductTypeId = x.Product.ProductTypeId,
+                        SupplierId = x.Product.SupplierId,
+                        BrandId = x.Product.BrandId,
+                        UnitOfMeasureId = x.Product.UnitOfMeasureId,
+                        UnitOfMeasureGroupingId = x.Product.UnitOfMeasureGroupingId,
+                        SalePrice = x.Product.SalePrice,
+                        RetailPrice = x.Product.RetailPrice,
+                        TaxTypeId = x.Product.TaxTypeId,
+                        StatusId = x.Product.StatusId,
+                    },
+                }).ToListAsync();
 
             return ProductGrouping;
         }
@@ -241,7 +266,7 @@ namespace DMS.Repositories
             await BuildPath();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<ProductGrouping> ProductGroupings)
         {
             List<ProductGroupingDAO> ProductGroupingDAOs = new List<ProductGroupingDAO>();
@@ -275,8 +300,23 @@ namespace DMS.Repositories
 
         private async Task SaveReference(ProductGrouping ProductGrouping)
         {
+            await DataContext.ProductProductGroupingMapping
+                .Where(x => x.ProductGroupingId == ProductGrouping.Id)
+                .DeleteFromQueryAsync();
+            List<ProductProductGroupingMappingDAO> ProductProductGroupingMappingDAOs = new List<ProductProductGroupingMappingDAO>();
+            if (ProductGrouping.ProductProductGroupingMappings != null)
+            {
+                foreach (ProductProductGroupingMapping ProductProductGroupingMapping in ProductGrouping.ProductProductGroupingMappings)
+                {
+                    ProductProductGroupingMappingDAO ProductProductGroupingMappingDAO = new ProductProductGroupingMappingDAO();
+                    ProductProductGroupingMappingDAO.ProductId = ProductProductGroupingMapping.ProductId;
+                    ProductProductGroupingMappingDAO.ProductGroupingId = ProductGrouping.Id;
+                    ProductProductGroupingMappingDAOs.Add(ProductProductGroupingMappingDAO);
+                }
+                await DataContext.ProductProductGroupingMapping.BulkMergeAsync(ProductProductGroupingMappingDAOs);
+            }
         }
-        
+
         private async Task BuildPath()
         {
             List<ProductGroupingDAO> ProductGroupingDAOs = await DataContext.ProductGrouping
@@ -291,7 +331,7 @@ namespace DMS.Repositories
                     queue.Enqueue(x);
                 }
             });
-            while(queue.Count > 0)
+            while (queue.Count > 0)
             {
                 ProductGroupingDAO Parent = queue.Dequeue();
                 foreach (ProductGroupingDAO ProductGroupingDAO in ProductGroupingDAOs)

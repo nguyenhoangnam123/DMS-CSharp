@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MDistrict
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MDistrict
             return count == 1;
         }
 
-        public async Task<bool>Create(District District)
+        public async Task<bool> Create(District District)
         {
             return District.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MDistrict
             }
             return District.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<District> Districts)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<District> Districts)
         {
             return true;

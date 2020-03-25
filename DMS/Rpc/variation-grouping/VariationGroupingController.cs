@@ -1,15 +1,13 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Services.MProduct;
+using DMS.Services.MVariationGrouping;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DMS.Entities;
-using DMS.Services.MVariationGrouping;
-using DMS.Services.MProduct;
 
 namespace DMS.Rpc.variation_grouping
 {
@@ -97,7 +95,7 @@ namespace DMS.Rpc.variation_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(VariationGrouping_VariationGroupingDTO.Id))
                 return Forbid();
 
@@ -115,7 +113,7 @@ namespace DMS.Rpc.variation_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(VariationGrouping_VariationGroupingDTO.Id))
                 return Forbid();
 
@@ -151,7 +149,7 @@ namespace DMS.Rpc.variation_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -178,7 +176,7 @@ namespace DMS.Rpc.variation_grouping
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(VariationGroupingRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MOrganization
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MOrganization
             return count == 1;
         }
 
-        public async Task<bool>Create(Organization Organization)
+        public async Task<bool> Create(Organization Organization)
         {
             return Organization.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MOrganization
             }
             return Organization.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Organization> Organizations)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Organization> Organizations)
         {
             return true;

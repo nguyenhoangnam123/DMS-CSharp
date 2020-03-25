@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MStoreGrouping
 {
-    public interface IStoreGroupingService :  IServiceScoped
+    public interface IStoreGroupingService : IServiceScoped
     {
         Task<int> Count(StoreGroupingFilter StoreGroupingFilter);
         Task<List<StoreGrouping>> List(StoreGroupingFilter StoreGroupingFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MStoreGrouping
                 return null;
             return StoreGrouping;
         }
-       
+
         public async Task<StoreGrouping> Create(StoreGrouping StoreGrouping)
         {
             if (!await StoreGroupingValidator.Create(StoreGrouping))
@@ -184,7 +184,7 @@ namespace DMS.Services.MStoreGrouping
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<StoreGrouping>> Import(DataFile DataFile)
         {
             List<StoreGrouping> StoreGroupings = new List<StoreGrouping>();
@@ -221,10 +221,10 @@ namespace DMS.Services.MStoreGrouping
                     StoreGroupings.Add(StoreGrouping);
                 }
             }
-            
+
             if (!await StoreGroupingValidator.Import(StoreGroupings))
                 return StoreGroupings;
-            
+
             try
             {
                 await UOW.Begin();
@@ -243,7 +243,7 @@ namespace DMS.Services.MStoreGrouping
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(StoreGroupingFilter StoreGroupingFilter)
         {
@@ -267,7 +267,7 @@ namespace DMS.Services.MStoreGrouping
                 int PathColumn = 4 + StartColumn;
                 int LevelColumn = 5 + StartColumn;
                 int IsActiveColumn = 6 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(StoreGrouping.Id);
                 worksheet.Cells[1, CodeColumn].Value = nameof(StoreGrouping.Code);
                 worksheet.Cells[1, NameColumn].Value = nameof(StoreGrouping.Name);
@@ -276,7 +276,7 @@ namespace DMS.Services.MStoreGrouping
                 worksheet.Cells[1, LevelColumn].Value = nameof(StoreGrouping.Level);
                 worksheet.Cells[1, IsActiveColumn].Value = nameof(StoreGrouping.IsActive);
 
-                for(int i = 0; i < StoreGroupings.Count; i++)
+                for (int i = 0; i < StoreGroupings.Count; i++)
                 {
                     StoreGrouping StoreGrouping = StoreGroupings[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = StoreGrouping.Id;
@@ -297,7 +297,7 @@ namespace DMS.Services.MStoreGrouping
             };
             return DataFile;
         }
-        
+
         public StoreGroupingFilter ToFilter(StoreGroupingFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<StoreGroupingFilter>();

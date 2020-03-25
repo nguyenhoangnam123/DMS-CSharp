@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MImage
 {
-    public interface IImageService :  IServiceScoped
+    public interface IImageService : IServiceScoped
     {
         Task<int> Count(ImageFilter ImageFilter);
         Task<List<Image>> List(ImageFilter ImageFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MImage
                 return null;
             return Image;
         }
-       
+
         public async Task<Image> Create(Image Image)
         {
             if (!await ImageValidator.Create(Image))
@@ -184,7 +184,7 @@ namespace DMS.Services.MImage
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Image>> Import(DataFile DataFile)
         {
             List<Image> Images = new List<Image>();
@@ -211,10 +211,10 @@ namespace DMS.Services.MImage
                     Images.Add(Image);
                 }
             }
-            
+
             if (!await ImageValidator.Import(Images))
                 return Images;
-            
+
             try
             {
                 await UOW.Begin();
@@ -233,7 +233,7 @@ namespace DMS.Services.MImage
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(ImageFilter ImageFilter)
         {
@@ -253,12 +253,12 @@ namespace DMS.Services.MImage
                 int IdColumn = 0 + StartColumn;
                 int NameColumn = 1 + StartColumn;
                 int UrlColumn = 2 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Image.Id);
                 worksheet.Cells[1, NameColumn].Value = nameof(Image.Name);
                 worksheet.Cells[1, UrlColumn].Value = nameof(Image.Url);
 
-                for(int i = 0; i < Images.Count; i++)
+                for (int i = 0; i < Images.Count; i++)
                 {
                     Image Image = Images[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Image.Id;
@@ -275,7 +275,7 @@ namespace DMS.Services.MImage
             };
             return DataFile;
         }
-        
+
         public ImageFilter ToFilter(ImageFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ImageFilter>();

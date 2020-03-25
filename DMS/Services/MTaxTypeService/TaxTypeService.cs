@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MTaxType
 {
-    public interface ITaxTypeService :  IServiceScoped
+    public interface ITaxTypeService : IServiceScoped
     {
         Task<int> Count(TaxTypeFilter TaxTypeFilter);
         Task<List<TaxType>> List(TaxTypeFilter TaxTypeFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MTaxType
                 return null;
             return TaxType;
         }
-       
+
         public async Task<TaxType> Create(TaxType TaxType)
         {
             if (!await TaxTypeValidator.Create(TaxType))
@@ -184,7 +184,7 @@ namespace DMS.Services.MTaxType
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<TaxType>> Import(DataFile DataFile)
         {
             List<TaxType> TaxTypes = new List<TaxType>();
@@ -216,10 +216,10 @@ namespace DMS.Services.MTaxType
                     TaxTypes.Add(TaxType);
                 }
             }
-            
+
             if (!await TaxTypeValidator.Import(TaxTypes))
                 return TaxTypes;
-            
+
             try
             {
                 await UOW.Begin();
@@ -238,7 +238,7 @@ namespace DMS.Services.MTaxType
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(TaxTypeFilter TaxTypeFilter)
         {
@@ -260,14 +260,14 @@ namespace DMS.Services.MTaxType
                 int NameColumn = 2 + StartColumn;
                 int PercentageColumn = 3 + StartColumn;
                 int StatusIdColumn = 4 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(TaxType.Id);
                 worksheet.Cells[1, CodeColumn].Value = nameof(TaxType.Code);
                 worksheet.Cells[1, NameColumn].Value = nameof(TaxType.Name);
                 worksheet.Cells[1, PercentageColumn].Value = nameof(TaxType.Percentage);
                 worksheet.Cells[1, StatusIdColumn].Value = nameof(TaxType.StatusId);
 
-                for(int i = 0; i < TaxTypes.Count; i++)
+                for (int i = 0; i < TaxTypes.Count; i++)
                 {
                     TaxType TaxType = TaxTypes[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = TaxType.Id;
@@ -286,7 +286,7 @@ namespace DMS.Services.MTaxType
             };
             return DataFile;
         }
-        
+
         public TaxTypeFilter ToFilter(TaxTypeFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<TaxTypeFilter>();

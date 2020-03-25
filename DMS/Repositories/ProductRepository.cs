@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -64,11 +64,17 @@ namespace DMS.Repositories
                 query = query.Where(q => q.TaxTypeId, filter.TaxTypeId);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
+            if (filter.OtherName != null)
+                query = query.Where(q => q.OtherName, filter.OtherName);
+            if (filter.TechnicalName != null)
+                query = query.Where(q => q.TechnicalName, filter.TechnicalName);
+            if (filter.Note != null)
+                query = query.Where(q => q.Note, filter.Note);
             query = OrFilter(query, filter);
             return query;
         }
 
-         private IQueryable<ProductDAO> OrFilter(IQueryable<ProductDAO> query, ProductFilter filter)
+        private IQueryable<ProductDAO> OrFilter(IQueryable<ProductDAO> query, ProductFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -106,10 +112,16 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.TaxTypeId, filter.TaxTypeId);
                 if (filter.StatusId != null)
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (filter.OtherName != null)
+                    queryable = queryable.Where(q => q.OtherName, filter.OtherName);
+                if (filter.TechnicalName != null)
+                    queryable = queryable.Where(q => q.TechnicalName, filter.TechnicalName);
+                if (filter.Note != null)
+                    queryable = queryable.Where(q => q.Note, filter.Note);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ProductDAO> DynamicOrder(IQueryable<ProductDAO> query, ProductFilter filter)
         {
@@ -163,6 +175,15 @@ namespace DMS.Repositories
                         case ProductOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
                             break;
+                        case ProductOrder.OtherName:
+                            query = query.OrderBy(q => q.OtherName);
+                            break;
+                        case ProductOrder.TechnicalName:
+                            query = query.OrderBy(q => q.TechnicalName);
+                            break;
+                        case ProductOrder.Note:
+                            query = query.OrderBy(q => q.Note);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -213,6 +234,15 @@ namespace DMS.Repositories
                         case ProductOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
                             break;
+                        case ProductOrder.OtherName:
+                            query = query.OrderByDescending(q => q.OtherName);
+                            break;
+                        case ProductOrder.TechnicalName:
+                            query = query.OrderByDescending(q => q.TechnicalName);
+                            break;
+                        case ProductOrder.Note:
+                            query = query.OrderByDescending(q => q.Note);
+                            break;
                     }
                     break;
             }
@@ -231,14 +261,17 @@ namespace DMS.Repositories
                 Description = filter.Selects.Contains(ProductSelect.Description) ? q.Description : default(string),
                 ScanCode = filter.Selects.Contains(ProductSelect.ScanCode) ? q.ScanCode : default(string),
                 ProductTypeId = filter.Selects.Contains(ProductSelect.ProductType) ? q.ProductTypeId : default(long),
-                SupplierId = filter.Selects.Contains(ProductSelect.Supplier) ? q.SupplierId : default(long),
-                BrandId = filter.Selects.Contains(ProductSelect.Brand) ? q.BrandId : default(long),
+                SupplierId = filter.Selects.Contains(ProductSelect.Supplier) ? q.SupplierId : default(long?),
+                BrandId = filter.Selects.Contains(ProductSelect.Brand) ? q.BrandId : default(long?),
                 UnitOfMeasureId = filter.Selects.Contains(ProductSelect.UnitOfMeasure) ? q.UnitOfMeasureId : default(long),
                 UnitOfMeasureGroupingId = filter.Selects.Contains(ProductSelect.UnitOfMeasureGrouping) ? q.UnitOfMeasureGroupingId : default(long?),
                 SalePrice = filter.Selects.Contains(ProductSelect.SalePrice) ? q.SalePrice : default(decimal?),
                 RetailPrice = filter.Selects.Contains(ProductSelect.RetailPrice) ? q.RetailPrice : default(decimal?),
                 TaxTypeId = filter.Selects.Contains(ProductSelect.TaxType) ? q.TaxTypeId : default(long?),
                 StatusId = filter.Selects.Contains(ProductSelect.Status) ? q.StatusId : default(long),
+                OtherName = filter.Selects.Contains(ProductSelect.OtherName) ? q.OtherName : default(string),
+                TechnicalName = filter.Selects.Contains(ProductSelect.TechnicalName) ? q.TechnicalName : default(string),
+                Note = filter.Selects.Contains(ProductSelect.Note) ? q.Note : default(string),
                 Brand = filter.Selects.Contains(ProductSelect.Brand) && q.Brand != null ? new Brand
                 {
                     Id = q.Brand.Id,
@@ -497,7 +530,7 @@ namespace DMS.Repositories
             await DataContext.Product.Where(x => x.Id == Product.Id).UpdateFromQueryAsync(x => new ProductDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Product> Products)
         {
             List<ProductDAO> ProductDAOs = new List<ProductDAO>();
@@ -639,6 +672,6 @@ namespace DMS.Repositories
                 await DataContext.VariationGrouping.BulkMergeAsync(VariationGroupingDAOs);
             }
         }
-        
+
     }
 }

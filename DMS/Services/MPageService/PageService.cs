@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MPage
 {
-    public interface IPageService :  IServiceScoped
+    public interface IPageService : IServiceScoped
     {
         Task<int> Count(PageFilter PageFilter);
         Task<List<Page>> List(PageFilter PageFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MPage
                 return null;
             return Page;
         }
-       
+
         public async Task<Page> Create(Page Page)
         {
             if (!await PageValidator.Create(Page))
@@ -184,7 +184,7 @@ namespace DMS.Services.MPage
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Page>> Import(DataFile DataFile)
         {
             List<Page> Pages = new List<Page>();
@@ -215,10 +215,10 @@ namespace DMS.Services.MPage
                     Pages.Add(Page);
                 }
             }
-            
+
             if (!await PageValidator.Import(Pages))
                 return Pages;
-            
+
             try
             {
                 await UOW.Begin();
@@ -237,7 +237,7 @@ namespace DMS.Services.MPage
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(PageFilter PageFilter)
         {
@@ -259,14 +259,14 @@ namespace DMS.Services.MPage
                 int PathColumn = 2 + StartColumn;
                 int MenuIdColumn = 3 + StartColumn;
                 int IsDeletedColumn = 4 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Page.Id);
                 worksheet.Cells[1, NameColumn].Value = nameof(Page.Name);
                 worksheet.Cells[1, PathColumn].Value = nameof(Page.Path);
                 worksheet.Cells[1, MenuIdColumn].Value = nameof(Page.MenuId);
                 worksheet.Cells[1, IsDeletedColumn].Value = nameof(Page.IsDeleted);
 
-                for(int i = 0; i < Pages.Count; i++)
+                for (int i = 0; i < Pages.Count; i++)
                 {
                     Page Page = Pages[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Page.Id;
@@ -285,7 +285,7 @@ namespace DMS.Services.MPage
             };
             return DataFile;
         }
-        
+
         public PageFilter ToFilter(PageFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<PageFilter>();

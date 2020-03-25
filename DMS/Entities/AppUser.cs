@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class AppUser : DataEntity,  IEquatable<AppUser>
+    public class AppUser : DataEntity, IEquatable<AppUser>
     {
         public long Id { get; set; }
         public string Username { get; set; }
@@ -38,8 +38,8 @@ namespace DMS.Entities
         public StringFilter Phone { get; set; }
         public IdFilter UserStatusId { get; set; }
         public List<AppUserFilter> OrFilter { get; set; }
-        public AppUserOrder OrderBy {get; set;}
-        public AppUserSelect Selects {get; set;}
+        public AppUserOrder OrderBy { get; set; }
+        public AppUserSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -55,7 +55,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum AppUserSelect:long
+    public enum AppUserSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

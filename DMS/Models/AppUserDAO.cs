@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace DMS.Models
@@ -14,6 +14,8 @@ namespace DMS.Models
         public string Username { get; set; }
         public string Password { get; set; }
         public string DisplayName { get; set; }
+        public long SexId { get; set; }
+        public string Address { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
         public long UserStatusId { get; set; }
@@ -21,6 +23,7 @@ namespace DMS.Models
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        public virtual SexDAO Sex { get; set; }
         public virtual UserStatusDAO UserStatus { get; set; }
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
     }

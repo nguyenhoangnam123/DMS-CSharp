@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -46,7 +46,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<BrandDAO> OrFilter(IQueryable<BrandDAO> query, BrandFilter filter)
+        private IQueryable<BrandDAO> OrFilter(IQueryable<BrandDAO> query, BrandFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -65,7 +65,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<BrandDAO> DynamicOrder(IQueryable<BrandDAO> query, BrandFilter filter)
         {
@@ -202,7 +202,7 @@ namespace DMS.Repositories
             await DataContext.Brand.Where(x => x.Id == Brand.Id).UpdateFromQueryAsync(x => new BrandDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Brand> Brands)
         {
             List<BrandDAO> BrandDAOs = new List<BrandDAO>();
@@ -233,6 +233,6 @@ namespace DMS.Repositories
         private async Task SaveReference(Brand Brand)
         {
         }
-        
+
     }
 }

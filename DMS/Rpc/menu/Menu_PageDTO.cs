@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.menu
@@ -13,8 +10,8 @@ namespace DMS.Rpc.menu
         public string Path { get; set; }
         public long MenuId { get; set; }
         public bool IsDeleted { get; set; }
-        
-        public Menu_PageDTO() {}
+
+        public Menu_PageDTO() { }
         public Menu_PageDTO(Page Page)
         {
             this.Id = Page.Id;
@@ -27,15 +24,15 @@ namespace DMS.Rpc.menu
 
     public class Menu_PageFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public StringFilter Name { get; set; }
-        
+
         public StringFilter Path { get; set; }
-        
+
         public IdFilter MenuId { get; set; }
-        
+
         public PageOrder OrderBy { get; set; }
     }
 }

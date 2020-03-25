@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.status
@@ -11,7 +8,7 @@ namespace DMS.Rpc.status
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public Status_StatusDTO() {}
+        public Status_StatusDTO() { }
         public Status_StatusDTO(Status Status)
         {
             this.Id = Status.Id;

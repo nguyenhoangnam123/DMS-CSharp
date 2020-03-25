@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Item : DataEntity,  IEquatable<Item>
+    public class Item : DataEntity, IEquatable<Item>
     {
         public long Id { get; set; }
         public long ProductId { get; set; }
@@ -37,8 +37,8 @@ namespace DMS.Entities
         public DecimalFilter SalePrice { get; set; }
         public DecimalFilter RetailPrice { get; set; }
         public List<ItemFilter> OrFilter { get; set; }
-        public ItemOrder OrderBy {get; set;}
-        public ItemSelect Selects {get; set;}
+        public ItemOrder OrderBy { get; set; }
+        public ItemSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -54,7 +54,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum ItemSelect:long
+    public enum ItemSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

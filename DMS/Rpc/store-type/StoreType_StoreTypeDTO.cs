@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.store_type
@@ -13,7 +10,7 @@ namespace DMS.Rpc.store_type
         public string Name { get; set; }
         public long StatusId { get; set; }
         public StoreType_StatusDTO Status { get; set; }
-        public StoreType_StoreTypeDTO() {}
+        public StoreType_StoreTypeDTO() { }
         public StoreType_StoreTypeDTO(StoreType StoreType)
         {
             this.Id = StoreType.Id;

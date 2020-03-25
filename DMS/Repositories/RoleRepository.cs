@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -45,7 +44,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<RoleDAO> OrFilter(IQueryable<RoleDAO> query, RoleFilter filter)
+        private IQueryable<RoleDAO> OrFilter(IQueryable<RoleDAO> query, RoleFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -64,7 +63,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<RoleDAO> DynamicOrder(IQueryable<RoleDAO> query, RoleFilter filter)
         {
@@ -221,7 +220,7 @@ namespace DMS.Repositories
             await DataContext.Role.Where(x => x.Id == Role.Id).DeleteFromQueryAsync();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Role> Roles)
         {
             List<RoleDAO> RoleDAOs = new List<RoleDAO>();
@@ -267,6 +266,6 @@ namespace DMS.Repositories
                 await DataContext.Permission.BulkMergeAsync(PermissionDAOs);
             }
         }
-        
+
     }
 }

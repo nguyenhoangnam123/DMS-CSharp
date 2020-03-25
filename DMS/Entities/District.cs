@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class District : DataEntity,  IEquatable<District>
+    public class District : DataEntity, IEquatable<District>
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -34,8 +34,8 @@ namespace DMS.Entities
         public IdFilter ProvinceId { get; set; }
         public IdFilter StatusId { get; set; }
         public List<DistrictFilter> OrFilter { get; set; }
-        public DistrictOrder OrderBy {get; set;}
-        public DistrictSelect Selects {get; set;}
+        public DistrictOrder OrderBy { get; set; }
+        public DistrictSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -49,7 +49,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum DistrictSelect:long
+    public enum DistrictSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

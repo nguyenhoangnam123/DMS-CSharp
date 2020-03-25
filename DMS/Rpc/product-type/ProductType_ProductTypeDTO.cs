@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.product_type
@@ -14,7 +11,7 @@ namespace DMS.Rpc.product_type
         public string Description { get; set; }
         public long StatusId { get; set; }
         public ProductType_StatusDTO Status { get; set; }
-        public ProductType_ProductTypeDTO() {}
+        public ProductType_ProductTypeDTO() { }
         public ProductType_ProductTypeDTO(ProductType ProductType)
         {
             this.Id = ProductType.Id;

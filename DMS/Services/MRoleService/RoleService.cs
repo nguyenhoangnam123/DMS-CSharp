@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MRole
 {
-    public interface IRoleService :  IServiceScoped
+    public interface IRoleService : IServiceScoped
     {
         Task<int> Count(RoleFilter RoleFilter);
         Task<List<Role>> List(RoleFilter RoleFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MRole
                 return null;
             return Role;
         }
-       
+
         public async Task<Role> Create(Role Role)
         {
             if (!await RoleValidator.Create(Role))
@@ -184,7 +184,7 @@ namespace DMS.Services.MRole
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Role>> Import(DataFile DataFile)
         {
             List<Role> Roles = new List<Role>();
@@ -213,10 +213,10 @@ namespace DMS.Services.MRole
                     Roles.Add(Role);
                 }
             }
-            
+
             if (!await RoleValidator.Import(Roles))
                 return Roles;
-            
+
             try
             {
                 await UOW.Begin();
@@ -235,7 +235,7 @@ namespace DMS.Services.MRole
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(RoleFilter RoleFilter)
         {
@@ -256,13 +256,13 @@ namespace DMS.Services.MRole
                 int CodeColumn = 1 + StartColumn;
                 int NameColumn = 2 + StartColumn;
                 int StatusIdColumn = 3 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Role.Id);
                 worksheet.Cells[1, CodeColumn].Value = nameof(Role.Code);
                 worksheet.Cells[1, NameColumn].Value = nameof(Role.Name);
                 worksheet.Cells[1, StatusIdColumn].Value = nameof(Role.StatusId);
 
-                for(int i = 0; i < Roles.Count; i++)
+                for (int i = 0; i < Roles.Count; i++)
                 {
                     Role Role = Roles[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Role.Id;
@@ -280,7 +280,7 @@ namespace DMS.Services.MRole
             };
             return DataFile;
         }
-        
+
         public RoleFilter ToFilter(RoleFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<RoleFilter>();

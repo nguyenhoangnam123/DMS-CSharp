@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.unit_of_measure
@@ -14,7 +11,7 @@ namespace DMS.Rpc.unit_of_measure
         public string Description { get; set; }
         public long StatusId { get; set; }
         public UnitOfMeasure_StatusDTO Status { get; set; }
-        public UnitOfMeasure_UnitOfMeasureDTO() {}
+        public UnitOfMeasure_UnitOfMeasureDTO() { }
         public UnitOfMeasure_UnitOfMeasureDTO(UnitOfMeasure UnitOfMeasure)
         {
             this.Id = UnitOfMeasure.Id;

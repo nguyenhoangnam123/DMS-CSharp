@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MVariationGrouping
 {
-    public interface IVariationGroupingService :  IServiceScoped
+    public interface IVariationGroupingService : IServiceScoped
     {
         Task<int> Count(VariationGroupingFilter VariationGroupingFilter);
         Task<List<VariationGrouping>> List(VariationGroupingFilter VariationGroupingFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MVariationGrouping
                 return null;
             return VariationGrouping;
         }
-       
+
         public async Task<VariationGrouping> Create(VariationGrouping VariationGrouping)
         {
             if (!await VariationGroupingValidator.Create(VariationGrouping))
@@ -184,7 +184,7 @@ namespace DMS.Services.MVariationGrouping
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<VariationGrouping>> Import(DataFile DataFile)
         {
             List<VariationGrouping> VariationGroupings = new List<VariationGrouping>();
@@ -210,10 +210,10 @@ namespace DMS.Services.MVariationGrouping
                     VariationGroupings.Add(VariationGrouping);
                 }
             }
-            
+
             if (!await VariationGroupingValidator.Import(VariationGroupings))
                 return VariationGroupings;
-            
+
             try
             {
                 await UOW.Begin();
@@ -232,7 +232,7 @@ namespace DMS.Services.MVariationGrouping
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(VariationGroupingFilter VariationGroupingFilter)
         {
@@ -252,12 +252,12 @@ namespace DMS.Services.MVariationGrouping
                 int IdColumn = 0 + StartColumn;
                 int NameColumn = 1 + StartColumn;
                 int ProductIdColumn = 2 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(VariationGrouping.Id);
                 worksheet.Cells[1, NameColumn].Value = nameof(VariationGrouping.Name);
                 worksheet.Cells[1, ProductIdColumn].Value = nameof(VariationGrouping.ProductId);
 
-                for(int i = 0; i < VariationGroupings.Count; i++)
+                for (int i = 0; i < VariationGroupings.Count; i++)
                 {
                     VariationGrouping VariationGrouping = VariationGroupings[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = VariationGrouping.Id;
@@ -274,7 +274,7 @@ namespace DMS.Services.MVariationGrouping
             };
             return DataFile;
         }
-        
+
         public VariationGroupingFilter ToFilter(VariationGroupingFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<VariationGroupingFilter>();

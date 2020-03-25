@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MStatus
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MStatus
             return count == 1;
         }
 
-        public async Task<bool>Create(Status Status)
+        public async Task<bool> Create(Status Status)
         {
             return Status.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MStatus
             }
             return Status.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Status> Statuses)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Status> Statuses)
         {
             return true;

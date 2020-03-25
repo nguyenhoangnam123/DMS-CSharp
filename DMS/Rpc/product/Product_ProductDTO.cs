@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.product
 {
@@ -15,14 +14,17 @@ namespace DMS.Rpc.product
         public string Description { get; set; }
         public string ScanCode { get; set; }
         public long ProductTypeId { get; set; }
-        public long SupplierId { get; set; }
-        public long BrandId { get; set; }
+        public long? SupplierId { get; set; }
+        public long? BrandId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long? UnitOfMeasureGroupingId { get; set; }
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public long? TaxTypeId { get; set; }
         public long StatusId { get; set; }
+        public string OtherName { get; set; }
+        public string TechnicalName { get; set; }
+        public string Note { get; set; }
         public Product_BrandDTO Brand { get; set; }
         public Product_ProductTypeDTO ProductType { get; set; }
         public Product_StatusDTO Status { get; set; }
@@ -34,7 +36,7 @@ namespace DMS.Rpc.product
         public List<Product_ProductImageMappingDTO> ProductImageMappings { get; set; }
         public List<Product_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
         public List<Product_VariationGroupingDTO> VariationGroupings { get; set; }
-        public Product_ProductDTO() {}
+        public Product_ProductDTO() { }
         public Product_ProductDTO(Product Product)
         {
             this.Id = Product.Id;
@@ -52,6 +54,9 @@ namespace DMS.Rpc.product
             this.RetailPrice = Product.RetailPrice;
             this.TaxTypeId = Product.TaxTypeId;
             this.StatusId = Product.StatusId;
+            this.OtherName = Product.OtherName;
+            this.TechnicalName = Product.TechnicalName;
+            this.Note = Product.Note;
             this.Brand = Product.Brand == null ? null : new Product_BrandDTO(Product.Brand);
             this.ProductType = Product.ProductType == null ? null : new Product_ProductTypeDTO(Product.ProductType);
             this.Status = Product.Status == null ? null : new Product_StatusDTO(Product.Status);
@@ -83,6 +88,9 @@ namespace DMS.Rpc.product
         public DecimalFilter RetailPrice { get; set; }
         public IdFilter TaxTypeId { get; set; }
         public IdFilter StatusId { get; set; }
+        public StringFilter OtherName { get; set; }
+        public StringFilter TechnicalName { get; set; }
+        public StringFilter Note { get; set; }
         public ProductOrder OrderBy { get; set; }
     }
 }

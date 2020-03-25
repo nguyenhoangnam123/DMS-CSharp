@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.store_grouping
 {
@@ -16,7 +15,7 @@ namespace DMS.Rpc.store_grouping
         public long Level { get; set; }
         public bool IsActive { get; set; }
         public List<StoreGrouping_StoreDTO> Stores { get; set; }
-        public StoreGrouping_StoreGroupingDTO() {}
+        public StoreGrouping_StoreGroupingDTO() { }
         public StoreGrouping_StoreGroupingDTO(StoreGrouping StoreGrouping)
         {
             this.Id = StoreGrouping.Id;

@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.menu
 {
@@ -14,7 +13,7 @@ namespace DMS.Rpc.menu
         public bool IsDeleted { get; set; }
         public List<Menu_FieldDTO> Fields { get; set; }
         public List<Menu_PageDTO> Pages { get; set; }
-        public Menu_MenuDTO() {}
+        public Menu_MenuDTO() { }
         public Menu_MenuDTO(Menu Menu)
         {
             this.Id = Menu.Id;

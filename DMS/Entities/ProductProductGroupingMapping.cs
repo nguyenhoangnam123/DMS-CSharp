@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class ProductProductGroupingMapping : DataEntity,  IEquatable<ProductProductGroupingMapping>
+    public class ProductProductGroupingMapping : DataEntity, IEquatable<ProductProductGroupingMapping>
     {
         public long ProductId { get; set; }
         public long ProductGroupingId { get; set; }
@@ -28,8 +28,8 @@ namespace DMS.Entities
         public IdFilter ProductId { get; set; }
         public IdFilter ProductGroupingId { get; set; }
         public List<ProductProductGroupingMappingFilter> OrFilter { get; set; }
-        public ProductProductGroupingMappingOrder OrderBy {get; set;}
-        public ProductProductGroupingMappingSelect Selects {get; set;}
+        public ProductProductGroupingMappingOrder OrderBy { get; set; }
+        public ProductProductGroupingMappingSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -40,7 +40,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum ProductProductGroupingMappingSelect:long
+    public enum ProductProductGroupingMappingSelect : long
     {
         ALL = E.ALL,
         Product = E._0,

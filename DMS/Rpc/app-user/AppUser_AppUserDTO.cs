@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.app_user
 {
@@ -17,7 +16,7 @@ namespace DMS.Rpc.app_user
         public long UserStatusId { get; set; }
         public AppUser_UserStatusDTO UserStatus { get; set; }
         public List<AppUser_AppUserRoleMappingDTO> AppUserRoleMappings { get; set; }
-        public AppUser_AppUserDTO() {}
+        public AppUser_AppUserDTO() { }
         public AppUser_AppUserDTO(AppUser AppUser)
         {
             this.Id = AppUser.Id;

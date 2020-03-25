@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Brand : DataEntity,  IEquatable<Brand>
+    public class Brand : DataEntity, IEquatable<Brand>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -31,8 +31,8 @@ namespace DMS.Entities
         public StringFilter Name { get; set; }
         public IdFilter StatusId { get; set; }
         public List<BrandFilter> OrFilter { get; set; }
-        public BrandOrder OrderBy {get; set;}
-        public BrandSelect Selects {get; set;}
+        public BrandOrder OrderBy { get; set; }
+        public BrandSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -45,7 +45,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum BrandSelect:long
+    public enum BrandSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

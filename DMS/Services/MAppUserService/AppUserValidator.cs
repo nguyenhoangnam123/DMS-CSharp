@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MAppUser
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MAppUser
             return count == 1;
         }
 
-        public async Task<bool>Create(AppUser AppUser)
+        public async Task<bool> Create(AppUser AppUser)
         {
             return AppUser.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MAppUser
             }
             return AppUser.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<AppUser> AppUsers)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<AppUser> AppUsers)
         {
             return true;

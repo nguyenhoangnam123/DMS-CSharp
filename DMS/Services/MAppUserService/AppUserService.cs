@@ -1,15 +1,21 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+<<<<<<< HEAD
 using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
 using DMS.Helpers;
 using Microsoft.AspNetCore.Http;
+=======
+>>>>>>> be72c771947b11ce6cb6b68822edc6651cff45a1
 
 namespace DMS.Services.MAppUser
 {
@@ -187,7 +193,11 @@ namespace DMS.Services.MAppUser
             }
         }
 
+<<<<<<< HEAD
         public async Task<List<AppUser>> Import(IFormFile file)
+=======
+        public async Task<List<AppUser>> Import(DataFile DataFile)
+>>>>>>> be72c771947b11ce6cb6b68822edc6651cff45a1
         {
             var lts = new List<AppUser>();
             string fileExtension = Path.GetExtension(file.FileName);
@@ -222,10 +232,17 @@ namespace DMS.Services.MAppUser
                         lts.Add(item);
                     } 
                 }
+<<<<<<< HEAD
             } 
 
             if (!await AppUserValidator.Import(lts))
                 return lts;
+=======
+            }
+
+            if (!await AppUserValidator.Import(AppUsers))
+                return AppUsers;
+>>>>>>> be72c771947b11ce6cb6b68822edc6651cff45a1
 
             try
             {

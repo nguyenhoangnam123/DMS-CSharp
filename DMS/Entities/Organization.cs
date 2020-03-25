@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Organization : DataEntity,  IEquatable<Organization>
+    public class Organization : DataEntity, IEquatable<Organization>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -47,8 +47,8 @@ namespace DMS.Entities
         public DecimalFilter Latitude { get; set; }
         public DecimalFilter Longitude { get; set; }
         public List<OrganizationFilter> OrFilter { get; set; }
-        public OrganizationOrder OrderBy {get; set;}
-        public OrganizationSelect Selects {get; set;}
+        public OrganizationOrder OrderBy { get; set; }
+        public OrganizationSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -68,7 +68,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum OrganizationSelect:long
+    public enum OrganizationSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

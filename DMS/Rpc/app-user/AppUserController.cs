@@ -1,20 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using DMS.Entities;
 using DMS.Services.MAppUser;
-using DMS.Services.MUserStatus;
 using DMS.Services.MRole;
+<<<<<<< HEAD
 using System.Text;
 using System.IO;
 using OfficeOpenXml;
 using DMS.Helpers;
+=======
+using DMS.Services.MUserStatus;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+>>>>>>> be72c771947b11ce6cb6b68822edc6651cff45a1
 
 namespace DMS.Rpc.app_user
 {
@@ -166,10 +167,20 @@ namespace DMS.Rpc.app_user
         public async Task<ActionResult<List<AppUser_AppUserDTO>>> Import(IFormFile file)
         {
             if (!ModelState.IsValid)
+<<<<<<< HEAD
                 throw new BindException(ModelState); 
             if (file == null || file.Length == 0)
                 return Content("File Not Selected");
             List<AppUser> AppUsers = await AppUserService.Import(file);  
+=======
+                throw new BindException(ModelState);
+
+            DataFile DataFile = new DataFile
+            {
+                Name = file.FileName,
+                Content = file.OpenReadStream(),
+            };
+>>>>>>> be72c771947b11ce6cb6b68822edc6651cff45a1
 
             List<AppUser_AppUserDTO> AppUser_AppUserDTOs = AppUsers
                 .Select(c => new AppUser_AppUserDTO(c)).ToList();

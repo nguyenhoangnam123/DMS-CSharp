@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.role
 {
@@ -14,7 +13,7 @@ namespace DMS.Rpc.role
         public long StatusId { get; set; }
         public Role_StatusDTO Status { get; set; }
         public List<Role_PermissionDTO> Permissions { get; set; }
-        public Role_RoleDTO() {}
+        public Role_RoleDTO() { }
         public Role_RoleDTO(Role Role)
         {
             this.Id = Role.Id;

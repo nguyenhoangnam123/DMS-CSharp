@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -46,7 +46,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<StoreTypeDAO> OrFilter(IQueryable<StoreTypeDAO> query, StoreTypeFilter filter)
+        private IQueryable<StoreTypeDAO> OrFilter(IQueryable<StoreTypeDAO> query, StoreTypeFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -65,7 +65,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<StoreTypeDAO> DynamicOrder(IQueryable<StoreTypeDAO> query, StoreTypeFilter filter)
         {
@@ -202,7 +202,7 @@ namespace DMS.Repositories
             await DataContext.StoreType.Where(x => x.Id == StoreType.Id).UpdateFromQueryAsync(x => new StoreTypeDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<StoreType> StoreTypes)
         {
             List<StoreTypeDAO> StoreTypeDAOs = new List<StoreTypeDAO>();
@@ -233,6 +233,6 @@ namespace DMS.Repositories
         private async Task SaveReference(StoreType StoreType)
         {
         }
-        
+
     }
 }

@@ -1,16 +1,14 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Services.MDistrict;
+using DMS.Services.MStatus;
+using DMS.Services.MWard;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DMS.Entities;
-using DMS.Services.MWard;
-using DMS.Services.MDistrict;
-using DMS.Services.MStatus;
 
 namespace DMS.Rpc.ward
 {
@@ -104,7 +102,7 @@ namespace DMS.Rpc.ward
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Ward_WardDTO.Id))
                 return Forbid();
 
@@ -122,7 +120,7 @@ namespace DMS.Rpc.ward
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Ward_WardDTO.Id))
                 return Forbid();
 
@@ -158,7 +156,7 @@ namespace DMS.Rpc.ward
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -185,7 +183,7 @@ namespace DMS.Rpc.ward
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(WardRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

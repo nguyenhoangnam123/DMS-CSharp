@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class TaxType : DataEntity,  IEquatable<TaxType>
+    public class TaxType : DataEntity, IEquatable<TaxType>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -33,8 +33,8 @@ namespace DMS.Entities
         public DecimalFilter Percentage { get; set; }
         public IdFilter StatusId { get; set; }
         public List<TaxTypeFilter> OrFilter { get; set; }
-        public TaxTypeOrder OrderBy {get; set;}
-        public TaxTypeSelect Selects {get; set;}
+        public TaxTypeOrder OrderBy { get; set; }
+        public TaxTypeSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -48,7 +48,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum TaxTypeSelect:long
+    public enum TaxTypeSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

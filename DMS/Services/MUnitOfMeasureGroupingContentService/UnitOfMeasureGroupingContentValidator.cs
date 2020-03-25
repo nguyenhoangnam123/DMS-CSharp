@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MUnitOfMeasureGroupingContent
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MUnitOfMeasureGroupingContent
             return count == 1;
         }
 
-        public async Task<bool>Create(UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent)
+        public async Task<bool> Create(UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent)
         {
             return UnitOfMeasureGroupingContent.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MUnitOfMeasureGroupingContent
             }
             return UnitOfMeasureGroupingContent.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<UnitOfMeasureGroupingContent> UnitOfMeasureGroupingContents)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<UnitOfMeasureGroupingContent> UnitOfMeasureGroupingContents)
         {
             return true;

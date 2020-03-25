@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class VariationGrouping : DataEntity,  IEquatable<VariationGrouping>
+    public class VariationGrouping : DataEntity, IEquatable<VariationGrouping>
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -29,8 +29,8 @@ namespace DMS.Entities
         public StringFilter Name { get; set; }
         public IdFilter ProductId { get; set; }
         public List<VariationGroupingFilter> OrFilter { get; set; }
-        public VariationGroupingOrder OrderBy {get; set;}
-        public VariationGroupingSelect Selects {get; set;}
+        public VariationGroupingOrder OrderBy { get; set; }
+        public VariationGroupingSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -42,7 +42,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum VariationGroupingSelect:long
+    public enum VariationGroupingSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

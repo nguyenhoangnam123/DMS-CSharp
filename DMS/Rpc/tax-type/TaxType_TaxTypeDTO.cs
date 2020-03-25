@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.tax_type
@@ -14,7 +11,7 @@ namespace DMS.Rpc.tax_type
         public decimal Percentage { get; set; }
         public long StatusId { get; set; }
         public TaxType_StatusDTO Status { get; set; }
-        public TaxType_TaxTypeDTO() {}
+        public TaxType_TaxTypeDTO() { }
         public TaxType_TaxTypeDTO(TaxType TaxType)
         {
             this.Id = TaxType.Id;

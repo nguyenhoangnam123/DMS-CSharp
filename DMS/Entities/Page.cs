@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Page : DataEntity,  IEquatable<Page>
+    public class Page : DataEntity, IEquatable<Page>
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -32,8 +32,8 @@ namespace DMS.Entities
         public StringFilter Path { get; set; }
         public IdFilter MenuId { get; set; }
         public List<PageFilter> OrFilter { get; set; }
-        public PageOrder OrderBy {get; set;}
-        public PageSelect Selects {get; set;}
+        public PageOrder OrderBy { get; set; }
+        public PageSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -47,7 +47,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum PageSelect:long
+    public enum PageSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

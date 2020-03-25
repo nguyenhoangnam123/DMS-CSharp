@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MProductGrouping
 {
-    public interface IProductGroupingService :  IServiceScoped
+    public interface IProductGroupingService : IServiceScoped
     {
         Task<int> Count(ProductGroupingFilter ProductGroupingFilter);
         Task<List<ProductGrouping>> List(ProductGroupingFilter ProductGroupingFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MProductGrouping
                 return null;
             return ProductGrouping;
         }
-       
+
         public async Task<ProductGrouping> Create(ProductGrouping ProductGrouping)
         {
             if (!await ProductGroupingValidator.Create(ProductGrouping))
@@ -184,7 +184,7 @@ namespace DMS.Services.MProductGrouping
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<ProductGrouping>> Import(DataFile DataFile)
         {
             List<ProductGrouping> ProductGroupings = new List<ProductGrouping>();
@@ -219,10 +219,10 @@ namespace DMS.Services.MProductGrouping
                     ProductGroupings.Add(ProductGrouping);
                 }
             }
-            
+
             if (!await ProductGroupingValidator.Import(ProductGroupings))
                 return ProductGroupings;
-            
+
             try
             {
                 await UOW.Begin();
@@ -241,7 +241,7 @@ namespace DMS.Services.MProductGrouping
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(ProductGroupingFilter ProductGroupingFilter)
         {
@@ -264,7 +264,7 @@ namespace DMS.Services.MProductGrouping
                 int ParentIdColumn = 3 + StartColumn;
                 int PathColumn = 4 + StartColumn;
                 int DescriptionColumn = 5 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(ProductGrouping.Id);
                 worksheet.Cells[1, CodeColumn].Value = nameof(ProductGrouping.Code);
                 worksheet.Cells[1, NameColumn].Value = nameof(ProductGrouping.Name);
@@ -272,7 +272,7 @@ namespace DMS.Services.MProductGrouping
                 worksheet.Cells[1, PathColumn].Value = nameof(ProductGrouping.Path);
                 worksheet.Cells[1, DescriptionColumn].Value = nameof(ProductGrouping.Description);
 
-                for(int i = 0; i < ProductGroupings.Count; i++)
+                for (int i = 0; i < ProductGroupings.Count; i++)
                 {
                     ProductGrouping ProductGrouping = ProductGroupings[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = ProductGrouping.Id;
@@ -292,7 +292,7 @@ namespace DMS.Services.MProductGrouping
             };
             return DataFile;
         }
-        
+
         public ProductGroupingFilter ToFilter(ProductGroupingFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ProductGroupingFilter>();

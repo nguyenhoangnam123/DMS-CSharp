@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class AppUserRoleMapping : DataEntity,  IEquatable<AppUserRoleMapping>
+    public class AppUserRoleMapping : DataEntity, IEquatable<AppUserRoleMapping>
     {
         public long AppUserId { get; set; }
         public long RoleId { get; set; }
@@ -28,8 +28,8 @@ namespace DMS.Entities
         public IdFilter AppUserId { get; set; }
         public IdFilter RoleId { get; set; }
         public List<AppUserRoleMappingFilter> OrFilter { get; set; }
-        public AppUserRoleMappingOrder OrderBy {get; set;}
-        public AppUserRoleMappingSelect Selects {get; set;}
+        public AppUserRoleMappingOrder OrderBy { get; set; }
+        public AppUserRoleMappingSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -40,7 +40,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum AppUserRoleMappingSelect:long
+    public enum AppUserRoleMappingSelect : long
     {
         ALL = E.ALL,
         AppUser = E._0,

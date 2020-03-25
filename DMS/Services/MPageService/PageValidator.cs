@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MPage
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MPage
             return count == 1;
         }
 
-        public async Task<bool>Create(Page Page)
+        public async Task<bool> Create(Page Page)
         {
             return Page.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MPage
             }
             return Page.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Page> Pages)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Page> Pages)
         {
             return true;

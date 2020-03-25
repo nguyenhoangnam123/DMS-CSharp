@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -44,7 +44,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<VariationGroupingDAO> OrFilter(IQueryable<VariationGroupingDAO> query, VariationGroupingFilter filter)
+        private IQueryable<VariationGroupingDAO> OrFilter(IQueryable<VariationGroupingDAO> query, VariationGroupingFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -61,7 +61,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<VariationGroupingDAO> DynamicOrder(IQueryable<VariationGroupingDAO> query, VariationGroupingFilter filter)
         {
@@ -212,7 +212,7 @@ namespace DMS.Repositories
             await DataContext.VariationGrouping.Where(x => x.Id == VariationGrouping.Id).UpdateFromQueryAsync(x => new VariationGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<VariationGrouping> VariationGroupings)
         {
             List<VariationGroupingDAO> VariationGroupingDAOs = new List<VariationGroupingDAO>();
@@ -242,6 +242,6 @@ namespace DMS.Repositories
         private async Task SaveReference(VariationGrouping VariationGrouping)
         {
         }
-        
+
     }
 }

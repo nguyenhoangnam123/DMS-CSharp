@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MStatus
 {
-    public interface IStatusService :  IServiceScoped
+    public interface IStatusService : IServiceScoped
     {
         Task<int> Count(StatusFilter StatusFilter);
         Task<List<Status>> List(StatusFilter StatusFilter);

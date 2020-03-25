@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.ward
@@ -15,7 +12,7 @@ namespace DMS.Rpc.ward
         public long StatusId { get; set; }
         public Ward_DistrictDTO District { get; set; }
         public Ward_StatusDTO Status { get; set; }
-        public Ward_WardDTO() {}
+        public Ward_WardDTO() { }
         public Ward_WardDTO(Ward Ward)
         {
             this.Id = Ward.Id;

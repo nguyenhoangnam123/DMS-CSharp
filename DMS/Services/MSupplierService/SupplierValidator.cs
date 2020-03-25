@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MSupplier
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MSupplier
             return count == 1;
         }
 
-        public async Task<bool>Create(Supplier Supplier)
+        public async Task<bool> Create(Supplier Supplier)
         {
             return Supplier.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MSupplier
             }
             return Supplier.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Supplier> Suppliers)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Supplier> Suppliers)
         {
             return true;

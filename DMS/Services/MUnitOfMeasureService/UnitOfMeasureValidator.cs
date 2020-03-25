@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MUnitOfMeasure
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MUnitOfMeasure
             return count == 1;
         }
 
-        public async Task<bool>Create(UnitOfMeasure UnitOfMeasure)
+        public async Task<bool> Create(UnitOfMeasure UnitOfMeasure)
         {
             return UnitOfMeasure.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MUnitOfMeasure
             }
             return UnitOfMeasure.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<UnitOfMeasure> UnitOfMeasures)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<UnitOfMeasure> UnitOfMeasures)
         {
             return true;

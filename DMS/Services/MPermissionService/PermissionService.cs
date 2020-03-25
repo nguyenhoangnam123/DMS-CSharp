@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MPermission
 {
-    public interface IPermissionService :  IServiceScoped
+    public interface IPermissionService : IServiceScoped
     {
         Task<int> Count(PermissionFilter PermissionFilter);
         Task<List<Permission>> List(PermissionFilter PermissionFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MPermission
                 return null;
             return Permission;
         }
-       
+
         public async Task<Permission> Create(Permission Permission)
         {
             if (!await PermissionValidator.Create(Permission))
@@ -184,7 +184,7 @@ namespace DMS.Services.MPermission
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Permission>> Import(DataFile DataFile)
         {
             List<Permission> Permissions = new List<Permission>();
@@ -214,10 +214,10 @@ namespace DMS.Services.MPermission
                     Permissions.Add(Permission);
                 }
             }
-            
+
             if (!await PermissionValidator.Import(Permissions))
                 return Permissions;
-            
+
             try
             {
                 await UOW.Begin();
@@ -236,7 +236,7 @@ namespace DMS.Services.MPermission
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(PermissionFilter PermissionFilter)
         {
@@ -258,14 +258,14 @@ namespace DMS.Services.MPermission
                 int RoleIdColumn = 2 + StartColumn;
                 int MenuIdColumn = 3 + StartColumn;
                 int StatusIdColumn = 4 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Permission.Id);
                 worksheet.Cells[1, NameColumn].Value = nameof(Permission.Name);
                 worksheet.Cells[1, RoleIdColumn].Value = nameof(Permission.RoleId);
                 worksheet.Cells[1, MenuIdColumn].Value = nameof(Permission.MenuId);
                 worksheet.Cells[1, StatusIdColumn].Value = nameof(Permission.StatusId);
 
-                for(int i = 0; i < Permissions.Count; i++)
+                for (int i = 0; i < Permissions.Count; i++)
                 {
                     Permission Permission = Permissions[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Permission.Id;
@@ -284,7 +284,7 @@ namespace DMS.Services.MPermission
             };
             return DataFile;
         }
-        
+
         public PermissionFilter ToFilter(PermissionFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<PermissionFilter>();
