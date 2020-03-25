@@ -1,4 +1,7 @@
 using Common;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.product_grouping
@@ -12,7 +15,8 @@ namespace DMS.Rpc.product_grouping
         public string Path { get; set; }
         public string Description { get; set; }
         public ProductGrouping_ProductGroupingDTO Parent { get; set; }
-        public ProductGrouping_ProductGroupingDTO() { }
+        public List<ProductGrouping_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
+        public ProductGrouping_ProductGroupingDTO() {}
         public ProductGrouping_ProductGroupingDTO(ProductGrouping ProductGrouping)
         {
             this.Id = ProductGrouping.Id;
@@ -22,6 +26,7 @@ namespace DMS.Rpc.product_grouping
             this.Path = ProductGrouping.Path;
             this.Description = ProductGrouping.Description;
             this.Parent = ProductGrouping.Parent == null ? null : new ProductGrouping_ProductGroupingDTO(ProductGrouping.Parent);
+            this.ProductProductGroupingMappings = ProductGrouping.ProductProductGroupingMappings?.Select(x => new ProductGrouping_ProductProductGroupingMappingDTO(x)).ToList();
         }
     }
 
