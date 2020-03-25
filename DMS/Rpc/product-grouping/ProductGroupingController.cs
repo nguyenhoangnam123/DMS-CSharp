@@ -1,12 +1,15 @@
-using Common;
-using DMS.Entities;
-using DMS.Services.MProductGrouping;
-using Helpers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common;
+using Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using DMS.Entities;
+using DMS.Services.MProductGrouping;
+using DMS.Services.MProduct;
 
 namespace DMS.Rpc.product_grouping
 {
@@ -24,9 +27,10 @@ namespace DMS.Rpc.product_grouping
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
-
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
-
+        public const string SingleListProduct = Default + "/single-list-product";
+        public const string CountProduct = Default + "/count-product";
+        public const string ListProduct = Default + "/list-product";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(ProductGroupingFilter.Id), FieldType.ID },
@@ -40,13 +44,16 @@ namespace DMS.Rpc.product_grouping
 
     public class ProductGroupingController : RpcController
     {
+        private IProductService ProductService;
         private IProductGroupingService ProductGroupingService;
         private ICurrentContext CurrentContext;
         public ProductGroupingController(
+            IProductService ProductService,
             IProductGroupingService ProductGroupingService,
             ICurrentContext CurrentContext
         )
         {
+            this.ProductService = ProductService;
             this.ProductGroupingService = ProductGroupingService;
             this.CurrentContext = CurrentContext;
         }
@@ -95,7 +102,7 @@ namespace DMS.Rpc.product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            
             if (!await HasPermission(ProductGrouping_ProductGroupingDTO.Id))
                 return Forbid();
 
@@ -113,7 +120,7 @@ namespace DMS.Rpc.product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            
             if (!await HasPermission(ProductGrouping_ProductGroupingDTO.Id))
                 return Forbid();
 
@@ -149,7 +156,7 @@ namespace DMS.Rpc.product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -176,7 +183,7 @@ namespace DMS.Rpc.product_grouping
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-
+        
         [Route(ProductGroupingRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -184,6 +191,7 @@ namespace DMS.Rpc.product_grouping
                 throw new BindException(ModelState);
 
             ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter = ProductGroupingService.ToFilter(ProductGroupingFilter);
             ProductGroupingFilter.Id = new IdFilter { In = Ids };
             ProductGroupingFilter.Selects = ProductGroupingSelect.Id;
             ProductGroupingFilter.Skip = 0;
@@ -230,6 +238,32 @@ namespace DMS.Rpc.product_grouping
                 Path = ProductGrouping_ProductGroupingDTO.Parent.Path,
                 Description = ProductGrouping_ProductGroupingDTO.Parent.Description,
             };
+            ProductGrouping.ProductProductGroupingMappings = ProductGrouping_ProductGroupingDTO.ProductProductGroupingMappings?
+                .Select(x => new ProductProductGroupingMapping
+                {
+                    ProductId = x.ProductId,
+                    Product = new Product
+                    {
+                        Id = x.Product.Id,
+                        Code = x.Product.Code,
+                        SupplierCode = x.Product.SupplierCode,
+                        Name = x.Product.Name,
+                        Description = x.Product.Description,
+                        ScanCode = x.Product.ScanCode,
+                        ProductTypeId = x.Product.ProductTypeId,
+                        SupplierId = x.Product.SupplierId,
+                        BrandId = x.Product.BrandId,
+                        UnitOfMeasureId = x.Product.UnitOfMeasureId,
+                        UnitOfMeasureGroupingId = x.Product.UnitOfMeasureGroupingId,
+                        SalePrice = x.Product.SalePrice,
+                        RetailPrice = x.Product.RetailPrice,
+                        TaxTypeId = x.Product.TaxTypeId,
+                        StatusId = x.Product.StatusId,
+                        OtherName = x.Product.OtherName,
+                        TechnicalName = x.Product.TechnicalName,
+                        Note = x.Product.Note,
+                    },
+                }).ToList();
             ProductGrouping.BaseLanguage = CurrentContext.Language;
             return ProductGrouping;
         }
@@ -253,23 +287,118 @@ namespace DMS.Rpc.product_grouping
         }
 
         [Route(ProductGroupingRoute.SingleListProductGrouping), HttpPost]
-        public async Task<List<ProductGrouping_ProductGroupingDTO>> SingleListBrand([FromBody] ProductGrouping_ProductGroupingFilterDTO ProductGrouping_ProductGroupingFilterDTO)
+        public async Task<List<ProductGrouping_ProductGroupingDTO>> SingleListProductGrouping([FromBody] ProductGrouping_ProductGroupingFilterDTO ProductGrouping_ProductGroupingFilterDTO)
         {
             ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
             ProductGroupingFilter.Skip = 0;
-            ProductGroupingFilter.Take = 20;
+            ProductGroupingFilter.Take = 99999;
             ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
             ProductGroupingFilter.OrderType = OrderType.ASC;
             ProductGroupingFilter.Selects = ProductGroupingSelect.ALL;
             ProductGroupingFilter.Id = ProductGrouping_ProductGroupingFilterDTO.Id;
             ProductGroupingFilter.Code = ProductGrouping_ProductGroupingFilterDTO.Code;
             ProductGroupingFilter.Name = ProductGrouping_ProductGroupingFilterDTO.Name;
-            
+            ProductGroupingFilter.ParentId = ProductGrouping_ProductGroupingFilterDTO.ParentId;
+            ProductGroupingFilter.Path = ProductGrouping_ProductGroupingFilterDTO.Path;
+            ProductGroupingFilter.Description = ProductGrouping_ProductGroupingFilterDTO.Description;
 
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
             List<ProductGrouping_ProductGroupingDTO> ProductGrouping_ProductGroupingDTOs = ProductGroupings
                 .Select(x => new ProductGrouping_ProductGroupingDTO(x)).ToList();
             return ProductGrouping_ProductGroupingDTOs;
+        }
+        [Route(ProductGroupingRoute.SingleListProduct), HttpPost]
+        public async Task<List<ProductGrouping_ProductDTO>> SingleListProduct([FromBody] ProductGrouping_ProductFilterDTO ProductGrouping_ProductFilterDTO)
+        {
+            ProductFilter ProductFilter = new ProductFilter();
+            ProductFilter.Skip = 0;
+            ProductFilter.Take = 20;
+            ProductFilter.OrderBy = ProductOrder.Id;
+            ProductFilter.OrderType = OrderType.ASC;
+            ProductFilter.Selects = ProductSelect.ALL;
+            ProductFilter.Id = ProductGrouping_ProductFilterDTO.Id;
+            ProductFilter.Code = ProductGrouping_ProductFilterDTO.Code;
+            ProductFilter.SupplierCode = ProductGrouping_ProductFilterDTO.SupplierCode;
+            ProductFilter.Name = ProductGrouping_ProductFilterDTO.Name;
+            ProductFilter.Description = ProductGrouping_ProductFilterDTO.Description;
+            ProductFilter.ScanCode = ProductGrouping_ProductFilterDTO.ScanCode;
+            ProductFilter.ProductTypeId = ProductGrouping_ProductFilterDTO.ProductTypeId;
+            ProductFilter.SupplierId = ProductGrouping_ProductFilterDTO.SupplierId;
+            ProductFilter.BrandId = ProductGrouping_ProductFilterDTO.BrandId;
+            ProductFilter.UnitOfMeasureId = ProductGrouping_ProductFilterDTO.UnitOfMeasureId;
+            ProductFilter.UnitOfMeasureGroupingId = ProductGrouping_ProductFilterDTO.UnitOfMeasureGroupingId;
+            ProductFilter.SalePrice = ProductGrouping_ProductFilterDTO.SalePrice;
+            ProductFilter.RetailPrice = ProductGrouping_ProductFilterDTO.RetailPrice;
+            ProductFilter.TaxTypeId = ProductGrouping_ProductFilterDTO.TaxTypeId;
+            ProductFilter.StatusId = ProductGrouping_ProductFilterDTO.StatusId;
+            ProductFilter.OtherName = ProductGrouping_ProductFilterDTO.OtherName;
+            ProductFilter.TechnicalName = ProductGrouping_ProductFilterDTO.TechnicalName;
+            ProductFilter.Note = ProductGrouping_ProductFilterDTO.Note;
+
+            List<Product> Products = await ProductService.List(ProductFilter);
+            List<ProductGrouping_ProductDTO> ProductGrouping_ProductDTOs = Products
+                .Select(x => new ProductGrouping_ProductDTO(x)).ToList();
+            return ProductGrouping_ProductDTOs;
+        }
+
+        [Route(ProductGroupingRoute.CountProduct), HttpPost]
+        public async Task<long> CountProduct([FromBody] ProductGrouping_ProductFilterDTO ProductGrouping_ProductFilterDTO)
+        {
+            ProductFilter ProductFilter = new ProductFilter();
+            ProductFilter.Id = ProductGrouping_ProductFilterDTO.Id;
+            ProductFilter.Code = ProductGrouping_ProductFilterDTO.Code;
+            ProductFilter.SupplierCode = ProductGrouping_ProductFilterDTO.SupplierCode;
+            ProductFilter.Name = ProductGrouping_ProductFilterDTO.Name;
+            ProductFilter.Description = ProductGrouping_ProductFilterDTO.Description;
+            ProductFilter.ScanCode = ProductGrouping_ProductFilterDTO.ScanCode;
+            ProductFilter.ProductTypeId = ProductGrouping_ProductFilterDTO.ProductTypeId;
+            ProductFilter.SupplierId = ProductGrouping_ProductFilterDTO.SupplierId;
+            ProductFilter.BrandId = ProductGrouping_ProductFilterDTO.BrandId;
+            ProductFilter.UnitOfMeasureId = ProductGrouping_ProductFilterDTO.UnitOfMeasureId;
+            ProductFilter.UnitOfMeasureGroupingId = ProductGrouping_ProductFilterDTO.UnitOfMeasureGroupingId;
+            ProductFilter.SalePrice = ProductGrouping_ProductFilterDTO.SalePrice;
+            ProductFilter.RetailPrice = ProductGrouping_ProductFilterDTO.RetailPrice;
+            ProductFilter.TaxTypeId = ProductGrouping_ProductFilterDTO.TaxTypeId;
+            ProductFilter.StatusId = ProductGrouping_ProductFilterDTO.StatusId;
+            ProductFilter.OtherName = ProductGrouping_ProductFilterDTO.OtherName;
+            ProductFilter.TechnicalName = ProductGrouping_ProductFilterDTO.TechnicalName;
+            ProductFilter.Note = ProductGrouping_ProductFilterDTO.Note;
+
+            return await ProductService.Count(ProductFilter);
+        }
+
+        [Route(ProductGroupingRoute.ListProduct), HttpPost]
+        public async Task<List<ProductGrouping_ProductDTO>> ListProduct([FromBody] ProductGrouping_ProductFilterDTO ProductGrouping_ProductFilterDTO)
+        {
+            ProductFilter ProductFilter = new ProductFilter();
+            ProductFilter.Skip = ProductGrouping_ProductFilterDTO.Skip;
+            ProductFilter.Take = ProductGrouping_ProductFilterDTO.Take;
+            ProductFilter.OrderBy = ProductOrder.Id;
+            ProductFilter.OrderType = OrderType.ASC;
+            ProductFilter.Selects = ProductSelect.ALL;
+            ProductFilter.Id = ProductGrouping_ProductFilterDTO.Id;
+            ProductFilter.Code = ProductGrouping_ProductFilterDTO.Code;
+            ProductFilter.SupplierCode = ProductGrouping_ProductFilterDTO.SupplierCode;
+            ProductFilter.Name = ProductGrouping_ProductFilterDTO.Name;
+            ProductFilter.Description = ProductGrouping_ProductFilterDTO.Description;
+            ProductFilter.ScanCode = ProductGrouping_ProductFilterDTO.ScanCode;
+            ProductFilter.ProductTypeId = ProductGrouping_ProductFilterDTO.ProductTypeId;
+            ProductFilter.SupplierId = ProductGrouping_ProductFilterDTO.SupplierId;
+            ProductFilter.BrandId = ProductGrouping_ProductFilterDTO.BrandId;
+            ProductFilter.UnitOfMeasureId = ProductGrouping_ProductFilterDTO.UnitOfMeasureId;
+            ProductFilter.UnitOfMeasureGroupingId = ProductGrouping_ProductFilterDTO.UnitOfMeasureGroupingId;
+            ProductFilter.SalePrice = ProductGrouping_ProductFilterDTO.SalePrice;
+            ProductFilter.RetailPrice = ProductGrouping_ProductFilterDTO.RetailPrice;
+            ProductFilter.TaxTypeId = ProductGrouping_ProductFilterDTO.TaxTypeId;
+            ProductFilter.StatusId = ProductGrouping_ProductFilterDTO.StatusId;
+            ProductFilter.OtherName = ProductGrouping_ProductFilterDTO.OtherName;
+            ProductFilter.TechnicalName = ProductGrouping_ProductFilterDTO.TechnicalName;
+            ProductFilter.Note = ProductGrouping_ProductFilterDTO.Note;
+
+            List<Product> Products = await ProductService.List(ProductFilter);
+            List<ProductGrouping_ProductDTO> ProductGrouping_ProductDTOs = Products
+                .Select(x => new ProductGrouping_ProductDTO(x)).ToList();
+            return ProductGrouping_ProductDTOs;
         }
     }
 }
