@@ -2,12 +2,10 @@ using Common;
 using DMS.Entities;
 using DMS.Services.MAppUser;
 using DMS.Services.MRole;
-<<<<<<< HEAD
 using System.Text;
 using System.IO;
 using OfficeOpenXml;
 using DMS.Helpers;
-=======
 using DMS.Services.MUserStatus;
 using Helpers;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
->>>>>>> be72c771947b11ce6cb6b68822edc6651cff45a1
 
 namespace DMS.Rpc.app_user
 {
