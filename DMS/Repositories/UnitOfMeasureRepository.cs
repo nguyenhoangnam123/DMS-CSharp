@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -48,7 +48,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<UnitOfMeasureDAO> OrFilter(IQueryable<UnitOfMeasureDAO> query, UnitOfMeasureFilter filter)
+        private IQueryable<UnitOfMeasureDAO> OrFilter(IQueryable<UnitOfMeasureDAO> query, UnitOfMeasureFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -69,7 +69,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<UnitOfMeasureDAO> DynamicOrder(IQueryable<UnitOfMeasureDAO> query, UnitOfMeasureFilter filter)
         {
@@ -216,7 +216,7 @@ namespace DMS.Repositories
             await DataContext.UnitOfMeasure.Where(x => x.Id == UnitOfMeasure.Id).UpdateFromQueryAsync(x => new UnitOfMeasureDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<UnitOfMeasure> UnitOfMeasures)
         {
             List<UnitOfMeasureDAO> UnitOfMeasureDAOs = new List<UnitOfMeasureDAO>();
@@ -248,6 +248,6 @@ namespace DMS.Repositories
         private async Task SaveReference(UnitOfMeasure UnitOfMeasure)
         {
         }
-        
+
     }
 }

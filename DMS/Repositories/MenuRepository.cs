@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -43,7 +42,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<MenuDAO> OrFilter(IQueryable<MenuDAO> query, MenuFilter filter)
+        private IQueryable<MenuDAO> OrFilter(IQueryable<MenuDAO> query, MenuFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -60,7 +59,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<MenuDAO> DynamicOrder(IQueryable<MenuDAO> query, MenuFilter filter)
         {
@@ -202,7 +201,7 @@ namespace DMS.Repositories
             await DataContext.Menu.Where(x => x.Id == Menu.Id).DeleteFromQueryAsync();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Menu> Menus)
         {
             List<MenuDAO> MenuDAOs = new List<MenuDAO>();
@@ -266,6 +265,6 @@ namespace DMS.Repositories
                 await DataContext.Page.BulkMergeAsync(PageDAOs);
             }
         }
-        
+
     }
 }

@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.district
@@ -15,7 +12,7 @@ namespace DMS.Rpc.district
         public long StatusId { get; set; }
         public District_ProvinceDTO Province { get; set; }
         public District_StatusDTO Status { get; set; }
-        public District_DistrictDTO() {}
+        public District_DistrictDTO() { }
         public District_DistrictDTO(District District)
         {
             this.Id = District.Id;

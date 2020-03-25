@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MAppUser
 {
-    public interface IAppUserService :  IServiceScoped
+    public interface IAppUserService : IServiceScoped
     {
         Task<int> Count(AppUserFilter AppUserFilter);
         Task<List<AppUser>> List(AppUserFilter AppUserFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MAppUser
                 return null;
             return AppUser;
         }
-       
+
         public async Task<AppUser> Create(AppUser AppUser)
         {
             if (!await AppUserValidator.Create(AppUser))
@@ -184,7 +184,7 @@ namespace DMS.Services.MAppUser
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<AppUser>> Import(DataFile DataFile)
         {
             List<AppUser> AppUsers = new List<AppUser>();
@@ -222,10 +222,10 @@ namespace DMS.Services.MAppUser
                     AppUsers.Add(AppUser);
                 }
             }
-            
+
             if (!await AppUserValidator.Import(AppUsers))
                 return AppUsers;
-            
+
             try
             {
                 await UOW.Begin();
@@ -244,7 +244,7 @@ namespace DMS.Services.MAppUser
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(AppUserFilter AppUserFilter)
         {
@@ -268,7 +268,7 @@ namespace DMS.Services.MAppUser
                 int EmailColumn = 4 + StartColumn;
                 int PhoneColumn = 5 + StartColumn;
                 int UserStatusIdColumn = 6 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(AppUser.Id);
                 worksheet.Cells[1, UsernameColumn].Value = nameof(AppUser.Username);
                 worksheet.Cells[1, PasswordColumn].Value = nameof(AppUser.Password);
@@ -277,7 +277,7 @@ namespace DMS.Services.MAppUser
                 worksheet.Cells[1, PhoneColumn].Value = nameof(AppUser.Phone);
                 worksheet.Cells[1, UserStatusIdColumn].Value = nameof(AppUser.UserStatusId);
 
-                for(int i = 0; i < AppUsers.Count; i++)
+                for (int i = 0; i < AppUsers.Count; i++)
                 {
                     AppUser AppUser = AppUsers[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = AppUser.Id;
@@ -298,7 +298,7 @@ namespace DMS.Services.MAppUser
             };
             return DataFile;
         }
-        
+
         public AppUserFilter ToFilter(AppUserFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<AppUserFilter>();

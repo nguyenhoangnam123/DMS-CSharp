@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -52,7 +52,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<AppUserDAO> OrFilter(IQueryable<AppUserDAO> query, AppUserFilter filter)
+        private IQueryable<AppUserDAO> OrFilter(IQueryable<AppUserDAO> query, AppUserFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -77,7 +77,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<AppUserDAO> DynamicOrder(IQueryable<AppUserDAO> query, AppUserFilter filter)
         {
@@ -258,7 +258,7 @@ namespace DMS.Repositories
             await DataContext.AppUser.Where(x => x.Id == AppUser.Id).UpdateFromQueryAsync(x => new AppUserDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<AppUser> AppUsers)
         {
             List<AppUserDAO> AppUserDAOs = new List<AppUserDAO>();
@@ -307,6 +307,6 @@ namespace DMS.Repositories
                 await DataContext.AppUserRoleMapping.BulkMergeAsync(AppUserRoleMappingDAOs);
             }
         }
-        
+
     }
 }

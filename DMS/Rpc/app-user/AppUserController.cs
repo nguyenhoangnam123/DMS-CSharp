@@ -1,16 +1,14 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Services.MAppUser;
+using DMS.Services.MRole;
+using DMS.Services.MUserStatus;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DMS.Entities;
-using DMS.Services.MAppUser;
-using DMS.Services.MUserStatus;
-using DMS.Services.MRole;
 
 namespace DMS.Rpc.app_user
 {
@@ -108,7 +106,7 @@ namespace DMS.Rpc.app_user
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(AppUser_AppUserDTO.Id))
                 return Forbid();
 
@@ -126,7 +124,7 @@ namespace DMS.Rpc.app_user
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(AppUser_AppUserDTO.Id))
                 return Forbid();
 
@@ -162,7 +160,7 @@ namespace DMS.Rpc.app_user
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -189,7 +187,7 @@ namespace DMS.Rpc.app_user
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(AppUserRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

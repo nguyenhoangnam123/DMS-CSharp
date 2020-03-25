@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.product
@@ -10,9 +7,9 @@ namespace DMS.Rpc.product
     {
         public long ProductId { get; set; }
         public long ProductGroupingId { get; set; }
-        public Product_ProductGroupingDTO ProductGrouping { get; set; }   
-        
-        public Product_ProductProductGroupingMappingDTO() {}
+        public Product_ProductGroupingDTO ProductGrouping { get; set; }
+
+        public Product_ProductProductGroupingMappingDTO() { }
         public Product_ProductProductGroupingMappingDTO(ProductProductGroupingMapping ProductProductGroupingMapping)
         {
             this.ProductId = ProductProductGroupingMapping.ProductId;
@@ -23,11 +20,11 @@ namespace DMS.Rpc.product
 
     public class Product_ProductProductGroupingMappingFilterDTO : FilterDTO
     {
-        
+
         public IdFilter ProductId { get; set; }
-        
+
         public IdFilter ProductGroupingId { get; set; }
-        
+
         public ProductProductGroupingMappingOrder OrderBy { get; set; }
     }
 }

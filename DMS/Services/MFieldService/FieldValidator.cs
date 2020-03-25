@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MField
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MField
             return count == 1;
         }
 
-        public async Task<bool>Create(Field Field)
+        public async Task<bool> Create(Field Field)
         {
             return Field.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MField
             }
             return Field.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Field> Fields)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Field> Fields)
         {
             return true;

@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class PermissionFieldMapping : DataEntity,  IEquatable<PermissionFieldMapping>
+    public class PermissionFieldMapping : DataEntity, IEquatable<PermissionFieldMapping>
     {
         public long PermissionId { get; set; }
         public long FieldId { get; set; }
@@ -30,8 +30,8 @@ namespace DMS.Entities
         public IdFilter FieldId { get; set; }
         public StringFilter Value { get; set; }
         public List<PermissionFieldMappingFilter> OrFilter { get; set; }
-        public PermissionFieldMappingOrder OrderBy {get; set;}
-        public PermissionFieldMappingSelect Selects {get; set;}
+        public PermissionFieldMappingOrder OrderBy { get; set; }
+        public PermissionFieldMappingSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -43,7 +43,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum PermissionFieldMappingSelect:long
+    public enum PermissionFieldMappingSelect : long
     {
         ALL = E.ALL,
         Permission = E._0,

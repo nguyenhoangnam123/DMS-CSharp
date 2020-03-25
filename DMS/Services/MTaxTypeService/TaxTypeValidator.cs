@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MTaxType
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MTaxType
             return count == 1;
         }
 
-        public async Task<bool>Create(TaxType TaxType)
+        public async Task<bool> Create(TaxType TaxType)
         {
             return TaxType.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MTaxType
             }
             return TaxType.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<TaxType> TaxTypes)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<TaxType> TaxTypes)
         {
             return true;

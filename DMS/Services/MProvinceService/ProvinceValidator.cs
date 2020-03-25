@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MProvince
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MProvince
             return count == 1;
         }
 
-        public async Task<bool>Create(Province Province)
+        public async Task<bool> Create(Province Province)
         {
             return Province.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MProvince
             }
             return Province.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Province> Provinces)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Province> Provinces)
         {
             return true;

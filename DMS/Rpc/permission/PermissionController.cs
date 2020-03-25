@@ -1,19 +1,17 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Services.MField;
+using DMS.Services.MMenu;
+using DMS.Services.MPage;
+using DMS.Services.MPermission;
+using DMS.Services.MRole;
+using DMS.Services.MStatus;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DMS.Entities;
-using DMS.Services.MPermission;
-using DMS.Services.MMenu;
-using DMS.Services.MRole;
-using DMS.Services.MStatus;
-using DMS.Services.MField;
-using DMS.Services.MPage;
 
 namespace DMS.Rpc.permission
 {
@@ -123,7 +121,7 @@ namespace DMS.Rpc.permission
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Permission_PermissionDTO.Id))
                 return Forbid();
 
@@ -141,7 +139,7 @@ namespace DMS.Rpc.permission
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Permission_PermissionDTO.Id))
                 return Forbid();
 
@@ -177,7 +175,7 @@ namespace DMS.Rpc.permission
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -204,7 +202,7 @@ namespace DMS.Rpc.permission
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(PermissionRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

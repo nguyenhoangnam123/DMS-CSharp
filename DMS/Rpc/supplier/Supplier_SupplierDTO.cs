@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.supplier
@@ -14,7 +11,7 @@ namespace DMS.Rpc.supplier
         public string TaxCode { get; set; }
         public long StatusId { get; set; }
         public Supplier_StatusDTO Status { get; set; }
-        public Supplier_SupplierDTO() {}
+        public Supplier_SupplierDTO() { }
         public Supplier_SupplierDTO(Supplier Supplier)
         {
             this.Id = Supplier.Id;

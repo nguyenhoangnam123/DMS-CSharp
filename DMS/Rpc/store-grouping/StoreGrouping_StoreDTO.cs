@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.store_grouping
@@ -27,15 +24,15 @@ namespace DMS.Rpc.store_grouping
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
         public long StatusId { get; set; }
-        public StoreGrouping_DistrictDTO District { get; set; }   
-        public StoreGrouping_OrganizationDTO Organization { get; set; }   
-        public StoreGrouping_StoreDTO ParentStore { get; set; }   
-        public StoreGrouping_ProvinceDTO Province { get; set; }   
-        public StoreGrouping_StatusDTO Status { get; set; }   
-        public StoreGrouping_StoreTypeDTO StoreType { get; set; }   
-        public StoreGrouping_WardDTO Ward { get; set; }   
-        
-        public StoreGrouping_StoreDTO() {}
+        public StoreGrouping_DistrictDTO District { get; set; }
+        public StoreGrouping_OrganizationDTO Organization { get; set; }
+        public StoreGrouping_StoreDTO ParentStore { get; set; }
+        public StoreGrouping_ProvinceDTO Province { get; set; }
+        public StoreGrouping_StatusDTO Status { get; set; }
+        public StoreGrouping_StoreTypeDTO StoreType { get; set; }
+        public StoreGrouping_WardDTO Ward { get; set; }
+
+        public StoreGrouping_StoreDTO() { }
         public StoreGrouping_StoreDTO(Store Store)
         {
             this.Id = Store.Id;
@@ -69,45 +66,45 @@ namespace DMS.Rpc.store_grouping
 
     public class StoreGrouping_StoreFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public StringFilter Code { get; set; }
-        
+
         public StringFilter Name { get; set; }
-        
+
         public IdFilter ParentStoreId { get; set; }
-        
+
         public IdFilter OrganizationId { get; set; }
-        
+
         public IdFilter StoreTypeId { get; set; }
-        
+
         public IdFilter StoreGroupingId { get; set; }
-        
+
         public StringFilter Telephone { get; set; }
-        
+
         public IdFilter ProvinceId { get; set; }
-        
+
         public IdFilter DistrictId { get; set; }
-        
+
         public IdFilter WardId { get; set; }
-        
+
         public StringFilter Address1 { get; set; }
-        
+
         public StringFilter Address2 { get; set; }
-        
+
         public DecimalFilter Latitude { get; set; }
-        
+
         public DecimalFilter Longitude { get; set; }
-        
+
         public StringFilter OwnerName { get; set; }
-        
+
         public StringFilter OwnerPhone { get; set; }
-        
+
         public StringFilter OwnerEmail { get; set; }
-        
+
         public IdFilter StatusId { get; set; }
-        
+
         public StoreOrder OrderBy { get; set; }
     }
 }

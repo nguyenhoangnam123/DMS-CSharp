@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MItem
 {
-    public interface IItemService :  IServiceScoped
+    public interface IItemService : IServiceScoped
     {
         Task<int> Count(ItemFilter ItemFilter);
         Task<List<Item>> List(ItemFilter ItemFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MItem
                 return null;
             return Item;
         }
-       
+
         public async Task<Item> Create(Item Item)
         {
             if (!await ItemValidator.Create(Item))
@@ -184,7 +184,7 @@ namespace DMS.Services.MItem
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Item>> Import(DataFile DataFile)
         {
             List<Item> Items = new List<Item>();
@@ -222,10 +222,10 @@ namespace DMS.Services.MItem
                     Items.Add(Item);
                 }
             }
-            
+
             if (!await ItemValidator.Import(Items))
                 return Items;
-            
+
             try
             {
                 await UOW.Begin();
@@ -244,7 +244,7 @@ namespace DMS.Services.MItem
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(ItemFilter ItemFilter)
         {
@@ -268,7 +268,7 @@ namespace DMS.Services.MItem
                 int ScanCodeColumn = 4 + StartColumn;
                 int SalePriceColumn = 5 + StartColumn;
                 int RetailPriceColumn = 6 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Item.Id);
                 worksheet.Cells[1, ProductIdColumn].Value = nameof(Item.ProductId);
                 worksheet.Cells[1, CodeColumn].Value = nameof(Item.Code);
@@ -277,7 +277,7 @@ namespace DMS.Services.MItem
                 worksheet.Cells[1, SalePriceColumn].Value = nameof(Item.SalePrice);
                 worksheet.Cells[1, RetailPriceColumn].Value = nameof(Item.RetailPrice);
 
-                for(int i = 0; i < Items.Count; i++)
+                for (int i = 0; i < Items.Count; i++)
                 {
                     Item Item = Items[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Item.Id;
@@ -298,7 +298,7 @@ namespace DMS.Services.MItem
             };
             return DataFile;
         }
-        
+
         public ItemFilter ToFilter(ItemFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ItemFilter>();

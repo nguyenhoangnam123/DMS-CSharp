@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Ward : DataEntity,  IEquatable<Ward>
+    public class Ward : DataEntity, IEquatable<Ward>
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -34,8 +34,8 @@ namespace DMS.Entities
         public IdFilter DistrictId { get; set; }
         public IdFilter StatusId { get; set; }
         public List<WardFilter> OrFilter { get; set; }
-        public WardOrder OrderBy {get; set;}
-        public WardSelect Selects {get; set;}
+        public WardOrder OrderBy { get; set; }
+        public WardSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -49,7 +49,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum WardSelect:long
+    public enum WardSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

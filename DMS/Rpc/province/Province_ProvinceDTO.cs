@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.province
@@ -13,7 +10,7 @@ namespace DMS.Rpc.province
         public long? Priority { get; set; }
         public long StatusId { get; set; }
         public Province_StatusDTO Status { get; set; }
-        public Province_ProvinceDTO() {}
+        public Province_ProvinceDTO() { }
         public Province_ProvinceDTO(Province Province)
         {
             this.Id = Province.Id;

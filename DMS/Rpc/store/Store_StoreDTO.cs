@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.store
@@ -35,7 +32,7 @@ namespace DMS.Rpc.store
         public Store_StoreGroupingDTO StoreGrouping { get; set; }
         public Store_StoreTypeDTO StoreType { get; set; }
         public Store_WardDTO Ward { get; set; }
-        public Store_StoreDTO() {}
+        public Store_StoreDTO() { }
         public Store_StoreDTO(Store Store)
         {
             this.Id = Store.Id;

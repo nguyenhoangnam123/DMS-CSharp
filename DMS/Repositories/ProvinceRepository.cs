@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -46,7 +46,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<ProvinceDAO> OrFilter(IQueryable<ProvinceDAO> query, ProvinceFilter filter)
+        private IQueryable<ProvinceDAO> OrFilter(IQueryable<ProvinceDAO> query, ProvinceFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -65,7 +65,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ProvinceDAO> DynamicOrder(IQueryable<ProvinceDAO> query, ProvinceFilter filter)
         {
@@ -202,7 +202,7 @@ namespace DMS.Repositories
             await DataContext.Province.Where(x => x.Id == Province.Id).UpdateFromQueryAsync(x => new ProvinceDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Province> Provinces)
         {
             List<ProvinceDAO> ProvinceDAOs = new List<ProvinceDAO>();
@@ -233,6 +233,6 @@ namespace DMS.Repositories
         private async Task SaveReference(Province Province)
         {
         }
-        
+
     }
 }

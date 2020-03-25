@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MUnitOfMeasure
 {
-    public interface IUnitOfMeasureService :  IServiceScoped
+    public interface IUnitOfMeasureService : IServiceScoped
     {
         Task<int> Count(UnitOfMeasureFilter UnitOfMeasureFilter);
         Task<List<UnitOfMeasure>> List(UnitOfMeasureFilter UnitOfMeasureFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MUnitOfMeasure
                 return null;
             return UnitOfMeasure;
         }
-       
+
         public async Task<UnitOfMeasure> Create(UnitOfMeasure UnitOfMeasure)
         {
             if (!await UnitOfMeasureValidator.Create(UnitOfMeasure))
@@ -184,7 +184,7 @@ namespace DMS.Services.MUnitOfMeasure
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<UnitOfMeasure>> Import(DataFile DataFile)
         {
             List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
@@ -216,10 +216,10 @@ namespace DMS.Services.MUnitOfMeasure
                     UnitOfMeasures.Add(UnitOfMeasure);
                 }
             }
-            
+
             if (!await UnitOfMeasureValidator.Import(UnitOfMeasures))
                 return UnitOfMeasures;
-            
+
             try
             {
                 await UOW.Begin();
@@ -238,7 +238,7 @@ namespace DMS.Services.MUnitOfMeasure
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(UnitOfMeasureFilter UnitOfMeasureFilter)
         {
@@ -260,14 +260,14 @@ namespace DMS.Services.MUnitOfMeasure
                 int NameColumn = 2 + StartColumn;
                 int DescriptionColumn = 3 + StartColumn;
                 int StatusIdColumn = 4 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(UnitOfMeasure.Id);
                 worksheet.Cells[1, CodeColumn].Value = nameof(UnitOfMeasure.Code);
                 worksheet.Cells[1, NameColumn].Value = nameof(UnitOfMeasure.Name);
                 worksheet.Cells[1, DescriptionColumn].Value = nameof(UnitOfMeasure.Description);
                 worksheet.Cells[1, StatusIdColumn].Value = nameof(UnitOfMeasure.StatusId);
 
-                for(int i = 0; i < UnitOfMeasures.Count; i++)
+                for (int i = 0; i < UnitOfMeasures.Count; i++)
                 {
                     UnitOfMeasure UnitOfMeasure = UnitOfMeasures[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = UnitOfMeasure.Id;
@@ -286,7 +286,7 @@ namespace DMS.Services.MUnitOfMeasure
             };
             return DataFile;
         }
-        
+
         public UnitOfMeasureFilter ToFilter(UnitOfMeasureFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<UnitOfMeasureFilter>();

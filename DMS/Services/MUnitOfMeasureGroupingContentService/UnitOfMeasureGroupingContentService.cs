@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MUnitOfMeasureGroupingContent
 {
-    public interface IUnitOfMeasureGroupingContentService :  IServiceScoped
+    public interface IUnitOfMeasureGroupingContentService : IServiceScoped
     {
         Task<int> Count(UnitOfMeasureGroupingContentFilter UnitOfMeasureGroupingContentFilter);
         Task<List<UnitOfMeasureGroupingContent>> List(UnitOfMeasureGroupingContentFilter UnitOfMeasureGroupingContentFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MUnitOfMeasureGroupingContent
                 return null;
             return UnitOfMeasureGroupingContent;
         }
-       
+
         public async Task<UnitOfMeasureGroupingContent> Create(UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent)
         {
             if (!await UnitOfMeasureGroupingContentValidator.Create(UnitOfMeasureGroupingContent))
@@ -184,7 +184,7 @@ namespace DMS.Services.MUnitOfMeasureGroupingContent
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<UnitOfMeasureGroupingContent>> Import(DataFile DataFile)
         {
             List<UnitOfMeasureGroupingContent> UnitOfMeasureGroupingContents = new List<UnitOfMeasureGroupingContent>();
@@ -212,10 +212,10 @@ namespace DMS.Services.MUnitOfMeasureGroupingContent
                     UnitOfMeasureGroupingContents.Add(UnitOfMeasureGroupingContent);
                 }
             }
-            
+
             if (!await UnitOfMeasureGroupingContentValidator.Import(UnitOfMeasureGroupingContents))
                 return UnitOfMeasureGroupingContents;
-            
+
             try
             {
                 await UOW.Begin();
@@ -234,7 +234,7 @@ namespace DMS.Services.MUnitOfMeasureGroupingContent
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(UnitOfMeasureGroupingContentFilter UnitOfMeasureGroupingContentFilter)
         {
@@ -255,13 +255,13 @@ namespace DMS.Services.MUnitOfMeasureGroupingContent
                 int UnitOfMeasureGroupingIdColumn = 1 + StartColumn;
                 int UnitOfMeasureIdColumn = 2 + StartColumn;
                 int FactorColumn = 3 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(UnitOfMeasureGroupingContent.Id);
                 worksheet.Cells[1, UnitOfMeasureGroupingIdColumn].Value = nameof(UnitOfMeasureGroupingContent.UnitOfMeasureGroupingId);
                 worksheet.Cells[1, UnitOfMeasureIdColumn].Value = nameof(UnitOfMeasureGroupingContent.UnitOfMeasureId);
                 worksheet.Cells[1, FactorColumn].Value = nameof(UnitOfMeasureGroupingContent.Factor);
 
-                for(int i = 0; i < UnitOfMeasureGroupingContents.Count; i++)
+                for (int i = 0; i < UnitOfMeasureGroupingContents.Count; i++)
                 {
                     UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent = UnitOfMeasureGroupingContents[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = UnitOfMeasureGroupingContent.Id;
@@ -279,7 +279,7 @@ namespace DMS.Services.MUnitOfMeasureGroupingContent
             };
             return DataFile;
         }
-        
+
         public UnitOfMeasureGroupingContentFilter ToFilter(UnitOfMeasureGroupingContentFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<UnitOfMeasureGroupingContentFilter>();

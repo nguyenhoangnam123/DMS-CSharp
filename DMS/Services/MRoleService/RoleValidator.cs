@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MRole
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MRole
             return count == 1;
         }
 
-        public async Task<bool>Create(Role Role)
+        public async Task<bool> Create(Role Role)
         {
             return Role.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MRole
             }
             return Role.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Role> Roles)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Role> Roles)
         {
             return true;

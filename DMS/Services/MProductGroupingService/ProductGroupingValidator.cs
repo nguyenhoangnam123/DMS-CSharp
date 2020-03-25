@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MProductGrouping
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MProductGrouping
             return count == 1;
         }
 
-        public async Task<bool>Create(ProductGrouping ProductGrouping)
+        public async Task<bool> Create(ProductGrouping ProductGrouping)
         {
             return ProductGrouping.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MProductGrouping
             }
             return ProductGrouping.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<ProductGrouping> ProductGroupings)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<ProductGrouping> ProductGroupings)
         {
             return true;

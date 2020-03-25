@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.menu
@@ -13,8 +10,8 @@ namespace DMS.Rpc.menu
         public string Type { get; set; }
         public long MenuId { get; set; }
         public bool IsDeleted { get; set; }
-        
-        public Menu_FieldDTO() {}
+
+        public Menu_FieldDTO() { }
         public Menu_FieldDTO(Field Field)
         {
             this.Id = Field.Id;
@@ -27,15 +24,15 @@ namespace DMS.Rpc.menu
 
     public class Menu_FieldFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public StringFilter Name { get; set; }
-        
+
         public StringFilter Type { get; set; }
-        
+
         public IdFilter MenuId { get; set; }
-        
+
         public FieldOrder OrderBy { get; set; }
     }
 }

@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -60,7 +60,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<OrganizationDAO> OrFilter(IQueryable<OrganizationDAO> query, OrganizationFilter filter)
+        private IQueryable<OrganizationDAO> OrFilter(IQueryable<OrganizationDAO> query, OrganizationFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -93,7 +93,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<OrganizationDAO> DynamicOrder(IQueryable<OrganizationDAO> query, OrganizationFilter filter)
         {
@@ -425,7 +425,7 @@ namespace DMS.Repositories
             await BuildPath();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Organization> Organizations)
         {
             List<OrganizationDAO> OrganizationDAOs = new List<OrganizationDAO>();
@@ -528,7 +528,7 @@ namespace DMS.Repositories
                 await DataContext.Store.BulkMergeAsync(StoreDAOs);
             }
         }
-        
+
         private async Task BuildPath()
         {
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization
@@ -543,7 +543,7 @@ namespace DMS.Repositories
                     queue.Enqueue(x);
                 }
             });
-            while(queue.Count > 0)
+            while (queue.Count > 0)
             {
                 OrganizationDAO Parent = queue.Dequeue();
                 foreach (OrganizationDAO OrganizationDAO in OrganizationDAOs)

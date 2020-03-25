@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -530,7 +530,7 @@ namespace DMS.Repositories
             await DataContext.Product.Where(x => x.Id == Product.Id).UpdateFromQueryAsync(x => new ProductDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Product> Products)
         {
             List<ProductDAO> ProductDAOs = new List<ProductDAO>();
@@ -672,6 +672,6 @@ namespace DMS.Repositories
                 await DataContext.VariationGrouping.BulkMergeAsync(VariationGroupingDAOs);
             }
         }
-        
+
     }
 }

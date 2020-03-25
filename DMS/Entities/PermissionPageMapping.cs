@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class PermissionPageMapping : DataEntity,  IEquatable<PermissionPageMapping>
+    public class PermissionPageMapping : DataEntity, IEquatable<PermissionPageMapping>
     {
         public long PermissionId { get; set; }
         public long PageId { get; set; }
@@ -28,8 +28,8 @@ namespace DMS.Entities
         public IdFilter PermissionId { get; set; }
         public IdFilter PageId { get; set; }
         public List<PermissionPageMappingFilter> OrFilter { get; set; }
-        public PermissionPageMappingOrder OrderBy {get; set;}
-        public PermissionPageMappingSelect Selects {get; set;}
+        public PermissionPageMappingOrder OrderBy { get; set; }
+        public PermissionPageMappingSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -40,7 +40,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum PermissionPageMappingSelect:long
+    public enum PermissionPageMappingSelect : long
     {
         ALL = E.ALL,
         Permission = E._0,

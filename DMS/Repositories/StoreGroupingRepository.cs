@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -50,7 +50,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<StoreGroupingDAO> OrFilter(IQueryable<StoreGroupingDAO> query, StoreGroupingFilter filter)
+        private IQueryable<StoreGroupingDAO> OrFilter(IQueryable<StoreGroupingDAO> query, StoreGroupingFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -73,7 +73,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<StoreGroupingDAO> DynamicOrder(IQueryable<StoreGroupingDAO> query, StoreGroupingFilter filter)
         {
@@ -329,7 +329,7 @@ namespace DMS.Repositories
             await BuildPath();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<StoreGrouping> StoreGroupings)
         {
             List<StoreGroupingDAO> StoreGroupingDAOs = new List<StoreGroupingDAO>();
@@ -428,7 +428,7 @@ namespace DMS.Repositories
                 await DataContext.Store.BulkMergeAsync(StoreDAOs);
             }
         }
-        
+
         private async Task BuildPath()
         {
             List<StoreGroupingDAO> StoreGroupingDAOs = await DataContext.StoreGrouping
@@ -443,7 +443,7 @@ namespace DMS.Repositories
                     queue.Enqueue(x);
                 }
             });
-            while(queue.Count > 0)
+            while (queue.Count > 0)
             {
                 StoreGroupingDAO Parent = queue.Dequeue();
                 foreach (StoreGroupingDAO StoreGroupingDAO in StoreGroupingDAOs)

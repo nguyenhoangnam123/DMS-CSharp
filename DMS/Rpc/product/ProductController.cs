@@ -1,25 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using DMS.Entities;
-using DMS.Services.MProduct;
 using DMS.Services.MBrand;
+using DMS.Services.MImage;
+using DMS.Services.MItem;
+using DMS.Services.MProduct;
+using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
 using DMS.Services.MStatus;
 using DMS.Services.MSupplier;
 using DMS.Services.MTaxType;
 using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MUnitOfMeasureGrouping;
-using DMS.Services.MItem;
-using DMS.Services.MImage;
-using DMS.Services.MProductGrouping;
 using DMS.Services.MVariationGrouping;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.product
 {
@@ -163,7 +161,7 @@ namespace DMS.Rpc.product
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Product_ProductDTO.Id))
                 return Forbid();
 
@@ -181,7 +179,7 @@ namespace DMS.Rpc.product
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Product_ProductDTO.Id))
                 return Forbid();
 
@@ -217,7 +215,7 @@ namespace DMS.Rpc.product
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -244,7 +242,7 @@ namespace DMS.Rpc.product
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(ProductRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

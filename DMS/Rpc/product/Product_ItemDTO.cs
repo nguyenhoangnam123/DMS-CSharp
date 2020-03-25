@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.product
@@ -15,8 +12,8 @@ namespace DMS.Rpc.product
         public string ScanCode { get; set; }
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
-        
-        public Product_ItemDTO() {}
+
+        public Product_ItemDTO() { }
         public Product_ItemDTO(Item Item)
         {
             this.Id = Item.Id;
@@ -31,21 +28,21 @@ namespace DMS.Rpc.product
 
     public class Product_ItemFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public IdFilter ProductId { get; set; }
-        
+
         public StringFilter Code { get; set; }
-        
+
         public StringFilter Name { get; set; }
-        
+
         public StringFilter ScanCode { get; set; }
-        
+
         public DecimalFilter SalePrice { get; set; }
-        
+
         public DecimalFilter RetailPrice { get; set; }
-        
+
         public ItemOrder OrderBy { get; set; }
     }
 }

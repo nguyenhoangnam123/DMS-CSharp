@@ -1,15 +1,13 @@
-﻿using DMS.Enums;
+﻿using Common;
+using DMS.Enums;
+using DMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Helpers;
-using Common;
 using System.Reflection;
-using DMS.Models;
+using System.Security.Cryptography;
 
 namespace DMS
 {
@@ -73,7 +71,7 @@ namespace DMS
                 .Include(p => p.PermissionFieldMappings)
                 .Include(p => p.PermissionPageMappings)
                 .ToList();
-            foreach(MenuDAO Menu in Menus)
+            foreach (MenuDAO Menu in Menus)
             {
                 PermissionDAO permission = permissions
                     .Where(p => p.MenuId == Menu.Id && p.RoleId == Admin.Id)
@@ -110,7 +108,7 @@ namespace DMS
                         permission.PermissionPageMappings.Add(PermissionPageMappingDAO);
                     }
                 }
-                foreach(FieldDAO field in Menu.Fields)
+                foreach (FieldDAO field in Menu.Fields)
                 {
                     PermissionFieldMappingDAO permissionFieldMapping = permission.PermissionFieldMappings
                         .Where(pfm => pfm.FieldId == field.Id).FirstOrDefault();
@@ -127,7 +125,7 @@ namespace DMS
             DataContext.Permission.BulkMerge(permissions);
             permissions.ForEach(p =>
             {
-                foreach(var field in p.PermissionFieldMappings)
+                foreach (var field in p.PermissionFieldMappings)
                 {
                     field.PermissionId = p.Id;
                 }
@@ -240,7 +238,7 @@ namespace DMS
             DataContext.BulkMerge(fields);
             string sql = DataContext.PermissionPageMapping.Where(ppm => ppm.Page.IsDeleted).ToSql();
             DataContext.PermissionPageMapping.Where(ppm => ppm.Page.IsDeleted).DeleteFromQuery();
-            DataContext.Page.Where(p => p.IsDeleted ||  p.Menu.IsDeleted).DeleteFromQuery();
+            DataContext.Page.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.PermissionFieldMapping.Where(pd => pd.Field.IsDeleted).DeleteFromQuery();
             DataContext.Field.Where(pf => pf.IsDeleted || pf.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Permission.Where(p => p.Menu.IsDeleted).DeleteFromQuery();

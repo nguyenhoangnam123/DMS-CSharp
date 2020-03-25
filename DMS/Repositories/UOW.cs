@@ -1,8 +1,6 @@
 using Common;
-using Microsoft.Extensions.Configuration;
-using System.Threading.Tasks;
 using DMS.Models;
-using DMS.Repositories;
+using System.Threading.Tasks;
 
 namespace DMS.Repositories
 {

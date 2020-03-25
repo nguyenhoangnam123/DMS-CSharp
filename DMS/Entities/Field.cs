@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Field : DataEntity,  IEquatable<Field>
+    public class Field : DataEntity, IEquatable<Field>
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -32,8 +32,8 @@ namespace DMS.Entities
         public StringFilter Type { get; set; }
         public IdFilter MenuId { get; set; }
         public List<FieldFilter> OrFilter { get; set; }
-        public FieldOrder OrderBy {get; set;}
-        public FieldSelect Selects {get; set;}
+        public FieldOrder OrderBy { get; set; }
+        public FieldSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -47,7 +47,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum FieldSelect:long
+    public enum FieldSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

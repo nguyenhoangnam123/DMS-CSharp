@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MProductType
 {
-    public interface IProductTypeService :  IServiceScoped
+    public interface IProductTypeService : IServiceScoped
     {
         Task<int> Count(ProductTypeFilter ProductTypeFilter);
         Task<List<ProductType>> List(ProductTypeFilter ProductTypeFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MProductType
                 return null;
             return ProductType;
         }
-       
+
         public async Task<ProductType> Create(ProductType ProductType)
         {
             if (!await ProductTypeValidator.Create(ProductType))
@@ -184,7 +184,7 @@ namespace DMS.Services.MProductType
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<ProductType>> Import(DataFile DataFile)
         {
             List<ProductType> ProductTypes = new List<ProductType>();
@@ -216,10 +216,10 @@ namespace DMS.Services.MProductType
                     ProductTypes.Add(ProductType);
                 }
             }
-            
+
             if (!await ProductTypeValidator.Import(ProductTypes))
                 return ProductTypes;
-            
+
             try
             {
                 await UOW.Begin();
@@ -238,7 +238,7 @@ namespace DMS.Services.MProductType
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(ProductTypeFilter ProductTypeFilter)
         {
@@ -260,14 +260,14 @@ namespace DMS.Services.MProductType
                 int NameColumn = 2 + StartColumn;
                 int DescriptionColumn = 3 + StartColumn;
                 int StatusIdColumn = 4 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(ProductType.Id);
                 worksheet.Cells[1, CodeColumn].Value = nameof(ProductType.Code);
                 worksheet.Cells[1, NameColumn].Value = nameof(ProductType.Name);
                 worksheet.Cells[1, DescriptionColumn].Value = nameof(ProductType.Description);
                 worksheet.Cells[1, StatusIdColumn].Value = nameof(ProductType.StatusId);
 
-                for(int i = 0; i < ProductTypes.Count; i++)
+                for (int i = 0; i < ProductTypes.Count; i++)
                 {
                     ProductType ProductType = ProductTypes[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = ProductType.Id;
@@ -286,7 +286,7 @@ namespace DMS.Services.MProductType
             };
             return DataFile;
         }
-        
+
         public ProductTypeFilter ToFilter(ProductTypeFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ProductTypeFilter>();

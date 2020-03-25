@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -46,7 +46,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<UnitOfMeasureGroupingDAO> OrFilter(IQueryable<UnitOfMeasureGroupingDAO> query, UnitOfMeasureGroupingFilter filter)
+        private IQueryable<UnitOfMeasureGroupingDAO> OrFilter(IQueryable<UnitOfMeasureGroupingDAO> query, UnitOfMeasureGroupingFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -65,7 +65,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<UnitOfMeasureGroupingDAO> DynamicOrder(IQueryable<UnitOfMeasureGroupingDAO> query, UnitOfMeasureGroupingFilter filter)
         {
@@ -235,7 +235,7 @@ namespace DMS.Repositories
             await DataContext.UnitOfMeasureGrouping.Where(x => x.Id == UnitOfMeasureGrouping.Id).UpdateFromQueryAsync(x => new UnitOfMeasureGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<UnitOfMeasureGrouping> UnitOfMeasureGroupings)
         {
             List<UnitOfMeasureGroupingDAO> UnitOfMeasureGroupingDAOs = new List<UnitOfMeasureGroupingDAO>();
@@ -283,6 +283,6 @@ namespace DMS.Repositories
                 await DataContext.UnitOfMeasureGroupingContent.BulkMergeAsync(UnitOfMeasureGroupingContentDAOs);
             }
         }
-        
+
     }
 }

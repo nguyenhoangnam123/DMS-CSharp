@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MProduct
 {
-    public interface IProductService :  IServiceScoped
+    public interface IProductService : IServiceScoped
     {
         Task<int> Count(ProductFilter ProductFilter);
         Task<List<Product>> List(ProductFilter ProductFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MProduct
                 return null;
             return Product;
         }
-       
+
         public async Task<Product> Create(Product Product)
         {
             if (!await ProductValidator.Create(Product))
@@ -184,7 +184,7 @@ namespace DMS.Services.MProduct
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Product>> Import(DataFile DataFile)
         {
             List<Product> Products = new List<Product>();
@@ -240,10 +240,10 @@ namespace DMS.Services.MProduct
                     Products.Add(Product);
                 }
             }
-            
+
             if (!await ProductValidator.Import(Products))
                 return Products;
-            
+
             try
             {
                 await UOW.Begin();
@@ -262,7 +262,7 @@ namespace DMS.Services.MProduct
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(ProductFilter ProductFilter)
         {
@@ -294,7 +294,7 @@ namespace DMS.Services.MProduct
                 int RetailPriceColumn = 12 + StartColumn;
                 int TaxTypeIdColumn = 13 + StartColumn;
                 int StatusIdColumn = 14 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Product.Id);
                 worksheet.Cells[1, CodeColumn].Value = nameof(Product.Code);
                 worksheet.Cells[1, SupplierCodeColumn].Value = nameof(Product.SupplierCode);
@@ -311,7 +311,7 @@ namespace DMS.Services.MProduct
                 worksheet.Cells[1, TaxTypeIdColumn].Value = nameof(Product.TaxTypeId);
                 worksheet.Cells[1, StatusIdColumn].Value = nameof(Product.StatusId);
 
-                for(int i = 0; i < Products.Count; i++)
+                for (int i = 0; i < Products.Count; i++)
                 {
                     Product Product = Products[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Product.Id;
@@ -340,7 +340,7 @@ namespace DMS.Services.MProduct
             };
             return DataFile;
         }
-        
+
         public ProductFilter ToFilter(ProductFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ProductFilter>();

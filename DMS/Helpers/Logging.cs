@@ -1,9 +1,8 @@
 using Common;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Microsoft.Extensions.Configuration;
 
 namespace Helpers
 {

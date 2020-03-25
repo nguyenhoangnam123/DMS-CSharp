@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MOrganization
 {
-    public interface IOrganizationService :  IServiceScoped
+    public interface IOrganizationService : IServiceScoped
     {
         Task<int> Count(OrganizationFilter OrganizationFilter);
         Task<List<Organization>> List(OrganizationFilter OrganizationFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MOrganization
                 return null;
             return Organization;
         }
-       
+
         public async Task<Organization> Create(Organization Organization)
         {
             if (!await OrganizationValidator.Create(Organization))
@@ -184,7 +184,7 @@ namespace DMS.Services.MOrganization
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Organization>> Import(DataFile DataFile)
         {
             List<Organization> Organizations = new List<Organization>();
@@ -233,10 +233,10 @@ namespace DMS.Services.MOrganization
                     Organizations.Add(Organization);
                 }
             }
-            
+
             if (!await OrganizationValidator.Import(Organizations))
                 return Organizations;
-            
+
             try
             {
                 await UOW.Begin();
@@ -255,7 +255,7 @@ namespace DMS.Services.MOrganization
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(OrganizationFilter OrganizationFilter)
         {
@@ -283,7 +283,7 @@ namespace DMS.Services.MOrganization
                 int AddressColumn = 8 + StartColumn;
                 int LatitudeColumn = 9 + StartColumn;
                 int LongitudeColumn = 10 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Organization.Id);
                 worksheet.Cells[1, CodeColumn].Value = nameof(Organization.Code);
                 worksheet.Cells[1, NameColumn].Value = nameof(Organization.Name);
@@ -296,7 +296,7 @@ namespace DMS.Services.MOrganization
                 worksheet.Cells[1, LatitudeColumn].Value = nameof(Organization.Latitude);
                 worksheet.Cells[1, LongitudeColumn].Value = nameof(Organization.Longitude);
 
-                for(int i = 0; i < Organizations.Count; i++)
+                for (int i = 0; i < Organizations.Count; i++)
                 {
                     Organization Organization = Organizations[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Organization.Id;
@@ -321,7 +321,7 @@ namespace DMS.Services.MOrganization
             };
             return DataFile;
         }
-        
+
         public OrganizationFilter ToFilter(OrganizationFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<OrganizationFilter>();

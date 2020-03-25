@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MMenu
 {
-    public interface IMenuService :  IServiceScoped
+    public interface IMenuService : IServiceScoped
     {
         Task<int> Count(MenuFilter MenuFilter);
         Task<List<Menu>> List(MenuFilter MenuFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MMenu
                 return null;
             return Menu;
         }
-       
+
         public async Task<Menu> Create(Menu Menu)
         {
             if (!await MenuValidator.Create(Menu))
@@ -184,7 +184,7 @@ namespace DMS.Services.MMenu
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Menu>> Import(DataFile DataFile)
         {
             List<Menu> Menus = new List<Menu>();
@@ -213,10 +213,10 @@ namespace DMS.Services.MMenu
                     Menus.Add(Menu);
                 }
             }
-            
+
             if (!await MenuValidator.Import(Menus))
                 return Menus;
-            
+
             try
             {
                 await UOW.Begin();
@@ -235,7 +235,7 @@ namespace DMS.Services.MMenu
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(MenuFilter MenuFilter)
         {
@@ -256,13 +256,13 @@ namespace DMS.Services.MMenu
                 int NameColumn = 1 + StartColumn;
                 int PathColumn = 2 + StartColumn;
                 int IsDeletedColumn = 3 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Menu.Id);
                 worksheet.Cells[1, NameColumn].Value = nameof(Menu.Name);
                 worksheet.Cells[1, PathColumn].Value = nameof(Menu.Path);
                 worksheet.Cells[1, IsDeletedColumn].Value = nameof(Menu.IsDeleted);
 
-                for(int i = 0; i < Menus.Count; i++)
+                for (int i = 0; i < Menus.Count; i++)
                 {
                     Menu Menu = Menus[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Menu.Id;
@@ -280,7 +280,7 @@ namespace DMS.Services.MMenu
             };
             return DataFile;
         }
-        
+
         public MenuFilter ToFilter(MenuFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<MenuFilter>();

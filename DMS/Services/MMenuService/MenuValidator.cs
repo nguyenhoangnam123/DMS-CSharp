@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MMenu
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MMenu
             return count == 1;
         }
 
-        public async Task<bool>Create(Menu Menu)
+        public async Task<bool> Create(Menu Menu)
         {
             return Menu.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MMenu
             }
             return Menu.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Menu> Menus)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Menu> Menus)
         {
             return true;

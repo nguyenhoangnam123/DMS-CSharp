@@ -1,4 +1,5 @@
 using Common;
+using DMS.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +16,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Winton.Extensions.Configuration.Consul;
 using Z.EntityFramework.Extensions;
-using DMS.Models;
 
 namespace DMS
 {

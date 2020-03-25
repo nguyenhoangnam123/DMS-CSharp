@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MField
 {
-    public interface IFieldService :  IServiceScoped
+    public interface IFieldService : IServiceScoped
     {
         Task<int> Count(FieldFilter FieldFilter);
         Task<List<Field>> List(FieldFilter FieldFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MField
                 return null;
             return Field;
         }
-       
+
         public async Task<Field> Create(Field Field)
         {
             if (!await FieldValidator.Create(Field))
@@ -184,7 +184,7 @@ namespace DMS.Services.MField
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Field>> Import(DataFile DataFile)
         {
             List<Field> Fields = new List<Field>();
@@ -215,10 +215,10 @@ namespace DMS.Services.MField
                     Fields.Add(Field);
                 }
             }
-            
+
             if (!await FieldValidator.Import(Fields))
                 return Fields;
-            
+
             try
             {
                 await UOW.Begin();
@@ -237,7 +237,7 @@ namespace DMS.Services.MField
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(FieldFilter FieldFilter)
         {
@@ -259,14 +259,14 @@ namespace DMS.Services.MField
                 int TypeColumn = 2 + StartColumn;
                 int MenuIdColumn = 3 + StartColumn;
                 int IsDeletedColumn = 4 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Field.Id);
                 worksheet.Cells[1, NameColumn].Value = nameof(Field.Name);
                 worksheet.Cells[1, TypeColumn].Value = nameof(Field.Type);
                 worksheet.Cells[1, MenuIdColumn].Value = nameof(Field.MenuId);
                 worksheet.Cells[1, IsDeletedColumn].Value = nameof(Field.IsDeleted);
 
-                for(int i = 0; i < Fields.Count; i++)
+                for (int i = 0; i < Fields.Count; i++)
                 {
                     Field Field = Fields[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Field.Id;
@@ -285,7 +285,7 @@ namespace DMS.Services.MField
             };
             return DataFile;
         }
-        
+
         public FieldFilter ToFilter(FieldFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<FieldFilter>();

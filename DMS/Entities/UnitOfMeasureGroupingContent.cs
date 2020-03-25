@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class UnitOfMeasureGroupingContent : DataEntity,  IEquatable<UnitOfMeasureGroupingContent>
+    public class UnitOfMeasureGroupingContent : DataEntity, IEquatable<UnitOfMeasureGroupingContent>
     {
         public long Id { get; set; }
         public long UnitOfMeasureGroupingId { get; set; }
@@ -32,8 +32,8 @@ namespace DMS.Entities
         public IdFilter UnitOfMeasureId { get; set; }
         public LongFilter Factor { get; set; }
         public List<UnitOfMeasureGroupingContentFilter> OrFilter { get; set; }
-        public UnitOfMeasureGroupingContentOrder OrderBy {get; set;}
-        public UnitOfMeasureGroupingContentSelect Selects {get; set;}
+        public UnitOfMeasureGroupingContentOrder OrderBy { get; set; }
+        public UnitOfMeasureGroupingContentSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -46,7 +46,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum UnitOfMeasureGroupingContentSelect:long
+    public enum UnitOfMeasureGroupingContentSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

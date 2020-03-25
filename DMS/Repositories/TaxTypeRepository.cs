@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -48,7 +48,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<TaxTypeDAO> OrFilter(IQueryable<TaxTypeDAO> query, TaxTypeFilter filter)
+        private IQueryable<TaxTypeDAO> OrFilter(IQueryable<TaxTypeDAO> query, TaxTypeFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -69,7 +69,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<TaxTypeDAO> DynamicOrder(IQueryable<TaxTypeDAO> query, TaxTypeFilter filter)
         {
@@ -216,7 +216,7 @@ namespace DMS.Repositories
             await DataContext.TaxType.Where(x => x.Id == TaxType.Id).UpdateFromQueryAsync(x => new TaxTypeDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<TaxType> TaxTypes)
         {
             List<TaxTypeDAO> TaxTypeDAOs = new List<TaxTypeDAO>();
@@ -248,6 +248,6 @@ namespace DMS.Repositories
         private async Task SaveReference(TaxType TaxType)
         {
         }
-        
+
     }
 }

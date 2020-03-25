@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.permission
 {
@@ -18,7 +17,7 @@ namespace DMS.Rpc.permission
         public Permission_StatusDTO Status { get; set; }
         public List<Permission_PermissionFieldMappingDTO> PermissionFieldMappings { get; set; }
         public List<Permission_PermissionPageMappingDTO> PermissionPageMappings { get; set; }
-        public Permission_PermissionDTO() {}
+        public Permission_PermissionDTO() { }
         public Permission_PermissionDTO(Permission Permission)
         {
             this.Id = Permission.Id;

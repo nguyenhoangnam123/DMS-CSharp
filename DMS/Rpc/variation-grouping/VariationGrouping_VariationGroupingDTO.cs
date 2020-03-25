@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.variation_grouping
@@ -12,7 +9,7 @@ namespace DMS.Rpc.variation_grouping
         public string Name { get; set; }
         public long ProductId { get; set; }
         public VariationGrouping_ProductDTO Product { get; set; }
-        public VariationGrouping_VariationGroupingDTO() {}
+        public VariationGrouping_VariationGroupingDTO() { }
         public VariationGrouping_VariationGroupingDTO(VariationGrouping VariationGrouping)
         {
             this.Id = VariationGrouping.Id;

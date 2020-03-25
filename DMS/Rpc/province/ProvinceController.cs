@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using DMS.Entities;
 using DMS.Services.MProvince;
 using DMS.Services.MStatus;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.province
 {
@@ -98,7 +96,7 @@ namespace DMS.Rpc.province
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Province_ProvinceDTO.Id))
                 return Forbid();
 
@@ -116,7 +114,7 @@ namespace DMS.Rpc.province
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Province_ProvinceDTO.Id))
                 return Forbid();
 
@@ -152,7 +150,7 @@ namespace DMS.Rpc.province
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -179,7 +177,7 @@ namespace DMS.Rpc.province
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(ProvinceRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

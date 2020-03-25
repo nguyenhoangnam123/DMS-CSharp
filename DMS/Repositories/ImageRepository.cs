@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -44,7 +44,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<ImageDAO> OrFilter(IQueryable<ImageDAO> query, ImageFilter filter)
+        private IQueryable<ImageDAO> OrFilter(IQueryable<ImageDAO> query, ImageFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -61,7 +61,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ImageDAO> DynamicOrder(IQueryable<ImageDAO> query, ImageFilter filter)
         {
@@ -176,7 +176,7 @@ namespace DMS.Repositories
             await DataContext.Image.Where(x => x.Id == Image.Id).UpdateFromQueryAsync(x => new ImageDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Image> Images)
         {
             List<ImageDAO> ImageDAOs = new List<ImageDAO>();
@@ -206,6 +206,6 @@ namespace DMS.Repositories
         private async Task SaveReference(Image Image)
         {
         }
-        
+
     }
 }

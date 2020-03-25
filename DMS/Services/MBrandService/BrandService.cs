@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MBrand
 {
-    public interface IBrandService :  IServiceScoped
+    public interface IBrandService : IServiceScoped
     {
         Task<int> Count(BrandFilter BrandFilter);
         Task<List<Brand>> List(BrandFilter BrandFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MBrand
                 return null;
             return Brand;
         }
-       
+
         public async Task<Brand> Create(Brand Brand)
         {
             if (!await BrandValidator.Create(Brand))
@@ -184,7 +184,7 @@ namespace DMS.Services.MBrand
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Brand>> Import(DataFile DataFile)
         {
             List<Brand> Brands = new List<Brand>();
@@ -213,10 +213,10 @@ namespace DMS.Services.MBrand
                     Brands.Add(Brand);
                 }
             }
-            
+
             if (!await BrandValidator.Import(Brands))
                 return Brands;
-            
+
             try
             {
                 await UOW.Begin();
@@ -235,7 +235,7 @@ namespace DMS.Services.MBrand
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(BrandFilter BrandFilter)
         {
@@ -256,13 +256,13 @@ namespace DMS.Services.MBrand
                 int CodeColumn = 1 + StartColumn;
                 int NameColumn = 2 + StartColumn;
                 int StatusIdColumn = 3 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Brand.Id);
                 worksheet.Cells[1, CodeColumn].Value = nameof(Brand.Code);
                 worksheet.Cells[1, NameColumn].Value = nameof(Brand.Name);
                 worksheet.Cells[1, StatusIdColumn].Value = nameof(Brand.StatusId);
 
-                for(int i = 0; i < Brands.Count; i++)
+                for (int i = 0; i < Brands.Count; i++)
                 {
                     Brand Brand = Brands[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Brand.Id;
@@ -280,7 +280,7 @@ namespace DMS.Services.MBrand
             };
             return DataFile;
         }
-        
+
         public BrandFilter ToFilter(BrandFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<BrandFilter>();

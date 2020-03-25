@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MStore
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MStore
             return count == 1;
         }
 
-        public async Task<bool>Create(Store Store)
+        public async Task<bool> Create(Store Store)
         {
             return Store.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MStore
             }
             return Store.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Store> Stores)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Store> Stores)
         {
             return true;

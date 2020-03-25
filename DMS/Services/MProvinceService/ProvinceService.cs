@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MProvince
 {
-    public interface IProvinceService :  IServiceScoped
+    public interface IProvinceService : IServiceScoped
     {
         Task<int> Count(ProvinceFilter ProvinceFilter);
         Task<List<Province>> List(ProvinceFilter ProvinceFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MProvince
                 return null;
             return Province;
         }
-       
+
         public async Task<Province> Create(Province Province)
         {
             if (!await ProvinceValidator.Create(Province))
@@ -184,7 +184,7 @@ namespace DMS.Services.MProvince
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Province>> Import(DataFile DataFile)
         {
             List<Province> Provinces = new List<Province>();
@@ -213,10 +213,10 @@ namespace DMS.Services.MProvince
                     Provinces.Add(Province);
                 }
             }
-            
+
             if (!await ProvinceValidator.Import(Provinces))
                 return Provinces;
-            
+
             try
             {
                 await UOW.Begin();
@@ -235,7 +235,7 @@ namespace DMS.Services.MProvince
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(ProvinceFilter ProvinceFilter)
         {
@@ -256,13 +256,13 @@ namespace DMS.Services.MProvince
                 int NameColumn = 1 + StartColumn;
                 int PriorityColumn = 2 + StartColumn;
                 int StatusIdColumn = 3 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Province.Id);
                 worksheet.Cells[1, NameColumn].Value = nameof(Province.Name);
                 worksheet.Cells[1, PriorityColumn].Value = nameof(Province.Priority);
                 worksheet.Cells[1, StatusIdColumn].Value = nameof(Province.StatusId);
 
-                for(int i = 0; i < Provinces.Count; i++)
+                for (int i = 0; i < Provinces.Count; i++)
                 {
                     Province Province = Provinces[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Province.Id;
@@ -280,7 +280,7 @@ namespace DMS.Services.MProvince
             };
             return DataFile;
         }
-        
+
         public ProvinceFilter ToFilter(ProvinceFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ProvinceFilter>();

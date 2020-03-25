@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MWard
 {
-    public interface IWardService :  IServiceScoped
+    public interface IWardService : IServiceScoped
     {
         Task<int> Count(WardFilter WardFilter);
         Task<List<Ward>> List(WardFilter WardFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MWard
                 return null;
             return Ward;
         }
-       
+
         public async Task<Ward> Create(Ward Ward)
         {
             if (!await WardValidator.Create(Ward))
@@ -184,7 +184,7 @@ namespace DMS.Services.MWard
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Ward>> Import(DataFile DataFile)
         {
             List<Ward> Wards = new List<Ward>();
@@ -215,10 +215,10 @@ namespace DMS.Services.MWard
                     Wards.Add(Ward);
                 }
             }
-            
+
             if (!await WardValidator.Import(Wards))
                 return Wards;
-            
+
             try
             {
                 await UOW.Begin();
@@ -237,7 +237,7 @@ namespace DMS.Services.MWard
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(WardFilter WardFilter)
         {
@@ -259,14 +259,14 @@ namespace DMS.Services.MWard
                 int PriorityColumn = 2 + StartColumn;
                 int DistrictIdColumn = 3 + StartColumn;
                 int StatusIdColumn = 4 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Ward.Id);
                 worksheet.Cells[1, NameColumn].Value = nameof(Ward.Name);
                 worksheet.Cells[1, PriorityColumn].Value = nameof(Ward.Priority);
                 worksheet.Cells[1, DistrictIdColumn].Value = nameof(Ward.DistrictId);
                 worksheet.Cells[1, StatusIdColumn].Value = nameof(Ward.StatusId);
 
-                for(int i = 0; i < Wards.Count; i++)
+                for (int i = 0; i < Wards.Count; i++)
                 {
                     Ward Ward = Wards[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Ward.Id;
@@ -285,7 +285,7 @@ namespace DMS.Services.MWard
             };
             return DataFile;
         }
-        
+
         public WardFilter ToFilter(WardFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<WardFilter>();

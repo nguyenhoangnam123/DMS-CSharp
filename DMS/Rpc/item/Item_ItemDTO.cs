@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.item
@@ -16,7 +13,7 @@ namespace DMS.Rpc.item
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public Item_ProductDTO Product { get; set; }
-        public Item_ItemDTO() {}
+        public Item_ItemDTO() { }
         public Item_ItemDTO(Item Item)
         {
             this.Id = Item.Id;

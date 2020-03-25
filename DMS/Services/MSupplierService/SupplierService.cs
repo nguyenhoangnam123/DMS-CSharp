@@ -1,17 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MSupplier
 {
-    public interface ISupplierService :  IServiceScoped
+    public interface ISupplierService : IServiceScoped
     {
         Task<int> Count(SupplierFilter SupplierFilter);
         Task<List<Supplier>> List(SupplierFilter SupplierFilter);
@@ -84,7 +84,7 @@ namespace DMS.Services.MSupplier
                 return null;
             return Supplier;
         }
-       
+
         public async Task<Supplier> Create(Supplier Supplier)
         {
             if (!await SupplierValidator.Create(Supplier))
@@ -184,7 +184,7 @@ namespace DMS.Services.MSupplier
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Supplier>> Import(DataFile DataFile)
         {
             List<Supplier> Suppliers = new List<Supplier>();
@@ -216,10 +216,10 @@ namespace DMS.Services.MSupplier
                     Suppliers.Add(Supplier);
                 }
             }
-            
+
             if (!await SupplierValidator.Import(Suppliers))
                 return Suppliers;
-            
+
             try
             {
                 await UOW.Begin();
@@ -238,7 +238,7 @@ namespace DMS.Services.MSupplier
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }    
+        }
 
         public async Task<DataFile> Export(SupplierFilter SupplierFilter)
         {
@@ -260,14 +260,14 @@ namespace DMS.Services.MSupplier
                 int NameColumn = 2 + StartColumn;
                 int TaxCodeColumn = 3 + StartColumn;
                 int StatusIdColumn = 4 + StartColumn;
-                
+
                 worksheet.Cells[1, IdColumn].Value = nameof(Supplier.Id);
                 worksheet.Cells[1, CodeColumn].Value = nameof(Supplier.Code);
                 worksheet.Cells[1, NameColumn].Value = nameof(Supplier.Name);
                 worksheet.Cells[1, TaxCodeColumn].Value = nameof(Supplier.TaxCode);
                 worksheet.Cells[1, StatusIdColumn].Value = nameof(Supplier.StatusId);
 
-                for(int i = 0; i < Suppliers.Count; i++)
+                for (int i = 0; i < Suppliers.Count; i++)
                 {
                     Supplier Supplier = Suppliers[i];
                     worksheet.Cells[i + StartRow, IdColumn].Value = Supplier.Id;
@@ -286,7 +286,7 @@ namespace DMS.Services.MSupplier
             };
             return DataFile;
         }
-        
+
         public SupplierFilter ToFilter(SupplierFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<SupplierFilter>();
