@@ -304,7 +304,6 @@ namespace DMS.Repositories
                 foreach (UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent in UnitOfMeasureGrouping.UnitOfMeasureGroupingContents)
                 {
                     UnitOfMeasureGroupingContentDAO UnitOfMeasureGroupingContentDAO = new UnitOfMeasureGroupingContentDAO();
-                    UnitOfMeasureGroupingContentDAO.Id = UnitOfMeasureGroupingContent.Id;
                     UnitOfMeasureGroupingContentDAO.UnitOfMeasureGroupingId = UnitOfMeasureGrouping.Id;
                     UnitOfMeasureGroupingContentDAO.UnitOfMeasureId = UnitOfMeasureGroupingContent.UnitOfMeasureId;
                     UnitOfMeasureGroupingContentDAO.Factor = UnitOfMeasureGroupingContent.Factor;
