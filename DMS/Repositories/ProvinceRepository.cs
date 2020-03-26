@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Models;
 using Helpers;
@@ -19,6 +19,7 @@ namespace DMS.Repositories
         Task<bool> Update(Province Province);
         Task<bool> Delete(Province Province);
         Task<bool> BulkMerge(List<Province> Provinces);
+        Task<bool> BulkMergeImport(List<Province> Provinces);
         Task<bool> BulkDelete(List<Province> Provinces);
     }
     public class ProvinceRepository : IProvinceRepository
@@ -151,6 +152,7 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 Name = x.Name,
+                Code = x.Code,
                 Priority = x.Priority,
                 StatusId = x.StatusId,
                 Status = x.Status == null ? null : new Status
@@ -170,6 +172,7 @@ namespace DMS.Repositories
         {
             ProvinceDAO ProvinceDAO = new ProvinceDAO();
             ProvinceDAO.Id = Province.Id;
+            ProvinceDAO.Code = Province.Code;
             ProvinceDAO.Name = Province.Name;
             ProvinceDAO.Priority = Province.Priority;
             ProvinceDAO.StatusId = Province.StatusId;
@@ -184,10 +187,11 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Province Province)
         {
-            ProvinceDAO ProvinceDAO = DataContext.Province.Where(x => x.Id == Province.Id).FirstOrDefault();
+            ProvinceDAO ProvinceDAO = DataContext.Province.Where(x => x.Id == Province.Id || x.Code == Province.Code).FirstOrDefault();
             if (ProvinceDAO == null)
                 return false;
             ProvinceDAO.Id = Province.Id;
+            ProvinceDAO.Code = Province.Code;
             ProvinceDAO.Name = Province.Name;
             ProvinceDAO.Priority = Province.Priority;
             ProvinceDAO.StatusId = Province.StatusId;
@@ -210,6 +214,7 @@ namespace DMS.Repositories
             {
                 ProvinceDAO ProvinceDAO = new ProvinceDAO();
                 ProvinceDAO.Id = Province.Id;
+                ProvinceDAO.Code = Province.Code;
                 ProvinceDAO.Name = Province.Name;
                 ProvinceDAO.Priority = Province.Priority;
                 ProvinceDAO.StatusId = Province.StatusId;
@@ -219,6 +224,42 @@ namespace DMS.Repositories
             }
             await DataContext.BulkMergeAsync(ProvinceDAOs);
             return true;
+        }
+
+        public async Task<bool> BulkMergeImport(List<Province> Provinces)
+        {
+            List<ProvinceDAO> ProvinceDAOs = new List<ProvinceDAO>();
+            foreach (Province Province in Provinces)
+            {
+                ProvinceDAO ProvinceDAO = new ProvinceDAO();
+                if (!checkExistByCode(Province.Code))
+                {
+                    ProvinceDAO.Id = Province.Id;
+                    ProvinceDAO.Code = Province.Code;
+                    ProvinceDAO.Name = Province.Name;
+                    ProvinceDAO.Priority = Province.Priority;
+                    ProvinceDAO.StatusId = Province.StatusId;
+                    ProvinceDAO.CreatedAt = StaticParams.DateTimeNow;
+                    ProvinceDAO.UpdatedAt = StaticParams.DateTimeNow;
+                }
+                else
+                {
+                    ProvinceDAO = DataContext.Province.Where(p => p.Code == Province.Code).FirstOrDefault();
+                    ProvinceDAO.Name = Province.Name;
+                    ProvinceDAO.UpdatedAt = StaticParams.DateTimeNow;
+                }
+                ProvinceDAOs.Add(ProvinceDAO);
+
+            }
+            await DataContext.BulkMergeAsync(ProvinceDAOs);
+            return true;
+
+        }
+
+        private bool checkExistByCode(string code)
+        {
+
+            return DataContext.Province.Where(p => p.Code == code).Any();
         }
 
         public async Task<bool> BulkDelete(List<Province> Provinces)

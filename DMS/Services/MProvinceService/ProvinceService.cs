@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Repositories;
 using Helpers;
@@ -21,18 +21,19 @@ namespace DMS.Services.MProvince
         Task<Province> Delete(Province Province);
         Task<List<Province>> BulkDelete(List<Province> Provinces);
         Task<List<Province>> Import(DataFile DataFile);
+
         Task<DataFile> Export(ProvinceFilter ProvinceFilter);
         ProvinceFilter ToFilter(ProvinceFilter ProvinceFilter);
     }
 
-    public class ProvinceService : BaseService, IProvinceService
+    public class LocationService : BaseService, IProvinceService
     {
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IProvinceValidator ProvinceValidator;
 
-        public ProvinceService(
+        public LocationService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
@@ -53,7 +54,7 @@ namespace DMS.Services.MProvince
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -70,7 +71,7 @@ namespace DMS.Services.MProvince
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -96,13 +97,13 @@ namespace DMS.Services.MProvince
                 await UOW.ProvinceRepository.Create(Province);
                 await UOW.Commit();
 
-                await Logging.CreateAuditLog(Province, new { }, nameof(ProvinceService));
+                await Logging.CreateAuditLog(Province, new { }, nameof(LocationService));
                 return await UOW.ProvinceRepository.Get(Province.Id);
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -123,13 +124,13 @@ namespace DMS.Services.MProvince
                 await UOW.Commit();
 
                 var newData = await UOW.ProvinceRepository.Get(Province.Id);
-                await Logging.CreateAuditLog(newData, oldData, nameof(ProvinceService));
+                await Logging.CreateAuditLog(newData, oldData, nameof(LocationService));
                 return newData;
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -147,13 +148,13 @@ namespace DMS.Services.MProvince
                 await UOW.Begin();
                 await UOW.ProvinceRepository.Delete(Province);
                 await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, Province, nameof(ProvinceService));
+                await Logging.CreateAuditLog(new { }, Province, nameof(LocationService));
                 return Province;
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -171,13 +172,13 @@ namespace DMS.Services.MProvince
                 await UOW.Begin();
                 await UOW.ProvinceRepository.BulkDelete(Provinces);
                 await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, Provinces, nameof(ProvinceService));
+                await Logging.CreateAuditLog(new { }, Provinces, nameof(LocationService));
                 return Provinces;
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -223,19 +224,21 @@ namespace DMS.Services.MProvince
                 await UOW.ProvinceRepository.BulkMerge(Provinces);
                 await UOW.Commit();
 
-                await Logging.CreateAuditLog(Provinces, new { }, nameof(ProvinceService));
+                await Logging.CreateAuditLog(Provinces, new { }, nameof(LocationService));
                 return Provinces;
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
                     throw new MessageException(ex.InnerException);
             }
         }
+
+
 
         public async Task<DataFile> Export(ProvinceFilter ProvinceFilter)
         {

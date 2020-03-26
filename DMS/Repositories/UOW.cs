@@ -38,7 +38,7 @@ namespace DMS.Repositories
         IUserStatusRepository UserStatusRepository { get; }
         IVariationRepository VariationRepository { get; }
         IVariationGroupingRepository VariationGroupingRepository { get; }
-        IWardRepository WardRepository { get; }
+        IWardRepository WardRepository { get; } 
     }
 
     public class UOW : IUOW
@@ -73,7 +73,7 @@ namespace DMS.Repositories
         public IUserStatusRepository UserStatusRepository { get; private set; }
         public IVariationRepository VariationRepository { get; private set; }
         public IVariationGroupingRepository VariationGroupingRepository { get; private set; }
-        public IWardRepository WardRepository { get; private set; }
+        public IWardRepository WardRepository { get; private set; } 
 
         public UOW(DataContext DataContext)
         {
@@ -107,7 +107,7 @@ namespace DMS.Repositories
             UserStatusRepository = new UserStatusRepository(DataContext);
             VariationRepository = new VariationRepository(DataContext);
             VariationGroupingRepository = new VariationGroupingRepository(DataContext);
-            WardRepository = new WardRepository(DataContext);
+            WardRepository = new WardRepository(DataContext); 
         }
         public async Task Begin()
         {

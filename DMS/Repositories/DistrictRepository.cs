@@ -19,6 +19,7 @@ namespace DMS.Repositories
         Task<bool> Update(District District);
         Task<bool> Delete(District District);
         Task<bool> BulkMerge(List<District> Districts);
+        Task<bool> BulkMergeImport(List<District> Districts);
         Task<bool> BulkDelete(List<District> Districts);
     }
     public class DistrictRepository : IDistrictRepository
@@ -169,6 +170,7 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 Name = x.Name,
+                Code = x.Code,
                 Priority = x.Priority,
                 ProvinceId = x.ProvinceId,
                 StatusId = x.StatusId,
@@ -196,6 +198,7 @@ namespace DMS.Repositories
         {
             DistrictDAO DistrictDAO = new DistrictDAO();
             DistrictDAO.Id = District.Id;
+            DistrictDAO.Code = District.Code;
             DistrictDAO.Name = District.Name;
             DistrictDAO.Priority = District.Priority;
             DistrictDAO.ProvinceId = District.ProvinceId;
@@ -215,6 +218,7 @@ namespace DMS.Repositories
             if (DistrictDAO == null)
                 return false;
             DistrictDAO.Id = District.Id;
+            DistrictDAO.Code = District.Code;
             DistrictDAO.Name = District.Name;
             DistrictDAO.Priority = District.Priority;
             DistrictDAO.ProvinceId = District.ProvinceId;
@@ -238,6 +242,7 @@ namespace DMS.Repositories
             {
                 DistrictDAO DistrictDAO = new DistrictDAO();
                 DistrictDAO.Id = District.Id;
+                DistrictDAO.Code = District.Code;
                 DistrictDAO.Name = District.Name;
                 DistrictDAO.Priority = District.Priority;
                 DistrictDAO.ProvinceId = District.ProvinceId;
@@ -248,6 +253,41 @@ namespace DMS.Repositories
             }
             await DataContext.BulkMergeAsync(DistrictDAOs);
             return true;
+        }
+
+        public async Task<bool> BulkMergeImport(List<District> Districts)
+        {
+            List<DistrictDAO> DistrictDAOs = new List<DistrictDAO>();
+            foreach (District District in Districts)
+            {
+                DistrictDAO DistrictDAO = new DistrictDAO();
+                if (!checkExistByCode(District.Code))
+                {
+                    DistrictDAO.Id = District.Id;
+                    DistrictDAO.Code = District.Code;
+                    DistrictDAO.Name = District.Name;
+                    DistrictDAO.Priority = District.Priority;
+                    DistrictDAO.StatusId = District.StatusId;
+                    DistrictDAO.CreatedAt = StaticParams.DateTimeNow;
+                    DistrictDAO.UpdatedAt = StaticParams.DateTimeNow;
+                    DistrictDAO.ProvinceId = DataContext.Province.FirstOrDefault(p => p.Code == District.ProvinceCode).Id;
+                }
+                else
+                {
+                    DistrictDAO = DataContext.District.Where(p => p.Code == District.Code).FirstOrDefault();
+                    DistrictDAO.Name = District.Name;
+                    DistrictDAO.UpdatedAt = StaticParams.DateTimeNow;
+                }
+                DistrictDAOs.Add(DistrictDAO);
+            }
+            await DataContext.BulkMergeAsync(DistrictDAOs);
+            return true;
+
+        }
+        private bool checkExistByCode(string code)
+        {
+
+            return DataContext.District.Where(p => p.Code == code).Any();
         }
 
         public async Task<bool> BulkDelete(List<District> Districts)

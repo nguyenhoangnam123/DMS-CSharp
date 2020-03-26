@@ -13,6 +13,7 @@ using DMS.Repositories;
 using DMS.Entities;
 using DMS.Helpers;
 using Microsoft.AspNetCore.Http;
+using DMS.Services.MSexService;
 
 namespace DMS.Services.MAppUser
 {
@@ -25,7 +26,7 @@ namespace DMS.Services.MAppUser
         Task<AppUser> Update(AppUser AppUser);
         Task<AppUser> Delete(AppUser AppUser);
         Task<List<AppUser>> BulkDelete(List<AppUser> AppUsers);
-        Task<List<AppUser>> Import(IFormFile DataFile);
+        Task<List<AppUser>> Import(DataFile DataFile);
         Task<DataFile> Export(AppUserFilter AppUserFilter);
         AppUserFilter ToFilter(AppUserFilter AppUserFilter);
     }
@@ -36,18 +37,21 @@ namespace DMS.Services.MAppUser
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IAppUserValidator AppUserValidator;
+        private ISexService SexService;
 
         public AppUserService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IAppUserValidator AppUserValidator
+            IAppUserValidator AppUserValidator,
+            ISexService SexService
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.AppUserValidator = AppUserValidator;
+            this.SexService = SexService;
         }
         public async Task<int> Count(AppUserFilter AppUserFilter)
         {
@@ -188,56 +192,65 @@ namespace DMS.Services.MAppUser
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }
+        } 
 
-        public async Task<List<AppUser>> Import(IFormFile file)
+        public async Task<List<AppUser>> Import(DataFile DataFile)
         {
-            var lts = new List<AppUser>();
-            string fileExtension = Path.GetExtension(file.FileName);
-            if (fileExtension == ".xls" || fileExtension == ".xlsx")
+            List<AppUser> AppUsers = new List<AppUser>(); 
+            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
             {
-                var fileLocation = await Utils.CreateFileImport(file);
-                using (ExcelPackage package = new ExcelPackage(fileLocation))
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                if (worksheet == null)
+                    return AppUsers;
+                int StartColumn = 1;
+                int StartRow = 1;
+                int IdColumn = 0 + StartColumn;
+                int UsernameColumn = 1 + StartColumn;
+                int PasswordColumn = 2 + StartColumn;
+                int DisplayNameColumn = 3 + StartColumn;
+                int EmailColumn = 4 + StartColumn;
+                int PhoneColumn = 5 + StartColumn;
+                int UserStatusIdColumn = 6 + StartColumn;
+                int SexIdColumn = 7 + StartColumn;
+                for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
                 {
-                    //ExcelWorksheet workSheet = package.Workbook.Worksheets["Table1"];
-                    var workSheet = package.Workbook.Worksheets.FirstOrDefault();
-                    int StartColumn = 1;
-                    int StartRow = 2;
-                    int IdColumn = 0 + StartColumn;
-                    int Username = 1 + StartColumn;
-                    int Password = 2 + StartColumn;
-                    int DisplayName = 3 + StartColumn;
-                    int Email = 4 + StartColumn;
-                    int Phone = 5 + StartColumn;
-                    int UserStatusId = 6 + StartColumn;
-                    int SexId = 7 + StartColumn;
-                    for (int i = StartRow; i <= workSheet.Dimension.Rows; i++)
-                    {
-                        AppUser item = new AppUser();
-                        item.Username = workSheet.Cells[i, Username].Value.ToString();
-                        item.Password = workSheet.Cells[i, Password].Value.ToString();
-                        item.DisplayName = workSheet.Cells[i, DisplayName].Value.ToString();
-                        item.Email = workSheet.Cells[i, Email].Value.ToString();
-                        item.Phone = workSheet.Cells[i, Phone].Value.ToString();
-                        item.UserStatusId = int.Parse(workSheet.Cells[i, UserStatusId].Value.ToString() ?? "0"); 
+                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, IdColumn].Value?.ToString()))
+                        break;
+                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
+                    string UsernameValue = worksheet.Cells[i + StartRow, UsernameColumn].Value?.ToString();
+                    string PasswordValue = worksheet.Cells[i + StartRow, PasswordColumn].Value?.ToString();
+                    string DisplayNameValue = worksheet.Cells[i + StartRow, DisplayNameColumn].Value?.ToString();
+                    string EmailValue = worksheet.Cells[i + StartRow, EmailColumn].Value?.ToString();
+                    string PhoneValue = worksheet.Cells[i + StartRow, PhoneColumn].Value?.ToString();
+                    string UserStatusIdValue = worksheet.Cells[i + StartRow, UserStatusIdColumn].Value?.ToString();
+                    string SexIdValue = worksheet.Cells[i + StartRow, SexIdColumn].Value?.ToString();
+                    AppUser AppUser = new AppUser(); 
 
-                        await Create(item);
-                        lts.Add(item);
-                    } 
+                    AppUser.Username = UsernameValue;
+                    AppUser.Password = PasswordValue;
+                    AppUser.DisplayName = DisplayNameValue;
+                    AppUser.Email = EmailValue;
+                    AppUser.Phone = PhoneValue;
+                    AppUser.UserStatusId = int.Parse(UserStatusIdValue);
+                    AppUser.SexId = long.Parse(SexIdValue);
+                    //AppUser.Sex = await SexService.Get(long.Parse(SexIdValue));
+
+                    await Create(AppUser);
+                    AppUsers.Add(AppUser);
                 }
-            } 
+            }
 
-            if (!await AppUserValidator.Import(lts))
-                return lts;
+            if (!await AppUserValidator.Import(AppUsers))
+                return AppUsers;
 
             try
             {
                 await UOW.Begin();
-                await UOW.AppUserRepository.BulkMerge(lts);
+                await UOW.AppUserRepository.BulkMerge(AppUsers);
                 await UOW.Commit();
 
-                await Logging.CreateAuditLog(lts, new { }, nameof(AppUserService));
-                return lts;
+                await Logging.CreateAuditLog(AppUsers, new { }, nameof(AppUserService));
+                return AppUsers;
             }
             catch (Exception ex)
             {

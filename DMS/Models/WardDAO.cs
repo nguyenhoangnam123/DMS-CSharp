@@ -11,6 +11,7 @@ namespace DMS.Models
         }
 
         public long Id { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public long? Priority { get; set; }
         public long DistrictId { get; set; }
