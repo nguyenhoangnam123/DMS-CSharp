@@ -1,4 +1,7 @@
 using Common;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.app_user
@@ -7,9 +10,9 @@ namespace DMS.Rpc.app_user
     {
         public long AppUserId { get; set; }
         public long RoleId { get; set; }
-        public AppUser_RoleDTO Role { get; set; }
-
-        public AppUser_AppUserRoleMappingDTO() { }
+        public AppUser_RoleDTO Role { get; set; }   
+        
+        public AppUser_AppUserRoleMappingDTO() {}
         public AppUser_AppUserRoleMappingDTO(AppUserRoleMapping AppUserRoleMapping)
         {
             this.AppUserId = AppUserRoleMapping.AppUserId;
@@ -20,11 +23,11 @@ namespace DMS.Rpc.app_user
 
     public class AppUser_AppUserRoleMappingFilterDTO : FilterDTO
     {
-
+        
         public IdFilter AppUserId { get; set; }
-
+        
         public IdFilter RoleId { get; set; }
-
+        
         public AppUserRoleMappingOrder OrderBy { get; set; }
     }
 }

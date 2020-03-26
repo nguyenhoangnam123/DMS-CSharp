@@ -468,6 +468,13 @@ namespace DMS.Repositories
                     Id = x.Id,
                     Name = x.Name,
                     ProductId = x.ProductId,
+                    Variations = x.Variations.Select(v => new Variation
+                    {
+                        Id = v.Id,
+                        Code = v.Code,
+                        Name = v.Name,
+                        VariationGroupingId = v.VariationGroupingId,
+                    }).ToList(),
                 }).ToListAsync();
 
             return Product;
@@ -583,7 +590,6 @@ namespace DMS.Repositories
                     if (ItemDAO == null)
                     {
                         ItemDAO = new ItemDAO();
-                        ItemDAO.Id = Item.Id;
                         ItemDAO.ProductId = Product.Id;
                         ItemDAO.Code = Item.Code;
                         ItemDAO.Name = Item.Name;
