@@ -12,6 +12,7 @@ namespace DMS.Entities
         public string Name { get; set; }
         public long ProductId { get; set; }
         public Product Product { get; set; }
+        public List<Variation> Variations { get; set; }
 
         public bool Equals(VariationGrouping other)
         {

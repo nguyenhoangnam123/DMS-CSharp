@@ -12,9 +12,12 @@ namespace DMS.Entities
         public string Username { get; set; }
         public string Password { get; set; }
         public string DisplayName { get; set; }
+        public string Address { get; set; }
+        public long SexId { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
         public long UserStatusId { get; set; }
+        public Sex Sex { get; set; }
         public UserStatus UserStatus { get; set; }
         public List<AppUserRoleMapping> AppUserRoleMappings { get; set; }
 
@@ -36,6 +39,8 @@ namespace DMS.Entities
         public StringFilter DisplayName { get; set; }
         public StringFilter Email { get; set; }
         public StringFilter Phone { get; set; }
+        public StringFilter Address { get; set; }
+        public IdFilter SexId { get; set; }
         public IdFilter UserStatusId { get; set; }
         public List<AppUserFilter> OrFilter { get; set; }
         public AppUserOrder OrderBy { get; set; }

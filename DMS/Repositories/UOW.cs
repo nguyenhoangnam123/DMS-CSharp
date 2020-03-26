@@ -25,6 +25,7 @@ namespace DMS.Repositories
         IProductTypeRepository ProductTypeRepository { get; }
         IProvinceRepository ProvinceRepository { get; }
         IRoleRepository RoleRepository { get; }
+        ISexRepository SexRepository { get; }
         IStatusRepository StatusRepository { get; }
         IStoreRepository StoreRepository { get; }
         IStoreGroupingRepository StoreGroupingRepository { get; }
@@ -59,6 +60,7 @@ namespace DMS.Repositories
         public IProductTypeRepository ProductTypeRepository { get; private set; }
         public IProvinceRepository ProvinceRepository { get; private set; }
         public IRoleRepository RoleRepository { get; private set; }
+        public ISexRepository SexRepository { get; private set; }
         public IStatusRepository StatusRepository { get; private set; }
         public IStoreRepository StoreRepository { get; private set; }
         public IStoreGroupingRepository StoreGroupingRepository { get; private set; }
@@ -92,6 +94,7 @@ namespace DMS.Repositories
             ProductTypeRepository = new ProductTypeRepository(DataContext);
             ProvinceRepository = new ProvinceRepository(DataContext);
             RoleRepository = new RoleRepository(DataContext);
+            SexRepository = new SexRepository(DataContext);
             StatusRepository = new StatusRepository(DataContext);
             StoreRepository = new StoreRepository(DataContext);
             StoreGroupingRepository = new StoreGroupingRepository(DataContext);

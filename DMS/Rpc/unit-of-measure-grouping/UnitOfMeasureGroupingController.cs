@@ -109,7 +109,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Id))
                 return Forbid();
 
@@ -127,7 +127,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Id))
                 return Forbid();
 
@@ -163,7 +163,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -190,7 +190,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(UnitOfMeasureGroupingRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -256,7 +256,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
                     Id = x.Id,
                     UnitOfMeasureId = x.UnitOfMeasureId,
                     Factor = x.Factor,
-                    UnitOfMeasure = new UnitOfMeasure
+                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
                     {
                         Id = x.UnitOfMeasure.Id,
                         Code = x.UnitOfMeasure.Code,
