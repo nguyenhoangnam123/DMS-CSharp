@@ -12,7 +12,7 @@ namespace DMS.Services.MProvince
         Task<bool> Update(Province Province);
         Task<bool> Delete(Province Province);
         Task<bool> BulkDelete(List<Province> Provinces);
-        Task<bool> Import(List<Province> Provinces);
+        Task<bool> BulkMerge(List<Province> Provinces);
     }
 
     public class ProvinceValidator : IProvinceValidator
@@ -73,7 +73,7 @@ namespace DMS.Services.MProvince
             return true;
         }
 
-        public async Task<bool> Import(List<Province> Provinces)
+        public async Task<bool> BulkMerge(List<Province> Provinces)
         {
             return true;
         }

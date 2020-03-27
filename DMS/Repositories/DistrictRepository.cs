@@ -19,7 +19,6 @@ namespace DMS.Repositories
         Task<bool> Update(District District);
         Task<bool> Delete(District District);
         Task<bool> BulkMerge(List<District> Districts);
-        Task<bool> BulkMergeImport(List<District> Districts);
         Task<bool> BulkDelete(List<District> Districts);
     }
     public class DistrictRepository : IDistrictRepository
@@ -59,6 +58,8 @@ namespace DMS.Repositories
                 IQueryable<DistrictDAO> queryable = query;
                 if (filter.Id != null)
                     queryable = queryable.Where(q => q.Id, filter.Id);
+                if (filter.Code != null)
+                    query = query.Where(q => q.Code, filter.Code);
                 if (filter.Name != null)
                     queryable = queryable.Where(q => q.Name, filter.Name);
                 if (filter.Priority != null)
@@ -82,6 +83,9 @@ namespace DMS.Repositories
                         case DistrictOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
+                        case DistrictOrder.Code:
+                            query = query.OrderBy(q => q.Code);
+                            break;
                         case DistrictOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
@@ -101,6 +105,9 @@ namespace DMS.Repositories
                     {
                         case DistrictOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
+                            break;
+                        case DistrictOrder.Code:
+                            query = query.OrderByDescending(q => q.Code);
                             break;
                         case DistrictOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
@@ -126,6 +133,7 @@ namespace DMS.Repositories
             List<District> Districts = await query.Select(q => new District()
             {
                 Id = filter.Selects.Contains(DistrictSelect.Id) ? q.Id : default(long),
+                Code = filter.Selects.Contains(DistrictSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(DistrictSelect.Name) ? q.Name : default(string),
                 Priority = filter.Selects.Contains(DistrictSelect.Priority) ? q.Priority : default(long?),
                 ProvinceId = filter.Selects.Contains(DistrictSelect.Province) ? q.ProvinceId : default(long),
@@ -253,41 +261,6 @@ namespace DMS.Repositories
             }
             await DataContext.BulkMergeAsync(DistrictDAOs);
             return true;
-        }
-
-        public async Task<bool> BulkMergeImport(List<District> Districts)
-        {
-            List<DistrictDAO> DistrictDAOs = new List<DistrictDAO>();
-            foreach (District District in Districts)
-            {
-                DistrictDAO DistrictDAO = new DistrictDAO();
-                if (!checkExistByCode(District.Code))
-                {
-                    DistrictDAO.Id = District.Id;
-                    DistrictDAO.Code = District.Code;
-                    DistrictDAO.Name = District.Name;
-                    DistrictDAO.Priority = District.Priority;
-                    DistrictDAO.StatusId = District.StatusId;
-                    DistrictDAO.CreatedAt = StaticParams.DateTimeNow;
-                    DistrictDAO.UpdatedAt = StaticParams.DateTimeNow;
-                    DistrictDAO.ProvinceId = DataContext.Province.FirstOrDefault(p => p.Code == District.ProvinceCode).Id;
-                }
-                else
-                {
-                    DistrictDAO = DataContext.District.Where(p => p.Code == District.Code).FirstOrDefault();
-                    DistrictDAO.Name = District.Name;
-                    DistrictDAO.UpdatedAt = StaticParams.DateTimeNow;
-                }
-                DistrictDAOs.Add(DistrictDAO);
-            }
-            await DataContext.BulkMergeAsync(DistrictDAOs);
-            return true;
-
-        }
-        private bool checkExistByCode(string code)
-        {
-
-            return DataContext.District.Where(p => p.Code == code).Any();
         }
 
         public async Task<bool> BulkDelete(List<District> Districts)

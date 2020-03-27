@@ -19,7 +19,6 @@ namespace DMS.Repositories
         Task<bool> Update(Province Province);
         Task<bool> Delete(Province Province);
         Task<bool> BulkMerge(List<Province> Provinces);
-        Task<bool> BulkMergeImport(List<Province> Provinces);
         Task<bool> BulkDelete(List<Province> Provinces);
     }
     public class ProvinceRepository : IProvinceRepository
@@ -37,6 +36,8 @@ namespace DMS.Repositories
             query = query.Where(q => !q.DeletedAt.HasValue);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
+            if (filter.Code != null)
+                query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.Priority != null)
@@ -78,6 +79,9 @@ namespace DMS.Repositories
                         case ProvinceOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
+                        case ProvinceOrder.Code:
+                            query = query.OrderBy(q => q.Code);
+                            break;
                         case ProvinceOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
@@ -94,6 +98,9 @@ namespace DMS.Repositories
                     {
                         case ProvinceOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
+                            break;
+                        case ProvinceOrder.Code:
+                            query = query.OrderByDescending(q => q.Code);
                             break;
                         case ProvinceOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
@@ -116,6 +123,7 @@ namespace DMS.Repositories
             List<Province> Provinces = await query.Select(q => new Province()
             {
                 Id = filter.Selects.Contains(ProvinceSelect.Id) ? q.Id : default(long),
+                Code = filter.Selects.Contains(ProvinceSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(ProvinceSelect.Name) ? q.Name : default(string),
                 Priority = filter.Selects.Contains(ProvinceSelect.Priority) ? q.Priority : default(long?),
                 StatusId = filter.Selects.Contains(ProvinceSelect.Status) ? q.StatusId : default(long),
@@ -151,8 +159,8 @@ namespace DMS.Repositories
             Province Province = await DataContext.Province.Where(x => x.Id == Id).Select(x => new Province()
             {
                 Id = x.Id,
-                Name = x.Name,
                 Code = x.Code,
+                Name = x.Name,
                 Priority = x.Priority,
                 StatusId = x.StatusId,
                 Status = x.Status == null ? null : new Status
@@ -224,42 +232,6 @@ namespace DMS.Repositories
             }
             await DataContext.BulkMergeAsync(ProvinceDAOs);
             return true;
-        }
-
-        public async Task<bool> BulkMergeImport(List<Province> Provinces)
-        {
-            List<ProvinceDAO> ProvinceDAOs = new List<ProvinceDAO>();
-            foreach (Province Province in Provinces)
-            {
-                ProvinceDAO ProvinceDAO = new ProvinceDAO();
-                if (!checkExistByCode(Province.Code))
-                {
-                    ProvinceDAO.Id = Province.Id;
-                    ProvinceDAO.Code = Province.Code;
-                    ProvinceDAO.Name = Province.Name;
-                    ProvinceDAO.Priority = Province.Priority;
-                    ProvinceDAO.StatusId = Province.StatusId;
-                    ProvinceDAO.CreatedAt = StaticParams.DateTimeNow;
-                    ProvinceDAO.UpdatedAt = StaticParams.DateTimeNow;
-                }
-                else
-                {
-                    ProvinceDAO = DataContext.Province.Where(p => p.Code == Province.Code).FirstOrDefault();
-                    ProvinceDAO.Name = Province.Name;
-                    ProvinceDAO.UpdatedAt = StaticParams.DateTimeNow;
-                }
-                ProvinceDAOs.Add(ProvinceDAO);
-
-            }
-            await DataContext.BulkMergeAsync(ProvinceDAOs);
-            return true;
-
-        }
-
-        private bool checkExistByCode(string code)
-        {
-
-            return DataContext.Province.Where(p => p.Code == code).Any();
         }
 
         public async Task<bool> BulkDelete(List<Province> Provinces)

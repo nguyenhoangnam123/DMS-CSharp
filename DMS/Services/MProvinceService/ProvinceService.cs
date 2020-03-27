@@ -20,20 +20,20 @@ namespace DMS.Services.MProvince
         Task<Province> Update(Province Province);
         Task<Province> Delete(Province Province);
         Task<List<Province>> BulkDelete(List<Province> Provinces);
-        Task<List<Province>> Import(DataFile DataFile);
+        Task<List<Province>> BulkMerge(List<Province> Provinces);
 
         Task<DataFile> Export(ProvinceFilter ProvinceFilter);
         ProvinceFilter ToFilter(ProvinceFilter ProvinceFilter);
     }
 
-    public class LocationService : BaseService, IProvinceService
+    public class ProvinceService : BaseService, IProvinceService
     {
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IProvinceValidator ProvinceValidator;
 
-        public LocationService(
+        public ProvinceService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
@@ -54,7 +54,7 @@ namespace DMS.Services.MProvince
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -71,7 +71,7 @@ namespace DMS.Services.MProvince
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -97,13 +97,13 @@ namespace DMS.Services.MProvince
                 await UOW.ProvinceRepository.Create(Province);
                 await UOW.Commit();
 
-                await Logging.CreateAuditLog(Province, new { }, nameof(LocationService));
+                await Logging.CreateAuditLog(Province, new { }, nameof(ProvinceService));
                 return await UOW.ProvinceRepository.Get(Province.Id);
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -124,13 +124,13 @@ namespace DMS.Services.MProvince
                 await UOW.Commit();
 
                 var newData = await UOW.ProvinceRepository.Get(Province.Id);
-                await Logging.CreateAuditLog(newData, oldData, nameof(LocationService));
+                await Logging.CreateAuditLog(newData, oldData, nameof(ProvinceService));
                 return newData;
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -148,13 +148,13 @@ namespace DMS.Services.MProvince
                 await UOW.Begin();
                 await UOW.ProvinceRepository.Delete(Province);
                 await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, Province, nameof(LocationService));
+                await Logging.CreateAuditLog(new { }, Province, nameof(ProvinceService));
                 return Province;
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -172,13 +172,13 @@ namespace DMS.Services.MProvince
                 await UOW.Begin();
                 await UOW.ProvinceRepository.BulkDelete(Provinces);
                 await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, Provinces, nameof(LocationService));
+                await Logging.CreateAuditLog(new { }, Provinces, nameof(ProvinceService));
                 return Provinces;
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -186,51 +186,120 @@ namespace DMS.Services.MProvince
             }
         }
 
-        public async Task<List<Province>> Import(DataFile DataFile)
+        public async Task<List<Province>> BulkMerge(List<Province> Provinces)
         {
-            List<Province> Provinces = new List<Province>();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
-            {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return Provinces;
-                int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int NameColumn = 1 + StartColumn;
-                int PriorityColumn = 2 + StartColumn;
-                int StatusIdColumn = 3 + StartColumn;
-                for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
-                {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, IdColumn].Value?.ToString()))
-                        break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string PriorityValue = worksheet.Cells[i + StartRow, PriorityColumn].Value?.ToString();
-                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    Province Province = new Province();
-                    Province.Name = NameValue;
-                    Province.Priority = long.TryParse(PriorityValue, out long Priority) ? Priority : 0;
-                    Provinces.Add(Province);
-                }
-            }
-
-            if (!await ProvinceValidator.Import(Provinces))
-                return Provinces;
-
             try
             {
                 await UOW.Begin();
+                #region merge province
+                List<Province> dbProvinces = await UOW.ProvinceRepository.List(new ProvinceFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = ProvinceSelect.Id | ProvinceSelect.Code,
+                });
+                foreach (Province province in Provinces)
+                {
+                    long provinceId = dbProvinces.Where(x => x.Code == province.Code)
+                        .Select(x => x.Id).FirstOrDefault();
+                    province.Id = provinceId;
+                }
                 await UOW.ProvinceRepository.BulkMerge(Provinces);
+                dbProvinces = await UOW.ProvinceRepository.List(new ProvinceFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = ProvinceSelect.ALL,
+                });
+                foreach (Province province in Provinces)
+                {
+                    long provinceId = dbProvinces.Where(x => x.Code == province.Code)
+                        .Select(x => x.Id).FirstOrDefault();
+                    province.Id = provinceId;
+                }
+                #endregion
+
+                #region merge District
+                List<District> dbDistricts = await UOW.DistrictRepository.List(new DistrictFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = DistrictSelect.ALL,
+                });
+                foreach (Province province in Provinces)
+                {
+                    foreach (District district in province.Districts)
+                    {
+                        district.ProvinceId = province.Id;
+                        long districtId = dbDistricts
+                            .Where(x => x.Code == district.Code && x.ProvinceId == province.Id)
+                            .Select(x => x.Id)
+                            .FirstOrDefault();
+                        district.Id = districtId;
+                    }
+                }
+                List<District> Districts = Provinces.SelectMany(x => x.Districts).ToList();
+                await UOW.DistrictRepository.BulkMerge(Districts);
+                dbDistricts = await UOW.DistrictRepository.List(new DistrictFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = DistrictSelect.ALL,
+                });
+                foreach (District district in Districts)
+                {
+                    long districtId = dbDistricts
+                        .Where(x => x.Code == district.Code && x.ProvinceId == district.ProvinceId)
+                        .Select(x => x.Id).FirstOrDefault();
+                    district.Id = districtId;
+                }
+                #endregion
+
+                #region merge Ward
+                List<Ward> dbWards = await UOW.WardRepository.List(new WardFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = WardSelect.ALL,
+                });
+                foreach (District district in Districts)
+                {
+                    foreach (Ward ward in district.Wards)
+                    {
+                        ward.DistrictId = district.Id;
+                        long wardId = dbWards
+                            .Where(x => x.Code == ward.Code && x.DistrictId == district.Id)
+                            .Select(x => x.Id)
+                            .FirstOrDefault();
+                        ward.Id = wardId;
+                    }
+                }
+                List<Ward> Wards = Districts.SelectMany(x => x.Wards).ToList();
+                await UOW.WardRepository.BulkMerge(Wards);
+                dbWards = await UOW.WardRepository.List(new WardFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = WardSelect.ALL,
+                });
+                foreach (Ward ward in Wards)
+                {
+                    long wardId = dbDistricts
+                        .Where(x => x.Code == ward.Code && x.ProvinceId == ward.DistrictId)
+                        .Select(x => x.Id).FirstOrDefault();
+                    ward.Id = wardId;
+                }
+                #endregion
+
                 await UOW.Commit();
 
-                await Logging.CreateAuditLog(Provinces, new { }, nameof(LocationService));
+                await Logging.CreateAuditLog(Provinces, new { }, nameof(ProvinceService));
                 return Provinces;
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(LocationService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
