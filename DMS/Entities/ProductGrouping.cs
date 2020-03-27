@@ -15,8 +15,6 @@ namespace DMS.Entities
         public long? ParentId { get; set; }
         public string Path { get; set; }
         public long Level { get; set; }
-        public long StatusId { get; set; }
-        public Status Status { get; set; }
         public ProductGrouping Parent { get; set; }
         public List<ProductProductGroupingMapping> ProductProductGroupingMappings { get; set; }
 
@@ -39,8 +37,6 @@ namespace DMS.Entities
         public IdFilter ParentId { get; set; }
         public StringFilter Path { get; set; }
         public LongFilter Level { get; set; }
-        public IdFilter StatusId { get; set; }
-        
         public List<ProductGroupingFilter> OrFilter { get; set; }
         public ProductGroupingOrder OrderBy { get; set; }
         public ProductGroupingSelect Selects { get; set; }

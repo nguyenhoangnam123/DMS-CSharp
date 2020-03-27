@@ -613,7 +613,6 @@ namespace DMS.Rpc.product
             ProductGroupingFilter.OrderType = OrderType.ASC;
             ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
                 | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
-            ProductGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
             List<Product_ProductGroupingDTO> Product_ProductGroupingDTOs = ProductGroupings
@@ -678,7 +677,6 @@ namespace DMS.Rpc.product
             ProductGroupingFilter.ParentId = Product_ProductGroupingFilterDTO.ParentId;
             ProductGroupingFilter.Path = Product_ProductGroupingFilterDTO.Path;
             ProductGroupingFilter.Description = Product_ProductGroupingFilterDTO.Description;
-            ProductGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             return await ProductGroupingService.Count(ProductGroupingFilter);
         }
 
@@ -697,7 +695,6 @@ namespace DMS.Rpc.product
             ProductGroupingFilter.ParentId = Product_ProductGroupingFilterDTO.ParentId;
             ProductGroupingFilter.Path = Product_ProductGroupingFilterDTO.Path;
             ProductGroupingFilter.Description = Product_ProductGroupingFilterDTO.Description;
-            ProductGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
             List<Product_ProductGroupingDTO> Product_ProductGroupingDTOs = ProductGroupings

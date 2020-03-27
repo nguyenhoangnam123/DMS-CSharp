@@ -280,7 +280,6 @@ namespace DMS.Repositories
                 ProductGroupingDAO.ParentId = ProductGrouping.ParentId;
                 ProductGroupingDAO.Path = "";
                 ProductGroupingDAO.Level = 1;
-                ProductGroupingDAO.StatusId = ProductGrouping.StatusId;
                 ProductGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
                 ProductGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
                 ProductGroupingDAOs.Add(ProductGroupingDAO);

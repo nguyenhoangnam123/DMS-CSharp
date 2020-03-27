@@ -476,8 +476,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(3000);
 
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Parent)
