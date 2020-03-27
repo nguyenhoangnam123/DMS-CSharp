@@ -9,9 +9,11 @@ namespace DMS.Entities
     public class Ward : DataEntity, IEquatable<Ward>
     {
         public long Id { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public long? Priority { get; set; }
         public long DistrictId { get; set; }
+        public string DistrictCode { get; set; }
         public long StatusId { get; set; }
         public District District { get; set; }
         public Status Status { get; set; }

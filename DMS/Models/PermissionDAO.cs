@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DMS.Models
 {
@@ -11,6 +12,7 @@ namespace DMS.Models
         }
 
         public long Id { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public long RoleId { get; set; }
         public long MenuId { get; set; }

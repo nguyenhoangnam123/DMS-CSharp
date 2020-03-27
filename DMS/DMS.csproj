@@ -22,4 +22,8 @@
 	<PackageReference Include="Winton.Extensions.Configuration.Consul" Version="3.0.2" />
 	<PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="3.0.56" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="FileImport\" />
+  </ItemGroup>
 </Project>

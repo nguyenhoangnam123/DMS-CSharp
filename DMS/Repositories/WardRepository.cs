@@ -19,6 +19,7 @@ namespace DMS.Repositories
         Task<bool> Update(Ward Ward);
         Task<bool> Delete(Ward Ward);
         Task<bool> BulkMerge(List<Ward> Wards);
+         Task<bool> BulkMergeImport(List<Ward> Wards);
         Task<bool> BulkDelete(List<Ward> Wards);
     }
     public class WardRepository : IWardRepository
@@ -198,6 +199,7 @@ namespace DMS.Repositories
         {
             WardDAO WardDAO = new WardDAO();
             WardDAO.Id = Ward.Id;
+            WardDAO.Code = Ward.Code;
             WardDAO.Name = Ward.Name;
             WardDAO.Priority = Ward.Priority;
             WardDAO.DistrictId = Ward.DistrictId;
@@ -217,6 +219,7 @@ namespace DMS.Repositories
             if (WardDAO == null)
                 return false;
             WardDAO.Id = Ward.Id;
+            WardDAO.Code = Ward.Code;
             WardDAO.Name = Ward.Name;
             WardDAO.Priority = Ward.Priority;
             WardDAO.DistrictId = Ward.DistrictId;
@@ -240,6 +243,7 @@ namespace DMS.Repositories
             {
                 WardDAO WardDAO = new WardDAO();
                 WardDAO.Id = Ward.Id;
+                WardDAO.Code = Ward.Code;
                 WardDAO.Name = Ward.Name;
                 WardDAO.Priority = Ward.Priority;
                 WardDAO.DistrictId = Ward.DistrictId;
@@ -251,7 +255,40 @@ namespace DMS.Repositories
             await DataContext.BulkMergeAsync(WardDAOs);
             return true;
         }
+        public async Task<bool> BulkMergeImport(List<Ward> Wards)
+        {
+            List<WardDAO> WardDAOs = new List<WardDAO>();
+            foreach (Ward Ward in Wards)
+            {
+                WardDAO WardDAO = new WardDAO();
+                if (!checkExistByCode(Ward.Code))
+                {
+                    WardDAO.Id = Ward.Id;
+                    WardDAO.Code = Ward.Code;
+                    WardDAO.Name = Ward.Name;
+                    WardDAO.Priority = Ward.Priority;
+                    WardDAO.StatusId = Ward.StatusId;
+                    WardDAO.CreatedAt = StaticParams.DateTimeNow;
+                    WardDAO.UpdatedAt = StaticParams.DateTimeNow;
+                    WardDAO.DistrictId = DataContext.District.FirstOrDefault(p => p.Code == Ward.DistrictCode).Id;
+                }
+                else
+                {
+                    WardDAO = DataContext.Ward.Where(p => p.Code == Ward.Code).FirstOrDefault();
+                    WardDAO.Name = Ward.Name;
+                    WardDAO.UpdatedAt = StaticParams.DateTimeNow;
+                }
+                WardDAOs.Add(WardDAO);
+            }
+            await DataContext.BulkMergeAsync(WardDAOs);
+            return true;
 
+        }
+        private bool checkExistByCode(string code)
+        {
+
+            return DataContext.Ward.Where(p => p.Code == code).Any();
+        }
         public async Task<bool> BulkDelete(List<Ward> Wards)
         {
             List<long> Ids = Wards.Select(x => x.Id).ToList();

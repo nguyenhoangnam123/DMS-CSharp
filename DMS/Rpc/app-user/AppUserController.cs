@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Common;
+using DMS.Entities;
+using DMS.Services.MAppUser;
+using DMS.Services.MRole;
+using System.Text;
+using System.IO;
+using OfficeOpenXml;
+using DMS.Helpers;
+using DMS.Services.MUserStatus;
 using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DMS.Entities;
-using DMS.Services.MAppUser;
-using DMS.Services.MUserStatus;
-using DMS.Services.MRole;
+using Microsoft.AspNetCore.Mvc; 
 using DMS.Services.MSexService;
 using DMS.Enums;
 
@@ -105,6 +109,7 @@ namespace DMS.Rpc.app_user
                 return Forbid();
 
             AppUser AppUser = await AppUserService.Get(AppUser_AppUserDTO.Id);
+            //AppUser AppUser = await AppUserService.Get(3);
             return new AppUser_AppUserDTO(AppUser);
         }
 
@@ -167,7 +172,7 @@ namespace DMS.Rpc.app_user
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,

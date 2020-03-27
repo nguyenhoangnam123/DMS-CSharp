@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Services.MLocationService;
 using DMS.Services.MProvince;
 using DMS.Services.MStatus;
 using Helpers;
@@ -23,6 +24,7 @@ namespace DMS.Rpc.province
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
+        public const string ImportLocation = Default + "/import-location";
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
 
@@ -40,16 +42,19 @@ namespace DMS.Rpc.province
     {
         private IStatusService StatusService;
         private IProvinceService ProvinceService;
+        private ILocationService LocationService;
         private ICurrentContext CurrentContext;
         public ProvinceController(
             IStatusService StatusService,
             IProvinceService ProvinceService,
-            ICurrentContext CurrentContext
+            ICurrentContext CurrentContext,
+            ILocationService LocationService
         )
         {
             this.StatusService = StatusService;
             this.ProvinceService = ProvinceService;
             this.CurrentContext = CurrentContext;
+            this.LocationService = LocationService; 
         }
 
         [Route(ProvinceRoute.Count), HttpPost]
@@ -161,6 +166,21 @@ namespace DMS.Rpc.province
             List<Province_ProvinceDTO> Province_ProvinceDTOs = Provinces
                 .Select(c => new Province_ProvinceDTO(c)).ToList();
             return Province_ProvinceDTOs;
+        }
+        [Route(ProvinceRoute.ImportLocation), HttpPost]
+        public async Task<ActionResult<List<LocationImport>>> ImportLocation(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DataFile DataFile = new DataFile
+            {
+                Name = file.FileName,
+                Content = file.OpenReadStream(),
+            };
+
+            List<LocationImport> LocationImports = await LocationService.ImportAll(DataFile); 
+            return LocationImports;
         }
 
         [Route(ProvinceRoute.Export), HttpPost]

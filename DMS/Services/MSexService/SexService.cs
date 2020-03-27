@@ -11,6 +11,7 @@ namespace DMS.Services.MSexService
 {
     public interface ISexService : IServiceScoped
     {
+        Task<Sex> Get(long Id);
         Task<int> Count(SexFilter SexFilter);
         Task<List<Sex>> List(SexFilter SexFilter);
     }
@@ -67,5 +68,14 @@ namespace DMS.Services.MSexService
                     throw new MessageException(ex.InnerException);
             }
         }
+        public async Task<Sex> Get(long Id)
+        {
+            Sex Sex = await UOW.SexRepository.Get(Id);
+            if (Sex == null)
+                return null;
+            return Sex;
+        }
+
+
     }
 }
