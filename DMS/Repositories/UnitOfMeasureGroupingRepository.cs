@@ -312,6 +312,5 @@ namespace DMS.Repositories
                 await DataContext.UnitOfMeasureGroupingContent.BulkMergeAsync(UnitOfMeasureGroupingContentDAOs);
             }
         }
-
     }
 }
