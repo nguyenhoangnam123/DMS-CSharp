@@ -298,7 +298,6 @@ namespace DMS.Rpc.product_grouping
             ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code 
                 | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
  
-            ProductGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
             List<ProductGrouping_ProductGroupingDTO> ProductGrouping_ProductGroupingDTOs = ProductGroupings
                 .Select(x => new ProductGrouping_ProductGroupingDTO(x)).ToList();
