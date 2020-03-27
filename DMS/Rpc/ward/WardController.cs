@@ -224,6 +224,7 @@ namespace DMS.Rpc.ward
         {
             Ward Ward = new Ward();
             Ward.Id = Ward_WardDTO.Id;
+            Ward.Code = Ward_WardDTO.Code;
             Ward.Name = Ward_WardDTO.Name;
             Ward.Priority = Ward_WardDTO.Priority;
             Ward.DistrictId = Ward_WardDTO.DistrictId;
@@ -256,6 +257,7 @@ namespace DMS.Rpc.ward
             WardFilter.OrderType = Ward_WardFilterDTO.OrderType;
 
             WardFilter.Id = Ward_WardFilterDTO.Id;
+            WardFilter.Code = Ward_WardFilterDTO.Code;
             WardFilter.Name = Ward_WardFilterDTO.Name;
             WardFilter.Priority = Ward_WardFilterDTO.Priority;
             WardFilter.DistrictId = Ward_WardFilterDTO.DistrictId;

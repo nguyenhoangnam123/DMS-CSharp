@@ -282,6 +282,7 @@ namespace DMS.Rpc.province
         {
             Province Province = new Province();
             Province.Id = Province_ProvinceDTO.Id;
+            Province.Code = Province_ProvinceDTO.Code;
             Province.Name = Province_ProvinceDTO.Name;
             Province.Priority = Province_ProvinceDTO.Priority;
             Province.StatusId = Province_ProvinceDTO.StatusId;
@@ -305,6 +306,7 @@ namespace DMS.Rpc.province
             ProvinceFilter.OrderType = Province_ProvinceFilterDTO.OrderType;
 
             ProvinceFilter.Id = Province_ProvinceFilterDTO.Id;
+            ProvinceFilter.Code = Province_ProvinceFilterDTO.Code;
             ProvinceFilter.Name = Province_ProvinceFilterDTO.Name;
             ProvinceFilter.Priority = Province_ProvinceFilterDTO.Priority;
             ProvinceFilter.StatusId = Province_ProvinceFilterDTO.StatusId;

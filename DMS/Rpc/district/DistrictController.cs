@@ -224,6 +224,7 @@ namespace DMS.Rpc.district
         {
             District District = new District();
             District.Id = District_DistrictDTO.Id;
+            District.Code = District_DistrictDTO.Code;
             District.Name = District_DistrictDTO.Name;
             District.Priority = District_DistrictDTO.Priority;
             District.ProvinceId = District_DistrictDTO.ProvinceId;
@@ -255,6 +256,7 @@ namespace DMS.Rpc.district
             DistrictFilter.OrderType = District_DistrictFilterDTO.OrderType;
 
             DistrictFilter.Id = District_DistrictFilterDTO.Id;
+            DistrictFilter.Code = District_DistrictFilterDTO.Code;
             DistrictFilter.Name = District_DistrictFilterDTO.Name;
             DistrictFilter.Priority = District_DistrictFilterDTO.Priority;
             DistrictFilter.ProvinceId = District_DistrictFilterDTO.ProvinceId;
@@ -270,10 +272,9 @@ namespace DMS.Rpc.district
             ProvinceFilter.Take = 20;
             ProvinceFilter.OrderBy = ProvinceOrder.Id;
             ProvinceFilter.OrderType = OrderType.ASC;
-            ProvinceFilter.Selects = ProvinceSelect.ALL;
+            ProvinceFilter.Selects = ProvinceSelect.Id | ProvinceSelect.Name;
             ProvinceFilter.Id = District_ProvinceFilterDTO.Id;
             ProvinceFilter.Name = District_ProvinceFilterDTO.Name;
-            ProvinceFilter.Priority = District_ProvinceFilterDTO.Priority;
             ProvinceFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Province> Provinces = await ProvinceService.List(ProvinceFilter);

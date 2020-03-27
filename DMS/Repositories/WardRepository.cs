@@ -180,6 +180,7 @@ namespace DMS.Repositories
             Ward Ward = await DataContext.Ward.Where(x => x.Id == Id).Select(x => new Ward()
             {
                 Id = x.Id,
+                Code = x.Code,
                 Name = x.Name,
                 Priority = x.Priority,
                 DistrictId = x.DistrictId,
