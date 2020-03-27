@@ -297,8 +297,8 @@ namespace DMS.Rpc.organization
                     ProvinceId = x.ProvinceId,
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
-                    Address1 = x.Address1,
-                    Address2 = x.Address2,
+                    Address = x.Address,
+                    DeliveryAddress = x.DeliveryAddress,
                     Latitude = x.Latitude,
                     Longitude = x.Longitude,
                     OwnerName = x.OwnerName,
@@ -326,8 +326,8 @@ namespace DMS.Rpc.organization
                         ProvinceId = x.ParentStore.ProvinceId,
                         DistrictId = x.ParentStore.DistrictId,
                         WardId = x.ParentStore.WardId,
-                        Address1 = x.ParentStore.Address1,
-                        Address2 = x.ParentStore.Address2,
+                        Address = x.ParentStore.Address,
+                        DeliveryAddress = x.ParentStore.DeliveryAddress,
                         Latitude = x.ParentStore.Latitude,
                         Longitude = x.ParentStore.Longitude,
                         OwnerName = x.ParentStore.OwnerName,
@@ -439,8 +439,8 @@ namespace DMS.Rpc.organization
             StoreFilter.ProvinceId = Organization_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Organization_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Organization_StoreFilterDTO.WardId;
-            StoreFilter.Address1 = Organization_StoreFilterDTO.Address1;
-            StoreFilter.Address2 = Organization_StoreFilterDTO.Address2;
+            StoreFilter.Address = Organization_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = Organization_StoreFilterDTO.DeliveryAddress;
             StoreFilter.Latitude = Organization_StoreFilterDTO.Latitude;
             StoreFilter.Longitude = Organization_StoreFilterDTO.Longitude;
             StoreFilter.OwnerName = Organization_StoreFilterDTO.OwnerName;

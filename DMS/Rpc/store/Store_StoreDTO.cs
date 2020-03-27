@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.store
 {
@@ -16,8 +17,8 @@ namespace DMS.Rpc.store
         public long ProvinceId { get; set; }
         public long DistrictId { get; set; }
         public long WardId { get; set; }
-        public string Address1 { get; set; }
-        public string Address2 { get; set; }
+        public string Address { get; set; }
+        public string DeliveryAddress { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
         public string OwnerName { get; set; }
@@ -32,6 +33,7 @@ namespace DMS.Rpc.store
         public Store_StoreGroupingDTO StoreGrouping { get; set; }
         public Store_StoreTypeDTO StoreType { get; set; }
         public Store_WardDTO Ward { get; set; }
+        public List<StoreImageMapping> StoreImageMappings { get; set; }
         public Store_StoreDTO() { }
         public Store_StoreDTO(Store Store)
         {
@@ -46,8 +48,8 @@ namespace DMS.Rpc.store
             this.ProvinceId = Store.ProvinceId;
             this.DistrictId = Store.DistrictId;
             this.WardId = Store.WardId;
-            this.Address1 = Store.Address1;
-            this.Address2 = Store.Address2;
+            this.Address = Store.Address;
+            this.DeliveryAddress = Store.DeliveryAddress;
             this.Latitude = Store.Latitude;
             this.Longitude = Store.Longitude;
             this.OwnerName = Store.OwnerName;
@@ -78,8 +80,8 @@ namespace DMS.Rpc.store
         public IdFilter ProvinceId { get; set; }
         public IdFilter DistrictId { get; set; }
         public IdFilter WardId { get; set; }
-        public StringFilter Address1 { get; set; }
-        public StringFilter Address2 { get; set; }
+        public StringFilter Address { get; set; }
+        public StringFilter DeliveryAddress { get; set; }
         public DecimalFilter Latitude { get; set; }
         public DecimalFilter Longitude { get; set; }
         public StringFilter OwnerName { get; set; }

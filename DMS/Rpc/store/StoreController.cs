@@ -34,6 +34,7 @@ namespace DMS.Rpc.store
 
         public const string SingleListDistrict = Default + "/single-list-district";
         public const string SingleListOrganization = Default + "/single-list-organization";
+        public const string SingleListParentStore = Default + "/single-list-parent-store";
         public const string SingleListProvince = Default + "/single-list-province";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
@@ -52,8 +53,8 @@ namespace DMS.Rpc.store
             { nameof(StoreFilter.ProvinceId), FieldType.ID },
             { nameof(StoreFilter.DistrictId), FieldType.ID },
             { nameof(StoreFilter.WardId), FieldType.ID },
-            { nameof(StoreFilter.Address1), FieldType.STRING },
-            { nameof(StoreFilter.Address2), FieldType.STRING },
+            { nameof(StoreFilter.Address), FieldType.STRING },
+            { nameof(StoreFilter.DeliveryAddress), FieldType.STRING },
             { nameof(StoreFilter.Latitude), FieldType.DECIMAL },
             { nameof(StoreFilter.Longitude), FieldType.DECIMAL },
             { nameof(StoreFilter.OwnerName), FieldType.STRING },
@@ -272,8 +273,8 @@ namespace DMS.Rpc.store
             Store.ProvinceId = Store_StoreDTO.ProvinceId;
             Store.DistrictId = Store_StoreDTO.DistrictId;
             Store.WardId = Store_StoreDTO.WardId;
-            Store.Address1 = Store_StoreDTO.Address1;
-            Store.Address2 = Store_StoreDTO.Address2;
+            Store.Address = Store_StoreDTO.Address;
+            Store.DeliveryAddress = Store_StoreDTO.DeliveryAddress;
             Store.Latitude = Store_StoreDTO.Latitude;
             Store.Longitude = Store_StoreDTO.Longitude;
             Store.OwnerName = Store_StoreDTO.OwnerName;
@@ -315,8 +316,8 @@ namespace DMS.Rpc.store
                 ProvinceId = Store_StoreDTO.ParentStore.ProvinceId,
                 DistrictId = Store_StoreDTO.ParentStore.DistrictId,
                 WardId = Store_StoreDTO.ParentStore.WardId,
-                Address1 = Store_StoreDTO.ParentStore.Address1,
-                Address2 = Store_StoreDTO.ParentStore.Address2,
+                Address = Store_StoreDTO.ParentStore.Address,
+                DeliveryAddress = Store_StoreDTO.ParentStore.DeliveryAddress,
                 Latitude = Store_StoreDTO.ParentStore.Latitude,
                 Longitude = Store_StoreDTO.ParentStore.Longitude,
                 OwnerName = Store_StoreDTO.ParentStore.OwnerName,
@@ -362,6 +363,18 @@ namespace DMS.Rpc.store
                 DistrictId = Store_StoreDTO.Ward.DistrictId,
                 StatusId = Store_StoreDTO.Ward.StatusId,
             };
+            Store.StoreImageMappings = Store_StoreDTO.StoreImageMappings?
+                .Select(x => new StoreImageMapping
+                {
+                    StoreId = x.StoreId,
+                    ImageId = x.ImageId,
+                    Image = new Image
+                    {
+                        Id = x.Image.Id,
+                        Name = x.Image.Name,
+                        Url = x.Image.Url,
+                    }
+                }).ToList();
             Store.BaseLanguage = CurrentContext.Language;
             return Store;
         }
@@ -386,8 +399,8 @@ namespace DMS.Rpc.store
             StoreFilter.ProvinceId = Store_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Store_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Store_StoreFilterDTO.WardId;
-            StoreFilter.Address1 = Store_StoreFilterDTO.Address1;
-            StoreFilter.Address2 = Store_StoreFilterDTO.Address2;
+            StoreFilter.Address = Store_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = Store_StoreFilterDTO.DeliveryAddress;
             StoreFilter.Latitude = Store_StoreFilterDTO.Latitude;
             StoreFilter.Longitude = Store_StoreFilterDTO.Longitude;
             StoreFilter.OwnerName = Store_StoreFilterDTO.OwnerName;
@@ -443,6 +456,40 @@ namespace DMS.Rpc.store
                 .Select(x => new Store_OrganizationDTO(x)).ToList();
             return Store_OrganizationDTOs;
         }
+        [Route(StoreRoute.SingleListParentStore), HttpPost]
+        public async Task<List<Store_StoreDTO>> SingleListParentStore([FromBody] Store_StoreFilterDTO Store_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = 0;
+            StoreFilter.Take = 20;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = Store_StoreFilterDTO.Id;
+            StoreFilter.Code = Store_StoreFilterDTO.Code;
+            StoreFilter.Name = Store_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = Store_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = Store_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = Store_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = Store_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.Telephone = Store_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = Store_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = Store_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = Store_StoreFilterDTO.WardId;
+            StoreFilter.Address = Store_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = Store_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = Store_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = Store_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = Store_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = Store_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = Store_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<Store_StoreDTO> Store_StoreDTOs = Stores
+                .Select(x => new Store_StoreDTO(x)).ToList();
+            return Store_StoreDTOs;
+        }
         [Route(StoreRoute.SingleListProvince), HttpPost]
         public async Task<List<Store_ProvinceDTO>> SingleListProvince([FromBody] Store_ProvinceFilterDTO Store_ProvinceFilterDTO)
         {
@@ -455,7 +502,7 @@ namespace DMS.Rpc.store
             ProvinceFilter.Id = Store_ProvinceFilterDTO.Id;
             ProvinceFilter.Name = Store_ProvinceFilterDTO.Name;
             ProvinceFilter.Priority = Store_ProvinceFilterDTO.Priority;
-            ProvinceFilter.StatusId = Store_ProvinceFilterDTO.StatusId;
+            ProvinceFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
             List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
             List<Store_ProvinceDTO> Store_ProvinceDTOs = Provinces
@@ -513,7 +560,7 @@ namespace DMS.Rpc.store
             StoreTypeFilter.Id = Store_StoreTypeFilterDTO.Id;
             StoreTypeFilter.Code = Store_StoreTypeFilterDTO.Code;
             StoreTypeFilter.Name = Store_StoreTypeFilterDTO.Name;
-            StoreTypeFilter.StatusId = Store_StoreTypeFilterDTO.StatusId;
+            StoreTypeFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
             List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
             List<Store_StoreTypeDTO> Store_StoreTypeDTOs = StoreTypes
@@ -533,7 +580,7 @@ namespace DMS.Rpc.store
             WardFilter.Name = Store_WardFilterDTO.Name;
             WardFilter.Priority = Store_WardFilterDTO.Priority;
             WardFilter.DistrictId = Store_WardFilterDTO.DistrictId;
-            WardFilter.StatusId = Store_WardFilterDTO.StatusId;
+            WardFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
             List<Ward> Wards = await WardService.List(WardFilter);
             List<Store_WardDTO> Store_WardDTOs = Wards
