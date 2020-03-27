@@ -34,6 +34,8 @@ namespace DMS.Repositories
                 return query.Where(q => false);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
+            if (filter.Code != null)
+                query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.RoleId != null)
@@ -56,6 +58,8 @@ namespace DMS.Repositories
                 IQueryable<PermissionDAO> queryable = query;
                 if (filter.Id != null)
                     queryable = queryable.Where(q => q.Id, filter.Id);
+                if (filter.Code != null)
+                    queryable = queryable.Where(q => q.Code, filter.Code);
                 if (filter.Name != null)
                     queryable = queryable.Where(q => q.Name, filter.Name);
                 if (filter.RoleId != null)
@@ -79,6 +83,9 @@ namespace DMS.Repositories
                         case PermissionOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
+                        case PermissionOrder.Code:
+                            query = query.OrderBy(q => q.Code);
+                            break;
                         case PermissionOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
@@ -98,6 +105,9 @@ namespace DMS.Repositories
                     {
                         case PermissionOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
+                            break;
+                        case PermissionOrder.Code:
+                            query = query.OrderByDescending(q => q.Code);
                             break;
                         case PermissionOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
@@ -123,6 +133,7 @@ namespace DMS.Repositories
             List<Permission> Permissions = await query.Select(q => new Permission()
             {
                 Id = filter.Selects.Contains(PermissionSelect.Id) ? q.Id : default(long),
+                Code = filter.Selects.Contains(PermissionSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(PermissionSelect.Name) ? q.Name : default(string),
                 RoleId = filter.Selects.Contains(PermissionSelect.Role) ? q.RoleId : default(long),
                 MenuId = filter.Selects.Contains(PermissionSelect.Menu) ? q.MenuId : default(long),
@@ -130,6 +141,7 @@ namespace DMS.Repositories
                 Menu = filter.Selects.Contains(PermissionSelect.Menu) && q.Menu != null ? new Menu
                 {
                     Id = q.Menu.Id,
+                    Code = q.Menu.Code,
                     Name = q.Menu.Name,
                     Path = q.Menu.Path,
                     IsDeleted = q.Menu.IsDeleted,
@@ -139,13 +151,7 @@ namespace DMS.Repositories
                     Id = q.Role.Id,
                     Code = q.Role.Code,
                     Name = q.Role.Name,
-                    StatusId = q.Role.StatusId,
-                } : null,
-                Status = filter.Selects.Contains(PermissionSelect.Status) && q.Status != null ? new Status
-                {
-                    Id = q.Status.Id,
-                    Code = q.Status.Code,
-                    Name = q.Status.Name,
+                    StatusId = q.StatusId
                 } : null,
             }).ToListAsync();
             return Permissions;
@@ -173,13 +179,14 @@ namespace DMS.Repositories
             Permission Permission = await DataContext.Permission.Where(x => x.Id == Id).Select(x => new Permission()
             {
                 Id = x.Id,
+                Code = x.Code,
                 Name = x.Name,
                 RoleId = x.RoleId,
                 MenuId = x.MenuId,
-                StatusId = x.StatusId,
                 Menu = x.Menu == null ? null : new Menu
                 {
                     Id = x.Menu.Id,
+                    Code = x.Menu.Code,
                     Name = x.Menu.Name,
                     Path = x.Menu.Path,
                     IsDeleted = x.Menu.IsDeleted,
@@ -190,12 +197,6 @@ namespace DMS.Repositories
                     Code = x.Role.Code,
                     Name = x.Role.Name,
                     StatusId = x.Role.StatusId,
-                },
-                Status = x.Status == null ? null : new Status
-                {
-                    Id = x.Status.Id,
-                    Code = x.Status.Code,
-                    Name = x.Status.Name,
                 },
             }).FirstOrDefaultAsync();
 
@@ -239,6 +240,7 @@ namespace DMS.Repositories
         {
             PermissionDAO PermissionDAO = new PermissionDAO();
             PermissionDAO.Id = Permission.Id;
+            PermissionDAO.Code = Permission.Code;
             PermissionDAO.Name = Permission.Name;
             PermissionDAO.RoleId = Permission.RoleId;
             PermissionDAO.MenuId = Permission.MenuId;
@@ -256,6 +258,7 @@ namespace DMS.Repositories
             if (PermissionDAO == null)
                 return false;
             PermissionDAO.Id = Permission.Id;
+            PermissionDAO.Code = Permission.Code;
             PermissionDAO.Name = Permission.Name;
             PermissionDAO.RoleId = Permission.RoleId;
             PermissionDAO.MenuId = Permission.MenuId;
@@ -278,6 +281,7 @@ namespace DMS.Repositories
             {
                 PermissionDAO PermissionDAO = new PermissionDAO();
                 PermissionDAO.Id = Permission.Id;
+                PermissionDAO.Code = Permission.Code;
                 PermissionDAO.Name = Permission.Name;
                 PermissionDAO.RoleId = Permission.RoleId;
                 PermissionDAO.MenuId = Permission.MenuId;
@@ -307,7 +311,7 @@ namespace DMS.Repositories
                 foreach (PermissionFieldMapping PermissionFieldMapping in Permission.PermissionFieldMappings)
                 {
                     PermissionFieldMappingDAO PermissionFieldMappingDAO = new PermissionFieldMappingDAO();
-                    PermissionFieldMappingDAO.PermissionId = Permission.Id;
+                    PermissionFieldMappingDAO.PermissionId = PermissionFieldMapping.PermissionId;
                     PermissionFieldMappingDAO.FieldId = PermissionFieldMapping.FieldId;
                     PermissionFieldMappingDAO.Value = PermissionFieldMapping.Value;
                     PermissionFieldMappingDAOs.Add(PermissionFieldMappingDAO);
@@ -323,7 +327,7 @@ namespace DMS.Repositories
                 foreach (PermissionPageMapping PermissionPageMapping in Permission.PermissionPageMappings)
                 {
                     PermissionPageMappingDAO PermissionPageMappingDAO = new PermissionPageMappingDAO();
-                    PermissionPageMappingDAO.PermissionId = Permission.Id;
+                    PermissionPageMappingDAO.PermissionId = PermissionPageMapping.PermissionId;
                     PermissionPageMappingDAO.PageId = PermissionPageMapping.PageId;
                     PermissionPageMappingDAOs.Add(PermissionPageMappingDAO);
                 }

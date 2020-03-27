@@ -18,13 +18,13 @@ namespace DMS.Models
         public string Address { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public long UserStatusId { get; set; }
+        public long StatusId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
         public virtual SexDAO Sex { get; set; }
-        public virtual UserStatusDAO UserStatus { get; set; }
+        public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
     }
 }

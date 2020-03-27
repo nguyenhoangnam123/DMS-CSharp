@@ -7,7 +7,7 @@ namespace DMS.Rpc.permission
     {
 
         public long Id { get; set; }
-
+        public string Code { get; set; }
         public string Name { get; set; }
 
         public string Path { get; set; }
@@ -20,7 +20,7 @@ namespace DMS.Rpc.permission
         {
 
             this.Id = Menu.Id;
-
+            this.Code = Menu.Code;
             this.Name = Menu.Name;
 
             this.Path = Menu.Path;
@@ -34,7 +34,7 @@ namespace DMS.Rpc.permission
     {
 
         public IdFilter Id { get; set; }
-
+        public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
 
         public StringFilter Path { get; set; }

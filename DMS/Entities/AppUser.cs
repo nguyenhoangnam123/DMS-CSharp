@@ -13,12 +13,15 @@ namespace DMS.Entities
         public string Password { get; set; }
         public string DisplayName { get; set; }
         public string Address { get; set; }
-        public long SexId { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public long UserStatusId { get; set; }
+        public string Department { get; set; }
+        public long? OrganizationId { get; set; }
+        public long SexId { get; set; }
+        public long StatusId { get; set; }
+        public Organization Organization { get; set; }
         public Sex Sex { get; set; }
-        public UserStatus UserStatus { get; set; }
+        public Status Status { get; set; }
         public List<AppUserRoleMapping> AppUserRoleMappings { get; set; }
 
         public bool Equals(AppUser other)
@@ -37,11 +40,13 @@ namespace DMS.Entities
         public StringFilter Username { get; set; }
         public StringFilter Password { get; set; }
         public StringFilter DisplayName { get; set; }
+        public StringFilter Address { get; set; }
         public StringFilter Email { get; set; }
         public StringFilter Phone { get; set; }
-        public StringFilter Address { get; set; }
+        public StringFilter Department { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public IdFilter SexId { get; set; }
-        public IdFilter UserStatusId { get; set; }
+        public IdFilter StatusId { get; set; }
         public List<AppUserFilter> OrFilter { get; set; }
         public AppUserOrder OrderBy { get; set; }
         public AppUserSelect Selects { get; set; }
@@ -54,9 +59,13 @@ namespace DMS.Entities
         Username = 1,
         Password = 2,
         DisplayName = 3,
-        Email = 4,
-        Phone = 5,
-        UserStatus = 6,
+        Address = 4,
+        Email = 5,
+        Phone = 6,
+        Department = 7,
+        Organization = 8,
+        Sex = 9,
+        Status = 10,
     }
 
     [Flags]
@@ -67,8 +76,12 @@ namespace DMS.Entities
         Username = E._1,
         Password = E._2,
         DisplayName = E._3,
-        Email = E._4,
-        Phone = E._5,
-        UserStatus = E._6,
+        Address = E._4,
+        Email = E._5,
+        Phone = E._6,
+        Department = E._7,
+        Organization = E._8,
+        Sex = E._9,
+        Status = E._10,
     }
 }

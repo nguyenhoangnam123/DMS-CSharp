@@ -15,24 +15,31 @@ namespace DMS.Rpc.app_user
         public string Address { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public long UserStatusId { get; set; }
+        public string Department { get; set; }
+        public long? OrganizationId { get; set; }
         public long SexId { get; set; }
-        public AppUser_UserStatusDTO UserStatus { get; set; }
+        public long StatusId { get; set; }
+        public AppUser_OrganizationDTO Organization { get; set; }
         public AppUser_SexDTO Sex { get; set; }
+        public AppUser_StatusDTO Status { get; set; }
         public List<AppUser_AppUserRoleMappingDTO> AppUserRoleMappings { get; set; }
-        public AppUser_AppUserDTO() {}
+        public AppUser_AppUserDTO() { }
         public AppUser_AppUserDTO(AppUser AppUser)
         {
             this.Id = AppUser.Id;
             this.Username = AppUser.Username;
             this.Password = AppUser.Password;
             this.DisplayName = AppUser.DisplayName;
+            this.Address = AppUser.Address;
             this.Email = AppUser.Email;
             this.Phone = AppUser.Phone;
-            this.UserStatusId = AppUser.UserStatusId;
+            this.Department = AppUser.Department;
+            this.OrganizationId = AppUser.OrganizationId;
             this.SexId = AppUser.SexId;
-            this.UserStatus = AppUser.UserStatus == null ? null : new AppUser_UserStatusDTO(AppUser.UserStatus);
+            this.StatusId = AppUser.StatusId;
+            this.Organization = AppUser.Organization == null ? null : new AppUser_OrganizationDTO(AppUser.Organization);
             this.Sex = AppUser.Sex == null ? null : new AppUser_SexDTO(AppUser.Sex);
+            this.Status = AppUser.Status == null ? null : new AppUser_StatusDTO(AppUser.Status);
             this.AppUserRoleMappings = AppUser.AppUserRoleMappings?.Select(x => new AppUser_AppUserRoleMappingDTO(x)).ToList();
         }
     }
@@ -46,8 +53,10 @@ namespace DMS.Rpc.app_user
         public StringFilter Address { get; set; }
         public StringFilter Email { get; set; }
         public StringFilter Phone { get; set; }
-        public IdFilter UserStatusId { get; set; }
+        public StringFilter Department { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public IdFilter SexId { get; set; }
+        public IdFilter StatusId { get; set; }
         public AppUserOrder OrderBy { get; set; }
     }
 }

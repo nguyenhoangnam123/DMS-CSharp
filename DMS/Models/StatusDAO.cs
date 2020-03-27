@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DMS.Models
 {
@@ -6,6 +7,7 @@ namespace DMS.Models
     {
         public StatusDAO()
         {
+            AppUsers = new HashSet<AppUserDAO>();
             Brands = new HashSet<BrandDAO>();
             Districts = new HashSet<DistrictDAO>();
             Organizations = new HashSet<OrganizationDAO>();
@@ -27,6 +29,7 @@ namespace DMS.Models
         public string Code { get; set; }
         public string Name { get; set; }
 
+        public virtual ICollection<AppUserDAO> AppUsers { get; set; }
         public virtual ICollection<BrandDAO> Brands { get; set; }
         public virtual ICollection<DistrictDAO> Districts { get; set; }
         public virtual ICollection<OrganizationDAO> Organizations { get; set; }

@@ -82,7 +82,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Name);
                             break;
                         case RoleOrder.Status:
-                            query = query.OrderBy(q => q.StatusId);
+                            query = query.OrderBy(q => q.Status);
                             break;
                     }
                     break;
@@ -99,7 +99,7 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Name);
                             break;
                         case RoleOrder.Status:
-                            query = query.OrderByDescending(q => q.StatusId);
+                            query = query.OrderByDescending(q => q.Status);
                             break;
                     }
                     break;
@@ -158,10 +158,26 @@ namespace DMS.Repositories
                     Name = x.Status.Name,
                 },
             }).FirstOrDefaultAsync();
-
             if (Role == null)
                 return null;
-            Role.Permissions = await DataContext.Permission
+            Role.AppUserRoleMappings = await DataContext.AppUserRoleMapping
+                .Where(x => x.RoleId == Role.Id)
+                .Select(x => new AppUserRoleMapping
+                {
+                    AppUserId = x.AppUserId,
+                    RoleId = x.RoleId,
+                    AppUser = new AppUser
+                    {
+                        Id = x.AppUser.Id,
+                        Username = x.AppUser.Username,
+                        Password = x.AppUser.Password,
+                        DisplayName = x.AppUser.DisplayName,
+                        Email = x.AppUser.Email,
+                        Phone = x.AppUser.Phone,
+                        StatusId = x.AppUser.StatusId,
+                    },
+                }).ToListAsync();
+            Role.Permissions = await DataContext.Permission.Include(p => p.PermissionFieldMappings).Include(p => p.PermissionPageMappings)
                 .Where(x => x.RoleId == Role.Id)
                 .Select(x => new Permission
                 {
@@ -176,15 +192,35 @@ namespace DMS.Repositories
                         Name = x.Menu.Name,
                         Path = x.Menu.Path,
                         IsDeleted = x.Menu.IsDeleted,
+                        Fields = x.Menu.Fields.Select(f => new Field
+                        {
+                            Id = f.Id,
+                            MenuId = f.MenuId,
+                            Name = f.Name,
+                            Type = f.Type,
+                            IsDeleted = f.IsDeleted
+                        }).ToList(),
+                        Pages = x.Menu.Pages.Select(p => new Page
+                        {
+                            Id = p.Id,
+                            MenuId = p.MenuId,
+                            Name = p.Name,
+                            Path = p.Path,
+                            IsDeleted = p.IsDeleted
+                        }).ToList()
                     },
-                    Status = new Status
+                    PermissionFieldMappings = x.PermissionFieldMappings.Select(pf => new PermissionFieldMapping
                     {
-                        Id = x.Status.Id,
-                        Code = x.Status.Code,
-                        Name = x.Status.Name,
-                    },
+                        PermissionId = pf.PermissionId,
+                        FieldId = pf.FieldId,
+                        Value = pf.Value
+                    }).ToList(),
+                    PermissionPageMappings = x.PermissionPageMappings.Select(pp => new PermissionPageMapping
+                    {
+                        PermissionId = pp.PermissionId,
+                        PageId = pp.PageId,
+                    }).ToList()
                 }).ToListAsync();
-
             return Role;
         }
         public async Task<bool> Create(Role Role)
@@ -247,6 +283,21 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Role Role)
         {
+            await DataContext.AppUserRoleMapping
+                .Where(x => x.RoleId == Role.Id)
+                .DeleteFromQueryAsync();
+            List<AppUserRoleMappingDAO> AppUserRoleMappingDAOs = new List<AppUserRoleMappingDAO>();
+            if (Role.AppUserRoleMappings != null)
+            {
+                foreach (AppUserRoleMapping AppUserRoleMapping in Role.AppUserRoleMappings)
+                {
+                    AppUserRoleMappingDAO AppUserRoleMappingDAO = new AppUserRoleMappingDAO();
+                    AppUserRoleMappingDAO.AppUserId = AppUserRoleMapping.AppUserId;
+                    AppUserRoleMappingDAO.RoleId = AppUserRoleMapping.RoleId;
+                    AppUserRoleMappingDAOs.Add(AppUserRoleMappingDAO);
+                }
+                await DataContext.AppUserRoleMapping.BulkMergeAsync(AppUserRoleMappingDAOs);
+            }
             await DataContext.Permission
                 .Where(x => x.RoleId == Role.Id)
                 .DeleteFromQueryAsync();
@@ -258,14 +309,38 @@ namespace DMS.Repositories
                     PermissionDAO PermissionDAO = new PermissionDAO();
                     PermissionDAO.Id = Permission.Id;
                     PermissionDAO.Name = Permission.Name;
-                    PermissionDAO.RoleId = Role.Id;
+                    PermissionDAO.RoleId = Permission.RoleId;
                     PermissionDAO.MenuId = Permission.MenuId;
                     PermissionDAO.StatusId = Permission.StatusId;
+                    if (Permission.PermissionFieldMappings != null)
+                    {
+                        foreach (var PermissionFieldMapping in Permission.PermissionFieldMappings)
+                        {
+                            PermissionFieldMappingDAO PermissionFieldMappingDAO = new PermissionFieldMappingDAO
+                            {
+                                PermissionId = PermissionFieldMapping.PermissionId,
+                                FieldId = PermissionFieldMapping.FieldId,
+                                Value = PermissionFieldMapping.Value
+                            };
+                            PermissionDAO.PermissionFieldMappings.Add(PermissionFieldMappingDAO);
+                        }
+                    }
+                    if (Permission.PermissionPageMappings != null)
+                    {
+                        foreach (var PermissionPageMapping in Permission.PermissionPageMappings)
+                        {
+                            PermissionPageMappingDAO PermissionPageMappingDAO = new PermissionPageMappingDAO
+                            {
+                                PermissionId = PermissionPageMapping.PermissionId,
+                                PageId = PermissionPageMapping.PageId,
+                            };
+                            PermissionDAO.PermissionPageMappings.Add(PermissionPageMappingDAO);
+                        }
+                    }
                     PermissionDAOs.Add(PermissionDAO);
                 }
                 await DataContext.Permission.BulkMergeAsync(PermissionDAOs);
             }
         }
-
     }
 }

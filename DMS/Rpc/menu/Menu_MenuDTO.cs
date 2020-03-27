@@ -8,6 +8,7 @@ namespace DMS.Rpc.menu
     public class Menu_MenuDTO : DataDTO
     {
         public long Id { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public string Path { get; set; }
         public bool IsDeleted { get; set; }
@@ -17,6 +18,7 @@ namespace DMS.Rpc.menu
         public Menu_MenuDTO(Menu Menu)
         {
             this.Id = Menu.Id;
+            this.Code = Menu.Code;
             this.Name = Menu.Name;
             this.Path = Menu.Path;
             this.IsDeleted = Menu.IsDeleted;
@@ -28,6 +30,7 @@ namespace DMS.Rpc.menu
     public class Menu_MenuFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
+        public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public StringFilter Path { get; set; }
         public MenuOrder OrderBy { get; set; }

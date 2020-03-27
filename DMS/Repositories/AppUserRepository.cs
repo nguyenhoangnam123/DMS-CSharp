@@ -33,7 +33,6 @@ namespace DMS.Repositories
         {
             if (filter == null)
                 return query.Where(q => false);
-            query = query.Where(q => !q.DeletedAt.HasValue);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.Username != null)
@@ -42,12 +41,16 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Password, filter.Password);
             if (filter.DisplayName != null)
                 query = query.Where(q => q.DisplayName, filter.DisplayName);
+            if (filter.Address != null)
+                query = query.Where(q => q.Address, filter.Address);
             if (filter.Email != null)
                 query = query.Where(q => q.Email, filter.Email);
             if (filter.Phone != null)
                 query = query.Where(q => q.Phone, filter.Phone);
-            if (filter.UserStatusId != null)
-                query = query.Where(q => q.UserStatusId, filter.UserStatusId);
+            if (filter.StatusId != null)
+                query = query.Where(q => q.StatusId, filter.StatusId);
+            if (filter.SexId != null)
+                query = query.Where(q => q.SexId, filter.SexId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -68,12 +71,16 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Password, filter.Password);
                 if (filter.DisplayName != null)
                     queryable = queryable.Where(q => q.DisplayName, filter.DisplayName);
+                if (filter.Address != null)
+                    queryable = queryable.Where(q => q.Address, filter.Address);
                 if (filter.Email != null)
                     queryable = queryable.Where(q => q.Email, filter.Email);
                 if (filter.Phone != null)
                     queryable = queryable.Where(q => q.Phone, filter.Phone);
-                if (filter.UserStatusId != null)
-                    queryable = queryable.Where(q => q.UserStatusId, filter.UserStatusId);
+                if (filter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (filter.SexId != null)
+                    queryable = queryable.Where(q => q.SexId, filter.SexId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -98,14 +105,20 @@ namespace DMS.Repositories
                         case AppUserOrder.DisplayName:
                             query = query.OrderBy(q => q.DisplayName);
                             break;
+                        case AppUserOrder.Address:
+                            query = query.OrderBy(q => q.Address);
+                            break;
                         case AppUserOrder.Email:
                             query = query.OrderBy(q => q.Email);
                             break;
                         case AppUserOrder.Phone:
                             query = query.OrderBy(q => q.Phone);
                             break;
-                        case AppUserOrder.UserStatus:
-                            query = query.OrderBy(q => q.UserStatusId);
+                        case AppUserOrder.Status:
+                            query = query.OrderBy(q => q.StatusId);
+                            break;
+                        case AppUserOrder.Sex:
+                            query = query.OrderBy(q => q.Sex);
                             break;
                     }
                     break;
@@ -124,14 +137,20 @@ namespace DMS.Repositories
                         case AppUserOrder.DisplayName:
                             query = query.OrderByDescending(q => q.DisplayName);
                             break;
+                        case AppUserOrder.Address:
+                            query = query.OrderByDescending(q => q.Address);
+                            break;
                         case AppUserOrder.Email:
                             query = query.OrderByDescending(q => q.Email);
                             break;
                         case AppUserOrder.Phone:
                             query = query.OrderByDescending(q => q.Phone);
                             break;
-                        case AppUserOrder.UserStatus:
-                            query = query.OrderByDescending(q => q.UserStatusId);
+                        case AppUserOrder.Status:
+                            query = query.OrderByDescending(q => q.StatusId);
+                            break;
+                        case AppUserOrder.Sex:
+                            query = query.OrderByDescending(q => q.Sex);
                             break;
                     }
                     break;
@@ -148,14 +167,22 @@ namespace DMS.Repositories
                 Username = filter.Selects.Contains(AppUserSelect.Username) ? q.Username : default(string),
                 Password = filter.Selects.Contains(AppUserSelect.Password) ? q.Password : default(string),
                 DisplayName = filter.Selects.Contains(AppUserSelect.DisplayName) ? q.DisplayName : default(string),
+                Address = filter.Selects.Contains(AppUserSelect.Address) ? q.Address : default(string),
                 Email = filter.Selects.Contains(AppUserSelect.Email) ? q.Email : default(string),
                 Phone = filter.Selects.Contains(AppUserSelect.Phone) ? q.Phone : default(string),
-                UserStatusId = filter.Selects.Contains(AppUserSelect.UserStatus) ? q.UserStatusId : default(long),
-                UserStatus = filter.Selects.Contains(AppUserSelect.UserStatus) && q.UserStatus != null ? new UserStatus
+                StatusId = filter.Selects.Contains(AppUserSelect.Status) ? q.StatusId : default(long),
+                SexId = filter.Selects.Contains(AppUserSelect.Sex) ? q.SexId : default(long),
+                Status = filter.Selects.Contains(AppUserSelect.Status) && q.Status != null ? new Status
                 {
-                    Id = q.UserStatus.Id,
-                    Code = q.UserStatus.Code,
-                    Name = q.UserStatus.Name,
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
+                } : null,
+                Sex = filter.Selects.Contains(AppUserSelect.Sex) && q.Sex != null ? new Sex
+                {
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
                 } : null,
             }).ToListAsync();
             return AppUsers;
@@ -186,15 +213,23 @@ namespace DMS.Repositories
                 Username = x.Username,
                 Password = x.Password,
                 DisplayName = x.DisplayName,
+                Address = x.Address,
                 Email = x.Email,
                 Phone = x.Phone,
-                UserStatusId = x.UserStatusId,
-                UserStatus = x.UserStatus == null ? null : new UserStatus
+                StatusId = x.StatusId,
+                SexId = x.SexId,
+                Status = x.Status == null ? null : new Status
                 {
-                    Id = x.UserStatus.Id,
-                    Code = x.UserStatus.Code,
-                    Name = x.UserStatus.Name,
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
                 },
+                Sex = x.Sex == null ? null : new Sex
+                {
+                    Id = x.Sex.Id,
+                    Code = x.Sex.Code,
+                    Name = x.Sex.Name,
+                }
             }).FirstOrDefaultAsync();
 
             if (AppUser == null)
@@ -208,9 +243,7 @@ namespace DMS.Repositories
                     Role = new Role
                     {
                         Id = x.Role.Id,
-                        Code = x.Role.Code,
                         Name = x.Role.Name,
-                        StatusId = x.Role.StatusId,
                     },
                 }).ToListAsync();
 
@@ -223,9 +256,11 @@ namespace DMS.Repositories
             AppUserDAO.Username = AppUser.Username;
             AppUserDAO.Password = AppUser.Password;
             AppUserDAO.DisplayName = AppUser.DisplayName;
+            AppUserDAO.Address = AppUser.Address;
             AppUserDAO.Email = AppUser.Email;
             AppUserDAO.Phone = AppUser.Phone;
-            AppUserDAO.UserStatusId = AppUser.UserStatusId;
+            AppUserDAO.StatusId = AppUser.StatusId;
+            AppUserDAO.SexId = AppUser.SexId;
             AppUserDAO.CreatedAt = StaticParams.DateTimeNow;
             AppUserDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.AppUser.Add(AppUserDAO);
@@ -244,9 +279,11 @@ namespace DMS.Repositories
             AppUserDAO.Username = AppUser.Username;
             AppUserDAO.Password = AppUser.Password;
             AppUserDAO.DisplayName = AppUser.DisplayName;
+            AppUserDAO.Address = AppUser.Address;
             AppUserDAO.Email = AppUser.Email;
             AppUserDAO.Phone = AppUser.Phone;
-            AppUserDAO.UserStatusId = AppUser.UserStatusId;
+            AppUserDAO.StatusId = AppUser.StatusId;
+            AppUserDAO.SexId = AppUser.SexId;
             AppUserDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(AppUser);
@@ -269,9 +306,11 @@ namespace DMS.Repositories
                 AppUserDAO.Username = AppUser.Username;
                 AppUserDAO.Password = AppUser.Password;
                 AppUserDAO.DisplayName = AppUser.DisplayName;
+                AppUserDAO.Address = AppUser.Address;
                 AppUserDAO.Email = AppUser.Email;
                 AppUserDAO.Phone = AppUser.Phone;
-                AppUserDAO.UserStatusId = AppUser.UserStatusId;
+                AppUserDAO.StatusId = AppUser.StatusId;
+                AppUserDAO.SexId = AppUser.SexId;
                 AppUserDAO.CreatedAt = StaticParams.DateTimeNow;
                 AppUserDAO.UpdatedAt = StaticParams.DateTimeNow;
                 AppUserDAOs.Add(AppUserDAO);
@@ -300,7 +339,7 @@ namespace DMS.Repositories
                 foreach (AppUserRoleMapping AppUserRoleMapping in AppUser.AppUserRoleMappings)
                 {
                     AppUserRoleMappingDAO AppUserRoleMappingDAO = new AppUserRoleMappingDAO();
-                    AppUserRoleMappingDAO.AppUserId = AppUser.Id;
+                    AppUserRoleMappingDAO.AppUserId = AppUserRoleMapping.AppUserId;
                     AppUserRoleMappingDAO.RoleId = AppUserRoleMapping.RoleId;
                     AppUserRoleMappingDAOs.Add(AppUserRoleMappingDAO);
                 }

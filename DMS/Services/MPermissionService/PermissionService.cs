@@ -92,6 +92,7 @@ namespace DMS.Services.MPermission
 
             try
             {
+                Permission.Id = 0;
                 await UOW.Begin();
                 await UOW.PermissionRepository.Create(Permission);
                 await UOW.Commit();
@@ -220,6 +221,7 @@ namespace DMS.Services.MPermission
 
             try
             {
+                Permissions.ForEach(p => p.Id = 0);
                 await UOW.Begin();
                 await UOW.PermissionRepository.BulkMerge(Permissions);
                 await UOW.Commit();

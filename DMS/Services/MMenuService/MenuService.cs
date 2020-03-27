@@ -92,6 +92,7 @@ namespace DMS.Services.MMenu
 
             try
             {
+                Menu.Id = 0;
                 await UOW.Begin();
                 await UOW.MenuRepository.Create(Menu);
                 await UOW.Commit();
@@ -219,6 +220,7 @@ namespace DMS.Services.MMenu
 
             try
             {
+                Menus.ForEach(m => m.Id = 0);
                 await UOW.Begin();
                 await UOW.MenuRepository.BulkMerge(Menus);
                 await UOW.Commit();

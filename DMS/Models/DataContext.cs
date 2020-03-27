@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DMS.Models
 {
@@ -35,7 +37,6 @@ namespace DMS.Models
         public virtual DbSet<UnitOfMeasureDAO> UnitOfMeasure { get; set; }
         public virtual DbSet<UnitOfMeasureGroupingDAO> UnitOfMeasureGrouping { get; set; }
         public virtual DbSet<UnitOfMeasureGroupingContentDAO> UnitOfMeasureGroupingContent { get; set; }
-        public virtual DbSet<UserStatusDAO> UserStatus { get; set; }
         public virtual DbSet<VariationDAO> Variation { get; set; }
         public virtual DbSet<VariationGroupingDAO> VariationGrouping { get; set; }
         public virtual DbSet<WardDAO> Ward { get; set; }
@@ -87,9 +88,9 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AppUser_Sex");
 
-                entity.HasOne(d => d.UserStatus)
+                entity.HasOne(d => d.Status)
                     .WithMany(p => p.AppUsers)
-                    .HasForeignKey(d => d.UserStatusId)
+                    .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AppUser_UserStatus");
             });
@@ -139,13 +140,15 @@ namespace DMS.Models
 
             modelBuilder.Entity<DistrictDAO>(entity =>
             {
+                entity.Property(e => e.Code).HasMaxLength(500);
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(255);
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 
@@ -308,6 +311,10 @@ namespace DMS.Models
             modelBuilder.Entity<PermissionDAO>(entity =>
             {
                 entity.ToTable("Permission", "PER");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -542,13 +549,17 @@ namespace DMS.Models
 
             modelBuilder.Entity<ProvinceDAO>(entity =>
             {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(255);
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 
@@ -804,7 +815,7 @@ namespace DMS.Models
             {
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(255);
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -814,7 +825,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(255);
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -827,9 +838,15 @@ namespace DMS.Models
 
             modelBuilder.Entity<UnitOfMeasureGroupingDAO>(entity =>
             {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Description).HasMaxLength(500);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -865,19 +882,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.UnitOfMeasureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UnitOfMeasureGroupingContent_UnitOfMeasure");
-            });
-
-            modelBuilder.Entity<UserStatusDAO>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Code)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(500);
             });
 
             modelBuilder.Entity<VariationDAO>(entity =>
@@ -918,13 +922,17 @@ namespace DMS.Models
 
             modelBuilder.Entity<WardDAO>(entity =>
             {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(255);
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 

@@ -1,8 +1,6 @@
 using Common;
 using DMS.Entities;
-using DMS.Services.MField;
 using DMS.Services.MMenu;
-using DMS.Services.MPage;
 using DMS.Services.MPermission;
 using DMS.Services.MRole;
 using DMS.Services.MStatus;
@@ -33,15 +31,10 @@ namespace DMS.Rpc.permission
         public const string SingleListMenu = Default + "/single-list-menu";
         public const string SingleListRole = Default + "/single-list-role";
         public const string SingleListStatus = Default + "/single-list-status";
-        public const string SingleListField = Default + "/single-list-field";
-        public const string SingleListPage = Default + "/single-list-page";
-        public const string CountField = Default + "/count-field";
-        public const string ListField = Default + "/list-field";
-        public const string CountPage = Default + "/count-page";
-        public const string ListPage = Default + "/list-page";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(PermissionFilter.Id), FieldType.ID },
+            { nameof(PermissionFilter.Code), FieldType.STRING },
             { nameof(PermissionFilter.Name), FieldType.STRING },
             { nameof(PermissionFilter.RoleId), FieldType.ID },
             { nameof(PermissionFilter.MenuId), FieldType.ID },
@@ -54,16 +47,12 @@ namespace DMS.Rpc.permission
         private IMenuService MenuService;
         private IRoleService RoleService;
         private IStatusService StatusService;
-        private IFieldService FieldService;
-        private IPageService PageService;
         private IPermissionService PermissionService;
         private ICurrentContext CurrentContext;
         public PermissionController(
             IMenuService MenuService,
             IRoleService RoleService,
             IStatusService StatusService,
-            IFieldService FieldService,
-            IPageService PageService,
             IPermissionService PermissionService,
             ICurrentContext CurrentContext
         )
@@ -71,8 +60,6 @@ namespace DMS.Rpc.permission
             this.MenuService = MenuService;
             this.RoleService = RoleService;
             this.StatusService = StatusService;
-            this.FieldService = FieldService;
-            this.PageService = PageService;
             this.PermissionService = PermissionService;
             this.CurrentContext = CurrentContext;
         }
@@ -242,6 +229,7 @@ namespace DMS.Rpc.permission
         {
             Permission Permission = new Permission();
             Permission.Id = Permission_PermissionDTO.Id;
+            Permission.Code = Permission_PermissionDTO.Code;
             Permission.Name = Permission_PermissionDTO.Name;
             Permission.RoleId = Permission_PermissionDTO.RoleId;
             Permission.MenuId = Permission_PermissionDTO.MenuId;
@@ -307,6 +295,7 @@ namespace DMS.Rpc.permission
             PermissionFilter.OrderType = Permission_PermissionFilterDTO.OrderType;
 
             PermissionFilter.Id = Permission_PermissionFilterDTO.Id;
+            PermissionFilter.Code = Permission_PermissionFilterDTO.Code;
             PermissionFilter.Name = Permission_PermissionFilterDTO.Name;
             PermissionFilter.RoleId = Permission_PermissionFilterDTO.RoleId;
             PermissionFilter.MenuId = Permission_PermissionFilterDTO.MenuId;
@@ -324,6 +313,7 @@ namespace DMS.Rpc.permission
             MenuFilter.OrderType = OrderType.ASC;
             MenuFilter.Selects = MenuSelect.ALL;
             MenuFilter.Id = Permission_MenuFilterDTO.Id;
+            MenuFilter.Code = Permission_MenuFilterDTO.Code;
             MenuFilter.Name = Permission_MenuFilterDTO.Name;
             MenuFilter.Path = Permission_MenuFilterDTO.Path;
 
@@ -368,107 +358,6 @@ namespace DMS.Rpc.permission
             List<Permission_StatusDTO> Permission_StatusDTOs = Statuses
                 .Select(x => new Permission_StatusDTO(x)).ToList();
             return Permission_StatusDTOs;
-        }
-        [Route(PermissionRoute.SingleListField), HttpPost]
-        public async Task<List<Permission_FieldDTO>> SingleListField([FromBody] Permission_FieldFilterDTO Permission_FieldFilterDTO)
-        {
-            FieldFilter FieldFilter = new FieldFilter();
-            FieldFilter.Skip = 0;
-            FieldFilter.Take = 20;
-            FieldFilter.OrderBy = FieldOrder.Id;
-            FieldFilter.OrderType = OrderType.ASC;
-            FieldFilter.Selects = FieldSelect.ALL;
-            FieldFilter.Id = Permission_FieldFilterDTO.Id;
-            FieldFilter.Name = Permission_FieldFilterDTO.Name;
-            FieldFilter.Type = Permission_FieldFilterDTO.Type;
-            FieldFilter.MenuId = Permission_FieldFilterDTO.MenuId;
-
-            List<Field> Fields = await FieldService.List(FieldFilter);
-            List<Permission_FieldDTO> Permission_FieldDTOs = Fields
-                .Select(x => new Permission_FieldDTO(x)).ToList();
-            return Permission_FieldDTOs;
-        }
-        [Route(PermissionRoute.SingleListPage), HttpPost]
-        public async Task<List<Permission_PageDTO>> SingleListPage([FromBody] Permission_PageFilterDTO Permission_PageFilterDTO)
-        {
-            PageFilter PageFilter = new PageFilter();
-            PageFilter.Skip = 0;
-            PageFilter.Take = 20;
-            PageFilter.OrderBy = PageOrder.Id;
-            PageFilter.OrderType = OrderType.ASC;
-            PageFilter.Selects = PageSelect.ALL;
-            PageFilter.Id = Permission_PageFilterDTO.Id;
-            PageFilter.Name = Permission_PageFilterDTO.Name;
-            PageFilter.Path = Permission_PageFilterDTO.Path;
-            PageFilter.MenuId = Permission_PageFilterDTO.MenuId;
-
-            List<Page> Pages = await PageService.List(PageFilter);
-            List<Permission_PageDTO> Permission_PageDTOs = Pages
-                .Select(x => new Permission_PageDTO(x)).ToList();
-            return Permission_PageDTOs;
-        }
-
-        [Route(PermissionRoute.CountField), HttpPost]
-        public async Task<long> CountField([FromBody] Permission_FieldFilterDTO Permission_FieldFilterDTO)
-        {
-            FieldFilter FieldFilter = new FieldFilter();
-            FieldFilter.Id = Permission_FieldFilterDTO.Id;
-            FieldFilter.Name = Permission_FieldFilterDTO.Name;
-            FieldFilter.Type = Permission_FieldFilterDTO.Type;
-            FieldFilter.MenuId = Permission_FieldFilterDTO.MenuId;
-
-            return await FieldService.Count(FieldFilter);
-        }
-
-        [Route(PermissionRoute.ListField), HttpPost]
-        public async Task<List<Permission_FieldDTO>> ListField([FromBody] Permission_FieldFilterDTO Permission_FieldFilterDTO)
-        {
-            FieldFilter FieldFilter = new FieldFilter();
-            FieldFilter.Skip = Permission_FieldFilterDTO.Skip;
-            FieldFilter.Take = Permission_FieldFilterDTO.Take;
-            FieldFilter.OrderBy = FieldOrder.Id;
-            FieldFilter.OrderType = OrderType.ASC;
-            FieldFilter.Selects = FieldSelect.ALL;
-            FieldFilter.Id = Permission_FieldFilterDTO.Id;
-            FieldFilter.Name = Permission_FieldFilterDTO.Name;
-            FieldFilter.Type = Permission_FieldFilterDTO.Type;
-            FieldFilter.MenuId = Permission_FieldFilterDTO.MenuId;
-
-            List<Field> Fields = await FieldService.List(FieldFilter);
-            List<Permission_FieldDTO> Permission_FieldDTOs = Fields
-                .Select(x => new Permission_FieldDTO(x)).ToList();
-            return Permission_FieldDTOs;
-        }
-        [Route(PermissionRoute.CountPage), HttpPost]
-        public async Task<long> CountPage([FromBody] Permission_PageFilterDTO Permission_PageFilterDTO)
-        {
-            PageFilter PageFilter = new PageFilter();
-            PageFilter.Id = Permission_PageFilterDTO.Id;
-            PageFilter.Name = Permission_PageFilterDTO.Name;
-            PageFilter.Path = Permission_PageFilterDTO.Path;
-            PageFilter.MenuId = Permission_PageFilterDTO.MenuId;
-
-            return await PageService.Count(PageFilter);
-        }
-
-        [Route(PermissionRoute.ListPage), HttpPost]
-        public async Task<List<Permission_PageDTO>> ListPage([FromBody] Permission_PageFilterDTO Permission_PageFilterDTO)
-        {
-            PageFilter PageFilter = new PageFilter();
-            PageFilter.Skip = Permission_PageFilterDTO.Skip;
-            PageFilter.Take = Permission_PageFilterDTO.Take;
-            PageFilter.OrderBy = PageOrder.Id;
-            PageFilter.OrderType = OrderType.ASC;
-            PageFilter.Selects = PageSelect.ALL;
-            PageFilter.Id = Permission_PageFilterDTO.Id;
-            PageFilter.Name = Permission_PageFilterDTO.Name;
-            PageFilter.Path = Permission_PageFilterDTO.Path;
-            PageFilter.MenuId = Permission_PageFilterDTO.MenuId;
-
-            List<Page> Pages = await PageService.List(PageFilter);
-            List<Permission_PageDTO> Permission_PageDTOs = Pages
-                .Select(x => new Permission_PageDTO(x)).ToList();
-            return Permission_PageDTOs;
         }
     }
 }

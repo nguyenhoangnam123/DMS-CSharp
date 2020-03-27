@@ -34,6 +34,8 @@ namespace DMS.Repositories
                 return query.Where(q => false);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
+            if (filter.Code != null)
+                query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.Path != null)
@@ -52,6 +54,8 @@ namespace DMS.Repositories
                 IQueryable<MenuDAO> queryable = query;
                 if (filter.Id != null)
                     queryable = queryable.Where(q => q.Id, filter.Id);
+                if (filter.Code != null)
+                    queryable = queryable.Where(q => q.Code, filter.Code);
                 if (filter.Name != null)
                     queryable = queryable.Where(q => q.Name, filter.Name);
                 if (filter.Path != null)
@@ -71,6 +75,9 @@ namespace DMS.Repositories
                         case MenuOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
+                        case MenuOrder.Code:
+                            query = query.OrderBy(q => q.Code);
+                            break;
                         case MenuOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
@@ -87,6 +94,9 @@ namespace DMS.Repositories
                     {
                         case MenuOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
+                            break;
+                        case MenuOrder.Code:
+                            query = query.OrderByDescending(q => q.Code);
                             break;
                         case MenuOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
@@ -109,6 +119,7 @@ namespace DMS.Repositories
             List<Menu> Menus = await query.Select(q => new Menu()
             {
                 Id = filter.Selects.Contains(MenuSelect.Id) ? q.Id : default(long),
+                Code = filter.Selects.Contains(MenuSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(MenuSelect.Name) ? q.Name : default(string),
                 Path = filter.Selects.Contains(MenuSelect.Path) ? q.Path : default(string),
                 IsDeleted = filter.Selects.Contains(MenuSelect.IsDeleted) ? q.IsDeleted : default(bool),
@@ -138,6 +149,7 @@ namespace DMS.Repositories
             Menu Menu = await DataContext.Menu.Where(x => x.Id == Id).Select(x => new Menu()
             {
                 Id = x.Id,
+                Code = x.Code,
                 Name = x.Name,
                 Path = x.Path,
                 IsDeleted = x.IsDeleted,
@@ -165,13 +177,13 @@ namespace DMS.Repositories
                     MenuId = x.MenuId,
                     IsDeleted = x.IsDeleted,
                 }).ToListAsync();
-
             return Menu;
         }
         public async Task<bool> Create(Menu Menu)
         {
             MenuDAO MenuDAO = new MenuDAO();
             MenuDAO.Id = Menu.Id;
+            MenuDAO.Code = Menu.Code;
             MenuDAO.Name = Menu.Name;
             MenuDAO.Path = Menu.Path;
             MenuDAO.IsDeleted = Menu.IsDeleted;
@@ -188,6 +200,7 @@ namespace DMS.Repositories
             if (MenuDAO == null)
                 return false;
             MenuDAO.Id = Menu.Id;
+            MenuDAO.Code = Menu.Code;
             MenuDAO.Name = Menu.Name;
             MenuDAO.Path = Menu.Path;
             MenuDAO.IsDeleted = Menu.IsDeleted;
@@ -209,6 +222,7 @@ namespace DMS.Repositories
             {
                 MenuDAO MenuDAO = new MenuDAO();
                 MenuDAO.Id = Menu.Id;
+                MenuDAO.Code = Menu.Code;
                 MenuDAO.Name = Menu.Name;
                 MenuDAO.Path = Menu.Path;
                 MenuDAO.IsDeleted = Menu.IsDeleted;
@@ -240,7 +254,7 @@ namespace DMS.Repositories
                     FieldDAO.Id = Field.Id;
                     FieldDAO.Name = Field.Name;
                     FieldDAO.Type = Field.Type;
-                    FieldDAO.MenuId = Menu.Id;
+                    FieldDAO.MenuId = Field.MenuId;
                     FieldDAO.IsDeleted = Field.IsDeleted;
                     FieldDAOs.Add(FieldDAO);
                 }
@@ -258,7 +272,7 @@ namespace DMS.Repositories
                     PageDAO.Id = Page.Id;
                     PageDAO.Name = Page.Name;
                     PageDAO.Path = Page.Path;
-                    PageDAO.MenuId = Menu.Id;
+                    PageDAO.MenuId = Page.MenuId;
                     PageDAO.IsDeleted = Page.IsDeleted;
                     PageDAOs.Add(PageDAO);
                 }

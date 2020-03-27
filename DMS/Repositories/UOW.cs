@@ -13,12 +13,10 @@ namespace DMS.Repositories
         IAppUserRepository AppUserRepository { get; }
         IBrandRepository BrandRepository { get; }
         IDistrictRepository DistrictRepository { get; }
-        IFieldRepository FieldRepository { get; }
         IImageRepository ImageRepository { get; }
         IItemRepository ItemRepository { get; }
         IMenuRepository MenuRepository { get; }
         IOrganizationRepository OrganizationRepository { get; }
-        IPageRepository PageRepository { get; }
         IPermissionRepository PermissionRepository { get; }
         IProductRepository ProductRepository { get; }
         IProductGroupingRepository ProductGroupingRepository { get; }
@@ -35,7 +33,6 @@ namespace DMS.Repositories
         IUnitOfMeasureRepository UnitOfMeasureRepository { get; }
         IUnitOfMeasureGroupingContentRepository UnitOfMeasureGroupingContentRepository { get; }
         IUnitOfMeasureGroupingRepository UnitOfMeasureGroupingRepository { get; }
-        IUserStatusRepository UserStatusRepository { get; }
         IVariationRepository VariationRepository { get; }
         IVariationGroupingRepository VariationGroupingRepository { get; }
         IWardRepository WardRepository { get; }
@@ -48,12 +45,10 @@ namespace DMS.Repositories
         public IAppUserRepository AppUserRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
         public IDistrictRepository DistrictRepository { get; private set; }
-        public IFieldRepository FieldRepository { get; private set; }
         public IImageRepository ImageRepository { get; private set; }
         public IItemRepository ItemRepository { get; private set; }
         public IMenuRepository MenuRepository { get; private set; }
         public IOrganizationRepository OrganizationRepository { get; private set; }
-        public IPageRepository PageRepository { get; private set; }
         public IPermissionRepository PermissionRepository { get; private set; }
         public IProductRepository ProductRepository { get; private set; }
         public IProductGroupingRepository ProductGroupingRepository { get; private set; }
@@ -70,7 +65,6 @@ namespace DMS.Repositories
         public IUnitOfMeasureRepository UnitOfMeasureRepository { get; private set; }
         public IUnitOfMeasureGroupingContentRepository UnitOfMeasureGroupingContentRepository { get; private set; }
         public IUnitOfMeasureGroupingRepository UnitOfMeasureGroupingRepository { get; private set; }
-        public IUserStatusRepository UserStatusRepository { get; private set; }
         public IVariationRepository VariationRepository { get; private set; }
         public IVariationGroupingRepository VariationGroupingRepository { get; private set; }
         public IWardRepository WardRepository { get; private set; }
@@ -82,12 +76,10 @@ namespace DMS.Repositories
             AppUserRepository = new AppUserRepository(DataContext);
             BrandRepository = new BrandRepository(DataContext);
             DistrictRepository = new DistrictRepository(DataContext);
-            FieldRepository = new FieldRepository(DataContext);
             ImageRepository = new ImageRepository(DataContext);
             ItemRepository = new ItemRepository(DataContext);
             MenuRepository = new MenuRepository(DataContext);
             OrganizationRepository = new OrganizationRepository(DataContext);
-            PageRepository = new PageRepository(DataContext);
             PermissionRepository = new PermissionRepository(DataContext);
             ProductRepository = new ProductRepository(DataContext);
             ProductGroupingRepository = new ProductGroupingRepository(DataContext);
@@ -104,7 +96,6 @@ namespace DMS.Repositories
             UnitOfMeasureRepository = new UnitOfMeasureRepository(DataContext);
             UnitOfMeasureGroupingContentRepository = new UnitOfMeasureGroupingContentRepository(DataContext);
             UnitOfMeasureGroupingRepository = new UnitOfMeasureGroupingRepository(DataContext);
-            UserStatusRepository = new UserStatusRepository(DataContext);
             VariationRepository = new VariationRepository(DataContext);
             VariationGroupingRepository = new VariationGroupingRepository(DataContext);
             WardRepository = new WardRepository(DataContext);

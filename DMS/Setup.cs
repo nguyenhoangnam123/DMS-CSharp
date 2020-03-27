@@ -247,40 +247,40 @@ namespace DMS
 
         private void InitEnum()
         {
-            InitUserStatusEnum();
+            InitStatusEnum();
             DataContext.SaveChanges();
         }
 
-        private void InitUserStatusEnum()
+        private void InitStatusEnum()
         {
-            List<UserStatusDAO> statuses = DataContext.UserStatus.ToList();
-            if (!statuses.Any(pt => pt.Id == UserStatusEnum.ACTIVE.Id))
+            List<StatusDAO> statuses = DataContext.Status.ToList();
+            if (!statuses.Any(pt => pt.Id == StatusEnum.ACTIVE.Id))
             {
-                DataContext.UserStatus.Add(new UserStatusDAO
+                DataContext.Status.Add(new StatusDAO
                 {
-                    Id = UserStatusEnum.ACTIVE.Id,
-                    Code = UserStatusEnum.ACTIVE.Code,
-                    Name = UserStatusEnum.ACTIVE.Name,
+                    Id = StatusEnum.ACTIVE.Id,
+                    Code = StatusEnum.ACTIVE.Code,
+                    Name = StatusEnum.ACTIVE.Name,
                 });
             }
 
-            if (!statuses.Any(pt => pt.Id == UserStatusEnum.INACTIVE.Id))
+            if (!statuses.Any(pt => pt.Id == StatusEnum.INACTIVE.Id))
             {
-                DataContext.UserStatus.Add(new UserStatusDAO
+                DataContext.Status.Add(new StatusDAO
                 {
-                    Id = UserStatusEnum.INACTIVE.Id,
-                    Code = UserStatusEnum.INACTIVE.Code,
-                    Name = UserStatusEnum.INACTIVE.Name,
+                    Id = StatusEnum.INACTIVE.Id,
+                    Code = StatusEnum.INACTIVE.Code,
+                    Name = StatusEnum.INACTIVE.Name,
                 });
             }
 
-            if (!statuses.Any(pt => pt.Id == UserStatusEnum.LOCKED.Id))
+            if (!statuses.Any(pt => pt.Id == StatusEnum.LOCKED.Id))
             {
-                DataContext.UserStatus.Add(new UserStatusDAO
+                DataContext.Status.Add(new StatusDAO
                 {
-                    Id = UserStatusEnum.LOCKED.Id,
-                    Code = UserStatusEnum.LOCKED.Code,
-                    Name = UserStatusEnum.LOCKED.Name,
+                    Id = StatusEnum.LOCKED.Id,
+                    Code = StatusEnum.LOCKED.Code,
+                    Name = StatusEnum.LOCKED.Name,
                 });
             }
         }

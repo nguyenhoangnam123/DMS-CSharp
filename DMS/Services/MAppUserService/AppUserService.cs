@@ -92,6 +92,7 @@ namespace DMS.Services.MAppUser
 
             try
             {
+                AppUser.Id = 0;
                 await UOW.Begin();
                 await UOW.AppUserRepository.Create(AppUser);
                 await UOW.Commit();
@@ -228,6 +229,7 @@ namespace DMS.Services.MAppUser
 
             try
             {
+                AppUsers.ForEach(a => a.Id = 0);
                 await UOW.Begin();
                 await UOW.AppUserRepository.BulkMerge(AppUsers);
                 await UOW.Commit();
@@ -275,7 +277,7 @@ namespace DMS.Services.MAppUser
                 worksheet.Cells[1, DisplayNameColumn].Value = nameof(AppUser.DisplayName);
                 worksheet.Cells[1, EmailColumn].Value = nameof(AppUser.Email);
                 worksheet.Cells[1, PhoneColumn].Value = nameof(AppUser.Phone);
-                worksheet.Cells[1, UserStatusIdColumn].Value = nameof(AppUser.UserStatusId);
+                worksheet.Cells[1, UserStatusIdColumn].Value = nameof(AppUser.StatusId);
 
                 for (int i = 0; i < AppUsers.Count; i++)
                 {
@@ -286,7 +288,7 @@ namespace DMS.Services.MAppUser
                     worksheet.Cells[i + StartRow, DisplayNameColumn].Value = AppUser.DisplayName;
                     worksheet.Cells[i + StartRow, EmailColumn].Value = AppUser.Email;
                     worksheet.Cells[i + StartRow, PhoneColumn].Value = AppUser.Phone;
-                    worksheet.Cells[i + StartRow, UserStatusIdColumn].Value = AppUser.UserStatusId;
+                    worksheet.Cells[i + StartRow, UserStatusIdColumn].Value = AppUser.StatusId;
                 }
                 excelPackage.Save();
             }
@@ -319,8 +321,8 @@ namespace DMS.Services.MAppUser
                     subFilter.Email = Map(subFilter.Email, currentFilter.Value);
                 if (currentFilter.Value.Name == nameof(subFilter.Phone))
                     subFilter.Phone = Map(subFilter.Phone, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.UserStatusId))
-                    subFilter.UserStatusId = Map(subFilter.UserStatusId, currentFilter.Value);
+                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
+                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
             }
             return filter;
         }

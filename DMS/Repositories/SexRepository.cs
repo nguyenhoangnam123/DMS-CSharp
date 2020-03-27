@@ -144,7 +144,7 @@ namespace DMS.Repositories
                     Email = x.Email,
                     Phone = x.Phone,
                     SexId = x.SexId,
-                    UserStatusId = x.UserStatusId
+                    StatusId = x.StatusId
                 }).ToListAsync();
 
             return Sex;

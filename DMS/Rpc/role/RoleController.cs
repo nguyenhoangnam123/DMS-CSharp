@@ -1,5 +1,7 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
+using DMS.Services.MAppUser;
 using DMS.Services.MMenu;
 using DMS.Services.MPermission;
 using DMS.Services.MRole;
@@ -26,11 +28,12 @@ namespace DMS.Rpc.role
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
-        public const string BulkDelete = Default + "/bulk-delete";
 
+        public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListStatus = Default + "/single-list-status";
-        public const string SingleListPermission = Default + "/single-list-permission";
         public const string SingleListMenu = Default + "/single-list-menu";
+        public const string CountAppUser = Default + "/count-app-user";
+        public const string ListAppUser = Default + "/list-app-user";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(RoleFilter.Id), FieldType.ID },
@@ -42,24 +45,22 @@ namespace DMS.Rpc.role
 
     public class RoleController : RpcController
     {
-        private IStatusService StatusService;
-        private IPermissionService PermissionService;
+        private IAppUserService AppUserService;
         private IMenuService MenuService;
         private IRoleService RoleService;
-        private ICurrentContext CurrentContext;
+        private IStatusService StatusService;
+
         public RoleController(
-            IStatusService StatusService,
-            IPermissionService PermissionService,
+            IAppUserService AppUserService,
             IMenuService MenuService,
             IRoleService RoleService,
-            ICurrentContext CurrentContext
+            IStatusService StatusService
         )
         {
-            this.StatusService = StatusService;
-            this.PermissionService = PermissionService;
+            this.AppUserService = AppUserService;
             this.MenuService = MenuService;
             this.RoleService = RoleService;
-            this.CurrentContext = CurrentContext;
+            this.StatusService = StatusService;
         }
 
         [Route(RoleRoute.Count), HttpPost]
@@ -188,27 +189,9 @@ namespace DMS.Rpc.role
             };
         }
 
-        [Route(RoleRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            RoleFilter RoleFilter = new RoleFilter();
-            RoleFilter.Id = new IdFilter { In = Ids };
-            RoleFilter.Selects = RoleSelect.Id;
-            RoleFilter.Skip = 0;
-            RoleFilter.Take = int.MaxValue;
-
-            List<Role> Roles = await RoleService.List(RoleFilter);
-            Roles = await RoleService.BulkDelete(Roles);
-            return true;
-        }
-
         private async Task<bool> HasPermission(long Id)
         {
             RoleFilter RoleFilter = new RoleFilter();
-            RoleFilter = RoleService.ToFilter(RoleFilter);
             if (Id == 0)
             {
 
@@ -216,6 +199,7 @@ namespace DMS.Rpc.role
             else
             {
                 RoleFilter.Id = new IdFilter { Equal = Id };
+                RoleFilter = RoleService.ToFilter(RoleFilter);
                 int count = await RoleService.Count(RoleFilter);
                 if (count == 0)
                     return false;
@@ -223,24 +207,35 @@ namespace DMS.Rpc.role
             return true;
         }
 
-        private Role ConvertDTOToEntity(Role_RoleDTO Role_RoleDTO)
+        public Role ConvertDTOToEntity(Role_RoleDTO Role_RoleDTO)
         {
             Role Role = new Role();
             Role.Id = Role_RoleDTO.Id;
             Role.Code = Role_RoleDTO.Code;
             Role.Name = Role_RoleDTO.Name;
             Role.StatusId = Role_RoleDTO.StatusId;
-            Role.Status = Role_RoleDTO.Status == null ? null : new Status
-            {
-                Id = Role_RoleDTO.Status.Id,
-                Code = Role_RoleDTO.Status.Code,
-                Name = Role_RoleDTO.Status.Name,
-            };
+            Role.AppUserRoleMappings = Role_RoleDTO.AppUserRoleMappings?
+                .Select(x => new AppUserRoleMapping
+                {
+                    AppUserId = x.AppUserId,
+                    RoleId = x.RoleId,
+                    AppUser = new AppUser
+                    {
+                        Id = x.AppUser.Id,
+                        Username = x.AppUser.Username,
+                        Password = x.AppUser.Password,
+                        DisplayName = x.AppUser.DisplayName,
+                        Email = x.AppUser.Email,
+                        Phone = x.AppUser.Phone,
+                        StatusId = x.AppUser.StatusId,
+                    },
+                }).ToList();
             Role.Permissions = Role_RoleDTO.Permissions?
                 .Select(x => new Permission
                 {
                     Id = x.Id,
                     Name = x.Name,
+                    RoleId = x.RoleId,
                     MenuId = x.MenuId,
                     StatusId = x.StatusId,
                     Menu = new Menu
@@ -250,18 +245,12 @@ namespace DMS.Rpc.role
                         Path = x.Menu.Path,
                         IsDeleted = x.Menu.IsDeleted,
                     },
-                    Status = new Status
-                    {
-                        Id = x.Status.Id,
-                        Code = x.Status.Code,
-                        Name = x.Status.Name,
-                    },
                 }).ToList();
-            Role.BaseLanguage = CurrentContext.Language;
+
             return Role;
         }
 
-        private RoleFilter ConvertFilterDTOToFilterEntity(Role_RoleFilterDTO Role_RoleFilterDTO)
+        public RoleFilter ConvertFilterDTOToFilterEntity(Role_RoleFilterDTO Role_RoleFilterDTO)
         {
             RoleFilter RoleFilter = new RoleFilter();
             RoleFilter.Selects = RoleSelect.ALL;
@@ -277,43 +266,27 @@ namespace DMS.Rpc.role
             return RoleFilter;
         }
 
-        [Route(RoleRoute.SingleListStatus), HttpPost]
-        public async Task<List<Role_StatusDTO>> SingleListStatus([FromBody] Role_StatusFilterDTO Role_StatusFilterDTO)
+        [Route(RoleRoute.SingleListAppUser), HttpPost]
+        public async Task<List<Role_AppUserDTO>> SingleListAppUser([FromBody] Role_AppUserFilterDTO Role_AppUserFilterDTO)
         {
-            StatusFilter StatusFilter = new StatusFilter();
-            StatusFilter.Skip = 0;
-            StatusFilter.Take = 20;
-            StatusFilter.OrderBy = StatusOrder.Id;
-            StatusFilter.OrderType = OrderType.ASC;
-            StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = Role_StatusFilterDTO.Id;
-            StatusFilter.Code = Role_StatusFilterDTO.Code;
-            StatusFilter.Name = Role_StatusFilterDTO.Name;
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = Role_AppUserFilterDTO.Id;
+            AppUserFilter.Username = Role_AppUserFilterDTO.Username;
+            AppUserFilter.Password = Role_AppUserFilterDTO.Password;
+            AppUserFilter.DisplayName = Role_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Email = Role_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = Role_AppUserFilterDTO.Phone;
+            AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
-            List<Status> Statuses = await StatusService.List(StatusFilter);
-            List<Role_StatusDTO> Role_StatusDTOs = Statuses
-                .Select(x => new Role_StatusDTO(x)).ToList();
-            return Role_StatusDTOs;
-        }
-        [Route(RoleRoute.SingleListPermission), HttpPost]
-        public async Task<List<Role_PermissionDTO>> SingleListPermission([FromBody] Role_PermissionFilterDTO Role_PermissionFilterDTO)
-        {
-            PermissionFilter PermissionFilter = new PermissionFilter();
-            PermissionFilter.Skip = 0;
-            PermissionFilter.Take = 20;
-            PermissionFilter.OrderBy = PermissionOrder.Id;
-            PermissionFilter.OrderType = OrderType.ASC;
-            PermissionFilter.Selects = PermissionSelect.ALL;
-            PermissionFilter.Id = Role_PermissionFilterDTO.Id;
-            PermissionFilter.Name = Role_PermissionFilterDTO.Name;
-            PermissionFilter.RoleId = Role_PermissionFilterDTO.RoleId;
-            PermissionFilter.MenuId = Role_PermissionFilterDTO.MenuId;
-            PermissionFilter.StatusId = Role_PermissionFilterDTO.StatusId;
-
-            List<Permission> Permissions = await PermissionService.List(PermissionFilter);
-            List<Role_PermissionDTO> Role_PermissionDTOs = Permissions
-                .Select(x => new Role_PermissionDTO(x)).ToList();
-            return Role_PermissionDTOs;
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<Role_AppUserDTO> Role_AppUserDTOs = AppUsers
+                .Select(x => new Role_AppUserDTO(x)).ToList();
+            return Role_AppUserDTOs;
         }
         [Route(RoleRoute.SingleListMenu), HttpPost]
         public async Task<List<Role_MenuDTO>> SingleListMenu([FromBody] Role_MenuFilterDTO Role_MenuFilterDTO)
@@ -333,7 +306,47 @@ namespace DMS.Rpc.role
                 .Select(x => new Role_MenuDTO(x)).ToList();
             return Role_MenuDTOs;
         }
+        [Route(RoleRoute.SingleListStatus), HttpPost]
+        public async Task<List<Role_StatusDTO>> SingleListStatus([FromBody] Role_StatusFilterDTO Role_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+            StatusFilter.Id = Role_StatusFilterDTO.Id;
+            StatusFilter.Code = Role_StatusFilterDTO.Code;
+            StatusFilter.Name = Role_StatusFilterDTO.Name;
 
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<Role_StatusDTO> Role_StatusDTOs = Statuses
+                .Select(x => new Role_StatusDTO(x)).ToList();
+            return Role_StatusDTOs;
+        }
+        [Route(RoleRoute.CountAppUser), HttpPost]
+        public async Task<long> CountAppUser([FromBody] Role_AppUserFilterDTO Role_AppUserFilterDTO)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter();
+
+            return await AppUserService.Count(AppUserFilter);
+        }
+
+        [Route(RoleRoute.ListAppUser), HttpPost]
+        public async Task<List<Role_AppUserDTO>> ListAppUser([FromBody] Role_AppUserFilterDTO Role_AppUserFilterDTO)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = Role_AppUserFilterDTO.Skip;
+            AppUserFilter.Take = Role_AppUserFilterDTO.Take;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<Role_AppUserDTO> Role_AppUserDTOs = AppUsers
+                .Select(x => new Role_AppUserDTO(x)).ToList();
+            return Role_AppUserDTOs;
+        }
     }
 }
 

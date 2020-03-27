@@ -92,6 +92,7 @@ namespace DMS.Services.MRole
 
             try
             {
+                Role.Id = 0;
                 await UOW.Begin();
                 await UOW.RoleRepository.Create(Role);
                 await UOW.Commit();
@@ -219,6 +220,7 @@ namespace DMS.Services.MRole
 
             try
             {
+                Roles.ForEach(r => r.Id = 0);
                 await UOW.Begin();
                 await UOW.RoleRepository.BulkMerge(Roles);
                 await UOW.Commit();

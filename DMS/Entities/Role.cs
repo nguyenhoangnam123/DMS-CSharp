@@ -13,6 +13,7 @@ namespace DMS.Entities
         public string Name { get; set; }
         public long StatusId { get; set; }
         public Status Status { get; set; }
+        public List<AppUserRoleMapping> AppUserRoleMappings { get; set; }
         public List<Permission> Permissions { get; set; }
 
         public bool Equals(Role other)
