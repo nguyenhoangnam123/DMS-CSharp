@@ -133,6 +133,17 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 } : null,
+                Districts = filter.Selects.Contains(ProvinceSelect.Districts) && q.Districts == null ? null : 
+                q.Districts.Select(p => new District
+                {
+                    Name = p.Name,
+                    Code = p.Code,
+                    Wards = p.Wards.Select(w => new Ward 
+                    { 
+                        Name = w.Name,
+                        Code = w.Code,
+                    }).ToList(),
+                }).ToList(),
             }).ToListAsync();
             return Provinces;
         }

@@ -9,6 +9,8 @@ using OfficeOpenXml;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.IO;
+using System;
 
 namespace DMS.Rpc.province
 {
@@ -235,12 +237,45 @@ namespace DMS.Rpc.province
                 throw new BindException(ModelState);
 
             ProvinceFilter ProvinceFilter = ConvertFilterDTOToFilterEntity(Province_ProvinceFilterDTO);
+            ProvinceFilter.Skip = 0;
+            ProvinceFilter.Take = int.MaxValue;
             ProvinceFilter = ProvinceService.ToFilter(ProvinceFilter);
-            DataFile DataFile = await ProvinceService.Export(ProvinceFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
+
+            List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
+                var ProvinceHeaders = new List<string[]>()
+                {
+                    new string[] { "Tỉnh Thành Phố","Mã TP","Quận Huyện", "Mã QH",   "Phường Xã" ,  "Mã PX" }
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < Provinces.Count; i++)
+                {
+                    var Province = Provinces[i];
+                    foreach (var district in Province.Districts)
+                    {
+                        foreach (var ward in district.Wards)
+                        {
+                            data.Add(new Object[]
+                            {
+                                 Province.Name,
+                                 Province.Code,
+                                 district.Name,
+                                 district.Code,
+                                 ward.Name,
+                                 ward.Code
+                            });
+                        }
+                    }
+
+                    excel.GenerateWorksheet("Province", ProvinceHeaders, data);
+                }
+                excel.Save();
+            }
+
+            return File(memoryStream.ToArray(), "application/octet-stream", "Province.xlsx");
+
         }
 
         [Route(ProvinceRoute.BulkDelete), HttpPost]
