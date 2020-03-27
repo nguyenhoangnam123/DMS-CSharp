@@ -263,6 +263,7 @@ namespace DMS.Repositories
             AppUserDAO.SexId = AppUser.SexId;
             AppUserDAO.CreatedAt = StaticParams.DateTimeNow;
             AppUserDAO.UpdatedAt = StaticParams.DateTimeNow;
+            AppUserDAO.SexId = AppUser.SexId;
             DataContext.AppUser.Add(AppUserDAO);
             await DataContext.SaveChangesAsync();
             AppUser.Id = AppUserDAO.Id;

@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Models;
 using Helpers;
@@ -36,6 +36,8 @@ namespace DMS.Repositories
             query = query.Where(q => !q.DeletedAt.HasValue);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
+            if (filter.Code != null)
+                query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.Priority != null)
@@ -77,6 +79,9 @@ namespace DMS.Repositories
                         case ProvinceOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
+                        case ProvinceOrder.Code:
+                            query = query.OrderBy(q => q.Code);
+                            break;
                         case ProvinceOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
@@ -93,6 +98,9 @@ namespace DMS.Repositories
                     {
                         case ProvinceOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
+                            break;
+                        case ProvinceOrder.Code:
+                            query = query.OrderByDescending(q => q.Code);
                             break;
                         case ProvinceOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
@@ -115,6 +123,7 @@ namespace DMS.Repositories
             List<Province> Provinces = await query.Select(q => new Province()
             {
                 Id = filter.Selects.Contains(ProvinceSelect.Id) ? q.Id : default(long),
+                Code = filter.Selects.Contains(ProvinceSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(ProvinceSelect.Name) ? q.Name : default(string),
                 Priority = filter.Selects.Contains(ProvinceSelect.Priority) ? q.Priority : default(long?),
                 StatusId = filter.Selects.Contains(ProvinceSelect.Status) ? q.StatusId : default(long),
@@ -150,6 +159,7 @@ namespace DMS.Repositories
             Province Province = await DataContext.Province.Where(x => x.Id == Id).Select(x => new Province()
             {
                 Id = x.Id,
+                Code = x.Code,
                 Name = x.Name,
                 Priority = x.Priority,
                 StatusId = x.StatusId,
@@ -170,6 +180,7 @@ namespace DMS.Repositories
         {
             ProvinceDAO ProvinceDAO = new ProvinceDAO();
             ProvinceDAO.Id = Province.Id;
+            ProvinceDAO.Code = Province.Code;
             ProvinceDAO.Name = Province.Name;
             ProvinceDAO.Priority = Province.Priority;
             ProvinceDAO.StatusId = Province.StatusId;
@@ -184,10 +195,11 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Province Province)
         {
-            ProvinceDAO ProvinceDAO = DataContext.Province.Where(x => x.Id == Province.Id).FirstOrDefault();
+            ProvinceDAO ProvinceDAO = DataContext.Province.Where(x => x.Id == Province.Id || x.Code == Province.Code).FirstOrDefault();
             if (ProvinceDAO == null)
                 return false;
             ProvinceDAO.Id = Province.Id;
+            ProvinceDAO.Code = Province.Code;
             ProvinceDAO.Name = Province.Name;
             ProvinceDAO.Priority = Province.Priority;
             ProvinceDAO.StatusId = Province.StatusId;
@@ -210,6 +222,7 @@ namespace DMS.Repositories
             {
                 ProvinceDAO ProvinceDAO = new ProvinceDAO();
                 ProvinceDAO.Id = Province.Id;
+                ProvinceDAO.Code = Province.Code;
                 ProvinceDAO.Name = Province.Name;
                 ProvinceDAO.Priority = Province.Priority;
                 ProvinceDAO.StatusId = Province.StatusId;

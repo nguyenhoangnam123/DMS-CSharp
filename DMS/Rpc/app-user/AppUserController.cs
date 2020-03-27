@@ -1,8 +1,11 @@
 using Common;
+using Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using DMS.Entities;
-using DMS.Enums;
 using DMS.Services.MAppUser;
-using DMS.Services.MOrganization;
+using DMS.Services.MUserStatus;
 using DMS.Services.MRole;
 using DMS.Services.MSexService;
 using DMS.Services.MStatus;
@@ -112,6 +115,7 @@ namespace DMS.Rpc.app_user
                 return Forbid();
 
             AppUser AppUser = await AppUserService.Get(AppUser_AppUserDTO.Id);
+            //AppUser AppUser = await AppUserService.Get(3);
             return new AppUser_AppUserDTO(AppUser);
         }
 

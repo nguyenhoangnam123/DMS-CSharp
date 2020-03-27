@@ -36,6 +36,8 @@ namespace DMS.Repositories
             query = query.Where(q => !q.DeletedAt.HasValue);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
+            if (filter.Code != null)
+                query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.Priority != null)
@@ -58,6 +60,8 @@ namespace DMS.Repositories
                 IQueryable<WardDAO> queryable = query;
                 if (filter.Id != null)
                     queryable = queryable.Where(q => q.Id, filter.Id);
+                if (filter.Code != null)
+                    queryable = queryable.Where(q => q.Code, filter.Code);
                 if (filter.Name != null)
                     queryable = queryable.Where(q => q.Name, filter.Name);
                 if (filter.Priority != null)
@@ -81,6 +85,9 @@ namespace DMS.Repositories
                         case WardOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
+                        case WardOrder.Code:
+                            query = query.OrderBy(q => q.Code);
+                            break;
                         case WardOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
@@ -100,6 +107,9 @@ namespace DMS.Repositories
                     {
                         case WardOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
+                            break;
+                        case WardOrder.Code:
+                            query = query.OrderByDescending(q => q.Code);
                             break;
                         case WardOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
@@ -125,6 +135,7 @@ namespace DMS.Repositories
             List<Ward> Wards = await query.Select(q => new Ward()
             {
                 Id = filter.Selects.Contains(WardSelect.Id) ? q.Id : default(long),
+                Code = filter.Selects.Contains(WardSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(WardSelect.Name) ? q.Name : default(string),
                 Priority = filter.Selects.Contains(WardSelect.Priority) ? q.Priority : default(long?),
                 DistrictId = filter.Selects.Contains(WardSelect.District) ? q.DistrictId : default(long),
@@ -198,6 +209,7 @@ namespace DMS.Repositories
         {
             WardDAO WardDAO = new WardDAO();
             WardDAO.Id = Ward.Id;
+            WardDAO.Code = Ward.Code;
             WardDAO.Name = Ward.Name;
             WardDAO.Priority = Ward.Priority;
             WardDAO.DistrictId = Ward.DistrictId;
@@ -217,6 +229,7 @@ namespace DMS.Repositories
             if (WardDAO == null)
                 return false;
             WardDAO.Id = Ward.Id;
+            WardDAO.Code = Ward.Code;
             WardDAO.Name = Ward.Name;
             WardDAO.Priority = Ward.Priority;
             WardDAO.DistrictId = Ward.DistrictId;
@@ -240,6 +253,7 @@ namespace DMS.Repositories
             {
                 WardDAO WardDAO = new WardDAO();
                 WardDAO.Id = Ward.Id;
+                WardDAO.Code = Ward.Code;
                 WardDAO.Name = Ward.Name;
                 WardDAO.Priority = Ward.Priority;
                 WardDAO.DistrictId = Ward.DistrictId;
@@ -251,7 +265,6 @@ namespace DMS.Repositories
             await DataContext.BulkMergeAsync(WardDAOs);
             return true;
         }
-
         public async Task<bool> BulkDelete(List<Ward> Wards)
         {
             List<long> Ids = Wards.Select(x => x.Id).ToList();

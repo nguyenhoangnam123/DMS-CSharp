@@ -1,10 +1,11 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Services.MProvince;
 using DMS.Services.MStatus;
 using Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace DMS.Rpc.province
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
+        public const string ImportLocation = Default + "/import-location";
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
 
@@ -157,7 +159,70 @@ namespace DMS.Rpc.province
                 Content = file.OpenReadStream(),
             };
 
-            List<Province> Provinces = await ProvinceService.Import(DataFile);
+            List<Province> Provinces = new List<Province>();
+            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                if (worksheet == null)
+                    return null;
+                int StartColumn = 1;
+                int StartRow = 2;
+
+                int ProvinceName = 0 + StartColumn;
+                int ProvinceCode = 1 + StartColumn;
+
+                int DistrictName = 2 + StartColumn;
+                int DistrictCode = 3 + StartColumn;
+
+                int WardName = 4 + StartColumn;
+                int WardCode = 5 + StartColumn;
+
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    // Lấy thông tin từng dòng
+                    string ProvinceNameValue = worksheet.Cells[i + StartRow, ProvinceName].Value?.ToString();
+                    string ProvinceCodeValue = worksheet.Cells[i + StartRow, ProvinceCode].Value?.ToString();
+                    string DistrictNameValue = worksheet.Cells[i + StartRow, DistrictName].Value?.ToString();
+                    string DistrictCodeValue = worksheet.Cells[i + StartRow, DistrictCode].Value?.ToString();
+                    string WardNameValue = worksheet.Cells[i + StartRow, WardName].Value?.ToString();
+                    string WardCodeValue = worksheet.Cells[i + StartRow, WardCode].Value?.ToString();
+                    if (string.IsNullOrEmpty(ProvinceCodeValue))
+                        continue;
+                    Province province = Provinces.Where(x => x.Code == ProvinceCodeValue).FirstOrDefault();
+                    if (province == null)
+                    {
+                        province = new Province
+                        {
+                            Code = ProvinceCodeValue,
+                            Name = ProvinceNameValue,
+                        };
+                        Provinces.Add(province);
+                    }
+                    if (province.Districts == null) province.Districts = new List<District>();
+                    District district = province.Districts.Where(x => x.Code == DistrictCodeValue).FirstOrDefault();
+                    if (district == null)
+                    {
+                        district = new District
+                        {
+                            Code = DistrictCodeValue,
+                            Name = DistrictNameValue,
+                        };
+                        province.Districts.Add(district);
+                    }
+                    if (district.Wards == null) district.Wards = new List<Ward>();
+                    Ward ward = district.Wards.Where(x => x.Code == WardCodeValue).FirstOrDefault();
+                    if (ward == null)
+                    {
+                        ward = new Ward
+                        {
+                            Code = WardCodeValue,
+                            Name = WardNameValue,
+                        };
+                        district.Wards.Add(ward);
+                    }
+                }
+            }
+            Provinces = await ProvinceService.BulkMerge(Provinces);
             List<Province_ProvinceDTO> Province_ProvinceDTOs = Provinces
                 .Select(c => new Province_ProvinceDTO(c)).ToList();
             return Province_ProvinceDTOs;

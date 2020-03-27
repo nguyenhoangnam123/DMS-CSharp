@@ -8,6 +8,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using OfficeOpenXml;
+using DMS.Repositories;
+using DMS.Entities;
+using DMS.Helpers;
+using Microsoft.AspNetCore.Http;
+using DMS.Services.MSexService;
 
 namespace DMS.Services.MAppUser
 {
@@ -31,18 +37,21 @@ namespace DMS.Services.MAppUser
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IAppUserValidator AppUserValidator;
+        private ISexService SexService;
 
         public AppUserService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IAppUserValidator AppUserValidator
+            IAppUserValidator AppUserValidator,
+            ISexService SexService
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.AppUserValidator = AppUserValidator;
+            this.SexService = SexService;
         }
         public async Task<int> Count(AppUserFilter AppUserFilter)
         {
@@ -184,11 +193,11 @@ namespace DMS.Services.MAppUser
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }
+        } 
 
         public async Task<List<AppUser>> Import(DataFile DataFile)
         {
-            List<AppUser> AppUsers = new List<AppUser>();
+            List<AppUser> AppUsers = new List<AppUser>(); 
             using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
             {
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
@@ -203,6 +212,7 @@ namespace DMS.Services.MAppUser
                 int EmailColumn = 4 + StartColumn;
                 int PhoneColumn = 5 + StartColumn;
                 int UserStatusIdColumn = 6 + StartColumn;
+                int SexIdColumn = 7 + StartColumn;
                 for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
                 {
                     if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, IdColumn].Value?.ToString()))
@@ -214,12 +224,19 @@ namespace DMS.Services.MAppUser
                     string EmailValue = worksheet.Cells[i + StartRow, EmailColumn].Value?.ToString();
                     string PhoneValue = worksheet.Cells[i + StartRow, PhoneColumn].Value?.ToString();
                     string UserStatusIdValue = worksheet.Cells[i + StartRow, UserStatusIdColumn].Value?.ToString();
-                    AppUser AppUser = new AppUser();
+                    string SexIdValue = worksheet.Cells[i + StartRow, SexIdColumn].Value?.ToString();
+                    AppUser AppUser = new AppUser(); 
+
                     AppUser.Username = UsernameValue;
                     AppUser.Password = PasswordValue;
                     AppUser.DisplayName = DisplayNameValue;
                     AppUser.Email = EmailValue;
                     AppUser.Phone = PhoneValue;
+                    AppUser.UserStatusId = int.Parse(UserStatusIdValue);
+                    AppUser.SexId = long.Parse(SexIdValue);
+                    //AppUser.Sex = await SexService.Get(long.Parse(SexIdValue));
+
+                    await Create(AppUser);
                     AppUsers.Add(AppUser);
                 }
             }
