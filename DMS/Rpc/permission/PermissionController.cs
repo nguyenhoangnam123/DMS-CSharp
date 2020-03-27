@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Services.MMenu;
 using DMS.Services.MPermission;
 using DMS.Services.MRole;
@@ -334,7 +335,7 @@ namespace DMS.Rpc.permission
             RoleFilter.Id = Permission_RoleFilterDTO.Id;
             RoleFilter.Code = Permission_RoleFilterDTO.Code;
             RoleFilter.Name = Permission_RoleFilterDTO.Name;
-            RoleFilter.StatusId = Permission_RoleFilterDTO.StatusId;
+            RoleFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Role> Roles = await RoleService.List(RoleFilter);
             List<Permission_RoleDTO> Permission_RoleDTOs = Roles

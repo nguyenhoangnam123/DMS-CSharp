@@ -1,9 +1,10 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
 using DMS.Services.MRole;
-using DMS.Services.MSexService;
+using DMS.Services.MSex;
 using DMS.Services.MStatus;
 using Helpers;
 using Microsoft.AspNetCore.Http;
@@ -329,14 +330,7 @@ namespace DMS.Rpc.app_user
             OrganizationFilter.Id = AppUser_OrganizationFilterDTO.Id;
             OrganizationFilter.Code = AppUser_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = AppUser_OrganizationFilterDTO.Name;
-            OrganizationFilter.ParentId = AppUser_OrganizationFilterDTO.ParentId;
-            OrganizationFilter.Path = AppUser_OrganizationFilterDTO.Path;
-            OrganizationFilter.Level = AppUser_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = AppUser_OrganizationFilterDTO.StatusId;
-            OrganizationFilter.Phone = AppUser_OrganizationFilterDTO.Phone;
-            OrganizationFilter.Address = AppUser_OrganizationFilterDTO.Address;
-            OrganizationFilter.Latitude = AppUser_OrganizationFilterDTO.Latitude;
-            OrganizationFilter.Longitude = AppUser_OrganizationFilterDTO.Longitude;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<AppUser_OrganizationDTO> AppUser_OrganizationDTOs = Organizations
@@ -355,6 +349,7 @@ namespace DMS.Rpc.app_user
             SexFilter.Id = AppUser_SexFilterDTO.Id;
             SexFilter.Code = AppUser_SexFilterDTO.Code;
             SexFilter.Name = AppUser_SexFilterDTO.Name;
+            SexFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Sex> Sexes = await SexService.List(SexFilter);
             List<AppUser_SexDTO> AppUser_SexDTOs = Sexes
@@ -391,7 +386,7 @@ namespace DMS.Rpc.app_user
             RoleFilter.Id = AppUser_RoleFilterDTO.Id;
             RoleFilter.Code = AppUser_RoleFilterDTO.Code;
             RoleFilter.Name = AppUser_RoleFilterDTO.Name;
-            RoleFilter.StatusId = AppUser_RoleFilterDTO.StatusId;
+            RoleFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Role> Roles = await RoleService.List(RoleFilter);
             List<AppUser_RoleDTO> AppUser_RoleDTOs = Roles
@@ -406,7 +401,7 @@ namespace DMS.Rpc.app_user
             RoleFilter.Id = AppUser_RoleFilterDTO.Id;
             RoleFilter.Code = AppUser_RoleFilterDTO.Code;
             RoleFilter.Name = AppUser_RoleFilterDTO.Name;
-            RoleFilter.StatusId = AppUser_RoleFilterDTO.StatusId;
+            RoleFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             return await RoleService.Count(RoleFilter);
         }
@@ -423,7 +418,7 @@ namespace DMS.Rpc.app_user
             RoleFilter.Id = AppUser_RoleFilterDTO.Id;
             RoleFilter.Code = AppUser_RoleFilterDTO.Code;
             RoleFilter.Name = AppUser_RoleFilterDTO.Name;
-            RoleFilter.StatusId = AppUser_RoleFilterDTO.StatusId;
+            RoleFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Role> Roles = await RoleService.List(RoleFilter);
             List<AppUser_RoleDTO> AppUser_RoleDTOs = Roles

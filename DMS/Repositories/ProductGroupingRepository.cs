@@ -276,9 +276,11 @@ namespace DMS.Repositories
                 ProductGroupingDAO.Id = ProductGrouping.Id;
                 ProductGroupingDAO.Code = ProductGrouping.Code;
                 ProductGroupingDAO.Name = ProductGrouping.Name;
-                ProductGroupingDAO.ParentId = ProductGrouping.ParentId;
-                ProductGroupingDAO.Path = ProductGrouping.Path;
                 ProductGroupingDAO.Description = ProductGrouping.Description;
+                ProductGroupingDAO.ParentId = ProductGrouping.ParentId;
+                ProductGroupingDAO.Path = "";
+                ProductGroupingDAO.Level = 1;
+                ProductGroupingDAO.StatusId = ProductGrouping.StatusId;
                 ProductGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
                 ProductGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
                 ProductGroupingDAOs.Add(ProductGroupingDAO);
@@ -328,6 +330,7 @@ namespace DMS.Repositories
                 if (!x.ParentId.HasValue)
                 {
                     x.Path = x.Id + ".";
+                    x.Level = 1;
                     queue.Enqueue(x);
                 }
             });
@@ -339,6 +342,7 @@ namespace DMS.Repositories
                     if (ProductGroupingDAO.ParentId == Parent.Id)
                     {
                         ProductGroupingDAO.Path = Parent.Path + ProductGroupingDAO.Id + ".";
+                        ProductGroupingDAO.Level = Parent.Level + 1;
                         queue.Enqueue(ProductGroupingDAO);
                     }
                 }

@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Services.MDistrict;
 using DMS.Services.MStatus;
 using DMS.Services.MWard;
@@ -275,7 +276,7 @@ namespace DMS.Rpc.ward
             DistrictFilter.Name = Ward_DistrictFilterDTO.Name;
             DistrictFilter.Priority = Ward_DistrictFilterDTO.Priority;
             DistrictFilter.ProvinceId = Ward_DistrictFilterDTO.ProvinceId;
-            DistrictFilter.StatusId = Ward_DistrictFilterDTO.StatusId;
+            DistrictFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<District> Districts = await DistrictService.List(DistrictFilter);
             List<Ward_DistrictDTO> Ward_DistrictDTOs = Districts

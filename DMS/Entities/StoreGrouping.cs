@@ -35,6 +35,7 @@ namespace DMS.Entities
         public IdFilter ParentId { get; set; }
         public StringFilter Path { get; set; }
         public LongFilter Level { get; set; }
+        public IdFilter StatusId { get; set; }
         public List<StoreGroupingFilter> OrFilter { get; set; }
         public StoreGroupingOrder OrderBy { get; set; }
         public StoreGroupingSelect Selects { get; set; }

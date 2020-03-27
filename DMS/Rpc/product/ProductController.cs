@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Services.MBrand;
 using DMS.Services.MImage;
 using DMS.Services.MItem;
@@ -438,7 +439,7 @@ namespace DMS.Rpc.product
             BrandFilter.Id = Product_BrandFilterDTO.Id;
             BrandFilter.Code = Product_BrandFilterDTO.Code;
             BrandFilter.Name = Product_BrandFilterDTO.Name;
-            BrandFilter.StatusId = Product_BrandFilterDTO.StatusId;
+            BrandFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Brand> Brands = await BrandService.List(BrandFilter);
             List<Product_BrandDTO> Product_BrandDTOs = Brands
@@ -458,7 +459,7 @@ namespace DMS.Rpc.product
             ProductTypeFilter.Code = Product_ProductTypeFilterDTO.Code;
             ProductTypeFilter.Name = Product_ProductTypeFilterDTO.Name;
             ProductTypeFilter.Description = Product_ProductTypeFilterDTO.Description;
-            ProductTypeFilter.StatusId = Product_ProductTypeFilterDTO.StatusId;
+            ProductTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
             List<Product_ProductTypeDTO> Product_ProductTypeDTOs = ProductTypes
@@ -496,7 +497,7 @@ namespace DMS.Rpc.product
             SupplierFilter.Code = Product_SupplierFilterDTO.Code;
             SupplierFilter.Name = Product_SupplierFilterDTO.Name;
             SupplierFilter.TaxCode = Product_SupplierFilterDTO.TaxCode;
-            SupplierFilter.StatusId = Product_SupplierFilterDTO.StatusId;
+            SupplierFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
             List<Product_SupplierDTO> Product_SupplierDTOs = Suppliers
@@ -516,7 +517,7 @@ namespace DMS.Rpc.product
             TaxTypeFilter.Code = Product_TaxTypeFilterDTO.Code;
             TaxTypeFilter.Name = Product_TaxTypeFilterDTO.Name;
             TaxTypeFilter.Percentage = Product_TaxTypeFilterDTO.Percentage;
-            TaxTypeFilter.StatusId = Product_TaxTypeFilterDTO.StatusId;
+            TaxTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<TaxType> TaxTypes = await TaxTypeService.List(TaxTypeFilter);
             List<Product_TaxTypeDTO> Product_TaxTypeDTOs = TaxTypes
@@ -536,7 +537,7 @@ namespace DMS.Rpc.product
             UnitOfMeasureFilter.Code = Product_UnitOfMeasureFilterDTO.Code;
             UnitOfMeasureFilter.Name = Product_UnitOfMeasureFilterDTO.Name;
             UnitOfMeasureFilter.Description = Product_UnitOfMeasureFilterDTO.Description;
-            UnitOfMeasureFilter.StatusId = Product_UnitOfMeasureFilterDTO.StatusId;
+            UnitOfMeasureFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
             List<Product_UnitOfMeasureDTO> Product_UnitOfMeasureDTOs = UnitOfMeasures
@@ -555,7 +556,7 @@ namespace DMS.Rpc.product
             UnitOfMeasureGroupingFilter.Id = Product_UnitOfMeasureGroupingFilterDTO.Id;
             UnitOfMeasureGroupingFilter.Name = Product_UnitOfMeasureGroupingFilterDTO.Name;
             UnitOfMeasureGroupingFilter.UnitOfMeasureId = Product_UnitOfMeasureGroupingFilterDTO.UnitOfMeasureId;
-            UnitOfMeasureGroupingFilter.StatusId = Product_UnitOfMeasureGroupingFilterDTO.StatusId;
+            UnitOfMeasureGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(UnitOfMeasureGroupingFilter);
             List<Product_UnitOfMeasureGroupingDTO> Product_UnitOfMeasureGroupingDTOs = UnitOfMeasureGroupings
@@ -610,13 +611,9 @@ namespace DMS.Rpc.product
             ProductGroupingFilter.Take = 99999;
             ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
             ProductGroupingFilter.OrderType = OrderType.ASC;
-            ProductGroupingFilter.Selects = ProductGroupingSelect.ALL;
-            ProductGroupingFilter.Id = Product_ProductGroupingFilterDTO.Id;
-            ProductGroupingFilter.Code = Product_ProductGroupingFilterDTO.Code;
-            ProductGroupingFilter.Name = Product_ProductGroupingFilterDTO.Name;
-            ProductGroupingFilter.ParentId = Product_ProductGroupingFilterDTO.ParentId;
-            ProductGroupingFilter.Path = Product_ProductGroupingFilterDTO.Path;
-            ProductGroupingFilter.Description = Product_ProductGroupingFilterDTO.Description;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+            ProductGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
             List<Product_ProductGroupingDTO> Product_ProductGroupingDTOs = ProductGroupings
@@ -681,7 +678,7 @@ namespace DMS.Rpc.product
             ProductGroupingFilter.ParentId = Product_ProductGroupingFilterDTO.ParentId;
             ProductGroupingFilter.Path = Product_ProductGroupingFilterDTO.Path;
             ProductGroupingFilter.Description = Product_ProductGroupingFilterDTO.Description;
-
+            ProductGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             return await ProductGroupingService.Count(ProductGroupingFilter);
         }
 
@@ -700,6 +697,7 @@ namespace DMS.Rpc.product
             ProductGroupingFilter.ParentId = Product_ProductGroupingFilterDTO.ParentId;
             ProductGroupingFilter.Path = Product_ProductGroupingFilterDTO.Path;
             ProductGroupingFilter.Description = Product_ProductGroupingFilterDTO.Description;
+            ProductGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
             List<Product_ProductGroupingDTO> Product_ProductGroupingDTOs = ProductGroupings

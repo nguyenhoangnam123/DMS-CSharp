@@ -1,19 +1,20 @@
-﻿using Common;
 using System;
 using System.Collections.Generic;
+using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class Sex : DataEntity, IEquatable<Status>
+    public class Sex : DataEntity,  IEquatable<Sex>
     {
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public List<AppUser> AppUsers { get; set; }
+        public long StatusId { get; set; }
+        public Status Status { get; set; }
 
-        public bool Equals(Status other)
+        public bool Equals(Sex other)
         {
             return other != null && Id == other.Id;
         }
@@ -28,9 +29,10 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public IdFilter StatusId { get; set; }
         public List<SexFilter> OrFilter { get; set; }
-        public SexOrder OrderBy { get; set; }
-        public SexSelect Selects { get; set; }
+        public SexOrder OrderBy {get; set;}
+        public SexSelect Selects {get; set;}
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -39,14 +41,16 @@ namespace DMS.Entities
         Id = 0,
         Code = 1,
         Name = 2,
+        Status = 3,
     }
 
     [Flags]
-    public enum SexSelect : long
+    public enum SexSelect:long
     {
         ALL = E.ALL,
         Id = E._0,
         Code = E._1,
         Name = E._2,
+        Status = E._3,
     }
 }

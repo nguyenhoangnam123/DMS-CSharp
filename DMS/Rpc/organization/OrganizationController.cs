@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Services.MDistrict;
 using DMS.Services.MOrganization;
 using DMS.Services.MProvince;
@@ -431,22 +432,7 @@ namespace DMS.Rpc.organization
             StoreFilter.Id = Organization_StoreFilterDTO.Id;
             StoreFilter.Code = Organization_StoreFilterDTO.Code;
             StoreFilter.Name = Organization_StoreFilterDTO.Name;
-            StoreFilter.ParentStoreId = Organization_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = Organization_StoreFilterDTO.OrganizationId;
-            StoreFilter.StoreTypeId = Organization_StoreFilterDTO.StoreTypeId;
-            StoreFilter.StoreGroupingId = Organization_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.Telephone = Organization_StoreFilterDTO.Telephone;
-            StoreFilter.ProvinceId = Organization_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = Organization_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = Organization_StoreFilterDTO.WardId;
-            StoreFilter.Address1 = Organization_StoreFilterDTO.Address1;
-            StoreFilter.Address2 = Organization_StoreFilterDTO.Address2;
-            StoreFilter.Latitude = Organization_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = Organization_StoreFilterDTO.Longitude;
-            StoreFilter.OwnerName = Organization_StoreFilterDTO.OwnerName;
-            StoreFilter.OwnerPhone = Organization_StoreFilterDTO.OwnerPhone;
-            StoreFilter.OwnerEmail = Organization_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = Organization_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<Organization_StoreDTO> Organization_StoreDTOs = Stores
@@ -466,7 +452,7 @@ namespace DMS.Rpc.organization
             DistrictFilter.Name = Organization_DistrictFilterDTO.Name;
             DistrictFilter.Priority = Organization_DistrictFilterDTO.Priority;
             DistrictFilter.ProvinceId = Organization_DistrictFilterDTO.ProvinceId;
-            DistrictFilter.StatusId = Organization_DistrictFilterDTO.StatusId;
+            DistrictFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<District> Districts = await DistrictService.List(DistrictFilter);
             List<Organization_DistrictDTO> Organization_DistrictDTOs = Districts
@@ -485,7 +471,7 @@ namespace DMS.Rpc.organization
             ProvinceFilter.Id = Organization_ProvinceFilterDTO.Id;
             ProvinceFilter.Name = Organization_ProvinceFilterDTO.Name;
             ProvinceFilter.Priority = Organization_ProvinceFilterDTO.Priority;
-            ProvinceFilter.StatusId = Organization_ProvinceFilterDTO.StatusId;
+            ProvinceFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
             List<Organization_ProvinceDTO> Organization_ProvinceDTOs = Provinces
@@ -525,7 +511,7 @@ namespace DMS.Rpc.organization
             StoreTypeFilter.Id = Organization_StoreTypeFilterDTO.Id;
             StoreTypeFilter.Code = Organization_StoreTypeFilterDTO.Code;
             StoreTypeFilter.Name = Organization_StoreTypeFilterDTO.Name;
-            StoreTypeFilter.StatusId = Organization_StoreTypeFilterDTO.StatusId;
+            StoreTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
             List<Organization_StoreTypeDTO> Organization_StoreTypeDTOs = StoreTypes
@@ -545,7 +531,7 @@ namespace DMS.Rpc.organization
             WardFilter.Name = Organization_WardFilterDTO.Name;
             WardFilter.Priority = Organization_WardFilterDTO.Priority;
             WardFilter.DistrictId = Organization_WardFilterDTO.DistrictId;
-            WardFilter.StatusId = Organization_WardFilterDTO.StatusId;
+            WardFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Ward> Wards = await WardService.List(WardFilter);
             List<Organization_WardDTO> Organization_WardDTOs = Wards

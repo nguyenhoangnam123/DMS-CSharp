@@ -1,12 +1,13 @@
-﻿using Common;
-using DMS.Entities;
-using DMS.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common;
+using DMS.Entities;
+using DMS;
+using DMS.Repositories;
 
-namespace DMS.Services.MSexService
+namespace DMS.Services.MSex
 {
     public interface ISexValidator : IServiceScoped
     {
@@ -49,7 +50,7 @@ namespace DMS.Services.MSexService
             return count == 1;
         }
 
-        public async Task<bool> Create(Sex Sex)
+        public async Task<bool>Create(Sex Sex)
         {
             return Sex.IsValidated;
         }
@@ -69,12 +70,12 @@ namespace DMS.Services.MSexService
             }
             return Sex.IsValidated;
         }
-
+        
         public async Task<bool> BulkDelete(List<Sex> Sexes)
         {
             return true;
         }
-
+        
         public async Task<bool> Import(List<Sex> Sexes)
         {
             return true;

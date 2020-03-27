@@ -13,7 +13,7 @@ using DMS.Repositories;
 using DMS.Entities;
 using DMS.Helpers;
 using Microsoft.AspNetCore.Http;
-using DMS.Services.MSexService;
+using DMS.Services.MSex;
 
 namespace DMS.Services.MAppUser
 {

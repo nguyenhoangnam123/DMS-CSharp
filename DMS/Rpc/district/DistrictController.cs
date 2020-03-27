@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Services.MDistrict;
 using DMS.Services.MProvince;
 using DMS.Services.MStatus;
@@ -273,7 +274,7 @@ namespace DMS.Rpc.district
             ProvinceFilter.Id = District_ProvinceFilterDTO.Id;
             ProvinceFilter.Name = District_ProvinceFilterDTO.Name;
             ProvinceFilter.Priority = District_ProvinceFilterDTO.Priority;
-            ProvinceFilter.StatusId = District_ProvinceFilterDTO.StatusId;
+            ProvinceFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
             List<District_ProvinceDTO> District_ProvinceDTOs = Provinces

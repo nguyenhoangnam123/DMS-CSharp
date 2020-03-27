@@ -1,11 +1,12 @@
-﻿using Common;
-using Microsoft.EntityFrameworkCore;
+using Common;
 using DMS.Entities;
 using DMS.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Helpers;
 
 namespace DMS.Repositories
 {
@@ -27,17 +28,20 @@ namespace DMS.Repositories
         {
             if (filter == null)
                 return query.Where(q => false);
+            query = query.Where(q => !q.DeletedAt.HasValue);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.Code != null)
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
+            if (filter.StatusId != null)
+                query = query.Where(q => q.StatusId, filter.StatusId);
             query = OrFilter(query, filter);
             return query;
         }
 
-        private IQueryable<SexDAO> OrFilter(IQueryable<SexDAO> query, SexFilter filter)
+         private IQueryable<SexDAO> OrFilter(IQueryable<SexDAO> query, SexFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -51,10 +55,12 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Code, filter.Code);
                 if (filter.Name != null)
                     queryable = queryable.Where(q => q.Name, filter.Name);
+                if (filter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }
+        }    
 
         private IQueryable<SexDAO> DynamicOrder(IQueryable<SexDAO> query, SexFilter filter)
         {
@@ -72,6 +78,9 @@ namespace DMS.Repositories
                         case SexOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
+                        case SexOrder.Status:
+                            query = query.OrderBy(q => q.StatusId);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -85,6 +94,9 @@ namespace DMS.Repositories
                             break;
                         case SexOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
+                            break;
+                        case SexOrder.Status:
+                            query = query.OrderByDescending(q => q.StatusId);
                             break;
                     }
                     break;
@@ -100,6 +112,13 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(SexSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(SexSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(SexSelect.Name) ? q.Name : default(string),
+                StatusId = filter.Selects.Contains(SexSelect.Status) ? q.StatusId : default(long),
+                Status = filter.Selects.Contains(SexSelect.Status) && q.Status != null ? new Status
+                {
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
+                } : null,
             }).ToListAsync();
             return Sexes;
         }
@@ -128,24 +147,17 @@ namespace DMS.Repositories
                 Id = x.Id,
                 Code = x.Code,
                 Name = x.Name,
+                StatusId = x.StatusId,
+                Status = x.Status == null ? null : new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
+                },
             }).FirstOrDefaultAsync();
 
             if (Sex == null)
                 return null;
-            Sex.AppUsers = await DataContext.AppUser
-                .Where(x => x.SexId == Sex.Id)
-                .Select(x => new AppUser
-                {
-                    Id = x.Id,
-                    Username = x.Username,
-                    Password = x.Password,
-                    DisplayName = x.DisplayName,
-                    Address = x.Address,
-                    Email = x.Email,
-                    Phone = x.Phone,
-                    SexId = x.SexId,
-                    StatusId = x.StatusId
-                }).ToListAsync();
 
             return Sex;
         }

@@ -12,6 +12,7 @@ using DMS.Services.MUnitOfMeasureGrouping;
 using DMS.Services.MStatus;
 using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MUnitOfMeasureGroupingContent;
+using DMS.Enums;
 
 namespace DMS.Rpc.unit_of_measure_grouping
 {
@@ -31,7 +32,6 @@ namespace DMS.Rpc.unit_of_measure_grouping
         public const string BulkDelete = Default + "/bulk-delete";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
-        public const string SingleListUnitOfMeasureGroupingContent = Default + "/single-list-unit-of-measure-grouping-content";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(UnitOfMeasureGroupingFilter.Id), FieldType.ID },
@@ -318,33 +318,13 @@ namespace DMS.Rpc.unit_of_measure_grouping
             UnitOfMeasureFilter.Code = UnitOfMeasureGrouping_UnitOfMeasureFilterDTO.Code;
             UnitOfMeasureFilter.Name = UnitOfMeasureGrouping_UnitOfMeasureFilterDTO.Name;
             UnitOfMeasureFilter.Description = UnitOfMeasureGrouping_UnitOfMeasureFilterDTO.Description;
-            UnitOfMeasureFilter.StatusId = UnitOfMeasureGrouping_UnitOfMeasureFilterDTO.StatusId;
+            UnitOfMeasureFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
             List<UnitOfMeasureGrouping_UnitOfMeasureDTO> UnitOfMeasureGrouping_UnitOfMeasureDTOs = UnitOfMeasures
                 .Select(x => new UnitOfMeasureGrouping_UnitOfMeasureDTO(x)).ToList();
             return UnitOfMeasureGrouping_UnitOfMeasureDTOs;
         }
-        [Route(UnitOfMeasureGroupingRoute.SingleListUnitOfMeasureGroupingContent), HttpPost]
-        public async Task<List<UnitOfMeasureGrouping_UnitOfMeasureGroupingContentDTO>> SingleListUnitOfMeasureGroupingContent([FromBody] UnitOfMeasureGrouping_UnitOfMeasureGroupingContentFilterDTO UnitOfMeasureGrouping_UnitOfMeasureGroupingContentFilterDTO)
-        {
-            UnitOfMeasureGroupingContentFilter UnitOfMeasureGroupingContentFilter = new UnitOfMeasureGroupingContentFilter();
-            UnitOfMeasureGroupingContentFilter.Skip = 0;
-            UnitOfMeasureGroupingContentFilter.Take = 20;
-            UnitOfMeasureGroupingContentFilter.OrderBy = UnitOfMeasureGroupingContentOrder.Id;
-            UnitOfMeasureGroupingContentFilter.OrderType = OrderType.ASC;
-            UnitOfMeasureGroupingContentFilter.Selects = UnitOfMeasureGroupingContentSelect.ALL;
-            UnitOfMeasureGroupingContentFilter.Id = UnitOfMeasureGrouping_UnitOfMeasureGroupingContentFilterDTO.Id;
-            UnitOfMeasureGroupingContentFilter.UnitOfMeasureGroupingId = UnitOfMeasureGrouping_UnitOfMeasureGroupingContentFilterDTO.UnitOfMeasureGroupingId;
-            UnitOfMeasureGroupingContentFilter.UnitOfMeasureId = UnitOfMeasureGrouping_UnitOfMeasureGroupingContentFilterDTO.UnitOfMeasureId;
-            UnitOfMeasureGroupingContentFilter.Factor = UnitOfMeasureGrouping_UnitOfMeasureGroupingContentFilterDTO.Factor;
-
-            List<UnitOfMeasureGroupingContent> UnitOfMeasureGroupingContents = await UnitOfMeasureGroupingContentService.List(UnitOfMeasureGroupingContentFilter);
-            List<UnitOfMeasureGrouping_UnitOfMeasureGroupingContentDTO> UnitOfMeasureGrouping_UnitOfMeasureGroupingContentDTOs = UnitOfMeasureGroupingContents
-                .Select(x => new UnitOfMeasureGrouping_UnitOfMeasureGroupingContentDTO(x)).ToList();
-            return UnitOfMeasureGrouping_UnitOfMeasureGroupingContentDTOs;
-        }
-
     }
 }
 
