@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using DMS.Entities;
 using DMS.Services.MAppUser;
-using DMS.Services.MUserStatus;
 using DMS.Services.MRole;
 using DMS.Services.MSexService;
 using DMS.Services.MStatus;
@@ -15,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DMS.Services.MOrganization;
 
 namespace DMS.Rpc.app_user
 {

@@ -24,7 +24,6 @@ namespace DMS.Rpc.province
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
-        public const string ImportLocation = Default + "/import-location";
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
 
