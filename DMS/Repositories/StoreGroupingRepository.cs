@@ -289,7 +289,7 @@ namespace DMS.Repositories
             StoreGroupingDAO.Code = StoreGrouping.Code;
             StoreGroupingDAO.Name = StoreGrouping.Name;
             StoreGroupingDAO.ParentId = StoreGrouping.ParentId;
-            StoreGroupingDAO.Path = StoreGrouping.Path;
+            StoreGroupingDAO.Path = "";
             StoreGroupingDAO.Level = StoreGrouping.Level;
             StoreGroupingDAO.IsActive = StoreGrouping.IsActive;
             StoreGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
@@ -311,7 +311,7 @@ namespace DMS.Repositories
             StoreGroupingDAO.Code = StoreGrouping.Code;
             StoreGroupingDAO.Name = StoreGrouping.Name;
             StoreGroupingDAO.ParentId = StoreGrouping.ParentId;
-            StoreGroupingDAO.Path = StoreGrouping.Path;
+            StoreGroupingDAO.Path = "";
             StoreGroupingDAO.Level = StoreGrouping.Level;
             StoreGroupingDAO.IsActive = StoreGrouping.IsActive;
             StoreGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -432,7 +432,7 @@ namespace DMS.Repositories
         private async Task BuildPath()
         {
             List<StoreGroupingDAO> StoreGroupingDAOs = await DataContext.StoreGrouping
-                .Where(x => x.DeletedAt != null)
+                .Where(x => x.DeletedAt == null)
                 .ToListAsync();
             Queue<StoreGroupingDAO> queue = new Queue<StoreGroupingDAO>();
             StoreGroupingDAOs.ForEach(x =>
