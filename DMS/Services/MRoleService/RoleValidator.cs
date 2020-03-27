@@ -22,6 +22,7 @@ namespace DMS.Services.MRole
         {
             IdNotExisted,
             CodeExisted,
+            CodeNotExisted,
             NameExisted,
             StatusNotExisted,
             PageNotExisted,
@@ -89,97 +90,65 @@ namespace DMS.Services.MRole
         {
             foreach (var Permission in Role.Permissions)
             {
-                if (!await ValidatePermissionCode(Permission)) return false;
-                if (!await ValidatePermissionStatus(Permission)) return false;
+                PermissionFilter PermissionFilter = new PermissionFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Code = new StringFilter { Equal = Permission.Code },
+                    Selects = PermissionSelect.Code
+                };
+
+                int count = await UOW.PermissionRepository.Count(PermissionFilter);
+                if (count == 0)
+                {
+                    Permission.AddError(nameof(RoleValidator), nameof(Permission.Code), ErrorCode.CodeNotExisted);
+                    return false;
+                }
+
+                if (!await ValidateMenu(Permission.Menu)) return false;
             }
             return true;
         }
-        public async Task<bool> ValidatePermissionId(Permission Permission)
-        {
-            PermissionFilter PermissionFilter = new PermissionFilter
-            {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = Permission.Id },
-                Selects = PermissionSelect.Id
-            };
 
-            int count = await UOW.PermissionRepository.Count(PermissionFilter);
-            if (count == 0)
-                Permission.AddError(nameof(RoleValidator), nameof(Permission.Id), ErrorCode.IdNotExisted);
-            return count == 1;
-        }
-        public async Task<bool> ValidatePermissionCode(Permission Permission)
-        {
-            PermissionFilter PermissionFilter = new PermissionFilter
-            {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { NotEqual = Permission.Id },
-                Code = new StringFilter { Equal = Permission.Code },
-                Selects = PermissionSelect.Code
-            };
-
-            int count = await UOW.PermissionRepository.Count(PermissionFilter);
-            if (count != 0)
-                Permission.AddError(nameof(RoleValidator), nameof(Permission.Code), ErrorCode.CodeExisted);
-            return count == 1;
-        }
-
-        public async Task<bool> ValidatePermissionStatus(Permission Permission)
-        {
-            StatusFilter StatusFilter = new StatusFilter
-            {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = Permission.StatusId },
-                Selects = StatusSelect.Id
-            };
-            int count = await UOW.StatusRepository.Count(StatusFilter);
-            if (count == 0)
-                Permission.AddError(nameof(RoleValidator), nameof(Permission.Status), ErrorCode.StatusNotExisted);
-            return count != 0;
-        }
-        public async Task<bool> ValidateMenu(Role Role)
-        {
-            foreach (var Permission in Role.Permissions)
-            {
-                if (!await ValidateMenuCode(Permission.Menu)) return false;
-            }
-            return true;
-        }
-        public async Task<bool> ValidateMenuId(Menu Menu)
+        public async Task<bool> ValidateMenu(Menu Menu)
         {
             MenuFilter MenuFilter = new MenuFilter
             {
                 Skip = 0,
                 Take = 10,
-                Id = new IdFilter { Equal = Menu.Id },
-                Selects = MenuSelect.Id
-            };
-
-            int count = await UOW.MenuRepository.Count(MenuFilter);
-            if (count == 0)
-                Menu.AddError(nameof(RoleValidator), nameof(Menu.Id), ErrorCode.IdNotExisted);
-            return count == 1;
-        }
-
-        public async Task<bool> ValidateMenuCode(Menu Menu)
-        {
-            MenuFilter MenuFilter = new MenuFilter
-            {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { NotEqual = Menu.Id },
                 Code = new StringFilter { Equal = Menu.Code },
                 Selects = MenuSelect.Code
             };
 
-            int count = await UOW.MenuRepository.Count(MenuFilter);
-            if (count != 0)
-                Menu.AddError(nameof(RoleValidator), nameof(Menu.Code), ErrorCode.CodeExisted);
-            return count == 1;
+            var MenuInDB = (await UOW.MenuRepository.List(MenuFilter)).FirstOrDefault();
+            if (MenuInDB == null)
+            {
+                Menu.AddError(nameof(RoleValidator), nameof(Menu.Code), ErrorCode.CodeNotExisted);
+                return false;
+            }
+            else
+            {
+                foreach (var Field in Menu.Fields)
+                {
+                    if (!MenuInDB.Fields.Select(f => f.Name).Contains(Field.Name))
+                    {
+                        Field.AddError(nameof(RoleValidator), nameof(Field.Name), ErrorCode.FieldNotExisted);
+                        return false;
+                    }
+                }
+
+                foreach (var Page in Menu.Pages)
+                {
+                    if (!MenuInDB.Pages.Select(p => p.Path).Contains(Page.Path))
+                    {
+                        Page.AddError(nameof(RoleValidator), nameof(Page.Path), ErrorCode.PageNotExisted);
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
+
         public async Task<bool> Create(Role Role)
         {
             await ValidateCode(Role);
@@ -236,15 +205,12 @@ namespace DMS.Services.MRole
 
             foreach (var Role in Roles)
             {
-                ;
-                if (!await ValidateStatus(Role)) return false;
-                if (!await ValidatePermission(Role)) return false;
-                if (!await ValidateMenu(Role)) return false;
                 if (listCodeInDB.Contains(Role.Code))
                 {
                     Role.AddError(nameof(RoleValidator), nameof(Role.Code), ErrorCode.CodeExisted);
                     return false;
                 }
+                if (!await ValidatePermission(Role)) return false;
             }
             return true;
         }

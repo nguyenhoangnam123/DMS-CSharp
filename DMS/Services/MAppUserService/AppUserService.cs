@@ -211,7 +211,7 @@ namespace DMS.Services.MAppUser
                 int DisplayNameColumn = 3 + StartColumn;
                 int EmailColumn = 4 + StartColumn;
                 int PhoneColumn = 5 + StartColumn;
-                int UserStatusIdColumn = 6 + StartColumn;
+                int StatusIdColumn = 6 + StartColumn;
                 int SexIdColumn = 7 + StartColumn;
                 for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
                 {
@@ -223,7 +223,7 @@ namespace DMS.Services.MAppUser
                     string DisplayNameValue = worksheet.Cells[i + StartRow, DisplayNameColumn].Value?.ToString();
                     string EmailValue = worksheet.Cells[i + StartRow, EmailColumn].Value?.ToString();
                     string PhoneValue = worksheet.Cells[i + StartRow, PhoneColumn].Value?.ToString();
-                    string UserStatusIdValue = worksheet.Cells[i + StartRow, UserStatusIdColumn].Value?.ToString();
+                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
                     string SexIdValue = worksheet.Cells[i + StartRow, SexIdColumn].Value?.ToString();
                     AppUser AppUser = new AppUser(); 
 
@@ -232,7 +232,7 @@ namespace DMS.Services.MAppUser
                     AppUser.DisplayName = DisplayNameValue;
                     AppUser.Email = EmailValue;
                     AppUser.Phone = PhoneValue;
-                    AppUser.UserStatusId = int.Parse(UserStatusIdValue);
+                    AppUser.StatusId = int.Parse(StatusIdValue);
                     AppUser.SexId = long.Parse(SexIdValue);
                     //AppUser.Sex = await SexService.Get(long.Parse(SexIdValue));
 
