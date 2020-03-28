@@ -92,6 +92,7 @@ namespace DMS.Services.MStore
 
             try
             {
+                Store.Id = 0;
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
                 await UOW.Commit();
@@ -257,6 +258,7 @@ namespace DMS.Services.MStore
 
             try
             {
+                Stores.ForEach(s => s.Id = 0);
                 await UOW.Begin();
                 await UOW.StoreRepository.BulkMerge(Stores);
                 await UOW.Commit();

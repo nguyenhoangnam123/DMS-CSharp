@@ -607,6 +607,19 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Store Store)
         {
+            await DataContext.StoreImageMapping.Where(x => x.StoreId == Store.Id).DeleteFromQueryAsync();
+            List<StoreImageMappingDAO> StoreImageMappingDAOs = new List<StoreImageMappingDAO>();
+            if(Store.StoreImageMappings != null)
+            {
+                foreach (StoreImageMapping StoreImageMapping in Store.StoreImageMappings)
+                {
+                    StoreImageMappingDAO StoreImageMappingDAO = new StoreImageMappingDAO();
+                    StoreImageMappingDAO.StoreId = StoreImageMapping.StoreId;
+                    StoreImageMappingDAO.ImageId = StoreImageMapping.ImageId;
+                    StoreImageMappingDAOs.Add(StoreImageMappingDAO);
+                }
+                await DataContext.StoreImageMapping.BulkMergeAsync(StoreImageMappingDAOs);
+            }
         }
 
     }

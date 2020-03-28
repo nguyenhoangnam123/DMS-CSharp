@@ -35,6 +35,7 @@ namespace DMS.Entities
         public StoreGrouping StoreGrouping { get; set; }
         public StoreType StoreType { get; set; }
         public Ward Ward { get; set; }
+        public List<StoreImageMapping> StoreImageMappings { get; set; }
 
         public bool Equals(Store other)
         {

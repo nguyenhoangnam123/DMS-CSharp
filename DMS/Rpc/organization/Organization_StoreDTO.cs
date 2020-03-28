@@ -16,8 +16,8 @@ namespace DMS.Rpc.organization
         public long ProvinceId { get; set; }
         public long DistrictId { get; set; }
         public long WardId { get; set; }
-        public string Address1 { get; set; }
-        public string Address2 { get; set; }
+        public string Address { get; set; }
+        public string DeliveryAddress { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
         public string OwnerName { get; set; }
@@ -46,8 +46,8 @@ namespace DMS.Rpc.organization
             this.ProvinceId = Store.ProvinceId;
             this.DistrictId = Store.DistrictId;
             this.WardId = Store.WardId;
-            this.Address1 = Store.Address;
-            this.Address2 = Store.DeliveryAddress;
+            this.Address = Store.Address;
+            this.DeliveryAddress = Store.DeliveryAddress;
             this.Latitude = Store.Latitude;
             this.Longitude = Store.Longitude;
             this.OwnerName = Store.OwnerName;
@@ -89,9 +89,9 @@ namespace DMS.Rpc.organization
 
         public IdFilter WardId { get; set; }
 
-        public StringFilter Address1 { get; set; }
+        public StringFilter Address { get; set; }
 
-        public StringFilter Address2 { get; set; }
+        public StringFilter DeliveryAddress { get; set; }
 
         public DecimalFilter Latitude { get; set; }
 
