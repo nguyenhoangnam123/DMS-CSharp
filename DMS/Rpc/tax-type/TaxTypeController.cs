@@ -258,16 +258,12 @@ namespace DMS.Rpc.tax_type
             StatusFilter.OrderBy = StatusOrder.Id;
             StatusFilter.OrderType = OrderType.ASC;
             StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = TaxType_StatusFilterDTO.Id;
-            StatusFilter.Code = TaxType_StatusFilterDTO.Code;
-            StatusFilter.Name = TaxType_StatusFilterDTO.Name;
 
             List<Status> Statuses = await StatusService.List(StatusFilter);
             List<TaxType_StatusDTO> TaxType_StatusDTOs = Statuses
                 .Select(x => new TaxType_StatusDTO(x)).ToList();
             return TaxType_StatusDTOs;
         }
-
     }
 }
 

@@ -18,12 +18,9 @@ namespace DMS.Rpc.menu
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
         public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
-        public const string BulkDelete = Default + "/bulk-delete";
 
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
@@ -86,24 +83,6 @@ namespace DMS.Rpc.menu
             return new Menu_MenuDTO(Menu);
         }
 
-        [Route(MenuRoute.Create), HttpPost]
-        public async Task<ActionResult<Menu_MenuDTO>> Create([FromBody] Menu_MenuDTO Menu_MenuDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (!await HasPermission(Menu_MenuDTO.Id))
-                return Forbid();
-
-            Menu Menu = ConvertDTOToEntity(Menu_MenuDTO);
-            Menu = await MenuService.Create(Menu);
-            Menu_MenuDTO = new Menu_MenuDTO(Menu);
-            if (Menu.IsValidated)
-                return Menu_MenuDTO;
-            else
-                return BadRequest(Menu_MenuDTO);
-        }
-
         [Route(MenuRoute.Update), HttpPost]
         public async Task<ActionResult<Menu_MenuDTO>> Update([FromBody] Menu_MenuDTO Menu_MenuDTO)
         {
@@ -115,24 +94,6 @@ namespace DMS.Rpc.menu
 
             Menu Menu = ConvertDTOToEntity(Menu_MenuDTO);
             Menu = await MenuService.Update(Menu);
-            Menu_MenuDTO = new Menu_MenuDTO(Menu);
-            if (Menu.IsValidated)
-                return Menu_MenuDTO;
-            else
-                return BadRequest(Menu_MenuDTO);
-        }
-
-        [Route(MenuRoute.Delete), HttpPost]
-        public async Task<ActionResult<Menu_MenuDTO>> Delete([FromBody] Menu_MenuDTO Menu_MenuDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (!await HasPermission(Menu_MenuDTO.Id))
-                return Forbid();
-
-            Menu Menu = ConvertDTOToEntity(Menu_MenuDTO);
-            Menu = await MenuService.Delete(Menu);
             Menu_MenuDTO = new Menu_MenuDTO(Menu);
             if (Menu.IsValidated)
                 return Menu_MenuDTO;
@@ -171,23 +132,6 @@ namespace DMS.Rpc.menu
             {
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
-        }
-
-        [Route(MenuRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            MenuFilter MenuFilter = new MenuFilter();
-            MenuFilter.Id = new IdFilter { In = Ids };
-            MenuFilter.Selects = MenuSelect.Id;
-            MenuFilter.Skip = 0;
-            MenuFilter.Take = int.MaxValue;
-
-            List<Menu> Menus = await MenuService.List(MenuFilter);
-            Menus = await MenuService.BulkDelete(Menus);
-            return true;
         }
 
         private async Task<bool> HasPermission(long Id)

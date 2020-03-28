@@ -475,9 +475,6 @@ namespace DMS.Rpc.product
             StatusFilter.OrderBy = StatusOrder.Id;
             StatusFilter.OrderType = OrderType.ASC;
             StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = Product_StatusFilterDTO.Id;
-            StatusFilter.Code = Product_StatusFilterDTO.Code;
-            StatusFilter.Name = Product_StatusFilterDTO.Name;
 
             List<Status> Statuses = await StatusService.List(StatusFilter);
             List<Product_StatusDTO> Product_StatusDTOs = Statuses
@@ -516,7 +513,6 @@ namespace DMS.Rpc.product
             TaxTypeFilter.Id = Product_TaxTypeFilterDTO.Id;
             TaxTypeFilter.Code = Product_TaxTypeFilterDTO.Code;
             TaxTypeFilter.Name = Product_TaxTypeFilterDTO.Name;
-            TaxTypeFilter.Percentage = Product_TaxTypeFilterDTO.Percentage;
             TaxTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<TaxType> TaxTypes = await TaxTypeService.List(TaxTypeFilter);
@@ -536,7 +532,6 @@ namespace DMS.Rpc.product
             UnitOfMeasureFilter.Id = Product_UnitOfMeasureFilterDTO.Id;
             UnitOfMeasureFilter.Code = Product_UnitOfMeasureFilterDTO.Code;
             UnitOfMeasureFilter.Name = Product_UnitOfMeasureFilterDTO.Name;
-            UnitOfMeasureFilter.Description = Product_UnitOfMeasureFilterDTO.Description;
             UnitOfMeasureFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
@@ -563,52 +558,13 @@ namespace DMS.Rpc.product
                 .Select(x => new Product_UnitOfMeasureGroupingDTO(x)).ToList();
             return Product_UnitOfMeasureGroupingDTOs;
         }
-        [Route(ProductRoute.SingleListItem), HttpPost]
-        public async Task<List<Product_ItemDTO>> SingleListItem([FromBody] Product_ItemFilterDTO Product_ItemFilterDTO)
-        {
-            ItemFilter ItemFilter = new ItemFilter();
-            ItemFilter.Skip = 0;
-            ItemFilter.Take = 20;
-            ItemFilter.OrderBy = ItemOrder.Id;
-            ItemFilter.OrderType = OrderType.ASC;
-            ItemFilter.Selects = ItemSelect.ALL;
-            ItemFilter.Id = Product_ItemFilterDTO.Id;
-            ItemFilter.ProductId = Product_ItemFilterDTO.ProductId;
-            ItemFilter.Code = Product_ItemFilterDTO.Code;
-            ItemFilter.Name = Product_ItemFilterDTO.Name;
-            ItemFilter.ScanCode = Product_ItemFilterDTO.ScanCode;
-            ItemFilter.SalePrice = Product_ItemFilterDTO.SalePrice;
-            ItemFilter.RetailPrice = Product_ItemFilterDTO.RetailPrice;
 
-            List<Item> Items = await ItemService.List(ItemFilter);
-            List<Product_ItemDTO> Product_ItemDTOs = Items
-                .Select(x => new Product_ItemDTO(x)).ToList();
-            return Product_ItemDTOs;
-        }
-        [Route(ProductRoute.SingleListImage), HttpPost]
-        public async Task<List<Product_ImageDTO>> SingleListImage([FromBody] Product_ImageFilterDTO Product_ImageFilterDTO)
-        {
-            ImageFilter ImageFilter = new ImageFilter();
-            ImageFilter.Skip = 0;
-            ImageFilter.Take = 20;
-            ImageFilter.OrderBy = ImageOrder.Id;
-            ImageFilter.OrderType = OrderType.ASC;
-            ImageFilter.Selects = ImageSelect.ALL;
-            ImageFilter.Id = Product_ImageFilterDTO.Id;
-            ImageFilter.Name = Product_ImageFilterDTO.Name;
-            ImageFilter.Url = Product_ImageFilterDTO.Url;
-
-            List<Image> Images = await ImageService.List(ImageFilter);
-            List<Product_ImageDTO> Product_ImageDTOs = Images
-                .Select(x => new Product_ImageDTO(x)).ToList();
-            return Product_ImageDTOs;
-        }
         [Route(ProductRoute.SingleListProductGrouping), HttpPost]
         public async Task<List<Product_ProductGroupingDTO>> SingleListProductGrouping([FromBody] Product_ProductGroupingFilterDTO Product_ProductGroupingFilterDTO)
         {
             ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
             ProductGroupingFilter.Skip = 0;
-            ProductGroupingFilter.Take = 99999;
+            ProductGroupingFilter.Take = int.MaxValue;
             ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
             ProductGroupingFilter.OrderType = OrderType.ASC;
             ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
@@ -619,25 +575,7 @@ namespace DMS.Rpc.product
                 .Select(x => new Product_ProductGroupingDTO(x)).ToList();
             return Product_ProductGroupingDTOs;
         }
-        [Route(ProductRoute.SingleListVariationGrouping), HttpPost]
-        public async Task<List<Product_VariationGroupingDTO>> SingleListVariationGrouping([FromBody] Product_VariationGroupingFilterDTO Product_VariationGroupingFilterDTO)
-        {
-            VariationGroupingFilter VariationGroupingFilter = new VariationGroupingFilter();
-            VariationGroupingFilter.Skip = 0;
-            VariationGroupingFilter.Take = 20;
-            VariationGroupingFilter.OrderBy = VariationGroupingOrder.Id;
-            VariationGroupingFilter.OrderType = OrderType.ASC;
-            VariationGroupingFilter.Selects = VariationGroupingSelect.ALL;
-            VariationGroupingFilter.Id = Product_VariationGroupingFilterDTO.Id;
-            VariationGroupingFilter.Name = Product_VariationGroupingFilterDTO.Name;
-            VariationGroupingFilter.ProductId = Product_VariationGroupingFilterDTO.ProductId;
-
-            List<VariationGrouping> VariationGroupings = await VariationGroupingService.List(VariationGroupingFilter);
-            List<Product_VariationGroupingDTO> Product_VariationGroupingDTOs = VariationGroupings
-                .Select(x => new Product_VariationGroupingDTO(x)).ToList();
-            return Product_VariationGroupingDTOs;
-        }
-
+      
         [Route(ProductRoute.CountImage), HttpPost]
         public async Task<long> CountImage([FromBody] Product_ImageFilterDTO Product_ImageFilterDTO)
         {
@@ -694,7 +632,6 @@ namespace DMS.Rpc.product
             ProductGroupingFilter.Name = Product_ProductGroupingFilterDTO.Name;
             ProductGroupingFilter.ParentId = Product_ProductGroupingFilterDTO.ParentId;
             ProductGroupingFilter.Path = Product_ProductGroupingFilterDTO.Path;
-            ProductGroupingFilter.Description = Product_ProductGroupingFilterDTO.Description;
 
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
             List<Product_ProductGroupingDTO> Product_ProductGroupingDTOs = ProductGroupings

@@ -298,8 +298,8 @@ namespace DMS.Rpc.organization
                     ProvinceId = x.ProvinceId,
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
-                    Address1 = x.Address1,
-                    Address2 = x.Address2,
+                    Address = x.Address1,
+                    DeliveryAddress = x.Address2,
                     Latitude = x.Latitude,
                     Longitude = x.Longitude,
                     OwnerName = x.OwnerName,
@@ -327,8 +327,8 @@ namespace DMS.Rpc.organization
                         ProvinceId = x.ParentStore.ProvinceId,
                         DistrictId = x.ParentStore.DistrictId,
                         WardId = x.ParentStore.WardId,
-                        Address1 = x.ParentStore.Address1,
-                        Address2 = x.ParentStore.Address2,
+                        Address = x.ParentStore.Address1,
+                        DeliveryAddress = x.ParentStore.Address2,
                         Latitude = x.ParentStore.Latitude,
                         Longitude = x.ParentStore.Longitude,
                         OwnerName = x.ParentStore.OwnerName,
@@ -411,9 +411,6 @@ namespace DMS.Rpc.organization
             StatusFilter.OrderBy = StatusOrder.Id;
             StatusFilter.OrderType = OrderType.ASC;
             StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = Organization_StatusFilterDTO.Id;
-            StatusFilter.Code = Organization_StatusFilterDTO.Code;
-            StatusFilter.Name = Organization_StatusFilterDTO.Name;
 
             List<Status> Statuses = await StatusService.List(StatusFilter);
             List<Organization_StatusDTO> Organization_StatusDTOs = Statuses
@@ -465,12 +462,11 @@ namespace DMS.Rpc.organization
             ProvinceFilter ProvinceFilter = new ProvinceFilter();
             ProvinceFilter.Skip = 0;
             ProvinceFilter.Take = 20;
-            ProvinceFilter.OrderBy = ProvinceOrder.Id;
+            ProvinceFilter.OrderBy = ProvinceOrder.Priority;
             ProvinceFilter.OrderType = OrderType.ASC;
             ProvinceFilter.Selects = ProvinceSelect.ALL;
             ProvinceFilter.Id = Organization_ProvinceFilterDTO.Id;
             ProvinceFilter.Name = Organization_ProvinceFilterDTO.Name;
-            ProvinceFilter.Priority = Organization_ProvinceFilterDTO.Priority;
             ProvinceFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
@@ -487,12 +483,6 @@ namespace DMS.Rpc.organization
             StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
             StoreGroupingFilter.OrderType = OrderType.ASC;
             StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
-            StoreGroupingFilter.Id = Organization_StoreGroupingFilterDTO.Id;
-            StoreGroupingFilter.Code = Organization_StoreGroupingFilterDTO.Code;
-            StoreGroupingFilter.Name = Organization_StoreGroupingFilterDTO.Name;
-            StoreGroupingFilter.ParentId = Organization_StoreGroupingFilterDTO.ParentId;
-            StoreGroupingFilter.Path = Organization_StoreGroupingFilterDTO.Path;
-            StoreGroupingFilter.Level = Organization_StoreGroupingFilterDTO.Level;
 
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<Organization_StoreGroupingDTO> Organization_StoreGroupingDTOs = StoreGroupings
@@ -524,12 +514,11 @@ namespace DMS.Rpc.organization
             WardFilter WardFilter = new WardFilter();
             WardFilter.Skip = 0;
             WardFilter.Take = 20;
-            WardFilter.OrderBy = WardOrder.Id;
+            WardFilter.OrderBy = WardOrder.Priority;
             WardFilter.OrderType = OrderType.ASC;
             WardFilter.Selects = WardSelect.ALL;
             WardFilter.Id = Organization_WardFilterDTO.Id;
             WardFilter.Name = Organization_WardFilterDTO.Name;
-            WardFilter.Priority = Organization_WardFilterDTO.Priority;
             WardFilter.DistrictId = Organization_WardFilterDTO.DistrictId;
             WardFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 

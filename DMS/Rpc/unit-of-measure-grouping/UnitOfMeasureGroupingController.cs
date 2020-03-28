@@ -296,9 +296,6 @@ namespace DMS.Rpc.unit_of_measure_grouping
             StatusFilter.OrderBy = StatusOrder.Id;
             StatusFilter.OrderType = OrderType.ASC;
             StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = UnitOfMeasureGrouping_StatusFilterDTO.Id;
-            StatusFilter.Code = UnitOfMeasureGrouping_StatusFilterDTO.Code;
-            StatusFilter.Name = UnitOfMeasureGrouping_StatusFilterDTO.Name;
 
             List<Status> Statuses = await StatusService.List(StatusFilter);
             List<UnitOfMeasureGrouping_StatusDTO> UnitOfMeasureGrouping_StatusDTOs = Statuses
@@ -317,7 +314,6 @@ namespace DMS.Rpc.unit_of_measure_grouping
             UnitOfMeasureFilter.Id = UnitOfMeasureGrouping_UnitOfMeasureFilterDTO.Id;
             UnitOfMeasureFilter.Code = UnitOfMeasureGrouping_UnitOfMeasureFilterDTO.Code;
             UnitOfMeasureFilter.Name = UnitOfMeasureGrouping_UnitOfMeasureFilterDTO.Name;
-            UnitOfMeasureFilter.Description = UnitOfMeasureGrouping_UnitOfMeasureFilterDTO.Description;
             UnitOfMeasureFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);

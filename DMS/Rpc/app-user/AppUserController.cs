@@ -326,10 +326,8 @@ namespace DMS.Rpc.app_user
             OrganizationFilter.Take = 99999;
             OrganizationFilter.OrderBy = OrganizationOrder.Id;
             OrganizationFilter.OrderType = OrderType.ASC;
-            OrganizationFilter.Selects = OrganizationSelect.ALL;
-            OrganizationFilter.Id = AppUser_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = AppUser_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = AppUser_OrganizationFilterDTO.Name;
+            OrganizationFilter.Selects = OrganizationSelect.Id | OrganizationSelect.Code |
+                OrganizationSelect.Name | OrganizationSelect.Parent;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
@@ -361,13 +359,10 @@ namespace DMS.Rpc.app_user
         {
             StatusFilter StatusFilter = new StatusFilter();
             StatusFilter.Skip = 0;
-            StatusFilter.Take = 20;
+            StatusFilter.Take = int.MaxValue;
             StatusFilter.OrderBy = StatusOrder.Id;
             StatusFilter.OrderType = OrderType.ASC;
             StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = AppUser_StatusFilterDTO.Id;
-            StatusFilter.Code = AppUser_StatusFilterDTO.Code;
-            StatusFilter.Name = AppUser_StatusFilterDTO.Name;
 
             List<Status> Statuses = await StatusService.List(StatusFilter);
             List<AppUser_StatusDTO> AppUser_StatusDTOs = Statuses

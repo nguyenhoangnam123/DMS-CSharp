@@ -322,9 +322,6 @@ namespace DMS.Rpc.province
             StatusFilter.OrderBy = StatusOrder.Id;
             StatusFilter.OrderType = OrderType.ASC;
             StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = Province_StatusFilterDTO.Id;
-            StatusFilter.Code = Province_StatusFilterDTO.Code;
-            StatusFilter.Name = Province_StatusFilterDTO.Name;
 
             List<Status> Statuses = await StatusService.List(StatusFilter);
             List<Province_StatusDTO> Province_StatusDTOs = Statuses

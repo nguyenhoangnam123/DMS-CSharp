@@ -100,9 +100,6 @@ namespace DMS.Repositories
                         case StoreGroupingOrder.Level:
                             query = query.OrderBy(q => q.Level);
                             break;
-                        case StoreGroupingOrder.IsActive:
-                            query = query.OrderBy(q => q.IsActive);
-                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -126,9 +123,6 @@ namespace DMS.Repositories
                         case StoreGroupingOrder.Level:
                             query = query.OrderByDescending(q => q.Level);
                             break;
-                        case StoreGroupingOrder.IsActive:
-                            query = query.OrderByDescending(q => q.IsActive);
-                            break;
                     }
                     break;
             }
@@ -146,7 +140,6 @@ namespace DMS.Repositories
                 ParentId = filter.Selects.Contains(StoreGroupingSelect.Parent) ? q.ParentId : default(long?),
                 Path = filter.Selects.Contains(StoreGroupingSelect.Path) ? q.Path : default(string),
                 Level = filter.Selects.Contains(StoreGroupingSelect.Level) ? q.Level : default(long),
-                IsActive = filter.Selects.Contains(StoreGroupingSelect.IsActive) ? q.IsActive : default(bool),
             }).ToListAsync();
             return StoreGroupings;
         }
@@ -178,7 +171,6 @@ namespace DMS.Repositories
                 ParentId = x.ParentId,
                 Path = x.Path,
                 Level = x.Level,
-                IsActive = x.IsActive,
             }).FirstOrDefaultAsync();
 
             if (StoreGrouping == null)
@@ -198,8 +190,8 @@ namespace DMS.Repositories
                     ProvinceId = x.ProvinceId,
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
-                    Address1 = x.Address1,
-                    Address2 = x.Address2,
+                    Address = x.Address,
+                    DeliveryAddress = x.DeliveryAddress,
                     Latitude = x.Latitude,
                     Longitude = x.Longitude,
                     OwnerName = x.OwnerName,
@@ -241,8 +233,8 @@ namespace DMS.Repositories
                         ProvinceId = x.ParentStore.ProvinceId,
                         DistrictId = x.ParentStore.DistrictId,
                         WardId = x.ParentStore.WardId,
-                        Address1 = x.ParentStore.Address1,
-                        Address2 = x.ParentStore.Address2,
+                        Address = x.ParentStore.Address,
+                        DeliveryAddress = x.ParentStore.DeliveryAddress,
                         Latitude = x.ParentStore.Latitude,
                         Longitude = x.ParentStore.Longitude,
                         OwnerName = x.ParentStore.OwnerName,
@@ -290,8 +282,7 @@ namespace DMS.Repositories
             StoreGroupingDAO.Name = StoreGrouping.Name;
             StoreGroupingDAO.ParentId = StoreGrouping.ParentId;
             StoreGroupingDAO.Path = "";
-            StoreGroupingDAO.Level = StoreGrouping.Level;
-            StoreGroupingDAO.IsActive = StoreGrouping.IsActive;
+            StoreGroupingDAO.Level = 1;
             StoreGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.StoreGrouping.Add(StoreGroupingDAO);
@@ -312,8 +303,7 @@ namespace DMS.Repositories
             StoreGroupingDAO.Name = StoreGrouping.Name;
             StoreGroupingDAO.ParentId = StoreGrouping.ParentId;
             StoreGroupingDAO.Path = "";
-            StoreGroupingDAO.Level = StoreGrouping.Level;
-            StoreGroupingDAO.IsActive = StoreGrouping.IsActive;
+            StoreGroupingDAO.Level = 1;
             StoreGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(StoreGrouping);
@@ -342,7 +332,6 @@ namespace DMS.Repositories
                 StoreGroupingDAO.ParentId = StoreGrouping.ParentId;
                 StoreGroupingDAO.Path = StoreGrouping.Path;
                 StoreGroupingDAO.Level = StoreGrouping.Level;
-                StoreGroupingDAO.IsActive = StoreGrouping.IsActive;
                 StoreGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
                 StoreGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
                 StoreGroupingDAOs.Add(StoreGroupingDAO);
@@ -387,8 +376,8 @@ namespace DMS.Repositories
                         StoreDAO.ProvinceId = Store.ProvinceId;
                         StoreDAO.DistrictId = Store.DistrictId;
                         StoreDAO.WardId = Store.WardId;
-                        StoreDAO.Address1 = Store.Address1;
-                        StoreDAO.Address2 = Store.Address2;
+                        StoreDAO.Address = Store.Address;
+                        StoreDAO.DeliveryAddress = Store.DeliveryAddress;
                         StoreDAO.Latitude = Store.Latitude;
                         StoreDAO.Longitude = Store.Longitude;
                         StoreDAO.OwnerName = Store.OwnerName;
@@ -413,8 +402,8 @@ namespace DMS.Repositories
                         StoreDAO.ProvinceId = Store.ProvinceId;
                         StoreDAO.DistrictId = Store.DistrictId;
                         StoreDAO.WardId = Store.WardId;
-                        StoreDAO.Address1 = Store.Address1;
-                        StoreDAO.Address2 = Store.Address2;
+                        StoreDAO.Address = Store.Address;
+                        StoreDAO.DeliveryAddress = Store.DeliveryAddress;
                         StoreDAO.Latitude = Store.Latitude;
                         StoreDAO.Longitude = Store.Longitude;
                         StoreDAO.OwnerName = Store.OwnerName;

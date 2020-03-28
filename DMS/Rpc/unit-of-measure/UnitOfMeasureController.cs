@@ -258,16 +258,12 @@ namespace DMS.Rpc.unit_of_measure
             StatusFilter.OrderBy = StatusOrder.Id;
             StatusFilter.OrderType = OrderType.ASC;
             StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = UnitOfMeasure_StatusFilterDTO.Id;
-            StatusFilter.Code = UnitOfMeasure_StatusFilterDTO.Code;
-            StatusFilter.Name = UnitOfMeasure_StatusFilterDTO.Name;
 
             List<Status> Statuses = await StatusService.List(StatusFilter);
             List<UnitOfMeasure_StatusDTO> UnitOfMeasure_StatusDTOs = Statuses
                 .Select(x => new UnitOfMeasure_StatusDTO(x)).ToList();
             return UnitOfMeasure_StatusDTOs;
         }
-
     }
 }
 

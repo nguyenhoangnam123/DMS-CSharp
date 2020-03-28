@@ -46,8 +46,8 @@ namespace DMS.Rpc.organization
             this.ProvinceId = Store.ProvinceId;
             this.DistrictId = Store.DistrictId;
             this.WardId = Store.WardId;
-            this.Address1 = Store.Address1;
-            this.Address2 = Store.Address2;
+            this.Address1 = Store.Address;
+            this.Address2 = Store.DeliveryAddress;
             this.Latitude = Store.Latitude;
             this.Longitude = Store.Longitude;
             this.OwnerName = Store.OwnerName;

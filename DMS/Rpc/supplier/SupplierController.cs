@@ -258,16 +258,12 @@ namespace DMS.Rpc.supplier
             StatusFilter.OrderBy = StatusOrder.Id;
             StatusFilter.OrderType = OrderType.ASC;
             StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = Supplier_StatusFilterDTO.Id;
-            StatusFilter.Code = Supplier_StatusFilterDTO.Code;
-            StatusFilter.Name = Supplier_StatusFilterDTO.Name;
 
             List<Status> Statuses = await StatusService.List(StatusFilter);
             List<Supplier_StatusDTO> Supplier_StatusDTOs = Statuses
                 .Select(x => new Supplier_StatusDTO(x)).ToList();
             return Supplier_StatusDTOs;
         }
-
     }
 }
 

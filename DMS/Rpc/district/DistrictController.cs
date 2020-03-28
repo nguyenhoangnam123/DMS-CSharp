@@ -291,9 +291,6 @@ namespace DMS.Rpc.district
             StatusFilter.OrderBy = StatusOrder.Id;
             StatusFilter.OrderType = OrderType.ASC;
             StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = District_StatusFilterDTO.Id;
-            StatusFilter.Code = District_StatusFilterDTO.Code;
-            StatusFilter.Name = District_StatusFilterDTO.Name;
 
             List<Status> Statuses = await StatusService.List(StatusFilter);
             List<District_StatusDTO> District_StatusDTOs = Statuses

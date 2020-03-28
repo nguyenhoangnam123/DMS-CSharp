@@ -53,8 +53,8 @@ namespace DMS.Rpc.store
             { nameof(StoreFilter.ProvinceId), FieldType.ID },
             { nameof(StoreFilter.DistrictId), FieldType.ID },
             { nameof(StoreFilter.WardId), FieldType.ID },
-            { nameof(StoreFilter.Address1), FieldType.STRING },
-            { nameof(StoreFilter.Address2), FieldType.STRING },
+            { nameof(StoreFilter.Address), FieldType.STRING },
+            { nameof(StoreFilter.DeliveryAddress), FieldType.STRING },
             { nameof(StoreFilter.Latitude), FieldType.DECIMAL },
             { nameof(StoreFilter.Longitude), FieldType.DECIMAL },
             { nameof(StoreFilter.OwnerName), FieldType.STRING },
@@ -273,8 +273,8 @@ namespace DMS.Rpc.store
             Store.ProvinceId = Store_StoreDTO.ProvinceId;
             Store.DistrictId = Store_StoreDTO.DistrictId;
             Store.WardId = Store_StoreDTO.WardId;
-            Store.Address1 = Store_StoreDTO.Address1;
-            Store.Address2 = Store_StoreDTO.Address2;
+            Store.Address = Store_StoreDTO.Address;
+            Store.DeliveryAddress = Store_StoreDTO.DeliveryAddress;
             Store.Latitude = Store_StoreDTO.Latitude;
             Store.Longitude = Store_StoreDTO.Longitude;
             Store.OwnerName = Store_StoreDTO.OwnerName;
@@ -316,8 +316,8 @@ namespace DMS.Rpc.store
                 ProvinceId = Store_StoreDTO.ParentStore.ProvinceId,
                 DistrictId = Store_StoreDTO.ParentStore.DistrictId,
                 WardId = Store_StoreDTO.ParentStore.WardId,
-                Address1 = Store_StoreDTO.ParentStore.Address1,
-                Address2 = Store_StoreDTO.ParentStore.Address2,
+                Address = Store_StoreDTO.ParentStore.Address,
+                DeliveryAddress = Store_StoreDTO.ParentStore.DeliveryAddress,
                 Latitude = Store_StoreDTO.ParentStore.Latitude,
                 Longitude = Store_StoreDTO.ParentStore.Longitude,
                 OwnerName = Store_StoreDTO.ParentStore.OwnerName,
@@ -387,8 +387,8 @@ namespace DMS.Rpc.store
             StoreFilter.ProvinceId = Store_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Store_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Store_StoreFilterDTO.WardId;
-            StoreFilter.Address1 = Store_StoreFilterDTO.Address1;
-            StoreFilter.Address2 = Store_StoreFilterDTO.Address2;
+            StoreFilter.Address = Store_StoreFilterDTO.Address1;
+            StoreFilter.DeliveryAddress = Store_StoreFilterDTO.Address2;
             StoreFilter.Latitude = Store_StoreFilterDTO.Latitude;
             StoreFilter.Longitude = Store_StoreFilterDTO.Longitude;
             StoreFilter.OwnerName = Store_StoreFilterDTO.OwnerName;
@@ -423,7 +423,7 @@ namespace DMS.Rpc.store
         {
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
             OrganizationFilter.Skip = 0;
-            OrganizationFilter.Take = 99999;
+            OrganizationFilter.Take = int.MaxValue;
             OrganizationFilter.OrderBy = OrganizationOrder.Id;
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
@@ -445,7 +445,6 @@ namespace DMS.Rpc.store
             ProvinceFilter.Selects = ProvinceSelect.ALL;
             ProvinceFilter.Id = Store_ProvinceFilterDTO.Id;
             ProvinceFilter.Name = Store_ProvinceFilterDTO.Name;
-            ProvinceFilter.Priority = Store_ProvinceFilterDTO.Priority;
             ProvinceFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
@@ -462,9 +461,6 @@ namespace DMS.Rpc.store
             StatusFilter.OrderBy = StatusOrder.Id;
             StatusFilter.OrderType = OrderType.ASC;
             StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = Store_StatusFilterDTO.Id;
-            StatusFilter.Code = Store_StatusFilterDTO.Code;
-            StatusFilter.Name = Store_StatusFilterDTO.Name;
 
             List<Status> Statuses = await StatusService.List(StatusFilter);
             List<Store_StatusDTO> Store_StatusDTOs = Statuses
@@ -480,12 +476,6 @@ namespace DMS.Rpc.store
             StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
             StoreGroupingFilter.OrderType = OrderType.ASC;
             StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
-            StoreGroupingFilter.Id = Store_StoreGroupingFilterDTO.Id;
-            StoreGroupingFilter.Code = Store_StoreGroupingFilterDTO.Code;
-            StoreGroupingFilter.Name = Store_StoreGroupingFilterDTO.Name;
-            StoreGroupingFilter.ParentId = Store_StoreGroupingFilterDTO.ParentId;
-            StoreGroupingFilter.Path = Store_StoreGroupingFilterDTO.Path;
-            StoreGroupingFilter.Level = Store_StoreGroupingFilterDTO.Level;
             StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<Store_StoreGroupingDTO> Store_StoreGroupingDTOs = StoreGroupings
@@ -522,7 +512,6 @@ namespace DMS.Rpc.store
             WardFilter.Selects = WardSelect.ALL;
             WardFilter.Id = Store_WardFilterDTO.Id;
             WardFilter.Name = Store_WardFilterDTO.Name;
-            WardFilter.Priority = Store_WardFilterDTO.Priority;
             WardFilter.DistrictId = Store_WardFilterDTO.DistrictId;
             WardFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             List<Ward> Wards = await WardService.List(WardFilter);

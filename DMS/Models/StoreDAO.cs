@@ -22,8 +22,8 @@ namespace DMS.Models
         public long ProvinceId { get; set; }
         public long DistrictId { get; set; }
         public long WardId { get; set; }
-        public string Address1 { get; set; }
-        public string Address2 { get; set; }
+        public string Address { get; set; }
+        public string DeliveryAddress { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
         public string OwnerName { get; set; }

@@ -625,17 +625,17 @@ namespace DMS.Models
 
             modelBuilder.Entity<StoreDAO>(entity =>
             {
-                entity.Property(e => e.Address1).HasMaxLength(3000);
-
-                entity.Property(e => e.Address2)
-                    .HasMaxLength(10)
-                    .IsFixedLength();
+                entity.Property(e => e.Address).HasMaxLength(3000);
 
                 entity.Property(e => e.Code).HasMaxLength(500);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeliveryAddress)
+                    .HasMaxLength(10)
+                    .IsFixedLength();
 
                 entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
 

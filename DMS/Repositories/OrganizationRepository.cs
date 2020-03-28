@@ -290,8 +290,8 @@ namespace DMS.Repositories
                     ProvinceId = x.ProvinceId,
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
-                    Address1 = x.Address1,
-                    Address2 = x.Address2,
+                    Address = x.Address,
+                    DeliveryAddress = x.DeliveryAddress,
                     Latitude = x.Latitude,
                     Longitude = x.Longitude,
                     OwnerName = x.OwnerName,
@@ -319,8 +319,8 @@ namespace DMS.Repositories
                         ProvinceId = x.ParentStore.ProvinceId,
                         DistrictId = x.ParentStore.DistrictId,
                         WardId = x.ParentStore.WardId,
-                        Address1 = x.ParentStore.Address1,
-                        Address2 = x.ParentStore.Address2,
+                        Address = x.ParentStore.Address,
+                        DeliveryAddress = x.ParentStore.DeliveryAddress,
                         Latitude = x.ParentStore.Latitude,
                         Longitude = x.ParentStore.Longitude,
                         OwnerName = x.ParentStore.OwnerName,
@@ -349,7 +349,6 @@ namespace DMS.Repositories
                         ParentId = x.StoreGrouping.ParentId,
                         Path = x.StoreGrouping.Path,
                         Level = x.StoreGrouping.Level,
-                        IsActive = x.StoreGrouping.IsActive,
                     },
                     StoreType = new StoreType
                     {
@@ -487,8 +486,8 @@ namespace DMS.Repositories
                         StoreDAO.ProvinceId = Store.ProvinceId;
                         StoreDAO.DistrictId = Store.DistrictId;
                         StoreDAO.WardId = Store.WardId;
-                        StoreDAO.Address1 = Store.Address1;
-                        StoreDAO.Address2 = Store.Address2;
+                        StoreDAO.Address = Store.Address;
+                        StoreDAO.DeliveryAddress = Store.DeliveryAddress;
                         StoreDAO.Latitude = Store.Latitude;
                         StoreDAO.Longitude = Store.Longitude;
                         StoreDAO.OwnerName = Store.OwnerName;
@@ -513,8 +512,8 @@ namespace DMS.Repositories
                         StoreDAO.ProvinceId = Store.ProvinceId;
                         StoreDAO.DistrictId = Store.DistrictId;
                         StoreDAO.WardId = Store.WardId;
-                        StoreDAO.Address1 = Store.Address1;
-                        StoreDAO.Address2 = Store.Address2;
+                        StoreDAO.Address = Store.Address;
+                        StoreDAO.DeliveryAddress = Store.DeliveryAddress;
                         StoreDAO.Latitude = Store.Latitude;
                         StoreDAO.Longitude = Store.Longitude;
                         StoreDAO.OwnerName = Store.OwnerName;

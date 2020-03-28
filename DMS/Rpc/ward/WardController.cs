@@ -294,16 +294,12 @@ namespace DMS.Rpc.ward
             StatusFilter.OrderBy = StatusOrder.Id;
             StatusFilter.OrderType = OrderType.ASC;
             StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = Ward_StatusFilterDTO.Id;
-            StatusFilter.Code = Ward_StatusFilterDTO.Code;
-            StatusFilter.Name = Ward_StatusFilterDTO.Name;
 
             List<Status> Statuses = await StatusService.List(StatusFilter);
             List<Ward_StatusDTO> Ward_StatusDTOs = Statuses
                 .Select(x => new Ward_StatusDTO(x)).ToList();
             return Ward_StatusDTOs;
         }
-
     }
 }
 

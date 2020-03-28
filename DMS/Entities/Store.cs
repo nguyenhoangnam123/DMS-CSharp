@@ -19,8 +19,8 @@ namespace DMS.Entities
         public long ProvinceId { get; set; }
         public long DistrictId { get; set; }
         public long WardId { get; set; }
-        public string Address1 { get; set; }
-        public string Address2 { get; set; }
+        public string Address { get; set; }
+        public string DeliveryAddress { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
         public string OwnerName { get; set; }
@@ -59,8 +59,8 @@ namespace DMS.Entities
         public IdFilter ProvinceId { get; set; }
         public IdFilter DistrictId { get; set; }
         public IdFilter WardId { get; set; }
-        public StringFilter Address1 { get; set; }
-        public StringFilter Address2 { get; set; }
+        public StringFilter Address { get; set; }
+        public StringFilter DeliveryAddress { get; set; }
         public DecimalFilter Latitude { get; set; }
         public DecimalFilter Longitude { get; set; }
         public StringFilter OwnerName { get; set; }
@@ -86,8 +86,8 @@ namespace DMS.Entities
         Province = 8,
         District = 9,
         Ward = 10,
-        Address1 = 11,
-        Address2 = 12,
+        Address = 11,
+        DeliveryAddress = 12,
         Latitude = 13,
         Longitude = 14,
         OwnerName = 15,
@@ -111,8 +111,8 @@ namespace DMS.Entities
         Province = E._8,
         District = E._9,
         Ward = E._10,
-        Address1 = E._11,
-        Address2 = E._12,
+        Address = E._11,
+        DeliveryAddress = E._12,
         Latitude = E._13,
         Longitude = E._14,
         OwnerName = E._15,

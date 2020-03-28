@@ -241,8 +241,8 @@ namespace DMS.Services.MStore
                     Store.Code = CodeValue;
                     Store.Name = NameValue;
                     Store.Telephone = TelephoneValue;
-                    Store.Address1 = Address1Value;
-                    Store.Address2 = Address2Value;
+                    Store.Address = Address1Value;
+                    Store.DeliveryAddress = Address2Value;
                     Store.Latitude = decimal.TryParse(LatitudeValue, out decimal Latitude) ? Latitude : 0;
                     Store.Longitude = decimal.TryParse(LongitudeValue, out decimal Longitude) ? Longitude : 0;
                     Store.OwnerName = OwnerNameValue;
@@ -321,8 +321,8 @@ namespace DMS.Services.MStore
                 worksheet.Cells[1, ProvinceIdColumn].Value = nameof(Store.ProvinceId);
                 worksheet.Cells[1, DistrictIdColumn].Value = nameof(Store.DistrictId);
                 worksheet.Cells[1, WardIdColumn].Value = nameof(Store.WardId);
-                worksheet.Cells[1, Address1Column].Value = nameof(Store.Address1);
-                worksheet.Cells[1, Address2Column].Value = nameof(Store.Address2);
+                worksheet.Cells[1, Address1Column].Value = nameof(Store.Address);
+                worksheet.Cells[1, Address2Column].Value = nameof(Store.DeliveryAddress);
                 worksheet.Cells[1, LatitudeColumn].Value = nameof(Store.Latitude);
                 worksheet.Cells[1, LongitudeColumn].Value = nameof(Store.Longitude);
                 worksheet.Cells[1, OwnerNameColumn].Value = nameof(Store.OwnerName);
@@ -344,8 +344,8 @@ namespace DMS.Services.MStore
                     worksheet.Cells[i + StartRow, ProvinceIdColumn].Value = Store.ProvinceId;
                     worksheet.Cells[i + StartRow, DistrictIdColumn].Value = Store.DistrictId;
                     worksheet.Cells[i + StartRow, WardIdColumn].Value = Store.WardId;
-                    worksheet.Cells[i + StartRow, Address1Column].Value = Store.Address1;
-                    worksheet.Cells[i + StartRow, Address2Column].Value = Store.Address2;
+                    worksheet.Cells[i + StartRow, Address1Column].Value = Store.Address;
+                    worksheet.Cells[i + StartRow, Address2Column].Value = Store.DeliveryAddress;
                     worksheet.Cells[i + StartRow, LatitudeColumn].Value = Store.Latitude;
                     worksheet.Cells[i + StartRow, LongitudeColumn].Value = Store.Longitude;
                     worksheet.Cells[i + StartRow, OwnerNameColumn].Value = Store.OwnerName;
@@ -394,10 +394,10 @@ namespace DMS.Services.MStore
                     subFilter.DistrictId = Map(subFilter.DistrictId, currentFilter.Value);
                 if (currentFilter.Value.Name == nameof(subFilter.WardId))
                     subFilter.WardId = Map(subFilter.WardId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Address1))
-                    subFilter.Address1 = Map(subFilter.Address1, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Address2))
-                    subFilter.Address2 = Map(subFilter.Address2, currentFilter.Value);
+                if (currentFilter.Value.Name == nameof(subFilter.Address))
+                    subFilter.Address = Map(subFilter.Address, currentFilter.Value);
+                if (currentFilter.Value.Name == nameof(subFilter.DeliveryAddress))
+                    subFilter.DeliveryAddress = Map(subFilter.DeliveryAddress, currentFilter.Value);
                 if (currentFilter.Value.Name == nameof(subFilter.Latitude))
                     subFilter.Latitude = Map(subFilter.Latitude, currentFilter.Value);
                 if (currentFilter.Value.Name == nameof(subFilter.Longitude))

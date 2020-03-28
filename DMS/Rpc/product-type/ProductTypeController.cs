@@ -258,9 +258,6 @@ namespace DMS.Rpc.product_type
             StatusFilter.OrderBy = StatusOrder.Id;
             StatusFilter.OrderType = OrderType.ASC;
             StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = ProductType_StatusFilterDTO.Id;
-            StatusFilter.Code = ProductType_StatusFilterDTO.Code;
-            StatusFilter.Name = ProductType_StatusFilterDTO.Name;
 
             List<Status> Statuses = await StatusService.List(StatusFilter);
             List<ProductType_StatusDTO> ProductType_StatusDTOs = Statuses
