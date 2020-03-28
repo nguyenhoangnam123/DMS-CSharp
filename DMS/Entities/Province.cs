@@ -56,5 +56,6 @@ namespace DMS.Entities
         Name = E._2,
         Priority = E._3,
         Status = E._4,
+        Districts = E._5
     }
 }
