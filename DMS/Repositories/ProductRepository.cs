@@ -422,6 +422,7 @@ namespace DMS.Repositories
                 return null;
             Product.Items = await DataContext.Item
                 .Where(x => x.ProductId == Product.Id)
+                .Where(x => x.DeletedAt == null)
                 .Select(x => new Item
                 {
                     Id = x.Id,
@@ -447,6 +448,7 @@ namespace DMS.Repositories
                 }).ToListAsync();
             Product.ProductProductGroupingMappings = await DataContext.ProductProductGroupingMapping
                 .Where(x => x.ProductId == Product.Id)
+                .Where(x => x.ProductGrouping.DeletedAt == null)
                 .Select(x => new ProductProductGroupingMapping
                 {
                     ProductId = x.ProductId,
