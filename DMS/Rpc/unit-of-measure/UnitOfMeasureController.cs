@@ -1,11 +1,14 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Services.MStatus;
 using DMS.Services.MUnitOfMeasure;
 using Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -171,12 +174,36 @@ namespace DMS.Rpc.unit_of_measure
                 throw new BindException(ModelState);
 
             UnitOfMeasureFilter UnitOfMeasureFilter = ConvertFilterDTOToFilterEntity(UnitOfMeasure_UnitOfMeasureFilterDTO);
+            UnitOfMeasureFilter.Skip = 0;
+            UnitOfMeasureFilter.Take = int.MaxValue;
             UnitOfMeasureFilter = UnitOfMeasureService.ToFilter(UnitOfMeasureFilter);
-            DataFile DataFile = await UnitOfMeasureService.Export(UnitOfMeasureFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
+
+            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
+                var UnitOfMeasureHeaders = new List<string[]>()
+                {
+                    new string[] {"Mã đơn vị tính","Tên đơn vị tính","Mô tả"}
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < UnitOfMeasures.Count; i++)
+                {
+                    var UnitOfMeasure = UnitOfMeasures[i];
+
+                    data.Add(new Object[]
+                    {
+                         UnitOfMeasure.Code,
+                         UnitOfMeasure.Name,
+                         UnitOfMeasure.Description
+                    });
+                    excel.GenerateWorksheet("UnitOfMeasure", UnitOfMeasureHeaders, data);
+                }
+                excel.Save();
+            }
+
+            return File(memoryStream.ToArray(), "application/octet-stream", "UnitOfMeasure.xlsx");
+
         }
 
         [Route(UnitOfMeasureRoute.BulkDelete), HttpPost]
