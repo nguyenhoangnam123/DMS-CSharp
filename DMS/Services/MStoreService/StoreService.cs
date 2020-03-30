@@ -20,7 +20,8 @@ namespace DMS.Services.MStore
         Task<Store> Update(Store Store);
         Task<Store> Delete(Store Store);
         Task<List<Store>> BulkDelete(List<Store> Stores);
-        Task<List<Store>> Import(DataFile DataFile);
+        Task<List<Store>> BulkMerge(List<Store> Stores);
+        Task<List<Store>> BulkMergeParentStore(List<Store> Stores);
         Task<DataFile> Export(StoreFilter StoreFilter);
         StoreFilter ToFilter(StoreFilter StoreFilter);
     }
@@ -186,81 +187,30 @@ namespace DMS.Services.MStore
             }
         }
 
-        public async Task<List<Store>> Import(DataFile DataFile)
+        public async Task<List<Store>> BulkMerge(List<Store> Stores)
         {
-            List<Store> Stores = new List<Store>();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
-            {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return Stores;
-                int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int ParentStoreIdColumn = 3 + StartColumn;
-                int OrganizationIdColumn = 4 + StartColumn;
-                int StoreTypeIdColumn = 5 + StartColumn;
-                int StoreGroupingIdColumn = 6 + StartColumn;
-                int TelephoneColumn = 7 + StartColumn;
-                int ProvinceIdColumn = 8 + StartColumn;
-                int DistrictIdColumn = 9 + StartColumn;
-                int WardIdColumn = 10 + StartColumn;
-                int Address1Column = 11 + StartColumn;
-                int Address2Column = 12 + StartColumn;
-                int LatitudeColumn = 13 + StartColumn;
-                int LongitudeColumn = 14 + StartColumn;
-                int OwnerNameColumn = 15 + StartColumn;
-                int OwnerPhoneColumn = 16 + StartColumn;
-                int OwnerEmailColumn = 17 + StartColumn;
-                int StatusIdColumn = 18 + StartColumn;
-                for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
-                {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, IdColumn].Value?.ToString()))
-                        break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string ParentStoreIdValue = worksheet.Cells[i + StartRow, ParentStoreIdColumn].Value?.ToString();
-                    string OrganizationIdValue = worksheet.Cells[i + StartRow, OrganizationIdColumn].Value?.ToString();
-                    string StoreTypeIdValue = worksheet.Cells[i + StartRow, StoreTypeIdColumn].Value?.ToString();
-                    string StoreGroupingIdValue = worksheet.Cells[i + StartRow, StoreGroupingIdColumn].Value?.ToString();
-                    string TelephoneValue = worksheet.Cells[i + StartRow, TelephoneColumn].Value?.ToString();
-                    string ProvinceIdValue = worksheet.Cells[i + StartRow, ProvinceIdColumn].Value?.ToString();
-                    string DistrictIdValue = worksheet.Cells[i + StartRow, DistrictIdColumn].Value?.ToString();
-                    string WardIdValue = worksheet.Cells[i + StartRow, WardIdColumn].Value?.ToString();
-                    string Address1Value = worksheet.Cells[i + StartRow, Address1Column].Value?.ToString();
-                    string Address2Value = worksheet.Cells[i + StartRow, Address2Column].Value?.ToString();
-                    string LatitudeValue = worksheet.Cells[i + StartRow, LatitudeColumn].Value?.ToString();
-                    string LongitudeValue = worksheet.Cells[i + StartRow, LongitudeColumn].Value?.ToString();
-                    string OwnerNameValue = worksheet.Cells[i + StartRow, OwnerNameColumn].Value?.ToString();
-                    string OwnerPhoneValue = worksheet.Cells[i + StartRow, OwnerPhoneColumn].Value?.ToString();
-                    string OwnerEmailValue = worksheet.Cells[i + StartRow, OwnerEmailColumn].Value?.ToString();
-                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    Store Store = new Store();
-                    Store.Code = CodeValue;
-                    Store.Name = NameValue;
-                    Store.Telephone = TelephoneValue;
-                    Store.Address = Address1Value;
-                    Store.DeliveryAddress = Address2Value;
-                    Store.Latitude = decimal.TryParse(LatitudeValue, out decimal Latitude) ? Latitude : 0;
-                    Store.Longitude = decimal.TryParse(LongitudeValue, out decimal Longitude) ? Longitude : 0;
-                    Store.OwnerName = OwnerNameValue;
-                    Store.OwnerPhone = OwnerPhoneValue;
-                    Store.OwnerEmail = OwnerEmailValue;
-                    Stores.Add(Store);
-                }
-            }
-
-            if (!await StoreValidator.Import(Stores))
+            if (!await StoreValidator.BulkMerge(Stores))
                 return Stores;
 
             try
             {
-                Stores.ForEach(s => s.Id = 0);
                 await UOW.Begin();
+                #region merge Store
+                List<Store> dbStores = await UOW.StoreRepository.List(new StoreFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = StoreSelect.Id | StoreSelect.Code,
+                });
+                foreach (Store Store in Stores)
+                {
+                    long StoreId = dbStores.Where(x => x.Code == Store.Code)
+                        .Select(x => x.Id).FirstOrDefault();
+                    Store.Id = StoreId;
+                }
                 await UOW.StoreRepository.BulkMerge(Stores);
+                #endregion
+
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(Stores, new { }, nameof(StoreService));
@@ -276,6 +226,47 @@ namespace DMS.Services.MStore
                     throw new MessageException(ex.InnerException);
             }
         }
+
+        public async Task<List<Store>> BulkMergeParentStore(List<Store> Stores)
+        {
+            if (!await StoreValidator.BulkMergeParentStore(Stores))
+                return Stores;
+
+            try
+            {
+                await UOW.Begin();
+                #region merge Store
+                List<Store> dbStores = await UOW.StoreRepository.List(new StoreFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = StoreSelect.Id | StoreSelect.Code,
+                });
+                foreach (Store Store in Stores)
+                {
+                    long StoreId = dbStores.Where(x => x.Code == Store.Code)
+                        .Select(x => x.Id).FirstOrDefault();
+                    Store.Id = StoreId;
+                }
+                await UOW.StoreRepository.BulkMerge(Stores);
+                #endregion
+
+                await UOW.Commit();
+
+                await Logging.CreateAuditLog(Stores, new { }, nameof(StoreService));
+                return Stores;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+        }
+
 
         public async Task<DataFile> Export(StoreFilter StoreFilter)
         {

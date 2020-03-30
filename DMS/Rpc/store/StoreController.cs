@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MDistrict;
@@ -12,6 +12,7 @@ using DMS.Services.MWard;
 using Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -198,13 +199,164 @@ namespace DMS.Rpc.store
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Id | OrganizationSelect.Code
+            });
+
+            List<StoreType> StoreTypes = await StoreTypeService.List(new StoreTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreTypeSelect.Id | StoreTypeSelect.Code
+            });
+
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(new StoreGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreGroupingSelect.Id | StoreGroupingSelect.Code
+            });
+
+            List<Province> Provinces = await ProvinceService.List(new ProvinceFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProvinceSelect.Id | ProvinceSelect.Code
+            });
+
+            List<District> Districts = await DistrictService.List(new DistrictFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = DistrictSelect.Id | DistrictSelect.Code
+            });
+
+            List<Ward> Wards = await WardService.List(new WardFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = WardSelect.Id | WardSelect.Code
+            });
+
+            List<Status> Statuses = await StatusService.List(new StatusFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StatusSelect.Id | StatusSelect.Code
+            });
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
                 Content = file.OpenReadStream(),
             };
 
-            List<Store> Stores = await StoreService.Import(DataFile);
+            List<Store> Stores = new List<Store>();
+            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                if (worksheet == null)
+                    return null;
+                int StartColumn = 1;
+                int StartRow = 1;
+
+                int CodeColumn = 0 + StartColumn;
+                int NameColumn = 1 + StartColumn;
+
+                int ParentStoreCodeColumn = 2 + StartColumn;
+                int OrganizationCodeColumn = 3 + StartColumn;
+                int StoreTypeCodeColumn = 4 + StartColumn;
+                int StoreGroupingCodeColumn = 5 + StartColumn;
+
+                int TelephoneColumn = 6 + StartColumn;
+
+                int ProvinceCodeColumn = 7 + StartColumn;
+                int DistrictCodeColumn = 8 + StartColumn;
+                int WardCodeColumn = 9 + StartColumn;
+
+                int AddressColumn = 10 + StartColumn;
+                int DeliveryAddressColumn = 11 + StartColumn;
+
+                int LatitudeColumn = 12 + StartColumn;
+                int LongitudeColumn = 13 + StartColumn;
+
+                int OwnerNameColumn = 14 + StartColumn;
+                int OwnerPhoneColumn = 15 + StartColumn;
+                int OwnerEmailColumn = 16 + StartColumn;
+
+                int StatusCodeColumn = 17 + StartColumn;
+
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    // Lấy thông tin từng dòng
+                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
+                    string ParentStoreCodeValue = worksheet.Cells[i + StartRow, ParentStoreCodeColumn].Value?.ToString();
+                    string OrganizationCodeValue = worksheet.Cells[i + StartRow, OrganizationCodeColumn].Value?.ToString();
+                    string StoreTypeCodeValue = worksheet.Cells[i + StartRow, StoreTypeCodeColumn].Value?.ToString();
+                    string StoreGroupingCodeValue = worksheet.Cells[i + StartRow, StoreGroupingCodeColumn].Value?.ToString();
+                    string TelephoneValue = worksheet.Cells[i + StartRow, TelephoneColumn].Value?.ToString();
+                    string ProvinceCodeValue = worksheet.Cells[i + StartRow, ProvinceCodeColumn].Value?.ToString();
+                    string DistrictCodeValue = worksheet.Cells[i + StartRow, DistrictCodeColumn].Value?.ToString();
+                    string WardCodeValue = worksheet.Cells[i + StartRow, WardCodeColumn].Value?.ToString();
+                    string AddressValue = worksheet.Cells[i + StartRow, AddressColumn].Value?.ToString();
+                    string DeliveryAddressValue = worksheet.Cells[i + StartRow, DeliveryAddressColumn].Value?.ToString();
+                    string LatitudeValue = worksheet.Cells[i + StartRow, LatitudeColumn].Value?.ToString();
+                    string LongitudeValue = worksheet.Cells[i + StartRow, LongitudeColumn].Value?.ToString();
+                    string OwnerNameValue = worksheet.Cells[i + StartRow, OwnerNameColumn].Value?.ToString();
+                    string OwnerPhoneValue = worksheet.Cells[i + StartRow, OwnerPhoneColumn].Value?.ToString();
+                    string OwnerEmailValue = worksheet.Cells[i + StartRow, OwnerEmailColumn].Value?.ToString();
+                    string StatusCodeValue = worksheet.Cells[i + StartRow, StatusCodeColumn].Value?.ToString();
+                    if (string.IsNullOrEmpty(CodeValue))
+                        continue;
+
+                    Store Store = new Store();
+                    Store.Code = CodeValue;
+                    Store.Name = NameValue;
+                    Store.Telephone = TelephoneValue;
+                    Store.Address = AddressValue;
+                    Store.DeliveryAddress = DeliveryAddressValue;
+                    Store.Latitude = decimal.TryParse(LatitudeValue, out decimal Latitude) ? Latitude : 0;
+                    Store.Longitude = decimal.TryParse(LongitudeValue, out decimal Longitude) ? Longitude : 0;
+                    Store.OwnerName = OwnerNameValue;
+                    Store.OwnerPhone = OwnerPhoneValue;
+                    Store.OwnerEmail = OwnerEmailValue;
+
+                    if (!string.IsNullOrEmpty(ParentStoreCodeValue))
+                    {
+                        Store.ParentStore = new Store
+                        {
+                            Code = ParentStoreCodeValue
+                        };
+                    }
+                    Store.Organization = Organizations.Where(x => x.Code == OrganizationCodeValue).FirstOrDefault();
+                    Store.StoreType = StoreTypes.Where(x => x.Code == StoreTypeCodeValue).FirstOrDefault();
+                    Store.StoreGrouping = StoreGroupings.Where(x => x.Code == StoreGroupingCodeValue).FirstOrDefault();
+                    Store.Province = Provinces.Where(x => x.Code == ProvinceCodeValue).FirstOrDefault();
+                    Store.District = Districts.Where(x => x.Code == DistrictCodeValue).FirstOrDefault();
+                    Store.Ward = Wards.Where(x => x.Code == WardCodeValue).FirstOrDefault();
+                    Store.Status = Statuses.Where(x => x.Code == StatusCodeValue).FirstOrDefault();
+
+                    Stores.Add(Store);
+                }
+            }
+
+            Stores = await StoreService.BulkMerge(Stores);
+            List<Store> StoresInDB = await StoreService.List(new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.Id | StoreSelect.ParentStore | StoreSelect.Code
+            });
+            foreach (Store Store in Stores)
+            {
+                if(Store.ParentStore != null && !string.IsNullOrEmpty(Store.ParentStore.Code))
+                    Store.ParentStoreId = StoresInDB.Where(x => x.Code == Store.ParentStore.Code).Select(x => x.Id).FirstOrDefault();
+            }
+            Stores = await StoreService.BulkMergeParentStore(Stores);
             List<Store_StoreDTO> Store_StoreDTOs = Stores
                 .Select(c => new Store_StoreDTO(c)).ToList();
             return Store_StoreDTOs;
