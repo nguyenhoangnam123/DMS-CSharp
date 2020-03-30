@@ -21,7 +21,6 @@ namespace DMS.Services.MUnitOfMeasureGrouping
         Task<UnitOfMeasureGrouping> Delete(UnitOfMeasureGrouping UnitOfMeasureGrouping);
         Task<List<UnitOfMeasureGrouping>> BulkDelete(List<UnitOfMeasureGrouping> UnitOfMeasureGroupings);
         Task<List<UnitOfMeasureGrouping>> Import(DataFile DataFile);
-        Task<DataFile> Export(UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter);
         UnitOfMeasureGroupingFilter ToFilter(UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter);
     }
 
@@ -234,50 +233,6 @@ namespace DMS.Services.MUnitOfMeasureGrouping
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }
-
-        public async Task<DataFile> Export(UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter)
-        {
-            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UOW.UnitOfMeasureGroupingRepository.List(UnitOfMeasureGroupingFilter);
-            MemoryStream MemoryStream = new MemoryStream();
-            using (ExcelPackage excelPackage = new ExcelPackage(MemoryStream))
-            {
-                //Set some properties of the Excel document
-                excelPackage.Workbook.Properties.Author = CurrentContext.UserName;
-                excelPackage.Workbook.Properties.Title = nameof(UnitOfMeasureGrouping);
-                excelPackage.Workbook.Properties.Created = StaticParams.DateTimeNow;
-
-                //Create the WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
-                int StartColumn = 1;
-                int StartRow = 2;
-                int IdColumn = 0 + StartColumn;
-                int NameColumn = 1 + StartColumn;
-                int UnitOfMeasureIdColumn = 2 + StartColumn;
-                int StatusIdColumn = 3 + StartColumn;
-
-                worksheet.Cells[1, IdColumn].Value = nameof(UnitOfMeasureGrouping.Id);
-                worksheet.Cells[1, NameColumn].Value = nameof(UnitOfMeasureGrouping.Name);
-                worksheet.Cells[1, UnitOfMeasureIdColumn].Value = nameof(UnitOfMeasureGrouping.UnitOfMeasureId);
-                worksheet.Cells[1, StatusIdColumn].Value = nameof(UnitOfMeasureGrouping.StatusId);
-
-                for (int i = 0; i < UnitOfMeasureGroupings.Count; i++)
-                {
-                    UnitOfMeasureGrouping UnitOfMeasureGrouping = UnitOfMeasureGroupings[i];
-                    worksheet.Cells[i + StartRow, IdColumn].Value = UnitOfMeasureGrouping.Id;
-                    worksheet.Cells[i + StartRow, NameColumn].Value = UnitOfMeasureGrouping.Name;
-                    worksheet.Cells[i + StartRow, UnitOfMeasureIdColumn].Value = UnitOfMeasureGrouping.UnitOfMeasureId;
-                    worksheet.Cells[i + StartRow, StatusIdColumn].Value = UnitOfMeasureGrouping.StatusId;
-                }
-                excelPackage.Save();
-            }
-
-            DataFile DataFile = new DataFile
-            {
-                Name = nameof(UnitOfMeasureGrouping),
-                Content = MemoryStream,
-            };
-            return DataFile;
         }
 
         public UnitOfMeasureGroupingFilter ToFilter(UnitOfMeasureGroupingFilter filter)

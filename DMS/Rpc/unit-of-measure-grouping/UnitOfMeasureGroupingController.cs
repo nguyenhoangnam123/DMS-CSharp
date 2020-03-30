@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +13,8 @@ using DMS.Services.MStatus;
 using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MUnitOfMeasureGroupingContent;
 using DMS.Enums;
+using OfficeOpenXml;
+using System.IO;
 
 namespace DMS.Rpc.unit_of_measure_grouping
 {
@@ -183,12 +185,36 @@ namespace DMS.Rpc.unit_of_measure_grouping
                 throw new BindException(ModelState);
 
             UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = ConvertFilterDTOToFilterEntity(UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO);
+            UnitOfMeasureGroupingFilter.Skip = 0;
+            UnitOfMeasureGroupingFilter.Take = int.MaxValue;
             UnitOfMeasureGroupingFilter = UnitOfMeasureGroupingService.ToFilter(UnitOfMeasureGroupingFilter);
-            DataFile DataFile = await UnitOfMeasureGroupingService.Export(UnitOfMeasureGroupingFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
+
+            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(UnitOfMeasureGroupingFilter);
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
+                var UnitOfMeasureGroupingHeaders = new List<string[]>()
+                {
+                    new string[] {"Mã nhóm đơn vị tính","Tên nhóm đơn vị tính","Mô tả"}
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < UnitOfMeasureGroupings.Count; i++)
+                {
+                    var UnitOfMeasureGrouping = UnitOfMeasureGroupings[i];
+
+                    data.Add(new Object[]
+                    {
+                         UnitOfMeasureGrouping.Code,
+                         UnitOfMeasureGrouping.Name,
+                         UnitOfMeasureGrouping.Description
+                    });
+                    excel.GenerateWorksheet("UnitOfMeasureGrouping", UnitOfMeasureGroupingHeaders, data);
+                }
+                excel.Save();
+            }
+
+            return File(memoryStream.ToArray(), "application/octet-stream", "UnitOfMeasure.xlsx");
+
         }
 
         [Route(UnitOfMeasureGroupingRoute.BulkDelete), HttpPost]

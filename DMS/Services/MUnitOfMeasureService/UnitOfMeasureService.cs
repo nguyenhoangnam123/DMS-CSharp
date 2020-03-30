@@ -21,7 +21,6 @@ namespace DMS.Services.MUnitOfMeasure
         Task<UnitOfMeasure> Delete(UnitOfMeasure UnitOfMeasure);
         Task<List<UnitOfMeasure>> BulkDelete(List<UnitOfMeasure> UnitOfMeasures);
         Task<List<UnitOfMeasure>> Import(DataFile DataFile);
-        Task<DataFile> Export(UnitOfMeasureFilter UnitOfMeasureFilter);
         UnitOfMeasureFilter ToFilter(UnitOfMeasureFilter UnitOfMeasureFilter);
     }
 
@@ -238,53 +237,6 @@ namespace DMS.Services.MUnitOfMeasure
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }
-
-        public async Task<DataFile> Export(UnitOfMeasureFilter UnitOfMeasureFilter)
-        {
-            List<UnitOfMeasure> UnitOfMeasures = await UOW.UnitOfMeasureRepository.List(UnitOfMeasureFilter);
-            MemoryStream MemoryStream = new MemoryStream();
-            using (ExcelPackage excelPackage = new ExcelPackage(MemoryStream))
-            {
-                //Set some properties of the Excel document
-                excelPackage.Workbook.Properties.Author = CurrentContext.UserName;
-                excelPackage.Workbook.Properties.Title = nameof(UnitOfMeasure);
-                excelPackage.Workbook.Properties.Created = StaticParams.DateTimeNow;
-
-                //Create the WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
-                int StartColumn = 1;
-                int StartRow = 2;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int DescriptionColumn = 3 + StartColumn;
-                int StatusIdColumn = 4 + StartColumn;
-
-                worksheet.Cells[1, IdColumn].Value = nameof(UnitOfMeasure.Id);
-                worksheet.Cells[1, CodeColumn].Value = nameof(UnitOfMeasure.Code);
-                worksheet.Cells[1, NameColumn].Value = nameof(UnitOfMeasure.Name);
-                worksheet.Cells[1, DescriptionColumn].Value = nameof(UnitOfMeasure.Description);
-                worksheet.Cells[1, StatusIdColumn].Value = nameof(UnitOfMeasure.StatusId);
-
-                for (int i = 0; i < UnitOfMeasures.Count; i++)
-                {
-                    UnitOfMeasure UnitOfMeasure = UnitOfMeasures[i];
-                    worksheet.Cells[i + StartRow, IdColumn].Value = UnitOfMeasure.Id;
-                    worksheet.Cells[i + StartRow, CodeColumn].Value = UnitOfMeasure.Code;
-                    worksheet.Cells[i + StartRow, NameColumn].Value = UnitOfMeasure.Name;
-                    worksheet.Cells[i + StartRow, DescriptionColumn].Value = UnitOfMeasure.Description;
-                    worksheet.Cells[i + StartRow, StatusIdColumn].Value = UnitOfMeasure.StatusId;
-                }
-                excelPackage.Save();
-            }
-
-            DataFile DataFile = new DataFile
-            {
-                Name = nameof(UnitOfMeasure),
-                Content = MemoryStream,
-            };
-            return DataFile;
         }
 
         public UnitOfMeasureFilter ToFilter(UnitOfMeasureFilter filter)
