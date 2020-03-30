@@ -18,7 +18,7 @@ namespace DMS.Rpc.organization
 
         public long Level { get; set; }
 
-        public bool IsActive { get; set; }
+        public long StatusId { get; set; }
 
 
         public Organization_StoreGroupingDTO() { }
@@ -37,7 +37,7 @@ namespace DMS.Rpc.organization
 
             this.Level = StoreGrouping.Level;
 
-            this.IsActive = StoreGrouping.IsActive;
+            this.StatusId = StoreGrouping.StatusId;
 
         }
     }
@@ -56,6 +56,7 @@ namespace DMS.Rpc.organization
         public StringFilter Path { get; set; }
 
         public LongFilter Level { get; set; }
+        public IdFilter StatusId { get; set; }
 
         public StoreGroupingOrder OrderBy { get; set; }
     }

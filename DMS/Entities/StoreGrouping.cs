@@ -14,7 +14,9 @@ namespace DMS.Entities
         public long? ParentId { get; set; }
         public string Path { get; set; }
         public long Level { get; set; }
-        public bool IsActive { get; set; }
+        public long StatusId { get; set; }
+        public StoreGrouping Parent { get; set; }
+        public Status Status { get; set; }
         public List<Store> Stores { get; set; }
 
         public bool Equals(StoreGrouping other)
@@ -50,7 +52,7 @@ namespace DMS.Entities
         Parent = 3,
         Path = 4,
         Level = 5,
-        IsActive = 6,
+        Status = 6
     }
 
     [Flags]
@@ -63,6 +65,6 @@ namespace DMS.Entities
         Parent = E._3,
         Path = E._4,
         Level = E._5,
-        IsActive = E._6,
+        Status = E._6,
     }
 }

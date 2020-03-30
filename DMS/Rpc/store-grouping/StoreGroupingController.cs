@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Services.MDistrict;
 using DMS.Services.MOrganization;
 using DMS.Services.MProvince;
@@ -32,13 +33,7 @@ namespace DMS.Rpc.store_grouping
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
 
-        public const string SingleListStore = Default + "/single-list-store";
-        public const string SingleListDistrict = Default + "/single-list-district";
-        public const string SingleListOrganization = Default + "/single-list-organization";
-        public const string SingleListProvince = Default + "/single-list-province";
-        public const string SingleListStatus = Default + "/single-list-status";
-        public const string SingleListStoreType = Default + "/single-list-store-type";
-        public const string SingleListWard = Default + "/single-list-ward";
+        public const string SingleListParentStoreGrouping = Default + "/single-list-parent-store-store";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(StoreGroupingFilter.Id), FieldType.ID },
@@ -47,6 +42,7 @@ namespace DMS.Rpc.store_grouping
             { nameof(StoreGroupingFilter.ParentId), FieldType.ID },
             { nameof(StoreGroupingFilter.Path), FieldType.STRING },
             { nameof(StoreGroupingFilter.Level), FieldType.LONG },
+            { nameof(StoreGroupingFilter.StatusId), FieldType.LONG },
         };
     }
 
@@ -254,7 +250,23 @@ namespace DMS.Rpc.store_grouping
             StoreGrouping.ParentId = StoreGrouping_StoreGroupingDTO.ParentId;
             StoreGrouping.Path = StoreGrouping_StoreGroupingDTO.Path;
             StoreGrouping.Level = StoreGrouping_StoreGroupingDTO.Level;
-            StoreGrouping.IsActive = StoreGrouping_StoreGroupingDTO.IsActive;
+            StoreGrouping.StatusId = StoreGrouping_StoreGroupingDTO.StatusId;
+            StoreGrouping.Parent = StoreGrouping_StoreGroupingDTO.Parent == null ? null : new StoreGrouping
+            {
+                Id = StoreGrouping_StoreGroupingDTO.Parent.Id,
+                Code = StoreGrouping_StoreGroupingDTO.Parent.Code,
+                Name = StoreGrouping_StoreGroupingDTO.Parent.Name,
+                Path = StoreGrouping_StoreGroupingDTO.Parent.Path,
+                Level = StoreGrouping_StoreGroupingDTO.Parent.Level,
+                ParentId = StoreGrouping_StoreGroupingDTO.Parent.ParentId,
+                StatusId = StoreGrouping_StoreGroupingDTO.Parent.StatusId
+            };
+            StoreGrouping.Status = StoreGrouping_StoreGroupingDTO.Status == null ? null : new Status
+            {
+                Id = StoreGrouping_StoreGroupingDTO.Status.Id,
+                Code = StoreGrouping_StoreGroupingDTO.Status.Code,
+                Name = StoreGrouping_StoreGroupingDTO.Status.Name
+            };
             StoreGrouping.Stores = StoreGrouping_StoreGroupingDTO.Stores?
                 .Select(x => new Store
                 {
@@ -368,164 +380,24 @@ namespace DMS.Rpc.store_grouping
             StoreGroupingFilter.ParentId = StoreGrouping_StoreGroupingFilterDTO.ParentId;
             StoreGroupingFilter.Path = StoreGrouping_StoreGroupingFilterDTO.Path;
             StoreGroupingFilter.Level = StoreGrouping_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.StatusId = StoreGrouping_StoreGroupingFilterDTO.StatusId;
             return StoreGroupingFilter;
         }
 
-        [Route(StoreGroupingRoute.SingleListStore), HttpPost]
-        public async Task<List<StoreGrouping_StoreDTO>> SingleListStore([FromBody] StoreGrouping_StoreFilterDTO StoreGrouping_StoreFilterDTO)
+        [Route(StoreGroupingRoute.SingleListParentStoreGrouping), HttpPost]
+        public async Task<List<StoreGrouping_StoreGroupingDTO>> SingleListParentStoreGrouping([FromBody] StoreGrouping_StoreGroupingFilterDTO StoreGrouping_StoreGroupingFilterDTO)
         {
-            StoreFilter StoreFilter = new StoreFilter();
-            StoreFilter.Skip = 0;
-            StoreFilter.Take = 20;
-            StoreFilter.OrderBy = StoreOrder.Id;
-            StoreFilter.OrderType = OrderType.ASC;
-            StoreFilter.Selects = StoreSelect.ALL;
-            StoreFilter.Id = StoreGrouping_StoreFilterDTO.Id;
-            StoreFilter.Code = StoreGrouping_StoreFilterDTO.Code;
-            StoreFilter.Name = StoreGrouping_StoreFilterDTO.Name;
-            StoreFilter.ParentStoreId = StoreGrouping_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = StoreGrouping_StoreFilterDTO.OrganizationId;
-            StoreFilter.StoreTypeId = StoreGrouping_StoreFilterDTO.StoreTypeId;
-            StoreFilter.StoreGroupingId = StoreGrouping_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.Telephone = StoreGrouping_StoreFilterDTO.Telephone;
-            StoreFilter.ProvinceId = StoreGrouping_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = StoreGrouping_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = StoreGrouping_StoreFilterDTO.WardId;
-            StoreFilter.Address = StoreGrouping_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = StoreGrouping_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = StoreGrouping_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = StoreGrouping_StoreFilterDTO.Longitude;
-            StoreFilter.OwnerName = StoreGrouping_StoreFilterDTO.OwnerName;
-            StoreFilter.OwnerPhone = StoreGrouping_StoreFilterDTO.OwnerPhone;
-            StoreFilter.OwnerEmail = StoreGrouping_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = StoreGrouping_StoreFilterDTO.StatusId;
-
-            List<Store> Stores = await StoreService.List(StoreFilter);
-            List<StoreGrouping_StoreDTO> StoreGrouping_StoreDTOs = Stores
-                .Select(x => new StoreGrouping_StoreDTO(x)).ToList();
-            return StoreGrouping_StoreDTOs;
-        }
-        [Route(StoreGroupingRoute.SingleListDistrict), HttpPost]
-        public async Task<List<StoreGrouping_DistrictDTO>> SingleListDistrict([FromBody] StoreGrouping_DistrictFilterDTO StoreGrouping_DistrictFilterDTO)
-        {
-            DistrictFilter DistrictFilter = new DistrictFilter();
-            DistrictFilter.Skip = 0;
-            DistrictFilter.Take = 20;
-            DistrictFilter.OrderBy = DistrictOrder.Id;
-            DistrictFilter.OrderType = OrderType.ASC;
-            DistrictFilter.Selects = DistrictSelect.ALL;
-            DistrictFilter.Id = StoreGrouping_DistrictFilterDTO.Id;
-            DistrictFilter.Name = StoreGrouping_DistrictFilterDTO.Name;
-            DistrictFilter.Priority = StoreGrouping_DistrictFilterDTO.Priority;
-            DistrictFilter.ProvinceId = StoreGrouping_DistrictFilterDTO.ProvinceId;
-            DistrictFilter.StatusId = StoreGrouping_DistrictFilterDTO.StatusId;
-
-            List<District> Districts = await DistrictService.List(DistrictFilter);
-            List<StoreGrouping_DistrictDTO> StoreGrouping_DistrictDTOs = Districts
-                .Select(x => new StoreGrouping_DistrictDTO(x)).ToList();
-            return StoreGrouping_DistrictDTOs;
-        }
-        [Route(StoreGroupingRoute.SingleListOrganization), HttpPost]
-        public async Task<List<StoreGrouping_OrganizationDTO>> SingleListOrganization([FromBody] StoreGrouping_OrganizationFilterDTO StoreGrouping_OrganizationFilterDTO)
-        {
-            OrganizationFilter OrganizationFilter = new OrganizationFilter();
-            OrganizationFilter.Skip = 0;
-            OrganizationFilter.Take = 99999;
-            OrganizationFilter.OrderBy = OrganizationOrder.Id;
-            OrganizationFilter.OrderType = OrderType.ASC;
-            OrganizationFilter.Selects = OrganizationSelect.ALL;
-            OrganizationFilter.Id = StoreGrouping_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = StoreGrouping_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = StoreGrouping_OrganizationFilterDTO.Name;
-            OrganizationFilter.ParentId = StoreGrouping_OrganizationFilterDTO.ParentId;
-            OrganizationFilter.Path = StoreGrouping_OrganizationFilterDTO.Path;
-            OrganizationFilter.Level = StoreGrouping_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = StoreGrouping_OrganizationFilterDTO.StatusId;
-            OrganizationFilter.Phone = StoreGrouping_OrganizationFilterDTO.Phone;
-            OrganizationFilter.Address = StoreGrouping_OrganizationFilterDTO.Address;
-            OrganizationFilter.Latitude = StoreGrouping_OrganizationFilterDTO.Latitude;
-            OrganizationFilter.Longitude = StoreGrouping_OrganizationFilterDTO.Longitude;
-
-            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-            List<StoreGrouping_OrganizationDTO> StoreGrouping_OrganizationDTOs = Organizations
-                .Select(x => new StoreGrouping_OrganizationDTO(x)).ToList();
-            return StoreGrouping_OrganizationDTOs;
-        }
-        [Route(StoreGroupingRoute.SingleListProvince), HttpPost]
-        public async Task<List<StoreGrouping_ProvinceDTO>> SingleListProvince([FromBody] StoreGrouping_ProvinceFilterDTO StoreGrouping_ProvinceFilterDTO)
-        {
-            ProvinceFilter ProvinceFilter = new ProvinceFilter();
-            ProvinceFilter.Skip = 0;
-            ProvinceFilter.Take = 20;
-            ProvinceFilter.OrderBy = ProvinceOrder.Id;
-            ProvinceFilter.OrderType = OrderType.ASC;
-            ProvinceFilter.Selects = ProvinceSelect.ALL;
-            ProvinceFilter.Id = StoreGrouping_ProvinceFilterDTO.Id;
-            ProvinceFilter.Name = StoreGrouping_ProvinceFilterDTO.Name;
-            ProvinceFilter.Priority = StoreGrouping_ProvinceFilterDTO.Priority;
-            ProvinceFilter.StatusId = StoreGrouping_ProvinceFilterDTO.StatusId;
-
-            List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
-            List<StoreGrouping_ProvinceDTO> StoreGrouping_ProvinceDTOs = Provinces
-                .Select(x => new StoreGrouping_ProvinceDTO(x)).ToList();
-            return StoreGrouping_ProvinceDTOs;
-        }
-        [Route(StoreGroupingRoute.SingleListStatus), HttpPost]
-        public async Task<List<StoreGrouping_StatusDTO>> SingleListStatus([FromBody] StoreGrouping_StatusFilterDTO StoreGrouping_StatusFilterDTO)
-        {
-            StatusFilter StatusFilter = new StatusFilter();
-            StatusFilter.Skip = 0;
-            StatusFilter.Take = 20;
-            StatusFilter.OrderBy = StatusOrder.Id;
-            StatusFilter.OrderType = OrderType.ASC;
-            StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = StoreGrouping_StatusFilterDTO.Id;
-            StatusFilter.Code = StoreGrouping_StatusFilterDTO.Code;
-            StatusFilter.Name = StoreGrouping_StatusFilterDTO.Name;
-
-            List<Status> Statuses = await StatusService.List(StatusFilter);
-            List<StoreGrouping_StatusDTO> StoreGrouping_StatusDTOs = Statuses
-                .Select(x => new StoreGrouping_StatusDTO(x)).ToList();
-            return StoreGrouping_StatusDTOs;
-        }
-        [Route(StoreGroupingRoute.SingleListStoreType), HttpPost]
-        public async Task<List<StoreGrouping_StoreTypeDTO>> SingleListStoreType([FromBody] StoreGrouping_StoreTypeFilterDTO StoreGrouping_StoreTypeFilterDTO)
-        {
-            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
-            StoreTypeFilter.Skip = 0;
-            StoreTypeFilter.Take = 20;
-            StoreTypeFilter.OrderBy = StoreTypeOrder.Id;
-            StoreTypeFilter.OrderType = OrderType.ASC;
-            StoreTypeFilter.Selects = StoreTypeSelect.ALL;
-            StoreTypeFilter.Id = StoreGrouping_StoreTypeFilterDTO.Id;
-            StoreTypeFilter.Code = StoreGrouping_StoreTypeFilterDTO.Code;
-            StoreTypeFilter.Name = StoreGrouping_StoreTypeFilterDTO.Name;
-            StoreTypeFilter.StatusId = StoreGrouping_StoreTypeFilterDTO.StatusId;
-
-            List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
-            List<StoreGrouping_StoreTypeDTO> StoreGrouping_StoreTypeDTOs = StoreTypes
-                .Select(x => new StoreGrouping_StoreTypeDTO(x)).ToList();
-            return StoreGrouping_StoreTypeDTOs;
-        }
-        [Route(StoreGroupingRoute.SingleListWard), HttpPost]
-        public async Task<List<StoreGrouping_WardDTO>> SingleListWard([FromBody] StoreGrouping_WardFilterDTO StoreGrouping_WardFilterDTO)
-        {
-            WardFilter WardFilter = new WardFilter();
-            WardFilter.Skip = 0;
-            WardFilter.Take = 20;
-            WardFilter.OrderBy = WardOrder.Id;
-            WardFilter.OrderType = OrderType.ASC;
-            WardFilter.Selects = WardSelect.ALL;
-            WardFilter.Id = StoreGrouping_WardFilterDTO.Id;
-            WardFilter.Name = StoreGrouping_WardFilterDTO.Name;
-            WardFilter.Priority = StoreGrouping_WardFilterDTO.Priority;
-            WardFilter.DistrictId = StoreGrouping_WardFilterDTO.DistrictId;
-            WardFilter.StatusId = StoreGrouping_WardFilterDTO.StatusId;
-
-            List<Ward> Wards = await WardService.List(WardFilter);
-            List<StoreGrouping_WardDTO> StoreGrouping_WardDTOs = Wards
-                .Select(x => new StoreGrouping_WardDTO(x)).ToList();
-            return StoreGrouping_WardDTOs;
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = 0;
+            StoreGroupingFilter.Take = int.MaxValue;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+            List<StoreGrouping_StoreGroupingDTO> StoreGrouping_StoreGroupingDTOs = StoreGroupings
+                .Select(x => new StoreGrouping_StoreGroupingDTO(x)).ToList();
+            return StoreGrouping_StoreGroupingDTOs;
         }
 
     }
