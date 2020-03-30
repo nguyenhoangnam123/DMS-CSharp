@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MUnitOfMeasure
@@ -12,8 +13,8 @@ namespace DMS.Services.MUnitOfMeasure
         Task<bool> Create(UnitOfMeasure UnitOfMeasure);
         Task<bool> Update(UnitOfMeasure UnitOfMeasure);
         Task<bool> Delete(UnitOfMeasure UnitOfMeasure);
+        Task<bool> BulkMerge(List<UnitOfMeasure> UnitOfMeasures);
         Task<bool> BulkDelete(List<UnitOfMeasure> UnitOfMeasures);
-        Task<bool> Import(List<UnitOfMeasure> UnitOfMeasures);
     }
 
     public class UnitOfMeasureValidator : IUnitOfMeasureValidator
@@ -132,9 +133,26 @@ namespace DMS.Services.MUnitOfMeasure
         {
             return true;
         }
-
-        public async Task<bool> Import(List<UnitOfMeasure> UnitOfMeasures)
+        public async Task<bool> BulkMerge(List<UnitOfMeasure> UnitOfMeasures)
         {
+            var listCodeInDB = (await UOW.UnitOfMeasureRepository.List(new UnitOfMeasureFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = UnitOfMeasureSelect.Code
+            })).Select(e => e.Code);
+
+            foreach (var UnitOfMeasure in UnitOfMeasures)
+            {
+                if (listCodeInDB.Contains(UnitOfMeasure.Code))
+                {
+                    UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Code), ErrorCode.CodeExisted);
+                    return false;
+                }
+
+                if (!await(ValidateName(UnitOfMeasure))) return false;
+                if (!await(ValidateStatus(UnitOfMeasure))) return false;
+            }
             return true;
         }
     }

@@ -161,10 +161,38 @@ namespace DMS.Rpc.unit_of_measure
                 Content = file.OpenReadStream(),
             };
 
-            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.Import(DataFile);
-            List<UnitOfMeasure_UnitOfMeasureDTO> UnitOfMeasure_UnitOfMeasureDTOs = UnitOfMeasures
-                .Select(c => new UnitOfMeasure_UnitOfMeasureDTO(c)).ToList();
-            return UnitOfMeasure_UnitOfMeasureDTOs;
+            List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
+            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                if (worksheet == null)
+                    return null;
+                int StartColumn = 1;
+                int StartRow = 1;
+
+                int CodeColumn = 0 + StartColumn;
+                int NameColumn = 1 + StartColumn;
+
+               
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    // Lấy thông tin từng dòng
+                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
+                    if (string.IsNullOrEmpty(CodeValue))
+                        continue;
+
+                    UnitOfMeasure UnitOfMeasure = new UnitOfMeasure();
+                    UnitOfMeasure.Code = CodeValue;
+                    UnitOfMeasure.Name = NameValue;
+                   
+                    UnitOfMeasures.Add(UnitOfMeasure);
+                }
+                UnitOfMeasures = await UnitOfMeasureService.BulkMerge(UnitOfMeasures);
+                List<UnitOfMeasure_UnitOfMeasureDTO> UnitOfMeasure_UnitOfMeasureDTOs = UnitOfMeasures
+                    .Select(c => new UnitOfMeasure_UnitOfMeasureDTO(c)).ToList();
+                return UnitOfMeasure_UnitOfMeasureDTOs;
+            }
         }
 
         [Route(UnitOfMeasureRoute.Export), HttpPost]

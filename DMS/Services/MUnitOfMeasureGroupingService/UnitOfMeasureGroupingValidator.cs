@@ -106,7 +106,7 @@ namespace DMS.Services.MUnitOfMeasureGrouping
         {
             if (UnitOfMeasureGrouping.UnitOfMeasureId == 0)
             {
-                UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.UnitOfMeasureId), ErrorCode.UnitOfMeasureGroupingTypeEmpty);
+                UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.UnitOfMeasureId), ErrorCode.UnitOfMeasureEmpty);
             }
             UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
             {
@@ -119,7 +119,7 @@ namespace DMS.Services.MUnitOfMeasureGrouping
 
             int count = await UOW.UnitOfMeasureRepository.Count(UnitOfMeasureFilter);
             if (count == 0)
-                UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.UnitOfMeasureId), ErrorCode.UnitOfMeasureGroupingNotExisted);
+                UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.UnitOfMeasureId), ErrorCode.UnitOfMeasureNotExisted);
             return count != 0;
         }
 
