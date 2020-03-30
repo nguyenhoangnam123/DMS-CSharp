@@ -725,6 +725,17 @@ namespace DMS.Models
                     .HasMaxLength(400);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.InverseParent)
+                    .HasForeignKey(d => d.ParentId)
+                    .HasConstraintName("FK_StoreGrouping_StoreGrouping");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.StoreGroupings)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreGrouping_Status");
             });
 
             modelBuilder.Entity<StoreImageMappingDAO>(entity =>

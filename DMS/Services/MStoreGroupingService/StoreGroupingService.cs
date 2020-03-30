@@ -92,6 +92,7 @@ namespace DMS.Services.MStoreGrouping
 
             try
             {
+                StoreGrouping.Id = 0;
                 await UOW.Begin();
                 await UOW.StoreGroupingRepository.Create(StoreGrouping);
                 await UOW.Commit();
@@ -274,7 +275,7 @@ namespace DMS.Services.MStoreGrouping
                 worksheet.Cells[1, ParentIdColumn].Value = nameof(StoreGrouping.ParentId);
                 worksheet.Cells[1, PathColumn].Value = nameof(StoreGrouping.Path);
                 worksheet.Cells[1, LevelColumn].Value = nameof(StoreGrouping.Level);
-                worksheet.Cells[1, IsActiveColumn].Value = nameof(StoreGrouping.IsActive);
+                
 
                 for (int i = 0; i < StoreGroupings.Count; i++)
                 {
@@ -285,7 +286,7 @@ namespace DMS.Services.MStoreGrouping
                     worksheet.Cells[i + StartRow, ParentIdColumn].Value = StoreGrouping.ParentId;
                     worksheet.Cells[i + StartRow, PathColumn].Value = StoreGrouping.Path;
                     worksheet.Cells[i + StartRow, LevelColumn].Value = StoreGrouping.Level;
-                    worksheet.Cells[i + StartRow, IsActiveColumn].Value = StoreGrouping.IsActive;
+                    
                 }
                 excelPackage.Save();
             }

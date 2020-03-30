@@ -13,7 +13,9 @@ namespace DMS.Rpc.store_grouping
         public long? ParentId { get; set; }
         public string Path { get; set; }
         public long Level { get; set; }
-        public bool IsActive { get; set; }
+        public long StatusId { get; set; }
+        public StoreGrouping_StoreGroupingDTO Parent { get; set; }
+        public StoreGrouping_StatusDTO Status { get; set; }
         public List<StoreGrouping_StoreDTO> Stores { get; set; }
         public StoreGrouping_StoreGroupingDTO() { }
         public StoreGrouping_StoreGroupingDTO(StoreGrouping StoreGrouping)
@@ -24,7 +26,9 @@ namespace DMS.Rpc.store_grouping
             this.ParentId = StoreGrouping.ParentId;
             this.Path = StoreGrouping.Path;
             this.Level = StoreGrouping.Level;
-            this.IsActive = StoreGrouping.IsActive;
+            this.StatusId = StoreGrouping.StatusId;
+            this.Parent = StoreGrouping.Parent == null ? null : new StoreGrouping_StoreGroupingDTO(StoreGrouping.Parent);
+            this.Status = StoreGrouping.Status == null ? null : new StoreGrouping_StatusDTO(StoreGrouping.Status);
             this.Stores = StoreGrouping.Stores?.Select(x => new StoreGrouping_StoreDTO(x)).ToList();
         }
     }
@@ -37,6 +41,7 @@ namespace DMS.Rpc.store_grouping
         public IdFilter ParentId { get; set; }
         public StringFilter Path { get; set; }
         public LongFilter Level { get; set; }
+        public IdFilter StatusId { get; set; }
         public StoreGroupingOrder OrderBy { get; set; }
     }
 }
