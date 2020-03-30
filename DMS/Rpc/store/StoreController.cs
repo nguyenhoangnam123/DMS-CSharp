@@ -13,7 +13,9 @@ using Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -369,12 +371,70 @@ namespace DMS.Rpc.store
                 throw new BindException(ModelState);
 
             StoreFilter StoreFilter = ConvertFilterDTOToFilterEntity(Store_StoreFilterDTO);
+            StoreFilter.Skip = 0;
+            StoreFilter.Take = int.MaxValue;
             StoreFilter = StoreService.ToFilter(StoreFilter);
-            DataFile DataFile = await StoreService.Export(StoreFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
+                var StoreHeaders = new List<string[]>()
+                {
+                    new string[] 
+                    { 
+                        "Mã Cửa Hàng", 
+                        "Tên Cửa Hàng", 
+                        "Đơn Vị Quản Lý", 
+                        "Cửa Hàng Cha", 
+                        "Câp Cửa Hàng" , 
+                        "Nhóm Cửa Hàng",
+                        "Điện Thoại",
+                        "Tỉnh/Thành phố",
+                        "Quận/Huyện",
+                        "Phường/Xã",
+                        "Địa Chỉ Cửa Hàng",
+                        "Địa Chỉ Giao Hàng",
+                        "Kinh Độ",
+                        "Vĩ Độ",
+                        "Tên Chủ Cửa Hàng",
+                        "Số Điện Thoại Liên Hệ",
+                        "Email",
+                        "Trạng Thái",
+                    }
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < Stores.Count; i++)
+                {
+                    var Store = Stores[i];
+                    data.Add(new Object[]
+                    {
+                        Store.Code,
+                        Store.Name,
+                        Store.Organization.Code,
+                        Store.ParentStore.Code,
+                        Store.StoreType.Code,
+                        Store.StoreGrouping.Code,
+                        Store.Telephone,
+                        Store.Province.Code,
+                        Store.District.Code,
+                        Store.Ward.Code,
+                        Store.Address,
+                        Store.DeliveryAddress,
+                        Store.Latitude,
+                        Store.Longitude,
+                        Store.OwnerName,
+                        Store.OwnerPhone,
+                        Store.OwnerEmail,
+                        Store.Status.Code
+                });
+
+                    excel.GenerateWorksheet("Province", StoreHeaders, data);
+                }
+                excel.Save();
+            }
+
+            return File(memoryStream.ToArray(), "application/octet-stream", "Store.xlsx");
         }
 
         [Route(StoreRoute.BulkDelete), HttpPost]
