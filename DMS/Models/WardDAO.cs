@@ -8,6 +8,7 @@ namespace DMS.Models
         public WardDAO()
         {
             Stores = new HashSet<StoreDAO>();
+            Suppliers = new HashSet<SupplierDAO>();
         }
 
         public long Id { get; set; }
@@ -23,5 +24,6 @@ namespace DMS.Models
         public virtual DistrictDAO District { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
+        public virtual ICollection<SupplierDAO> Suppliers { get; set; }
     }
 }
