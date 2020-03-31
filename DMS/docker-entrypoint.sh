@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT_NAME=DMS.BE
+PROJECT_NAME=DMS
 
 consul agent -config-dir /consul/config &
 sleep 5
