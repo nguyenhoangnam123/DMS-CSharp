@@ -207,7 +207,7 @@ namespace DMS.Repositories
 
         public async Task<AppUser> Get(long Id)
         {
-            AppUser AppUser = await DataContext.AppUser.Where(x => x.Id == Id).Select(x => new AppUser()
+            AppUser AppUser = await DataContext.AppUser.Where(x => x.Id == Id).AsNoTracking().Select(x => new AppUser()
             {
                 Id = x.Id,
                 Username = x.Username,
@@ -273,7 +273,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(AppUser AppUser)
         {
-            AppUserDAO AppUserDAO = DataContext.AppUser.Where(x => x.Id == AppUser.Id).FirstOrDefault();
+            AppUserDAO AppUserDAO = DataContext.AppUser.Where(x => x.Id == AppUser.Id).AsNoTracking().FirstOrDefault();
             if (AppUserDAO == null)
                 return false;
             AppUserDAO.Id = AppUser.Id;
@@ -293,7 +293,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(AppUser AppUser)
         {
-            await DataContext.AppUser.Where(x => x.Id == AppUser.Id).UpdateFromQueryAsync(x => new AppUserDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.AppUser.Where(x => x.Id == AppUser.Id).AsNoTracking().UpdateFromQueryAsync(x => new AppUserDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 
