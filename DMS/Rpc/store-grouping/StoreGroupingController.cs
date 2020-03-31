@@ -406,7 +406,25 @@ namespace DMS.Rpc.store_grouping
         public async Task<long> CountStore([FromBody] StoreGrouping_StoreFilterDTO StoreGrouping_StoreFilterDTO)
         {
             StoreFilter StoreFilter = new StoreFilter();
-
+            StoreFilter.Id = StoreGrouping_StoreFilterDTO.Id;
+            StoreFilter.Code = StoreGrouping_StoreFilterDTO.Code;
+            StoreFilter.Name = StoreGrouping_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = StoreGrouping_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = StoreGrouping_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = StoreGrouping_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = StoreGrouping_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.Telephone = StoreGrouping_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = StoreGrouping_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = StoreGrouping_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = StoreGrouping_StoreFilterDTO.WardId;
+            StoreFilter.Address = StoreGrouping_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = StoreGrouping_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = StoreGrouping_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = StoreGrouping_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = StoreGrouping_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = StoreGrouping_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = StoreGrouping_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             return await StoreService.Count(StoreFilter);
         }
 
@@ -419,6 +437,25 @@ namespace DMS.Rpc.store_grouping
             StoreFilter.OrderBy = StoreOrder.Id;
             StoreFilter.OrderType = OrderType.ASC;
             StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = StoreGrouping_StoreFilterDTO.Id;
+            StoreFilter.Code = StoreGrouping_StoreFilterDTO.Code;
+            StoreFilter.Name = StoreGrouping_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = StoreGrouping_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = StoreGrouping_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = StoreGrouping_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = StoreGrouping_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.Telephone = StoreGrouping_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = StoreGrouping_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = StoreGrouping_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = StoreGrouping_StoreFilterDTO.WardId;
+            StoreFilter.Address = StoreGrouping_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = StoreGrouping_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = StoreGrouping_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = StoreGrouping_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = StoreGrouping_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = StoreGrouping_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = StoreGrouping_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<StoreGrouping_StoreDTO> StoreGrouping_StoreDTOs = Stores
