@@ -146,7 +146,7 @@ namespace DMS.Repositories
 
         public async Task<Menu> Get(long Id)
         {
-            Menu Menu = await DataContext.Menu.Where(x => x.Id == Id).Select(x => new Menu()
+            Menu Menu = await DataContext.Menu.Where(x => x.Id == Id).AsNoTracking().Select(x => new Menu()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -196,7 +196,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Menu Menu)
         {
-            MenuDAO MenuDAO = DataContext.Menu.Where(x => x.Id == Menu.Id).FirstOrDefault();
+            MenuDAO MenuDAO = DataContext.Menu.Where(x => x.Id == Menu.Id).AsNoTracking().FirstOrDefault();
             if (MenuDAO == null)
                 return false;
             MenuDAO.Id = Menu.Id;
@@ -211,7 +211,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Menu Menu)
         {
-            await DataContext.Menu.Where(x => x.Id == Menu.Id).DeleteFromQueryAsync();
+            await DataContext.Menu.Where(x => x.Id == Menu.Id).AsNoTracking().DeleteFromQueryAsync();
             return true;
         }
 

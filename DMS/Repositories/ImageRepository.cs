@@ -130,7 +130,7 @@ namespace DMS.Repositories
 
         public async Task<Image> Get(long Id)
         {
-            Image Image = await DataContext.Image.Where(x => x.Id == Id).Select(x => new Image()
+            Image Image = await DataContext.Image.Where(x => x.Id == Id).AsNoTracking().Select(x => new Image()
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -159,7 +159,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Image Image)
         {
-            ImageDAO ImageDAO = DataContext.Image.Where(x => x.Id == Image.Id).FirstOrDefault();
+            ImageDAO ImageDAO = DataContext.Image.Where(x => x.Id == Image.Id).AsNoTracking().FirstOrDefault();
             if (ImageDAO == null)
                 return false;
             ImageDAO.Id = Image.Id;
@@ -173,7 +173,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Image Image)
         {
-            await DataContext.Image.Where(x => x.Id == Image.Id).UpdateFromQueryAsync(x => new ImageDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.Image.Where(x => x.Id == Image.Id).AsNoTracking().UpdateFromQueryAsync(x => new ImageDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

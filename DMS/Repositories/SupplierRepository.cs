@@ -290,7 +290,7 @@ namespace DMS.Repositories
 
         public async Task<Supplier> Get(long Id)
         {
-            Supplier Supplier = await DataContext.Supplier.Where(x => x.Id == Id).Select(x => new Supplier()
+            Supplier Supplier = await DataContext.Supplier.Where(x => x.Id == Id).AsNoTracking().Select(x => new Supplier()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -380,7 +380,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Supplier Supplier)
         {
-            SupplierDAO SupplierDAO = DataContext.Supplier.Where(x => x.Id == Supplier.Id).FirstOrDefault();
+            SupplierDAO SupplierDAO = DataContext.Supplier.Where(x => x.Id == Supplier.Id).AsNoTracking().FirstOrDefault();
             if (SupplierDAO == null)
                 return false;
             SupplierDAO.Id = Supplier.Id;
@@ -405,7 +405,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Supplier Supplier)
         {
-            await DataContext.Supplier.Where(x => x.Id == Supplier.Id).UpdateFromQueryAsync(x => new SupplierDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.Supplier.Where(x => x.Id == Supplier.Id).AsNoTracking().UpdateFromQueryAsync(x => new SupplierDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

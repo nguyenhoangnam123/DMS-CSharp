@@ -176,7 +176,7 @@ namespace DMS.Repositories
 
         public async Task<Permission> Get(long Id)
         {
-            Permission Permission = await DataContext.Permission.Where(x => x.Id == Id).Select(x => new Permission()
+            Permission Permission = await DataContext.Permission.Where(x => x.Id == Id).AsNoTracking().Select(x => new Permission()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -254,7 +254,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Permission Permission)
         {
-            PermissionDAO PermissionDAO = DataContext.Permission.Where(x => x.Id == Permission.Id).FirstOrDefault();
+            PermissionDAO PermissionDAO = DataContext.Permission.Where(x => x.Id == Permission.Id).AsNoTracking().FirstOrDefault();
             if (PermissionDAO == null)
                 return false;
             PermissionDAO.Id = Permission.Id;
@@ -270,7 +270,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Permission Permission)
         {
-            await DataContext.Permission.Where(x => x.Id == Permission.Id).DeleteFromQueryAsync();
+            await DataContext.Permission.Where(x => x.Id == Permission.Id).AsNoTracking().DeleteFromQueryAsync();
             return true;
         }
 

@@ -347,7 +347,7 @@ namespace DMS.Repositories
 
         public async Task<Product> Get(long Id)
         {
-            Product Product = await DataContext.Product.Where(x => x.Id == Id).Select(x => new Product()
+            Product Product = await DataContext.Product.Where(x => x.Id == Id).AsNoTracking().Select(x => new Product()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -510,7 +510,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Product Product)
         {
-            ProductDAO ProductDAO = DataContext.Product.Where(x => x.Id == Product.Id).FirstOrDefault();
+            ProductDAO ProductDAO = DataContext.Product.Where(x => x.Id == Product.Id).AsNoTracking().FirstOrDefault();
             if (ProductDAO == null)
                 return false;
             ProductDAO.Id = Product.Id;
@@ -536,7 +536,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Product Product)
         {
-            await DataContext.Product.Where(x => x.Id == Product.Id).UpdateFromQueryAsync(x => new ProductDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.Product.Where(x => x.Id == Product.Id).AsNoTracking().UpdateFromQueryAsync(x => new ProductDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 
