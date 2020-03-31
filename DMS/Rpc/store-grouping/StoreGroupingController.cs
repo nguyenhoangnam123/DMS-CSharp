@@ -34,6 +34,8 @@ namespace DMS.Rpc.store_grouping
         public const string BulkDelete = Default + "/bulk-delete";
 
         public const string SingleListParentStoreGrouping = Default + "/single-list-parent-store-store";
+        public const string CountStore = Default + "/count-store";
+        public const string ListStore = Default + "/list-store";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(StoreGroupingFilter.Id), FieldType.ID },
@@ -400,6 +402,29 @@ namespace DMS.Rpc.store_grouping
             return StoreGrouping_StoreGroupingDTOs;
         }
 
+        [Route(StoreGroupingRoute.CountStore), HttpPost]
+        public async Task<long> CountStore([FromBody] StoreGrouping_StoreFilterDTO StoreGrouping_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+
+            return await StoreService.Count(StoreFilter);
+        }
+
+        [Route(StoreGroupingRoute.ListStore), HttpPost]
+        public async Task<List<StoreGrouping_StoreDTO>> ListStore([FromBody] StoreGrouping_StoreFilterDTO StoreGrouping_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = StoreGrouping_StoreFilterDTO.Skip;
+            StoreFilter.Take = StoreGrouping_StoreFilterDTO.Take;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<StoreGrouping_StoreDTO> StoreGrouping_StoreDTOs = Stores
+                .Select(x => new StoreGrouping_StoreDTO(x)).ToList();
+            return StoreGrouping_StoreDTOs;
+        }
     }
 }
 
