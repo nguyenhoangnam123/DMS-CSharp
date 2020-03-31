@@ -249,6 +249,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<OrganizationDAO>(entity =>
             {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Address).HasMaxLength(500);
 
                 entity.Property(e => e.Code)
@@ -782,6 +784,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<SupplierDAO>(entity =>
             {
+                entity.Property(e => e.Address).HasMaxLength(2000);
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -790,23 +794,53 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.Description).HasMaxLength(4000);
+
+                entity.Property(e => e.Email).HasMaxLength(50);
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
 
+                entity.Property(e => e.OwnerName).HasMaxLength(50);
+
+                entity.Property(e => e.Phone).HasMaxLength(50);
+
                 entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.TaxCode)
-                    .IsRequired()
-                    .HasMaxLength(500);
+                entity.Property(e => e.TaxCode).HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.District)
+                    .WithMany(p => p.Suppliers)
+                    .HasForeignKey(d => d.DistrictId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Supplier_District");
+
+                entity.HasOne(d => d.PersonInCharge)
+                    .WithMany(p => p.Suppliers)
+                    .HasForeignKey(d => d.PersonInChargeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Supplier_AppUser");
+
+                entity.HasOne(d => d.Province)
+                    .WithMany(p => p.Suppliers)
+                    .HasForeignKey(d => d.ProvinceId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Supplier_Province");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Supplier_Status");
+
+                entity.HasOne(d => d.Ward)
+                    .WithMany(p => p.Suppliers)
+                    .HasForeignKey(d => d.WardId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Supplier_Ward");
             });
 
             modelBuilder.Entity<TaxTypeDAO>(entity =>

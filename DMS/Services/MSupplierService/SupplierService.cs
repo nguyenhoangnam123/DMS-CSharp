@@ -20,7 +20,7 @@ namespace DMS.Services.MSupplier
         Task<Supplier> Update(Supplier Supplier);
         Task<Supplier> Delete(Supplier Supplier);
         Task<List<Supplier>> BulkDelete(List<Supplier> Suppliers);
-        Task<List<Supplier>> Import(DataFile DataFile);
+        Task<List<Supplier>> BulkMerge(List<Supplier> Suppliers);
         Task<DataFile> Export(SupplierFilter SupplierFilter);
         SupplierFilter ToFilter(SupplierFilter SupplierFilter);
     }
@@ -92,6 +92,7 @@ namespace DMS.Services.MSupplier
 
             try
             {
+                Supplier.Id = 0;
                 await UOW.Begin();
                 await UOW.SupplierRepository.Create(Supplier);
                 await UOW.Commit();
@@ -185,45 +186,30 @@ namespace DMS.Services.MSupplier
             }
         }
 
-        public async Task<List<Supplier>> Import(DataFile DataFile)
+        public async Task<List<Supplier>> BulkMerge(List<Supplier> Suppliers)
         {
-            List<Supplier> Suppliers = new List<Supplier>();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
-            {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return Suppliers;
-                int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int TaxCodeColumn = 3 + StartColumn;
-                int StatusIdColumn = 4 + StartColumn;
-                for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
-                {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, IdColumn].Value?.ToString()))
-                        break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string TaxCodeValue = worksheet.Cells[i + StartRow, TaxCodeColumn].Value?.ToString();
-                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    Supplier Supplier = new Supplier();
-                    Supplier.Code = CodeValue;
-                    Supplier.Name = NameValue;
-                    Supplier.TaxCode = TaxCodeValue;
-                    Suppliers.Add(Supplier);
-                }
-            }
-
-            if (!await SupplierValidator.Import(Suppliers))
+            if (!await SupplierValidator.BulkMerge(Suppliers))
                 return Suppliers;
 
             try
             {
                 await UOW.Begin();
+                #region merge Supplier
+                List<Supplier> dbSuppliers = await UOW.SupplierRepository.List(new SupplierFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = SupplierSelect.Id | SupplierSelect.Code,
+                });
+                foreach (Supplier Supplier in Suppliers)
+                {
+                    long SupplierId = dbSuppliers.Where(x => x.Code == Supplier.Code)
+                        .Select(x => x.Id).FirstOrDefault();
+                    Supplier.Id = SupplierId;
+                }
                 await UOW.SupplierRepository.BulkMerge(Suppliers);
+                #endregion
+
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(Suppliers, new { }, nameof(SupplierService));
