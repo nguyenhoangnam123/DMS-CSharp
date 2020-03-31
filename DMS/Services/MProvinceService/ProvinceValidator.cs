@@ -20,6 +20,11 @@ namespace DMS.Services.MProvince
         public enum ErrorCode
         {
             IdNotExisted,
+            CodeEmpty,
+            CodeHasSpecialCharacter,
+            NameEmpty,
+            CodeExisted,
+            NameOverLength
         }
 
         private IUOW UOW;
@@ -47,8 +52,47 @@ namespace DMS.Services.MProvince
             return count == 1;
         }
 
+        private async Task<bool> ValidateCode(Province Province)
+        {
+            if (string.IsNullOrEmpty(Province.Code))
+            {
+                Province.AddError(nameof(ProvinceValidator), nameof(Province.Code), ErrorCode.CodeEmpty);
+                return false;
+            }
+            ProvinceFilter ProvinceFilter = new ProvinceFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { NotEqual = Province.Id },
+                Code = new StringFilter { Equal = Province.Code },
+                Selects = ProvinceSelect.Code
+            };
+
+            int count = await UOW.ProvinceRepository.Count(ProvinceFilter);
+            if (count != 0)
+                Province.AddError(nameof(ProvinceValidator), nameof(Province.Code), ErrorCode.CodeExisted);
+            return count == 0;
+        }
+
+        private async Task<bool> ValidateName(Province Province)
+        {
+            if (string.IsNullOrEmpty(Province.Name))
+            {
+                Province.AddError(nameof(ProvinceValidator), nameof(Province.Name), ErrorCode.NameEmpty);
+                return false;
+            }
+            if (Province.Name.Length > 255)
+            {
+                Province.AddError(nameof(ProvinceValidator), nameof(Province.Name), ErrorCode.NameOverLength);
+                return false;
+            }
+            return true;
+        }
+
         public async Task<bool> Create(Province Province)
         {
+            await ValidateCode(Province);
+            await ValidateName(Province);
             return Province.IsValidated;
         }
 
@@ -56,6 +100,8 @@ namespace DMS.Services.MProvince
         {
             if (await ValidateId(Province))
             {
+                await ValidateCode(Province);
+                await ValidateName(Province);
             }
             return Province.IsValidated;
         }
