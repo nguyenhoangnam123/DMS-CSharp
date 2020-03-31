@@ -24,6 +24,7 @@ namespace DMS.Rpc.district
             this.StatusId = District.StatusId;
             this.Province = District.Province == null ? null : new District_ProvinceDTO(District.Province);
             this.Status = District.Status == null ? null : new District_StatusDTO(District.Status);
+            this.Errors = District.Errors;
         }
     }
 

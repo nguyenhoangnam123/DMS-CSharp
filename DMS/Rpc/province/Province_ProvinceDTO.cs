@@ -20,6 +20,7 @@ namespace DMS.Rpc.province
             this.Priority = Province.Priority;
             this.StatusId = Province.StatusId;
             this.Status = Province.Status == null ? null : new Province_StatusDTO(Province.Status);
+            this.Errors = Province.Errors;
         }
     }
 
