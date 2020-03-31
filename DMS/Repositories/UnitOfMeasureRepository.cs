@@ -158,7 +158,7 @@ namespace DMS.Repositories
 
         public async Task<UnitOfMeasure> Get(long Id)
         {
-            UnitOfMeasure UnitOfMeasure = await DataContext.UnitOfMeasure.Where(x => x.Id == Id).Select(x => new UnitOfMeasure()
+            UnitOfMeasure UnitOfMeasure = await DataContext.UnitOfMeasure.Where(x => x.Id == Id).AsNoTracking().Select(x => new UnitOfMeasure()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -197,7 +197,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(UnitOfMeasure UnitOfMeasure)
         {
-            UnitOfMeasureDAO UnitOfMeasureDAO = DataContext.UnitOfMeasure.Where(x => x.Id == UnitOfMeasure.Id).FirstOrDefault();
+            UnitOfMeasureDAO UnitOfMeasureDAO = DataContext.UnitOfMeasure.Where(x => x.Id == UnitOfMeasure.Id).AsNoTracking().FirstOrDefault();
             if (UnitOfMeasureDAO == null)
                 return false;
             UnitOfMeasureDAO.Id = UnitOfMeasure.Id;
@@ -213,7 +213,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(UnitOfMeasure UnitOfMeasure)
         {
-            await DataContext.UnitOfMeasure.Where(x => x.Id == UnitOfMeasure.Id).UpdateFromQueryAsync(x => new UnitOfMeasureDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.UnitOfMeasure.Where(x => x.Id == UnitOfMeasure.Id).AsNoTracking().UpdateFromQueryAsync(x => new UnitOfMeasureDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

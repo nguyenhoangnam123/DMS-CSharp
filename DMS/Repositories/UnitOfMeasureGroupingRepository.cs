@@ -177,7 +177,7 @@ namespace DMS.Repositories
 
         public async Task<UnitOfMeasureGrouping> Get(long Id)
         {
-            UnitOfMeasureGrouping UnitOfMeasureGrouping = await DataContext.UnitOfMeasureGrouping.Where(x => x.Id == Id).Select(x => new UnitOfMeasureGrouping()
+            UnitOfMeasureGrouping UnitOfMeasureGrouping = await DataContext.UnitOfMeasureGrouping.Where(x => x.Id == Id).AsNoTracking().Select(x => new UnitOfMeasureGrouping()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -243,7 +243,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
-            UnitOfMeasureGroupingDAO UnitOfMeasureGroupingDAO = DataContext.UnitOfMeasureGrouping.Where(x => x.Id == UnitOfMeasureGrouping.Id).FirstOrDefault();
+            UnitOfMeasureGroupingDAO UnitOfMeasureGroupingDAO = DataContext.UnitOfMeasureGrouping.Where(x => x.Id == UnitOfMeasureGrouping.Id).AsNoTracking().FirstOrDefault();
             if (UnitOfMeasureGroupingDAO == null)
                 return false;
             UnitOfMeasureGroupingDAO.Id = UnitOfMeasureGrouping.Id;
@@ -260,7 +260,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
-            await DataContext.UnitOfMeasureGrouping.Where(x => x.Id == UnitOfMeasureGrouping.Id).UpdateFromQueryAsync(x => new UnitOfMeasureGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.UnitOfMeasureGrouping.Where(x => x.Id == UnitOfMeasureGrouping.Id).AsNoTracking().UpdateFromQueryAsync(x => new UnitOfMeasureGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

@@ -387,7 +387,7 @@ namespace DMS.Repositories
 
         public async Task<Store> Get(long Id)
         {
-            Store Store = await DataContext.Store.Where(x => x.Id == Id).Select(x => new Store()
+            Store Store = await DataContext.Store.Where(x => x.Id == Id).AsNoTracking().Select(x => new Store()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -529,7 +529,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Store Store)
         {
-            StoreDAO StoreDAO = DataContext.Store.Where(x => x.Id == Store.Id).FirstOrDefault();
+            StoreDAO StoreDAO = DataContext.Store.Where(x => x.Id == Store.Id).AsNoTracking().FirstOrDefault();
             if (StoreDAO == null)
                 return false;
             StoreDAO.Id = Store.Id;
@@ -559,7 +559,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Store Store)
         {
-            await DataContext.Store.Where(x => x.Id == Store.Id).UpdateFromQueryAsync(x => new StoreDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.Store.Where(x => x.Id == Store.Id).AsNoTracking().UpdateFromQueryAsync(x => new StoreDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 
