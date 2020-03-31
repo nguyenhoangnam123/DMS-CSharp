@@ -19,4 +19,5 @@ RUN dotnet publish "DMS.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "DMS.dll"]
+
+CMD ["docker-entrypoint.sh"]
