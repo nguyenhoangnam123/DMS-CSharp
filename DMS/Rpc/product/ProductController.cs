@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MBrand;
@@ -16,6 +16,7 @@ using DMS.Services.MVariationGrouping;
 using Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -222,6 +223,97 @@ namespace DMS.Rpc.product
                 Name = file.FileName,
                 Content = file.OpenReadStream(),
             };
+            List<Product> Products = new List<Product>();
+            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                if (worksheet == null)
+                    return null;
+                int StartColumn = 1;
+                int StartRow = 1;
+
+                int CodeColumn = 1 + StartColumn;
+                int NameColumn = 2 + StartColumn;
+
+                int ProductGroupNameColumn = 2 + StartColumn;
+                int ProductTypeNameColumn = 3 + StartColumn;
+                int UoMNameColumn = 4 + StartColumn;
+                int UoMGroupNameColumn = 5 + StartColumn;
+                int SupplierNameColumn = 5 + StartColumn;
+
+                int TelephoneColumn = 6 + StartColumn;
+
+                int ProvinceCodeColumn = 7 + StartColumn;
+                int DistrictCodeColumn = 8 + StartColumn;
+                int WardCodeColumn = 9 + StartColumn;
+
+                int AddressColumn = 10 + StartColumn;
+                int DeliveryAddressColumn = 11 + StartColumn;
+
+                int LatitudeColumn = 12 + StartColumn;
+                int LongitudeColumn = 13 + StartColumn;
+
+                int OwnerNameColumn = 14 + StartColumn;
+                int OwnerPhoneColumn = 15 + StartColumn;
+                int OwnerEmailColumn = 16 + StartColumn;
+
+                int StatusCodeColumn = 17 + StartColumn;
+
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    // Lấy thông tin từng dòng
+                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
+                    string ParentStoreCodeValue = worksheet.Cells[i + StartRow, ParentStoreCodeColumn].Value?.ToString();
+                    string OrganizationCodeValue = worksheet.Cells[i + StartRow, OrganizationCodeColumn].Value?.ToString();
+                    string StoreTypeCodeValue = worksheet.Cells[i + StartRow, StoreTypeCodeColumn].Value?.ToString();
+                    string StoreGroupingCodeValue = worksheet.Cells[i + StartRow, StoreGroupingCodeColumn].Value?.ToString();
+                    string TelephoneValue = worksheet.Cells[i + StartRow, TelephoneColumn].Value?.ToString();
+                    string ProvinceCodeValue = worksheet.Cells[i + StartRow, ProvinceCodeColumn].Value?.ToString();
+                    string DistrictCodeValue = worksheet.Cells[i + StartRow, DistrictCodeColumn].Value?.ToString();
+                    string WardCodeValue = worksheet.Cells[i + StartRow, WardCodeColumn].Value?.ToString();
+                    string AddressValue = worksheet.Cells[i + StartRow, AddressColumn].Value?.ToString();
+                    string DeliveryAddressValue = worksheet.Cells[i + StartRow, DeliveryAddressColumn].Value?.ToString();
+                    string LatitudeValue = worksheet.Cells[i + StartRow, LatitudeColumn].Value?.ToString();
+                    string LongitudeValue = worksheet.Cells[i + StartRow, LongitudeColumn].Value?.ToString();
+                    string OwnerNameValue = worksheet.Cells[i + StartRow, OwnerNameColumn].Value?.ToString();
+                    string OwnerPhoneValue = worksheet.Cells[i + StartRow, OwnerPhoneColumn].Value?.ToString();
+                    string OwnerEmailValue = worksheet.Cells[i + StartRow, OwnerEmailColumn].Value?.ToString();
+                    string StatusCodeValue = worksheet.Cells[i + StartRow, StatusCodeColumn].Value?.ToString();
+                    if (string.IsNullOrEmpty(CodeValue))
+                        continue;
+
+                    Store Store = new Store();
+                    Store.Code = CodeValue;
+                    Store.Name = NameValue;
+                    Store.Telephone = TelephoneValue;
+                    Store.Address = AddressValue;
+                    Store.DeliveryAddress = DeliveryAddressValue;
+                    Store.Latitude = decimal.TryParse(LatitudeValue, out decimal Latitude) ? Latitude : 0;
+                    Store.Longitude = decimal.TryParse(LongitudeValue, out decimal Longitude) ? Longitude : 0;
+                    Store.OwnerName = OwnerNameValue;
+                    Store.OwnerPhone = OwnerPhoneValue;
+                    Store.OwnerEmail = OwnerEmailValue;
+
+                    if (!string.IsNullOrEmpty(ParentStoreCodeValue))
+                    {
+                        Store.ParentStore = new Store
+                        {
+                            Code = ParentStoreCodeValue
+                        };
+                    }
+                    Store.Organization = Organizations.Where(x => x.Code == OrganizationCodeValue).FirstOrDefault();
+                    Store.StoreType = StoreTypes.Where(x => x.Code == StoreTypeCodeValue).FirstOrDefault();
+                    Store.StoreGrouping = StoreGroupings.Where(x => x.Code == StoreGroupingCodeValue).FirstOrDefault();
+                    Store.Province = Provinces.Where(x => x.Code == ProvinceCodeValue).FirstOrDefault();
+                    Store.District = Districts.Where(x => x.Code == DistrictCodeValue).FirstOrDefault();
+                    Store.Ward = Wards.Where(x => x.Code == WardCodeValue).FirstOrDefault();
+                    Store.Status = Statuses.Where(x => x.Code == StatusCodeValue).FirstOrDefault();
+
+                    Stores.Add(Store);
+                }
+            }
+
 
             List<Product> Products = await ProductService.Import(DataFile);
             List<Product_ProductDTO> Product_ProductDTOs = Products

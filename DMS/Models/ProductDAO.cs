@@ -19,6 +19,7 @@ namespace DMS.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string ScanCode { get; set; }
+        public string ERPCode { get; set; }
         public long ProductTypeId { get; set; }
         public long? SupplierId { get; set; }
         public long? BrandId { get; set; }
