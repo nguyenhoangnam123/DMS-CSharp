@@ -1,3 +1,5 @@
 .vs/
 DMS/bin/
 DMS/obj/
+docker-compose.override.*
+
