@@ -20,6 +20,10 @@ namespace DMS.Services.MDistrict
         public enum ErrorCode
         {
             IdNotExisted,
+            CodeEmpty,
+            NameEmpty,
+            CodeExisted,
+            NameOverLength
         }
 
         private IUOW UOW;
@@ -46,9 +50,47 @@ namespace DMS.Services.MDistrict
                 District.AddError(nameof(DistrictValidator), nameof(District.Id), ErrorCode.IdNotExisted);
             return count == 1;
         }
+        private async Task<bool> ValidateCode(District District)
+        {
+            if (string.IsNullOrEmpty(District.Code))
+            {
+                District.AddError(nameof(DistrictValidator), nameof(District.Code), ErrorCode.CodeEmpty);
+                return false;
+            }
+            DistrictFilter DistrictFilter = new DistrictFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { NotEqual = District.Id },
+                Code = new StringFilter { Equal = District.Code },
+                Selects = DistrictSelect.Code
+            };
+
+            int count = await UOW.DistrictRepository.Count(DistrictFilter);
+            if (count != 0)
+                District.AddError(nameof(DistrictValidator), nameof(District.Code), ErrorCode.CodeExisted);
+            return count == 0;
+        }
+
+        private async Task<bool> ValidateName(District District)
+        {
+            if (string.IsNullOrEmpty(District.Name))
+            {
+                District.AddError(nameof(DistrictValidator), nameof(District.Name), ErrorCode.NameEmpty);
+                return false;
+            }
+            if (District.Name.Length > 255)
+            {
+                District.AddError(nameof(DistrictValidator), nameof(District.Name), ErrorCode.NameOverLength);
+                return false;
+            }
+            return true;
+        }
 
         public async Task<bool> Create(District District)
         {
+            await ValidateCode(District);
+            await ValidateName(District);
             return District.IsValidated;
         }
 
@@ -56,6 +98,8 @@ namespace DMS.Services.MDistrict
         {
             if (await ValidateId(District))
             {
+                await ValidateCode(District);
+                await ValidateName(District);
             }
             return District.IsValidated;
         }
