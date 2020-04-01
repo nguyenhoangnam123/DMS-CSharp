@@ -149,19 +149,19 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.ScanCode);
                             break;
                         case ProductOrder.ProductType:
-                            query = query.OrderBy(q => q.ProductType.Code);
+                            query = query.OrderBy(q => q.ProductType.Name);
                             break;
                         case ProductOrder.Supplier:
-                            query = query.OrderBy(q => q.Supplier.Code);
+                            query = query.OrderBy(q => q.Supplier.Name);
                             break;
                         case ProductOrder.Brand:
-                            query = query.OrderBy(q => q.Brand.Code);
+                            query = query.OrderBy(q => q.Brand.Name);
                             break;
                         case ProductOrder.UnitOfMeasure:
-                            query = query.OrderBy(q => q.UnitOfMeasure.Code);
+                            query = query.OrderBy(q => q.UnitOfMeasure.Name);
                             break;
                         case ProductOrder.UnitOfMeasureGrouping:
-                            query = query.OrderBy(q => q.UnitOfMeasureGrouping.Code);
+                            query = query.OrderBy(q => q.UnitOfMeasureGrouping.Name);
                             break;
                         case ProductOrder.SalePrice:
                             query = query.OrderBy(q => q.SalePrice);
@@ -208,19 +208,19 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.ScanCode);
                             break;
                         case ProductOrder.ProductType:
-                            query = query.OrderByDescending(q => q.ProductType.Code);
+                            query = query.OrderByDescending(q => q.ProductType.Name);
                             break;
                         case ProductOrder.Supplier:
-                            query = query.OrderByDescending(q => q.Supplier.Code);
+                            query = query.OrderByDescending(q => q.Supplier.Name);
                             break;
                         case ProductOrder.Brand:
-                            query = query.OrderByDescending(q => q.Brand.Code);
+                            query = query.OrderByDescending(q => q.Brand.Name);
                             break;
                         case ProductOrder.UnitOfMeasure:
-                            query = query.OrderByDescending(q => q.UnitOfMeasure.Code);
+                            query = query.OrderByDescending(q => q.UnitOfMeasure.Name);
                             break;
                         case ProductOrder.UnitOfMeasureGrouping:
-                            query = query.OrderByDescending(q => q.UnitOfMeasureGrouping.Code);
+                            query = query.OrderByDescending(q => q.UnitOfMeasureGrouping.Name);
                             break;
                         case ProductOrder.SalePrice:
                             query = query.OrderByDescending(q => q.SalePrice);
