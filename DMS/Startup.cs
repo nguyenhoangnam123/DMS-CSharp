@@ -1,4 +1,5 @@
 using Common;
+using DMS.Handlers;
 using DMS.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -109,6 +110,8 @@ namespace DMS
 
             };
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);
+
+            services.AddHostedService<ConsumeRabbitMQHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
