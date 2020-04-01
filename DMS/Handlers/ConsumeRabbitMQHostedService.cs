@@ -5,6 +5,7 @@ using Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.ObjectPool;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
@@ -17,40 +18,19 @@ namespace DMS.Handlers
 {
     public class ConsumeRabbitMQHostedService : BackgroundService
     {
-        private IConnection _connection;
         private IModel _channel;
         private IConfiguration Configuration;
-
-        public ConsumeRabbitMQHostedService(IConfiguration Configuration)
+        private readonly DefaultObjectPool<IModel> _objectPool;
+        public ConsumeRabbitMQHostedService(IPooledObjectPolicy<IModel> objectPolicy)
         {
-            this.Configuration = Configuration;
-            InitRabbitMQ();
-        }
-
-        private void InitRabbitMQ()
-        {
-            var factory = new ConnectionFactory
-            {
-                HostName = Configuration["RabbitConfig:Hostname"],
-                UserName = Configuration["RabbitConfig:Username"],
-                Password = Configuration["RabbitConfig:Password"],
-                VirtualHost = Configuration["RabbitConfig:VirtualHost"],
-                Port = int.Parse(Configuration["RabbitConfig:Port"]),
-            };
-
-            // create connection  
-            _connection = factory.CreateConnection();
-
-            // create channel  
-            _channel = _connection.CreateModel();
-
+            _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 1);
+            _channel = _objectPool.Get();
             _channel.ExchangeDeclare("exchange", ExchangeType.Topic, true, false);
             _channel.QueueDeclare(StaticParams.ModuleName, true, false, false, null);
             _channel.QueueBind(StaticParams.ModuleName, "exchange", $"{nameof(AppUser)}.*", null);
             _channel.QueueBind(StaticParams.ModuleName, "exchange", $"{nameof(Organization)}.*", null);
             _channel.BasicQos(0, 1, false);
 
-            _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -60,7 +40,6 @@ namespace DMS.Handlers
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += (ch, ea) =>
             {
-
                 // received message  
                 var content = System.Text.Encoding.UTF8.GetString(ea.Body);
                 var routingKey = ea.RoutingKey;
@@ -79,7 +58,7 @@ namespace DMS.Handlers
             consumer.Shutdown += OnConsumerShutdown;
             consumer.Registered += OnConsumerRegistered;
             consumer.Unregistered += OnConsumerUnregistered;
-            consumer.ConsumerCancelled += OnConsumerConsumerCancelled;
+            consumer.ConsumerCancelled += OnConsumerCancelled;
 
             _channel.BasicConsume(StaticParams.ModuleName, false, consumer);
             return Task.CompletedTask;
@@ -107,17 +86,9 @@ namespace DMS.Handlers
             }
         }
 
-        private void OnConsumerConsumerCancelled(object sender, ConsumerEventArgs e) { }
+        private void OnConsumerCancelled(object sender, ConsumerEventArgs e) { }
         private void OnConsumerUnregistered(object sender, ConsumerEventArgs e) { }
         private void OnConsumerRegistered(object sender, ConsumerEventArgs e) { }
         private void OnConsumerShutdown(object sender, ShutdownEventArgs e) { }
-        private void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e) { }
-
-        public override void Dispose()
-        {
-            _channel.Close();
-            _connection.Close();
-            base.Dispose();
-        }
     }
 }

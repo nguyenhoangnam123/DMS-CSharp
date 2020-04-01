@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Repositories;
 using DMS.Services.MAppUser;
 using Newtonsoft.Json;
@@ -20,7 +21,10 @@ namespace DMS.Handlers
         public bool Handle(string routingKey, string json)
         {
             List<AppUser> appUsers = JsonConvert.DeserializeObject<List<AppUser>>(json);
+            if (routingKey == RoutingKeyEnum.AppUserSync.Code)
+            {
 
+            }
             return true;
         }
     }
