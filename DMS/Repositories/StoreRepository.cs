@@ -48,6 +48,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StoreTypeId, filter.StoreTypeId);
             if (filter.StoreGroupingId != null)
                 query = query.Where(q => q.StoreGroupingId, filter.StoreGroupingId);
+            if (filter.ResellerId != null)
+                query = query.Where(q => q.ResellerId, filter.ResellerId);
             if (filter.Telephone != null)
                 query = query.Where(q => q.Telephone, filter.Telephone);
             if (filter.ProvinceId != null)
@@ -64,6 +66,10 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Latitude, filter.Latitude);
             if (filter.Longitude != null)
                 query = query.Where(q => q.Longitude, filter.Longitude);
+            if (filter.DeliveryLatitude != null)
+                query = query.Where(q => q.DeliveryLatitude, filter.DeliveryLatitude);
+            if (filter.DeliveryLongitude != null)
+                query = query.Where(q => q.DeliveryLongitude, filter.DeliveryLongitude);
             if (filter.OwnerName != null)
                 query = query.Where(q => q.OwnerName, filter.OwnerName);
             if (filter.OwnerPhone != null)
@@ -100,6 +106,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.StoreTypeId, filter.StoreTypeId);
                 if (filter.StoreGroupingId != null)
                     queryable = queryable.Where(q => q.StoreGroupingId, filter.StoreGroupingId);
+                if (filter.ResellerId != null)
+                    queryable = queryable.Where(q => q.ResellerId, filter.ResellerId);
                 if (filter.Telephone != null)
                     queryable = queryable.Where(q => q.Telephone, filter.Telephone);
                 if (filter.ProvinceId != null)
@@ -116,6 +124,10 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Latitude, filter.Latitude);
                 if (filter.Longitude != null)
                     queryable = queryable.Where(q => q.Longitude, filter.Longitude);
+                if (filter.DeliveryLatitude != null)
+                    queryable = queryable.Where(q => q.DeliveryLatitude, filter.DeliveryLatitude);
+                if (filter.DeliveryLongitude != null)
+                    queryable = queryable.Where(q => q.DeliveryLongitude, filter.DeliveryLongitude);
                 if (filter.OwnerName != null)
                     queryable = queryable.Where(q => q.OwnerName, filter.OwnerName);
                 if (filter.OwnerPhone != null)
@@ -158,6 +170,9 @@ namespace DMS.Repositories
                             break;
                         case StoreOrder.StoreGrouping:
                             query = query.OrderBy(q => q.StoreGroupingId);
+                            break;
+                        case StoreOrder.Reseller:
+                            query = query.OrderBy(q => q.ResellerId);
                             break;
                         case StoreOrder.Telephone:
                             query = query.OrderBy(q => q.Telephone);
@@ -221,6 +236,9 @@ namespace DMS.Repositories
                         case StoreOrder.StoreGrouping:
                             query = query.OrderByDescending(q => q.StoreGroupingId);
                             break;
+                        case StoreOrder.Reseller:
+                            query = query.OrderByDescending(q => q.ResellerId);
+                            break;
                         case StoreOrder.Telephone:
                             query = query.OrderByDescending(q => q.Telephone);
                             break;
@@ -275,6 +293,7 @@ namespace DMS.Repositories
                 OrganizationId = filter.Selects.Contains(StoreSelect.Organization) ? q.OrganizationId : default(long),
                 StoreTypeId = filter.Selects.Contains(StoreSelect.StoreType) ? q.StoreTypeId : default(long),
                 StoreGroupingId = filter.Selects.Contains(StoreSelect.StoreGrouping) ? q.StoreGroupingId : default(long?),
+                ResellerId = filter.Selects.Contains(StoreSelect.Reseller) ? q.ResellerId : default(long?),
                 Telephone = filter.Selects.Contains(StoreSelect.Telephone) ? q.Telephone : default(string),
                 ProvinceId = filter.Selects.Contains(StoreSelect.Province) ? q.ProvinceId : default(long),
                 DistrictId = filter.Selects.Contains(StoreSelect.District) ? q.DistrictId : default(long),
@@ -283,6 +302,8 @@ namespace DMS.Repositories
                 DeliveryAddress = filter.Selects.Contains(StoreSelect.DeliveryAddress) ? q.DeliveryAddress : default(string),
                 Latitude = filter.Selects.Contains(StoreSelect.Latitude) ? q.Latitude : default(decimal?),
                 Longitude = filter.Selects.Contains(StoreSelect.Longitude) ? q.Longitude : default(decimal?),
+                DeliveryLatitude = filter.Selects.Contains(StoreSelect.DeliveryLatitude) ? q.DeliveryLatitude : default(decimal?),
+                DeliveryLongitude = filter.Selects.Contains(StoreSelect.DeliveryLongitude) ? q.DeliveryLongitude : default(decimal?),
                 OwnerName = filter.Selects.Contains(StoreSelect.OwnerName) ? q.OwnerName : default(string),
                 OwnerPhone = filter.Selects.Contains(StoreSelect.OwnerPhone) ? q.OwnerPhone : default(string),
                 OwnerEmail = filter.Selects.Contains(StoreSelect.OwnerEmail) ? q.OwnerEmail : default(string),

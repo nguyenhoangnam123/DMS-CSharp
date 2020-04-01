@@ -15,6 +15,7 @@ namespace DMS.Entities
         public long OrganizationId { get; set; }
         public long StoreTypeId { get; set; }
         public long? StoreGroupingId { get; set; }
+        public long? ResellerId { get; set; }
         public string Telephone { get; set; }
         public long ProvinceId { get; set; }
         public long DistrictId { get; set; }
@@ -23,6 +24,8 @@ namespace DMS.Entities
         public string DeliveryAddress { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
+        public decimal? DeliveryLatitude { get; set; }
+        public decimal? DeliveryLongitude { get; set; }
         public string OwnerName { get; set; }
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
@@ -31,6 +34,7 @@ namespace DMS.Entities
         public District District { get; set; }
         public Organization Organization { get; set; }
         public Store ParentStore { get; set; }
+        public Reseller Reseller { get; set; }
         public Province Province { get; set; }
         public Status Status { get; set; }
         public StoreGrouping StoreGrouping { get; set; }
@@ -57,6 +61,7 @@ namespace DMS.Entities
         public IdFilter OrganizationId { get; set; }
         public IdFilter StoreTypeId { get; set; }
         public IdFilter StoreGroupingId { get; set; }
+        public IdFilter ResellerId { get; set; }
         public StringFilter Telephone { get; set; }
         public IdFilter ProvinceId { get; set; }
         public IdFilter DistrictId { get; set; }
@@ -65,6 +70,8 @@ namespace DMS.Entities
         public StringFilter DeliveryAddress { get; set; }
         public DecimalFilter Latitude { get; set; }
         public DecimalFilter Longitude { get; set; }
+        public DecimalFilter DeliveryLatitude { get; set; }
+        public DecimalFilter DeliveryLongitude { get; set; }
         public StringFilter OwnerName { get; set; }
         public StringFilter OwnerPhone { get; set; }
         public StringFilter OwnerEmail { get; set; }
@@ -85,19 +92,22 @@ namespace DMS.Entities
         Organization = 4,
         StoreType = 5,
         StoreGrouping = 6,
-        Telephone = 7,
-        Province = 8,
-        District = 9,
-        Ward = 10,
-        Address = 11,
-        DeliveryAddress = 12,
-        Latitude = 13,
-        Longitude = 14,
-        OwnerName = 15,
-        OwnerPhone = 16,
-        OwnerEmail = 17,
-        Status = 18,
-        StoreStatus = 19,
+        Reseller = 7,
+        Telephone = 8,
+        Province = 9,
+        District = 10,
+        Ward = 11,
+        Address = 12,
+        DeliveryAddress = 13,
+        Latitude = 14,
+        Longitude = 15,
+        DeliveryLatitude = 16,
+        DeliveryLongitude = 17,
+        OwnerName = 18,
+        OwnerPhone = 19,
+        OwnerEmail = 20,
+        Status = 21,
+        StoreStatus = 22,
     }
 
     [Flags]
@@ -111,18 +121,21 @@ namespace DMS.Entities
         Organization = E._4,
         StoreType = E._5,
         StoreGrouping = E._6,
-        Telephone = E._7,
-        Province = E._8,
-        District = E._9,
-        Ward = E._10,
-        Address = E._11,
-        DeliveryAddress = E._12,
-        Latitude = E._13,
-        Longitude = E._14,
-        OwnerName = E._15,
-        OwnerPhone = E._16,
-        OwnerEmail = E._17,
-        Status = E._18,
-        StoreStatus = E._19,
+        Reseller = E._6,
+        Telephone = E._8,
+        Province = E._9,
+        District = E._10,
+        Ward = E._11,
+        Address = E._12,
+        DeliveryAddress = E._13,
+        Latitude = E._14,
+        Longitude = E._15,
+        DeliveryLatitude = E._16,
+        DeliveryLongitude = E._17,
+        OwnerName = E._18,
+        OwnerPhone = E._19,
+        OwnerEmail = E._20,
+        Status = E._21,
+        StoreStatus = E._22,
     }
 }
