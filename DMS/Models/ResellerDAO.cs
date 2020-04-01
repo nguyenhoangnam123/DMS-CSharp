@@ -5,6 +5,11 @@ namespace DMS.Models
 {
     public partial class ResellerDAO
     {
+        public ResellerDAO()
+        {
+            Stores = new HashSet<StoreDAO>();
+        }
+
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
@@ -27,5 +32,6 @@ namespace DMS.Models
         public virtual ResellerTypeDAO ResellerType { get; set; }
         public virtual AppUserDAO Staff { get; set; }
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<StoreDAO> Stores { get; set; }
     }
 }
