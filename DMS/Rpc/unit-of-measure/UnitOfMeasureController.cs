@@ -1,11 +1,14 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Services.MStatus;
 using DMS.Services.MUnitOfMeasure;
 using Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -158,10 +161,38 @@ namespace DMS.Rpc.unit_of_measure
                 Content = file.OpenReadStream(),
             };
 
-            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.Import(DataFile);
-            List<UnitOfMeasure_UnitOfMeasureDTO> UnitOfMeasure_UnitOfMeasureDTOs = UnitOfMeasures
-                .Select(c => new UnitOfMeasure_UnitOfMeasureDTO(c)).ToList();
-            return UnitOfMeasure_UnitOfMeasureDTOs;
+            List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
+            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                if (worksheet == null)
+                    return null;
+                int StartColumn = 1;
+                int StartRow = 1;
+
+                int CodeColumn = 0 + StartColumn;
+                int NameColumn = 1 + StartColumn;
+
+               
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    // Lấy thông tin từng dòng
+                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
+                    if (string.IsNullOrEmpty(CodeValue))
+                        continue;
+
+                    UnitOfMeasure UnitOfMeasure = new UnitOfMeasure();
+                    UnitOfMeasure.Code = CodeValue;
+                    UnitOfMeasure.Name = NameValue;
+                   
+                    UnitOfMeasures.Add(UnitOfMeasure);
+                }
+                UnitOfMeasures = await UnitOfMeasureService.BulkMerge(UnitOfMeasures);
+                List<UnitOfMeasure_UnitOfMeasureDTO> UnitOfMeasure_UnitOfMeasureDTOs = UnitOfMeasures
+                    .Select(c => new UnitOfMeasure_UnitOfMeasureDTO(c)).ToList();
+                return UnitOfMeasure_UnitOfMeasureDTOs;
+            }
         }
 
         [Route(UnitOfMeasureRoute.Export), HttpPost]
@@ -171,12 +202,36 @@ namespace DMS.Rpc.unit_of_measure
                 throw new BindException(ModelState);
 
             UnitOfMeasureFilter UnitOfMeasureFilter = ConvertFilterDTOToFilterEntity(UnitOfMeasure_UnitOfMeasureFilterDTO);
+            UnitOfMeasureFilter.Skip = 0;
+            UnitOfMeasureFilter.Take = int.MaxValue;
             UnitOfMeasureFilter = UnitOfMeasureService.ToFilter(UnitOfMeasureFilter);
-            DataFile DataFile = await UnitOfMeasureService.Export(UnitOfMeasureFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
+
+            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
+                var UnitOfMeasureHeaders = new List<string[]>()
+                {
+                    new string[] {"Mã đơn vị tính","Tên đơn vị tính","Mô tả"}
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < UnitOfMeasures.Count; i++)
+                {
+                    var UnitOfMeasure = UnitOfMeasures[i];
+
+                    data.Add(new Object[]
+                    {
+                         UnitOfMeasure.Code,
+                         UnitOfMeasure.Name,
+                         UnitOfMeasure.Description
+                    });
+                    excel.GenerateWorksheet("UnitOfMeasure", UnitOfMeasureHeaders, data);
+                }
+                excel.Save();
+            }
+
+            return File(memoryStream.ToArray(), "application/octet-stream", "UnitOfMeasure.xlsx");
+
         }
 
         [Route(UnitOfMeasureRoute.BulkDelete), HttpPost]

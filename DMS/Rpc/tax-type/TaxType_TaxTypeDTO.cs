@@ -20,6 +20,7 @@ namespace DMS.Rpc.tax_type
             this.Percentage = TaxType.Percentage;
             this.StatusId = TaxType.StatusId;
             this.Status = TaxType.Status == null ? null : new TaxType_StatusDTO(TaxType.Status);
+            this.Errors = TaxType.Errors;
         }
     }
 

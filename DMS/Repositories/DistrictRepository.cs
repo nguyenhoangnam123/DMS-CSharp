@@ -174,7 +174,7 @@ namespace DMS.Repositories
 
         public async Task<District> Get(long Id)
         {
-            District District = await DataContext.District.Where(x => x.Id == Id).Select(x => new District()
+            District District = await DataContext.District.Where(x => x.Id == Id).AsNoTracking().Select(x => new District()
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -222,7 +222,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(District District)
         {
-            DistrictDAO DistrictDAO = DataContext.District.Where(x => x.Id == District.Id).FirstOrDefault();
+            DistrictDAO DistrictDAO = DataContext.District.Where(x => x.Id == District.Id).AsNoTracking().FirstOrDefault();
             if (DistrictDAO == null)
                 return false;
             DistrictDAO.Id = District.Id;
@@ -239,7 +239,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(District District)
         {
-            await DataContext.District.Where(x => x.Id == District.Id).UpdateFromQueryAsync(x => new DistrictDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.District.Where(x => x.Id == District.Id).AsNoTracking().UpdateFromQueryAsync(x => new DistrictDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

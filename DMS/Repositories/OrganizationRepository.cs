@@ -238,7 +238,7 @@ namespace DMS.Repositories
 
         public async Task<Organization> Get(long Id)
         {
-            Organization Organization = await DataContext.Organization.Where(x => x.Id == Id).Select(x => new Organization()
+            Organization Organization = await DataContext.Organization.Where(x => x.Id == Id).AsNoTracking().Select(x => new Organization()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -395,7 +395,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Organization Organization)
         {
-            OrganizationDAO OrganizationDAO = DataContext.Organization.Where(x => x.Id == Organization.Id).FirstOrDefault();
+            OrganizationDAO OrganizationDAO = DataContext.Organization.Where(x => x.Id == Organization.Id).AsNoTracking().FirstOrDefault();
             if (OrganizationDAO == null)
                 return false;
             OrganizationDAO.Id = Organization.Id;
@@ -418,9 +418,9 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Organization Organization)
         {
-            OrganizationDAO OrganizationDAO = await DataContext.Organization.Where(x => x.Id == Organization.Id).FirstOrDefaultAsync();
+            OrganizationDAO OrganizationDAO = await DataContext.Organization.Where(x => x.Id == Organization.Id).AsNoTracking().FirstOrDefaultAsync();
             await DataContext.Organization.Where(x => x.Path.StartsWith(OrganizationDAO.Id + ".")).UpdateFromQueryAsync(x => new OrganizationDAO { DeletedAt = StaticParams.DateTimeNow });
-            await DataContext.Organization.Where(x => x.Id == Organization.Id).UpdateFromQueryAsync(x => new OrganizationDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.Organization.Where(x => x.Id == Organization.Id).AsNoTracking().UpdateFromQueryAsync(x => new OrganizationDAO { DeletedAt = StaticParams.DateTimeNow });
             await BuildPath();
             return true;
         }

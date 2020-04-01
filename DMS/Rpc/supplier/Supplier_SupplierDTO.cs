@@ -46,6 +46,7 @@ namespace DMS.Rpc.supplier
             this.Province = Supplier.Province == null ? null : new Supplier_ProvinceDTO(Supplier.Province);
             this.Status = Supplier.Status == null ? null : new Supplier_StatusDTO(Supplier.Status);
             this.Ward = Supplier.Ward == null ? null : new Supplier_WardDTO(Supplier.Ward);
+            this.Errors = Supplier.Errors;
         }
     }
 

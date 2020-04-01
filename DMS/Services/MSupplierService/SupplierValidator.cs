@@ -124,7 +124,7 @@ namespace DMS.Services.MSupplier
                 {
                     Skip = 0,
                     Take = 10,
-                    Id = new IdFilter { Equal = Supplier.Id },
+                    Id = new IdFilter { Equal = Supplier.ProvinceId },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = ProvinceSelect.Id
                 };
@@ -144,7 +144,7 @@ namespace DMS.Services.MSupplier
                 {
                     Skip = 0,
                     Take = 10,
-                    Id = new IdFilter { Equal = Supplier.Id },
+                    Id = new IdFilter { Equal = Supplier.DistrictId },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = DistrictSelect.Id
                 };
@@ -164,7 +164,7 @@ namespace DMS.Services.MSupplier
                 {
                     Skip = 0,
                     Take = 10,
-                    Id = new IdFilter { Equal = Supplier.Id },
+                    Id = new IdFilter { Equal = Supplier.WardId },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = WardSelect.Id
                 };
@@ -185,7 +185,7 @@ namespace DMS.Services.MSupplier
                 {
                     Skip = 0,
                     Take = 10,
-                    Id = new IdFilter { Equal = Supplier.Id },
+                    Id = new IdFilter { Equal = Supplier.PersonInChargeId },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = AppUserSelect.Id
                 };

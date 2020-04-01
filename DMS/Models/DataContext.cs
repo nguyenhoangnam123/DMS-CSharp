@@ -34,6 +34,7 @@ namespace DMS.Models
         public virtual DbSet<StoreDAO> Store { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
+        public virtual DbSet<StoreStatusDAO> StoreStatus { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
         public virtual DbSet<TaxTypeDAO> TaxType { get; set; }
@@ -787,6 +788,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StoreGroupingId)
                     .HasConstraintName("FK_Store_StoreGrouping");
 
+                entity.HasOne(d => d.StoreStatus)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.StoreStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Store_StoreStatus");
+
                 entity.HasOne(d => d.StoreType)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.StoreTypeId)
@@ -824,12 +831,6 @@ namespace DMS.Models
                     .WithMany(p => p.InverseParent)
                     .HasForeignKey(d => d.ParentId)
                     .HasConstraintName("FK_StoreGrouping_StoreGrouping");
-
-                entity.HasOne(d => d.Status)
-                    .WithMany(p => p.StoreGroupings)
-                    .HasForeignKey(d => d.StatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreGrouping_Status");
             });
 
             modelBuilder.Entity<StoreImageMappingDAO>(entity =>
@@ -847,6 +848,17 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StoreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreImageMapping_Store");
+            });
+
+            modelBuilder.Entity<StoreStatusDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<StoreTypeDAO>(entity =>

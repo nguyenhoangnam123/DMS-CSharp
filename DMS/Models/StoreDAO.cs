@@ -33,6 +33,7 @@ namespace DMS.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public long StoreStatusId { get; set; }
 
         public virtual DistrictDAO District { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
@@ -40,6 +41,7 @@ namespace DMS.Models
         public virtual ProvinceDAO Province { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual StoreGroupingDAO StoreGrouping { get; set; }
+        public virtual StoreStatusDAO StoreStatus { get; set; }
         public virtual StoreTypeDAO StoreType { get; set; }
         public virtual WardDAO Ward { get; set; }
         public virtual ICollection<StoreDAO> InverseParentStore { get; set; }

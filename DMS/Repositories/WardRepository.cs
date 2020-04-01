@@ -177,7 +177,7 @@ namespace DMS.Repositories
 
         public async Task<Ward> Get(long Id)
         {
-            Ward Ward = await DataContext.Ward.Where(x => x.Id == Id).Select(x => new Ward()
+            Ward Ward = await DataContext.Ward.Where(x => x.Id == Id).AsNoTracking().Select(x => new Ward()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -226,7 +226,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Ward Ward)
         {
-            WardDAO WardDAO = DataContext.Ward.Where(x => x.Id == Ward.Id).FirstOrDefault();
+            WardDAO WardDAO = DataContext.Ward.Where(x => x.Id == Ward.Id).AsNoTracking().FirstOrDefault();
             if (WardDAO == null)
                 return false;
             WardDAO.Id = Ward.Id;
@@ -243,7 +243,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Ward Ward)
         {
-            await DataContext.Ward.Where(x => x.Id == Ward.Id).UpdateFromQueryAsync(x => new WardDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.Ward.Where(x => x.Id == Ward.Id).AsNoTracking().UpdateFromQueryAsync(x => new WardDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

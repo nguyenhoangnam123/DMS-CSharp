@@ -248,6 +248,7 @@ namespace DMS
         private void InitEnum()
         {
             InitStatusEnum();
+            InitStoreStatusEnum();
             InitResellerStatusEnum();
             DataContext.SaveChanges();
         }
@@ -326,6 +327,50 @@ namespace DMS
                     Id = ResellerStatusEnum.REJECTED.Id,
                     Code = ResellerStatusEnum.REJECTED.Code,
                     Name = ResellerStatusEnum.REJECTED.Name,
+                });
+            }
+        }
+
+        private void InitStoreStatusEnum()
+        {
+            List<StoreStatusDAO> statuses = DataContext.StoreStatus.ToList();
+            if (!statuses.Any(pt => pt.Id == StoreStatusEnum.NEW.Id))
+            {
+                DataContext.StoreStatus.Add(new StoreStatusDAO
+                {
+                    Id = StoreStatusEnum.NEW.Id,
+                    Code = StoreStatusEnum.NEW.Code,
+                    Name = StoreStatusEnum.NEW.Name,
+                });
+            }
+
+            if (!statuses.Any(pt => pt.Id == StoreStatusEnum.PENDING.Id))
+            {
+                DataContext.StoreStatus.Add(new StoreStatusDAO
+                {
+                    Id = StoreStatusEnum.PENDING.Id,
+                    Code = StoreStatusEnum.PENDING.Code,
+                    Name = StoreStatusEnum.PENDING.Name,
+                });
+            }
+
+            if (!statuses.Any(pt => pt.Id == StoreStatusEnum.APPROVED.Id))
+            {
+                DataContext.StoreStatus.Add(new StoreStatusDAO
+                {
+                    Id = StoreStatusEnum.APPROVED.Id,
+                    Code = StoreStatusEnum.APPROVED.Code,
+                    Name = StoreStatusEnum.APPROVED.Name,
+                });
+            }
+
+            if (!statuses.Any(pt => pt.Id == StoreStatusEnum.REJECTED.Id))
+            {
+                DataContext.StoreStatus.Add(new StoreStatusDAO
+                {
+                    Id = StoreStatusEnum.REJECTED.Id,
+                    Code = StoreStatusEnum.REJECTED.Code,
+                    Name = StoreStatusEnum.REJECTED.Name,
                 });
             }
         }

@@ -18,6 +18,7 @@ namespace DMS.Rpc.store_type
             this.Name = StoreType.Name;
             this.StatusId = StoreType.StatusId;
             this.Status = StoreType.Status == null ? null : new StoreType_StatusDTO(StoreType.Status);
+            this.Errors = StoreType.Errors;
         }
     }
 

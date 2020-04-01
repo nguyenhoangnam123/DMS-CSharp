@@ -31,6 +31,8 @@ namespace DMS.Rpc.store
         public const string Get = Default + "/get";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
+        public const string Approve = Default + "/approve";
+        public const string Reject = Default + "/reject";
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
@@ -151,6 +153,7 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
+            Store.StatusId = StoreStatusEnum.NEW.Id;
             Store = await StoreService.Create(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
@@ -169,6 +172,45 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
+            Store.StatusId = StoreStatusEnum.PENDING.Id;
+            Store = await StoreService.Update(Store);
+            Store_StoreDTO = new Store_StoreDTO(Store);
+            if (Store.IsValidated)
+                return Store_StoreDTO;
+            else
+                return BadRequest(Store_StoreDTO);
+        }
+
+        [Route(StoreRoute.Approve), HttpPost]
+        public async Task<ActionResult<Store_StoreDTO>> Approve([FromBody] Store_StoreDTO Store_StoreDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Store_StoreDTO.Id))
+                return Forbid();
+
+            Store Store = ConvertDTOToEntity(Store_StoreDTO);
+            Store.StatusId = StoreStatusEnum.APPROVED.Id;
+            Store = await StoreService.Update(Store);
+            Store_StoreDTO = new Store_StoreDTO(Store);
+            if (Store.IsValidated)
+                return Store_StoreDTO;
+            else
+                return BadRequest(Store_StoreDTO);
+        }
+
+        [Route(StoreRoute.Reject), HttpPost]
+        public async Task<ActionResult<Store_StoreDTO>> Reject([FromBody] Store_StoreDTO Store_StoreDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Store_StoreDTO.Id))
+                return Forbid();
+
+            Store Store = ConvertDTOToEntity(Store_StoreDTO);
+            Store.StatusId = StoreStatusEnum.REJECTED.Id;
             Store = await StoreService.Update(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
@@ -559,7 +601,6 @@ namespace DMS.Rpc.store
                 ParentId = Store_StoreDTO.StoreGrouping.ParentId,
                 Path = Store_StoreDTO.StoreGrouping.Path,
                 Level = Store_StoreDTO.StoreGrouping.Level,
-                StatusId = Store_StoreDTO.StoreGrouping.StatusId,
             };
             Store.StoreType = Store_StoreDTO.StoreType == null ? null : new StoreType
             {
@@ -735,7 +776,6 @@ namespace DMS.Rpc.store
             StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
             StoreGroupingFilter.OrderType = OrderType.ASC;
             StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
-            StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<Store_StoreGroupingDTO> Store_StoreGroupingDTOs = StoreGroupings
                 .Select(x => new Store_StoreGroupingDTO(x)).ToList();
