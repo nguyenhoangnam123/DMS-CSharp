@@ -46,8 +46,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Path, filter.Path);
             if (filter.Level != null)
                 query = query.Where(q => q.Level, filter.Level);
-            if (filter.StatusId != null)
-                query = query.Where(q => q.StatusId, filter.StatusId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -72,8 +70,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Path, filter.Path);
                 if (filter.Level != null)
                     queryable = queryable.Where(q => q.Level, filter.Level);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -104,9 +100,6 @@ namespace DMS.Repositories
                         case StoreGroupingOrder.Level:
                             query = query.OrderBy(q => q.Level);
                             break;
-                        case StoreGroupingOrder.Status:
-                            query = query.OrderBy(q => q.StatusId);
-                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -130,9 +123,6 @@ namespace DMS.Repositories
                         case StoreGroupingOrder.Level:
                             query = query.OrderByDescending(q => q.Level);
                             break;
-                        case StoreGroupingOrder.Status:
-                            query = query.OrderByDescending(q => q.StatusId);
-                            break;
                     }
                     break;
             }
@@ -150,7 +140,6 @@ namespace DMS.Repositories
                 ParentId = filter.Selects.Contains(StoreGroupingSelect.Parent) ? q.ParentId : default(long?),
                 Path = filter.Selects.Contains(StoreGroupingSelect.Path) ? q.Path : default(string),
                 Level = filter.Selects.Contains(StoreGroupingSelect.Level) ? q.Level : default(long),
-                StatusId = filter.Selects.Contains(StoreGroupingSelect.Status) ? q.StatusId : default(long),
             }).ToListAsync();
             return StoreGroupings;
         }
@@ -182,7 +171,6 @@ namespace DMS.Repositories
                 ParentId = x.ParentId,
                 Path = x.Path,
                 Level = x.Level,
-                StatusId = x.StatusId,
                 Parent = x.Parent == null ? null : new StoreGrouping
                 {
                     Id = x.Id,
@@ -191,13 +179,6 @@ namespace DMS.Repositories
                     ParentId = x.ParentId,
                     Path = x.Path,
                     Level = x.Level,
-                    StatusId = x.StatusId,
-                },
-                Status = x.Status == null ? null : new Status
-                {
-                    Id = x.Status.Id,
-                    Code = x.Status.Code,
-                    Name = x.Status.Name,
                 },
             }).FirstOrDefaultAsync();
 
@@ -311,7 +292,6 @@ namespace DMS.Repositories
             StoreGroupingDAO.ParentId = StoreGrouping.ParentId;
             StoreGroupingDAO.Path = "";
             StoreGroupingDAO.Level = 1;
-            StoreGroupingDAO.StatusId = StoreGrouping.StatusId;
             StoreGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.StoreGrouping.Add(StoreGroupingDAO);
@@ -333,7 +313,6 @@ namespace DMS.Repositories
             StoreGroupingDAO.ParentId = StoreGrouping.ParentId;
             StoreGroupingDAO.Path = "";
             StoreGroupingDAO.Level = 1;
-            StoreGroupingDAO.StatusId = StoreGrouping.StatusId;
             StoreGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(StoreGrouping);
@@ -362,7 +341,6 @@ namespace DMS.Repositories
                 StoreGroupingDAO.ParentId = StoreGrouping.ParentId;
                 StoreGroupingDAO.Path = StoreGrouping.Path;
                 StoreGroupingDAO.Level = StoreGrouping.Level;
-                StoreGroupingDAO.StatusId = StoreGrouping.StatusId;
                 StoreGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
                 StoreGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
                 StoreGroupingDAOs.Add(StoreGroupingDAO);

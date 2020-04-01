@@ -357,7 +357,6 @@ namespace DMS.Rpc.organization
                         ParentId = x.StoreGrouping.ParentId,
                         Path = x.StoreGrouping.Path,
                         Level = x.StoreGrouping.Level,
-                        StatusId = x.StoreGrouping.StatusId,
                     },
                     StoreType = new StoreType
                     {

@@ -601,7 +601,6 @@ namespace DMS.Rpc.store
                 ParentId = Store_StoreDTO.StoreGrouping.ParentId,
                 Path = Store_StoreDTO.StoreGrouping.Path,
                 Level = Store_StoreDTO.StoreGrouping.Level,
-                StatusId = Store_StoreDTO.StoreGrouping.StatusId,
             };
             Store.StoreType = Store_StoreDTO.StoreType == null ? null : new StoreType
             {
@@ -777,7 +776,6 @@ namespace DMS.Rpc.store
             StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
             StoreGroupingFilter.OrderType = OrderType.ASC;
             StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
-            StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<Store_StoreGroupingDTO> Store_StoreGroupingDTOs = StoreGroupings
                 .Select(x => new Store_StoreGroupingDTO(x)).ToList();

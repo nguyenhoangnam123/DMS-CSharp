@@ -106,7 +106,6 @@ namespace DMS.Services.MStoreGrouping
                 Skip = 0,
                 Take = 10,
                 Id = new IdFilter { Equal = StoreGrouping.ParentId },
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                 Selects = StoreGroupingSelect.Id
             };
 
@@ -116,19 +115,11 @@ namespace DMS.Services.MStoreGrouping
             return count != 0;
         }
 
-        private async Task<bool> ValidateStatus(StoreGrouping StoreGrouping)
-        {
-            if (StatusEnum.ACTIVE.Id != StoreGrouping.StatusId && StatusEnum.INACTIVE.Id != StoreGrouping.StatusId)
-                StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Status), ErrorCode.StatusNotExisted);
-            return true;
-        }
-
         public async Task<bool> Create(StoreGrouping StoreGrouping)
         {
             await ValidateCode(StoreGrouping);
             await ValidateName(StoreGrouping);
             await ValidateParent(StoreGrouping);
-            await ValidateStatus(StoreGrouping);
             return StoreGrouping.IsValidated;
         }
 
@@ -139,7 +130,6 @@ namespace DMS.Services.MStoreGrouping
                 await ValidateCode(StoreGrouping);
                 await ValidateName(StoreGrouping);
                 await ValidateParent(StoreGrouping);
-                await ValidateStatus(StoreGrouping);
             }
             return StoreGrouping.IsValidated;
         }

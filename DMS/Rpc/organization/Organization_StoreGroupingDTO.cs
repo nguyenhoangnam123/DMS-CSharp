@@ -18,8 +18,6 @@ namespace DMS.Rpc.organization
 
         public long Level { get; set; }
 
-        public long StatusId { get; set; }
-
 
         public Organization_StoreGroupingDTO() { }
         public Organization_StoreGroupingDTO(StoreGrouping StoreGrouping)
@@ -36,8 +34,6 @@ namespace DMS.Rpc.organization
             this.Path = StoreGrouping.Path;
 
             this.Level = StoreGrouping.Level;
-
-            this.StatusId = StoreGrouping.StatusId;
 
         }
     }
