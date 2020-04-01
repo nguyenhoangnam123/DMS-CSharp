@@ -24,6 +24,7 @@ namespace DMS.Rpc.role
             this.Status = Role.Status == null ? null : new Role_StatusDTO(Role.Status);
             this.Permissions = Role.Permissions?.Select(x => new Role_PermissionDTO(x)).ToList();
             this.AppUserRoleMappings = Role.AppUserRoleMappings?.Select(x => new Role_AppUserRoleMappingDTO(x)).ToList();
+            this.Errors = Role.Errors;
         }
     }
 

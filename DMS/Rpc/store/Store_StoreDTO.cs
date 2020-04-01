@@ -64,6 +64,7 @@ namespace DMS.Rpc.store
             this.StoreGrouping = Store.StoreGrouping == null ? null : new Store_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new Store_StoreTypeDTO(Store.StoreType);
             this.Ward = Store.Ward == null ? null : new Store_WardDTO(Store.Ward);
+            this.Errors = Store.Errors;
         }
     }
 

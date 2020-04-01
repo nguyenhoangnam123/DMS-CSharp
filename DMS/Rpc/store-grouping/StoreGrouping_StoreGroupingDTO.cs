@@ -30,6 +30,7 @@ namespace DMS.Rpc.store_grouping
             this.Parent = StoreGrouping.Parent == null ? null : new StoreGrouping_StoreGroupingDTO(StoreGrouping.Parent);
             this.Status = StoreGrouping.Status == null ? null : new StoreGrouping_StatusDTO(StoreGrouping.Status);
             this.Stores = StoreGrouping.Stores?.Select(x => new StoreGrouping_StoreDTO(x)).ToList();
+            this.Errors = StoreGrouping.Errors;
         }
     }
 

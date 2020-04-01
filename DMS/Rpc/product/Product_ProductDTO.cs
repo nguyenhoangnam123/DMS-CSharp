@@ -68,6 +68,7 @@ namespace DMS.Rpc.product
             this.ProductImageMappings = Product.ProductImageMappings?.Select(x => new Product_ProductImageMappingDTO(x)).ToList();
             this.ProductProductGroupingMappings = Product.ProductProductGroupingMappings?.Select(x => new Product_ProductProductGroupingMappingDTO(x)).ToList();
             this.VariationGroupings = Product.VariationGroupings?.Select(x => new Product_VariationGroupingDTO(x)).ToList();
+            this.Errors = Product.Errors;
         }
     }
 

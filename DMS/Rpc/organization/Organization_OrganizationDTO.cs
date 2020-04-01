@@ -38,6 +38,7 @@ namespace DMS.Rpc.organization
             this.Parent = Organization.Parent == null ? null : new Organization_OrganizationDTO(Organization.Parent);
             this.Status = Organization.Status == null ? null : new Organization_StatusDTO(Organization.Status);
             this.Stores = Organization.Stores?.Select(x => new Organization_StoreDTO(x)).ToList();
+            this.Errors = Organization.Errors;
         }
     }
 
