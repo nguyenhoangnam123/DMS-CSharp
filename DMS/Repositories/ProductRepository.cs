@@ -149,19 +149,19 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.ScanCode);
                             break;
                         case ProductOrder.ProductType:
-                            query = query.OrderBy(q => q.ProductTypeId);
+                            query = query.OrderBy(q => q.ProductType.Code);
                             break;
                         case ProductOrder.Supplier:
-                            query = query.OrderBy(q => q.SupplierId);
+                            query = query.OrderBy(q => q.Supplier.Code);
                             break;
                         case ProductOrder.Brand:
-                            query = query.OrderBy(q => q.BrandId);
+                            query = query.OrderBy(q => q.Brand.Code);
                             break;
                         case ProductOrder.UnitOfMeasure:
-                            query = query.OrderBy(q => q.UnitOfMeasureId);
+                            query = query.OrderBy(q => q.UnitOfMeasure.Code);
                             break;
                         case ProductOrder.UnitOfMeasureGrouping:
-                            query = query.OrderBy(q => q.UnitOfMeasureGroupingId);
+                            query = query.OrderBy(q => q.UnitOfMeasureGrouping.Code);
                             break;
                         case ProductOrder.SalePrice:
                             query = query.OrderBy(q => q.SalePrice);
@@ -170,7 +170,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.RetailPrice);
                             break;
                         case ProductOrder.TaxType:
-                            query = query.OrderBy(q => q.TaxTypeId);
+                            query = query.OrderBy(q => q.TaxType.Code);
                             break;
                         case ProductOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
@@ -208,19 +208,19 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.ScanCode);
                             break;
                         case ProductOrder.ProductType:
-                            query = query.OrderByDescending(q => q.ProductTypeId);
+                            query = query.OrderByDescending(q => q.ProductType.Code);
                             break;
                         case ProductOrder.Supplier:
-                            query = query.OrderByDescending(q => q.SupplierId);
+                            query = query.OrderByDescending(q => q.Supplier.Code);
                             break;
                         case ProductOrder.Brand:
-                            query = query.OrderByDescending(q => q.BrandId);
+                            query = query.OrderByDescending(q => q.Brand.Code);
                             break;
                         case ProductOrder.UnitOfMeasure:
-                            query = query.OrderByDescending(q => q.UnitOfMeasureId);
+                            query = query.OrderByDescending(q => q.UnitOfMeasure.Code);
                             break;
                         case ProductOrder.UnitOfMeasureGrouping:
-                            query = query.OrderByDescending(q => q.UnitOfMeasureGroupingId);
+                            query = query.OrderByDescending(q => q.UnitOfMeasureGrouping.Code);
                             break;
                         case ProductOrder.SalePrice:
                             query = query.OrderByDescending(q => q.SalePrice);
