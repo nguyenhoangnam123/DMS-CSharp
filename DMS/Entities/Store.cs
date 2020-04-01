@@ -27,6 +27,7 @@ namespace DMS.Entities
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
         public long StatusId { get; set; }
+        public long StoreStatusId { get; set; }
         public District District { get; set; }
         public Organization Organization { get; set; }
         public Store ParentStore { get; set; }
@@ -68,6 +69,7 @@ namespace DMS.Entities
         public StringFilter OwnerPhone { get; set; }
         public StringFilter OwnerEmail { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter StoreStatusId { get; set; }
         public List<StoreFilter> OrFilter { get; set; }
         public StoreOrder OrderBy { get; set; }
         public StoreSelect Selects { get; set; }
@@ -95,6 +97,7 @@ namespace DMS.Entities
         OwnerPhone = 16,
         OwnerEmail = 17,
         Status = 18,
+        StoreStatus = 19,
     }
 
     [Flags]
@@ -120,5 +123,6 @@ namespace DMS.Entities
         OwnerPhone = E._16,
         OwnerEmail = E._17,
         Status = E._18,
+        StoreStatus = E._19,
     }
 }
