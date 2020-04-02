@@ -91,6 +91,7 @@ namespace DMS.Services.MReseller
 
             try
             {
+                Reseller.Id = 0;
                 await UOW.Begin();
                 await UOW.ResellerRepository.Create(Reseller);
                 await UOW.Commit();
@@ -190,6 +191,7 @@ namespace DMS.Services.MReseller
                 return Resellers;
             try
             {
+                Resellers.ForEach(r => r.Id = 0);
                 await UOW.Begin();
                 await UOW.ResellerRepository.BulkMerge(Resellers);
                 await UOW.Commit();

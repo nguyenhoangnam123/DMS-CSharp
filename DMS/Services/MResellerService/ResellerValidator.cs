@@ -23,6 +23,24 @@ namespace DMS.Services.MReseller
         public enum ErrorCode
         {
             IdNotExisted,
+            CodeExisted,
+            CodeEmpty,
+            CodeOverLength,
+            NameEmpty,
+            NameOverLength,
+            AddressOverLength,
+            EmailOverLength,
+            TaxCodeOverLength,
+            CompanyNameOverLength,
+            DeputyNameOverLength,
+            PhoneEmpty,
+            PhoneOverLength,
+            DescriptionOverLength,
+            StatusNotExisted,
+            StaffNotExisted,
+            OrganizationNotExisted,
+            ResellerTypeNotExisted,
+            ResellerStatusNotExisted
         }
 
         private IUOW UOW;
@@ -50,8 +68,218 @@ namespace DMS.Services.MReseller
             return count == 1;
         }
 
+        public async Task<bool> ValidateCode(Reseller Reseller)
+        {
+            if (string.IsNullOrEmpty(Reseller.Code))
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Code), ErrorCode.CodeEmpty);
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(Reseller.Code) && Reseller.Code.Length > 255)
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Code), ErrorCode.CodeOverLength);
+                return false;
+            }
+
+            ResellerFilter ResellerFilter = new ResellerFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { NotEqual = Reseller.Id },
+                Code = new StringFilter { Equal = Reseller.Code },
+                Selects = ResellerSelect.Code
+            };
+
+            int count = await UOW.ResellerRepository.Count(ResellerFilter);
+            if (count != 0)
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Code), ErrorCode.CodeExisted);
+            return count == 0;
+        }
+
+        public async Task<bool> ValidateName(Reseller Reseller)
+        {
+            if (string.IsNullOrEmpty(Reseller.Name))
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Name), ErrorCode.NameEmpty);
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(Reseller.Name) && Reseller.Name.Length > 255)
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Name), ErrorCode.NameOverLength);
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> ValidateAddress(Reseller Reseller)
+        {
+            if (!string.IsNullOrEmpty(Reseller.Address) && Reseller.Address.Length > 255)
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Address), ErrorCode.AddressOverLength);
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> ValidateEmail(Reseller Reseller)
+        {
+            if (!string.IsNullOrEmpty(Reseller.Email) && Reseller.Email.Length > 255)
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Email), ErrorCode.EmailOverLength);
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> ValidateTaxCode(Reseller Reseller)
+        {
+            if (!string.IsNullOrEmpty(Reseller.TaxCode) && Reseller.TaxCode.Length > 255)
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.TaxCode), ErrorCode.TaxCodeOverLength);
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> ValidateCompanyName(Reseller Reseller)
+        {
+            if (!string.IsNullOrEmpty(Reseller.CompanyName) && Reseller.CompanyName.Length > 255)
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.CompanyName), ErrorCode.CompanyNameOverLength);
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> ValidateDeputyName(Reseller Reseller)
+        {
+            if (!string.IsNullOrEmpty(Reseller.DeputyName) && Reseller.DeputyName.Length > 255)
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.DeputyName), ErrorCode.DeputyNameOverLength);
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> ValidatePhone(Reseller Reseller)
+        {
+            if (string.IsNullOrEmpty(Reseller.Phone))
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Phone), ErrorCode.PhoneEmpty);
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(Reseller.Phone) && Reseller.Phone.Length > 255)
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Phone), ErrorCode.PhoneOverLength);
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> ValidateDescription(Reseller Reseller)
+        {
+            if (!string.IsNullOrEmpty(Reseller.Description) && Reseller.Description.Length > 1000)
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Description), ErrorCode.DescriptionOverLength);
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> ValidateAppUser(Reseller Reseller)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { Equal = Reseller.StaffId },
+                Selects = AppUserSelect.Id
+            };
+            int count = await UOW.AppUserRepository.Count(AppUserFilter);
+            if (count == 0)
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Staff), ErrorCode.StaffNotExisted);
+            return count != 0;
+        }
+
+        public async Task<bool> ValidateOrganization(Reseller Reseller)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { Equal = Reseller.OrganizationId },
+                Selects = OrganizationSelect.Id
+            };
+            int count = await UOW.OrganizationRepository.Count(OrganizationFilter);
+            if (count == 0)
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Organization), ErrorCode.OrganizationNotExisted);
+            return count != 0;
+        }
+
+        public async Task<bool> ValidateResellerType(Reseller Reseller)
+        {
+            ResellerTypeFilter ResellerTypeFilter = new ResellerTypeFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { Equal = Reseller.ResellerTypeId },
+                Selects = ResellerTypeSelect.Id
+            };
+            int count = await UOW.ResellerTypeRepository.Count(ResellerTypeFilter);
+            if (count == 0)
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerType), ErrorCode.ResellerTypeNotExisted);
+            return count != 0;
+        }
+
+        public async Task<bool> ValidateResellerStatus(Reseller Reseller)
+        {
+            ResellerStatusFilter ResellerStatusFilter = new ResellerStatusFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { Equal = Reseller.ResellerStatusId },
+                Selects = ResellerStatusSelect.Id
+            };
+            int count = await UOW.ResellerStatusRepository.Count(ResellerStatusFilter);
+            if (count == 0)
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerStatus), ErrorCode.ResellerStatusNotExisted);
+            return count != 0;
+        }
+
+        public async Task<bool> ValidateStatus(Reseller Reseller)
+        {
+            StatusFilter StatusFilter = new StatusFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { Equal = Reseller.StatusId },
+                Selects = StatusSelect.Id
+            };
+            int count = await UOW.StatusRepository.Count(StatusFilter);
+            if (count == 0)
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Status), ErrorCode.StatusNotExisted);
+            return count != 0;
+        }
+
         public async Task<bool>Create(Reseller Reseller)
         {
+            await ValidateCode(Reseller);
+            await ValidateName(Reseller);
+            await ValidateAddress(Reseller);
+            await ValidateEmail(Reseller);
+            await ValidateTaxCode(Reseller);
+            await ValidateCompanyName(Reseller);
+            await ValidateDeputyName(Reseller);
+            await ValidatePhone(Reseller);
+            await ValidateDescription(Reseller);
+            await ValidateAppUser(Reseller);
+            await ValidateOrganization(Reseller);
+            await ValidateResellerType(Reseller);
+            await ValidateResellerStatus(Reseller);
+            await ValidateStatus(Reseller);
             return Reseller.IsValidated;
         }
 
@@ -59,6 +287,20 @@ namespace DMS.Services.MReseller
         {
             if (await ValidateId(Reseller))
             {
+                await ValidateCode(Reseller);
+                await ValidateName(Reseller);
+                await ValidateAddress(Reseller);
+                await ValidateEmail(Reseller);
+                await ValidateTaxCode(Reseller);
+                await ValidateCompanyName(Reseller);
+                await ValidateDeputyName(Reseller);
+                await ValidatePhone(Reseller);
+                await ValidateDescription(Reseller);
+                await ValidateAppUser(Reseller);
+                await ValidateOrganization(Reseller);
+                await ValidateResellerType(Reseller);
+                await ValidateResellerStatus(Reseller);
+                await ValidateStatus(Reseller);
             }
             return Reseller.IsValidated;
         }
@@ -73,11 +315,99 @@ namespace DMS.Services.MReseller
         
         public async Task<bool> BulkDelete(List<Reseller> Resellers)
         {
-            return true;
+            ResellerFilter ResellerFilter = new ResellerFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Id = new IdFilter { In = Resellers.Select(a => a.Id).ToList() },
+                Selects = ResellerSelect.Id
+            };
+
+            var listInDB = await UOW.ResellerRepository.List(ResellerFilter);
+            var listExcept = Resellers.Except(listInDB);
+            if (listExcept == null || listExcept.Count() == 0) return true;
+            foreach (var Reseller in listExcept)
+            {
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Id), ErrorCode.IdNotExisted);
+            }
+            return false;
         }
         
         public async Task<bool> Import(List<Reseller> Resellers)
         {
+            var listCodeInDB = (await UOW.ResellerRepository.List(new ResellerFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ResellerSelect.Code
+            })).Select(e => e.Code);
+
+            var listOrganizationCodeInDB = (await UOW.OrganizationRepository.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Code
+            })).Select(e => e.Code);
+
+            var listResellerTypeCodeInDB = (await UOW.ResellerTypeRepository.List(new ResellerTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ResellerTypeSelect.Code
+            })).Select(e => e.Code);
+
+            var listResellerStatusCodeInDB = (await UOW.ResellerStatusRepository.List(new ResellerStatusFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ResellerStatusSelect.Code
+            })).Select(e => e.Code);
+
+            var listStatusCodeInDB = (await UOW.StatusRepository.List(new StatusFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StatusSelect.Code
+            })).Select(e => e.Code);
+
+            foreach (var Reseller in Resellers)
+            {
+                if (listCodeInDB.Contains(Reseller.Code))
+                {
+                    Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Code), ErrorCode.CodeExisted);
+                    return false;
+                }
+
+                if (listOrganizationCodeInDB.Contains(Reseller.Organization.Code))
+                {
+                    Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Organization), ErrorCode.OrganizationNotExisted);
+                    return false;
+                }
+                if (listResellerTypeCodeInDB.Contains(Reseller.ResellerType.Code))
+                {
+                    Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerType), ErrorCode.ResellerTypeNotExisted);
+                    return false;
+                }
+                if (listResellerStatusCodeInDB.Contains(Reseller.ResellerStatus.Code))
+                {
+                    Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerStatus), ErrorCode.ResellerStatusNotExisted);
+                    return false;
+                }
+                if (listStatusCodeInDB.Contains(Reseller.Status.Code))
+                {
+                    Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Status), ErrorCode.StatusNotExisted);
+                    return false;
+                }
+                if (!await ValidateCode(Reseller)) return false;
+                if (!await ValidateName(Reseller)) return false;
+                if (!await ValidateAddress(Reseller)) return false;
+                if (!await ValidateEmail(Reseller)) return false;
+                if (!await ValidateTaxCode(Reseller)) return false;
+                if (!await ValidateCompanyName(Reseller)) return false;
+                if (!await ValidateDeputyName(Reseller)) return false;
+                if (!await ValidatePhone(Reseller)) return false;
+                if (!await ValidateDescription(Reseller)) return false;
+            }
             return true;
         }
     }

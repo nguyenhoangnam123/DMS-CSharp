@@ -614,6 +614,12 @@ namespace DMS.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.Resellers)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Reseller_Organization");
+
                 entity.HasOne(d => d.ResellerStatus)
                     .WithMany(p => p.Resellers)
                     .HasForeignKey(d => d.ResellerStatusId)
@@ -732,6 +738,10 @@ namespace DMS.Models
                     .HasMaxLength(10)
                     .IsFixedLength();
 
+                entity.Property(e => e.DeliveryLatitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.DeliveryLongitude).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
@@ -776,6 +786,11 @@ namespace DMS.Models
                     .HasForeignKey(d => d.ProvinceId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_Province");
+
+                entity.HasOne(d => d.Reseller)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.ResellerId)
+                    .HasConstraintName("FK_Store_Reseller");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Stores)

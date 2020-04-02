@@ -14,6 +14,10 @@ using DMS.Services.MReseller;
 using DMS.Services.MResellerStatus;
 using DMS.Services.MResellerType;
 using DMS.Services.MAppUser;
+using DMS.Enums;
+using DMS.Services.MOrganization;
+using DMS.Services.MStatus;
+using DMS.Services.MStore;
 
 namespace DMS.Rpc.reseller
 {
@@ -27,13 +31,20 @@ namespace DMS.Rpc.reseller
         public const string Get = Default + "/get";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
+        public const string Approve = Default + "/approve";
+        public const string Reject = Default + "/reject";
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
+        public const string SingleListAppUser = Default + "/single-list-app-user";
+        public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListResellerStatus = Default + "/single-list-reseller-status";
         public const string SingleListResellerType = Default + "/single-list-reseller-type";
-        public const string SingleListAppUser = Default + "/single-list-app-user";
+        public const string SingleListStatus = Default + "/single-list-status";
+
+        public const string CountStore = Default + "/count-store";
+        public const string ListStore = Default + "/list-store";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(ResellerFilter.Id), FieldType.ID },
@@ -46,31 +57,42 @@ namespace DMS.Rpc.reseller
             { nameof(ResellerFilter.CompanyName), FieldType.STRING },
             { nameof(ResellerFilter.DeputyName), FieldType.STRING },
             { nameof(ResellerFilter.Description), FieldType.STRING },
+            { nameof(ResellerFilter.OrganizationId), FieldType.ID },
             { nameof(ResellerFilter.ResellerTypeId), FieldType.ID },
             { nameof(ResellerFilter.ResellerStatusId), FieldType.ID },
             { nameof(ResellerFilter.StaffId), FieldType.ID },
+            { nameof(ResellerFilter.StatusId), FieldType.ID },
         };
     }
 
     public class ResellerController : RpcController
     {
+        private IAppUserService AppUserService;
+        private IOrganizationService OrganizationService;
         private IResellerStatusService ResellerStatusService;
         private IResellerTypeService ResellerTypeService;
-        private IAppUserService AppUserService;
         private IResellerService ResellerService;
+        private IStatusService StatusService;
+        private IStoreService StoreService;
         private ICurrentContext CurrentContext;
         public ResellerController(
+            IAppUserService AppUserService,
+            IOrganizationService OrganizationService,
             IResellerStatusService ResellerStatusService,
             IResellerTypeService ResellerTypeService,
-            IAppUserService AppUserService,
             IResellerService ResellerService,
+            IStatusService StatusService,
+            IStoreService StoreService,
             ICurrentContext CurrentContext
         )
         {
+            this.AppUserService = AppUserService;
+            this.OrganizationService = OrganizationService;
             this.ResellerStatusService = ResellerStatusService;
             this.ResellerTypeService = ResellerTypeService;
-            this.AppUserService = AppUserService;
             this.ResellerService = ResellerService;
+            this.StatusService = StatusService;
+            this.StoreService = StoreService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -123,6 +145,13 @@ namespace DMS.Rpc.reseller
                 return Forbid();
 
             Reseller Reseller = ConvertDTOToEntity(Reseller_ResellerDTO);
+            Reseller.ResellerStatusId = ResellerStatusEnum.NEW.Id;
+            Reseller.ResellerStatus = new ResellerStatus
+            {
+                Id = ResellerStatusEnum.NEW.Id,
+                Code = ResellerStatusEnum.NEW.Code,
+                Name = ResellerStatusEnum.NEW.Name
+            };
             Reseller = await ResellerService.Create(Reseller);
             Reseller_ResellerDTO = new Reseller_ResellerDTO(Reseller);
             if (Reseller.IsValidated)
@@ -141,6 +170,63 @@ namespace DMS.Rpc.reseller
                 return Forbid();
 
             Reseller Reseller = ConvertDTOToEntity(Reseller_ResellerDTO);
+            Reseller.ResellerStatusId = ResellerStatusEnum.PENDING.Id;
+            Reseller.ResellerStatus = new ResellerStatus
+            {
+                Id = ResellerStatusEnum.PENDING.Id,
+                Code = ResellerStatusEnum.PENDING.Code,
+                Name = ResellerStatusEnum.PENDING.Name
+            };
+            Reseller = await ResellerService.Update(Reseller);
+            Reseller_ResellerDTO = new Reseller_ResellerDTO(Reseller);
+            if (Reseller.IsValidated)
+                return Reseller_ResellerDTO;
+            else
+                return BadRequest(Reseller_ResellerDTO);
+        }
+
+        [Route(ResellerRoute.Approve), HttpPost]
+        public async Task<ActionResult<Reseller_ResellerDTO>> Approve([FromBody] Reseller_ResellerDTO Reseller_ResellerDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Reseller_ResellerDTO.Id))
+                return Forbid();
+
+            Reseller Reseller = ConvertDTOToEntity(Reseller_ResellerDTO);
+            Reseller.ResellerStatusId = ResellerStatusEnum.APPROVED.Id;
+            Reseller.ResellerStatus = new ResellerStatus
+            {
+                Id = ResellerStatusEnum.APPROVED.Id,
+                Code = ResellerStatusEnum.APPROVED.Code,
+                Name = ResellerStatusEnum.APPROVED.Name
+            };
+            Reseller = await ResellerService.Update(Reseller);
+            Reseller_ResellerDTO = new Reseller_ResellerDTO(Reseller);
+            if (Reseller.IsValidated)
+                return Reseller_ResellerDTO;
+            else
+                return BadRequest(Reseller_ResellerDTO);
+        }
+
+        [Route(ResellerRoute.Reject), HttpPost]
+        public async Task<ActionResult<Reseller_ResellerDTO>> Reject([FromBody] Reseller_ResellerDTO Reseller_ResellerDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Reseller_ResellerDTO.Id))
+                return Forbid();
+
+            Reseller Reseller = ConvertDTOToEntity(Reseller_ResellerDTO);
+            Reseller.ResellerStatusId = ResellerStatusEnum.REJECTED.Id;
+            Reseller.ResellerStatus = new ResellerStatus
+            {
+                Id = ResellerStatusEnum.REJECTED.Id,
+                Code = ResellerStatusEnum.REJECTED.Code,
+                Name = ResellerStatusEnum.REJECTED.Name
+            };
             Reseller = await ResellerService.Update(Reseller);
             Reseller_ResellerDTO = new Reseller_ResellerDTO(Reseller);
             if (Reseller.IsValidated)
@@ -186,10 +272,29 @@ namespace DMS.Rpc.reseller
         }
         
         [Route(ResellerRoute.Import), HttpPost]
-        public async Task<ActionResult> Import(IFormFile file)
+        public async Task<ActionResult<List<Reseller_ResellerDTO>>> Import(IFormFile file)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            DataFile DataFile = new DataFile
+            {
+                Name = file.FileName,
+                Content = file.OpenReadStream(),
+            };
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.ALL
+            };
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL
+            };
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             ResellerStatusFilter ResellerStatusFilter = new ResellerStatusFilter
             {
                 Skip = 0,
@@ -204,13 +309,7 @@ namespace DMS.Rpc.reseller
                 Selects = ResellerTypeSelect.ALL
             };
             List<ResellerType> ResellerTypes = await ResellerTypeService.List(ResellerTypeFilter);
-            AppUserFilter AppUserFilter = new AppUserFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = AppUserSelect.ALL
-            };
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            
             List<Reseller> Resellers = new List<Reseller>();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
@@ -219,25 +318,24 @@ namespace DMS.Rpc.reseller
                     return Ok(Resellers);
                 int StartColumn = 1;
                 int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int PhoneColumn = 3 + StartColumn;
-                int EmailColumn = 4 + StartColumn;
-                int AddressColumn = 5 + StartColumn;
-                int TaxCodeColumn = 6 + StartColumn;
-                int CompanyNameColumn = 7 + StartColumn;
-                int DeputyNameColumn = 8 + StartColumn;
-                int DescriptionColumn = 9 + StartColumn;
-                int ResellerTypeIdColumn = 10 + StartColumn;
-                int ResellerStatusIdColumn = 11 + StartColumn;
-                int StaffIdColumn = 12 + StartColumn;
+
+                int CodeColumn = 0 + StartColumn;
+                int NameColumn = 1 + StartColumn;
+                int PhoneColumn = 2 + StartColumn;
+                int EmailColumn = 3 + StartColumn;
+                int AddressColumn = 4 + StartColumn;
+                int TaxCodeColumn = 5 + StartColumn;
+                int CompanyNameColumn = 6 + StartColumn;
+                int DeputyNameColumn = 7 + StartColumn;
+                int OrganizationCodeColumn = 8 + StartColumn;
+                int ResellerTypeCodeColumn = 9 + StartColumn;
+                int ResellerStatusCodeColumn = 10 + StartColumn;
+                int StatusCodeColumn = 11 + StartColumn;
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
                     if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, StartColumn].Value?.ToString()))
                         break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
                     string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
                     string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
                     string PhoneValue = worksheet.Cells[i + StartRow, PhoneColumn].Value?.ToString();
@@ -246,78 +344,37 @@ namespace DMS.Rpc.reseller
                     string TaxCodeValue = worksheet.Cells[i + StartRow, TaxCodeColumn].Value?.ToString();
                     string CompanyNameValue = worksheet.Cells[i + StartRow, CompanyNameColumn].Value?.ToString();
                     string DeputyNameValue = worksheet.Cells[i + StartRow, DeputyNameColumn].Value?.ToString();
-                    string DescriptionValue = worksheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
-                    string ResellerTypeIdValue = worksheet.Cells[i + StartRow, ResellerTypeIdColumn].Value?.ToString();
-                    string ResellerStatusIdValue = worksheet.Cells[i + StartRow, ResellerStatusIdColumn].Value?.ToString();
-                    string StaffIdValue = worksheet.Cells[i + StartRow, StaffIdColumn].Value?.ToString();
-                    
-                    Reseller Reseller = new Reseller();
-                    Reseller.Code = CodeValue;
-                    Reseller.Name = NameValue;
-                    Reseller.Phone = PhoneValue;
-                    Reseller.Email = EmailValue;
-                    Reseller.Address = AddressValue;
-                    Reseller.TaxCode = TaxCodeValue;
-                    Reseller.CompanyName = CompanyNameValue;
-                    Reseller.DeputyName = DeputyNameValue;
-                    Reseller.Description = DescriptionValue;
-                    ResellerStatus ResellerStatus = ResellerStatuses.Where(x => x.Id.ToString() == ResellerStatusIdValue).FirstOrDefault();
-                    Reseller.ResellerStatusId = ResellerStatus == null ? 0 : ResellerStatus.Id;
-                    Reseller.ResellerStatus = ResellerStatus;
-                    ResellerType ResellerType = ResellerTypes.Where(x => x.Id.ToString() == ResellerTypeIdValue).FirstOrDefault();
-                    Reseller.ResellerTypeId = ResellerType == null ? 0 : ResellerType.Id;
-                    Reseller.ResellerType = ResellerType;
-                    //AppUser AppUser = AppUsers.Where(x => x.Id.ToString() == AppUserIdValue).FirstOrDefault();
-                    //Reseller.AppUserId = AppUser == null ? 0 : AppUser.Id;
-                    //Reseller.AppUser = AppUser;
-                    
+
+                    string OrganizationCodeValue = worksheet.Cells[i + StartRow, OrganizationCodeColumn].Value?.ToString();
+                    string ResellerTypeCodeValue = worksheet.Cells[i + StartRow, ResellerTypeCodeColumn].Value?.ToString();
+                    string ResellerStatusCodeValue = worksheet.Cells[i + StartRow, ResellerStatusCodeColumn].Value?.ToString();
+                    string StatusCodeValue = worksheet.Cells[i + StartRow, StatusCodeColumn].Value?.ToString();
+
+                    Reseller Reseller = new Reseller() 
+                    {
+                        Code = CodeValue,
+                        Name = NameValue,
+                        Phone = PhoneValue,
+                        Email = EmailValue,
+                        Address = AddressValue,
+                        TaxCode = TaxCodeValue,
+                        CompanyName = CompanyNameValue,
+                        DeputyName = DeputyNameValue,
+
+                        Organization = Organizations.Where(x => x.Code.ToString() == OrganizationCodeValue).FirstOrDefault(),
+                        ResellerStatus = ResellerStatuses.Where(x => x.Code.ToString() == ResellerStatusCodeValue).FirstOrDefault(),
+                        ResellerType = ResellerTypes.Where(x => x.Code.ToString() == ResellerTypeCodeValue).FirstOrDefault(),
+                    };
                     Resellers.Add(Reseller);
                 }
             }
             Resellers = await ResellerService.Import(Resellers);
-            if (Resellers.All(x => x.IsValidated))
-                return Ok(true);
-            else
-            {
-                List<string> Errors = new List<string>();
-                for (int i = 0; i < Resellers.Count; i++)
-                {
-                    Reseller Reseller = Resellers[i];
-                    if (!Reseller.IsValidated)
-                    {
-                        string Error = $"Dòng {i + 2} có lỗi:";
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.Id)))
-                            Error += Reseller.Errors[nameof(Reseller.Id)];
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.Code)))
-                            Error += Reseller.Errors[nameof(Reseller.Code)];
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.Name)))
-                            Error += Reseller.Errors[nameof(Reseller.Name)];
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.Phone)))
-                            Error += Reseller.Errors[nameof(Reseller.Phone)];
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.Email)))
-                            Error += Reseller.Errors[nameof(Reseller.Email)];
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.Address)))
-                            Error += Reseller.Errors[nameof(Reseller.Address)];
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.TaxCode)))
-                            Error += Reseller.Errors[nameof(Reseller.TaxCode)];
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.CompanyName)))
-                            Error += Reseller.Errors[nameof(Reseller.CompanyName)];
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.DeputyName)))
-                            Error += Reseller.Errors[nameof(Reseller.DeputyName)];
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.Description)))
-                            Error += Reseller.Errors[nameof(Reseller.Description)];
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.ResellerTypeId)))
-                            Error += Reseller.Errors[nameof(Reseller.ResellerTypeId)];
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.ResellerStatusId)))
-                            Error += Reseller.Errors[nameof(Reseller.ResellerStatusId)];
-                        if (Reseller.Errors.ContainsKey(nameof(Reseller.StaffId)))
-                            Error += Reseller.Errors[nameof(Reseller.StaffId)];
-                        Errors.Add(Error);
-                    }
-                }
-                return BadRequest(Errors);
-            }
+
+            List<Reseller_ResellerDTO> Reseller_ResellerDTOs = Resellers
+                .Select(c => new Reseller_ResellerDTO(c)).ToList();
+            return Reseller_ResellerDTOs;
         }
+        
         
         [Route(ResellerRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] Reseller_ResellerFilterDTO Reseller_ResellerFilterDTO)
@@ -326,6 +383,7 @@ namespace DMS.Rpc.reseller
                 throw new BindException(ModelState);
 
             var ResellerFilter = ConvertFilterDTOToFilterEntity(Reseller_ResellerFilterDTO);
+            ResellerFilter = ResellerService.ToFilter(ResellerFilter);
             ResellerFilter.Skip = 0;
             ResellerFilter.Take = int.MaxValue;
             ResellerFilter = ResellerService.ToFilter(ResellerFilter);
@@ -337,19 +395,17 @@ namespace DMS.Rpc.reseller
                 var ResellerHeaders = new List<string[]>()
                 {
                     new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                        "Phone",
+                        "Mã khách hàng",
+                        "Tên khách hàng",
+                        "Số điện thoại",
                         "Email",
-                        "Address",
-                        "TaxCode",
-                        "CompanyName",
-                        "DeputyName",
-                        "Description",
-                        "ResellerTypeId",
-                        "ResellerStatusId",
-                        "StaffId",
+                        "Địa chỉ",
+                        "Mã số thuế",
+                        "Tên công ty",
+                        "Tên người đại diện",
+                        "Mã tổ chức",
+                        "Mã loại khách hàng",
+                        "Mã trạng thái khách hàng",
                     }
                 };
                 List<object[]> data = new List<object[]>();
@@ -358,7 +414,6 @@ namespace DMS.Rpc.reseller
                     var Reseller = Resellers[i];
                     data.Add(new Object[]
                     {
-                        Reseller.Id,
                         Reseller.Code,
                         Reseller.Name,
                         Reseller.Phone,
@@ -367,10 +422,9 @@ namespace DMS.Rpc.reseller
                         Reseller.TaxCode,
                         Reseller.CompanyName,
                         Reseller.DeputyName,
-                        Reseller.Description,
-                        Reseller.ResellerTypeId,
-                        Reseller.ResellerStatusId,
-                        Reseller.StaffId,
+                        Reseller.Organization.Code,
+                        Reseller.ResellerType.Code,
+                        Reseller.ResellerStatus.Code,
                     });
                     excel.GenerateWorksheet("Reseller", ResellerHeaders, data);
                 }
@@ -466,7 +520,56 @@ namespace DMS.Rpc.reseller
             ResellerFilter.StaffId = Reseller_ResellerFilterDTO.StaffId;
             return ResellerFilter;
         }
+        [Route(ResellerRoute.SingleListAppUser), HttpPost]
+        public async Task<List<Reseller_AppUserDTO>> SingleListAppUser([FromBody] Reseller_AppUserFilterDTO Reseller_AppUserFilterDTO)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = Reseller_AppUserFilterDTO.Id;
+            AppUserFilter.Username = Reseller_AppUserFilterDTO.Username;
+            AppUserFilter.Password = Reseller_AppUserFilterDTO.Password;
+            AppUserFilter.DisplayName = Reseller_AppUserFilterDTO.DisplayName;
+            AppUserFilter.SexId = Reseller_AppUserFilterDTO.SexId;
+            AppUserFilter.Address = Reseller_AppUserFilterDTO.Address;
+            AppUserFilter.Email = Reseller_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = Reseller_AppUserFilterDTO.Phone;
+            AppUserFilter.StatusId = Reseller_AppUserFilterDTO.StatusId;
 
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<Reseller_AppUserDTO> Reseller_AppUserDTOs = AppUsers
+                .Select(x => new Reseller_AppUserDTO(x)).ToList();
+            return Reseller_AppUserDTOs;
+        }
+        [Route(ResellerRoute.SingleListOrganization), HttpPost]
+        public async Task<List<Reseller_OrganizationDTO>> SingleListOrganization([FromBody] Reseller_OrganizationFilterDTO Reseller_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = int.MaxValue;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.Id = Reseller_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = Reseller_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = Reseller_OrganizationFilterDTO.Name;
+            OrganizationFilter.Address = Reseller_OrganizationFilterDTO.Address;
+            OrganizationFilter.Latitude = Reseller_OrganizationFilterDTO.Latitude;
+            OrganizationFilter.Longitude = Reseller_OrganizationFilterDTO.Longitude;
+            OrganizationFilter.ParentId = Reseller_OrganizationFilterDTO.ParentId;
+            OrganizationFilter.Path = Reseller_OrganizationFilterDTO.Path;
+            OrganizationFilter.Phone = Reseller_OrganizationFilterDTO.Phone;
+            OrganizationFilter.Level = Reseller_OrganizationFilterDTO.Level;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<Reseller_OrganizationDTO> Reseller_OrganizationDTOs = Organizations
+                .Select(x => new Reseller_OrganizationDTO(x)).ToList();
+            return Reseller_OrganizationDTOs;
+        }
         [Route(ResellerRoute.SingleListResellerStatus), HttpPost]
         public async Task<List<Reseller_ResellerStatusDTO>> SingleListResellerStatus([FromBody] Reseller_ResellerStatusFilterDTO Reseller_ResellerStatusFilterDTO)
         {
@@ -504,31 +607,86 @@ namespace DMS.Rpc.reseller
                 .Select(x => new Reseller_ResellerTypeDTO(x)).ToList();
             return Reseller_ResellerTypeDTOs;
         }
-        [Route(ResellerRoute.SingleListAppUser), HttpPost]
-        public async Task<List<Reseller_AppUserDTO>> SingleListAppUser([FromBody] Reseller_AppUserFilterDTO Reseller_AppUserFilterDTO)
+        
+        [Route(ResellerRoute.SingleListStatus), HttpPost]
+        public async Task<List<Reseller_StatusDTO>> SingleListStatus([FromBody] Reseller_StatusFilterDTO Reseller_StatusFilterDTO)
         {
-            AppUserFilter AppUserFilter = new AppUserFilter();
-            AppUserFilter.Skip = 0;
-            AppUserFilter.Take = 20;
-            AppUserFilter.OrderBy = AppUserOrder.Id;
-            AppUserFilter.OrderType = OrderType.ASC;
-            AppUserFilter.Selects = AppUserSelect.ALL;
-            AppUserFilter.Id = Reseller_AppUserFilterDTO.Id;
-            AppUserFilter.Username = Reseller_AppUserFilterDTO.Username;
-            AppUserFilter.Password = Reseller_AppUserFilterDTO.Password;
-            AppUserFilter.DisplayName = Reseller_AppUserFilterDTO.DisplayName;
-            AppUserFilter.SexId = Reseller_AppUserFilterDTO.SexId;
-            AppUserFilter.Address = Reseller_AppUserFilterDTO.Address;
-            AppUserFilter.Email = Reseller_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = Reseller_AppUserFilterDTO.Phone;
-            AppUserFilter.StatusId = Reseller_AppUserFilterDTO.StatusId;
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+            StatusFilter.Id = Reseller_StatusFilterDTO.Id;
+            StatusFilter.Code = Reseller_StatusFilterDTO.Code;
+            StatusFilter.Name = Reseller_StatusFilterDTO.Name;
 
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-            List<Reseller_AppUserDTO> Reseller_AppUserDTOs = AppUsers
-                .Select(x => new Reseller_AppUserDTO(x)).ToList();
-            return Reseller_AppUserDTOs;
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<Reseller_StatusDTO> Reseller_StatusDTOs = Statuses
+                .Select(x => new Reseller_StatusDTO(x)).ToList();
+            return Reseller_StatusDTOs;
         }
 
+        [Route(ResellerRoute.CountStore), HttpPost]
+        public async Task<long> CountStore([FromBody] Reseller_StoreFilterDTO Reseller_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Id = Reseller_StoreFilterDTO.Id;
+            StoreFilter.Code = Reseller_StoreFilterDTO.Code;
+            StoreFilter.Name = Reseller_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = Reseller_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = Reseller_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = Reseller_StoreFilterDTO.StoreTypeId;
+            StoreFilter.ResellerId = Reseller_StoreFilterDTO.ResellerId;
+            StoreFilter.Telephone = Reseller_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = Reseller_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = Reseller_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = Reseller_StoreFilterDTO.WardId;
+            StoreFilter.Address = Reseller_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = Reseller_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = Reseller_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = Reseller_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = Reseller_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = Reseller_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = Reseller_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            return await StoreService.Count(StoreFilter);
+        }
+
+        [Route(ResellerRoute.ListStore), HttpPost]
+        public async Task<List<Reseller_StoreDTO>> ListStore([FromBody] Reseller_StoreFilterDTO Reseller_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = Reseller_StoreFilterDTO.Skip;
+            StoreFilter.Take = Reseller_StoreFilterDTO.Take;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = Reseller_StoreFilterDTO.Id;
+            StoreFilter.Code = Reseller_StoreFilterDTO.Code;
+            StoreFilter.Name = Reseller_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = Reseller_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = Reseller_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = Reseller_StoreFilterDTO.StoreTypeId;
+            StoreFilter.ResellerId = Reseller_StoreFilterDTO.ResellerId;
+            StoreFilter.Telephone = Reseller_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = Reseller_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = Reseller_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = Reseller_StoreFilterDTO.WardId;
+            StoreFilter.Address = Reseller_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = Reseller_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = Reseller_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = Reseller_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = Reseller_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = Reseller_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = Reseller_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<Reseller_StoreDTO> Reseller_StoreDTOs = Stores
+                .Select(x => new Reseller_StoreDTO(x)).ToList();
+            return Reseller_StoreDTOs;
+        }
     }
 }
 

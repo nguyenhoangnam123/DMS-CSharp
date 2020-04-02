@@ -54,6 +54,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.DeputyName, filter.DeputyName);
             if (filter.Description != null)
                 query = query.Where(q => q.Description, filter.Description);
+            if (filter.OrganizationId != null)
+                query = query.Where(q => q.OrganizationId, filter.OrganizationId);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.ResellerTypeId != null)
@@ -94,6 +96,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.DeputyName, filter.DeputyName);
                 if (filter.Description != null)
                     queryable = queryable.Where(q => q.Description, filter.Description);
+                if (filter.OrganizationId != null)
+                    queryable = queryable.Where(q => q.OrganizationId, filter.OrganizationId);
                 if (filter.StatusId != null)
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
                 if (filter.ResellerTypeId != null)
@@ -144,6 +148,9 @@ namespace DMS.Repositories
                         case ResellerOrder.Description:
                             query = query.OrderBy(q => q.Description);
                             break;
+                        case ResellerOrder.Organization:
+                            query = query.OrderBy(q => q.OrganizationId);
+                            break;
                         case ResellerOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
                             break;
@@ -191,6 +198,9 @@ namespace DMS.Repositories
                         case ResellerOrder.Description:
                             query = query.OrderByDescending(q => q.Description);
                             break;
+                        case ResellerOrder.Organization:
+                            query = query.OrderByDescending(q => q.OrganizationId);
+                            break;
                         case ResellerOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
                             break;
@@ -224,10 +234,25 @@ namespace DMS.Repositories
                 CompanyName = filter.Selects.Contains(ResellerSelect.CompanyName) ? q.CompanyName : default(string),
                 DeputyName = filter.Selects.Contains(ResellerSelect.DeputyName) ? q.DeputyName : default(string),
                 Description = filter.Selects.Contains(ResellerSelect.Description) ? q.Description : default(string),
+                OrganizationId = filter.Selects.Contains(ResellerSelect.Organization) ? q.OrganizationId : default(long),
                 StatusId = filter.Selects.Contains(ResellerSelect.Status) ? q.StatusId : default(long),
                 ResellerTypeId = filter.Selects.Contains(ResellerSelect.ResellerType) ? q.ResellerTypeId : default(long),
                 ResellerStatusId = filter.Selects.Contains(ResellerSelect.ResellerStatus) ? q.ResellerStatusId : default(long),
                 StaffId = filter.Selects.Contains(ResellerSelect.Staff) ? q.StaffId : default(long),
+                Organization = filter.Selects.Contains(ResellerSelect.Organization) && q.Organization != null ? new Organization
+                {
+                    Id = q.Organization.Id,
+                    Code = q.Organization.Code,
+                    Name = q.Organization.Name,
+                    Address = q.Organization.Address,
+                    Latitude = q.Organization.Latitude,
+                    Longitude = q.Organization.Longitude,    
+                    Level = q.Organization.Level,
+                    ParentId = q.Organization.ParentId,
+                    Path = q.Organization.Path,
+                    Phone = q.Organization.Phone,
+                    StatusId = q.Organization.StatusId
+                } : null,
                 ResellerStatus = filter.Selects.Contains(ResellerSelect.ResellerStatus) && q.ResellerStatus != null ? new ResellerStatus
                 {
                     Id = q.ResellerStatus.Id,
@@ -294,10 +319,25 @@ namespace DMS.Repositories
                 CompanyName = x.CompanyName,
                 DeputyName = x.DeputyName,
                 Description = x.Description,
+                OrganizationId = x.OrganizationId,
                 StatusId = x.StatusId,
                 ResellerTypeId = x.ResellerTypeId,
                 ResellerStatusId = x.ResellerStatusId,
                 StaffId = x.StaffId,
+                Organization = x.Organization == null ? null : new Organization
+                {
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    Address = x.Organization.Address,
+                    Latitude = x.Organization.Latitude,
+                    Longitude = x.Organization.Longitude,
+                    Level = x.Organization.Level,
+                    ParentId = x.Organization.ParentId,
+                    Path = x.Organization.Path,
+                    Phone = x.Organization.Phone,
+                    StatusId = x.Organization.StatusId
+                },
                 ResellerStatus = x.ResellerStatus == null ? null : new ResellerStatus
                 {
                     Id = x.ResellerStatus.Id,
@@ -349,6 +389,7 @@ namespace DMS.Repositories
             ResellerDAO.CompanyName = Reseller.CompanyName;
             ResellerDAO.DeputyName = Reseller.DeputyName;
             ResellerDAO.Description = Reseller.Description;
+            ResellerDAO.OrganizationId = Reseller.OrganizationId;
             ResellerDAO.StatusId = Reseller.StatusId;
             ResellerDAO.ResellerTypeId = Reseller.ResellerTypeId;
             ResellerDAO.ResellerStatusId = Reseller.ResellerStatusId;
@@ -377,6 +418,7 @@ namespace DMS.Repositories
             ResellerDAO.CompanyName = Reseller.CompanyName;
             ResellerDAO.DeputyName = Reseller.DeputyName;
             ResellerDAO.Description = Reseller.Description;
+            ResellerDAO.OrganizationId = Reseller.OrganizationId;
             ResellerDAO.StatusId = Reseller.StatusId;
             ResellerDAO.ResellerTypeId = Reseller.ResellerTypeId;
             ResellerDAO.ResellerStatusId = Reseller.ResellerStatusId;
@@ -409,6 +451,7 @@ namespace DMS.Repositories
                 ResellerDAO.CompanyName = Reseller.CompanyName;
                 ResellerDAO.DeputyName = Reseller.DeputyName;
                 ResellerDAO.Description = Reseller.Description;
+                ResellerDAO.OrganizationId = Reseller.OrganizationId;
                 ResellerDAO.StatusId = Reseller.StatusId;
                 ResellerDAO.ResellerTypeId = Reseller.ResellerTypeId;
                 ResellerDAO.ResellerStatusId = Reseller.ResellerStatusId;
