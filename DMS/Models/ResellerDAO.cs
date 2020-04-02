@@ -20,6 +20,7 @@ namespace DMS.Models
         public string CompanyName { get; set; }
         public string DeputyName { get; set; }
         public string Description { get; set; }
+        public long OrganizationId { get; set; }
         public long StatusId { get; set; }
         public long ResellerTypeId { get; set; }
         public long ResellerStatusId { get; set; }
@@ -28,6 +29,7 @@ namespace DMS.Models
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        public virtual OrganizationDAO Organization { get; set; }
         public virtual ResellerStatusDAO ResellerStatus { get; set; }
         public virtual ResellerTypeDAO ResellerType { get; set; }
         public virtual AppUserDAO Staff { get; set; }

@@ -614,6 +614,12 @@ namespace DMS.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.Resellers)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Reseller_Organization");
+
                 entity.HasOne(d => d.ResellerStatus)
                     .WithMany(p => p.Resellers)
                     .HasForeignKey(d => d.ResellerStatusId)

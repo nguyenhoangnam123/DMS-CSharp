@@ -1,12 +1,13 @@
-using Common;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using Common;
+using DMS.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace DMS.Entities
+namespace DMS.Rpc.reseller
 {
-    public class Store : DataEntity, IEquatable<Store>
+    public class Reseller_StoreDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -29,27 +30,37 @@ namespace DMS.Entities
         public string OwnerEmail { get; set; }
         public long StatusId { get; set; }
         public long StoreStatusId { get; set; }
-        public District District { get; set; }
-        public Organization Organization { get; set; }
-        public Store ParentStore { get; set; }
-        public Province Province { get; set; }
-        public Status Status { get; set; }
-        public StoreGrouping StoreGrouping { get; set; }
-        public StoreType StoreType { get; set; }
-        public Ward Ward { get; set; }
-        public List<StoreImageMapping> StoreImageMappings { get; set; }
-
-        public bool Equals(Store other)
+        public Reseller_StoreDTO ParentStore { get; set; }
+        public Reseller_StoreDTO() { }
+        public Reseller_StoreDTO(Store Store)
         {
-            return other != null && Id == other.Id;
-        }
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
+            this.Id = Store.Id;
+            this.Code = Store.Code;
+            this.Name = Store.Name;
+            this.ParentStoreId = Store.ParentStoreId;
+            this.OrganizationId = Store.OrganizationId;
+            this.StoreTypeId = Store.StoreTypeId;
+            this.StoreGroupingId = Store.StoreGroupingId;
+            this.Telephone = Store.Telephone;
+            this.ResellerId = Store.ResellerId;
+            this.ProvinceId = Store.ProvinceId;
+            this.DistrictId = Store.DistrictId;
+            this.WardId = Store.WardId;
+            this.Address = Store.Address;
+            this.DeliveryAddress = Store.DeliveryAddress;
+            this.Latitude = Store.Latitude;
+            this.Longitude = Store.Longitude;
+            this.OwnerName = Store.OwnerName;
+            this.OwnerPhone = Store.OwnerPhone;
+            this.OwnerEmail = Store.OwnerEmail;
+            this.StatusId = Store.StatusId;
+            this.StoreStatusId = Store.StoreStatusId;
+            this.ParentStore = Store.ParentStore == null ? null : new Reseller_StoreDTO(Store.ParentStore);
+            this.Errors = Store.Errors;
         }
     }
 
-    public class StoreFilter : FilterEntity
+    public class Reseller_StoreFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
@@ -72,61 +83,6 @@ namespace DMS.Entities
         public StringFilter OwnerEmail { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter StoreStatusId { get; set; }
-        public List<StoreFilter> OrFilter { get; set; }
         public StoreOrder OrderBy { get; set; }
-        public StoreSelect Selects { get; set; }
-    }
-
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum StoreOrder
-    {
-        Id = 0,
-        Code = 1,
-        Name = 2,
-        ParentStore = 3,
-        Organization = 4,
-        StoreType = 5,
-        StoreGrouping = 6,
-        Telephone = 7,
-        Reseller = 8,
-        Province = 9,
-        District = 10,
-        Ward = 11,
-        Address = 12,
-        DeliveryAddress = 13,
-        Latitude = 14,
-        Longitude = 15,
-        OwnerName = 16,
-        OwnerPhone = 17,
-        OwnerEmail = 18,
-        Status = 19,
-        StoreStatus = 20,
-    }
-
-    [Flags]
-    public enum StoreSelect : long
-    {
-        ALL = E.ALL,
-        Id = E._0,
-        Code = E._1,
-        Name = E._2,
-        ParentStore = E._3,
-        Organization = E._4,
-        StoreType = E._5,
-        StoreGrouping = E._6,
-        Telephone = E._7,
-        Reseller = 8,
-        Province = E._9,
-        District = E._10,
-        Ward = E._11,
-        Address = E._12,
-        DeliveryAddress = E._13,
-        Latitude = E._14,
-        Longitude = E._15,
-        OwnerName = E._16,
-        OwnerPhone = E._17,
-        OwnerEmail = E._18,
-        Status = E._19,
-        StoreStatus = E._20,
     }
 }
