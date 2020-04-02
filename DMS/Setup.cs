@@ -249,6 +249,7 @@ namespace DMS
         {
             InitStatusEnum();
             InitStoreStatusEnum();
+            InitResellerStatusEnum();
             DataContext.SaveChanges();
         }
 
@@ -282,6 +283,50 @@ namespace DMS
                     Id = StatusEnum.LOCKED.Id,
                     Code = StatusEnum.LOCKED.Code,
                     Name = StatusEnum.LOCKED.Name,
+                });
+            }
+        }
+
+        private void InitResellerStatusEnum()
+        {
+            List<ResellerStatusDAO> resellerStatuses = DataContext.ResellerStatus.ToList();
+            if (!resellerStatuses.Any(pt => pt.Id == ResellerStatusEnum.NEW.Id))
+            {
+                DataContext.ResellerStatus.Add(new ResellerStatusDAO
+                {
+                    Id = ResellerStatusEnum.NEW.Id,
+                    Code = ResellerStatusEnum.NEW.Code,
+                    Name = ResellerStatusEnum.NEW.Name,
+                });
+            }
+
+            if (!resellerStatuses.Any(pt => pt.Id == ResellerStatusEnum.PENDING.Id))
+            {
+                DataContext.ResellerStatus.Add(new ResellerStatusDAO
+                {
+                    Id = ResellerStatusEnum.PENDING.Id,
+                    Code = ResellerStatusEnum.PENDING.Code,
+                    Name = ResellerStatusEnum.PENDING.Name,
+                });
+            }
+
+            if (!resellerStatuses.Any(pt => pt.Id == ResellerStatusEnum.APPROVED.Id))
+            {
+                DataContext.ResellerStatus.Add(new ResellerStatusDAO
+                {
+                    Id = ResellerStatusEnum.APPROVED.Id,
+                    Code = ResellerStatusEnum.APPROVED.Code,
+                    Name = ResellerStatusEnum.APPROVED.Name,
+                });
+            }
+
+            if (!resellerStatuses.Any(pt => pt.Id == ResellerStatusEnum.REJECTED.Id))
+            {
+                DataContext.ResellerStatus.Add(new ResellerStatusDAO
+                {
+                    Id = ResellerStatusEnum.REJECTED.Id,
+                    Code = ResellerStatusEnum.REJECTED.Code,
+                    Name = ResellerStatusEnum.REJECTED.Name,
                 });
             }
         }

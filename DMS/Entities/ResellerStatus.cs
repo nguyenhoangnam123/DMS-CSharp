@@ -6,7 +6,7 @@ using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class ResellerStatus : DataEntity, IEquatable<ResellerStatus>
+    public class ResellerStatus : DataEntity,  IEquatable<ResellerStatus>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -28,8 +28,8 @@ namespace DMS.Entities
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public List<ResellerStatusFilter> OrFilter { get; set; }
-        public ResellerStatusOrder OrderBy { get; set; }
-        public ResellerStatusSelect Selects { get; set; }
+        public ResellerStatusOrder OrderBy {get; set;}
+        public ResellerStatusSelect Selects {get; set;}
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -41,7 +41,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum ResellerStatusSelect : long
+    public enum ResellerStatusSelect:long
     {
         ALL = E.ALL,
         Id = E._0,

@@ -17,6 +17,7 @@ namespace DMS.Entities
         public long? StoreGroupingId { get; set; }
         public long? ResellerId { get; set; }
         public string Telephone { get; set; }
+        public long? ResellerId { get; set; }
         public long ProvinceId { get; set; }
         public long DistrictId { get; set; }
         public long WardId { get; set; }
@@ -63,6 +64,7 @@ namespace DMS.Entities
         public IdFilter StoreGroupingId { get; set; }
         public IdFilter ResellerId { get; set; }
         public StringFilter Telephone { get; set; }
+        public IdFilter ResellerId { get; set; }
         public IdFilter ProvinceId { get; set; }
         public IdFilter DistrictId { get; set; }
         public IdFilter WardId { get; set; }
