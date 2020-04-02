@@ -561,8 +561,11 @@ namespace DMS.Repositories
                 ProductDAO.RetailPrice = Product.RetailPrice;
                 ProductDAO.TaxTypeId = Product.TaxTypeId;
                 ProductDAO.StatusId = Product.StatusId;
-                ProductDAO.CreatedAt = StaticParams.DateTimeNow;
-                ProductDAO.UpdatedAt = StaticParams.DateTimeNow;
+                ProductDAO.OtherName = Product.OtherName;
+                ProductDAO.TechnicalName = Product.TechnicalName;
+
+                ProductDAO.CreatedAt = DateTime.Now;
+                ProductDAO.UpdatedAt = DateTime.Now;
                 ProductDAOs.Add(ProductDAO);
             }
             await DataContext.BulkMergeAsync(ProductDAOs);

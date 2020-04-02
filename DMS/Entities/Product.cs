@@ -14,6 +14,7 @@ namespace DMS.Entities
         public string Name { get; set; }
         public string Description { get; set; }
         public string ScanCode { get; set; }
+        public string ERPCode { get; set; }
         public long ProductTypeId { get; set; }
         public long? SupplierId { get; set; }
         public long? BrandId { get; set; }
@@ -118,5 +119,6 @@ namespace DMS.Entities
         OtherName = E._15,
         TechnicalName = E._16,
         Note = E._17,
+        ERPCode = E._18,
     }
 }

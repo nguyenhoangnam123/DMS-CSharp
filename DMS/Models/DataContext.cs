@@ -25,12 +25,16 @@ namespace DMS.Models
         public virtual DbSet<ProductProductGroupingMappingDAO> ProductProductGroupingMapping { get; set; }
         public virtual DbSet<ProductTypeDAO> ProductType { get; set; }
         public virtual DbSet<ProvinceDAO> Province { get; set; }
+        public virtual DbSet<ResellerDAO> Reseller { get; set; }
+        public virtual DbSet<ResellerStatusDAO> ResellerStatus { get; set; }
+        public virtual DbSet<ResellerTypeDAO> ResellerType { get; set; }
         public virtual DbSet<RoleDAO> Role { get; set; }
         public virtual DbSet<SexDAO> Sex { get; set; }
         public virtual DbSet<StatusDAO> Status { get; set; }
         public virtual DbSet<StoreDAO> Store { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
+        public virtual DbSet<StoreStatusDAO> StoreStatus { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
         public virtual DbSet<TaxTypeDAO> TaxType { get; set; }
@@ -576,6 +580,99 @@ namespace DMS.Models
                     .HasConstraintName("FK_Province_Status");
             });
 
+            modelBuilder.Entity<ResellerDAO>(entity =>
+            {
+                entity.Property(e => e.Address)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CompanyName).HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeputyName).HasMaxLength(500);
+
+                entity.Property(e => e.Description).HasMaxLength(1000);
+
+                entity.Property(e => e.Email).HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Phone)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.TaxCode).HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.Resellers)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Reseller_Organization");
+
+                entity.HasOne(d => d.ResellerStatus)
+                    .WithMany(p => p.Resellers)
+                    .HasForeignKey(d => d.ResellerStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Reseller_ResellerStatus");
+
+                entity.HasOne(d => d.ResellerType)
+                    .WithMany(p => p.Resellers)
+                    .HasForeignKey(d => d.ResellerTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Reseller_ResellerType");
+
+                entity.HasOne(d => d.Staff)
+                    .WithMany(p => p.Resellers)
+                    .HasForeignKey(d => d.StaffId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Reseller_AppUser");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Resellers)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Reseller_Status");
+            });
+
+            modelBuilder.Entity<ResellerStatusDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<ResellerTypeDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<RoleDAO>(entity =>
             {
                 entity.ToTable("Role", "PER");
@@ -641,6 +738,10 @@ namespace DMS.Models
                     .HasMaxLength(10)
                     .IsFixedLength();
 
+                entity.Property(e => e.DeliveryLatitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.DeliveryLongitude).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
@@ -686,6 +787,11 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_Province");
 
+                entity.HasOne(d => d.Reseller)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.ResellerId)
+                    .HasConstraintName("FK_Store_Reseller");
+
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.StatusId)
@@ -696,6 +802,12 @@ namespace DMS.Models
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.StoreGroupingId)
                     .HasConstraintName("FK_Store_StoreGrouping");
+
+                entity.HasOne(d => d.StoreStatus)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.StoreStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Store_StoreStatus");
 
                 entity.HasOne(d => d.StoreType)
                     .WithMany(p => p.Stores)
@@ -759,6 +871,17 @@ namespace DMS.Models
                     .HasConstraintName("FK_StoreImageMapping_Store");
             });
 
+            modelBuilder.Entity<StoreStatusDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
             modelBuilder.Entity<StoreTypeDAO>(entity =>
             {
                 entity.Property(e => e.Code)
@@ -796,7 +919,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.Descreption).HasMaxLength(4000);
+                entity.Property(e => e.Description).HasMaxLength(4000);
 
                 entity.Property(e => e.Email).HasMaxLength(50);
 

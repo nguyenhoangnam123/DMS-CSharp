@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Repositories;
 using Helpers;
@@ -20,7 +20,7 @@ namespace DMS.Services.MProduct
         Task<Product> Update(Product Product);
         Task<Product> Delete(Product Product);
         Task<List<Product>> BulkDelete(List<Product> Products);
-        Task<List<Product>> Import(DataFile DataFile);
+        Task<List<Product>> Import(List<Product> Products);
         Task<DataFile> Export(ProductFilter ProductFilter);
         ProductFilter ToFilter(ProductFilter ProductFilter);
     }
@@ -185,71 +185,38 @@ namespace DMS.Services.MProduct
             }
         }
 
-        public async Task<List<Product>> Import(DataFile DataFile)
+        public async Task<List<Product>> Import(List<Product> Products)
         {
-            List<Product> Products = new List<Product>();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
-            {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return Products;
-                int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int SupplierCodeColumn = 2 + StartColumn;
-                int NameColumn = 3 + StartColumn;
-                int DescriptionColumn = 4 + StartColumn;
-                int ScanCodeColumn = 5 + StartColumn;
-                int ProductTypeIdColumn = 6 + StartColumn;
-                int SupplierIdColumn = 7 + StartColumn;
-                int BrandIdColumn = 8 + StartColumn;
-                int UnitOfMeasureIdColumn = 9 + StartColumn;
-                int UnitOfMeasureGroupingIdColumn = 10 + StartColumn;
-                int SalePriceColumn = 11 + StartColumn;
-                int RetailPriceColumn = 12 + StartColumn;
-                int TaxTypeIdColumn = 13 + StartColumn;
-                int StatusIdColumn = 14 + StartColumn;
-                for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
-                {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, IdColumn].Value?.ToString()))
-                        break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string SupplierCodeValue = worksheet.Cells[i + StartRow, SupplierCodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string DescriptionValue = worksheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
-                    string ScanCodeValue = worksheet.Cells[i + StartRow, ScanCodeColumn].Value?.ToString();
-                    string ProductTypeIdValue = worksheet.Cells[i + StartRow, ProductTypeIdColumn].Value?.ToString();
-                    string SupplierIdValue = worksheet.Cells[i + StartRow, SupplierIdColumn].Value?.ToString();
-                    string BrandIdValue = worksheet.Cells[i + StartRow, BrandIdColumn].Value?.ToString();
-                    string UnitOfMeasureIdValue = worksheet.Cells[i + StartRow, UnitOfMeasureIdColumn].Value?.ToString();
-                    string UnitOfMeasureGroupingIdValue = worksheet.Cells[i + StartRow, UnitOfMeasureGroupingIdColumn].Value?.ToString();
-                    string SalePriceValue = worksheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
-                    string RetailPriceValue = worksheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
-                    string TaxTypeIdValue = worksheet.Cells[i + StartRow, TaxTypeIdColumn].Value?.ToString();
-                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    Product Product = new Product();
-                    Product.Code = CodeValue;
-                    Product.SupplierCode = SupplierCodeValue;
-                    Product.Name = NameValue;
-                    Product.Description = DescriptionValue;
-                    Product.ScanCode = ScanCodeValue;
-                    Product.SalePrice = decimal.TryParse(SalePriceValue, out decimal SalePrice) ? SalePrice : 0;
-                    Product.RetailPrice = decimal.TryParse(RetailPriceValue, out decimal RetailPrice) ? RetailPrice : 0;
-                    Products.Add(Product);
-                }
-            }
-
+            var ProductProductGroupingMappings = new List<ProductProductGroupingMapping>();
             if (!await ProductValidator.Import(Products))
                 return Products;
-
             try
             {
                 await UOW.Begin();
                 await UOW.ProductRepository.BulkMerge(Products);
+                //Lấy danh sách product để check the code lấy ra productId vừa mới thêm
+                var listProductInDB = (await UOW.ProductRepository.List(new ProductFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = ProductSelect.ALL
+                }));
+                // Add reference ProductProductGroupingMapping
+                foreach (var Product in Products)
+                {
+                    var p = listProductInDB.Where(p => p.Code == Product.Code).FirstOrDefault();
+                    Product.Id = p != null ? p.Id : 0;
+                    if (Product.ProductProductGroupingMappings.Any())
+                    {
+                        foreach (var ProductProductGroupingMapping in Product.ProductProductGroupingMappings)
+                        {
+                            ProductProductGroupingMapping.ProductId = Product.Id;
+                            ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
+                        } 
+                    }
+                }
+                await UOW.ProductProductGroupingMappingRepository.BulkMerge(ProductProductGroupingMappings);
                 await UOW.Commit();
-
                 await Logging.CreateAuditLog(Products, new { }, nameof(ProductService));
                 return Products;
             }

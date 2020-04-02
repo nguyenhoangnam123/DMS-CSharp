@@ -20,6 +20,7 @@ namespace DMS.Repositories
         IPermissionRepository PermissionRepository { get; }
         IProductRepository ProductRepository { get; }
         IProductGroupingRepository ProductGroupingRepository { get; }
+        IProductProductGroupingMappingRepository ProductProductGroupingMappingRepository { get; }
         IProductTypeRepository ProductTypeRepository { get; }
         IProvinceRepository ProvinceRepository { get; }
         IRoleRepository RoleRepository { get; }
@@ -52,6 +53,7 @@ namespace DMS.Repositories
         public IPermissionRepository PermissionRepository { get; private set; }
         public IProductRepository ProductRepository { get; private set; }
         public IProductGroupingRepository ProductGroupingRepository { get; private set; }
+        public IProductProductGroupingMappingRepository ProductProductGroupingMappingRepository { get; private set; }
         public IProductTypeRepository ProductTypeRepository { get; private set; }
         public IProvinceRepository ProvinceRepository { get; private set; }
         public IRoleRepository RoleRepository { get; private set; }
@@ -83,6 +85,7 @@ namespace DMS.Repositories
             PermissionRepository = new PermissionRepository(DataContext);
             ProductRepository = new ProductRepository(DataContext);
             ProductGroupingRepository = new ProductGroupingRepository(DataContext);
+            ProductProductGroupingMappingRepository = new ProductProductGroupingMappingRepository(DataContext);
             ProductTypeRepository = new ProductTypeRepository(DataContext);
             ProvinceRepository = new ProvinceRepository(DataContext);
             RoleRepository = new RoleRepository(DataContext);

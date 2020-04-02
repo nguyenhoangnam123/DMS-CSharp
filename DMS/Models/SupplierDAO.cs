@@ -23,7 +23,7 @@ namespace DMS.Models
         public string OwnerName { get; set; }
         public long PersonInChargeId { get; set; }
         public long StatusId { get; set; }
-        public string Descreption { get; set; }
+        public string Description { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
