@@ -354,12 +354,12 @@ namespace DMS.Rpc.product
                     Product.Code = CodeValue;
                     Product.Name = NameValue;
                     //Thêm vào bảng ProductProductGroupingMapping
-                    ProductGrouping ProductGrouping = ProductGroupings.FirstOrDefault(p =>!string.IsNullOrEmpty(p.Name) && p.Name.Trim().ToLower() == ProductGroupNameValue.Trim().ToLower());
+                    ProductGrouping ProductGrouping = ProductGroupings.FirstOrDefault(p => !string.IsNullOrEmpty(p.Name) && p.Name.Trim().ToLower() == ProductGroupNameValue.Trim().ToLower());
                     if (ProductGrouping != null)
                     {
                         ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
                         List<ProductProductGroupingMapping> ProductProductGroupingMappings = new List<ProductProductGroupingMapping>();
-                         
+
                         ProductProductGroupingMapping.ProductGroupingId = ProductGrouping.Id;
                         ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
                         Product.ProductProductGroupingMappings = ProductProductGroupingMappings;
@@ -415,25 +415,28 @@ namespace DMS.Rpc.product
                 Product Product = Products[i];
                 if (Products.Where(p => p.Code == Product.Code).Count() >= 2)
                 {
-                    Error += $"Dòng {i + 1} có lỗi:";
-                    Error += Product.Errors[nameof(Product.Code)] + " trống hoặc đã tồn tại trong file";
+                    errorCode = true;
+                    Error = $"Dòng {i + 1} có lỗi:";
+                    Error += "Code trống hoặc đã tồn tại trong file,";
+                    Errors.Add(Error);
                 }
                 if (Products.Where(p => p.ScanCode == Product.ScanCode).Count() >= 2)
                 {
                     errorCode = true;
-                    Error += Product.Errors[nameof(Product.ScanCode)] + " trống hoặc đã tồn tại trong file";
+                    Error = $"Dòng {i + 1} có lỗi:";
+                    Error += "ScanCode trống hoặc đã tồn tại trong file,";
+                    Errors.Add(Error);
                 }
                 if (Products.Where(p => p.ERPCode == Product.ERPCode).Count() >= 2)
                 {
                     errorCode = true;
-                    Error += Product.Errors[nameof(Product.ERPCode)] + " trống hoặc đã tồn tại trong file";
+                    Error = $"Dòng {i + 1} có lỗi:";
+                    Error += "ERPCode trống hoặc đã tồn tại trong file,";
+                    Errors.Add(Error);
                 }
             }
             if (errorCode == true)
-            {
-                Errors.Add(Error);
                 return BadRequest(Errors);
-            }
 
             #endregion
 
