@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -43,6 +44,7 @@ namespace DMS
                 });
             }
             Configuration = builder.Build();
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
 
         public IConfiguration Configuration { get; }
