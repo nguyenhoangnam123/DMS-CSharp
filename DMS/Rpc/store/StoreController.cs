@@ -164,7 +164,7 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            Store.StatusId = StoreStatusEnum.NEW.Id;
+            Store.StoreStatusId = StoreStatusEnum.NEW.Id;
             Store = await StoreService.Create(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
@@ -183,7 +183,7 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            Store.StatusId = StoreStatusEnum.PENDING.Id;
+            Store.StoreStatusId = StoreStatusEnum.PENDING.Id;
             Store = await StoreService.Update(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
@@ -202,7 +202,7 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            Store.StatusId = StoreStatusEnum.APPROVED.Id;
+            Store.StoreStatusId = StoreStatusEnum.APPROVED.Id;
             Store = await StoreService.Update(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
@@ -221,7 +221,7 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            Store.StatusId = StoreStatusEnum.REJECTED.Id;
+            Store.StoreStatusId = StoreStatusEnum.REJECTED.Id;
             Store = await StoreService.Update(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
@@ -411,12 +411,7 @@ namespace DMS.Rpc.store
                     Store.District = Districts.Where(x => x.Code == DistrictCodeValue).FirstOrDefault();
                     Store.Ward = Wards.Where(x => x.Code == WardCodeValue).FirstOrDefault();
                     Store.Status = Statuses.Where(x => x.Code == StatusCodeValue).FirstOrDefault();
-                    Store.StoreStatus = new StoreStatus
-                    {
-                        Id = StoreStatusEnum.PENDING.Id,
-                        Code = StoreStatusEnum.PENDING.Code,
-                        Name = StoreStatusEnum.PENDING.Name,
-                    };
+                    Store.StoreStatusId = StoreStatusEnum.PENDING.Id;
                     Stores.Add(Store);
                 }
             }
