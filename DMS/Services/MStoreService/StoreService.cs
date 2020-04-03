@@ -213,6 +213,7 @@ namespace DMS.Services.MStore
                     else
                     {
                         item.Id = 0;
+                        item.StatusId = StatusEnum.ACTIVE.Id;
                     }
                 }
                 await UOW.StoreRepository.BulkMerge(Stores);
