@@ -563,8 +563,7 @@ namespace DMS.Rpc.product
                         string.Empty,
                         string.Empty,
                         string.Empty,
-                    }
-                        );
+                    });
                 }
                 excel.GenerateWorksheet("Product", ProductHeader, data);
                 #endregion
@@ -595,8 +594,8 @@ namespace DMS.Rpc.product
                                 Item.SalePrice,
                                 Item.RetailPrice,
                                 });
-                    excel.GenerateWorksheet("Item", ItemHeader, data);
                 }
+                excel.GenerateWorksheet("Item", ItemHeader, data);
                 #endregion 
                 excel.Save();
             }
