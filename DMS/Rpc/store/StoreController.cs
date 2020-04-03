@@ -352,7 +352,6 @@ namespace DMS.Rpc.store
                 int OwnerEmailColumn = 19 + StartColumn;
 
                 int StatusCodeColumn = 20 + StartColumn;
-                int StoreStatusCodeColumn = 21 + StartColumn;
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
@@ -378,7 +377,6 @@ namespace DMS.Rpc.store
                     string OwnerPhoneValue = worksheet.Cells[i + StartRow, OwnerPhoneColumn].Value?.ToString();
                     string OwnerEmailValue = worksheet.Cells[i + StartRow, OwnerEmailColumn].Value?.ToString();
                     string StatusCodeValue = worksheet.Cells[i + StartRow, StatusCodeColumn].Value?.ToString();
-                    string StoreStatusCodeValue = worksheet.Cells[i + StartRow, StoreStatusCodeColumn].Value?.ToString();
                     if (string.IsNullOrEmpty(CodeValue))
                         continue;
 

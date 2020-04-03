@@ -208,27 +208,6 @@ namespace DMS.Services.MStore
                     if (Store != null)
                     {
                         item.Id = Store.Id;
-                        item.Code = Store.Code;
-                        item.Name = Store.Name;
-                        item.Address = Store.Address;
-                        item.Telephone = Store.Telephone;
-                        item.ResellerId = Store.ResellerId;
-                        item.ProvinceId = Store.ProvinceId;
-                        item.DistrictId = Store.DistrictId;
-                        item.WardId = Store.WardId;
-                        item.Longitude = Store.Longitude;
-                        item.Latitude = Store.Latitude;
-                        item.DeliveryLongitude = Store.DeliveryLongitude;
-                        item.DeliveryLatitude = Store.DeliveryLatitude;
-                        item.DeliveryAddress = Store.DeliveryAddress;
-                        item.OrganizationId = Store.OrganizationId;
-                        item.OwnerEmail = Store.OwnerEmail;
-                        item.OwnerName = Store.OwnerName;
-                        item.OwnerPhone = Store.OwnerPhone;
-                        item.ParentStoreId = Store.ParentStoreId;
-                        item.StoreGroupingId = Store.StoreGroupingId;
-                        item.StoreStatusId = StoreStatusEnum.PENDING.Id;
-                        item.StoreTypeId = Store.StoreTypeId;
                         item.StatusId = StatusEnum.ACTIVE.Id;
                     }
                     else
