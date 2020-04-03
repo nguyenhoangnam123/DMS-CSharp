@@ -24,6 +24,8 @@ namespace DMS.Entities
         public string DeliveryAddress { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
+        public decimal? DeliveryLatitude { get; set; }
+        public decimal? DeliveryLongitude { get; set; }
         public string OwnerName { get; set; }
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
@@ -32,10 +34,12 @@ namespace DMS.Entities
         public District District { get; set; }
         public Organization Organization { get; set; }
         public Store ParentStore { get; set; }
+        public Reseller Reseller { get; set; }
         public Province Province { get; set; }
         public Status Status { get; set; }
         public StoreGrouping StoreGrouping { get; set; }
         public StoreType StoreType { get; set; }
+        public StoreStatus StoreStatus { get; set; }
         public Ward Ward { get; set; }
         public List<StoreImageMapping> StoreImageMappings { get; set; }
 
@@ -67,6 +71,8 @@ namespace DMS.Entities
         public StringFilter DeliveryAddress { get; set; }
         public DecimalFilter Latitude { get; set; }
         public DecimalFilter Longitude { get; set; }
+        public DecimalFilter DeliveryLatitude { get; set; }
+        public DecimalFilter DeliveryLongitude { get; set; }
         public StringFilter OwnerName { get; set; }
         public StringFilter OwnerPhone { get; set; }
         public StringFilter OwnerEmail { get; set; }
@@ -87,8 +93,8 @@ namespace DMS.Entities
         Organization = 4,
         StoreType = 5,
         StoreGrouping = 6,
-        Telephone = 7,
-        Reseller = 8,
+        Reseller = 7,
+        Telephone = 8,
         Province = 9,
         District = 10,
         Ward = 11,
@@ -96,11 +102,13 @@ namespace DMS.Entities
         DeliveryAddress = 13,
         Latitude = 14,
         Longitude = 15,
-        OwnerName = 16,
-        OwnerPhone = 17,
-        OwnerEmail = 18,
-        Status = 19,
-        StoreStatus = 20,
+        DeliveryLatitude = 16,
+        DeliveryLongitude = 17,
+        OwnerName = 18,
+        OwnerPhone = 19,
+        OwnerEmail = 20,
+        Status = 21,
+        StoreStatus = 22,
     }
 
     [Flags]
@@ -114,8 +122,8 @@ namespace DMS.Entities
         Organization = E._4,
         StoreType = E._5,
         StoreGrouping = E._6,
-        Telephone = E._7,
-        Reseller = 8,
+        Reseller = E._6,
+        Telephone = E._8,
         Province = E._9,
         District = E._10,
         Ward = E._11,
@@ -123,10 +131,12 @@ namespace DMS.Entities
         DeliveryAddress = E._13,
         Latitude = E._14,
         Longitude = E._15,
-        OwnerName = E._16,
-        OwnerPhone = E._17,
-        OwnerEmail = E._18,
-        Status = E._19,
-        StoreStatus = E._20,
+        DeliveryLatitude = E._16,
+        DeliveryLongitude = E._17,
+        OwnerName = E._18,
+        OwnerPhone = E._19,
+        OwnerEmail = E._20,
+        Status = E._21,
+        StoreStatus = E._22,
     }
 }
