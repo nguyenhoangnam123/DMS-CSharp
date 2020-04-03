@@ -15,7 +15,6 @@ namespace DMS.Services.MStore
         Task<bool> Delete(Store Store);
         Task<bool> BulkDelete(List<Store> Stores);
         Task<bool> Import(List<Store> Stores);
-        Task<bool> BulkMergeParentStore(List<Store> Stores);
     }
 
     public class StoreValidator : IStoreValidator
@@ -165,28 +164,6 @@ namespace DMS.Services.MStore
                 if (count == 0)
                     Store.AddError(nameof(StoreValidator), nameof(Store.ParentStoreId), ErrorCode.ParentStoreNotExisted);
                 return count != 0;
-            }
-            return true;
-        }
-        public async Task<bool> BulkMergeParentStore(List<Store> Stores)
-        {
-            foreach (Store Store in Stores)
-            {
-                StoreFilter StoreFilter = new StoreFilter
-                {
-                    Skip = 0,
-                    Take = 10,
-                    Id = new IdFilter { Equal = Store.ParentStoreId },
-                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
-                    Selects = StoreSelect.Id
-                };
-
-                int count = await UOW.StoreRepository.Count(StoreFilter);
-                if (count == 0)
-                {
-                    Store.AddError(nameof(StoreValidator), nameof(Store.ParentStoreId), ErrorCode.ParentStoreNotExisted);
-                    return false;
-                }
             }
             return true;
         }
