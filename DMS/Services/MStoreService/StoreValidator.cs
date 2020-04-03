@@ -14,7 +14,7 @@ namespace DMS.Services.MStore
         Task<bool> Update(Store Store);
         Task<bool> Delete(Store Store);
         Task<bool> BulkDelete(List<Store> Stores);
-        Task<bool> BulkMerge(List<Store> Stores);
+        Task<bool> Import(List<Store> Stores);
         Task<bool> BulkMergeParentStore(List<Store> Stores);
     }
 
@@ -34,6 +34,7 @@ namespace DMS.Services.MStore
             StoreTypeEmpty,
             StoreGroupingNotExisted,
             TelephoneOverLength,
+            ResellerNotExisted,
             ProvinceNotExisted,
             DistrictNotExisted,
             WardNotExisted,
@@ -247,7 +248,28 @@ namespace DMS.Services.MStore
             return true;
         }
         #endregion
+        #region Reseller
+        private async Task<bool> ValidateResellerId(Store Store)
+        {
+            if (Store.ResellerId != 0)
+            {
+                ResellerFilter ResellerFilter = new ResellerFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = Store.Id },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
+                    Selects = ResellerSelect.Id
+                };
 
+                int count = await UOW.ResellerRepository.Count(ResellerFilter);
+                if (count == 0)
+                    Store.AddError(nameof(StoreValidator), nameof(Store.ResellerId), ErrorCode.ResellerNotExisted);
+                return count != 0;
+            }
+            return true;
+        }
+        #endregion
         #region Province + District + Ward
         private async Task<bool> ValidateProvinceId(Store Store)
         {
@@ -403,6 +425,7 @@ namespace DMS.Services.MStore
             await ValidateStoreTypeId(Store);
             await ValidateStoreGroupingId(Store);
             await ValidatePhone(Store);
+            await ValidateResellerId(Store);
             await ValidateProvinceId(Store);
             await ValidateDistrictId(Store);
             await ValidateWardId(Store);
@@ -427,6 +450,7 @@ namespace DMS.Services.MStore
                 await ValidateStoreTypeId(Store);
                 await ValidateStoreGroupingId(Store);
                 await ValidatePhone(Store);
+                await ValidateResellerId(Store);
                 await ValidateProvinceId(Store);
                 await ValidateDistrictId(Store);
                 await ValidateWardId(Store);
@@ -469,7 +493,7 @@ namespace DMS.Services.MStore
             return false;
         }
 
-        public async Task<bool> BulkMerge(List<Store> Stores)
+        public async Task<bool> Import(List<Store> Stores)
         {
             var listCodeInDB = (await UOW.StoreRepository.List(new StoreFilter
             {
@@ -478,11 +502,77 @@ namespace DMS.Services.MStore
                 Selects = StoreSelect.Code
             })).Select(e => e.Code);
 
+            var listOrganizationCodeInDB = (await UOW.OrganizationRepository.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Code
+            })).Select(e => e.Code);
+            var listStoreTypeCodeInDB = (await UOW.StoreTypeRepository.List(new StoreTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreTypeSelect.Code
+            })).Select(e => e.Code);
+            var listStoreGroupingCodeInDB = (await UOW.StoreGroupingRepository.List(new StoreGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreGroupingSelect.Code
+            })).Select(e => e.Code);
+            var listProvinceCodeInDB = (await UOW.ProvinceRepository.List(new ProvinceFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProvinceSelect.Code
+            })).Select(e => e.Code);
+            var listDistrictCodeInDB = (await UOW.DistrictRepository.List(new DistrictFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = DistrictSelect.Code
+            })).Select(e => e.Code);
+            var listWardCodeInDB = (await UOW.WardRepository.List(new WardFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = WardSelect.Code
+            })).Select(e => e.Code);
             foreach (var Store in Stores)
             {
                 if (listCodeInDB.Contains(Store.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeExisted);
+                    return false;
+                }
+                if (listOrganizationCodeInDB.Contains(Store.Organization.Code))
+                {
+                    Store.AddError(nameof(StoreValidator), nameof(Store.Organization), ErrorCode.OrganizationNotExisted);
+                    return false;
+                }
+                if (listProvinceCodeInDB.Contains(Store.Province.Code))
+                {
+                    Store.AddError(nameof(StoreValidator), nameof(Store.Province), ErrorCode.ProvinceNotExisted);
+                    return false;
+                }
+                if (listDistrictCodeInDB.Contains(Store.District.Code))
+                {
+                    Store.AddError(nameof(StoreValidator), nameof(Store.District), ErrorCode.DistrictNotExisted);
+                    return false;
+                }
+                if (listWardCodeInDB.Contains(Store.Ward.Code))
+                {
+                    Store.AddError(nameof(StoreValidator), nameof(Store.Ward), ErrorCode.WardNotExisted);
+                    return false;
+                }
+                if (listStoreGroupingCodeInDB.Contains(Store.StoreGrouping.Code))
+                {
+                    Store.AddError(nameof(StoreValidator), nameof(Store.StoreGrouping), ErrorCode.StoreGroupingNotExisted);
+                    return false;
+                }
+                if (listStoreTypeCodeInDB.Contains(Store.StoreType.Code))
+                {
+                    Store.AddError(nameof(StoreValidator), nameof(Store.StoreType), ErrorCode.StoreTypeNotExisted);
                     return false;
                 }
 
@@ -494,13 +584,7 @@ namespace DMS.Services.MStore
                 if (!await (ValidateOwnerName(Store))) return false;
                 if (!await (ValidateOwnerPhone(Store))) return false;
                 if (!await (ValidateOwnerEmail(Store))) return false;
-                if (!await (ValidateOrganizationId(Store))) return false;
-                if (!await (ValidateStoreTypeId(Store))) return false;
-                if (!await (ValidateStoreGroupingId(Store))) return false;
-                if (!await (ValidateProvinceId(Store))) return false;
-                if (!await (ValidateDistrictId(Store))) return false;
-                if (!await (ValidateWardId(Store))) return false;
-                if (!await (ValidateStatusId(Store))) return false;
+                
             }
             return true;
         }

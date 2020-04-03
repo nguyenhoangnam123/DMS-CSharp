@@ -354,6 +354,24 @@ namespace DMS.Repositories
                     StatusId = q.ParentStore.StatusId,
                     StoreStatusId = q.ParentStore.StoreStatusId,
                 } : null,
+                Reseller = filter.Selects.Contains(StoreSelect.Reseller) && q.Reseller != null ? new Reseller
+                {
+                    Id = q.Reseller.Id,
+                    Name = q.Reseller.Name,
+                    Code = q.Reseller.Code,
+                    Email = q.Reseller.Email,
+                    Phone = q.Reseller.Phone,
+                    CompanyName = q.Reseller.CompanyName,
+                    DeputyName = q.Reseller.DeputyName,
+                    Address = q.Reseller.Address,
+                    Description = q.Reseller.Description,
+                    OrganizationId = q.Reseller.OrganizationId,
+                    ResellerStatusId = q.Reseller.ResellerStatusId,
+                    ResellerTypeId = q.Reseller.ResellerTypeId,
+                    StaffId = q.Reseller.StaffId,
+                    TaxCode = q.Reseller.TaxCode,
+                    StatusId = q.Reseller.StatusId,
+                } : null,
                 Province = filter.Selects.Contains(StoreSelect.Province) && q.Province != null ? new Province
                 {
                     Id = q.Province.Id,
@@ -488,6 +506,24 @@ namespace DMS.Repositories
                     Priority = x.Province.Priority,
                     StatusId = x.Province.StatusId,
                 },
+                Reseller = x.Reseller == null ? null : new Reseller
+                {
+                    Id = x.Reseller.Id,
+                    Name = x.Reseller.Name,
+                    Code = x.Reseller.Code,
+                    Email = x.Reseller.Email,
+                    Phone = x.Reseller.Phone,
+                    CompanyName = x.Reseller.CompanyName,
+                    DeputyName = x.Reseller.DeputyName,
+                    Address = x.Reseller.Address,
+                    Description = x.Reseller.Description,
+                    OrganizationId = x.Reseller.OrganizationId,
+                    ResellerStatusId = x.Reseller.ResellerStatusId,
+                    ResellerTypeId = x.Reseller.ResellerTypeId,
+                    StaffId = x.Reseller.StaffId,
+                    TaxCode = x.Reseller.TaxCode,
+                    StatusId = x.Reseller.StatusId,
+                },
                 Status = x.Status == null ? null : new Status
                 {
                     Id = x.Status.Id,
@@ -535,6 +571,7 @@ namespace DMS.Repositories
             StoreDAO.OrganizationId = Store.OrganizationId;
             StoreDAO.StoreTypeId = Store.StoreTypeId;
             StoreDAO.StoreGroupingId = Store.StoreGroupingId;
+            StoreDAO.ResellerId = Store.ResellerId;
             StoreDAO.Telephone = Store.Telephone;
             StoreDAO.ProvinceId = Store.ProvinceId;
             StoreDAO.DistrictId = Store.DistrictId;
@@ -570,6 +607,7 @@ namespace DMS.Repositories
             StoreDAO.StoreTypeId = Store.StoreTypeId;
             StoreDAO.StoreGroupingId = Store.StoreGroupingId;
             StoreDAO.Telephone = Store.Telephone;
+            StoreDAO.ResellerId = Store.ResellerId;
             StoreDAO.ProvinceId = Store.ProvinceId;
             StoreDAO.DistrictId = Store.DistrictId;
             StoreDAO.WardId = Store.WardId;
@@ -608,6 +646,7 @@ namespace DMS.Repositories
                 StoreDAO.StoreTypeId = Store.StoreTypeId;
                 StoreDAO.StoreGroupingId = Store.StoreGroupingId;
                 StoreDAO.Telephone = Store.Telephone;
+                StoreDAO.ResellerId = Store.ResellerId;
                 StoreDAO.ProvinceId = Store.ProvinceId;
                 StoreDAO.DistrictId = Store.DistrictId;
                 StoreDAO.WardId = Store.WardId;

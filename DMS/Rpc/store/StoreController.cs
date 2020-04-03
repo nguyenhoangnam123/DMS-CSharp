@@ -4,6 +4,7 @@ using DMS.Enums;
 using DMS.Services.MDistrict;
 using DMS.Services.MOrganization;
 using DMS.Services.MProvince;
+using DMS.Services.MReseller;
 using DMS.Services.MStatus;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
@@ -46,6 +47,9 @@ namespace DMS.Rpc.store
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
         public const string SingleListStoreType = Default + "/single-list-store-type";
         public const string SingleListWard = Default + "/single-list-ward";
+
+        public const string ListReseller = Default + "/list-reseller";
+        public const string CountReseller = Default + "/count-reseller";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(StoreFilter.Id), FieldType.ID },
@@ -55,6 +59,7 @@ namespace DMS.Rpc.store
             { nameof(StoreFilter.OrganizationId), FieldType.ID },
             { nameof(StoreFilter.StoreTypeId), FieldType.ID },
             { nameof(StoreFilter.StoreGroupingId), FieldType.ID },
+            { nameof(StoreFilter.ResellerId), FieldType.ID },
             { nameof(StoreFilter.Telephone), FieldType.STRING },
             { nameof(StoreFilter.ProvinceId), FieldType.ID },
             { nameof(StoreFilter.DistrictId), FieldType.ID },
@@ -63,10 +68,13 @@ namespace DMS.Rpc.store
             { nameof(StoreFilter.DeliveryAddress), FieldType.STRING },
             { nameof(StoreFilter.Latitude), FieldType.DECIMAL },
             { nameof(StoreFilter.Longitude), FieldType.DECIMAL },
+            { nameof(StoreFilter.DeliveryLatitude), FieldType.DECIMAL },
+            { nameof(StoreFilter.DeliveryLongitude), FieldType.DECIMAL },
             { nameof(StoreFilter.OwnerName), FieldType.STRING },
             { nameof(StoreFilter.OwnerPhone), FieldType.STRING },
             { nameof(StoreFilter.OwnerEmail), FieldType.STRING },
             { nameof(StoreFilter.StatusId), FieldType.ID },
+            { nameof(StoreFilter.StoreStatusId), FieldType.ID },
         };
     }
 
@@ -75,6 +83,7 @@ namespace DMS.Rpc.store
         private IDistrictService DistrictService;
         private IOrganizationService OrganizationService;
         private IProvinceService ProvinceService;
+        private IResellerService ResellerService;
         private IStatusService StatusService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
@@ -85,6 +94,7 @@ namespace DMS.Rpc.store
             IDistrictService DistrictService,
             IOrganizationService OrganizationService,
             IProvinceService ProvinceService,
+            IResellerService ResellerService,
             IStatusService StatusService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
@@ -96,6 +106,7 @@ namespace DMS.Rpc.store
             this.DistrictService = DistrictService;
             this.OrganizationService = OrganizationService;
             this.ProvinceService = ProvinceService;
+            this.ResellerService = ResellerService;
             this.StatusService = StatusService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
@@ -243,11 +254,23 @@ namespace DMS.Rpc.store
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            DataFile DataFile = new DataFile
+            {
+                Name = file.FileName,
+                Content = file.OpenReadStream(),
+            };
             List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = OrganizationSelect.Id | OrganizationSelect.Code
+            });
+
+            List<Reseller> Resellers = await ResellerService.List(new ResellerFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ResellerSelect.Id | ResellerSelect.Code
             });
 
             List<StoreType> StoreTypes = await StoreTypeService.List(new StoreTypeFilter
@@ -292,12 +315,6 @@ namespace DMS.Rpc.store
                 Selects = StatusSelect.Id | StatusSelect.Code
             });
 
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
-
             List<Store> Stores = new List<Store>();
             using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
             {
@@ -316,22 +333,26 @@ namespace DMS.Rpc.store
                 int StoreGroupingCodeColumn = 5 + StartColumn;
 
                 int TelephoneColumn = 6 + StartColumn;
+                int ResellerCodeColumn = 7 + StartColumn;
 
-                int ProvinceCodeColumn = 7 + StartColumn;
-                int DistrictCodeColumn = 8 + StartColumn;
-                int WardCodeColumn = 9 + StartColumn;
+                int ProvinceCodeColumn = 8 + StartColumn;
+                int DistrictCodeColumn = 9 + StartColumn;
+                int WardCodeColumn = 10 + StartColumn;
 
-                int AddressColumn = 10 + StartColumn;
-                int DeliveryAddressColumn = 11 + StartColumn;
+                int AddressColumn = 11 + StartColumn;
+                int DeliveryAddressColumn = 12 + StartColumn;
 
-                int LatitudeColumn = 12 + StartColumn;
-                int LongitudeColumn = 13 + StartColumn;
+                int LatitudeColumn = 13 + StartColumn;
+                int LongitudeColumn = 14 + StartColumn;
+                int DeliveryLatitudeColumn = 15 + StartColumn;
+                int DeliveryLongitudeColumn = 16 + StartColumn;
 
-                int OwnerNameColumn = 14 + StartColumn;
-                int OwnerPhoneColumn = 15 + StartColumn;
-                int OwnerEmailColumn = 16 + StartColumn;
+                int OwnerNameColumn = 17 + StartColumn;
+                int OwnerPhoneColumn = 18 + StartColumn;
+                int OwnerEmailColumn = 19 + StartColumn;
 
-                int StatusCodeColumn = 17 + StartColumn;
+                int StatusCodeColumn = 20 + StartColumn;
+                int StoreStatusCodeColumn = 21 + StartColumn;
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
@@ -343,6 +364,7 @@ namespace DMS.Rpc.store
                     string StoreTypeCodeValue = worksheet.Cells[i + StartRow, StoreTypeCodeColumn].Value?.ToString();
                     string StoreGroupingCodeValue = worksheet.Cells[i + StartRow, StoreGroupingCodeColumn].Value?.ToString();
                     string TelephoneValue = worksheet.Cells[i + StartRow, TelephoneColumn].Value?.ToString();
+                    string ResellerCodeValue = worksheet.Cells[i + StartRow, ResellerCodeColumn].Value?.ToString();
                     string ProvinceCodeValue = worksheet.Cells[i + StartRow, ProvinceCodeColumn].Value?.ToString();
                     string DistrictCodeValue = worksheet.Cells[i + StartRow, DistrictCodeColumn].Value?.ToString();
                     string WardCodeValue = worksheet.Cells[i + StartRow, WardCodeColumn].Value?.ToString();
@@ -350,10 +372,13 @@ namespace DMS.Rpc.store
                     string DeliveryAddressValue = worksheet.Cells[i + StartRow, DeliveryAddressColumn].Value?.ToString();
                     string LatitudeValue = worksheet.Cells[i + StartRow, LatitudeColumn].Value?.ToString();
                     string LongitudeValue = worksheet.Cells[i + StartRow, LongitudeColumn].Value?.ToString();
+                    string DeliveryLatitudeValue = worksheet.Cells[i + StartRow, DeliveryLatitudeColumn].Value?.ToString();
+                    string DeliveryLongitudeValue = worksheet.Cells[i + StartRow, DeliveryLongitudeColumn].Value?.ToString();
                     string OwnerNameValue = worksheet.Cells[i + StartRow, OwnerNameColumn].Value?.ToString();
                     string OwnerPhoneValue = worksheet.Cells[i + StartRow, OwnerPhoneColumn].Value?.ToString();
                     string OwnerEmailValue = worksheet.Cells[i + StartRow, OwnerEmailColumn].Value?.ToString();
                     string StatusCodeValue = worksheet.Cells[i + StartRow, StatusCodeColumn].Value?.ToString();
+                    string StoreStatusCodeValue = worksheet.Cells[i + StartRow, StoreStatusCodeColumn].Value?.ToString();
                     if (string.IsNullOrEmpty(CodeValue))
                         continue;
 
@@ -365,6 +390,8 @@ namespace DMS.Rpc.store
                     Store.DeliveryAddress = DeliveryAddressValue;
                     Store.Latitude = decimal.TryParse(LatitudeValue, out decimal Latitude) ? Latitude : 0;
                     Store.Longitude = decimal.TryParse(LongitudeValue, out decimal Longitude) ? Longitude : 0;
+                    Store.DeliveryLatitude = decimal.TryParse(DeliveryLatitudeValue, out decimal DeliveryLatitude) ? DeliveryLatitude : 0;
+                    Store.DeliveryLongitude = decimal.TryParse(DeliveryLongitudeValue, out decimal DeliveryLongitude) ? DeliveryLongitude : 0;
                     Store.OwnerName = OwnerNameValue;
                     Store.OwnerPhone = OwnerPhoneValue;
                     Store.OwnerEmail = OwnerEmailValue;
@@ -377,30 +404,25 @@ namespace DMS.Rpc.store
                         };
                     }
                     Store.Organization = Organizations.Where(x => x.Code == OrganizationCodeValue).FirstOrDefault();
+                    Store.Reseller = Resellers.Where(x => x.Code == ResellerCodeValue).FirstOrDefault();
                     Store.StoreType = StoreTypes.Where(x => x.Code == StoreTypeCodeValue).FirstOrDefault();
                     Store.StoreGrouping = StoreGroupings.Where(x => x.Code == StoreGroupingCodeValue).FirstOrDefault();
                     Store.Province = Provinces.Where(x => x.Code == ProvinceCodeValue).FirstOrDefault();
                     Store.District = Districts.Where(x => x.Code == DistrictCodeValue).FirstOrDefault();
                     Store.Ward = Wards.Where(x => x.Code == WardCodeValue).FirstOrDefault();
                     Store.Status = Statuses.Where(x => x.Code == StatusCodeValue).FirstOrDefault();
-
+                    Store.StoreStatus = new StoreStatus
+                    {
+                        Id = StoreStatusEnum.PENDING.Id,
+                        Code = StoreStatusEnum.PENDING.Code,
+                        Name = StoreStatusEnum.PENDING.Name,
+                    };
                     Stores.Add(Store);
                 }
             }
 
-            Stores = await StoreService.BulkMerge(Stores);
-            List<Store> StoresInDB = await StoreService.List(new StoreFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StoreSelect.Id | StoreSelect.ParentStore | StoreSelect.Code
-            });
-            foreach (Store Store in Stores)
-            {
-                if(Store.ParentStore != null && !string.IsNullOrEmpty(Store.ParentStore.Code))
-                    Store.ParentStoreId = StoresInDB.Where(x => x.Code == Store.ParentStore.Code).Select(x => x.Id).FirstOrDefault();
-            }
-            Stores = await StoreService.BulkMergeParentStore(Stores);
+            Stores = await StoreService.Import(Stores);
+            
             List<Store_StoreDTO> Store_StoreDTOs = Stores
                 .Select(c => new Store_StoreDTO(c)).ToList();
             return Store_StoreDTOs;
@@ -413,6 +435,7 @@ namespace DMS.Rpc.store
                 throw new BindException(ModelState);
 
             StoreFilter StoreFilter = ConvertFilterDTOToFilterEntity(Store_StoreFilterDTO);
+            StoreFilter = StoreService.ToFilter(StoreFilter);
             StoreFilter.Skip = 0;
             StoreFilter.Take = int.MaxValue;
             StoreFilter = StoreService.ToFilter(StoreFilter);
@@ -431,6 +454,7 @@ namespace DMS.Rpc.store
                         "Cửa Hàng Cha", 
                         "Câp Cửa Hàng" , 
                         "Nhóm Cửa Hàng",
+                        "Mã Khách Hàng",
                         "Điện Thoại",
                         "Tỉnh/Thành phố",
                         "Quận/Huyện",
@@ -439,6 +463,8 @@ namespace DMS.Rpc.store
                         "Địa Chỉ Giao Hàng",
                         "Kinh Độ",
                         "Vĩ Độ",
+                        "Kinh Độ Giao Hàng",
+                        "Vĩ Độ Giao Hàng",
                         "Tên Chủ Cửa Hàng",
                         "Số Điện Thoại Liên Hệ",
                         "Email",
@@ -457,6 +483,7 @@ namespace DMS.Rpc.store
                         Store.ParentStore.Code,
                         Store.StoreType.Code,
                         Store.StoreGrouping.Code,
+                        Store.Reseller.Code,
                         Store.Telephone,
                         Store.Province.Code,
                         Store.District.Code,
@@ -465,13 +492,15 @@ namespace DMS.Rpc.store
                         Store.DeliveryAddress,
                         Store.Latitude,
                         Store.Longitude,
+                        Store.DeliveryLatitude,
+                        Store.DeliveryLongitude,
                         Store.OwnerName,
                         Store.OwnerPhone,
                         Store.OwnerEmail,
                         Store.Status.Code
                 });
 
-                    excel.GenerateWorksheet("Province", StoreHeaders, data);
+                    excel.GenerateWorksheet("Store", StoreHeaders, data);
                 }
                 excel.Save();
             }
@@ -525,6 +554,7 @@ namespace DMS.Rpc.store
             Store.StoreTypeId = Store_StoreDTO.StoreTypeId;
             Store.StoreGroupingId = Store_StoreDTO.StoreGroupingId;
             Store.Telephone = Store_StoreDTO.Telephone;
+            Store.ResellerId = Store_StoreDTO.ResellerId;
             Store.ProvinceId = Store_StoreDTO.ProvinceId;
             Store.DistrictId = Store_StoreDTO.DistrictId;
             Store.WardId = Store_StoreDTO.WardId;
@@ -817,6 +847,59 @@ namespace DMS.Rpc.store
             List<Store_WardDTO> Store_WardDTOs = Wards
                 .Select(x => new Store_WardDTO(x)).ToList();
             return Store_WardDTOs;
+        }
+
+        [Route(StoreRoute.CountReseller), HttpPost]
+        public async Task<long> CountReseller([FromBody] Store_ResellerFilterDTO Store_ResellerFilterDTO)
+        {
+            ResellerFilter ResellerFilter = new ResellerFilter();
+            ResellerFilter.Id = Store_ResellerFilterDTO.Id;
+            ResellerFilter.Code = Store_ResellerFilterDTO.Code;
+            ResellerFilter.Name = Store_ResellerFilterDTO.Name;
+            ResellerFilter.OrganizationId = Store_ResellerFilterDTO.OrganizationId;
+            ResellerFilter.ResellerTypeId = Store_ResellerFilterDTO.ResellerTypeId;
+            ResellerFilter.ResellerStatusId = Store_ResellerFilterDTO.ResellerStatusId;
+            ResellerFilter.Phone = Store_ResellerFilterDTO.Phone;
+            ResellerFilter.Email = Store_ResellerFilterDTO.Email;
+            ResellerFilter.CompanyName = Store_ResellerFilterDTO.CompanyName;
+            ResellerFilter.DeputyName = Store_ResellerFilterDTO.DeputyName;
+            ResellerFilter.Address = Store_ResellerFilterDTO.Address;
+            ResellerFilter.Description = Store_ResellerFilterDTO.Description;
+            ResellerFilter.StaffId = Store_ResellerFilterDTO.StaffId;
+            ResellerFilter.TaxCode = Store_ResellerFilterDTO.TaxCode;
+            ResellerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            return await ResellerService.Count(ResellerFilter);
+        }
+
+        [Route(StoreRoute.ListReseller), HttpPost]
+        public async Task<List<Store_ResellerDTO>> ListReseller([FromBody] Store_ResellerFilterDTO Store_ResellerFilterDTO)
+        {
+            ResellerFilter ResellerFilter = new ResellerFilter();
+            ResellerFilter.Skip = Store_ResellerFilterDTO.Skip;
+            ResellerFilter.Take = Store_ResellerFilterDTO.Take;
+            ResellerFilter.OrderBy = ResellerOrder.Id;
+            ResellerFilter.OrderType = OrderType.ASC;
+            ResellerFilter.Selects = ResellerSelect.ALL;
+            ResellerFilter.Id = Store_ResellerFilterDTO.Id;
+            ResellerFilter.Code = Store_ResellerFilterDTO.Code;
+            ResellerFilter.Name = Store_ResellerFilterDTO.Name;
+            ResellerFilter.OrganizationId = Store_ResellerFilterDTO.OrganizationId;
+            ResellerFilter.ResellerTypeId = Store_ResellerFilterDTO.ResellerTypeId;
+            ResellerFilter.ResellerStatusId = Store_ResellerFilterDTO.ResellerStatusId;
+            ResellerFilter.Phone = Store_ResellerFilterDTO.Phone;
+            ResellerFilter.Email = Store_ResellerFilterDTO.Email;
+            ResellerFilter.CompanyName = Store_ResellerFilterDTO.CompanyName;
+            ResellerFilter.DeputyName = Store_ResellerFilterDTO.DeputyName;
+            ResellerFilter.Address = Store_ResellerFilterDTO.Address;
+            ResellerFilter.Description = Store_ResellerFilterDTO.Description;
+            ResellerFilter.StaffId = Store_ResellerFilterDTO.StaffId;
+            ResellerFilter.TaxCode = Store_ResellerFilterDTO.TaxCode;
+            ResellerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Reseller> Resellers = await ResellerService.List(ResellerFilter);
+            List<Store_ResellerDTO> Store_ResellerDTOs = Resellers
+                .Select(x => new Store_ResellerDTO(x)).ToList();
+            return Store_ResellerDTOs;
         }
 
     }

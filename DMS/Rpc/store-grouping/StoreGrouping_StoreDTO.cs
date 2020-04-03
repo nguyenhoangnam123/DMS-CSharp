@@ -13,6 +13,7 @@ namespace DMS.Rpc.store_grouping
         public long StoreTypeId { get; set; }
         public long? StoreGroupingId { get; set; }
         public string Telephone { get; set; }
+        public long? ResellerId { get; set; }
         public long ProvinceId { get; set; }
         public long DistrictId { get; set; }
         public long WardId { get; set; }
@@ -20,10 +21,13 @@ namespace DMS.Rpc.store_grouping
         public string DeliveryAddress { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
+        public decimal? DeliveryLatitude { get; set; }
+        public decimal? DeliveryLongitude { get; set; }
         public string OwnerName { get; set; }
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
         public long StatusId { get; set; }
+        public long StoreStatusId { get; set; }
         public StoreGrouping_DistrictDTO District { get; set; }
         public StoreGrouping_OrganizationDTO Organization { get; set; }
         public StoreGrouping_StoreDTO ParentStore { get; set; }
@@ -54,6 +58,7 @@ namespace DMS.Rpc.store_grouping
             this.OwnerPhone = Store.OwnerPhone;
             this.OwnerEmail = Store.OwnerEmail;
             this.StatusId = Store.StatusId;
+            this.StoreStatusId = Store.StoreStatusId;
             this.District = Store.District == null ? null : new StoreGrouping_DistrictDTO(Store.District);
             this.Organization = Store.Organization == null ? null : new StoreGrouping_OrganizationDTO(Store.Organization);
             this.ParentStore = Store.ParentStore == null ? null : new StoreGrouping_StoreDTO(Store.ParentStore);
@@ -82,7 +87,7 @@ namespace DMS.Rpc.store_grouping
         public IdFilter StoreGroupingId { get; set; }
 
         public StringFilter Telephone { get; set; }
-
+        public IdFilter ResellerId { get; set; }
         public IdFilter ProvinceId { get; set; }
 
         public IdFilter DistrictId { get; set; }
@@ -104,7 +109,7 @@ namespace DMS.Rpc.store_grouping
         public StringFilter OwnerEmail { get; set; }
 
         public IdFilter StatusId { get; set; }
-
+        public IdFilter StoreStatusId { get; set; }
         public StoreOrder OrderBy { get; set; }
     }
 }
