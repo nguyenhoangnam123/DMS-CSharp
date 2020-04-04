@@ -20,7 +20,7 @@ namespace DMS.Services.MItem
         Task<Item> Update(Item Item);
         Task<Item> Delete(Item Item);
         Task<List<Item>> BulkDelete(List<Item> Items);
-        Task<List<Item>> Import(DataFile DataFile);
+        Task<List<Item>> Import(List<Item> Items);
         Task<DataFile> Export(ItemFilter ItemFilter);
         ItemFilter ToFilter(ItemFilter ItemFilter);
     }
@@ -185,44 +185,8 @@ namespace DMS.Services.MItem
             }
         }
 
-        public async Task<List<Item>> Import(DataFile DataFile)
-        {
-            List<Item> Items = new List<Item>();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
-            {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return Items;
-                int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int ProductIdColumn = 1 + StartColumn;
-                int CodeColumn = 2 + StartColumn;
-                int NameColumn = 3 + StartColumn;
-                int ScanCodeColumn = 4 + StartColumn;
-                int SalePriceColumn = 5 + StartColumn;
-                int RetailPriceColumn = 6 + StartColumn;
-                for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
-                {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, IdColumn].Value?.ToString()))
-                        break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string ProductIdValue = worksheet.Cells[i + StartRow, ProductIdColumn].Value?.ToString();
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string ScanCodeValue = worksheet.Cells[i + StartRow, ScanCodeColumn].Value?.ToString();
-                    string SalePriceValue = worksheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
-                    string RetailPriceValue = worksheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
-                    Item Item = new Item();
-                    Item.Code = CodeValue;
-                    Item.Name = NameValue;
-                    Item.ScanCode = ScanCodeValue;
-                    Item.SalePrice = decimal.TryParse(SalePriceValue, out decimal SalePrice) ? SalePrice : 0;
-                    Item.RetailPrice = decimal.TryParse(RetailPriceValue, out decimal RetailPrice) ? RetailPrice : 0;
-                    Items.Add(Item);
-                }
-            }
-
+        public async Task<List<Item>> Import(List<Item> Items)
+        {  
             if (!await ItemValidator.Import(Items))
                 return Items;
 

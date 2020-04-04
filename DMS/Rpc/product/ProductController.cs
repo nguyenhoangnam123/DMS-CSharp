@@ -230,6 +230,7 @@ namespace DMS.Rpc.product
             string Error = "";
             List<string> Errors = new List<string>();
             List<Product> Products = new List<Product>();
+            List<Item> Items = new List<Item>();
 
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
             {
@@ -272,9 +273,11 @@ namespace DMS.Rpc.product
                 Name = file.FileName,
                 Content = file.OpenReadStream(),
             };
+            #region Sheet Product
             using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Product"];
+                ExcelWorksheet worksheet_Item = excelPackage.Workbook.Worksheets["Item"];
                 if (worksheet == null)
                     return null;
 
@@ -417,42 +420,44 @@ namespace DMS.Rpc.product
 
                     Products.Add(Product);
                 }
+
+                #region Check code trùng trong danh sách sản phẩm
+                var errorCode = false;
+                for (int i = 0; i < Products.Count; i++)
+                {
+                    Product Product = Products[i];
+                    if (Products.Where(p => p.Code == Product.Code).Count() >= 2)
+                    {
+                        errorCode = true;
+                        Error = $"Dòng {i + 1} của sản phẩm có lỗi:";
+                        Error += "Code trống hoặc đã tồn tại trong file,";
+                        Errors.Add(Error);
+                    }
+                    if (Products.Where(p => p.ScanCode == Product.ScanCode).Count() >= 2)
+                    {
+                        errorCode = true;
+                        Error = $"Dòng {i + 1} của sản phẩm có lỗi:";
+                        Error += "ScanCode trống hoặc đã tồn tại trong file,";
+                        Errors.Add(Error);
+                    }
+                    if (Products.Where(p => p.ERPCode == Product.ERPCode).Count() >= 2)
+                    {
+                        errorCode = true;
+                        Error = $"Dòng {i + 1} của sản phẩm có lỗi:";
+                        Error += "ERPCode trống hoặc đã tồn tại trong file,";
+                        Errors.Add(Error);
+                    }
+                }
+                if (errorCode == true)
+                    return BadRequest(Errors);
+
+                #endregion
+                Products = await ProductService.Import(Products);
+                Items = await ImportItem(worksheet_Item);
             }
-            #region Check code trùng trong danh sách 
-            var errorCode = false;
-            for (int i = 0; i < Products.Count; i++)
-            {
-                Product Product = Products[i];
-                if (Products.Where(p => p.Code == Product.Code).Count() >= 2)
-                {
-                    errorCode = true;
-                    Error = $"Dòng {i + 1} có lỗi:";
-                    Error += "Code trống hoặc đã tồn tại trong file,";
-                    Errors.Add(Error);
-                }
-                if (Products.Where(p => p.ScanCode == Product.ScanCode).Count() >= 2)
-                {
-                    errorCode = true;
-                    Error = $"Dòng {i + 1} có lỗi:";
-                    Error += "ScanCode trống hoặc đã tồn tại trong file,";
-                    Errors.Add(Error);
-                }
-                if (Products.Where(p => p.ERPCode == Product.ERPCode).Count() >= 2)
-                {
-                    errorCode = true;
-                    Error = $"Dòng {i + 1} có lỗi:";
-                    Error += "ERPCode trống hoặc đã tồn tại trong file,";
-                    Errors.Add(Error);
-                }
-            }
-            if (errorCode == true)
-                return BadRequest(Errors);
+            #endregion 
 
-            #endregion
-
-            Products = await ProductService.Import(Products);
-
-            if (Products.All(au => au.IsValidated))
+            if (Products.All(au => au.IsValidated) && Items.All(au => au.IsValidated))
                 return true;
             else
             {
@@ -461,7 +466,7 @@ namespace DMS.Rpc.product
                     Product Product = Products[i];
                     if (!Product.IsValidated)
                     {
-                        Error += $"Dòng {i + 1} có lỗi:";
+                        Error += $"Dòng {i + 1} của Product có lỗi:";
                         if (Product.Errors.ContainsKey(nameof(Product.Name)))
                             Error += Product.Errors[nameof(Product.Name)] + " ";
                         if (Product.Errors.ContainsKey(nameof(Product.Code)))
@@ -477,10 +482,84 @@ namespace DMS.Rpc.product
                         Errors.Add(Error);
                     }
                 }
+                for (int i = 0; i < Items.Count; i++)
+                {
+                    Item Item = Items[i];
+                    if (!Item.IsValidated)
+                    {
+                        Error += $"Dòng {i + 1} của Item có lỗi:";
+                        if (Item.Errors.ContainsKey(nameof(Item.Name)))
+                            Error += Item.Errors[nameof(Item.Name)] + " ";
+                        if (Item.Errors.ContainsKey(nameof(Item.Code)))
+                            Error += Item.Errors[nameof(Item.Code)] + " ";
+                        if (Item.Errors.ContainsKey(nameof(Item.ScanCode)))
+                            Error += Item.Errors[nameof(Item.ScanCode)] + " ";
+                        if (Item.Errors.ContainsKey(nameof(Item.ProductId)))
+                            Error += Item.Errors[nameof(Item.ProductId)] + " ";
+                        Errors.Add(Error);
+                    }
+                }
+                return BadRequest(Errors);
             }
-            return BadRequest(Errors);
         }
+        private async Task<List<Item>> ImportItem(ExcelWorksheet worksheet)
+        {
+            var Items = new List<Item>();
+            List<string> Errors = new List<string>();
+            var Products = await ProductService.List(new ProductFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProductSelect.ALL
+            });
 
+            #region Sheet Item 
+            if (worksheet == null)
+                return null;
+
+            #region Khai báo thứ tự các cột trong Exel file 
+            int StartColumn = 1;
+            int StartRow = 1;
+
+            //Mã sản phẩm
+            int CodeColumn = 1 + StartColumn;
+            //Mã sản phẩm thuộc tính
+            int CodeProductItemColumn = 2 + StartColumn;
+            //Tên sản phẩm thuộc tính
+            int NameProductItemColumn = 3 + StartColumn;
+            //Mã sản phẩm nhận diện
+            int ScanCodeItemColumn = 4 + StartColumn;
+            //Giá bán
+            int SalePriceColumn = 5 + StartColumn;
+            //Giá bán lẻ đề xuất
+            int RetailPriceColumn = 6 + StartColumn;
+
+            #endregion
+            for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+            {
+                if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString()))
+                    break;
+                string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                string CodeProductItemValue = worksheet.Cells[i + StartRow, CodeProductItemColumn].Value?.ToString();
+                string NameProductItemValue = worksheet.Cells[i + StartRow, NameProductItemColumn].Value?.ToString();
+                string ScanCodeItemValue = worksheet.Cells[i + StartRow, ScanCodeItemColumn].Value?.ToString();
+                string SalePriceValue = worksheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
+                string RetailPriceValue = worksheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
+
+                Item Item = new Item();
+                Item.Code = CodeProductItemValue;
+                Item.Name = NameProductItemValue;
+                Item.ScanCode = ScanCodeItemValue;
+                Item.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : decimal.Parse(SalePriceValue);
+                Item.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : decimal.Parse(RetailPriceValue);
+                var Product = Products.Where(p => p.Code == CodeValue).FirstOrDefault();
+                Item.ProductId = Product != null ? Product.Id : 0;
+                Items.Add(Item);
+            }
+            #endregion
+            Items = await ItemService.Import(Items);
+            return Items;
+        }
 
         [Route(ProductRoute.Export), HttpPost]
         public async Task<ActionResult> Export([FromBody] Product_ProductFilterDTO Product_ProductFilterDTO)

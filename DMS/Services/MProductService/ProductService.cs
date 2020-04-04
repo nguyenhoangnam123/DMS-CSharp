@@ -212,7 +212,7 @@ namespace DMS.Services.MProduct
                         {
                             ProductProductGroupingMapping.ProductId = Product.Id;
                             ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
-                        } 
+                        }
                     }
                 }
                 await UOW.ProductProductGroupingMappingRepository.BulkMerge(ProductProductGroupingMappings);
