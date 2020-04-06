@@ -180,7 +180,7 @@ namespace DMS.Services.MStore
             {
                 Skip = 0,
                 Take = 10,
-                Id = new IdFilter { Equal = Store.StoreStatusId },
+                Id = new IdFilter { Equal = Store.StoreTypeId },
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                 Selects = StoreTypeSelect.Id
             };
