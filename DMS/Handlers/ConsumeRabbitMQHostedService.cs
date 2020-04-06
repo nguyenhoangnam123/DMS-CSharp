@@ -21,8 +21,9 @@ namespace DMS.Handlers
         private IModel _channel;
         private IConfiguration Configuration;
         private readonly DefaultObjectPool<IModel> _objectPool;
-        public ConsumeRabbitMQHostedService(IPooledObjectPolicy<IModel> objectPolicy)
+        public ConsumeRabbitMQHostedService(IPooledObjectPolicy<IModel> objectPolicy, IConfiguration Configuration)
         {
+            this.Configuration = Configuration;
             _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 1);
             _channel = _objectPool.Get();
             _channel.ExchangeDeclare("exchange", ExchangeType.Topic, true, false);
@@ -30,7 +31,6 @@ namespace DMS.Handlers
             _channel.QueueBind(StaticParams.ModuleName, "exchange", $"{nameof(AppUser)}.*", null);
             _channel.QueueBind(StaticParams.ModuleName, "exchange", $"{nameof(Organization)}.*", null);
             _channel.BasicQos(0, 1, false);
-
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -49,7 +49,7 @@ namespace DMS.Handlers
                     HandleMessage(routingKey, content);
                     _channel.BasicAck(ea.DeliveryTag, false);
                 }
-                catch
+                catch (Exception e)
                 {
                     _channel.BasicNack(ea.DeliveryTag, false, true);
                 }

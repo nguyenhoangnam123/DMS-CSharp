@@ -18,7 +18,7 @@ namespace DMS.Handlers
         public bool Handle(string routingKey, string json)
         {
             List<Organization> Organizations = JsonConvert.DeserializeObject<List<Organization>>(json);
-
+            UOW.OrganizationRepository.BulkMerge(Organizations);
             return true;
         }
     }

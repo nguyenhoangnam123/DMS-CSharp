@@ -442,8 +442,8 @@ namespace DMS.Repositories
                 OrganizationDAO.Address = Organization.Address;
                 OrganizationDAO.Latitude = Organization.Latitude;
                 OrganizationDAO.Longitude = Organization.Longitude;
-                OrganizationDAO.CreatedAt = StaticParams.DateTimeNow;
-                OrganizationDAO.UpdatedAt = StaticParams.DateTimeNow;
+                OrganizationDAO.CreatedAt = DateTime.Now;
+                OrganizationDAO.UpdatedAt = DateTime.Now;
                 OrganizationDAOs.Add(OrganizationDAO);
             }
             await DataContext.BulkMergeAsync(OrganizationDAOs);

@@ -1,5 +1,7 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
+using DMS.Handlers;
 using DMS.Repositories;
 using Helpers;
 using OfficeOpenXml;
@@ -32,18 +34,20 @@ namespace DMS.Services.MStore
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IStoreValidator StoreValidator;
-
+        private IRabbitManager RabbitManager;
         public StoreService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IStoreValidator StoreValidator
+            IStoreValidator StoreValidator,
+            IRabbitManager rabbitManager
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.StoreValidator = StoreValidator;
+            this.RabbitManager = rabbitManager;
         }
         public async Task<int> Count(StoreFilter StoreFilter)
         {
@@ -99,7 +103,9 @@ namespace DMS.Services.MStore
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(Store, new { }, nameof(StoreService));
-                return await UOW.StoreRepository.Get(Store.Id);
+                var obj = await UOW.StoreRepository.Get(Store.Id);
+                RabbitManager.Publish(new List<Store> { obj }, RoutingKeyEnum.StorenSync);
+                return obj;
             }
             catch (Exception ex)
             {
@@ -125,6 +131,7 @@ namespace DMS.Services.MStore
                 await UOW.Commit();
 
                 var newData = await UOW.StoreRepository.Get(Store.Id);
+                RabbitManager.Publish(new List<Store> { newData }, RoutingKeyEnum.StorenSync);
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreService));
                 return newData;
             }
@@ -150,6 +157,7 @@ namespace DMS.Services.MStore
                 await UOW.StoreRepository.Delete(Store);
                 await UOW.Commit();
                 await Logging.CreateAuditLog(new { }, Store, nameof(StoreService));
+                RabbitManager.Publish(new List<Store> { Store }, RoutingKeyEnum.StorenSync);
                 return Store;
             }
             catch (Exception ex)
@@ -174,6 +182,7 @@ namespace DMS.Services.MStore
                 await UOW.StoreRepository.BulkDelete(Stores);
                 await UOW.Commit();
                 await Logging.CreateAuditLog(new { }, Stores, nameof(StoreService));
+                RabbitManager.Publish(Stores, RoutingKeyEnum.StorenSync);
                 return Stores;
             }
             catch (Exception ex)
@@ -214,6 +223,7 @@ namespace DMS.Services.MStore
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(Stores, new { }, nameof(StoreService));
+                RabbitManager.Publish(Stores, RoutingKeyEnum.StorenSync);
                 return Stores;
             }
             catch (Exception ex)

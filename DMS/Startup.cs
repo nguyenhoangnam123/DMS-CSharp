@@ -59,7 +59,7 @@ namespace DMS
             services.AddSingleton<IRabbitManager, RabbitManager>();
             services.AddHostedService<ConsumeRabbitMQHostedService>();
             services.AddDbContext<DataContext>(options =>
-               options.UseSqlServer(Configuration.GetConnectionString("DataContext")));
+              options.UseSqlServer(Configuration.GetConnectionString("DataContext")));
             EntityFrameworkManager.ContextFactory = context =>
             {
                 var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
