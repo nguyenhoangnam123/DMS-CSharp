@@ -180,8 +180,8 @@ namespace DMS.Services.MStore
             {
                 Skip = 0,
                 Take = 10,
-                Id = new IdFilter { Equal = Store.Id },
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
+                Id = new IdFilter { Equal = Store.StoreStatusId },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                 Selects = StoreTypeSelect.Id
             };
 
@@ -201,7 +201,7 @@ namespace DMS.Services.MStore
                 {
                     Skip = 0,
                     Take = 10,
-                    Id = new IdFilter { Equal = Store.Id },
+                    Id = new IdFilter { Equal = Store.StoreGroupingId },
                     Selects = StoreGroupingSelect.Id
                 };
 
@@ -234,7 +234,7 @@ namespace DMS.Services.MStore
                 {
                     Skip = 0,
                     Take = 10,
-                    Id = new IdFilter { Equal = Store.Id },
+                    Id = new IdFilter { Equal = Store.ResellerId },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = ResellerSelect.Id
                 };
@@ -256,7 +256,7 @@ namespace DMS.Services.MStore
                 {
                     Skip = 0,
                     Take = 10,
-                    Id = new IdFilter { Equal = Store.Id },
+                    Id = new IdFilter { Equal = Store.ProvinceId },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = ProvinceSelect.Id
                 };
@@ -276,7 +276,7 @@ namespace DMS.Services.MStore
                 {
                     Skip = 0,
                     Take = 10,
-                    Id = new IdFilter { Equal = Store.Id },
+                    Id = new IdFilter { Equal = Store.DistrictId },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = DistrictSelect.Id
                 };
@@ -296,7 +296,7 @@ namespace DMS.Services.MStore
                 {
                     Skip = 0,
                     Take = 10,
-                    Id = new IdFilter { Equal = Store.Id },
+                    Id = new IdFilter { Equal = Store.WardId },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = WardSelect.Id
                 };
