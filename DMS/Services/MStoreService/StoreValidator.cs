@@ -228,7 +228,7 @@ namespace DMS.Services.MStore
         #region Reseller
         private async Task<bool> ValidateResellerId(Store Store)
         {
-            if (Store.ResellerId != 0)
+            if (Store.ResellerId != null && Store.ResellerId != 0)
             {
                 ResellerFilter ResellerFilter = new ResellerFilter
                 {
