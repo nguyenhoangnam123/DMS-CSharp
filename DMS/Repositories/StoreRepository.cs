@@ -198,6 +198,12 @@ namespace DMS.Repositories
                         case StoreOrder.Longitude:
                             query = query.OrderBy(q => q.Longitude);
                             break;
+                        case StoreOrder.DeliveryLatitude:
+                            query = query.OrderBy(q => q.DeliveryLatitude);
+                            break;
+                        case StoreOrder.DeliveryLongitude:
+                            query = query.OrderBy(q => q.DeliveryLongitude);
+                            break;
                         case StoreOrder.OwnerName:
                             query = query.OrderBy(q => q.OwnerName);
                             break;
@@ -262,6 +268,12 @@ namespace DMS.Repositories
                             break;
                         case StoreOrder.Longitude:
                             query = query.OrderByDescending(q => q.Longitude);
+                            break;
+                        case StoreOrder.DeliveryLatitude:
+                            query = query.OrderByDescending(q => q.DeliveryLatitude);
+                            break;
+                        case StoreOrder.DeliveryLongitude:
+                            query = query.OrderByDescending(q => q.DeliveryLongitude);
                             break;
                         case StoreOrder.OwnerName:
                             query = query.OrderByDescending(q => q.OwnerName);
@@ -341,6 +353,7 @@ namespace DMS.Repositories
                     StoreTypeId = q.ParentStore.StoreTypeId,
                     StoreGroupingId = q.ParentStore.StoreGroupingId,
                     Telephone = q.ParentStore.Telephone,
+                    ResellerId = q.ParentStore.ResellerId,
                     ProvinceId = q.ParentStore.ProvinceId,
                     DistrictId = q.ParentStore.DistrictId,
                     WardId = q.ParentStore.WardId,
@@ -348,6 +361,8 @@ namespace DMS.Repositories
                     DeliveryAddress = q.ParentStore.DeliveryAddress,
                     Latitude = q.ParentStore.Latitude,
                     Longitude = q.ParentStore.Longitude,
+                    DeliveryLatitude = q.ParentStore.DeliveryLatitude,
+                    DeliveryLongitude = q.ParentStore.DeliveryLongitude,
                     OwnerName = q.ParentStore.OwnerName,
                     OwnerPhone = q.ParentStore.OwnerPhone,
                     OwnerEmail = q.ParentStore.OwnerEmail,
@@ -443,6 +458,7 @@ namespace DMS.Repositories
                 StoreTypeId = x.StoreTypeId,
                 StoreGroupingId = x.StoreGroupingId,
                 Telephone = x.Telephone,
+                ResellerId = x.ResellerId,
                 ProvinceId = x.ProvinceId,
                 DistrictId = x.DistrictId,
                 WardId = x.WardId,
@@ -450,6 +466,8 @@ namespace DMS.Repositories
                 DeliveryAddress = x.DeliveryAddress,
                 Latitude = x.Latitude,
                 Longitude = x.Longitude,
+                DeliveryLatitude = x.DeliveryLatitude,
+                DeliveryLongitude = x.DeliveryLongitude,
                 OwnerName = x.OwnerName,
                 OwnerPhone = x.OwnerPhone,
                 OwnerEmail = x.OwnerEmail,
@@ -581,6 +599,8 @@ namespace DMS.Repositories
             StoreDAO.DeliveryAddress = Store.DeliveryAddress;
             StoreDAO.Latitude = Store.Latitude;
             StoreDAO.Longitude = Store.Longitude;
+            StoreDAO.DeliveryLatitude = Store.DeliveryLatitude;
+            StoreDAO.DeliveryLongitude = Store.DeliveryLongitude;
             StoreDAO.OwnerName = Store.OwnerName;
             StoreDAO.OwnerPhone = Store.OwnerPhone;
             StoreDAO.OwnerEmail = Store.OwnerEmail;
@@ -616,6 +636,8 @@ namespace DMS.Repositories
             StoreDAO.DeliveryAddress = Store.DeliveryAddress;
             StoreDAO.Latitude = Store.Latitude;
             StoreDAO.Longitude = Store.Longitude;
+            StoreDAO.DeliveryLatitude = Store.DeliveryLatitude;
+            StoreDAO.DeliveryLongitude = Store.DeliveryLongitude;
             StoreDAO.OwnerName = Store.OwnerName;
             StoreDAO.OwnerPhone = Store.OwnerPhone;
             StoreDAO.OwnerEmail = Store.OwnerEmail;
@@ -655,6 +677,8 @@ namespace DMS.Repositories
                 StoreDAO.DeliveryAddress = Store.DeliveryAddress;
                 StoreDAO.Latitude = Store.Latitude;
                 StoreDAO.Longitude = Store.Longitude;
+                StoreDAO.DeliveryLatitude = Store.DeliveryLatitude;
+                StoreDAO.DeliveryLongitude = Store.DeliveryLongitude;
                 StoreDAO.OwnerName = Store.OwnerName;
                 StoreDAO.OwnerPhone = Store.OwnerPhone;
                 StoreDAO.OwnerEmail = Store.OwnerEmail;

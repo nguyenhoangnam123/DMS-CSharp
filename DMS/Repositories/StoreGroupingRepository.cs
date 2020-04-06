@@ -197,6 +197,7 @@ namespace DMS.Repositories
                     StoreTypeId = x.StoreTypeId,
                     StoreGroupingId = x.StoreGroupingId,
                     Telephone = x.Telephone,
+                    ResellerId = x.ResellerId,
                     ProvinceId = x.ProvinceId,
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
@@ -204,6 +205,8 @@ namespace DMS.Repositories
                     DeliveryAddress = x.DeliveryAddress,
                     Latitude = x.Latitude,
                     Longitude = x.Longitude,
+                    DeliveryLatitude = x.DeliveryLatitude,
+                    DeliveryLongitude = x.DeliveryLongitude,
                     OwnerName = x.OwnerName,
                     OwnerPhone = x.OwnerPhone,
                     OwnerEmail = x.OwnerEmail,
@@ -240,6 +243,7 @@ namespace DMS.Repositories
                         StoreTypeId = x.ParentStore.StoreTypeId,
                         StoreGroupingId = x.ParentStore.StoreGroupingId,
                         Telephone = x.ParentStore.Telephone,
+                        ResellerId = x.ParentStore.ResellerId,
                         ProvinceId = x.ParentStore.ProvinceId,
                         DistrictId = x.ParentStore.DistrictId,
                         WardId = x.ParentStore.WardId,
@@ -247,6 +251,8 @@ namespace DMS.Repositories
                         DeliveryAddress = x.ParentStore.DeliveryAddress,
                         Latitude = x.ParentStore.Latitude,
                         Longitude = x.ParentStore.Longitude,
+                        DeliveryLatitude = x.ParentStore.DeliveryLatitude,
+                        DeliveryLongitude = x.ParentStore.DeliveryLongitude,
                         OwnerName = x.ParentStore.OwnerName,
                         OwnerPhone = x.ParentStore.OwnerPhone,
                         OwnerEmail = x.ParentStore.OwnerEmail,
@@ -383,6 +389,7 @@ namespace DMS.Repositories
                         StoreDAO.StoreTypeId = Store.StoreTypeId;
                         StoreDAO.StoreGroupingId = StoreGrouping.Id;
                         StoreDAO.Telephone = Store.Telephone;
+                        StoreDAO.ResellerId = Store.ResellerId;
                         StoreDAO.ProvinceId = Store.ProvinceId;
                         StoreDAO.DistrictId = Store.DistrictId;
                         StoreDAO.WardId = Store.WardId;
@@ -390,6 +397,8 @@ namespace DMS.Repositories
                         StoreDAO.DeliveryAddress = Store.DeliveryAddress;
                         StoreDAO.Latitude = Store.Latitude;
                         StoreDAO.Longitude = Store.Longitude;
+                        StoreDAO.DeliveryLatitude = Store.DeliveryLatitude;
+                        StoreDAO.DeliveryLongitude = Store.DeliveryLongitude;
                         StoreDAO.OwnerName = Store.OwnerName;
                         StoreDAO.OwnerPhone = Store.OwnerPhone;
                         StoreDAO.OwnerEmail = Store.OwnerEmail;
@@ -409,6 +418,7 @@ namespace DMS.Repositories
                         StoreDAO.StoreTypeId = Store.StoreTypeId;
                         StoreDAO.StoreGroupingId = StoreGrouping.Id;
                         StoreDAO.Telephone = Store.Telephone;
+                        StoreDAO.ResellerId = Store.ResellerId;
                         StoreDAO.ProvinceId = Store.ProvinceId;
                         StoreDAO.DistrictId = Store.DistrictId;
                         StoreDAO.WardId = Store.WardId;
@@ -416,6 +426,8 @@ namespace DMS.Repositories
                         StoreDAO.DeliveryAddress = Store.DeliveryAddress;
                         StoreDAO.Latitude = Store.Latitude;
                         StoreDAO.Longitude = Store.Longitude;
+                        StoreDAO.DeliveryLatitude = Store.DeliveryLatitude;
+                        StoreDAO.DeliveryLongitude = Store.DeliveryLongitude;
                         StoreDAO.OwnerName = Store.OwnerName;
                         StoreDAO.OwnerPhone = Store.OwnerPhone;
                         StoreDAO.OwnerEmail = Store.OwnerEmail;
