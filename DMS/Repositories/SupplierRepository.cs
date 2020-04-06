@@ -281,7 +281,7 @@ namespace DMS.Repositories
         public async Task<List<Supplier>> List(SupplierFilter filter)
         {
             if (filter == null) return new List<Supplier>();
-            IQueryable<SupplierDAO> SupplierDAOs = DataContext.Supplier;
+            IQueryable<SupplierDAO> SupplierDAOs = DataContext.Supplier.AsNoTracking();
             SupplierDAOs = DynamicFilter(SupplierDAOs, filter);
             SupplierDAOs = DynamicOrder(SupplierDAOs, filter);
             List<Supplier> Suppliers = await DynamicSelect(SupplierDAOs, filter);
@@ -290,7 +290,8 @@ namespace DMS.Repositories
 
         public async Task<Supplier> Get(long Id)
         {
-            Supplier Supplier = await DataContext.Supplier.Where(x => x.Id == Id).AsNoTracking().Select(x => new Supplier()
+            Supplier Supplier = await DataContext.Supplier.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new Supplier()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -380,7 +381,8 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Supplier Supplier)
         {
-            SupplierDAO SupplierDAO = DataContext.Supplier.Where(x => x.Id == Supplier.Id).AsNoTracking().FirstOrDefault();
+            SupplierDAO SupplierDAO = DataContext.Supplier
+                .Where(x => x.Id == Supplier.Id).FirstOrDefault();
             if (SupplierDAO == null)
                 return false;
             SupplierDAO.Id = Supplier.Id;
@@ -405,7 +407,8 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Supplier Supplier)
         {
-            await DataContext.Supplier.Where(x => x.Id == Supplier.Id).AsNoTracking().UpdateFromQueryAsync(x => new SupplierDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.Supplier.Where(x => x.Id == Supplier.Id)
+                .UpdateFromQueryAsync(x => new SupplierDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

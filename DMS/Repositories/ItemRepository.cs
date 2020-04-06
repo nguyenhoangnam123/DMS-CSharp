@@ -247,7 +247,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Item Item)
         {
-            ItemDAO ItemDAO = DataContext.Item.Where(x => x.Id == Item.Id).AsNoTracking().FirstOrDefault();
+            ItemDAO ItemDAO = DataContext.Item.Where(x => x.Id == Item.Id).FirstOrDefault();
             if (ItemDAO == null)
                 return false;
             ItemDAO.Id = Item.Id;
@@ -265,7 +265,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Item Item)
         {
-            await DataContext.Item.Where(x => x.Id == Item.Id).AsNoTracking().UpdateFromQueryAsync(x => new ItemDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.Item.Where(x => x.Id == Item.Id).UpdateFromQueryAsync(x => new ItemDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

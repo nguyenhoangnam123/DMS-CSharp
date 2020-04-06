@@ -154,7 +154,7 @@ namespace DMS.Repositories
         public async Task<List<StoreGrouping>> List(StoreGroupingFilter filter)
         {
             if (filter == null) return new List<StoreGrouping>();
-            IQueryable<StoreGroupingDAO> StoreGroupingDAOs = DataContext.StoreGrouping;
+            IQueryable<StoreGroupingDAO> StoreGroupingDAOs = DataContext.StoreGrouping.AsNoTracking();
             StoreGroupingDAOs = DynamicFilter(StoreGroupingDAOs, filter);
             StoreGroupingDAOs = DynamicOrder(StoreGroupingDAOs, filter);
             List<StoreGrouping> StoreGroupings = await DynamicSelect(StoreGroupingDAOs, filter);
@@ -163,7 +163,8 @@ namespace DMS.Repositories
 
         public async Task<StoreGrouping> Get(long Id)
         {
-            StoreGrouping StoreGrouping = await DataContext.StoreGrouping.Where(x => x.Id == Id).AsNoTracking().Select(x => new StoreGrouping()
+            StoreGrouping StoreGrouping = await DataContext.StoreGrouping.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new StoreGrouping()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -304,7 +305,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(StoreGrouping StoreGrouping)
         {
-            StoreGroupingDAO StoreGroupingDAO = DataContext.StoreGrouping.Where(x => x.Id == StoreGrouping.Id).AsNoTracking().FirstOrDefault();
+            StoreGroupingDAO StoreGroupingDAO = DataContext.StoreGrouping.Where(x => x.Id == StoreGrouping.Id).FirstOrDefault();
             if (StoreGroupingDAO == null)
                 return false;
             StoreGroupingDAO.Id = StoreGrouping.Id;
@@ -322,7 +323,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(StoreGrouping StoreGrouping)
         {
-            StoreGroupingDAO StoreGroupingDAO = await DataContext.StoreGrouping.Where(x => x.Id == StoreGrouping.Id).AsNoTracking().FirstOrDefaultAsync();
+            StoreGroupingDAO StoreGroupingDAO = await DataContext.StoreGrouping.Where(x => x.Id == StoreGrouping.Id).FirstOrDefaultAsync();
             await DataContext.StoreGrouping.Where(x => x.Path.StartsWith(StoreGroupingDAO.Id + ".")).UpdateFromQueryAsync(x => new StoreGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
             await DataContext.StoreGrouping.Where(x => x.Id == StoreGrouping.Id).UpdateFromQueryAsync(x => new StoreGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
             await BuildPath();

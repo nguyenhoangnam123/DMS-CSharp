@@ -117,7 +117,7 @@ namespace DMS.Repositories
                 Code = filter.Selects.Contains(ResellerTypeSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(ResellerTypeSelect.Name) ? q.Name : default(string),
                 StatusId = filter.Selects.Contains(ResellerTypeSelect.Status) ? q.StatusId : default(long),
-            }).AsNoTracking().ToListAsync();
+            }).ToListAsync();
             return ResellerTypes;
         }
 
@@ -131,7 +131,7 @@ namespace DMS.Repositories
         public async Task<List<ResellerType>> List(ResellerTypeFilter filter)
         {
             if (filter == null) return new List<ResellerType>();
-            IQueryable<ResellerTypeDAO> ResellerTypeDAOs = DataContext.ResellerType;
+            IQueryable<ResellerTypeDAO> ResellerTypeDAOs = DataContext.ResellerType.AsNoTracking();
             ResellerTypeDAOs = DynamicFilter(ResellerTypeDAOs, filter);
             ResellerTypeDAOs = DynamicOrder(ResellerTypeDAOs, filter);
             List<ResellerType> ResellerTypes = await DynamicSelect(ResellerTypeDAOs, filter);
@@ -140,13 +140,14 @@ namespace DMS.Repositories
 
         public async Task<ResellerType> Get(long Id)
         {
-            ResellerType ResellerType = await DataContext.ResellerType.Where(x => x.Id == Id).Select(x => new ResellerType()
+            ResellerType ResellerType = await DataContext.ResellerType.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new ResellerType()
             {
                 Id = x.Id,
                 Code = x.Code,
                 Name = x.Name,
                 StatusId = x.StatusId,
-            }).AsNoTracking().FirstOrDefaultAsync();
+            }).FirstOrDefaultAsync();
 
             if (ResellerType == null)
                 return null;

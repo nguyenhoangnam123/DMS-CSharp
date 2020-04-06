@@ -172,7 +172,8 @@ namespace DMS.Repositories
 
         public async Task<ProductGrouping> Get(long Id)
         {
-            ProductGrouping ProductGrouping = await DataContext.ProductGrouping.Where(x => x.Id == Id).AsNoTracking().Select(x => new ProductGrouping()
+            ProductGrouping ProductGrouping = await DataContext.ProductGrouping.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new ProductGrouping()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -242,7 +243,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(ProductGrouping ProductGrouping)
         {
-            ProductGroupingDAO ProductGroupingDAO = DataContext.ProductGrouping.Where(x => x.Id == ProductGrouping.Id).AsNoTracking().FirstOrDefault();
+            ProductGroupingDAO ProductGroupingDAO = DataContext.ProductGrouping.Where(x => x.Id == ProductGrouping.Id).FirstOrDefault();
             if (ProductGroupingDAO == null)
                 return false;
             ProductGroupingDAO.Id = ProductGrouping.Id;
@@ -260,9 +261,9 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(ProductGrouping ProductGrouping)
         {
-            ProductGroupingDAO ProductGroupingDAO = await DataContext.ProductGrouping.Where(x => x.Id == ProductGrouping.Id).AsNoTracking().FirstOrDefaultAsync();
+            ProductGroupingDAO ProductGroupingDAO = await DataContext.ProductGrouping.Where(x => x.Id == ProductGrouping.Id).FirstOrDefaultAsync();
             await DataContext.ProductGrouping.Where(x => x.Path.StartsWith(ProductGroupingDAO.Id + ".")).UpdateFromQueryAsync(x => new ProductGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
-            await DataContext.ProductGrouping.Where(x => x.Id == ProductGrouping.Id).AsNoTracking().UpdateFromQueryAsync(x => new ProductGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.ProductGrouping.Where(x => x.Id == ProductGrouping.Id).UpdateFromQueryAsync(x => new ProductGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
             await BuildPath();
             return true;
         }

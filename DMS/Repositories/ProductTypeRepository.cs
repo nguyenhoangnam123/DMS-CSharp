@@ -149,7 +149,7 @@ namespace DMS.Repositories
         public async Task<List<ProductType>> List(ProductTypeFilter filter)
         {
             if (filter == null) return new List<ProductType>();
-            IQueryable<ProductTypeDAO> ProductTypeDAOs = DataContext.ProductType;
+            IQueryable<ProductTypeDAO> ProductTypeDAOs = DataContext.ProductType.AsNoTracking();
             ProductTypeDAOs = DynamicFilter(ProductTypeDAOs, filter);
             ProductTypeDAOs = DynamicOrder(ProductTypeDAOs, filter);
             List<ProductType> ProductTypes = await DynamicSelect(ProductTypeDAOs, filter);
@@ -158,7 +158,8 @@ namespace DMS.Repositories
 
         public async Task<ProductType> Get(long Id)
         {
-            ProductType ProductType = await DataContext.ProductType.Where(x => x.Id == Id).AsNoTracking().Select(x => new ProductType()
+            ProductType ProductType = await DataContext.ProductType.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new ProductType()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -197,7 +198,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(ProductType ProductType)
         {
-            ProductTypeDAO ProductTypeDAO = DataContext.ProductType.Where(x => x.Id == ProductType.Id).AsNoTracking().FirstOrDefault();
+            ProductTypeDAO ProductTypeDAO = DataContext.ProductType.Where(x => x.Id == ProductType.Id).FirstOrDefault();
             if (ProductTypeDAO == null)
                 return false;
             ProductTypeDAO.Id = ProductType.Id;
@@ -213,7 +214,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(ProductType ProductType)
         {
-            await DataContext.ProductType.Where(x => x.Id == ProductType.Id).AsNoTracking().UpdateFromQueryAsync(x => new ProductTypeDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.ProductType.Where(x => x.Id == ProductType.Id).UpdateFromQueryAsync(x => new ProductTypeDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

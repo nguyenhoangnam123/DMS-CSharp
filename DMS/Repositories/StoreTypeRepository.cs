@@ -138,7 +138,7 @@ namespace DMS.Repositories
         public async Task<List<StoreType>> List(StoreTypeFilter filter)
         {
             if (filter == null) return new List<StoreType>();
-            IQueryable<StoreTypeDAO> StoreTypeDAOs = DataContext.StoreType;
+            IQueryable<StoreTypeDAO> StoreTypeDAOs = DataContext.StoreType.AsNoTracking();
             StoreTypeDAOs = DynamicFilter(StoreTypeDAOs, filter);
             StoreTypeDAOs = DynamicOrder(StoreTypeDAOs, filter);
             List<StoreType> StoreTypes = await DynamicSelect(StoreTypeDAOs, filter);
@@ -147,7 +147,8 @@ namespace DMS.Repositories
 
         public async Task<StoreType> Get(long Id)
         {
-            StoreType StoreType = await DataContext.StoreType.Where(x => x.Id == Id).AsNoTracking().Select(x => new StoreType()
+            StoreType StoreType = await DataContext.StoreType.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new StoreType()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -184,7 +185,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(StoreType StoreType)
         {
-            StoreTypeDAO StoreTypeDAO = DataContext.StoreType.Where(x => x.Id == StoreType.Id).AsNoTracking().FirstOrDefault();
+            StoreTypeDAO StoreTypeDAO = DataContext.StoreType.Where(x => x.Id == StoreType.Id).FirstOrDefault();
             if (StoreTypeDAO == null)
                 return false;
             StoreTypeDAO.Id = StoreType.Id;
@@ -199,7 +200,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(StoreType StoreType)
         {
-            await DataContext.StoreType.Where(x => x.Id == StoreType.Id).AsNoTracking().UpdateFromQueryAsync(x => new StoreTypeDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.StoreType.Where(x => x.Id == StoreType.Id).UpdateFromQueryAsync(x => new StoreTypeDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

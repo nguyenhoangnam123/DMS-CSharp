@@ -138,7 +138,7 @@ namespace DMS.Repositories
         public async Task<List<Brand>> List(BrandFilter filter)
         {
             if (filter == null) return new List<Brand>();
-            IQueryable<BrandDAO> BrandDAOs = DataContext.Brand;
+            IQueryable<BrandDAO> BrandDAOs = DataContext.Brand.AsNoTracking();
             BrandDAOs = DynamicFilter(BrandDAOs, filter);
             BrandDAOs = DynamicOrder(BrandDAOs, filter);
             List<Brand> Brands = await DynamicSelect(BrandDAOs, filter);
@@ -147,7 +147,8 @@ namespace DMS.Repositories
 
         public async Task<Brand> Get(long Id)
         {
-            Brand Brand = await DataContext.Brand.Where(x => x.Id == Id).AsNoTracking().Select(x => new Brand()
+            Brand Brand = await DataContext.Brand.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new Brand()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -184,7 +185,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Brand Brand)
         {
-            BrandDAO BrandDAO = DataContext.Brand.Where(x => x.Id == Brand.Id).AsNoTracking().FirstOrDefault();
+            BrandDAO BrandDAO = DataContext.Brand.Where(x => x.Id == Brand.Id).FirstOrDefault();
             if (BrandDAO == null)
                 return false;
             BrandDAO.Id = Brand.Id;
@@ -199,7 +200,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Brand Brand)
         {
-            await DataContext.Brand.Where(x => x.Id == Brand.Id).AsNoTracking().UpdateFromQueryAsync(x => new BrandDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.Brand.Where(x => x.Id == Brand.Id).UpdateFromQueryAsync(x => new BrandDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

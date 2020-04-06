@@ -158,7 +158,7 @@ namespace DMS.Repositories
         public async Task<List<Province>> List(ProvinceFilter filter)
         {
             if (filter == null) return new List<Province>();
-            IQueryable<ProvinceDAO> ProvinceDAOs = DataContext.Province;
+            IQueryable<ProvinceDAO> ProvinceDAOs = DataContext.Province.AsNoTracking();
             ProvinceDAOs = DynamicFilter(ProvinceDAOs, filter);
             ProvinceDAOs = DynamicOrder(ProvinceDAOs, filter);
             List<Province> Provinces = await DynamicSelect(ProvinceDAOs, filter);
@@ -167,7 +167,8 @@ namespace DMS.Repositories
 
         public async Task<Province> Get(long Id)
         {
-            Province Province = await DataContext.Province.Where(x => x.Id == Id).AsNoTracking().Select(x => new Province()
+            Province Province = await DataContext.Province.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new Province()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -206,7 +207,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Province Province)
         {
-            ProvinceDAO ProvinceDAO = DataContext.Province.Where(x => x.Id == Province.Id || x.Code == Province.Code).AsNoTracking().FirstOrDefault();
+            ProvinceDAO ProvinceDAO = DataContext.Province.Where(x => x.Id == Province.Id || x.Code == Province.Code).FirstOrDefault();
             if (ProvinceDAO == null)
                 return false;
             ProvinceDAO.Id = Province.Id;
@@ -222,7 +223,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Province Province)
         {
-            await DataContext.Province.Where(x => x.Id == Province.Id).AsNoTracking().UpdateFromQueryAsync(x => new ProvinceDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.Province.Where(x => x.Id == Province.Id).UpdateFromQueryAsync(x => new ProvinceDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

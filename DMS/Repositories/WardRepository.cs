@@ -168,7 +168,7 @@ namespace DMS.Repositories
         public async Task<List<Ward>> List(WardFilter filter)
         {
             if (filter == null) return new List<Ward>();
-            IQueryable<WardDAO> WardDAOs = DataContext.Ward;
+            IQueryable<WardDAO> WardDAOs = DataContext.Ward.AsNoTracking();
             WardDAOs = DynamicFilter(WardDAOs, filter);
             WardDAOs = DynamicOrder(WardDAOs, filter);
             List<Ward> Wards = await DynamicSelect(WardDAOs, filter);
@@ -226,7 +226,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(Ward Ward)
         {
-            WardDAO WardDAO = DataContext.Ward.Where(x => x.Id == Ward.Id).AsNoTracking().FirstOrDefault();
+            WardDAO WardDAO = DataContext.Ward.Where(x => x.Id == Ward.Id).FirstOrDefault();
             if (WardDAO == null)
                 return false;
             WardDAO.Id = Ward.Id;
@@ -243,7 +243,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Ward Ward)
         {
-            await DataContext.Ward.Where(x => x.Id == Ward.Id).AsNoTracking().UpdateFromQueryAsync(x => new WardDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.Ward.Where(x => x.Id == Ward.Id).UpdateFromQueryAsync(x => new WardDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

@@ -198,7 +198,7 @@ namespace DMS.Repositories
         public async Task<List<AppUser>> List(AppUserFilter filter)
         {
             if (filter == null) return new List<AppUser>();
-            IQueryable<AppUserDAO> AppUserDAOs = DataContext.AppUser;
+            IQueryable<AppUserDAO> AppUserDAOs = DataContext.AppUser.AsNoTracking();
             AppUserDAOs = DynamicFilter(AppUserDAOs, filter);
             AppUserDAOs = DynamicOrder(AppUserDAOs, filter);
             List<AppUser> AppUsers = await DynamicSelect(AppUserDAOs, filter);
@@ -273,7 +273,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(AppUser AppUser)
         {
-            AppUserDAO AppUserDAO = DataContext.AppUser.Where(x => x.Id == AppUser.Id).AsNoTracking().FirstOrDefault();
+            AppUserDAO AppUserDAO = DataContext.AppUser.Where(x => x.Id == AppUser.Id).FirstOrDefault();
             if (AppUserDAO == null)
                 return false;
             AppUserDAO.Id = AppUser.Id;
@@ -293,7 +293,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(AppUser AppUser)
         {
-            await DataContext.AppUser.Where(x => x.Id == AppUser.Id).AsNoTracking().UpdateFromQueryAsync(x => new AppUserDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.AppUser.Where(x => x.Id == AppUser.Id).UpdateFromQueryAsync(x => new AppUserDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

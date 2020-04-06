@@ -284,7 +284,7 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 } : null,
-            }).AsNoTracking().ToListAsync();
+            }).ToListAsync();
             return Resellers;
         }
 
@@ -298,7 +298,7 @@ namespace DMS.Repositories
         public async Task<List<Reseller>> List(ResellerFilter filter)
         {
             if (filter == null) return new List<Reseller>();
-            IQueryable<ResellerDAO> ResellerDAOs = DataContext.Reseller;
+            IQueryable<ResellerDAO> ResellerDAOs = DataContext.Reseller.AsNoTracking();
             ResellerDAOs = DynamicFilter(ResellerDAOs, filter);
             ResellerDAOs = DynamicOrder(ResellerDAOs, filter);
             List<Reseller> Resellers = await DynamicSelect(ResellerDAOs, filter);
@@ -307,7 +307,8 @@ namespace DMS.Repositories
 
         public async Task<Reseller> Get(long Id)
         {
-            Reseller Reseller = await DataContext.Reseller.Where(x => x.Id == Id).Select(x => new Reseller()
+            Reseller Reseller = await DataContext.Reseller.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new Reseller()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -369,7 +370,7 @@ namespace DMS.Repositories
                     Code = x.Status.Code,
                     Name = x.Status.Name,
                 },
-            }).AsNoTracking().FirstOrDefaultAsync();
+            }).FirstOrDefaultAsync();
 
             if (Reseller == null)
                 return null;
