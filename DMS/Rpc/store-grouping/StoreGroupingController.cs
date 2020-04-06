@@ -313,6 +313,8 @@ namespace DMS.Rpc.store_grouping
                         DeliveryAddress = x.ParentStore.DeliveryAddress,
                         Latitude = x.ParentStore.Latitude,
                         Longitude = x.ParentStore.Longitude,
+                        DeliveryLatitude = x.ParentStore.DeliveryLatitude,
+                        DeliveryLongitude = x.ParentStore.DeliveryLongitude,
                         OwnerName = x.ParentStore.OwnerName,
                         OwnerPhone = x.ParentStore.OwnerPhone,
                         OwnerEmail = x.ParentStore.OwnerEmail,
@@ -421,6 +423,8 @@ namespace DMS.Rpc.store_grouping
             StoreFilter.DeliveryAddress = StoreGrouping_StoreFilterDTO.DeliveryAddress;
             StoreFilter.Latitude = StoreGrouping_StoreFilterDTO.Latitude;
             StoreFilter.Longitude = StoreGrouping_StoreFilterDTO.Longitude;
+            StoreFilter.DeliveryLatitude = StoreGrouping_StoreFilterDTO.DeliveryLatitude;
+            StoreFilter.DeliveryLongitude = StoreGrouping_StoreFilterDTO.DeliveryLongitude;
             StoreFilter.OwnerName = StoreGrouping_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = StoreGrouping_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = StoreGrouping_StoreFilterDTO.OwnerEmail;
@@ -453,6 +457,8 @@ namespace DMS.Rpc.store_grouping
             StoreFilter.DeliveryAddress = StoreGrouping_StoreFilterDTO.DeliveryAddress;
             StoreFilter.Latitude = StoreGrouping_StoreFilterDTO.Latitude;
             StoreFilter.Longitude = StoreGrouping_StoreFilterDTO.Longitude;
+            StoreFilter.DeliveryLatitude = StoreGrouping_StoreFilterDTO.DeliveryLatitude;
+            StoreFilter.DeliveryLongitude = StoreGrouping_StoreFilterDTO.DeliveryLongitude;
             StoreFilter.OwnerName = StoreGrouping_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = StoreGrouping_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = StoreGrouping_StoreFilterDTO.OwnerEmail;

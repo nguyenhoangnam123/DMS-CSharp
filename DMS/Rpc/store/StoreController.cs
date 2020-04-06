@@ -415,7 +415,7 @@ namespace DMS.Rpc.store
             }
 
             Stores = await StoreService.Import(Stores);
-            
+
             List<Store_StoreDTO> Store_StoreDTOs = Stores
                 .Select(c => new Store_StoreDTO(c)).ToList();
             return Store_StoreDTOs;
@@ -439,13 +439,13 @@ namespace DMS.Rpc.store
             {
                 var StoreHeaders = new List<string[]>()
                 {
-                    new string[] 
-                    { 
-                        "Mã Cửa Hàng", 
-                        "Tên Cửa Hàng", 
-                        "Đơn Vị Quản Lý", 
-                        "Cửa Hàng Cha", 
-                        "Câp Cửa Hàng" , 
+                    new string[]
+                    {
+                        "Mã Cửa Hàng",
+                        "Tên Cửa Hàng",
+                        "Đơn Vị Quản Lý",
+                        "Cửa Hàng Cha",
+                        "Câp Cửa Hàng" ,
                         "Nhóm Cửa Hàng",
                         "Mã Khách Hàng",
                         "Điện Thoại",
@@ -555,6 +555,8 @@ namespace DMS.Rpc.store
             Store.DeliveryAddress = Store_StoreDTO.DeliveryAddress;
             Store.Latitude = Store_StoreDTO.Latitude;
             Store.Longitude = Store_StoreDTO.Longitude;
+            Store.DeliveryLatitude = Store_StoreDTO.DeliveryLatitude;
+            Store.DeliveryLongitude = Store_StoreDTO.DeliveryLongitude;
             Store.OwnerName = Store_StoreDTO.OwnerName;
             Store.OwnerPhone = Store_StoreDTO.OwnerPhone;
             Store.OwnerEmail = Store_StoreDTO.OwnerEmail;
@@ -591,6 +593,7 @@ namespace DMS.Rpc.store
                 StoreTypeId = Store_StoreDTO.ParentStore.StoreTypeId,
                 StoreGroupingId = Store_StoreDTO.ParentStore.StoreGroupingId,
                 Telephone = Store_StoreDTO.ParentStore.Telephone,
+                ResellerId = Store_StoreDTO.ParentStore.ResellerId,
                 ProvinceId = Store_StoreDTO.ParentStore.ProvinceId,
                 DistrictId = Store_StoreDTO.ParentStore.DistrictId,
                 WardId = Store_StoreDTO.ParentStore.WardId,
@@ -598,6 +601,8 @@ namespace DMS.Rpc.store
                 DeliveryAddress = Store_StoreDTO.ParentStore.DeliveryAddress,
                 Latitude = Store_StoreDTO.ParentStore.Latitude,
                 Longitude = Store_StoreDTO.ParentStore.Longitude,
+                DeliveryLatitude = Store_StoreDTO.ParentStore.DeliveryLatitude,
+                DeliveryLongitude = Store_StoreDTO.ParentStore.DeliveryLongitude,
                 OwnerName = Store_StoreDTO.ParentStore.OwnerName,
                 OwnerPhone = Store_StoreDTO.ParentStore.OwnerPhone,
                 OwnerEmail = Store_StoreDTO.ParentStore.OwnerEmail,
@@ -673,6 +678,7 @@ namespace DMS.Rpc.store
             StoreFilter.StoreTypeId = Store_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Store_StoreFilterDTO.StoreGroupingId;
             StoreFilter.Telephone = Store_StoreFilterDTO.Telephone;
+            StoreFilter.ResellerId = Store_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Store_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Store_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Store_StoreFilterDTO.WardId;
@@ -680,6 +686,8 @@ namespace DMS.Rpc.store
             StoreFilter.DeliveryAddress = Store_StoreFilterDTO.DeliveryAddress;
             StoreFilter.Latitude = Store_StoreFilterDTO.Latitude;
             StoreFilter.Longitude = Store_StoreFilterDTO.Longitude;
+            StoreFilter.DeliveryLatitude = Store_StoreFilterDTO.DeliveryLatitude;
+            StoreFilter.DeliveryLongitude = Store_StoreFilterDTO.DeliveryLongitude;
             StoreFilter.OwnerName = Store_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = Store_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Store_StoreFilterDTO.OwnerEmail;
@@ -740,6 +748,7 @@ namespace DMS.Rpc.store
             StoreFilter.StoreTypeId = Store_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Store_StoreFilterDTO.StoreGroupingId;
             StoreFilter.Telephone = Store_StoreFilterDTO.Telephone;
+            StoreFilter.ResellerId = Store_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Store_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Store_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Store_StoreFilterDTO.WardId;

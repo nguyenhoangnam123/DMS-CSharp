@@ -54,6 +54,8 @@ namespace DMS.Rpc.store_grouping
             this.DeliveryAddress = Store.DeliveryAddress;
             this.Latitude = Store.Latitude;
             this.Longitude = Store.Longitude;
+            this.DeliveryLatitude = Store.DeliveryLatitude;
+            this.DeliveryLongitude = Store.DeliveryLongitude;
             this.OwnerName = Store.OwnerName;
             this.OwnerPhone = Store.OwnerPhone;
             this.OwnerEmail = Store.OwnerEmail;
@@ -101,6 +103,9 @@ namespace DMS.Rpc.store_grouping
         public DecimalFilter Latitude { get; set; }
 
         public DecimalFilter Longitude { get; set; }
+        public DecimalFilter DeliveryLatitude { get; set; }
+
+        public DecimalFilter DeliveryLongitude { get; set; }
 
         public StringFilter OwnerName { get; set; }
 

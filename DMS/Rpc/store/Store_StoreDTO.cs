@@ -22,6 +22,8 @@ namespace DMS.Rpc.store
         public string DeliveryAddress { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
+        public decimal? DeliveryLatitude { get; set; }
+        public decimal? DeliveryLongitude { get; set; }
         public string OwnerName { get; set; }
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
@@ -55,6 +57,8 @@ namespace DMS.Rpc.store
             this.DeliveryAddress = Store.DeliveryAddress;
             this.Latitude = Store.Latitude;
             this.Longitude = Store.Longitude;
+            this.DeliveryLatitude = Store.DeliveryLatitude;
+            this.DeliveryLongitude = Store.DeliveryLongitude;
             this.OwnerName = Store.OwnerName;
             this.OwnerPhone = Store.OwnerPhone;
             this.OwnerEmail = Store.OwnerEmail;
@@ -90,6 +94,8 @@ namespace DMS.Rpc.store
         public StringFilter DeliveryAddress { get; set; }
         public DecimalFilter Latitude { get; set; }
         public DecimalFilter Longitude { get; set; }
+        public DecimalFilter DeliveryLatitude { get; set; }
+        public DecimalFilter DeliveryLongitude { get; set; }
         public StringFilter OwnerName { get; set; }
         public StringFilter OwnerPhone { get; set; }
         public StringFilter OwnerEmail { get; set; }
