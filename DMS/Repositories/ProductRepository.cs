@@ -570,6 +570,18 @@ namespace DMS.Repositories
                 ProductDAOs.Add(ProductDAO);
             }
             await DataContext.BulkMergeAsync(ProductDAOs);
+
+            foreach (var Product in Products)
+            {
+                long ProductId = ProductDAOs.Where(p => p.Code == Product.Code).Select(p => p.Id).FirstOrDefault();
+                foreach (var item in Product.Items)
+                {
+                    item.ProductId = ProductId;
+                }
+            }
+            List<Item> Items = Products.SelectMany(p => p.Items).ToList();
+            await DataContext.BulkMergeAsync(Items);
+
             return true;
         }
 
