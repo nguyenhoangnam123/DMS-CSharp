@@ -46,6 +46,7 @@ namespace DMS.Rpc.store_grouping
             { nameof(StoreGroupingFilter.ParentId), FieldType.ID },
             { nameof(StoreGroupingFilter.Path), FieldType.STRING },
             { nameof(StoreGroupingFilter.Level), FieldType.LONG },
+            { nameof(StoreGroupingFilter.StatusId), FieldType.ID },
         };
     }
 

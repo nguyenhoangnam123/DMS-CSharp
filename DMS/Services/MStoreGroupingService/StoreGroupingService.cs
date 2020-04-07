@@ -319,6 +319,8 @@ namespace DMS.Services.MStoreGrouping
                     subFilter.Path = Map(subFilter.Path, currentFilter.Value);
                 if (currentFilter.Value.Name == nameof(subFilter.Level))
                     subFilter.Level = Map(subFilter.Level, currentFilter.Value);
+                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
+                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
             }
             return filter;
         }

@@ -36,7 +36,7 @@ namespace DMS.Rpc.store
             this.Path = StoreGrouping.Path;
 
             this.Level = StoreGrouping.Level;
-
+            this.StatusId = StoreGrouping.StatusId;
 
         }
     }
@@ -55,6 +55,7 @@ namespace DMS.Rpc.store
         public StringFilter Path { get; set; }
 
         public LongFilter Level { get; set; }
+        public IdFilter StatusId { get; set; }
 
         public StoreGroupingOrder OrderBy { get; set; }
     }

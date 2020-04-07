@@ -14,7 +14,9 @@ namespace DMS.Entities
         public long? ParentId { get; set; }
         public string Path { get; set; }
         public long Level { get; set; }
+        public long StatusId { get; set; }
         public StoreGrouping Parent { get; set; }
+        public Status Status { get; set; }
         public List<Store> Stores { get; set; }
 
         public bool Equals(StoreGrouping other)
@@ -35,6 +37,7 @@ namespace DMS.Entities
         public IdFilter ParentId { get; set; }
         public StringFilter Path { get; set; }
         public LongFilter Level { get; set; }
+        public IdFilter StatusId { get; set; }
         public List<StoreGroupingFilter> OrFilter { get; set; }
         public StoreGroupingOrder OrderBy { get; set; }
         public StoreGroupingSelect Selects { get; set; }
@@ -49,6 +52,7 @@ namespace DMS.Entities
         Parent = 3,
         Path = 4,
         Level = 5,
+        Status = 6
     }
 
     [Flags]
@@ -61,5 +65,6 @@ namespace DMS.Entities
         Parent = E._3,
         Path = E._4,
         Level = E._5,
+        Status = E._6
     }
 }
