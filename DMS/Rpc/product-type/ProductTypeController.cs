@@ -34,6 +34,7 @@ namespace DMS.Rpc.product_type
             { nameof(ProductTypeFilter.Name), FieldType.STRING },
             { nameof(ProductTypeFilter.Description), FieldType.STRING },
             { nameof(ProductTypeFilter.StatusId), FieldType.ID },
+            { nameof(ProductTypeFilter.UpdatedAt), FieldType.DATE },
         };
     }
 
@@ -222,6 +223,7 @@ namespace DMS.Rpc.product_type
             ProductType.Name = ProductType_ProductTypeDTO.Name;
             ProductType.Description = ProductType_ProductTypeDTO.Description;
             ProductType.StatusId = ProductType_ProductTypeDTO.StatusId;
+            ProductType.UpdatedAt = ProductType_ProductTypeDTO.UpdatedAt;
             ProductType.Status = ProductType_ProductTypeDTO.Status == null ? null : new Status
             {
                 Id = ProductType_ProductTypeDTO.Status.Id,
@@ -246,6 +248,7 @@ namespace DMS.Rpc.product_type
             ProductTypeFilter.Name = ProductType_ProductTypeFilterDTO.Name;
             ProductTypeFilter.Description = ProductType_ProductTypeFilterDTO.Description;
             ProductTypeFilter.StatusId = ProductType_ProductTypeFilterDTO.StatusId;
+            ProductTypeFilter.UpdatedAt = ProductType_ProductTypeFilterDTO.UpdatedAt;
             return ProductTypeFilter;
         }
 

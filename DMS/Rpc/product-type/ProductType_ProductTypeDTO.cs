@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using System;
 
 namespace DMS.Rpc.product_type
 {
@@ -10,6 +11,7 @@ namespace DMS.Rpc.product_type
         public string Name { get; set; }
         public string Description { get; set; }
         public long StatusId { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public ProductType_StatusDTO Status { get; set; }
         public ProductType_ProductTypeDTO() { }
         public ProductType_ProductTypeDTO(ProductType ProductType)
@@ -19,6 +21,7 @@ namespace DMS.Rpc.product_type
             this.Name = ProductType.Name;
             this.Description = ProductType.Description;
             this.StatusId = ProductType.StatusId;
+            this.UpdatedAt = ProductType.UpdatedAt;
             this.Status = ProductType.Status == null ? null : new ProductType_StatusDTO(ProductType.Status);
             this.Errors = ProductType.Errors;
         }
@@ -31,6 +34,7 @@ namespace DMS.Rpc.product_type
         public StringFilter Name { get; set; }
         public StringFilter Description { get; set; }
         public IdFilter StatusId { get; set; }
+        public DateFilter UpdatedAt { get; set; }
         public ProductTypeOrder OrderBy { get; set; }
     }
 }
