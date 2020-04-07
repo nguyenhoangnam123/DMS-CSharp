@@ -239,6 +239,7 @@ namespace DMS.Rpc.store_grouping
             StoreGrouping.ParentId = StoreGrouping_StoreGroupingDTO.ParentId;
             StoreGrouping.Path = StoreGrouping_StoreGroupingDTO.Path;
             StoreGrouping.Level = StoreGrouping_StoreGroupingDTO.Level;
+            StoreGrouping.StatusId = StoreGrouping_StoreGroupingDTO.StatusId;
             StoreGrouping.Parent = StoreGrouping_StoreGroupingDTO.Parent == null ? null : new StoreGrouping
             {
                 Id = StoreGrouping_StoreGroupingDTO.Parent.Id,
@@ -247,6 +248,12 @@ namespace DMS.Rpc.store_grouping
                 Path = StoreGrouping_StoreGroupingDTO.Parent.Path,
                 Level = StoreGrouping_StoreGroupingDTO.Parent.Level,
                 ParentId = StoreGrouping_StoreGroupingDTO.Parent.ParentId,
+            };
+            StoreGrouping.Status = StoreGrouping_StoreGroupingDTO.Status == null ? null : new Status
+            {
+                Id = StoreGrouping_StoreGroupingDTO.Status.Id,
+                Code = StoreGrouping_StoreGroupingDTO.Status.Code,
+                Name = StoreGrouping_StoreGroupingDTO.Status.Name,
             };
             StoreGrouping.Stores = StoreGrouping_StoreGroupingDTO.Stores?
                 .Select(x => new Store
@@ -370,6 +377,7 @@ namespace DMS.Rpc.store_grouping
             StoreGroupingFilter.ParentId = StoreGrouping_StoreGroupingFilterDTO.ParentId;
             StoreGroupingFilter.Path = StoreGrouping_StoreGroupingFilterDTO.Path;
             StoreGroupingFilter.Level = StoreGrouping_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.StatusId = StoreGrouping_StoreGroupingFilterDTO.StatusId;
             return StoreGroupingFilter;
         }
 
@@ -382,6 +390,7 @@ namespace DMS.Rpc.store_grouping
             StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
             StoreGroupingFilter.OrderType = OrderType.ASC;
             StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<StoreGrouping_StoreGroupingDTO> StoreGrouping_StoreGroupingDTOs = StoreGroupings
                 .Select(x => new StoreGrouping_StoreGroupingDTO(x)).ToList();

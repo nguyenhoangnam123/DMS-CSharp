@@ -65,6 +65,7 @@ namespace DMS.Entities
         Parent = E._3,
         Path = E._4,
         Level = E._5,
-        Status = E._6
+        Status = E._6,
+        Stores = E._7
     }
 }

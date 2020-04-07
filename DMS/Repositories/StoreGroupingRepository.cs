@@ -151,6 +151,48 @@ namespace DMS.Repositories
                 Path = filter.Selects.Contains(StoreGroupingSelect.Path) ? q.Path : default(string),
                 Level = filter.Selects.Contains(StoreGroupingSelect.Level) ? q.Level : default(long),
                 StatusId = filter.Selects.Contains(StoreGroupingSelect.Status) ? q.StatusId : default(long),
+                Parent = filter.Selects.Contains(StoreGroupingSelect.Parent) && q.Parent != null ? new StoreGrouping
+                {
+                    Id = q.Parent.Id,
+                    Code = q.Parent.Code,
+                    Name = q.Parent.Name,
+                    ParentId = q.Parent.ParentId,
+                    Path = q.Parent.Path,
+                    Level = q.Parent.Level,
+                    StatusId = q.Parent.StatusId,
+                } : null,
+                Status = filter.Selects.Contains(StoreGroupingSelect.Status) && q.Status != null ? new Status
+                {
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
+                } : null,
+                Stores = filter.Selects.Contains(StoreGroupingSelect.Stores) && q.Stores == null ? null :
+                q.Stores.Select(s => new Store
+                {
+                    Id = s.Id,
+                    Code = s.Code,
+                    Name = s.Name,
+                    ParentStoreId = s.ParentStoreId,
+                    OrganizationId = s.OrganizationId,
+                    StoreTypeId = s.StoreTypeId,
+                    StoreGroupingId = s.StoreGroupingId,
+                    Telephone = s.Telephone,
+                    ResellerId = s.ResellerId,
+                    ProvinceId = s.ProvinceId,
+                    DistrictId = s.DistrictId,
+                    WardId = s.WardId,
+                    Address = s.Address,
+                    DeliveryAddress = s.DeliveryAddress,
+                    Latitude = s.Latitude,
+                    Longitude = s.Longitude,
+                    DeliveryLatitude = s.DeliveryLatitude,
+                    DeliveryLongitude = s.DeliveryLongitude,
+                    OwnerName = s.OwnerName,
+                    OwnerPhone = s.OwnerPhone,
+                    OwnerEmail = s.OwnerEmail,
+                    StatusId = s.StatusId,
+                }).ToList(),
             }).ToListAsync();
             return StoreGroupings;
         }
