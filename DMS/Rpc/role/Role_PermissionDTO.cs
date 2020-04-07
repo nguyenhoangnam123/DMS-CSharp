@@ -28,6 +28,7 @@ namespace DMS.Rpc.role
             this.Menu = Permission.Menu == null ? null : new Role_MenuDTO(Permission.Menu);
             this.PermissionFieldMappings = Permission.PermissionFieldMappings?.Select(x => new Role_PermissionFieldMappingDTO(x)).ToList();
             this.PermissionPageMappings = Permission.PermissionPageMappings?.Select(x => new Role_PermissionPageMappingDTO(x)).ToList();
+            this.Errors = Permission.Errors;
         }
     }
 

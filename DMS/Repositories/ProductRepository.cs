@@ -149,19 +149,19 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.ScanCode);
                             break;
                         case ProductOrder.ProductType:
-                            query = query.OrderBy(q => q.ProductTypeId);
+                            query = query.OrderBy(q => q.ProductType.Name);
                             break;
                         case ProductOrder.Supplier:
-                            query = query.OrderBy(q => q.SupplierId);
+                            query = query.OrderBy(q => q.Supplier.Name);
                             break;
                         case ProductOrder.Brand:
-                            query = query.OrderBy(q => q.BrandId);
+                            query = query.OrderBy(q => q.Brand.Name);
                             break;
                         case ProductOrder.UnitOfMeasure:
-                            query = query.OrderBy(q => q.UnitOfMeasureId);
+                            query = query.OrderBy(q => q.UnitOfMeasure.Name);
                             break;
                         case ProductOrder.UnitOfMeasureGrouping:
-                            query = query.OrderBy(q => q.UnitOfMeasureGroupingId);
+                            query = query.OrderBy(q => q.UnitOfMeasureGrouping.Name);
                             break;
                         case ProductOrder.SalePrice:
                             query = query.OrderBy(q => q.SalePrice);
@@ -170,7 +170,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.RetailPrice);
                             break;
                         case ProductOrder.TaxType:
-                            query = query.OrderBy(q => q.TaxTypeId);
+                            query = query.OrderBy(q => q.TaxType.Code);
                             break;
                         case ProductOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
@@ -208,19 +208,19 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.ScanCode);
                             break;
                         case ProductOrder.ProductType:
-                            query = query.OrderByDescending(q => q.ProductTypeId);
+                            query = query.OrderByDescending(q => q.ProductType.Name);
                             break;
                         case ProductOrder.Supplier:
-                            query = query.OrderByDescending(q => q.SupplierId);
+                            query = query.OrderByDescending(q => q.Supplier.Name);
                             break;
                         case ProductOrder.Brand:
-                            query = query.OrderByDescending(q => q.BrandId);
+                            query = query.OrderByDescending(q => q.Brand.Name);
                             break;
                         case ProductOrder.UnitOfMeasure:
-                            query = query.OrderByDescending(q => q.UnitOfMeasureId);
+                            query = query.OrderByDescending(q => q.UnitOfMeasure.Name);
                             break;
                         case ProductOrder.UnitOfMeasureGrouping:
-                            query = query.OrderByDescending(q => q.UnitOfMeasureGroupingId);
+                            query = query.OrderByDescending(q => q.UnitOfMeasureGrouping.Name);
                             break;
                         case ProductOrder.SalePrice:
                             query = query.OrderByDescending(q => q.SalePrice);
@@ -338,7 +338,7 @@ namespace DMS.Repositories
         public async Task<List<Product>> List(ProductFilter filter)
         {
             if (filter == null) return new List<Product>();
-            IQueryable<ProductDAO> ProductDAOs = DataContext.Product;
+            IQueryable<ProductDAO> ProductDAOs = DataContext.Product.AsNoTracking();
             ProductDAOs = DynamicFilter(ProductDAOs, filter);
             ProductDAOs = DynamicOrder(ProductDAOs, filter);
             List<Product> Products = await DynamicSelect(ProductDAOs, filter);
@@ -347,7 +347,8 @@ namespace DMS.Repositories
 
         public async Task<Product> Get(long Id)
         {
-            Product Product = await DataContext.Product.Where(x => x.Id == Id).Select(x => new Product()
+            Product Product = await DataContext.Product.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new Product()
             {
                 Id = x.Id,
                 Code = x.Code,

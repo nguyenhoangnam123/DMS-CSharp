@@ -121,7 +121,7 @@ namespace DMS.Repositories
         public async Task<List<Image>> List(ImageFilter filter)
         {
             if (filter == null) return new List<Image>();
-            IQueryable<ImageDAO> ImageDAOs = DataContext.Image;
+            IQueryable<ImageDAO> ImageDAOs = DataContext.Image.AsNoTracking();
             ImageDAOs = DynamicFilter(ImageDAOs, filter);
             ImageDAOs = DynamicOrder(ImageDAOs, filter);
             List<Image> Images = await DynamicSelect(ImageDAOs, filter);
@@ -130,7 +130,8 @@ namespace DMS.Repositories
 
         public async Task<Image> Get(long Id)
         {
-            Image Image = await DataContext.Image.Where(x => x.Id == Id).Select(x => new Image()
+            Image Image = await DataContext.Image.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new Image()
             {
                 Id = x.Id,
                 Name = x.Name,

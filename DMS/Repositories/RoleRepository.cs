@@ -136,7 +136,7 @@ namespace DMS.Repositories
         public async Task<List<Role>> List(RoleFilter filter)
         {
             if (filter == null) return new List<Role>();
-            IQueryable<RoleDAO> RoleDAOs = DataContext.Role;
+            IQueryable<RoleDAO> RoleDAOs = DataContext.Role.AsNoTracking();
             RoleDAOs = DynamicFilter(RoleDAOs, filter);
             RoleDAOs = DynamicOrder(RoleDAOs, filter);
             List<Role> Roles = await DynamicSelect(RoleDAOs, filter);
@@ -145,7 +145,8 @@ namespace DMS.Repositories
 
         public async Task<Role> Get(long Id)
         {
-            Role Role = await DataContext.Role.Where(x => x.Id == Id).Select(x => new Role()
+            Role Role = await DataContext.Role.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new Role()
             {
                 Id = x.Id,
                 Code = x.Code,

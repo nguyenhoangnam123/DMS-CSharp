@@ -34,6 +34,10 @@ namespace DMS.Rpc.store_grouping
         public const string BulkDelete = Default + "/bulk-delete";
 
         public const string SingleListParentStoreGrouping = Default + "/single-list-parent-store-store";
+        public const string SingleListStatus = Default + "/single-list-status";
+
+        public const string CountStore = Default + "/count-store";
+        public const string ListStore = Default + "/list-store";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(StoreGroupingFilter.Id), FieldType.ID },
@@ -42,40 +46,25 @@ namespace DMS.Rpc.store_grouping
             { nameof(StoreGroupingFilter.ParentId), FieldType.ID },
             { nameof(StoreGroupingFilter.Path), FieldType.STRING },
             { nameof(StoreGroupingFilter.Level), FieldType.LONG },
-            { nameof(StoreGroupingFilter.StatusId), FieldType.LONG },
+            { nameof(StoreGroupingFilter.StatusId), FieldType.ID },
         };
     }
 
     public class StoreGroupingController : RpcController
     {
         private IStoreService StoreService;
-        private IDistrictService DistrictService;
-        private IOrganizationService OrganizationService;
-        private IProvinceService ProvinceService;
         private IStatusService StatusService;
-        private IStoreTypeService StoreTypeService;
-        private IWardService WardService;
         private IStoreGroupingService StoreGroupingService;
         private ICurrentContext CurrentContext;
         public StoreGroupingController(
             IStoreService StoreService,
-            IDistrictService DistrictService,
-            IOrganizationService OrganizationService,
-            IProvinceService ProvinceService,
             IStatusService StatusService,
-            IStoreTypeService StoreTypeService,
-            IWardService WardService,
             IStoreGroupingService StoreGroupingService,
             ICurrentContext CurrentContext
         )
         {
             this.StoreService = StoreService;
-            this.DistrictService = DistrictService;
-            this.OrganizationService = OrganizationService;
-            this.ProvinceService = ProvinceService;
             this.StatusService = StatusService;
-            this.StoreTypeService = StoreTypeService;
-            this.WardService = WardService;
             this.StoreGroupingService = StoreGroupingService;
             this.CurrentContext = CurrentContext;
         }
@@ -259,13 +248,12 @@ namespace DMS.Rpc.store_grouping
                 Path = StoreGrouping_StoreGroupingDTO.Parent.Path,
                 Level = StoreGrouping_StoreGroupingDTO.Parent.Level,
                 ParentId = StoreGrouping_StoreGroupingDTO.Parent.ParentId,
-                StatusId = StoreGrouping_StoreGroupingDTO.Parent.StatusId
             };
             StoreGrouping.Status = StoreGrouping_StoreGroupingDTO.Status == null ? null : new Status
             {
                 Id = StoreGrouping_StoreGroupingDTO.Status.Id,
                 Code = StoreGrouping_StoreGroupingDTO.Status.Code,
-                Name = StoreGrouping_StoreGroupingDTO.Status.Name
+                Name = StoreGrouping_StoreGroupingDTO.Status.Name,
             };
             StoreGrouping.Stores = StoreGrouping_StoreGroupingDTO.Stores?
                 .Select(x => new Store
@@ -277,6 +265,7 @@ namespace DMS.Rpc.store_grouping
                     OrganizationId = x.OrganizationId,
                     StoreTypeId = x.StoreTypeId,
                     Telephone = x.Telephone,
+                    ResellerId = x.ResellerId,
                     ProvinceId = x.ProvinceId,
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
@@ -284,10 +273,14 @@ namespace DMS.Rpc.store_grouping
                     DeliveryAddress = x.DeliveryAddress,
                     Latitude = x.Latitude,
                     Longitude = x.Longitude,
+                    DeliveryLatitude = x.DeliveryLatitude,
+                    DeliveryLongitude = x.DeliveryLongitude,
                     OwnerName = x.OwnerName,
                     OwnerPhone = x.OwnerPhone,
                     OwnerEmail = x.OwnerEmail,
                     StatusId = x.StatusId,
+                    StoreGroupingId = x.StoreGroupingId,
+                    StoreStatusId = x.StoreStatusId,
                     District = new District
                     {
                         Id = x.District.Id,
@@ -320,6 +313,7 @@ namespace DMS.Rpc.store_grouping
                         StoreTypeId = x.ParentStore.StoreTypeId,
                         StoreGroupingId = x.ParentStore.StoreGroupingId,
                         Telephone = x.ParentStore.Telephone,
+                        ResellerId = x.ParentStore.ResellerId,
                         ProvinceId = x.ParentStore.ProvinceId,
                         DistrictId = x.ParentStore.DistrictId,
                         WardId = x.ParentStore.WardId,
@@ -327,10 +321,13 @@ namespace DMS.Rpc.store_grouping
                         DeliveryAddress = x.ParentStore.DeliveryAddress,
                         Latitude = x.ParentStore.Latitude,
                         Longitude = x.ParentStore.Longitude,
+                        DeliveryLatitude = x.ParentStore.DeliveryLatitude,
+                        DeliveryLongitude = x.ParentStore.DeliveryLongitude,
                         OwnerName = x.ParentStore.OwnerName,
                         OwnerPhone = x.ParentStore.OwnerPhone,
                         OwnerEmail = x.ParentStore.OwnerEmail,
                         StatusId = x.ParentStore.StatusId,
+                        StoreStatusId = x.ParentStore.StoreStatusId
                     },
                     Province = new Province
                     {
@@ -400,6 +397,88 @@ namespace DMS.Rpc.store_grouping
             return StoreGrouping_StoreGroupingDTOs;
         }
 
+        [Route(StoreGroupingRoute.SingleListStatus), HttpPost]
+        public async Task<List<StoreGrouping_StatusDTO>> SingleListStatus([FromBody] StoreGrouping_StatusFilterDTO StoreGrouping_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<StoreGrouping_StatusDTO> StoreGrouping_StatusDTOs = Statuses
+                .Select(x => new StoreGrouping_StatusDTO(x)).ToList();
+            return StoreGrouping_StatusDTOs;
+        }
+
+        [Route(StoreGroupingRoute.CountStore), HttpPost]
+        public async Task<long> CountStore([FromBody] StoreGrouping_StoreFilterDTO StoreGrouping_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Id = StoreGrouping_StoreFilterDTO.Id;
+            StoreFilter.Code = StoreGrouping_StoreFilterDTO.Code;
+            StoreFilter.Name = StoreGrouping_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = StoreGrouping_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = StoreGrouping_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = StoreGrouping_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = StoreGrouping_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.Telephone = StoreGrouping_StoreFilterDTO.Telephone;
+            StoreFilter.ResellerId = StoreGrouping_StoreFilterDTO.ResellerId;
+            StoreFilter.ProvinceId = StoreGrouping_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = StoreGrouping_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = StoreGrouping_StoreFilterDTO.WardId;
+            StoreFilter.Address = StoreGrouping_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = StoreGrouping_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = StoreGrouping_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = StoreGrouping_StoreFilterDTO.Longitude;
+            StoreFilter.DeliveryLatitude = StoreGrouping_StoreFilterDTO.DeliveryLatitude;
+            StoreFilter.DeliveryLongitude = StoreGrouping_StoreFilterDTO.DeliveryLongitude;
+            StoreFilter.OwnerName = StoreGrouping_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = StoreGrouping_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = StoreGrouping_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            return await StoreService.Count(StoreFilter);
+        }
+
+        [Route(StoreGroupingRoute.ListStore), HttpPost]
+        public async Task<List<StoreGrouping_StoreDTO>> ListStore([FromBody] StoreGrouping_StoreFilterDTO StoreGrouping_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = StoreGrouping_StoreFilterDTO.Skip;
+            StoreFilter.Take = StoreGrouping_StoreFilterDTO.Take;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = StoreGrouping_StoreFilterDTO.Id;
+            StoreFilter.Code = StoreGrouping_StoreFilterDTO.Code;
+            StoreFilter.Name = StoreGrouping_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = StoreGrouping_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = StoreGrouping_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = StoreGrouping_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = StoreGrouping_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.Telephone = StoreGrouping_StoreFilterDTO.Telephone;
+            StoreFilter.ResellerId = StoreGrouping_StoreFilterDTO.ResellerId;
+            StoreFilter.ProvinceId = StoreGrouping_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = StoreGrouping_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = StoreGrouping_StoreFilterDTO.WardId;
+            StoreFilter.Address = StoreGrouping_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = StoreGrouping_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = StoreGrouping_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = StoreGrouping_StoreFilterDTO.Longitude;
+            StoreFilter.DeliveryLatitude = StoreGrouping_StoreFilterDTO.DeliveryLatitude;
+            StoreFilter.DeliveryLongitude = StoreGrouping_StoreFilterDTO.DeliveryLongitude;
+            StoreFilter.OwnerName = StoreGrouping_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = StoreGrouping_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = StoreGrouping_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<StoreGrouping_StoreDTO> StoreGrouping_StoreDTOs = Stores
+                .Select(x => new StoreGrouping_StoreDTO(x)).ToList();
+            return StoreGrouping_StoreDTOs;
+        }
     }
 }
 

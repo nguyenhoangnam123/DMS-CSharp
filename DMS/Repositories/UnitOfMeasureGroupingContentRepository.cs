@@ -154,7 +154,7 @@ namespace DMS.Repositories
 
         public async Task<UnitOfMeasureGroupingContent> Get(long Id)
         {
-            UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent = await DataContext.UnitOfMeasureGroupingContent.Where(x => x.Id == Id).Select(x => new UnitOfMeasureGroupingContent()
+            UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent = await DataContext.UnitOfMeasureGroupingContent.Where(x => x.Id == Id).AsNoTracking().Select(x => new UnitOfMeasureGroupingContent()
             {
                 Id = x.Id,
                 UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
@@ -198,7 +198,8 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent)
         {
-            UnitOfMeasureGroupingContentDAO UnitOfMeasureGroupingContentDAO = DataContext.UnitOfMeasureGroupingContent.Where(x => x.Id == UnitOfMeasureGroupingContent.Id).FirstOrDefault();
+            UnitOfMeasureGroupingContentDAO UnitOfMeasureGroupingContentDAO = DataContext.UnitOfMeasureGroupingContent
+                .Where(x => x.Id == UnitOfMeasureGroupingContent.Id).FirstOrDefault();
             if (UnitOfMeasureGroupingContentDAO == null)
                 return false;
             UnitOfMeasureGroupingContentDAO.Id = UnitOfMeasureGroupingContent.Id;

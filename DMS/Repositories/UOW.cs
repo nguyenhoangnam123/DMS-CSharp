@@ -1,6 +1,8 @@
 using Common;
-using DMS.Models;
+using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using DMS.Models;
+using DMS.Repositories;
 
 namespace DMS.Repositories
 {
@@ -23,6 +25,9 @@ namespace DMS.Repositories
         IProductProductGroupingMappingRepository ProductProductGroupingMappingRepository { get; }
         IProductTypeRepository ProductTypeRepository { get; }
         IProvinceRepository ProvinceRepository { get; }
+        IResellerRepository ResellerRepository { get; }
+        IResellerStatusRepository ResellerStatusRepository { get; }
+        IResellerTypeRepository ResellerTypeRepository { get; }
         IRoleRepository RoleRepository { get; }
         ISexRepository SexRepository { get; }
         IStatusRepository StatusRepository { get; }
@@ -36,7 +41,7 @@ namespace DMS.Repositories
         IUnitOfMeasureGroupingRepository UnitOfMeasureGroupingRepository { get; }
         IVariationRepository VariationRepository { get; }
         IVariationGroupingRepository VariationGroupingRepository { get; }
-        IWardRepository WardRepository { get; } 
+        IWardRepository WardRepository { get; }
     }
 
     public class UOW : IUOW
@@ -56,6 +61,9 @@ namespace DMS.Repositories
         public IProductProductGroupingMappingRepository ProductProductGroupingMappingRepository { get; private set; }
         public IProductTypeRepository ProductTypeRepository { get; private set; }
         public IProvinceRepository ProvinceRepository { get; private set; }
+        public IResellerRepository ResellerRepository { get; private set; }
+        public IResellerStatusRepository ResellerStatusRepository { get; private set; }
+        public IResellerTypeRepository ResellerTypeRepository { get; private set; }
         public IRoleRepository RoleRepository { get; private set; }
         public ISexRepository SexRepository { get; private set; }
         public IStatusRepository StatusRepository { get; private set; }
@@ -69,7 +77,7 @@ namespace DMS.Repositories
         public IUnitOfMeasureGroupingRepository UnitOfMeasureGroupingRepository { get; private set; }
         public IVariationRepository VariationRepository { get; private set; }
         public IVariationGroupingRepository VariationGroupingRepository { get; private set; }
-        public IWardRepository WardRepository { get; private set; } 
+        public IWardRepository WardRepository { get; private set; }
 
         public UOW(DataContext DataContext)
         {
@@ -88,6 +96,9 @@ namespace DMS.Repositories
             ProductProductGroupingMappingRepository = new ProductProductGroupingMappingRepository(DataContext);
             ProductTypeRepository = new ProductTypeRepository(DataContext);
             ProvinceRepository = new ProvinceRepository(DataContext);
+            ResellerRepository = new ResellerRepository(DataContext);
+            ResellerStatusRepository = new ResellerStatusRepository(DataContext);
+            ResellerTypeRepository = new ResellerTypeRepository(DataContext);
             RoleRepository = new RoleRepository(DataContext);
             SexRepository = new SexRepository(DataContext);
             StatusRepository = new StatusRepository(DataContext);
@@ -101,7 +112,7 @@ namespace DMS.Repositories
             UnitOfMeasureGroupingRepository = new UnitOfMeasureGroupingRepository(DataContext);
             VariationRepository = new VariationRepository(DataContext);
             VariationGroupingRepository = new VariationGroupingRepository(DataContext);
-            WardRepository = new WardRepository(DataContext); 
+            WardRepository = new WardRepository(DataContext);
         }
         public async Task Begin()
         {

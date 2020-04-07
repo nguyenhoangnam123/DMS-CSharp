@@ -20,6 +20,7 @@ namespace DMS.Rpc.product_type
             this.Description = ProductType.Description;
             this.StatusId = ProductType.StatusId;
             this.Status = ProductType.Status == null ? null : new ProductType_StatusDTO(ProductType.Status);
+            this.Errors = ProductType.Errors;
         }
     }
 

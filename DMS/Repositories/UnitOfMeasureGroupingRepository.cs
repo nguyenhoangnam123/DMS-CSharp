@@ -168,7 +168,7 @@ namespace DMS.Repositories
         public async Task<List<UnitOfMeasureGrouping>> List(UnitOfMeasureGroupingFilter filter)
         {
             if (filter == null) return new List<UnitOfMeasureGrouping>();
-            IQueryable<UnitOfMeasureGroupingDAO> UnitOfMeasureGroupingDAOs = DataContext.UnitOfMeasureGrouping;
+            IQueryable<UnitOfMeasureGroupingDAO> UnitOfMeasureGroupingDAOs = DataContext.UnitOfMeasureGrouping.AsNoTracking();
             UnitOfMeasureGroupingDAOs = DynamicFilter(UnitOfMeasureGroupingDAOs, filter);
             UnitOfMeasureGroupingDAOs = DynamicOrder(UnitOfMeasureGroupingDAOs, filter);
             List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await DynamicSelect(UnitOfMeasureGroupingDAOs, filter);
@@ -177,7 +177,8 @@ namespace DMS.Repositories
 
         public async Task<UnitOfMeasureGrouping> Get(long Id)
         {
-            UnitOfMeasureGrouping UnitOfMeasureGrouping = await DataContext.UnitOfMeasureGrouping.Where(x => x.Id == Id).Select(x => new UnitOfMeasureGrouping()
+            UnitOfMeasureGrouping UnitOfMeasureGrouping = await DataContext.UnitOfMeasureGrouping.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new UnitOfMeasureGrouping()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -243,7 +244,8 @@ namespace DMS.Repositories
 
         public async Task<bool> Update(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
-            UnitOfMeasureGroupingDAO UnitOfMeasureGroupingDAO = DataContext.UnitOfMeasureGrouping.Where(x => x.Id == UnitOfMeasureGrouping.Id).FirstOrDefault();
+            UnitOfMeasureGroupingDAO UnitOfMeasureGroupingDAO = DataContext.UnitOfMeasureGrouping
+                .Where(x => x.Id == UnitOfMeasureGrouping.Id).FirstOrDefault();
             if (UnitOfMeasureGroupingDAO == null)
                 return false;
             UnitOfMeasureGroupingDAO.Id = UnitOfMeasureGrouping.Id;
@@ -260,7 +262,8 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
-            await DataContext.UnitOfMeasureGrouping.Where(x => x.Id == UnitOfMeasureGrouping.Id).UpdateFromQueryAsync(x => new UnitOfMeasureGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.UnitOfMeasureGrouping.Where(x => x.Id == UnitOfMeasureGrouping.Id)
+                .UpdateFromQueryAsync(x => new UnitOfMeasureGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 

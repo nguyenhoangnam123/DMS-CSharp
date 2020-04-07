@@ -1,9 +1,12 @@
 #!/bin/bash
+if [ -z ${NODE} ]; then
+	    NODE="dms-backend_${HOSTNAME}"
+fi
 
-PROJECT_NAME=DMS.BE
+PROJECT_NAME="DMS"
 
-consul agent -config-dir /consul/config &
+dotnet ${PROJECT_NAME}.dll --urls http://0.0.0.0:5003 --environment Development --launch-profile ${PROJECT_NAME} &
+consul agent -config-dir /consul/config -node ${NODE}&
 sleep 5
-consul connect envoy -sidecar-for rd-auth &
-sleep 5
-dotnet $PROJECT_NAME.dll --urls http://0.0.0.0:5003 --environment Development --launch-profile $PROJECT_NAME
+consul connect envoy -sidecar-for dms-backend
+

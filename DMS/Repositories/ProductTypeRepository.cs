@@ -149,7 +149,7 @@ namespace DMS.Repositories
         public async Task<List<ProductType>> List(ProductTypeFilter filter)
         {
             if (filter == null) return new List<ProductType>();
-            IQueryable<ProductTypeDAO> ProductTypeDAOs = DataContext.ProductType;
+            IQueryable<ProductTypeDAO> ProductTypeDAOs = DataContext.ProductType.AsNoTracking();
             ProductTypeDAOs = DynamicFilter(ProductTypeDAOs, filter);
             ProductTypeDAOs = DynamicOrder(ProductTypeDAOs, filter);
             List<ProductType> ProductTypes = await DynamicSelect(ProductTypeDAOs, filter);
@@ -158,7 +158,8 @@ namespace DMS.Repositories
 
         public async Task<ProductType> Get(long Id)
         {
-            ProductType ProductType = await DataContext.ProductType.Where(x => x.Id == Id).Select(x => new ProductType()
+            ProductType ProductType = await DataContext.ProductType.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new ProductType()
             {
                 Id = x.Id,
                 Code = x.Code,

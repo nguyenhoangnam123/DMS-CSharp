@@ -198,7 +198,7 @@ namespace DMS.Repositories
         public async Task<List<AppUser>> List(AppUserFilter filter)
         {
             if (filter == null) return new List<AppUser>();
-            IQueryable<AppUserDAO> AppUserDAOs = DataContext.AppUser;
+            IQueryable<AppUserDAO> AppUserDAOs = DataContext.AppUser.AsNoTracking();
             AppUserDAOs = DynamicFilter(AppUserDAOs, filter);
             AppUserDAOs = DynamicOrder(AppUserDAOs, filter);
             List<AppUser> AppUsers = await DynamicSelect(AppUserDAOs, filter);
@@ -207,7 +207,7 @@ namespace DMS.Repositories
 
         public async Task<AppUser> Get(long Id)
         {
-            AppUser AppUser = await DataContext.AppUser.Where(x => x.Id == Id).Select(x => new AppUser()
+            AppUser AppUser = await DataContext.AppUser.Where(x => x.Id == Id).AsNoTracking().Select(x => new AppUser()
             {
                 Id = x.Id,
                 Username = x.Username,

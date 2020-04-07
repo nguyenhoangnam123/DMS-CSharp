@@ -172,7 +172,8 @@ namespace DMS.Repositories
 
         public async Task<ProductGrouping> Get(long Id)
         {
-            ProductGrouping ProductGrouping = await DataContext.ProductGrouping.Where(x => x.Id == Id).Select(x => new ProductGrouping()
+            ProductGrouping ProductGrouping = await DataContext.ProductGrouping.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new ProductGrouping()
             {
                 Id = x.Id,
                 Code = x.Code,

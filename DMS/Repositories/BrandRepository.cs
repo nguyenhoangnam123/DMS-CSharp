@@ -138,7 +138,7 @@ namespace DMS.Repositories
         public async Task<List<Brand>> List(BrandFilter filter)
         {
             if (filter == null) return new List<Brand>();
-            IQueryable<BrandDAO> BrandDAOs = DataContext.Brand;
+            IQueryable<BrandDAO> BrandDAOs = DataContext.Brand.AsNoTracking();
             BrandDAOs = DynamicFilter(BrandDAOs, filter);
             BrandDAOs = DynamicOrder(BrandDAOs, filter);
             List<Brand> Brands = await DynamicSelect(BrandDAOs, filter);
@@ -147,7 +147,8 @@ namespace DMS.Repositories
 
         public async Task<Brand> Get(long Id)
         {
-            Brand Brand = await DataContext.Brand.Where(x => x.Id == Id).Select(x => new Brand()
+            Brand Brand = await DataContext.Brand.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new Brand()
             {
                 Id = x.Id,
                 Code = x.Code,

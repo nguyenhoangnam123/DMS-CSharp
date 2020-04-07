@@ -23,6 +23,7 @@ namespace DMS.Rpc.product
             this.ScanCode = Item.ScanCode;
             this.SalePrice = Item.SalePrice;
             this.RetailPrice = Item.RetailPrice;
+            this.Errors = Item.Errors;
         }
     }
 

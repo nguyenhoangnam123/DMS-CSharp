@@ -192,7 +192,7 @@ namespace DMS.Repositories
 
         public async Task<Item> Get(long Id)
         {
-            Item Item = await DataContext.Item.Where(x => x.Id == Id).Select(x => new Item()
+            Item Item = await DataContext.Item.Where(x => x.Id == Id).AsNoTracking().Select(x => new Item()
             {
                 Id = x.Id,
                 ProductId = x.ProductId,

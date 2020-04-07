@@ -27,6 +27,7 @@ namespace DMS.Rpc.product_grouping
             this.Description = ProductGrouping.Description;
             this.Parent = ProductGrouping.Parent == null ? null : new ProductGrouping_ProductGroupingDTO(ProductGrouping.Parent);
             this.ProductProductGroupingMappings = ProductGrouping.ProductProductGroupingMappings?.Select(x => new ProductGrouping_ProductProductGroupingMappingDTO(x)).ToList();
+            this.Errors = ProductGrouping.Errors;
         }
     }
 

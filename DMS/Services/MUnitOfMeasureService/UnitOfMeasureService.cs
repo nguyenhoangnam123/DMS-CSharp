@@ -19,9 +19,8 @@ namespace DMS.Services.MUnitOfMeasure
         Task<UnitOfMeasure> Create(UnitOfMeasure UnitOfMeasure);
         Task<UnitOfMeasure> Update(UnitOfMeasure UnitOfMeasure);
         Task<UnitOfMeasure> Delete(UnitOfMeasure UnitOfMeasure);
+        Task<List<UnitOfMeasure>> BulkMerge(List<UnitOfMeasure> UnitOfMeasures);
         Task<List<UnitOfMeasure>> BulkDelete(List<UnitOfMeasure> UnitOfMeasures);
-        Task<List<UnitOfMeasure>> Import(DataFile DataFile);
-        Task<DataFile> Export(UnitOfMeasureFilter UnitOfMeasureFilter);
         UnitOfMeasureFilter ToFilter(UnitOfMeasureFilter UnitOfMeasureFilter);
     }
 
@@ -185,45 +184,27 @@ namespace DMS.Services.MUnitOfMeasure
             }
         }
 
-        public async Task<List<UnitOfMeasure>> Import(DataFile DataFile)
+        public async Task<List<UnitOfMeasure>> BulkMerge(List<UnitOfMeasure> UnitOfMeasures)
         {
-            List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
-            {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return UnitOfMeasures;
-                int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int DescriptionColumn = 3 + StartColumn;
-                int StatusIdColumn = 4 + StartColumn;
-                for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
-                {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, IdColumn].Value?.ToString()))
-                        break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string DescriptionValue = worksheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
-                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    UnitOfMeasure UnitOfMeasure = new UnitOfMeasure();
-                    UnitOfMeasure.Code = CodeValue;
-                    UnitOfMeasure.Name = NameValue;
-                    UnitOfMeasure.Description = DescriptionValue;
-                    UnitOfMeasures.Add(UnitOfMeasure);
-                }
-            }
-
-            if (!await UnitOfMeasureValidator.Import(UnitOfMeasures))
+            if (!await UnitOfMeasureValidator.BulkMerge(UnitOfMeasures))
                 return UnitOfMeasures;
-
             try
             {
                 await UOW.Begin();
+                List<UnitOfMeasure> dbUnitOfMeasures = await UOW.UnitOfMeasureRepository.List(new UnitOfMeasureFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = UnitOfMeasureSelect.Id | UnitOfMeasureSelect.Code,
+                });
+                foreach (UnitOfMeasure UnitOfMeasure in UnitOfMeasures)
+                {
+                    long UnitOfMeasureId = dbUnitOfMeasures.Where(x => x.Code == UnitOfMeasure.Code)
+                        .Select(x => x.Id).FirstOrDefault();
+                    UnitOfMeasure.Id = UnitOfMeasureId;
+                }
                 await UOW.UnitOfMeasureRepository.BulkMerge(UnitOfMeasures);
+
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(UnitOfMeasures, new { }, nameof(UnitOfMeasureService));
@@ -239,54 +220,6 @@ namespace DMS.Services.MUnitOfMeasure
                     throw new MessageException(ex.InnerException);
             }
         }
-
-        public async Task<DataFile> Export(UnitOfMeasureFilter UnitOfMeasureFilter)
-        {
-            List<UnitOfMeasure> UnitOfMeasures = await UOW.UnitOfMeasureRepository.List(UnitOfMeasureFilter);
-            MemoryStream MemoryStream = new MemoryStream();
-            using (ExcelPackage excelPackage = new ExcelPackage(MemoryStream))
-            {
-                //Set some properties of the Excel document
-                excelPackage.Workbook.Properties.Author = CurrentContext.UserName;
-                excelPackage.Workbook.Properties.Title = nameof(UnitOfMeasure);
-                excelPackage.Workbook.Properties.Created = StaticParams.DateTimeNow;
-
-                //Create the WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
-                int StartColumn = 1;
-                int StartRow = 2;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int DescriptionColumn = 3 + StartColumn;
-                int StatusIdColumn = 4 + StartColumn;
-
-                worksheet.Cells[1, IdColumn].Value = nameof(UnitOfMeasure.Id);
-                worksheet.Cells[1, CodeColumn].Value = nameof(UnitOfMeasure.Code);
-                worksheet.Cells[1, NameColumn].Value = nameof(UnitOfMeasure.Name);
-                worksheet.Cells[1, DescriptionColumn].Value = nameof(UnitOfMeasure.Description);
-                worksheet.Cells[1, StatusIdColumn].Value = nameof(UnitOfMeasure.StatusId);
-
-                for (int i = 0; i < UnitOfMeasures.Count; i++)
-                {
-                    UnitOfMeasure UnitOfMeasure = UnitOfMeasures[i];
-                    worksheet.Cells[i + StartRow, IdColumn].Value = UnitOfMeasure.Id;
-                    worksheet.Cells[i + StartRow, CodeColumn].Value = UnitOfMeasure.Code;
-                    worksheet.Cells[i + StartRow, NameColumn].Value = UnitOfMeasure.Name;
-                    worksheet.Cells[i + StartRow, DescriptionColumn].Value = UnitOfMeasure.Description;
-                    worksheet.Cells[i + StartRow, StatusIdColumn].Value = UnitOfMeasure.StatusId;
-                }
-                excelPackage.Save();
-            }
-
-            DataFile DataFile = new DataFile
-            {
-                Name = nameof(UnitOfMeasure),
-                Content = MemoryStream,
-            };
-            return DataFile;
-        }
-
         public UnitOfMeasureFilter ToFilter(UnitOfMeasureFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<UnitOfMeasureFilter>();

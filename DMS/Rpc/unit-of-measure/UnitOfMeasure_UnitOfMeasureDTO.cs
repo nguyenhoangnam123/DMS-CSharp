@@ -20,6 +20,7 @@ namespace DMS.Rpc.unit_of_measure
             this.Description = UnitOfMeasure.Description;
             this.StatusId = UnitOfMeasure.StatusId;
             this.Status = UnitOfMeasure.Status == null ? null : new UnitOfMeasure_StatusDTO(UnitOfMeasure.Status);
+            this.Errors = UnitOfMeasure.Errors;
         }
     }
 

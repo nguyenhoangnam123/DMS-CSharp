@@ -36,7 +36,6 @@ namespace DMS.Rpc.store
             this.Path = StoreGrouping.Path;
 
             this.Level = StoreGrouping.Level;
-
             this.StatusId = StoreGrouping.StatusId;
 
         }

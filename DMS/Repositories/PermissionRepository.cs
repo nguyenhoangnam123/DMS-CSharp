@@ -167,7 +167,7 @@ namespace DMS.Repositories
         public async Task<List<Permission>> List(PermissionFilter filter)
         {
             if (filter == null) return new List<Permission>();
-            IQueryable<PermissionDAO> PermissionDAOs = DataContext.Permission;
+            IQueryable<PermissionDAO> PermissionDAOs = DataContext.Permission.AsNoTracking();
             PermissionDAOs = DynamicFilter(PermissionDAOs, filter);
             PermissionDAOs = DynamicOrder(PermissionDAOs, filter);
             List<Permission> Permissions = await DynamicSelect(PermissionDAOs, filter);
@@ -176,7 +176,8 @@ namespace DMS.Repositories
 
         public async Task<Permission> Get(long Id)
         {
-            Permission Permission = await DataContext.Permission.Where(x => x.Id == Id).Select(x => new Permission()
+            Permission Permission = await DataContext.Permission.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new Permission()
             {
                 Id = x.Id,
                 Code = x.Code,

@@ -149,7 +149,7 @@ namespace DMS.Repositories
         public async Task<List<UnitOfMeasure>> List(UnitOfMeasureFilter filter)
         {
             if (filter == null) return new List<UnitOfMeasure>();
-            IQueryable<UnitOfMeasureDAO> UnitOfMeasureDAOs = DataContext.UnitOfMeasure;
+            IQueryable<UnitOfMeasureDAO> UnitOfMeasureDAOs = DataContext.UnitOfMeasure.AsNoTracking();
             UnitOfMeasureDAOs = DynamicFilter(UnitOfMeasureDAOs, filter);
             UnitOfMeasureDAOs = DynamicOrder(UnitOfMeasureDAOs, filter);
             List<UnitOfMeasure> UnitOfMeasures = await DynamicSelect(UnitOfMeasureDAOs, filter);
@@ -158,7 +158,7 @@ namespace DMS.Repositories
 
         public async Task<UnitOfMeasure> Get(long Id)
         {
-            UnitOfMeasure UnitOfMeasure = await DataContext.UnitOfMeasure.Where(x => x.Id == Id).Select(x => new UnitOfMeasure()
+            UnitOfMeasure UnitOfMeasure = await DataContext.UnitOfMeasure.Where(x => x.Id == Id).AsNoTracking().Select(x => new UnitOfMeasure()
             {
                 Id = x.Id,
                 Code = x.Code,

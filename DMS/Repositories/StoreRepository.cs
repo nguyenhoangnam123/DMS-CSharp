@@ -48,6 +48,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StoreTypeId, filter.StoreTypeId);
             if (filter.StoreGroupingId != null)
                 query = query.Where(q => q.StoreGroupingId, filter.StoreGroupingId);
+            if (filter.ResellerId != null)
+                query = query.Where(q => q.ResellerId, filter.ResellerId);
             if (filter.Telephone != null)
                 query = query.Where(q => q.Telephone, filter.Telephone);
             if (filter.ProvinceId != null)
@@ -64,6 +66,10 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Latitude, filter.Latitude);
             if (filter.Longitude != null)
                 query = query.Where(q => q.Longitude, filter.Longitude);
+            if (filter.DeliveryLatitude != null)
+                query = query.Where(q => q.DeliveryLatitude, filter.DeliveryLatitude);
+            if (filter.DeliveryLongitude != null)
+                query = query.Where(q => q.DeliveryLongitude, filter.DeliveryLongitude);
             if (filter.OwnerName != null)
                 query = query.Where(q => q.OwnerName, filter.OwnerName);
             if (filter.OwnerPhone != null)
@@ -72,6 +78,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.OwnerEmail, filter.OwnerEmail);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
+            if (filter.StoreStatusId != null)
+                query = query.Where(q => q.StoreStatusId, filter.StoreStatusId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -98,6 +106,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.StoreTypeId, filter.StoreTypeId);
                 if (filter.StoreGroupingId != null)
                     queryable = queryable.Where(q => q.StoreGroupingId, filter.StoreGroupingId);
+                if (filter.ResellerId != null)
+                    queryable = queryable.Where(q => q.ResellerId, filter.ResellerId);
                 if (filter.Telephone != null)
                     queryable = queryable.Where(q => q.Telephone, filter.Telephone);
                 if (filter.ProvinceId != null)
@@ -114,6 +124,10 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Latitude, filter.Latitude);
                 if (filter.Longitude != null)
                     queryable = queryable.Where(q => q.Longitude, filter.Longitude);
+                if (filter.DeliveryLatitude != null)
+                    queryable = queryable.Where(q => q.DeliveryLatitude, filter.DeliveryLatitude);
+                if (filter.DeliveryLongitude != null)
+                    queryable = queryable.Where(q => q.DeliveryLongitude, filter.DeliveryLongitude);
                 if (filter.OwnerName != null)
                     queryable = queryable.Where(q => q.OwnerName, filter.OwnerName);
                 if (filter.OwnerPhone != null)
@@ -122,6 +136,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.OwnerEmail, filter.OwnerEmail);
                 if (filter.StatusId != null)
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (filter.StoreStatusId != null)
+                    queryable = queryable.Where(q => q.StoreStatusId, filter.StoreStatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -155,6 +171,9 @@ namespace DMS.Repositories
                         case StoreOrder.StoreGrouping:
                             query = query.OrderBy(q => q.StoreGroupingId);
                             break;
+                        case StoreOrder.Reseller:
+                            query = query.OrderBy(q => q.ResellerId);
+                            break;
                         case StoreOrder.Telephone:
                             query = query.OrderBy(q => q.Telephone);
                             break;
@@ -178,6 +197,12 @@ namespace DMS.Repositories
                             break;
                         case StoreOrder.Longitude:
                             query = query.OrderBy(q => q.Longitude);
+                            break;
+                        case StoreOrder.DeliveryLatitude:
+                            query = query.OrderBy(q => q.DeliveryLatitude);
+                            break;
+                        case StoreOrder.DeliveryLongitude:
+                            query = query.OrderBy(q => q.DeliveryLongitude);
                             break;
                         case StoreOrder.OwnerName:
                             query = query.OrderBy(q => q.OwnerName);
@@ -217,6 +242,9 @@ namespace DMS.Repositories
                         case StoreOrder.StoreGrouping:
                             query = query.OrderByDescending(q => q.StoreGroupingId);
                             break;
+                        case StoreOrder.Reseller:
+                            query = query.OrderByDescending(q => q.ResellerId);
+                            break;
                         case StoreOrder.Telephone:
                             query = query.OrderByDescending(q => q.Telephone);
                             break;
@@ -240,6 +268,12 @@ namespace DMS.Repositories
                             break;
                         case StoreOrder.Longitude:
                             query = query.OrderByDescending(q => q.Longitude);
+                            break;
+                        case StoreOrder.DeliveryLatitude:
+                            query = query.OrderByDescending(q => q.DeliveryLatitude);
+                            break;
+                        case StoreOrder.DeliveryLongitude:
+                            query = query.OrderByDescending(q => q.DeliveryLongitude);
                             break;
                         case StoreOrder.OwnerName:
                             query = query.OrderByDescending(q => q.OwnerName);
@@ -271,6 +305,7 @@ namespace DMS.Repositories
                 OrganizationId = filter.Selects.Contains(StoreSelect.Organization) ? q.OrganizationId : default(long),
                 StoreTypeId = filter.Selects.Contains(StoreSelect.StoreType) ? q.StoreTypeId : default(long),
                 StoreGroupingId = filter.Selects.Contains(StoreSelect.StoreGrouping) ? q.StoreGroupingId : default(long?),
+                ResellerId = filter.Selects.Contains(StoreSelect.Reseller) ? q.ResellerId : default(long?),
                 Telephone = filter.Selects.Contains(StoreSelect.Telephone) ? q.Telephone : default(string),
                 ProvinceId = filter.Selects.Contains(StoreSelect.Province) ? q.ProvinceId : default(long),
                 DistrictId = filter.Selects.Contains(StoreSelect.District) ? q.DistrictId : default(long),
@@ -279,10 +314,13 @@ namespace DMS.Repositories
                 DeliveryAddress = filter.Selects.Contains(StoreSelect.DeliveryAddress) ? q.DeliveryAddress : default(string),
                 Latitude = filter.Selects.Contains(StoreSelect.Latitude) ? q.Latitude : default(decimal?),
                 Longitude = filter.Selects.Contains(StoreSelect.Longitude) ? q.Longitude : default(decimal?),
+                DeliveryLatitude = filter.Selects.Contains(StoreSelect.DeliveryLatitude) ? q.DeliveryLatitude : default(decimal?),
+                DeliveryLongitude = filter.Selects.Contains(StoreSelect.DeliveryLongitude) ? q.DeliveryLongitude : default(decimal?),
                 OwnerName = filter.Selects.Contains(StoreSelect.OwnerName) ? q.OwnerName : default(string),
                 OwnerPhone = filter.Selects.Contains(StoreSelect.OwnerPhone) ? q.OwnerPhone : default(string),
                 OwnerEmail = filter.Selects.Contains(StoreSelect.OwnerEmail) ? q.OwnerEmail : default(string),
                 StatusId = filter.Selects.Contains(StoreSelect.Status) ? q.StatusId : default(long),
+                StoreStatusId = filter.Selects.Contains(StoreSelect.StoreStatus) ? q.StoreStatusId : default(long),
                 District = filter.Selects.Contains(StoreSelect.District) && q.District != null ? new District
                 {
                     Id = q.District.Id,
@@ -315,6 +353,7 @@ namespace DMS.Repositories
                     StoreTypeId = q.ParentStore.StoreTypeId,
                     StoreGroupingId = q.ParentStore.StoreGroupingId,
                     Telephone = q.ParentStore.Telephone,
+                    ResellerId = q.ParentStore.ResellerId,
                     ProvinceId = q.ParentStore.ProvinceId,
                     DistrictId = q.ParentStore.DistrictId,
                     WardId = q.ParentStore.WardId,
@@ -322,10 +361,31 @@ namespace DMS.Repositories
                     DeliveryAddress = q.ParentStore.DeliveryAddress,
                     Latitude = q.ParentStore.Latitude,
                     Longitude = q.ParentStore.Longitude,
+                    DeliveryLatitude = q.ParentStore.DeliveryLatitude,
+                    DeliveryLongitude = q.ParentStore.DeliveryLongitude,
                     OwnerName = q.ParentStore.OwnerName,
                     OwnerPhone = q.ParentStore.OwnerPhone,
                     OwnerEmail = q.ParentStore.OwnerEmail,
                     StatusId = q.ParentStore.StatusId,
+                    StoreStatusId = q.ParentStore.StoreStatusId,
+                } : null,
+                Reseller = filter.Selects.Contains(StoreSelect.Reseller) && q.Reseller != null ? new Reseller
+                {
+                    Id = q.Reseller.Id,
+                    Name = q.Reseller.Name,
+                    Code = q.Reseller.Code,
+                    Email = q.Reseller.Email,
+                    Phone = q.Reseller.Phone,
+                    CompanyName = q.Reseller.CompanyName,
+                    DeputyName = q.Reseller.DeputyName,
+                    Address = q.Reseller.Address,
+                    Description = q.Reseller.Description,
+                    OrganizationId = q.Reseller.OrganizationId,
+                    ResellerStatusId = q.Reseller.ResellerStatusId,
+                    ResellerTypeId = q.Reseller.ResellerTypeId,
+                    StaffId = q.Reseller.StaffId,
+                    TaxCode = q.Reseller.TaxCode,
+                    StatusId = q.Reseller.StatusId,
                 } : null,
                 Province = filter.Selects.Contains(StoreSelect.Province) && q.Province != null ? new Province
                 {
@@ -378,7 +438,7 @@ namespace DMS.Repositories
         public async Task<List<Store>> List(StoreFilter filter)
         {
             if (filter == null) return new List<Store>();
-            IQueryable<StoreDAO> StoreDAOs = DataContext.Store;
+            IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
             StoreDAOs = DynamicFilter(StoreDAOs, filter);
             StoreDAOs = DynamicOrder(StoreDAOs, filter);
             List<Store> Stores = await DynamicSelect(StoreDAOs, filter);
@@ -387,7 +447,8 @@ namespace DMS.Repositories
 
         public async Task<Store> Get(long Id)
         {
-            Store Store = await DataContext.Store.Where(x => x.Id == Id).Select(x => new Store()
+            Store Store = await DataContext.Store.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new Store()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -397,6 +458,7 @@ namespace DMS.Repositories
                 StoreTypeId = x.StoreTypeId,
                 StoreGroupingId = x.StoreGroupingId,
                 Telephone = x.Telephone,
+                ResellerId = x.ResellerId,
                 ProvinceId = x.ProvinceId,
                 DistrictId = x.DistrictId,
                 WardId = x.WardId,
@@ -404,10 +466,13 @@ namespace DMS.Repositories
                 DeliveryAddress = x.DeliveryAddress,
                 Latitude = x.Latitude,
                 Longitude = x.Longitude,
+                DeliveryLatitude = x.DeliveryLatitude,
+                DeliveryLongitude = x.DeliveryLongitude,
                 OwnerName = x.OwnerName,
                 OwnerPhone = x.OwnerPhone,
                 OwnerEmail = x.OwnerEmail,
                 StatusId = x.StatusId,
+                StoreStatusId = x.StoreStatusId,
                 District = x.District == null ? null : new District
                 {
                     Id = x.District.Id,
@@ -451,6 +516,7 @@ namespace DMS.Repositories
                     OwnerPhone = x.ParentStore.OwnerPhone,
                     OwnerEmail = x.ParentStore.OwnerEmail,
                     StatusId = x.ParentStore.StatusId,
+                    StoreStatusId = x.ParentStore.StoreStatusId,
                 },
                 Province = x.Province == null ? null : new Province
                 {
@@ -458,6 +524,24 @@ namespace DMS.Repositories
                     Name = x.Province.Name,
                     Priority = x.Province.Priority,
                     StatusId = x.Province.StatusId,
+                },
+                Reseller = x.Reseller == null ? null : new Reseller
+                {
+                    Id = x.Reseller.Id,
+                    Name = x.Reseller.Name,
+                    Code = x.Reseller.Code,
+                    Email = x.Reseller.Email,
+                    Phone = x.Reseller.Phone,
+                    CompanyName = x.Reseller.CompanyName,
+                    DeputyName = x.Reseller.DeputyName,
+                    Address = x.Reseller.Address,
+                    Description = x.Reseller.Description,
+                    OrganizationId = x.Reseller.OrganizationId,
+                    ResellerStatusId = x.Reseller.ResellerStatusId,
+                    ResellerTypeId = x.Reseller.ResellerTypeId,
+                    StaffId = x.Reseller.StaffId,
+                    TaxCode = x.Reseller.TaxCode,
+                    StatusId = x.Reseller.StatusId,
                 },
                 Status = x.Status == null ? null : new Status
                 {
@@ -506,6 +590,7 @@ namespace DMS.Repositories
             StoreDAO.OrganizationId = Store.OrganizationId;
             StoreDAO.StoreTypeId = Store.StoreTypeId;
             StoreDAO.StoreGroupingId = Store.StoreGroupingId;
+            StoreDAO.ResellerId = Store.ResellerId;
             StoreDAO.Telephone = Store.Telephone;
             StoreDAO.ProvinceId = Store.ProvinceId;
             StoreDAO.DistrictId = Store.DistrictId;
@@ -514,10 +599,13 @@ namespace DMS.Repositories
             StoreDAO.DeliveryAddress = Store.DeliveryAddress;
             StoreDAO.Latitude = Store.Latitude;
             StoreDAO.Longitude = Store.Longitude;
+            StoreDAO.DeliveryLatitude = Store.DeliveryLatitude;
+            StoreDAO.DeliveryLongitude = Store.DeliveryLongitude;
             StoreDAO.OwnerName = Store.OwnerName;
             StoreDAO.OwnerPhone = Store.OwnerPhone;
             StoreDAO.OwnerEmail = Store.OwnerEmail;
             StoreDAO.StatusId = Store.StatusId;
+            StoreDAO.StoreStatusId = Store.StoreStatusId;
             StoreDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.Store.Add(StoreDAO);
@@ -540,6 +628,7 @@ namespace DMS.Repositories
             StoreDAO.StoreTypeId = Store.StoreTypeId;
             StoreDAO.StoreGroupingId = Store.StoreGroupingId;
             StoreDAO.Telephone = Store.Telephone;
+            StoreDAO.ResellerId = Store.ResellerId;
             StoreDAO.ProvinceId = Store.ProvinceId;
             StoreDAO.DistrictId = Store.DistrictId;
             StoreDAO.WardId = Store.WardId;
@@ -547,10 +636,13 @@ namespace DMS.Repositories
             StoreDAO.DeliveryAddress = Store.DeliveryAddress;
             StoreDAO.Latitude = Store.Latitude;
             StoreDAO.Longitude = Store.Longitude;
+            StoreDAO.DeliveryLatitude = Store.DeliveryLatitude;
+            StoreDAO.DeliveryLongitude = Store.DeliveryLongitude;
             StoreDAO.OwnerName = Store.OwnerName;
             StoreDAO.OwnerPhone = Store.OwnerPhone;
             StoreDAO.OwnerEmail = Store.OwnerEmail;
             StoreDAO.StatusId = Store.StatusId;
+            StoreDAO.StoreStatusId = Store.StoreStatusId;
             StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(Store);
@@ -559,6 +651,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Store Store)
         {
+            await DataContext.Store.Where(x => x.ParentStoreId == Store.Id).UpdateFromQueryAsync(x => new StoreDAO { ParentStoreId = null });
             await DataContext.Store.Where(x => x.Id == Store.Id).UpdateFromQueryAsync(x => new StoreDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
@@ -577,6 +670,7 @@ namespace DMS.Repositories
                 StoreDAO.StoreTypeId = Store.StoreTypeId;
                 StoreDAO.StoreGroupingId = Store.StoreGroupingId;
                 StoreDAO.Telephone = Store.Telephone;
+                StoreDAO.ResellerId = Store.ResellerId;
                 StoreDAO.ProvinceId = Store.ProvinceId;
                 StoreDAO.DistrictId = Store.DistrictId;
                 StoreDAO.WardId = Store.WardId;
@@ -584,10 +678,13 @@ namespace DMS.Repositories
                 StoreDAO.DeliveryAddress = Store.DeliveryAddress;
                 StoreDAO.Latitude = Store.Latitude;
                 StoreDAO.Longitude = Store.Longitude;
+                StoreDAO.DeliveryLatitude = Store.DeliveryLatitude;
+                StoreDAO.DeliveryLongitude = Store.DeliveryLongitude;
                 StoreDAO.OwnerName = Store.OwnerName;
                 StoreDAO.OwnerPhone = Store.OwnerPhone;
                 StoreDAO.OwnerEmail = Store.OwnerEmail;
                 StoreDAO.StatusId = Store.StatusId;
+                StoreDAO.StoreStatusId = Store.StoreStatusId;
                 StoreDAO.CreatedAt = StaticParams.DateTimeNow;
                 StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
                 StoreDAOs.Add(StoreDAO);
@@ -599,6 +696,7 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<Store> Stores)
         {
             List<long> Ids = Stores.Select(x => x.Id).ToList();
+            await DataContext.Store.Where(x => Ids.Contains(x.ParentStoreId.Value)).UpdateFromQueryAsync(x => new StoreDAO { ParentStoreId = null });
             await DataContext.Store
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new StoreDAO { DeletedAt = StaticParams.DateTimeNow });

@@ -24,6 +24,7 @@ namespace DMS.Rpc.ward
             this.StatusId = Ward.StatusId;
             this.District = Ward.District == null ? null : new Ward_DistrictDTO(Ward.District);
             this.Status = Ward.Status == null ? null : new Ward_StatusDTO(Ward.Status);
+            this.Errors = Ward.Errors;
         }
     }
 

@@ -138,7 +138,7 @@ namespace DMS.Repositories
         public async Task<List<StoreType>> List(StoreTypeFilter filter)
         {
             if (filter == null) return new List<StoreType>();
-            IQueryable<StoreTypeDAO> StoreTypeDAOs = DataContext.StoreType;
+            IQueryable<StoreTypeDAO> StoreTypeDAOs = DataContext.StoreType.AsNoTracking();
             StoreTypeDAOs = DynamicFilter(StoreTypeDAOs, filter);
             StoreTypeDAOs = DynamicOrder(StoreTypeDAOs, filter);
             List<StoreType> StoreTypes = await DynamicSelect(StoreTypeDAOs, filter);
@@ -147,7 +147,8 @@ namespace DMS.Repositories
 
         public async Task<StoreType> Get(long Id)
         {
-            StoreType StoreType = await DataContext.StoreType.Where(x => x.Id == Id).Select(x => new StoreType()
+            StoreType StoreType = await DataContext.StoreType.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new StoreType()
             {
                 Id = x.Id,
                 Code = x.Code,

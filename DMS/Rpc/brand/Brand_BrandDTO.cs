@@ -18,6 +18,7 @@ namespace DMS.Rpc.brand
             this.Name = Brand.Name;
             this.StatusId = Brand.StatusId;
             this.Status = Brand.Status == null ? null : new Brand_StatusDTO(Brand.Status);
+            this.Errors = Brand.Errors;
         }
     }
 

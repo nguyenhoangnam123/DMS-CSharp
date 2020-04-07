@@ -248,6 +248,8 @@ namespace DMS
         private void InitEnum()
         {
             InitStatusEnum();
+            InitStoreStatusEnum();
+            InitResellerStatusEnum();
             DataContext.SaveChanges();
         }
 
@@ -273,14 +275,92 @@ namespace DMS
                     Name = StatusEnum.INACTIVE.Name,
                 });
             }
+        }
 
-            if (!statuses.Any(pt => pt.Id == StatusEnum.LOCKED.Id))
+        private void InitResellerStatusEnum()
+        {
+            List<ResellerStatusDAO> resellerStatuses = DataContext.ResellerStatus.ToList();
+            if (!resellerStatuses.Any(pt => pt.Id == ResellerStatusEnum.NEW.Id))
             {
-                DataContext.Status.Add(new StatusDAO
+                DataContext.ResellerStatus.Add(new ResellerStatusDAO
                 {
-                    Id = StatusEnum.LOCKED.Id,
-                    Code = StatusEnum.LOCKED.Code,
-                    Name = StatusEnum.LOCKED.Name,
+                    Id = ResellerStatusEnum.NEW.Id,
+                    Code = ResellerStatusEnum.NEW.Code,
+                    Name = ResellerStatusEnum.NEW.Name,
+                });
+            }
+
+            if (!resellerStatuses.Any(pt => pt.Id == ResellerStatusEnum.PENDING.Id))
+            {
+                DataContext.ResellerStatus.Add(new ResellerStatusDAO
+                {
+                    Id = ResellerStatusEnum.PENDING.Id,
+                    Code = ResellerStatusEnum.PENDING.Code,
+                    Name = ResellerStatusEnum.PENDING.Name,
+                });
+            }
+
+            if (!resellerStatuses.Any(pt => pt.Id == ResellerStatusEnum.APPROVED.Id))
+            {
+                DataContext.ResellerStatus.Add(new ResellerStatusDAO
+                {
+                    Id = ResellerStatusEnum.APPROVED.Id,
+                    Code = ResellerStatusEnum.APPROVED.Code,
+                    Name = ResellerStatusEnum.APPROVED.Name,
+                });
+            }
+
+            if (!resellerStatuses.Any(pt => pt.Id == ResellerStatusEnum.REJECTED.Id))
+            {
+                DataContext.ResellerStatus.Add(new ResellerStatusDAO
+                {
+                    Id = ResellerStatusEnum.REJECTED.Id,
+                    Code = ResellerStatusEnum.REJECTED.Code,
+                    Name = ResellerStatusEnum.REJECTED.Name,
+                });
+            }
+        }
+
+        private void InitStoreStatusEnum()
+        {
+            List<StoreStatusDAO> statuses = DataContext.StoreStatus.ToList();
+            if (!statuses.Any(pt => pt.Id == StoreStatusEnum.NEW.Id))
+            {
+                DataContext.StoreStatus.Add(new StoreStatusDAO
+                {
+                    Id = StoreStatusEnum.NEW.Id,
+                    Code = StoreStatusEnum.NEW.Code,
+                    Name = StoreStatusEnum.NEW.Name,
+                });
+            }
+
+            if (!statuses.Any(pt => pt.Id == StoreStatusEnum.PENDING.Id))
+            {
+                DataContext.StoreStatus.Add(new StoreStatusDAO
+                {
+                    Id = StoreStatusEnum.PENDING.Id,
+                    Code = StoreStatusEnum.PENDING.Code,
+                    Name = StoreStatusEnum.PENDING.Name,
+                });
+            }
+
+            if (!statuses.Any(pt => pt.Id == StoreStatusEnum.APPROVED.Id))
+            {
+                DataContext.StoreStatus.Add(new StoreStatusDAO
+                {
+                    Id = StoreStatusEnum.APPROVED.Id,
+                    Code = StoreStatusEnum.APPROVED.Code,
+                    Name = StoreStatusEnum.APPROVED.Name,
+                });
+            }
+
+            if (!statuses.Any(pt => pt.Id == StoreStatusEnum.REJECTED.Id))
+            {
+                DataContext.StoreStatus.Add(new StoreStatusDAO
+                {
+                    Id = StoreStatusEnum.REJECTED.Id,
+                    Code = StoreStatusEnum.REJECTED.Code,
+                    Name = StoreStatusEnum.REJECTED.Name,
                 });
             }
         }

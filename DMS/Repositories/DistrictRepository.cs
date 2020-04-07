@@ -33,9 +33,11 @@ namespace DMS.Repositories
         {
             if (filter == null)
                 return query.Where(q => false);
-            query = query.Where(q => !q.DeletedAt.HasValue);
+            query = query.Where(q => q.DeletedAt == null);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
+            if (filter.Code != null)
+                query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.Priority != null)
@@ -93,7 +95,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Priority);
                             break;
                         case DistrictOrder.Province:
-                            query = query.OrderBy(q => q.ProvinceId);
+                            query = query.OrderBy(q => q.Province.Name);
                             break;
                         case DistrictOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
@@ -116,7 +118,7 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Priority);
                             break;
                         case DistrictOrder.Province:
-                            query = query.OrderByDescending(q => q.ProvinceId);
+                            query = query.OrderByDescending(q => q.Province.Name);
                             break;
                         case DistrictOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
@@ -165,7 +167,7 @@ namespace DMS.Repositories
         public async Task<List<District>> List(DistrictFilter filter)
         {
             if (filter == null) return new List<District>();
-            IQueryable<DistrictDAO> DistrictDAOs = DataContext.District;
+            IQueryable<DistrictDAO> DistrictDAOs = DataContext.District.AsNoTracking();
             DistrictDAOs = DynamicFilter(DistrictDAOs, filter);
             DistrictDAOs = DynamicOrder(DistrictDAOs, filter);
             List<District> Districts = await DynamicSelect(DistrictDAOs, filter);
@@ -174,7 +176,8 @@ namespace DMS.Repositories
 
         public async Task<District> Get(long Id)
         {
-            District District = await DataContext.District.Where(x => x.Id == Id).Select(x => new District()
+            District District = await DataContext.District.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new District()
             {
                 Id = x.Id,
                 Name = x.Name,

@@ -144,6 +144,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<DistrictDAO>(entity =>
             {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code).HasMaxLength(500);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -557,6 +559,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ProvinceDAO>(entity =>
             {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -734,9 +738,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.DeliveryAddress)
-                    .HasMaxLength(10)
-                    .IsFixedLength();
+                entity.Property(e => e.DeliveryAddress).HasMaxLength(3000);
 
                 entity.Property(e => e.DeliveryLatitude).HasColumnType("decimal(18, 4)");
 
@@ -1106,6 +1108,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<WardDAO>(entity =>
             {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);

@@ -151,6 +151,48 @@ namespace DMS.Repositories
                 Path = filter.Selects.Contains(StoreGroupingSelect.Path) ? q.Path : default(string),
                 Level = filter.Selects.Contains(StoreGroupingSelect.Level) ? q.Level : default(long),
                 StatusId = filter.Selects.Contains(StoreGroupingSelect.Status) ? q.StatusId : default(long),
+                Parent = filter.Selects.Contains(StoreGroupingSelect.Parent) && q.Parent != null ? new StoreGrouping
+                {
+                    Id = q.Parent.Id,
+                    Code = q.Parent.Code,
+                    Name = q.Parent.Name,
+                    ParentId = q.Parent.ParentId,
+                    Path = q.Parent.Path,
+                    Level = q.Parent.Level,
+                    StatusId = q.Parent.StatusId,
+                } : null,
+                Status = filter.Selects.Contains(StoreGroupingSelect.Status) && q.Status != null ? new Status
+                {
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
+                } : null,
+                Stores = filter.Selects.Contains(StoreGroupingSelect.Stores) && q.Stores == null ? null :
+                q.Stores.Select(s => new Store
+                {
+                    Id = s.Id,
+                    Code = s.Code,
+                    Name = s.Name,
+                    ParentStoreId = s.ParentStoreId,
+                    OrganizationId = s.OrganizationId,
+                    StoreTypeId = s.StoreTypeId,
+                    StoreGroupingId = s.StoreGroupingId,
+                    Telephone = s.Telephone,
+                    ResellerId = s.ResellerId,
+                    ProvinceId = s.ProvinceId,
+                    DistrictId = s.DistrictId,
+                    WardId = s.WardId,
+                    Address = s.Address,
+                    DeliveryAddress = s.DeliveryAddress,
+                    Latitude = s.Latitude,
+                    Longitude = s.Longitude,
+                    DeliveryLatitude = s.DeliveryLatitude,
+                    DeliveryLongitude = s.DeliveryLongitude,
+                    OwnerName = s.OwnerName,
+                    OwnerPhone = s.OwnerPhone,
+                    OwnerEmail = s.OwnerEmail,
+                    StatusId = s.StatusId,
+                }).ToList(),
             }).ToListAsync();
             return StoreGroupings;
         }
@@ -165,7 +207,7 @@ namespace DMS.Repositories
         public async Task<List<StoreGrouping>> List(StoreGroupingFilter filter)
         {
             if (filter == null) return new List<StoreGrouping>();
-            IQueryable<StoreGroupingDAO> StoreGroupingDAOs = DataContext.StoreGrouping;
+            IQueryable<StoreGroupingDAO> StoreGroupingDAOs = DataContext.StoreGrouping.AsNoTracking();
             StoreGroupingDAOs = DynamicFilter(StoreGroupingDAOs, filter);
             StoreGroupingDAOs = DynamicOrder(StoreGroupingDAOs, filter);
             List<StoreGrouping> StoreGroupings = await DynamicSelect(StoreGroupingDAOs, filter);
@@ -174,16 +216,8 @@ namespace DMS.Repositories
 
         public async Task<StoreGrouping> Get(long Id)
         {
-            StoreGrouping StoreGrouping = await DataContext.StoreGrouping.Where(x => x.Id == Id).Select(x => new StoreGrouping()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                ParentId = x.ParentId,
-                Path = x.Path,
-                Level = x.Level,
-                StatusId = x.StatusId,
-                Parent = x.Parent == null ? null : new StoreGrouping
+            StoreGrouping StoreGrouping = await DataContext.StoreGrouping.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new StoreGrouping()
                 {
                     Id = x.Id,
                     Code = x.Code,
@@ -192,14 +226,22 @@ namespace DMS.Repositories
                     Path = x.Path,
                     Level = x.Level,
                     StatusId = x.StatusId,
-                },
-                Status = x.Status == null ? null : new Status
-                {
-                    Id = x.Status.Id,
-                    Code = x.Status.Code,
-                    Name = x.Status.Name,
-                },
-            }).FirstOrDefaultAsync();
+                    Parent = x.Parent == null ? null : new StoreGrouping
+                    {
+                        Id = x.Parent.Id,
+                        Code = x.Parent.Code,
+                        Name = x.Parent.Name,
+                        ParentId = x.Parent.ParentId,
+                        Path = x.Parent.Path,
+                        Level = x.Parent.Level,
+                    },
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name
+                    }
+                }).FirstOrDefaultAsync();
 
             if (StoreGrouping == null)
                 return null;
@@ -215,6 +257,7 @@ namespace DMS.Repositories
                     StoreTypeId = x.StoreTypeId,
                     StoreGroupingId = x.StoreGroupingId,
                     Telephone = x.Telephone,
+                    ResellerId = x.ResellerId,
                     ProvinceId = x.ProvinceId,
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
@@ -222,6 +265,8 @@ namespace DMS.Repositories
                     DeliveryAddress = x.DeliveryAddress,
                     Latitude = x.Latitude,
                     Longitude = x.Longitude,
+                    DeliveryLatitude = x.DeliveryLatitude,
+                    DeliveryLongitude = x.DeliveryLongitude,
                     OwnerName = x.OwnerName,
                     OwnerPhone = x.OwnerPhone,
                     OwnerEmail = x.OwnerEmail,
@@ -258,6 +303,7 @@ namespace DMS.Repositories
                         StoreTypeId = x.ParentStore.StoreTypeId,
                         StoreGroupingId = x.ParentStore.StoreGroupingId,
                         Telephone = x.ParentStore.Telephone,
+                        ResellerId = x.ParentStore.ResellerId,
                         ProvinceId = x.ParentStore.ProvinceId,
                         DistrictId = x.ParentStore.DistrictId,
                         WardId = x.ParentStore.WardId,
@@ -265,6 +311,8 @@ namespace DMS.Repositories
                         DeliveryAddress = x.ParentStore.DeliveryAddress,
                         Latitude = x.ParentStore.Latitude,
                         Longitude = x.ParentStore.Longitude,
+                        DeliveryLatitude = x.ParentStore.DeliveryLatitude,
+                        DeliveryLongitude = x.ParentStore.DeliveryLongitude,
                         OwnerName = x.ParentStore.OwnerName,
                         OwnerPhone = x.ParentStore.OwnerPhone,
                         OwnerEmail = x.ParentStore.OwnerEmail,
@@ -404,6 +452,7 @@ namespace DMS.Repositories
                         StoreDAO.StoreTypeId = Store.StoreTypeId;
                         StoreDAO.StoreGroupingId = StoreGrouping.Id;
                         StoreDAO.Telephone = Store.Telephone;
+                        StoreDAO.ResellerId = Store.ResellerId;
                         StoreDAO.ProvinceId = Store.ProvinceId;
                         StoreDAO.DistrictId = Store.DistrictId;
                         StoreDAO.WardId = Store.WardId;
@@ -411,6 +460,8 @@ namespace DMS.Repositories
                         StoreDAO.DeliveryAddress = Store.DeliveryAddress;
                         StoreDAO.Latitude = Store.Latitude;
                         StoreDAO.Longitude = Store.Longitude;
+                        StoreDAO.DeliveryLatitude = Store.DeliveryLatitude;
+                        StoreDAO.DeliveryLongitude = Store.DeliveryLongitude;
                         StoreDAO.OwnerName = Store.OwnerName;
                         StoreDAO.OwnerPhone = Store.OwnerPhone;
                         StoreDAO.OwnerEmail = Store.OwnerEmail;
@@ -430,6 +481,7 @@ namespace DMS.Repositories
                         StoreDAO.StoreTypeId = Store.StoreTypeId;
                         StoreDAO.StoreGroupingId = StoreGrouping.Id;
                         StoreDAO.Telephone = Store.Telephone;
+                        StoreDAO.ResellerId = Store.ResellerId;
                         StoreDAO.ProvinceId = Store.ProvinceId;
                         StoreDAO.DistrictId = Store.DistrictId;
                         StoreDAO.WardId = Store.WardId;
@@ -437,6 +489,8 @@ namespace DMS.Repositories
                         StoreDAO.DeliveryAddress = Store.DeliveryAddress;
                         StoreDAO.Latitude = Store.Latitude;
                         StoreDAO.Longitude = Store.Longitude;
+                        StoreDAO.DeliveryLatitude = Store.DeliveryLatitude;
+                        StoreDAO.DeliveryLongitude = Store.DeliveryLongitude;
                         StoreDAO.OwnerName = Store.OwnerName;
                         StoreDAO.OwnerPhone = Store.OwnerPhone;
                         StoreDAO.OwnerEmail = Store.OwnerEmail;

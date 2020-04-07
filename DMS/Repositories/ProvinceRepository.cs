@@ -158,7 +158,7 @@ namespace DMS.Repositories
         public async Task<List<Province>> List(ProvinceFilter filter)
         {
             if (filter == null) return new List<Province>();
-            IQueryable<ProvinceDAO> ProvinceDAOs = DataContext.Province;
+            IQueryable<ProvinceDAO> ProvinceDAOs = DataContext.Province.AsNoTracking();
             ProvinceDAOs = DynamicFilter(ProvinceDAOs, filter);
             ProvinceDAOs = DynamicOrder(ProvinceDAOs, filter);
             List<Province> Provinces = await DynamicSelect(ProvinceDAOs, filter);
@@ -167,7 +167,8 @@ namespace DMS.Repositories
 
         public async Task<Province> Get(long Id)
         {
-            Province Province = await DataContext.Province.Where(x => x.Id == Id).Select(x => new Province()
+            Province Province = await DataContext.Province.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new Province()
             {
                 Id = x.Id,
                 Code = x.Code,

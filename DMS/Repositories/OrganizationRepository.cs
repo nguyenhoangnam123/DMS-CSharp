@@ -229,7 +229,7 @@ namespace DMS.Repositories
         public async Task<List<Organization>> List(OrganizationFilter filter)
         {
             if (filter == null) return new List<Organization>();
-            IQueryable<OrganizationDAO> OrganizationDAOs = DataContext.Organization;
+            IQueryable<OrganizationDAO> OrganizationDAOs = DataContext.Organization.AsNoTracking();
             OrganizationDAOs = DynamicFilter(OrganizationDAOs, filter);
             OrganizationDAOs = DynamicOrder(OrganizationDAOs, filter);
             List<Organization> Organizations = await DynamicSelect(OrganizationDAOs, filter);
@@ -238,7 +238,8 @@ namespace DMS.Repositories
 
         public async Task<Organization> Get(long Id)
         {
-            Organization Organization = await DataContext.Organization.Where(x => x.Id == Id).Select(x => new Organization()
+            Organization Organization = await DataContext.Organization.AsNoTracking()
+                .Where(x => x.Id == Id).Select(x => new Organization()
             {
                 Id = x.Id,
                 Code = x.Code,
