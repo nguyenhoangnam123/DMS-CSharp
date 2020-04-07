@@ -651,6 +651,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Store Store)
         {
+            await DataContext.Store.Where(x => x.ParentStoreId == Store.Id).UpdateFromQueryAsync(x => new StoreDAO { ParentStoreId = null });
             await DataContext.Store.Where(x => x.Id == Store.Id).UpdateFromQueryAsync(x => new StoreDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
@@ -695,6 +696,7 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<Store> Stores)
         {
             List<long> Ids = Stores.Select(x => x.Id).ToList();
+            await DataContext.Store.Where(x => Ids.Contains(x.ParentStoreId.Value)).UpdateFromQueryAsync(x => new StoreDAO { ParentStoreId = null });
             await DataContext.Store
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new StoreDAO { DeletedAt = StaticParams.DateTimeNow });
