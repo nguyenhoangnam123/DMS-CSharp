@@ -275,16 +275,6 @@ namespace DMS
                     Name = StatusEnum.INACTIVE.Name,
                 });
             }
-
-            if (!statuses.Any(pt => pt.Id == StatusEnum.LOCKED.Id))
-            {
-                DataContext.Status.Add(new StatusDAO
-                {
-                    Id = StatusEnum.LOCKED.Id,
-                    Code = StatusEnum.LOCKED.Code,
-                    Name = StatusEnum.LOCKED.Name,
-                });
-            }
         }
 
         private void InitResellerStatusEnum()
