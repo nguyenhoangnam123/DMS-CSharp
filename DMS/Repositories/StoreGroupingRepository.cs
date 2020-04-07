@@ -165,14 +165,6 @@ namespace DMS.Repositories
         {
             StoreGrouping StoreGrouping = await DataContext.StoreGrouping.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new StoreGrouping()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                ParentId = x.ParentId,
-                Path = x.Path,
-                Level = x.Level,
-                Parent = x.Parent == null ? null : new StoreGrouping
                 {
                     Id = x.Id,
                     Code = x.Code,
@@ -180,8 +172,16 @@ namespace DMS.Repositories
                     ParentId = x.ParentId,
                     Path = x.Path,
                     Level = x.Level,
-                },
-            }).FirstOrDefaultAsync();
+                    Parent = x.Parent == null ? null : new StoreGrouping
+                    {
+                        Id = x.Id,
+                        Code = x.Code,
+                        Name = x.Name,
+                        ParentId = x.ParentId,
+                        Path = x.Path,
+                        Level = x.Level,
+                    },
+                }).FirstOrDefaultAsync();
 
             if (StoreGrouping == null)
                 return null;
@@ -299,6 +299,7 @@ namespace DMS.Repositories
             StoreGroupingDAO.ParentId = StoreGrouping.ParentId;
             StoreGroupingDAO.Path = "";
             StoreGroupingDAO.Level = 1;
+            StoreGroupingDAO.StatusId = 1;
             StoreGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.StoreGrouping.Add(StoreGroupingDAO);
