@@ -580,7 +580,22 @@ namespace DMS.Repositories
                 }
             }
             List<Item> Items = Products.SelectMany(p => p.Items).ToList();
-            await DataContext.BulkMergeAsync(Items);
+            List<ItemDAO> ItemDAOs = new List<ItemDAO>();
+            foreach (Item Item in Items)
+            {
+                ItemDAO ItemDAO = new ItemDAO();
+                ItemDAO.Id = Item.Id;
+                ItemDAO.ProductId = Item.ProductId;
+                ItemDAO.Code = Item.Code;
+                ItemDAO.Name = Item.Name;
+                ItemDAO.ScanCode = Item.ScanCode;
+                ItemDAO.SalePrice = Item.SalePrice;
+                ItemDAO.RetailPrice = Item.RetailPrice;
+                ItemDAO.CreatedAt = StaticParams.DateTimeNow;
+                ItemDAO.UpdatedAt = StaticParams.DateTimeNow;
+                ItemDAOs.Add(ItemDAO);
+            }
+            await DataContext.BulkMergeAsync(ItemDAOs);
 
             return true;
         }
