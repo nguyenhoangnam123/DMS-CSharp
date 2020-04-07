@@ -30,6 +30,9 @@ namespace DMS.Handlers
             _channel.QueueDeclare(StaticParams.ModuleName, true, false, false, null);
             _channel.QueueBind(StaticParams.ModuleName, "exchange", $"{nameof(AppUser)}.*", null);
             _channel.QueueBind(StaticParams.ModuleName, "exchange", $"{nameof(Organization)}.*", null);
+            _channel.QueueBind(StaticParams.ModuleName, "exchange", $"{nameof(Province)}.*", null);
+            _channel.QueueBind(StaticParams.ModuleName, "exchange", $"{nameof(District)}.*", null);
+            _channel.QueueBind(StaticParams.ModuleName, "exchange", $"{nameof(Ward)}.*", null);
             _channel.BasicQos(0, 1, false);
         }
 
@@ -82,6 +85,18 @@ namespace DMS.Handlers
                 case nameof(Organization):
                     OrganizationHandler OrganizationHandler = new OrganizationHandler(UOW);
                     OrganizationHandler.Handle(routingKey, content);
+                    break;
+                case nameof(Province):
+                    ProvinceHandler ProvinceHandler = new ProvinceHandler(UOW);
+                    ProvinceHandler.Handle(routingKey, content);
+                    break;
+                case nameof(District):
+                    DistrictHandler DistrictHandler = new DistrictHandler(UOW);
+                    DistrictHandler.Handle(routingKey, content);
+                    break;
+                case nameof(Ward):
+                    WardHandler WardHandler = new WardHandler(UOW);
+                    WardHandler.Handle(routingKey, content);
                     break;
             }
         }
