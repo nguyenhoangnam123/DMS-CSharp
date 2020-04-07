@@ -289,21 +289,21 @@ namespace DMS.Rpc.product
                 //Tên sản phẩm
                 int NameColumn = 2 + StartColumn;
                 //Nhóm sản phẩm
-                int ProductGroupNameColumn = 3 + StartColumn;
+                int ProductGroupCodeColumn = 3 + StartColumn;
                 //Loại sản phẩm
-                int ProductTypeNameColumn = 4 + StartColumn;
+                int ProductTypeCodeColumn = 4 + StartColumn;
                 //Đơn vị tính
-                int UoMNameColumn = 5 + StartColumn;
+                int UoMCodeColumn = 5 + StartColumn;
                 //NHóm đơn vị tính
-                int UoMGroupNameColumn = 6 + StartColumn;
+                int UoMGroupCodeColumn = 6 + StartColumn;
                 //Nhà cung cấp
-                int SupplierNameColumn = 7 + StartColumn;
+                int SupplierCodeColumn = 7 + StartColumn;
                 //Mã ERP
                 int ERPCodeColumn = 8 + StartColumn;
                 //Mã nhận diện sản phẩm
                 int ScanCodeColumn = 9 + StartColumn;
                 //Nhãn hiệu
-                int BrandNameColumn = 10 + StartColumn;
+                int BrandCodeColumn = 10 + StartColumn;
                 //Tên khác
                 int OtherNameColumn = 11 + StartColumn;
                 //Tên kỹ thuật
@@ -340,14 +340,14 @@ namespace DMS.Rpc.product
                         break;
                     string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
                     string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string ProductGroupNameValue = worksheet.Cells[i + StartRow, ProductGroupNameColumn].Value?.ToString();
-                    string ProductTypeNameValue = worksheet.Cells[i + StartRow, ProductTypeNameColumn].Value?.ToString();
-                    string UoMNameValue = worksheet.Cells[i + StartRow, UoMNameColumn].Value?.ToString();
-                    string UoMGroupNameValue = worksheet.Cells[i + StartRow, UoMGroupNameColumn].Value?.ToString();
-                    string SupplierNameValue = worksheet.Cells[i + StartRow, SupplierNameColumn].Value?.ToString();
+                    string ProductGroupCodeValue = worksheet.Cells[i + StartRow, ProductGroupCodeColumn].Value?.ToString();
+                    string ProductTypeCodeValue = worksheet.Cells[i + StartRow, ProductTypeCodeColumn].Value?.ToString();
+                    string UoMCodeValue = worksheet.Cells[i + StartRow, UoMCodeColumn].Value?.ToString();
+                    string UoMGroupCodeValue = worksheet.Cells[i + StartRow, UoMGroupCodeColumn].Value?.ToString();
+                    string SupplierCodeValue = worksheet.Cells[i + StartRow, SupplierCodeColumn].Value?.ToString();
                     string ERPCodeValue = worksheet.Cells[i + StartRow, ERPCodeColumn].Value?.ToString();
                     string ScanCodeValue = worksheet.Cells[i + StartRow, ScanCodeColumn].Value?.ToString();
-                    string BrandNameValue = worksheet.Cells[i + StartRow, BrandNameColumn].Value?.ToString();
+                    string BrandCodeValue = worksheet.Cells[i + StartRow, BrandCodeColumn].Value?.ToString();
                     string OtherNameValue = worksheet.Cells[i + StartRow, OtherNameColumn].Value?.ToString();
                     string TechnicalNameValue = worksheet.Cells[i + StartRow, TechnicalNameColumn].Value?.ToString();
                     string DescriptionValue = worksheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
@@ -366,51 +366,27 @@ namespace DMS.Rpc.product
                     Product Product = new Product();
                     Product.Code = CodeValue;
                     Product.Name = NameValue;
-                    //Thêm vào bảng ProductProductGroupingMapping
-                    ProductGrouping ProductGrouping = ProductGroupings.FirstOrDefault(p => !string.IsNullOrEmpty(p.Name) && p.Name.Trim().ToLower() == ProductGroupNameValue.Trim().ToLower());
-                    if (ProductGrouping != null)
+                    if (!string.IsNullOrEmpty(ProductGroupCodeValue))
                     {
-                        ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
-                        List<ProductProductGroupingMapping> ProductProductGroupingMappings = new List<ProductProductGroupingMapping>();
+                        ProductGrouping ProductGrouping = ProductGroupings.Where(pg => pg.Code.Equals(ProductGroupCodeValue)).FirstOrDefault();
+                        if(ProductGrouping != null)
+                        {
+                            ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
+                            Product.ProductProductGroupingMappings = new List<ProductProductGroupingMapping>();
 
-                        ProductProductGroupingMapping.ProductGroupingId = ProductGrouping.Id;
-                        ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
-                        Product.ProductProductGroupingMappings = ProductProductGroupingMappings;
+                            ProductProductGroupingMapping.ProductGrouping = ProductGrouping;
+                            Product.ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
+                        }
                     }
 
-                    if (!string.IsNullOrEmpty(ProductTypeNameValue))
-                    {
-                        ProductType ProductType = ProductTypes.FirstOrDefault(p => p.Name.Equals(ProductTypeNameValue));
-                        Product.ProductType = ProductType;
-                        Product.ProductTypeId = ProductType != null ? ProductType.Id : 0;
-                    }
-                    if (!string.IsNullOrEmpty(UoMNameValue))
-                    {
-                        UnitOfMeasure UnitOfMeasure = UnitOfMeasures.FirstOrDefault(p => p.Name.Equals(UoMNameValue));
-                        Product.UnitOfMeasure = UnitOfMeasure;
-                        Product.UnitOfMeasureId = UnitOfMeasure != null ? UnitOfMeasure.Id : 0;
-                    }
-                    if (!string.IsNullOrEmpty(UoMGroupNameValue))
-                    {
-                        UnitOfMeasureGrouping UnitOfMeasureGrouping = UnitOfMeasureGroupings.FirstOrDefault(p => p.Name.Equals(UoMGroupNameValue));
-                        Product.UnitOfMeasureGrouping = UnitOfMeasureGrouping;
-                        Product.UnitOfMeasureGroupingId = UnitOfMeasureGrouping != null ? UnitOfMeasureGrouping.Id : 0;
-                    }
-                    if (!string.IsNullOrEmpty(SupplierNameValue))
-                    {
-                        Supplier Supplier = Suppliers.FirstOrDefault(p => p.Name.Equals(SupplierNameValue));
-                        Product.Supplier = Supplier;
-                        Product.SupplierId = Supplier != null ? Supplier.Id : 0;
-                    }
+                    Product.ProductType = ProductTypes.Where(x => x.Code.Equals(ProductTypeCodeValue)).FirstOrDefault();
+                    Product.UnitOfMeasure = UnitOfMeasures.Where(x => x.Code.Equals(UoMCodeValue)).FirstOrDefault();
+                    Product.UnitOfMeasureGrouping = UnitOfMeasureGroupings.Where(x => x.Code.Equals(UoMGroupCodeValue)).FirstOrDefault();
+                    Product.Supplier = Suppliers.Where(x => x.Code.Equals(SupplierCodeValue)).FirstOrDefault();
+                    Product.Brand = Brands.Where(x => x.Code.Equals(BrandCodeValue)).FirstOrDefault();
 
                     Product.ERPCode = ERPCodeValue;
                     Product.ScanCode = ScanCodeValue;
-                    if (!string.IsNullOrEmpty(BrandNameValue))
-                    {
-                        Brand Brand = Brands.FirstOrDefault(p => p.Name.Equals(BrandNameValue));
-                        Product.Brand = Brand;
-                        Product.BrandId = Brand != null ? Brand.Id : 0;
-                    }
 
                     Product.OtherName = OtherNameValue;
                     Product.TechnicalName = TechnicalNameValue;
@@ -421,86 +397,12 @@ namespace DMS.Rpc.product
                     Products.Add(Product);
                 }
 
-                #region Check code trùng trong danh sách sản phẩm
-                var errorCode = false;
-                for (int i = 0; i < Products.Count; i++)
-                {
-                    Product Product = Products[i];
-                    if (Products.Where(p => p.Code == Product.Code).Count() >= 2)
-                    {
-                        errorCode = true;
-                        Error = $"Dòng {i + 1} của sản phẩm có lỗi:";
-                        Error += "Code trống hoặc đã tồn tại trong file,";
-                        Errors.Add(Error);
-                    }
-                    if (Products.Where(p => p.ScanCode == Product.ScanCode).Count() >= 2)
-                    {
-                        errorCode = true;
-                        Error = $"Dòng {i + 1} của sản phẩm có lỗi:";
-                        Error += "ScanCode trống hoặc đã tồn tại trong file,";
-                        Errors.Add(Error);
-                    }
-                    if (Products.Where(p => p.ERPCode == Product.ERPCode).Count() >= 2)
-                    {
-                        errorCode = true;
-                        Error = $"Dòng {i + 1} của sản phẩm có lỗi:";
-                        Error += "ERPCode trống hoặc đã tồn tại trong file,";
-                        Errors.Add(Error);
-                    }
-                }
-                if (errorCode == true)
-                    return BadRequest(Errors);
-
-                #endregion
+                
                 Products = await ProductService.Import(Products);
                 Items = await ImportItem(worksheet_Item);
             }
             #endregion 
-
-            if (Products.All(au => au.IsValidated) && Items.All(au => au.IsValidated))
-                return true;
-            else
-            {
-                for (int i = 0; i < Products.Count; i++)
-                {
-                    Product Product = Products[i];
-                    if (!Product.IsValidated)
-                    {
-                        Error += $"Dòng {i + 1} của Product có lỗi:";
-                        if (Product.Errors.ContainsKey(nameof(Product.Name)))
-                            Error += Product.Errors[nameof(Product.Name)] + " ";
-                        if (Product.Errors.ContainsKey(nameof(Product.Code)))
-                            Error += Product.Errors[nameof(Product.Code)] + " ";
-                        if (Product.Errors.ContainsKey(nameof(Product.ScanCode)))
-                            Error += Product.Errors[nameof(Product.ScanCode)] + " ";
-                        if (Product.Errors.ContainsKey(nameof(Product.ERPCode)))
-                            Error += Product.Errors[nameof(Product.ERPCode)] + " ";
-                        if (Product.Errors.ContainsKey(nameof(Product.ProductTypeId)))
-                            Error += Product.Errors[nameof(Product.ProductTypeId)] + " ";
-                        if (Product.Errors.ContainsKey(nameof(Product.UnitOfMeasureId)))
-                            Error += Product.Errors[nameof(Product.UnitOfMeasureId)] + " ";
-                        Errors.Add(Error);
-                    }
-                }
-                for (int i = 0; i < Items.Count; i++)
-                {
-                    Item Item = Items[i];
-                    if (!Item.IsValidated)
-                    {
-                        Error += $"Dòng {i + 1} của Item có lỗi:";
-                        if (Item.Errors.ContainsKey(nameof(Item.Name)))
-                            Error += Item.Errors[nameof(Item.Name)] + " ";
-                        if (Item.Errors.ContainsKey(nameof(Item.Code)))
-                            Error += Item.Errors[nameof(Item.Code)] + " ";
-                        if (Item.Errors.ContainsKey(nameof(Item.ScanCode)))
-                            Error += Item.Errors[nameof(Item.ScanCode)] + " ";
-                        if (Item.Errors.ContainsKey(nameof(Item.ProductId)))
-                            Error += Item.Errors[nameof(Item.ProductId)] + " ";
-                        Errors.Add(Error);
-                    }
-                }
-                return BadRequest(Errors);
-            }
+            return true;
         }
         private async Task<List<Item>> ImportItem(ExcelWorksheet worksheet)
         {
