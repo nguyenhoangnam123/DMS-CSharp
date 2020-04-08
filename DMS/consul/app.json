@@ -20,7 +20,7 @@
     "check": {
       "id": "dms-backend",
       "name": "dms-backend TCP on port 10002",
-      "tcp": "dms-backend:10002",
+      "tcp": "127.0.0.1:10002",
       "interval": "5s",
       "timeout": "1s"
     }
