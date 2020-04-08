@@ -107,15 +107,14 @@ namespace DMS.Services.MImage
 
         public async Task<Image> Create(Image Image, string path)
         {
-            RestClient restClient = new RestClient($"http://localhost:/{Modules.Utils}");
-            RestRequest restRequest = new RestRequest("/rpc/utils/upload");
+            RestClient restClient = new RestClient($"http://localhost:{Modules.Utils}");
+            RestRequest restRequest = new RestRequest("/rpc/utils/file/upload");
             restRequest.RequestFormat = DataFormat.Json;
             restRequest.Method = Method.POST;
             restRequest.AddCookie("Token", CurrentContext.Token);
             restRequest.AddCookie("X-Language", CurrentContext.Language);
             restRequest.AddHeader("Content-Type", "multipart/form-data");
-            restRequest.AddFile("file", Image.Content, "");
-            FileInfo fileInfo = new FileInfo(Image.Name);
+            restRequest.AddFile("file", Image.Content, Image.Name);
             restRequest.AddParameter("path", path);
             try
             {
@@ -123,13 +122,12 @@ namespace DMS.Services.MImage
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     Image.Id = response.Data.Id;
-                    Image.Url = "/utils/file/download" + response.Data.Path;
+                    Image.Url = "/rpc/utils/file/download" + response.Data.Path;
+                    await UOW.Begin();
+                    await UOW.ImageRepository.Create(Image);
+                    await UOW.Commit();
+                    return Image;
                 }
-
-                await UOW.Begin();
-                await UOW.ImageRepository.Create(Image);
-                await UOW.Commit();
-                return Image;
             }
             catch
             {

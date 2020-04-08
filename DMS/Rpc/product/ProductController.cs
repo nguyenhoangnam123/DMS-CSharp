@@ -42,6 +42,8 @@ namespace DMS.Rpc.product
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
+        public const string SaveImage = Default + "/save-image";
+
 
         public const string SingleListBrand = Default + "/single-list-brand";
         public const string SingleListProductType = Default + "/single-list-product-type";
@@ -478,7 +480,6 @@ namespace DMS.Rpc.product
             return BadRequest(Errors);
         }
 
-
         [Route(ProductRoute.Export), HttpPost]
         public async Task<ActionResult> Export([FromBody] Product_ProductFilterDTO Product_ProductFilterDTO)
         {
@@ -749,6 +750,31 @@ namespace DMS.Rpc.product
             List<Product> Products = await ProductService.List(ProductFilter);
             Products = await ProductService.BulkDelete(Products);
             return true;
+        }
+
+        [HttpPost]
+        [Route(ProductRoute.SaveImage)]
+        public async Task<ActionResult<Product_ImageDTO>> SaveImage(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            MemoryStream memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            Image Image = new Image
+            {
+                Name = file.FileName,
+                Content = memoryStream.ToArray()
+            };
+            Image = await ProductService.SaveImage(Image);
+            if (Image == null)
+                return BadRequest();
+            Product_ImageDTO product_ImageDTO = new Product_ImageDTO
+            {
+                Id = Image.Id,
+                Name = Image.Name,
+                Url = Image.Url,
+            };
+            return Ok(product_ImageDTO);
         }
 
         private async Task<bool> HasPermission(long Id)
