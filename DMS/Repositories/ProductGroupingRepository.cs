@@ -195,7 +195,7 @@ namespace DMS.Repositories
             if (ProductGrouping == null)
                 return null;
             ProductGrouping.ProductProductGroupingMappings = await DataContext.ProductProductGroupingMapping
-                .Where(x => x.ProductGrouping.Path.StartsWith(ProductGrouping.Path))
+                .Where(x => x.ProductGrouping.Path.StartsWith(ProductGrouping.Path) && x.Product.DeletedAt == null)
                 .Select(x => new ProductProductGroupingMapping
                 {
                     ProductId = x.ProductId,
