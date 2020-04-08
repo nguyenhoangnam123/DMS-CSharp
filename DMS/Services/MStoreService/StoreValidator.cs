@@ -82,13 +82,11 @@ namespace DMS.Services.MStore
             if (string.IsNullOrEmpty(Store.Code))
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeEmpty);
-                return false;
             }
             var Code = Store.Code;
             if (Store.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Store.Code))
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeHasSpecialCharacter);
-                return false;
             }
             StoreFilter StoreFilter = new StoreFilter
             {
@@ -102,7 +100,7 @@ namespace DMS.Services.MStore
             int count = await UOW.StoreRepository.Count(StoreFilter);
             if (count != 0)
                 Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeExisted);
-            return count == 0;
+            return Store.IsValidated;
         }
         #endregion
 
@@ -112,14 +110,12 @@ namespace DMS.Services.MStore
             if (string.IsNullOrEmpty(Store.Name))
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Name), ErrorCode.NameEmpty);
-                return false;
             }
             if (Store.Name.Length > 255)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Name), ErrorCode.NameOverLength);
-                return false;
             }
-            return true;
+            return Store.IsValidated;
         }
         #endregion
 
@@ -140,9 +136,8 @@ namespace DMS.Services.MStore
                 int count = await UOW.OrganizationRepository.Count(OrganizationFilter);
                 if (count == 0)
                     Store.AddError(nameof(StoreValidator), nameof(Store.OrganizationId), ErrorCode.OrganizationNotExisted);
-                return count != 0;
             }
-            return true;
+            return Store.IsValidated;
         }
         #endregion
 
@@ -163,9 +158,8 @@ namespace DMS.Services.MStore
                 int count = await UOW.StoreRepository.Count(StoreFilter);
                 if (count == 0)
                     Store.AddError(nameof(StoreValidator), nameof(Store.ParentStoreId), ErrorCode.ParentStoreNotExisted);
-                return count != 0;
             }
-            return true;
+            return Store.IsValidated;
         }
         #endregion
 
@@ -188,7 +182,7 @@ namespace DMS.Services.MStore
             int count = await UOW.StoreTypeRepository.Count(StoreTypeFilter);
             if (count == 0)
                 Store.AddError(nameof(StoreValidator), nameof(Store.StoreTypeId), ErrorCode.StoreTypeNotExisted);
-            return count != 0;
+            return Store.IsValidated;
         }
         #endregion
 
@@ -208,9 +202,8 @@ namespace DMS.Services.MStore
                 int count = await UOW.StoreGroupingRepository.Count(StoreGroupingFilter);
                 if (count == 0)
                     Store.AddError(nameof(StoreValidator), nameof(Store.StoreGroupingId), ErrorCode.StoreGroupingNotExisted);
-                return count != 0;
             }
-            return true;
+            return Store.IsValidated;
         }
         #endregion
 
@@ -220,9 +213,8 @@ namespace DMS.Services.MStore
             if (!string.IsNullOrEmpty(Store.Telephone) && Store.Telephone.Length > 255)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Telephone), ErrorCode.TelephoneOverLength);
-                return false;
             }
-            return true;
+            return Store.IsValidated;
         }
         #endregion
         #region Reseller
@@ -242,9 +234,8 @@ namespace DMS.Services.MStore
                 int count = await UOW.ResellerRepository.Count(ResellerFilter);
                 if (count == 0)
                     Store.AddError(nameof(StoreValidator), nameof(Store.ResellerId), ErrorCode.ResellerNotExisted);
-                return count != 0;
             }
-            return true;
+            return Store.IsValidated;
         }
         #endregion
         #region Province + District + Ward
@@ -264,9 +255,8 @@ namespace DMS.Services.MStore
                 int count = await UOW.ProvinceRepository.Count(ProvinceFilter);
                 if (count == 0)
                     Store.AddError(nameof(StoreValidator), nameof(Store.ProvinceId), ErrorCode.ProvinceNotExisted);
-                return count != 0;
             }
-            return true;
+            return Store.IsValidated;
         }
         private async Task<bool> ValidateDistrictId(Store Store)
         {
@@ -284,9 +274,8 @@ namespace DMS.Services.MStore
                 int count = await UOW.DistrictRepository.Count(DistrictFilter);
                 if (count == 0)
                     Store.AddError(nameof(StoreValidator), nameof(Store.DistrictId), ErrorCode.DistrictNotExisted);
-                return count != 0;
             }
-            return true;
+            return Store.IsValidated;
         }
         private async Task<bool> ValidateWardId(Store Store)
         {
@@ -304,9 +293,8 @@ namespace DMS.Services.MStore
                 int count = await UOW.WardRepository.Count(WardFilter);
                 if (count == 0)
                     Store.AddError(nameof(StoreValidator), nameof(Store.WardId), ErrorCode.WardNotExisted);
-                return count != 0;
             }
-            return true;
+            return Store.IsValidated;
         }
         #endregion
 
@@ -316,32 +304,28 @@ namespace DMS.Services.MStore
             if (string.IsNullOrEmpty(Store.Address))
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Address), ErrorCode.AddressEmpty);
-                return false;
             }
             if (Store.Address.Length > 255)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Address), ErrorCode.AddressOverLength);
-                return false;
             }
-            return true;
+            return Store.IsValidated;
         }
         private async Task<bool> ValidateDeliveryAddress(Store Store)
         {
             if (!string.IsNullOrEmpty(Store.DeliveryAddress) && Store.DeliveryAddress.Length > 255)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.DeliveryAddress), ErrorCode.DeliveryAddressOverLength);
-                return false;
             }
-            return true;
+            return Store.IsValidated;
         }
         private async Task<bool> ValidateLocation(Store Store)
         {
             if (Store.Latitude == null || Store.Longitude == null)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.OwnerName), ErrorCode.LocationEmpty);
-                return false;
             }
-            return true;
+            return Store.IsValidated;
         }
         #endregion
 
@@ -351,37 +335,32 @@ namespace DMS.Services.MStore
             if (string.IsNullOrEmpty(Store.OwnerName))
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.OwnerName), ErrorCode.OwnerNameEmpty);
-                return false;
             }
             if (Store.OwnerName.Length > 255)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.OwnerName), ErrorCode.OwnerNameOverLength);
-                return false;
             }
-            return true;
+            return Store.IsValidated;
         }
         private async Task<bool> ValidateOwnerPhone(Store Store)
         {
             if (string.IsNullOrEmpty(Store.OwnerPhone))
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.OwnerPhone), ErrorCode.OwnerPhoneEmpty);
-                return false;
             }
             if (Store.OwnerPhone.Length > 255)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.OwnerPhone), ErrorCode.OwnerPhoneOverLength);
-                return false;
             }
-            return true;
+            return Store.IsValidated;
         }
         private async Task<bool> ValidateOwnerEmail(Store Store)
         {
             if (!string.IsNullOrEmpty(Store.OwnerEmail) && Store.OwnerEmail.Length > 255)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.OwnerEmail), ErrorCode.OwnerEmailOverLength);
-                return false;
             }
-            return true;
+            return Store.IsValidated;
         }
         #endregion
 
@@ -390,7 +369,7 @@ namespace DMS.Services.MStore
         {
             if (StatusEnum.ACTIVE.Id != Store.StatusId && StatusEnum.INACTIVE.Id != Store.StatusId)
                 Store.AddError(nameof(StoreValidator), nameof(Store.Status), ErrorCode.StatusNotExisted);
-            return true;
+            return Store.IsValidated;
         }
         #endregion
         public async Task<bool> Create(Store Store)
@@ -520,50 +499,43 @@ namespace DMS.Services.MStore
                 if (listCodeInDB.Contains(Store.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeExisted);
-                    return false;
                 }
                 if (!listOrganizationCodeInDB.Contains(Store.Organization.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Organization), ErrorCode.OrganizationNotExisted);
-                    return false;
                 }
                 if (!listProvinceCodeInDB.Contains(Store.Province.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Province), ErrorCode.ProvinceNotExisted);
-                    return false;
                 }
                 if (!listDistrictCodeInDB.Contains(Store.District.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.District), ErrorCode.DistrictNotExisted);
-                    return false;
                 }
                 if (!listWardCodeInDB.Contains(Store.Ward.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Ward), ErrorCode.WardNotExisted);
-                    return false;
                 }
                 if (!listStoreGroupingCodeInDB.Contains(Store.StoreGrouping.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.StoreGrouping), ErrorCode.StoreGroupingNotExisted);
-                    return false;
                 }
                 if (!listStoreTypeCodeInDB.Contains(Store.StoreType.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.StoreType), ErrorCode.StoreTypeNotExisted);
-                    return false;
                 }
 
-                if (!await (ValidateName(Store))) return false;
-                if (!await (ValidateAddress(Store))) return false;
-                if (!await (ValidatePhone(Store))) return false;
-                if (!await (ValidateDeliveryAddress(Store))) return false;
-                if (!await (ValidateLocation(Store))) return false;
-                if (!await (ValidateOwnerName(Store))) return false;
-                if (!await (ValidateOwnerPhone(Store))) return false;
-                if (!await (ValidateOwnerEmail(Store))) return false;
+                await (ValidateName(Store));
+                await (ValidateAddress(Store));
+                await (ValidatePhone(Store));
+                await (ValidateDeliveryAddress(Store));
+                await (ValidateLocation(Store));
+                await (ValidateOwnerName(Store));
+                await (ValidateOwnerPhone(Store));
+                await (ValidateOwnerEmail(Store));
                 
             }
-            return true;
+            return Stores.Any(s => !s.IsValidated) ? false : true;
         }
     }
 }

@@ -54,7 +54,7 @@ namespace DMS.Services.MAppUser
             int count = await UOW.AppUserRepository.Count(AppUserFilter);
             if (count == 0)
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Id), ErrorCode.IdNotExisted);
-            return count == 1;
+            return AppUser.IsValidated;
         }
 
         private async Task<bool> ValidateUsername(AppUser AppUser)
@@ -71,7 +71,7 @@ namespace DMS.Services.MAppUser
             int count = await UOW.AppUserRepository.Count(AppUserFilter);
             if (count != 0)
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Username), ErrorCode.UsernameExisted);
-            return count == 0;
+            return AppUser.IsValidated;
         }
 
         private async Task<bool> ValidateDisplayName(AppUser AppUser)
@@ -79,14 +79,12 @@ namespace DMS.Services.MAppUser
             if (string.IsNullOrEmpty(AppUser.DisplayName))
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.DisplayName), ErrorCode.DisplayNameEmpty);
-                return false;
             }
             if (AppUser.DisplayName.Length > 255)
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.DisplayName), ErrorCode.DisplayNameOverLength);
-                return false;
             }
-            return true;
+            return AppUser.IsValidated;
         }
 
         private async Task<bool> ValidateEmail(AppUser AppUser)
@@ -103,7 +101,7 @@ namespace DMS.Services.MAppUser
             int count = await UOW.AppUserRepository.Count(AppUserFilter);
             if (count != 0)
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Email), ErrorCode.EmailExisted);
-            return count == 0;
+            return AppUser.IsValidated;
         }
 
         public async Task<bool> ValidatePhone(AppUser AppUser)
@@ -111,14 +109,12 @@ namespace DMS.Services.MAppUser
             if (string.IsNullOrEmpty(AppUser.Phone))
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Phone), ErrorCode.PhoneEmpty);
-                return false;
             }
             if (AppUser.Phone.Length > 255)
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Phone), ErrorCode.PhoneOverLength);
-                return false;
             }
-            return true;
+            return AppUser.IsValidated;
         }
 
         public async Task<bool> ValidateAddress(AppUser AppUser)
@@ -126,16 +122,15 @@ namespace DMS.Services.MAppUser
             if (!string.IsNullOrEmpty(AppUser.Address) && AppUser.Address.Length > 255)
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Address), ErrorCode.AddressOverLength);
-                return false;
             }
-            return true;
+            return AppUser.IsValidated;
         }
 
         public async Task<bool> ValidateStatus(AppUser AppUser)
         {
             if (StatusEnum.ACTIVE.Id != AppUser.StatusId && StatusEnum.INACTIVE.Id != AppUser.StatusId)
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Status), ErrorCode.StatusNotExisted);
-            return true;
+            return AppUser.IsValidated;
         }
 
         public async Task<bool> Create(AppUser AppUser)
@@ -209,19 +204,17 @@ namespace DMS.Services.MAppUser
                 if (listEmailInDB.Contains(AppUser.Email))
                 {
                     AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Email), ErrorCode.EmailExisted);
-                    return false;
                 }
                 if (listUserNameInDB.Contains(AppUser.Username))
                 {
                     AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Username), ErrorCode.UsernameExisted);
-                    return false;
                 }
-                if (!await ValidateDisplayName(AppUser)) return false;
-                if (!await ValidatePhone(AppUser)) return false;
-                if (!await ValidateAddress(AppUser)) return false;
+                await ValidateDisplayName(AppUser);
+                await ValidatePhone(AppUser);
+                await ValidateAddress(AppUser);
 
             }
-            return true;
+            return AppUsers.Any(s => !s.IsValidated) ? false : true;
         }
     }
 }

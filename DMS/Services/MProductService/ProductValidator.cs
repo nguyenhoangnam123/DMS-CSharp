@@ -64,21 +64,18 @@ namespace DMS.Services.MProduct
             if (string.IsNullOrWhiteSpace(Product.Name))
             {
                 Product.AddError(nameof(ProductValidator), nameof(Product.Name), ErrorCode.NameEmpty);
-                return false;
             }
             if (Product.Name.Length > 3000)
             {
                 Product.AddError(nameof(ProductValidator), nameof(Product.Name), ErrorCode.NameOverLength);
-                return false;
             }
-            return true;
+            return Product.IsValidated;
         }
         private async Task<bool> ValidateCode(Product Product)
         {
             if (string.IsNullOrWhiteSpace(Product.Code))
             {
                 Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeEmpty);
-                return false;
             }
 
             ProductFilter ProductFilter = new ProductFilter
@@ -93,9 +90,9 @@ namespace DMS.Services.MProduct
             int count = await UOW.ProductRepository.Count(ProductFilter);
             if (count > 0)
                 Product.AddError(nameof(ProductValidator), nameof(Product.Id), ErrorCode.CodeExisted);
-            return count == 0;
+            return Product.IsValidated;
         }
-        
+
         private async Task<bool> ValidateProductType(Product Product)
         {
             ProductTypeFilter ProductTypeFilter = new ProductTypeFilter
@@ -109,9 +106,9 @@ namespace DMS.Services.MProduct
             int count = await UOW.ProductTypeRepository.Count(ProductTypeFilter);
             if (count == 0)
                 Product.AddError(nameof(ProductValidator), nameof(Product.ProductType), ErrorCode.ProductTypeNotExisted);
-            return count != 0;
+            return Product.IsValidated;
         }
-        
+
         private async Task<bool> ValidateSupplier(Product Product)
         {
             SupplierFilter SupplierFilter = new SupplierFilter
@@ -125,9 +122,9 @@ namespace DMS.Services.MProduct
             int count = await UOW.SupplierRepository.Count(SupplierFilter);
             if (count == 0)
                 Product.AddError(nameof(ProductValidator), nameof(Product.Supplier), ErrorCode.SupplierNotExisted);
-            return count != 0;
+            return Product.IsValidated;
         }
-        
+
         private async Task<bool> ValidateBrand(Product Product)
         {
             BrandFilter BrandFilter = new BrandFilter
@@ -141,7 +138,7 @@ namespace DMS.Services.MProduct
             int count = await UOW.BrandRepository.Count(BrandFilter);
             if (count == 0)
                 Product.AddError(nameof(ProductValidator), nameof(Product.Brand), ErrorCode.BrandNotExisted);
-            return count != 0;
+            return Product.IsValidated;
         }
 
         private async Task<bool> ValidateUnitOfMeasure(Product Product)
@@ -157,7 +154,7 @@ namespace DMS.Services.MProduct
             int count = await UOW.UnitOfMeasureRepository.Count(UnitOfMeasureFilter);
             if (count == 0)
                 Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
-            return count != 0;
+            return Product.IsValidated;
         }
 
         private async Task<bool> ValidateUnitOfMeasureGrouping(Product Product)
@@ -173,14 +170,14 @@ namespace DMS.Services.MProduct
             int count = await UOW.UnitOfMeasureGroupingRepository.Count(UnitOfMeasureGroupingFilter);
             if (count == 0)
                 Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
-            return count != 0;
+            return Product.IsValidated;
         }
 
         private async Task<bool> ValidateStatusId(Product Product)
         {
             if (StatusEnum.ACTIVE.Id != Product.StatusId && StatusEnum.INACTIVE.Id != Product.StatusId)
                 Product.AddError(nameof(ProductValidator), nameof(Product.Status), ErrorCode.StatusNotExisted);
-            return true;
+            return Product.IsValidated;
         }
         public async Task<bool> Create(Product Product)
         {
@@ -283,37 +280,31 @@ namespace DMS.Services.MProduct
                 if (listCodeInDB.Contains(Product.Code))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeExisted);
-                    return false;
                 }
                 if (!listProductTypeCodeInDB.Contains(Product.ProductType.Code))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.ProductType), ErrorCode.ProductTypeNotExisted);
-                    return false;
                 }
                 if (!listSupplierCodeInDB.Contains(Product.Supplier.Code))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.Supplier), ErrorCode.SupplierNotExisted);
-                    return false;
                 }
                 if (!listBrandCodeInDB.Contains(Product.Brand.Code))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.Brand), ErrorCode.BrandNotExisted);
-                    return false;
                 }
                 if (!listUOMCodeInDB.Contains(Product.UnitOfMeasure.Code))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
-                    return false;
                 }
                 if (!listUOMGroupingCodeInDB.Contains(Product.UnitOfMeasureGrouping.Code))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
-                    return false;
                 }
 
-                if(!await ValidateName(Product)) return false;
-            } 
-            return true;
+                await ValidateName(Product);
+            }
+            return Products.Any(s => !s.IsValidated) ? false : true;
         }
     }
 }

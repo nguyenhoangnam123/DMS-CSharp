@@ -102,12 +102,11 @@ namespace DMS.Services.MRole
                 if (count == 0)
                 {
                     Permission.AddError(nameof(RoleValidator), nameof(Permission.Code), ErrorCode.CodeNotExisted);
-                    return false;
                 }
 
-                if (!await ValidateMenu(Permission.Menu)) return false;
+                await ValidateMenu(Permission.Menu);
             }
-            return true;
+            return Role.Permissions.Any(s => !s.IsValidated) ? false : true;
         }
 
         public async Task<bool> ValidateMenu(Menu Menu)
@@ -124,7 +123,6 @@ namespace DMS.Services.MRole
             if (MenuInDB == null)
             {
                 Menu.AddError(nameof(RoleValidator), nameof(Menu.Code), ErrorCode.CodeNotExisted);
-                return false;
             }
             else
             {
@@ -146,7 +144,7 @@ namespace DMS.Services.MRole
                     }
                 }
             }
-            return true;
+            return Menu.IsValidated;
         }
 
         public async Task<bool> Create(Role Role)
@@ -210,9 +208,9 @@ namespace DMS.Services.MRole
                     Role.AddError(nameof(RoleValidator), nameof(Role.Code), ErrorCode.CodeExisted);
                     return false;
                 }
-                if (!await ValidatePermission(Role)) return false;
+                await ValidatePermission(Role);
             }
-            return true;
+            return Roles.Any(s => !s.IsValidated) ? false : true;
         }
     }
 }

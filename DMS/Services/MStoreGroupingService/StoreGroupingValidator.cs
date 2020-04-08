@@ -61,13 +61,11 @@ namespace DMS.Services.MStoreGrouping
             if (string.IsNullOrEmpty(StoreGrouping.Code))
             {
                 StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Code), ErrorCode.CodeEmpty);
-                return false;
             }
             var Code = StoreGrouping.Code;
             if (StoreGrouping.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(StoreGrouping.Code))
             {
                 StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Code), ErrorCode.CodeHasSpecialCharacter);
-                return false;
             }
             StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter
             {
@@ -81,7 +79,7 @@ namespace DMS.Services.MStoreGrouping
             int count = await UOW.StoreGroupingRepository.Count(StoreGroupingFilter);
             if (count != 0)
                 StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Code), ErrorCode.CodeExisted);
-            return count == 0;
+            return StoreGrouping.IsValidated;
         }
 
         private async Task<bool> ValidateName(StoreGrouping StoreGrouping)
@@ -89,14 +87,12 @@ namespace DMS.Services.MStoreGrouping
             if (string.IsNullOrEmpty(StoreGrouping.Name))
             {
                 StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Name), ErrorCode.NameEmpty);
-                return false;
             }
             if (StoreGrouping.Name.Length > 255)
             {
                 StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Name), ErrorCode.NameOverLength);
-                return false;
             }
-            return true;
+            return StoreGrouping.IsValidated;
         }
 
         private async Task<bool> ValidateParent(StoreGrouping StoreGrouping)

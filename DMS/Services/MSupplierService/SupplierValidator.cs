@@ -65,13 +65,11 @@ namespace DMS.Services.MSupplier
             if (string.IsNullOrEmpty(Supplier.Code))
             {
                 Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Code), ErrorCode.CodeEmpty);
-                return false;
             }
             var Code = Supplier.Code;
             if (Supplier.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Supplier.Code))
             {
                 Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Code), ErrorCode.CodeHasSpecialCharacter);
-                return false;
             }
             SupplierFilter SupplierFilter = new SupplierFilter
             {
@@ -85,7 +83,7 @@ namespace DMS.Services.MSupplier
             int count = await UOW.SupplierRepository.Count(SupplierFilter);
             if (count != 0)
                 Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Code), ErrorCode.CodeExisted);
-            return count == 0;
+            return Supplier.IsValidated;
         }
 
         private async Task<bool> ValidateName(Supplier Supplier)
@@ -93,13 +91,11 @@ namespace DMS.Services.MSupplier
             if (string.IsNullOrEmpty(Supplier.Name))
             {
                 Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameEmpty);
-                return false;
             }
             var Name = Supplier.Name;
             if (Supplier.Name.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Name).Equals(Supplier.Name))
             {
                 Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameHasSpecialCharacter);
-                return false;
             }
             SupplierFilter SupplierFilter = new SupplierFilter
             {
@@ -113,7 +109,7 @@ namespace DMS.Services.MSupplier
             int count = await UOW.SupplierRepository.Count(SupplierFilter);
             if (count != 0)
                 Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameExisted);
-            return count == 0;
+            return Supplier.IsValidated;
         }
 
         private async Task<bool> ValidateProvinceId(Supplier Supplier)
@@ -132,9 +128,8 @@ namespace DMS.Services.MSupplier
                 int count = await UOW.ProvinceRepository.Count(ProvinceFilter);
                 if (count == 0)
                     Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.ProvinceId), ErrorCode.ProvinceNotExisted);
-                return count != 0;
             }
-            return true;
+            return Supplier.IsValidated;
         }
         private async Task<bool> ValidateDistrictId(Supplier Supplier)
         {
@@ -152,9 +147,8 @@ namespace DMS.Services.MSupplier
                 int count = await UOW.DistrictRepository.Count(DistrictFilter);
                 if (count == 0)
                     Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.DistrictId), ErrorCode.DistrictNotExisted);
-                return count != 0;
             }
-            return true;
+            return Supplier.IsValidated;
         }
         private async Task<bool> ValidateWardId(Supplier Supplier)
         {
@@ -172,9 +166,8 @@ namespace DMS.Services.MSupplier
                 int count = await UOW.WardRepository.Count(WardFilter);
                 if (count == 0)
                     Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.WardId), ErrorCode.WardNotExisted);
-                return count != 0;
             }
-            return true;
+            return Supplier.IsValidated;
         }
 
         private async Task<bool> ValidatePersonInCharge(Supplier Supplier)
@@ -192,9 +185,8 @@ namespace DMS.Services.MSupplier
                 int count = await UOW.AppUserRepository.Count(AppUserFilter);
                 if (count == 0)
                     Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.PersonInChargeId), ErrorCode.PersonInChargeNotExisted);
-                return count != 0;
             }
-            return true;
+            return Supplier.IsValidated;
         }
 
         private async Task<bool> ValidateStatusId(Supplier Supplier)
@@ -287,13 +279,13 @@ namespace DMS.Services.MSupplier
                     Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameExisted);
                     return false;
                 }
-                if (!await ValidatePersonInCharge(Supplier)) return false;
-                if (!await ValidateProvinceId(Supplier)) return false;
-                if (!await ValidateDistrictId(Supplier)) return false;
-                if (!await ValidateWardId(Supplier)) return false;
-                if (!await ValidateStatusId(Supplier)) return false;
+                await ValidatePersonInCharge(Supplier);
+                await ValidateProvinceId(Supplier);
+                await ValidateDistrictId(Supplier);
+                await ValidateWardId(Supplier);
+                await ValidateStatusId(Supplier);
             }
-            return true;
+            return Suppliers.Any(s => !s.IsValidated) ? false : true;
         }
     }
 }
