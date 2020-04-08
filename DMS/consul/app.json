@@ -6,7 +6,16 @@
       "dms-backend"
     ],
     "connect": {
-      "sidecar_service": {}
+      "sidecar_service": {
+        "proxy": {
+          "upstreams": [
+            {
+              "destination_name": "dms-utils",
+              "local_bind_port": 10100
+            }
+          ]
+        }
+      }
     },
     "check": {
       "id": "dms-backend",
