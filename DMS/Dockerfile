@@ -20,4 +20,4 @@ COPY --from=publish /app/publish .
 
 COPY ["docker-entrypoint.sh", "."]
 
-CMD ["dotnet", "DMS.dll"]
+CMD ["./docker-entrypoint.sh"]
