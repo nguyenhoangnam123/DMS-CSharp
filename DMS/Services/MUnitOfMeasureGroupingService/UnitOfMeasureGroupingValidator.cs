@@ -112,7 +112,7 @@ namespace DMS.Services.MUnitOfMeasureGrouping
             {
                 Skip = 0,
                 Take = 10,
-                Id = new IdFilter { Equal = UnitOfMeasureGrouping.Id },
+                Id = new IdFilter { Equal = UnitOfMeasureGrouping.UnitOfMeasureId },
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                 Selects = UnitOfMeasureSelect.Id
             };
