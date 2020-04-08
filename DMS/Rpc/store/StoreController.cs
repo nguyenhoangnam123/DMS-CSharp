@@ -27,6 +27,7 @@ namespace DMS.Rpc.store
         public const string Master = Module + "/store/store-master";
         public const string Detail = Module + "/store/store-detail";
         private const string Default = Rpc + Module + "/store";
+        public const string Mobile = Default + "/master-data.stores";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
