@@ -11,6 +11,7 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
+        public byte[] Content { get; set; }
 
         public bool Equals(Image other)
         {

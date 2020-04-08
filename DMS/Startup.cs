@@ -20,6 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Winton.Extensions.Configuration.Consul;
 using Z.EntityFramework.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DMS
 {
@@ -113,6 +114,14 @@ namespace DMS
                     }
                 };
             });
+
+            services.AddScoped<IAuthorizationHandler, PermissionHandler>();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Permission", policy =>
+                    policy.Requirements.Add(new PermissionRequirement()));
+            });
+
             Action onChange = () =>
             {
 

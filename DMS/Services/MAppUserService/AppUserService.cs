@@ -8,11 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
-using DMS.Helpers;
-using Microsoft.AspNetCore.Http;
 using DMS.Services.MSex;
 
 namespace DMS.Services.MAppUser

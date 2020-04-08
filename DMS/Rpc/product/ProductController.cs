@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
-using DMS.Helpers;
 using System;
 using System.Data;
 using Microsoft.AspNetCore.Hosting;
@@ -55,8 +54,6 @@ namespace DMS.Rpc.product
         public const string SingleListImage = Default + "/single-list-image";
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
         public const string SingleListVariationGrouping = Default + "/single-list-variation-grouping";
-        public const string CountImage = Default + "/count-image";
-        public const string ListImage = Default + "/list-image";
         public const string CountProductGrouping = Default + "/count-product-grouping";
         public const string ListProductGrouping = Default + "/list-product-grouping";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
@@ -600,7 +597,7 @@ namespace DMS.Rpc.product
                 excel.Save();
             }
 
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + Utils.ConvertDateTimeToString(DateTime.Now) + ".xlsx");
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
         }
 
         [Route(ProductRoute.ExportTemplate), HttpPost]
@@ -734,7 +731,7 @@ namespace DMS.Rpc.product
                 xlPackage.SaveAs(MemoryStream);
             }
 
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + Utils.ConvertDateTimeToString(DateTime.Now) + ".xlsx");
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
         }
 
         [Route(ProductRoute.BulkDelete), HttpPost]
@@ -1069,35 +1066,6 @@ namespace DMS.Rpc.product
             return Product_ProductGroupingDTOs;
         }
 
-        [Route(ProductRoute.CountImage), HttpPost]
-        public async Task<long> CountImage([FromBody] Product_ImageFilterDTO Product_ImageFilterDTO)
-        {
-            ImageFilter ImageFilter = new ImageFilter();
-            ImageFilter.Id = Product_ImageFilterDTO.Id;
-            ImageFilter.Name = Product_ImageFilterDTO.Name;
-            ImageFilter.Url = Product_ImageFilterDTO.Url;
-
-            return await ImageService.Count(ImageFilter);
-        }
-
-        [Route(ProductRoute.ListImage), HttpPost]
-        public async Task<List<Product_ImageDTO>> ListImage([FromBody] Product_ImageFilterDTO Product_ImageFilterDTO)
-        {
-            ImageFilter ImageFilter = new ImageFilter();
-            ImageFilter.Skip = Product_ImageFilterDTO.Skip;
-            ImageFilter.Take = Product_ImageFilterDTO.Take;
-            ImageFilter.OrderBy = ImageOrder.Id;
-            ImageFilter.OrderType = OrderType.ASC;
-            ImageFilter.Selects = ImageSelect.ALL;
-            ImageFilter.Id = Product_ImageFilterDTO.Id;
-            ImageFilter.Name = Product_ImageFilterDTO.Name;
-            ImageFilter.Url = Product_ImageFilterDTO.Url;
-
-            List<Image> Images = await ImageService.List(ImageFilter);
-            List<Product_ImageDTO> Product_ImageDTOs = Images
-                .Select(x => new Product_ImageDTO(x)).ToList();
-            return Product_ImageDTOs;
-        }
         [Route(ProductRoute.CountProductGrouping), HttpPost]
         public async Task<long> CountProductGrouping([FromBody] Product_ProductGroupingFilterDTO Product_ProductGroupingFilterDTO)
         {
