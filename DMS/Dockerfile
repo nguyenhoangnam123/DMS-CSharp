@@ -16,6 +16,12 @@ RUN dotnet publish "DMS.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
+
+
+COPY --from=consul:latest /bin/consul /usr/local/bin/consul
+
+COPY --from=envoyproxy/envoy-alpine /usr/local/bin/envoy /usr/local/bin/envoy
+
 COPY --from=publish /app/publish .
 
 COPY ["docker-entrypoint.sh", "."]
