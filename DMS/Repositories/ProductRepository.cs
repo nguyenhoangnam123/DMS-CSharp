@@ -574,11 +574,13 @@ namespace DMS.Repositories
             foreach (var Product in Products)
             {
                 long ProductId = ProductDAOs.Where(p => p.Code == Product.Code).Select(p => p.Id).FirstOrDefault();
-                foreach (var item in Product.Items)
-                {
-                    item.ProductId = ProductId;
-                }
+                if (Product.Items != null) 
+                    Product.Items.ForEach(i => i.ProductId = ProductId);
+
+                if (Product.VariationGroupings != null)
+                    Product.VariationGroupings.ForEach(vg => vg.ProductId = ProductId);
             }
+            #region merge item
             List<Item> Items = Products.SelectMany(p => p.Items).ToList();
             List<ItemDAO> ItemDAOs = new List<ItemDAO>();
             foreach (Item Item in Items)
@@ -595,7 +597,53 @@ namespace DMS.Repositories
                 ItemDAO.UpdatedAt = StaticParams.DateTimeNow;
                 ItemDAOs.Add(ItemDAO);
             }
-            await DataContext.BulkMergeAsync(ItemDAOs);
+            await DataContext.Item.BulkMergeAsync(ItemDAOs);
+            #endregion
+
+            #region merge VariationGroupings
+            List<VariationGrouping> VariationGroupings = Products.SelectMany(p => p.VariationGroupings).ToList();
+            List<VariationGroupingDAO> VariationGroupingDAOs = new List<VariationGroupingDAO>();
+            foreach (var VariationGrouping in VariationGroupings)
+            {
+                VariationGroupingDAO VariationGroupingDAO = new VariationGroupingDAO
+                {
+                    Id = VariationGrouping.Id,
+                    Name = VariationGrouping.Name,
+                    ProductId = VariationGrouping.ProductId,
+                    CreatedAt = StaticParams.DateTimeNow,
+                    UpdatedAt = StaticParams.DateTimeNow
+                };
+                VariationGroupingDAOs.Add(VariationGroupingDAO);
+            }
+            
+            await DataContext.VariationGrouping.BulkMergeAsync(VariationGroupingDAOs);
+            #endregion
+
+            #region merge Variation
+            foreach (var VariationGrouping in VariationGroupings)
+            {
+                long VariationGroupingId = VariationGroupingDAOs
+                    .Where(vg => vg.Name.Equals(VariationGrouping.Name) && vg.ProductId == VariationGrouping.ProductId)
+                    .Select(vg => vg.Id).FirstOrDefault();
+                if (VariationGrouping.Variations != null)
+                    VariationGrouping.Variations.ForEach(v => v.VariationGroupingId = VariationGroupingId);
+            }
+            List<Variation> Variations = VariationGroupings.SelectMany(p => p.Variations).ToList();
+            List<VariationDAO> VariationDAOs = new List<VariationDAO>();
+            foreach (var Variation in Variations)
+            {
+                VariationDAO VariationDAO = new VariationDAO
+                {
+                    Id = Variation.Id,
+                    Code = Variation.Code,
+                    Name = Variation.Name,
+                    VariationGroupingId = Variation.VariationGroupingId,
+                };
+                VariationDAOs.Add(VariationDAO);
+            }
+
+            await DataContext.Variation.BulkMergeAsync(VariationDAOs);
+            #endregion
 
             return true;
         }
@@ -622,17 +670,19 @@ namespace DMS.Repositories
                         .Where(x => x.Id == Item.Id && x.Id != 0).FirstOrDefault();
                     if (ItemDAO == null)
                     {
-                        ItemDAO = new ItemDAO();
-                        ItemDAO.ProductId = Product.Id;
-                        ItemDAO.Code = Item.Code;
-                        ItemDAO.Name = Item.Name;
-                        ItemDAO.ScanCode = Item.ScanCode;
-                        ItemDAO.SalePrice = Item.SalePrice;
-                        ItemDAO.RetailPrice = Item.RetailPrice;
+                        ItemDAO = new ItemDAO() 
+                        {
+                            ProductId = Product.Id,
+                            Code = Item.Code,
+                            Name = Item.Name,
+                            ScanCode = Item.ScanCode,
+                            SalePrice = Item.SalePrice,
+                            RetailPrice = Item.RetailPrice,
+                            CreatedAt = StaticParams.DateTimeNow,
+                            UpdatedAt = StaticParams.DateTimeNow,
+                            DeletedAt = null
+                        };
                         ItemDAOs.Add(ItemDAO);
-                        ItemDAO.CreatedAt = StaticParams.DateTimeNow;
-                        ItemDAO.UpdatedAt = StaticParams.DateTimeNow;
-                        ItemDAO.DeletedAt = null;
                     }
                     else
                     {
@@ -657,9 +707,11 @@ namespace DMS.Repositories
             {
                 foreach (ProductImageMapping ProductImageMapping in Product.ProductImageMappings)
                 {
-                    ProductImageMappingDAO ProductImageMappingDAO = new ProductImageMappingDAO();
-                    ProductImageMappingDAO.ProductId = Product.Id;
-                    ProductImageMappingDAO.ImageId = ProductImageMapping.ImageId;
+                    ProductImageMappingDAO ProductImageMappingDAO = new ProductImageMappingDAO() 
+                    {
+                        ProductId = Product.Id,
+                        ImageId = ProductImageMapping.ImageId,
+                    };
                     ProductImageMappingDAOs.Add(ProductImageMappingDAO);
                 }
                 await DataContext.ProductImageMapping.BulkMergeAsync(ProductImageMappingDAOs);
@@ -672,9 +724,11 @@ namespace DMS.Repositories
             {
                 foreach (ProductProductGroupingMapping ProductProductGroupingMapping in Product.ProductProductGroupingMappings)
                 {
-                    ProductProductGroupingMappingDAO ProductProductGroupingMappingDAO = new ProductProductGroupingMappingDAO();
-                    ProductProductGroupingMappingDAO.ProductId = Product.Id;
-                    ProductProductGroupingMappingDAO.ProductGroupingId = ProductProductGroupingMapping.ProductGroupingId;
+                    ProductProductGroupingMappingDAO ProductProductGroupingMappingDAO = new ProductProductGroupingMappingDAO()
+                    {
+                        ProductId = Product.Id,
+                        ProductGroupingId = ProductProductGroupingMapping.ProductGroupingId
+                    };
                     ProductProductGroupingMappingDAOs.Add(ProductProductGroupingMappingDAO);
                 }
                 await DataContext.ProductProductGroupingMapping.BulkMergeAsync(ProductProductGroupingMappingDAOs);
@@ -694,10 +748,11 @@ namespace DMS.Repositories
                         VariationGroupingDAO.Id = VariationGrouping.Id;
                         VariationGroupingDAO.Name = VariationGrouping.Name;
                         VariationGroupingDAO.ProductId = Product.Id;
-                        VariationGroupingDAOs.Add(VariationGroupingDAO);
+                        
                         VariationGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
                         VariationGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
                         VariationGroupingDAO.DeletedAt = null;
+                        VariationGroupingDAOs.Add(VariationGroupingDAO);
                     }
                     else
                     {
@@ -709,6 +764,27 @@ namespace DMS.Repositories
                     }
                 }
                 await DataContext.VariationGrouping.BulkMergeAsync(VariationGroupingDAOs);
+
+                foreach (VariationGrouping VariationGrouping in Product.VariationGroupings)
+                {
+                    long VariationGroupingId = VariationGroupingDAOs.Where(vg => vg.Name.Equals(VariationGrouping.Name) && vg.ProductId == Product.Id).Select(vg => vg.Id).FirstOrDefault();
+                    VariationGrouping.Id = VariationGroupingId;
+
+                    foreach (var Variation in VariationGrouping.Variations)
+                    {
+                        Variation.VariationGroupingId = VariationGroupingId;
+                    }
+                }
+
+                List<Variation> Variations = Product.VariationGroupings.SelectMany(p => p.Variations).ToList();
+                List<VariationDAO> VariationDAOs = Variations.Select(v => new VariationDAO
+                {
+                    Code = v.Code,
+                    Name = v.Name,
+                    VariationGroupingId = v.VariationGroupingId
+                }).ToList();
+
+                await DataContext.Variation.BulkMergeAsync(VariationDAOs);
             }
         }
 

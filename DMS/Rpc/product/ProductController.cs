@@ -178,6 +178,17 @@ namespace DMS.Rpc.product
                 return Forbid();
 
             Product Product = ConvertDTOToEntity(Product_ProductDTO);
+            Item Item = new Item
+            {
+                Code = Product.Code,
+                Name = Product.Name,
+                RetailPrice = Product.RetailPrice,
+                SalePrice = Product.SalePrice,
+                ScanCode = Product.ScanCode
+            };
+            Product.Items = new List<Item>();
+            Product.Items.Add(Item);
+
             Product = await ProductService.Create(Product);
             Product_ProductDTO = new Product_ProductDTO(Product);
             if (Product.IsValidated)
@@ -410,13 +421,17 @@ namespace DMS.Rpc.product
                             
                         }
                         VariationGrouping.Variations = new List<Variation>();
-                        var splitValue = PropertyValue1Value.Split('-');
-                        Variation Variation = new Variation
+                        var Values = PropertyValue1Value.Split(',');
+                        foreach (var Value in Values)
                         {
-                            Code = splitValue[0],
-                            Name = splitValue[1]
-                        };
-                        VariationGrouping.Variations.Add(Variation);
+                            var splitValue = Value.Split('-');
+                            Variation Variation = new Variation
+                            {
+                                Code = splitValue[0],
+                                Name = splitValue[1]
+                            };
+                            VariationGrouping.Variations.Add(Variation);
+                        }
                         Product.VariationGroupings.Add(VariationGrouping);
                         
                     }
@@ -434,13 +449,17 @@ namespace DMS.Rpc.product
 
                         }
                         VariationGrouping.Variations = new List<Variation>();
-                        var splitValue = PropertyValue2Value.Split('-');
-                        Variation Variation = new Variation
+                        var Values = PropertyValue2Value.Split(',');
+                        foreach (var Value in Values)
                         {
-                            Code = splitValue[0],
-                            Name = splitValue[1]
-                        };
-                        VariationGrouping.Variations.Add(Variation);
+                            var splitValue = Value.Split('-');
+                            Variation Variation = new Variation
+                            {
+                                Code = splitValue[0],
+                                Name = splitValue[1]
+                            };
+                            VariationGrouping.Variations.Add(Variation);
+                        }
                         Product.VariationGroupings.Add(VariationGrouping);
 
                     }
@@ -458,13 +477,17 @@ namespace DMS.Rpc.product
 
                         }
                         VariationGrouping.Variations = new List<Variation>();
-                        var splitValue = PropertyValue3Value.Split('-');
-                        Variation Variation = new Variation
+                        var Values = PropertyValue3Value.Split(',');
+                        foreach (var Value in Values)
                         {
-                            Code = splitValue[0],
-                            Name = splitValue[1]
-                        };
-                        VariationGrouping.Variations.Add(Variation);
+                            var splitValue = Value.Split('-');
+                            Variation Variation = new Variation
+                            {
+                                Code = splitValue[0],
+                                Name = splitValue[1]
+                            };
+                            VariationGrouping.Variations.Add(Variation);
+                        }
                         Product.VariationGroupings.Add(VariationGrouping);
 
                     }
@@ -482,15 +505,18 @@ namespace DMS.Rpc.product
 
                         }
                         VariationGrouping.Variations = new List<Variation>();
-                        var splitValue = PropertyValue4Value.Split('-');
-                        Variation Variation = new Variation
+                        var Values = PropertyValue4Value.Split(',');
+                        foreach (var Value in Values)
                         {
-                            Code = splitValue[0],
-                            Name = splitValue[1]
-                        };
-                        VariationGrouping.Variations.Add(Variation);
+                            var splitValue = Value.Split('-');
+                            Variation Variation = new Variation
+                            {
+                                Code = splitValue[0],
+                                Name = splitValue[1]
+                            };
+                            VariationGrouping.Variations.Add(Variation);
+                        }
                         Product.VariationGroupings.Add(VariationGrouping);
-
                     }
                     #endregion
                     Products.Add(Product);
@@ -559,64 +585,6 @@ namespace DMS.Rpc.product
             List<Product_ProductDTO> Product_ProductDTOs = Products
                 .Select(c => new Product_ProductDTO(c)).ToList();
             return Product_ProductDTOs;
-        }
-        private async Task<List<Item>> ImportItem(ExcelWorksheet worksheet)
-        {
-            var Items = new List<Item>();
-            List<string> Errors = new List<string>();
-            var Products = await ProductService.List(new ProductFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = ProductSelect.ALL
-            });
-
-            #region Sheet Item 
-            if (worksheet == null)
-                return null;
-
-            #region Khai báo thứ tự các cột trong Exel file 
-            int StartColumn = 1;
-            int StartRow = 1;
-
-            //Mã sản phẩm
-            int CodeColumn = 1 + StartColumn;
-            //Mã sản phẩm thuộc tính
-            int CodeProductItemColumn = 2 + StartColumn;
-            //Tên sản phẩm thuộc tính
-            int NameProductItemColumn = 3 + StartColumn;
-            //Mã sản phẩm nhận diện
-            int ScanCodeItemColumn = 4 + StartColumn;
-            //Giá bán
-            int SalePriceColumn = 5 + StartColumn;
-            //Giá bán lẻ đề xuất
-            int RetailPriceColumn = 6 + StartColumn;
-
-            #endregion
-            for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
-            {
-                if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString()))
-                    break;
-                string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                string CodeProductItemValue = worksheet.Cells[i + StartRow, CodeProductItemColumn].Value?.ToString();
-                string NameProductItemValue = worksheet.Cells[i + StartRow, NameProductItemColumn].Value?.ToString();
-                string ScanCodeItemValue = worksheet.Cells[i + StartRow, ScanCodeItemColumn].Value?.ToString();
-                string SalePriceValue = worksheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
-                string RetailPriceValue = worksheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
-
-                Item Item = new Item();
-                Item.Code = CodeProductItemValue;
-                Item.Name = NameProductItemValue;
-                Item.ScanCode = ScanCodeItemValue;
-                Item.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : decimal.Parse(SalePriceValue);
-                Item.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : decimal.Parse(RetailPriceValue);
-                var Product = Products.Where(p => p.Code == CodeValue).FirstOrDefault();
-                Item.ProductId = Product != null ? Product.Id : 0;
-                Items.Add(Item);
-            }
-            #endregion
-            Items = await ItemService.Import(Items);
-            return Items;
         }
 
         [Route(ProductRoute.Export), HttpPost]
@@ -1084,6 +1052,13 @@ namespace DMS.Rpc.product
                 {
                     Id = x.Id,
                     Name = x.Name,
+                    Variations = x.Variations.Select(v => new Variation
+                    {
+                        Id = v.Id,
+                        Code = v.Code,
+                        Name = v.Name,
+                        VariationGroupingId = x.Id
+                    }).ToList()
                 }).ToList();
             Product.BaseLanguage = CurrentContext.Language;
             return Product;
