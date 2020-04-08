@@ -1,21 +1,17 @@
 {
   "service": {
     "name": "dms-backend",
-    "port": 5003,
+    "port": 10002,
     "tags": [
       "dms-backend"
     ],
     "connect": {
-      "sidecar_service": {
-        "proxy": {
-          "upstreams": []
-        }
-      }
+      "sidecar_service": {}
     },
     "check": {
       "id": "dms-backend",
-      "name": "dms-backend TCP on port 5003",
-      "tcp": "dms-backend:5003",
+      "name": "dms-backend TCP on port 10002",
+      "tcp": "dms-backend:10002",
       "interval": "5s",
       "timeout": "1s"
     }

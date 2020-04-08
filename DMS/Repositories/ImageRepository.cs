@@ -1,8 +1,10 @@
 using Common;
 using DMS.Entities;
+using DMS.Helpers;
 using DMS.Models;
 using Helpers;
 using Microsoft.EntityFrameworkCore;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +18,7 @@ namespace DMS.Repositories
         Task<List<Image>> List(ImageFilter ImageFilter);
         Task<Image> Get(long Id);
         Task<bool> Create(Image Image);
-        Task<bool> Update(Image Image);
         Task<bool> Delete(Image Image);
-        Task<bool> BulkMerge(List<Image> Images);
-        Task<bool> BulkDelete(List<Image> Images);
     }
     public class ImageRepository : IImageRepository
     {
@@ -151,24 +150,7 @@ namespace DMS.Repositories
             ImageDAO.Url = Image.Url;
             ImageDAO.CreatedAt = StaticParams.DateTimeNow;
             ImageDAO.UpdatedAt = StaticParams.DateTimeNow;
-            DataContext.Image.Add(ImageDAO);
-            await DataContext.SaveChangesAsync();
-            Image.Id = ImageDAO.Id;
-            await SaveReference(Image);
-            return true;
-        }
-
-        public async Task<bool> Update(Image Image)
-        {
-            ImageDAO ImageDAO = DataContext.Image.Where(x => x.Id == Image.Id).FirstOrDefault();
-            if (ImageDAO == null)
-                return false;
-            ImageDAO.Id = Image.Id;
-            ImageDAO.Name = Image.Name;
-            ImageDAO.Url = Image.Url;
-            ImageDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(Image);
+            await DataContext.BulkMergeAsync<ImageDAO>(new List<ImageDAO> { ImageDAO });
             return true;
         }
 
@@ -176,36 +158,6 @@ namespace DMS.Repositories
         {
             await DataContext.Image.Where(x => x.Id == Image.Id).UpdateFromQueryAsync(x => new ImageDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
-        }
-
-        public async Task<bool> BulkMerge(List<Image> Images)
-        {
-            List<ImageDAO> ImageDAOs = new List<ImageDAO>();
-            foreach (Image Image in Images)
-            {
-                ImageDAO ImageDAO = new ImageDAO();
-                ImageDAO.Id = Image.Id;
-                ImageDAO.Name = Image.Name;
-                ImageDAO.Url = Image.Url;
-                ImageDAO.CreatedAt = StaticParams.DateTimeNow;
-                ImageDAO.UpdatedAt = StaticParams.DateTimeNow;
-                ImageDAOs.Add(ImageDAO);
-            }
-            await DataContext.BulkMergeAsync(ImageDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<Image> Images)
-        {
-            List<long> Ids = Images.Select(x => x.Id).ToList();
-            await DataContext.Image
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new ImageDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        private async Task SaveReference(Image Image)
-        {
         }
 
     }

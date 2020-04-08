@@ -6,4 +6,4 @@ services:
         volumes:
             - ./consul/:/consul/config
         ports:
-            - "5003"
+            - "10002"

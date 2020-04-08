@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Repositories;
+using DMS.Services.MImage;
 using Helpers;
 using OfficeOpenXml;
 using System;
@@ -23,6 +24,8 @@ namespace DMS.Services.MProduct
         Task<List<Product>> Import(List<Product> Products);
         Task<DataFile> Export(ProductFilter ProductFilter);
         ProductFilter ToFilter(ProductFilter ProductFilter);
+
+        Task<Image> SaveImage(Image Image);
     }
 
     public class ProductService : BaseService, IProductService
@@ -31,18 +34,21 @@ namespace DMS.Services.MProduct
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IProductValidator ProductValidator;
+        private IImageService ImageService;
 
         public ProductService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IProductValidator ProductValidator
+            IProductValidator ProductValidator,
+            IImageService ImageService
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.ProductValidator = ProductValidator;
+            this.ImageService = ImageService;
         }
         public async Task<int> Count(ProductFilter ProductFilter)
         {
@@ -212,7 +218,7 @@ namespace DMS.Services.MProduct
                         {
                             ProductProductGroupingMapping.ProductId = Product.Id;
                             ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
-                        } 
+                        }
                     }
                 }
                 await UOW.ProductProductGroupingMappingRepository.BulkMerge(ProductProductGroupingMappings);
@@ -348,6 +354,14 @@ namespace DMS.Services.MProduct
                     subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
             }
             return filter;
+        }
+
+        public async Task<Image> SaveImage(Image Image)
+        {
+            FileInfo fileInfo = new FileInfo(Image.Name);
+            string path = $"/product/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            Image = await ImageService.Create(Image, path);
+            return Image;
         }
     }
 }
