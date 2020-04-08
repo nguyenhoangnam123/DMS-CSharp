@@ -1,4 +1,5 @@
 using Common;
+using DMS.Handlers;
 using DMS.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -7,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RabbitMQ.Client;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -53,8 +56,12 @@ namespace DMS
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers().AddNewtonsoftJson();
+            services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
+            services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
+            services.AddSingleton<IRabbitManager, RabbitManager>();
+            services.AddHostedService<ConsumeRabbitMQHostedService>();
             services.AddDbContext<DataContext>(options =>
-               options.UseSqlServer(Configuration.GetConnectionString("DataContext")));
+              options.UseSqlServer(Configuration.GetConnectionString("DataContext")));
             EntityFrameworkManager.ContextFactory = context =>
             {
                 var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
@@ -111,6 +118,7 @@ namespace DMS
 
             };
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
