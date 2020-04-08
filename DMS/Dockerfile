@@ -22,6 +22,8 @@ COPY --from=consul:latest /bin/consul /usr/local/bin/consul
 
 COPY --from=envoyproxy/envoy-alpine /usr/local/bin/envoy /usr/local/bin/envoy
 
+COPY /consul /consul/config 
+
 COPY --from=publish /app/publish .
 
 COPY ["docker-entrypoint.sh", "."]
