@@ -363,13 +363,6 @@ namespace DMS.Services.MReseller
                 Selects = ResellerStatusSelect.Code
             })).Select(e => e.Code);
 
-            var listStatusCodeInDB = (await UOW.StatusRepository.List(new StatusFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StatusSelect.Code
-            })).Select(e => e.Code);
-
             foreach (var Reseller in Resellers)
             {
                 if (listCodeInDB.Contains(Reseller.Code))
@@ -378,24 +371,19 @@ namespace DMS.Services.MReseller
                     return false;
                 }
 
-                if (listOrganizationCodeInDB.Contains(Reseller.Organization.Code))
+                if (!listOrganizationCodeInDB.Contains(Reseller.Organization.Code))
                 {
                     Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Organization), ErrorCode.OrganizationNotExisted);
                     return false;
                 }
-                if (listResellerTypeCodeInDB.Contains(Reseller.ResellerType.Code))
+                if (!listResellerTypeCodeInDB.Contains(Reseller.ResellerType.Code))
                 {
                     Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerType), ErrorCode.ResellerTypeNotExisted);
                     return false;
                 }
-                if (listResellerStatusCodeInDB.Contains(Reseller.ResellerStatus.Code))
+                if (!listResellerStatusCodeInDB.Contains(Reseller.ResellerStatus.Code))
                 {
                     Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerStatus), ErrorCode.ResellerStatusNotExisted);
-                    return false;
-                }
-                if (listStatusCodeInDB.Contains(Reseller.Status.Code))
-                {
-                    Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Status), ErrorCode.StatusNotExisted);
                     return false;
                 }
                 if (!await ValidateCode(Reseller)) return false;

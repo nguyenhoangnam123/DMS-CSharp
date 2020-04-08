@@ -522,32 +522,32 @@ namespace DMS.Services.MStore
                     Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeExisted);
                     return false;
                 }
-                if (listOrganizationCodeInDB.Contains(Store.Organization.Code))
+                if (!listOrganizationCodeInDB.Contains(Store.Organization.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Organization), ErrorCode.OrganizationNotExisted);
                     return false;
                 }
-                if (listProvinceCodeInDB.Contains(Store.Province.Code))
+                if (!listProvinceCodeInDB.Contains(Store.Province.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Province), ErrorCode.ProvinceNotExisted);
                     return false;
                 }
-                if (listDistrictCodeInDB.Contains(Store.District.Code))
+                if (!listDistrictCodeInDB.Contains(Store.District.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.District), ErrorCode.DistrictNotExisted);
                     return false;
                 }
-                if (listWardCodeInDB.Contains(Store.Ward.Code))
+                if (!listWardCodeInDB.Contains(Store.Ward.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Ward), ErrorCode.WardNotExisted);
                     return false;
                 }
-                if (listStoreGroupingCodeInDB.Contains(Store.StoreGrouping.Code))
+                if (!listStoreGroupingCodeInDB.Contains(Store.StoreGrouping.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.StoreGrouping), ErrorCode.StoreGroupingNotExisted);
                     return false;
                 }
-                if (listStoreTypeCodeInDB.Contains(Store.StoreType.Code))
+                if (!listStoreTypeCodeInDB.Contains(Store.StoreType.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.StoreType), ErrorCode.StoreTypeNotExisted);
                     return false;

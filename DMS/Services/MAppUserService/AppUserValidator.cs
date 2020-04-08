@@ -41,7 +41,7 @@ namespace DMS.Services.MAppUser
             this.CurrentContext = CurrentContext;
         }
 
-        public async Task<bool> ValidateId(AppUser AppUser)
+        private async Task<bool> ValidateId(AppUser AppUser)
         {
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -57,7 +57,7 @@ namespace DMS.Services.MAppUser
             return count == 1;
         }
 
-        public async Task<bool> ValidateUsername(AppUser AppUser)
+        private async Task<bool> ValidateUsername(AppUser AppUser)
         {
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -69,25 +69,27 @@ namespace DMS.Services.MAppUser
             };
 
             int count = await UOW.AppUserRepository.Count(AppUserFilter);
-            if (count == 0)
+            if (count != 0)
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Username), ErrorCode.UsernameExisted);
-            return count == 1;
+            return count == 0;
         }
 
-        public async Task<bool> ValidateDisplayName(AppUser AppUser)
+        private async Task<bool> ValidateDisplayName(AppUser AppUser)
         {
             if (string.IsNullOrEmpty(AppUser.DisplayName))
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.DisplayName), ErrorCode.DisplayNameEmpty);
+                return false;
             }
             if (AppUser.DisplayName.Length > 255)
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.DisplayName), ErrorCode.DisplayNameOverLength);
+                return false;
             }
             return true;
         }
 
-        public async Task<bool> ValidateEmail(AppUser AppUser)
+        private async Task<bool> ValidateEmail(AppUser AppUser)
         {
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -99,9 +101,9 @@ namespace DMS.Services.MAppUser
             };
 
             int count = await UOW.AppUserRepository.Count(AppUserFilter);
-            if (count == 0)
+            if (count != 0)
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Email), ErrorCode.EmailExisted);
-            return count == 1;
+            return count == 0;
         }
 
         public async Task<bool> ValidatePhone(AppUser AppUser)
@@ -109,10 +111,12 @@ namespace DMS.Services.MAppUser
             if (string.IsNullOrEmpty(AppUser.Phone))
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Phone), ErrorCode.PhoneEmpty);
+                return false;
             }
             if (AppUser.Phone.Length > 255)
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Phone), ErrorCode.PhoneOverLength);
+                return false;
             }
             return true;
         }
@@ -122,6 +126,7 @@ namespace DMS.Services.MAppUser
             if (!string.IsNullOrEmpty(AppUser.Address) && AppUser.Address.Length > 255)
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Address), ErrorCode.AddressOverLength);
+                return false;
             }
             return true;
         }
@@ -201,11 +206,6 @@ namespace DMS.Services.MAppUser
 
             foreach (var AppUser in AppUsers)
             {
-                await ValidateDisplayName(AppUser);
-                await ValidatePhone(AppUser);
-                await ValidateAddress(AppUser);
-                await ValidateStatus(AppUser);
-                if (!AppUser.IsValidated) return false;
                 if (listEmailInDB.Contains(AppUser.Email))
                 {
                     AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Email), ErrorCode.EmailExisted);
@@ -216,6 +216,10 @@ namespace DMS.Services.MAppUser
                     AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Username), ErrorCode.UsernameExisted);
                     return false;
                 }
+                if (!await ValidateDisplayName(AppUser)) return false;
+                if (!await ValidatePhone(AppUser)) return false;
+                if (!await ValidateAddress(AppUser)) return false;
+
             }
             return true;
         }
