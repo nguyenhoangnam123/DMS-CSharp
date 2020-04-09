@@ -73,13 +73,11 @@ namespace DMS.Services.MReseller
             if (string.IsNullOrEmpty(Reseller.Code))
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Code), ErrorCode.CodeEmpty);
-                return false;
             }
 
             if (!string.IsNullOrEmpty(Reseller.Code) && Reseller.Code.Length > 255)
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Code), ErrorCode.CodeOverLength);
-                return false;
             }
 
             ResellerFilter ResellerFilter = new ResellerFilter
@@ -94,7 +92,7 @@ namespace DMS.Services.MReseller
             int count = await UOW.ResellerRepository.Count(ResellerFilter);
             if (count != 0)
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Code), ErrorCode.CodeExisted);
-            return count == 0;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateName(Reseller Reseller)
@@ -102,15 +100,13 @@ namespace DMS.Services.MReseller
             if (string.IsNullOrEmpty(Reseller.Name))
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Name), ErrorCode.NameEmpty);
-                return false;
             }
 
             if (!string.IsNullOrEmpty(Reseller.Name) && Reseller.Name.Length > 255)
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Name), ErrorCode.NameOverLength);
-                return false;
             }
-            return true;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateAddress(Reseller Reseller)
@@ -118,9 +114,8 @@ namespace DMS.Services.MReseller
             if (!string.IsNullOrEmpty(Reseller.Address) && Reseller.Address.Length > 255)
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Address), ErrorCode.AddressOverLength);
-                return false;
             }
-            return true;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateEmail(Reseller Reseller)
@@ -128,9 +123,8 @@ namespace DMS.Services.MReseller
             if (!string.IsNullOrEmpty(Reseller.Email) && Reseller.Email.Length > 255)
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Email), ErrorCode.EmailOverLength);
-                return false;
             }
-            return true;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateTaxCode(Reseller Reseller)
@@ -138,9 +132,8 @@ namespace DMS.Services.MReseller
             if (!string.IsNullOrEmpty(Reseller.TaxCode) && Reseller.TaxCode.Length > 255)
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.TaxCode), ErrorCode.TaxCodeOverLength);
-                return false;
             }
-            return true;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateCompanyName(Reseller Reseller)
@@ -148,9 +141,8 @@ namespace DMS.Services.MReseller
             if (!string.IsNullOrEmpty(Reseller.CompanyName) && Reseller.CompanyName.Length > 255)
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.CompanyName), ErrorCode.CompanyNameOverLength);
-                return false;
             }
-            return true;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateDeputyName(Reseller Reseller)
@@ -158,9 +150,8 @@ namespace DMS.Services.MReseller
             if (!string.IsNullOrEmpty(Reseller.DeputyName) && Reseller.DeputyName.Length > 255)
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.DeputyName), ErrorCode.DeputyNameOverLength);
-                return false;
             }
-            return true;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidatePhone(Reseller Reseller)
@@ -168,13 +159,11 @@ namespace DMS.Services.MReseller
             if (string.IsNullOrEmpty(Reseller.Phone))
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Phone), ErrorCode.PhoneEmpty);
-                return false;
             }
 
             if (!string.IsNullOrEmpty(Reseller.Phone) && Reseller.Phone.Length > 255)
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Phone), ErrorCode.PhoneOverLength);
-                return false;
             }
             return true;
         }
@@ -184,9 +173,8 @@ namespace DMS.Services.MReseller
             if (!string.IsNullOrEmpty(Reseller.Description) && Reseller.Description.Length > 1000)
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Description), ErrorCode.DescriptionOverLength);
-                return false;
             }
-            return true;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateAppUser(Reseller Reseller)
@@ -201,7 +189,7 @@ namespace DMS.Services.MReseller
             int count = await UOW.AppUserRepository.Count(AppUserFilter);
             if (count == 0)
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Staff), ErrorCode.StaffNotExisted);
-            return count != 0;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateOrganization(Reseller Reseller)
@@ -216,7 +204,7 @@ namespace DMS.Services.MReseller
             int count = await UOW.OrganizationRepository.Count(OrganizationFilter);
             if (count == 0)
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Organization), ErrorCode.OrganizationNotExisted);
-            return count != 0;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateResellerType(Reseller Reseller)
@@ -231,7 +219,7 @@ namespace DMS.Services.MReseller
             int count = await UOW.ResellerTypeRepository.Count(ResellerTypeFilter);
             if (count == 0)
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerType), ErrorCode.ResellerTypeNotExisted);
-            return count != 0;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateResellerStatus(Reseller Reseller)
@@ -246,7 +234,7 @@ namespace DMS.Services.MReseller
             int count = await UOW.ResellerStatusRepository.Count(ResellerStatusFilter);
             if (count == 0)
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerStatus), ErrorCode.ResellerStatusNotExisted);
-            return count != 0;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateStatus(Reseller Reseller)
@@ -261,7 +249,7 @@ namespace DMS.Services.MReseller
             int count = await UOW.StatusRepository.Count(StatusFilter);
             if (count == 0)
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Status), ErrorCode.StatusNotExisted);
-            return count != 0;
+            return Reseller.IsValidated;
         }
 
         public async Task<bool>Create(Reseller Reseller)
@@ -363,52 +351,35 @@ namespace DMS.Services.MReseller
                 Selects = ResellerStatusSelect.Code
             })).Select(e => e.Code);
 
-            var listStatusCodeInDB = (await UOW.StatusRepository.List(new StatusFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StatusSelect.Code
-            })).Select(e => e.Code);
-
             foreach (var Reseller in Resellers)
             {
                 if (listCodeInDB.Contains(Reseller.Code))
                 {
                     Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Code), ErrorCode.CodeExisted);
-                    return false;
                 }
-
-                if (listOrganizationCodeInDB.Contains(Reseller.Organization.Code))
+                if (!listOrganizationCodeInDB.Contains(Reseller.Organization.Code))
                 {
                     Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Organization), ErrorCode.OrganizationNotExisted);
-                    return false;
                 }
-                if (listResellerTypeCodeInDB.Contains(Reseller.ResellerType.Code))
+                if (!listResellerTypeCodeInDB.Contains(Reseller.ResellerType.Code))
                 {
                     Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerType), ErrorCode.ResellerTypeNotExisted);
-                    return false;
                 }
-                if (listResellerStatusCodeInDB.Contains(Reseller.ResellerStatus.Code))
+                if (!listResellerStatusCodeInDB.Contains(Reseller.ResellerStatus.Code))
                 {
                     Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerStatus), ErrorCode.ResellerStatusNotExisted);
-                    return false;
                 }
-                if (listStatusCodeInDB.Contains(Reseller.Status.Code))
-                {
-                    Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Status), ErrorCode.StatusNotExisted);
-                    return false;
-                }
-                if (!await ValidateCode(Reseller)) return false;
-                if (!await ValidateName(Reseller)) return false;
-                if (!await ValidateAddress(Reseller)) return false;
-                if (!await ValidateEmail(Reseller)) return false;
-                if (!await ValidateTaxCode(Reseller)) return false;
-                if (!await ValidateCompanyName(Reseller)) return false;
-                if (!await ValidateDeputyName(Reseller)) return false;
-                if (!await ValidatePhone(Reseller)) return false;
-                if (!await ValidateDescription(Reseller)) return false;
+                await ValidateCode(Reseller);
+                await ValidateName(Reseller);
+                await ValidateAddress(Reseller);
+                await ValidateEmail(Reseller);
+                await ValidateTaxCode(Reseller);
+                await ValidateCompanyName(Reseller);
+                await ValidateDeputyName(Reseller);
+                await ValidatePhone(Reseller);
+                await ValidateDescription(Reseller);
             }
-            return true;
+            return Resellers.Any(s => !s.IsValidated) ? false : true;
         }
     }
 }

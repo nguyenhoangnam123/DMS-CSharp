@@ -178,6 +178,17 @@ namespace DMS.Rpc.product
                 return Forbid();
 
             Product Product = ConvertDTOToEntity(Product_ProductDTO);
+            Item Item = new Item
+            {
+                Code = Product.Code,
+                Name = Product.Name,
+                RetailPrice = Product.RetailPrice,
+                SalePrice = Product.SalePrice,
+                ScanCode = Product.ScanCode
+            };
+            Product.Items = new List<Item>();
+            Product.Items.Add(Item);
+
             Product = await ProductService.Create(Product);
             Product_ProductDTO = new Product_ProductDTO(Product);
             if (Product.IsValidated)
@@ -223,13 +234,10 @@ namespace DMS.Rpc.product
         }
 
         [Route(ProductRoute.Import), HttpPost]
-        public async Task<ActionResult<bool>> Import(IFormFile file)
+        public async Task<ActionResult<List<Product_ProductDTO>>> Import(IFormFile file)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            string Error = "";
-            List<string> Errors = new List<string>();
-            List<Product> Products = new List<Product>();
 
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
             {
@@ -267,15 +275,23 @@ namespace DMS.Rpc.product
                 Take = int.MaxValue,
                 Selects = BrandSelect.ALL
             });
+            List<VariationGrouping> VariationGroupings = await VariationGroupingService.List(new VariationGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = VariationGroupingSelect.ALL
+            });
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
                 Content = file.OpenReadStream(),
             };
+            List<Product> Products = new List<Product>();
             using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
+                #region ProductSheet
+                ExcelWorksheet ProductSheet = excelPackage.Workbook.Worksheets["Product"];
+                if (ProductSheet == null)
                     return null;
 
                 #region Khai báo thứ tự các cột trong Exel file 
@@ -286,21 +302,21 @@ namespace DMS.Rpc.product
                 //Tên sản phẩm
                 int NameColumn = 2 + StartColumn;
                 //Nhóm sản phẩm
-                int ProductGroupNameColumn = 3 + StartColumn;
+                int ProductGroupCodeColumn = 3 + StartColumn;
                 //Loại sản phẩm
-                int ProductTypeNameColumn = 4 + StartColumn;
+                int ProductTypeCodeColumn = 4 + StartColumn;
                 //Đơn vị tính
-                int UoMNameColumn = 5 + StartColumn;
+                int UoMCodeColumn = 5 + StartColumn;
                 //NHóm đơn vị tính
-                int UoMGroupNameColumn = 6 + StartColumn;
+                int UoMGroupCodeColumn = 6 + StartColumn;
                 //Nhà cung cấp
-                int SupplierNameColumn = 7 + StartColumn;
+                int SupplierCodeColumn = 7 + StartColumn;
                 //Mã ERP
                 int ERPCodeColumn = 8 + StartColumn;
                 //Mã nhận diện sản phẩm
                 int ScanCodeColumn = 9 + StartColumn;
                 //Nhãn hiệu
-                int BrandNameColumn = 10 + StartColumn;
+                int BrandCodeColumn = 10 + StartColumn;
                 //Tên khác
                 int OtherNameColumn = 11 + StartColumn;
                 //Tên kỹ thuật
@@ -331,83 +347,59 @@ namespace DMS.Rpc.product
                 int PropertyValue4Column = 23 + StartColumn;
                 #endregion
 
-                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                for (int i = StartRow; i <= ProductSheet.Dimension.End.Row; i++)
                 {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString()))
+                    if (string.IsNullOrEmpty(ProductSheet.Cells[i + StartRow, CodeColumn].Value?.ToString()))
                         break;
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string ProductGroupNameValue = worksheet.Cells[i + StartRow, ProductGroupNameColumn].Value?.ToString();
-                    string ProductTypeNameValue = worksheet.Cells[i + StartRow, ProductTypeNameColumn].Value?.ToString();
-                    string UoMNameValue = worksheet.Cells[i + StartRow, UoMNameColumn].Value?.ToString();
-                    string UoMGroupNameValue = worksheet.Cells[i + StartRow, UoMGroupNameColumn].Value?.ToString();
-                    string SupplierNameValue = worksheet.Cells[i + StartRow, SupplierNameColumn].Value?.ToString();
-                    string ERPCodeValue = worksheet.Cells[i + StartRow, ERPCodeColumn].Value?.ToString();
-                    string ScanCodeValue = worksheet.Cells[i + StartRow, ScanCodeColumn].Value?.ToString();
-                    string BrandNameValue = worksheet.Cells[i + StartRow, BrandNameColumn].Value?.ToString();
-                    string OtherNameValue = worksheet.Cells[i + StartRow, OtherNameColumn].Value?.ToString();
-                    string TechnicalNameValue = worksheet.Cells[i + StartRow, TechnicalNameColumn].Value?.ToString();
-                    string DescriptionValue = worksheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
-                    string RetailPriceValue = worksheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
-                    string SalePriceValue = worksheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
+                    string CodeValue = ProductSheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                    string NameValue = ProductSheet.Cells[i + StartRow, NameColumn].Value?.ToString();
+                    string ProductGroupCodeValue = ProductSheet.Cells[i + StartRow, ProductGroupCodeColumn].Value?.ToString();
+                    string ProductTypeCodeValue = ProductSheet.Cells[i + StartRow, ProductTypeCodeColumn].Value?.ToString();
+                    string UoMCodeValue = ProductSheet.Cells[i + StartRow, UoMCodeColumn].Value?.ToString();
+                    string UoMGroupCodeValue = ProductSheet.Cells[i + StartRow, UoMGroupCodeColumn].Value?.ToString();
+                    string SupplierCodeValue = ProductSheet.Cells[i + StartRow, SupplierCodeColumn].Value?.ToString();
+                    string ERPCodeValue = ProductSheet.Cells[i + StartRow, ERPCodeColumn].Value?.ToString();
+                    string ScanCodeValue = ProductSheet.Cells[i + StartRow, ScanCodeColumn].Value?.ToString();
+                    string BrandCodeValue = ProductSheet.Cells[i + StartRow, BrandCodeColumn].Value?.ToString();
+                    string OtherNameValue = ProductSheet.Cells[i + StartRow, OtherNameColumn].Value?.ToString();
+                    string TechnicalNameValue = ProductSheet.Cells[i + StartRow, TechnicalNameColumn].Value?.ToString();
+                    string DescriptionValue = ProductSheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
+                    string RetailPriceValue = ProductSheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
+                    string SalePriceValue = ProductSheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
                     //Thuộc tính
-                    string Property1Value = worksheet.Cells[i + StartRow, Property1Column].Value?.ToString();
-                    string PropertyValue1Value = worksheet.Cells[i + StartRow, PropertyValue1Column].Value?.ToString();
-                    string Property2Value = worksheet.Cells[i + StartRow, Property2Column].Value?.ToString();
-                    string PropertyValue2Value = worksheet.Cells[i + StartRow, PropertyValue2Column].Value?.ToString();
-                    string Property3Value = worksheet.Cells[i + StartRow, Property3Column].Value?.ToString();
-                    string PropertyValue3Value = worksheet.Cells[i + StartRow, PropertyValue3Column].Value?.ToString();
-                    string Property4Value = worksheet.Cells[i + StartRow, Property4Column].Value?.ToString();
-                    string PropertyValue4Value = worksheet.Cells[i + StartRow, PropertyValue4Column].Value?.ToString();
+                    string Property1Value = ProductSheet.Cells[i + StartRow, Property1Column].Value?.ToString();
+                    string PropertyValue1Value = ProductSheet.Cells[i + StartRow, PropertyValue1Column].Value?.ToString();
+                    string Property2Value = ProductSheet.Cells[i + StartRow, Property2Column].Value?.ToString();
+                    string PropertyValue2Value = ProductSheet.Cells[i + StartRow, PropertyValue2Column].Value?.ToString();
+                    string Property3Value = ProductSheet.Cells[i + StartRow, Property3Column].Value?.ToString();
+                    string PropertyValue3Value = ProductSheet.Cells[i + StartRow, PropertyValue3Column].Value?.ToString();
+                    string Property4Value = ProductSheet.Cells[i + StartRow, Property4Column].Value?.ToString();
+                    string PropertyValue4Value = ProductSheet.Cells[i + StartRow, PropertyValue4Column].Value?.ToString();
 
                     Product Product = new Product();
                     Product.Code = CodeValue;
                     Product.Name = NameValue;
-                    //Thêm vào bảng ProductProductGroupingMapping
-                    ProductGrouping ProductGrouping = ProductGroupings.FirstOrDefault(p => !string.IsNullOrEmpty(p.Name) && p.Name.Trim().ToLower() == ProductGroupNameValue.Trim().ToLower());
-                    if (ProductGrouping != null)
+                    if (!string.IsNullOrEmpty(ProductGroupCodeValue))
                     {
-                        ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
-                        List<ProductProductGroupingMapping> ProductProductGroupingMappings = new List<ProductProductGroupingMapping>();
+                        ProductGrouping ProductGrouping = ProductGroupings.Where(pg => pg.Code.Equals(ProductGroupCodeValue)).FirstOrDefault();
+                        if(ProductGrouping != null)
+                        {
+                            ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
+                            Product.ProductProductGroupingMappings = new List<ProductProductGroupingMapping>();
 
-                        ProductProductGroupingMapping.ProductGroupingId = ProductGrouping.Id;
-                        ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
-                        Product.ProductProductGroupingMappings = ProductProductGroupingMappings;
+                            ProductProductGroupingMapping.ProductGrouping = ProductGrouping;
+                            Product.ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
+                        }
                     }
 
-                    if (!string.IsNullOrEmpty(ProductTypeNameValue))
-                    {
-                        ProductType ProductType = ProductTypes.FirstOrDefault(p => p.Name.Equals(ProductTypeNameValue));
-                        Product.ProductType = ProductType;
-                        Product.ProductTypeId = ProductType != null ? ProductType.Id : 0;
-                    }
-                    if (!string.IsNullOrEmpty(UoMNameValue))
-                    {
-                        UnitOfMeasure UnitOfMeasure = UnitOfMeasures.FirstOrDefault(p => p.Name.Equals(UoMNameValue));
-                        Product.UnitOfMeasure = UnitOfMeasure;
-                        Product.UnitOfMeasureId = UnitOfMeasure != null ? UnitOfMeasure.Id : 0;
-                    }
-                    if (!string.IsNullOrEmpty(UoMGroupNameValue))
-                    {
-                        UnitOfMeasureGrouping UnitOfMeasureGrouping = UnitOfMeasureGroupings.FirstOrDefault(p => p.Name.Equals(UoMGroupNameValue));
-                        Product.UnitOfMeasureGrouping = UnitOfMeasureGrouping;
-                        Product.UnitOfMeasureGroupingId = UnitOfMeasureGrouping != null ? UnitOfMeasureGrouping.Id : 0;
-                    }
-                    if (!string.IsNullOrEmpty(SupplierNameValue))
-                    {
-                        Supplier Supplier = Suppliers.FirstOrDefault(p => p.Name.Equals(SupplierNameValue));
-                        Product.Supplier = Supplier;
-                        Product.SupplierId = Supplier != null ? Supplier.Id : 0;
-                    }
+                    Product.ProductType = ProductTypes.Where(x => x.Code.Equals(ProductTypeCodeValue)).FirstOrDefault();
+                    Product.UnitOfMeasure = UnitOfMeasures.Where(x => x.Code.Equals(UoMCodeValue)).FirstOrDefault();
+                    Product.UnitOfMeasureGrouping = UnitOfMeasureGroupings.Where(x => x.Code.Equals(UoMGroupCodeValue)).FirstOrDefault();
+                    Product.Supplier = Suppliers.Where(x => x.Code.Equals(SupplierCodeValue)).FirstOrDefault();
+                    Product.Brand = Brands.Where(x => x.Code.Equals(BrandCodeValue)).FirstOrDefault();
 
                     Product.ERPCode = ERPCodeValue;
                     Product.ScanCode = ScanCodeValue;
-                    if (!string.IsNullOrEmpty(BrandNameValue))
-                    {
-                        Brand Brand = Brands.FirstOrDefault(p => p.Name.Equals(BrandNameValue));
-                        Product.Brand = Brand;
-                        Product.BrandId = Brand != null ? Brand.Id : 0;
-                    }
 
                     Product.OtherName = OtherNameValue;
                     Product.TechnicalName = TechnicalNameValue;
@@ -415,70 +407,184 @@ namespace DMS.Rpc.product
                     Product.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : decimal.Parse(RetailPriceValue);
                     Product.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : decimal.Parse(SalePriceValue);
 
+                    #region Variation
+                    if (!string.IsNullOrEmpty(Property1Value))
+                    {
+                        Product.VariationGroupings = new List<VariationGrouping>();
+                        VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property1Value)).FirstOrDefault();
+                        if(VariationGrouping == null)
+                        {
+                            VariationGrouping = new VariationGrouping
+                            {
+                                Name = Property1Value
+                            };
+                            
+                        }
+                        VariationGrouping.Variations = new List<Variation>();
+                        var Values = PropertyValue1Value.Split(',');
+                        foreach (var Value in Values)
+                        {
+                            var splitValue = Value.Split('-');
+                            Variation Variation = new Variation
+                            {
+                                Code = splitValue[0],
+                                Name = splitValue[1]
+                            };
+                            VariationGrouping.Variations.Add(Variation);
+                        }
+                        Product.VariationGroupings.Add(VariationGrouping);
+                        
+                    }
+
+                    if (!string.IsNullOrEmpty(Property2Value))
+                    {
+                        Product.VariationGroupings = new List<VariationGrouping>();
+                        VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property2Value)).FirstOrDefault();
+                        if (VariationGrouping == null)
+                        {
+                            VariationGrouping = new VariationGrouping
+                            {
+                                Name = Property2Value
+                            };
+
+                        }
+                        VariationGrouping.Variations = new List<Variation>();
+                        var Values = PropertyValue2Value.Split(',');
+                        foreach (var Value in Values)
+                        {
+                            var splitValue = Value.Split('-');
+                            Variation Variation = new Variation
+                            {
+                                Code = splitValue[0],
+                                Name = splitValue[1]
+                            };
+                            VariationGrouping.Variations.Add(Variation);
+                        }
+                        Product.VariationGroupings.Add(VariationGrouping);
+
+                    }
+
+                    if (!string.IsNullOrEmpty(Property3Value))
+                    {
+                        Product.VariationGroupings = new List<VariationGrouping>();
+                        VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property3Value)).FirstOrDefault();
+                        if (VariationGrouping == null)
+                        {
+                            VariationGrouping = new VariationGrouping
+                            {
+                                Name = Property3Value
+                            };
+
+                        }
+                        VariationGrouping.Variations = new List<Variation>();
+                        var Values = PropertyValue3Value.Split(',');
+                        foreach (var Value in Values)
+                        {
+                            var splitValue = Value.Split('-');
+                            Variation Variation = new Variation
+                            {
+                                Code = splitValue[0],
+                                Name = splitValue[1]
+                            };
+                            VariationGrouping.Variations.Add(Variation);
+                        }
+                        Product.VariationGroupings.Add(VariationGrouping);
+
+                    }
+
+                    if (!string.IsNullOrEmpty(Property4Value))
+                    {
+                        Product.VariationGroupings = new List<VariationGrouping>();
+                        VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property4Value)).FirstOrDefault();
+                        if (VariationGrouping == null)
+                        {
+                            VariationGrouping = new VariationGrouping
+                            {
+                                Name = Property4Value
+                            };
+
+                        }
+                        VariationGrouping.Variations = new List<Variation>();
+                        var Values = PropertyValue4Value.Split(',');
+                        foreach (var Value in Values)
+                        {
+                            var splitValue = Value.Split('-');
+                            Variation Variation = new Variation
+                            {
+                                Code = splitValue[0],
+                                Name = splitValue[1]
+                            };
+                            VariationGrouping.Variations.Add(Variation);
+                        }
+                        Product.VariationGroupings.Add(VariationGrouping);
+                    }
+                    #endregion
                     Products.Add(Product);
                 }
-            }
-            #region Check code trùng trong danh sách 
-            var errorCode = false;
-            for (int i = 0; i < Products.Count; i++)
-            {
-                Product Product = Products[i];
-                if (Products.Where(p => p.Code == Product.Code).Count() >= 2)
-                {
-                    errorCode = true;
-                    Error = $"Dòng {i + 1} có lỗi:";
-                    Error += "Code trống hoặc đã tồn tại trong file,";
-                    Errors.Add(Error);
-                }
-                if (Products.Where(p => p.ScanCode == Product.ScanCode).Count() >= 2)
-                {
-                    errorCode = true;
-                    Error = $"Dòng {i + 1} có lỗi:";
-                    Error += "ScanCode trống hoặc đã tồn tại trong file,";
-                    Errors.Add(Error);
-                }
-                if (Products.Where(p => p.ERPCode == Product.ERPCode).Count() >= 2)
-                {
-                    errorCode = true;
-                    Error = $"Dòng {i + 1} có lỗi:";
-                    Error += "ERPCode trống hoặc đã tồn tại trong file,";
-                    Errors.Add(Error);
-                }
-            }
-            if (errorCode == true)
-                return BadRequest(Errors);
+                #endregion
 
+                #region ItemSheet
+                ExcelWorksheet ItemSheet = excelPackage.Workbook.Worksheets["Item"];
+                if(ItemSheet != null)
+                {
+                    StartColumn = 1;
+                    StartRow = 1;
+
+                    CodeColumn = 1 + StartColumn;
+                    int CodeProductItemColumn = 2 + StartColumn;
+                    int NameProductItemColumn = 3 + StartColumn;
+                    int ScanCodeItemColumn = 4 + StartColumn;
+                    SalePriceColumn = 5 + StartColumn;
+                    RetailPriceColumn = 6 + StartColumn;
+
+                    for (int i = StartRow; i <= ItemSheet.Dimension.End.Row; i++)
+                    {
+                        if (string.IsNullOrEmpty(ItemSheet.Cells[i + StartRow, CodeColumn].Value?.ToString()))
+                            break;
+                        string CodeValue = ItemSheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                        string CodeProductItemValue = ItemSheet.Cells[i + StartRow, CodeProductItemColumn].Value?.ToString();
+                        string NameProductItemValue = ItemSheet.Cells[i + StartRow, NameProductItemColumn].Value?.ToString();
+                        string ScanCodeItemValue = ItemSheet.Cells[i + StartRow, ScanCodeItemColumn].Value?.ToString();
+                        string SalePriceValue = ItemSheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
+                        string RetailPriceValue = ItemSheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
+
+                        Item Item = new Item();
+                        Item.Code = CodeProductItemValue;
+                        Item.Name = NameProductItemValue;
+                        Item.ScanCode = ScanCodeItemValue;
+                        Item.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : decimal.Parse(SalePriceValue);
+                        Item.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : decimal.Parse(RetailPriceValue);
+                        var Product = Products.Where(p => p.Code == CodeValue).FirstOrDefault();
+                        if(Product != null)
+                        {
+                            Product.Items.Add(Item);
+                        }
+                        
+                    }
+                    #endregion
+                }
+            }
+            #region Tạo mới item nếu chưa có
+            foreach (var Product in Products)
+            {
+                if (Product.Items != null && Product.Items.Count > 0) continue;
+
+                Product.Items.Add(new Item
+                {
+                    Code = Product.Code,
+                    Name = Product.Name,
+                    ScanCode = Product.ScanCode,
+                    RetailPrice = Product.RetailPrice,
+                    SalePrice = Product.SalePrice,
+                    ProductId = Product.Id
+                });
+            }
             #endregion
 
             Products = await ProductService.Import(Products);
-
-            if (Products.All(au => au.IsValidated))
-                return true;
-            else
-            {
-                for (int i = 0; i < Products.Count; i++)
-                {
-                    Product Product = Products[i];
-                    if (!Product.IsValidated)
-                    {
-                        Error += $"Dòng {i + 1} có lỗi:";
-                        if (Product.Errors.ContainsKey(nameof(Product.Name)))
-                            Error += Product.Errors[nameof(Product.Name)] + " ";
-                        if (Product.Errors.ContainsKey(nameof(Product.Code)))
-                            Error += Product.Errors[nameof(Product.Code)] + " ";
-                        if (Product.Errors.ContainsKey(nameof(Product.ScanCode)))
-                            Error += Product.Errors[nameof(Product.ScanCode)] + " ";
-                        if (Product.Errors.ContainsKey(nameof(Product.ERPCode)))
-                            Error += Product.Errors[nameof(Product.ERPCode)] + " ";
-                        if (Product.Errors.ContainsKey(nameof(Product.ProductTypeId)))
-                            Error += Product.Errors[nameof(Product.ProductTypeId)] + " ";
-                        if (Product.Errors.ContainsKey(nameof(Product.UnitOfMeasureId)))
-                            Error += Product.Errors[nameof(Product.UnitOfMeasureId)] + " ";
-                        Errors.Add(Error);
-                    }
-                }
-            }
-            return BadRequest(Errors);
+            List<Product_ProductDTO> Product_ProductDTOs = Products
+                .Select(c => new Product_ProductDTO(c)).ToList();
+            return Product_ProductDTOs;
         }
 
         [Route(ProductRoute.Export), HttpPost]
@@ -499,9 +605,47 @@ namespace DMS.Rpc.product
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = ItemSelect.ALL
+                Selects = ItemSelect.ALL,
+                ProductId = new IdFilter { In = Products.Select(p => p.Id).ToList() }
+            });
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter 
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProductGroupingSelect.ALL,
+            });
+            List<ProductType> ProductTypes = await ProductTypeService.List(new ProductTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProductTypeSelect.ALL
+            });
+            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(new UnitOfMeasureFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = UnitOfMeasureSelect.ALL
+            });
+            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(new UnitOfMeasureGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = UnitOfMeasureGroupingSelect.ALL
+            });
+            List<Supplier> Suppliers = await SupplierService.List(new SupplierFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = SupplierSelect.ALL
+            });
+            List<Brand> Brands = await BrandService.List(new BrandFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = BrandSelect.ALL
             });
             MemoryStream MemoryStream = new MemoryStream();
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using (ExcelPackage excel = new ExcelPackage(MemoryStream))
             {
                 #region sheet product 
@@ -537,31 +681,69 @@ namespace DMS.Rpc.product
                 for (int i = 0; i < Products.Count; i++)
                 {
                     Product Product = Products[i];
+                    string ProductGroupingName = Product.ProductProductGroupingMappings.FirstOrDefault() == null ? null : Product.ProductProductGroupingMappings.FirstOrDefault().ProductGrouping.Name;
+
+                    string VariationGrouping1 = "";
+                    string VariationValue1 = "";
+                    string VariationGrouping2 = "";
+                    string VariationValue2 = "";
+                    string VariationGrouping3 = "";
+                    string VariationValue3 = "";
+                    string VariationGrouping4 = "";
+                    string VariationValue4 = "";
+
+                    if (Product.VariationGroupings != null)
+                    {
+                        if(Product.VariationGroupings.Count > 0)
+                        {
+                            VariationGrouping1 += Product.VariationGroupings[0].Name;
+                            VariationValue1 = string.Join(",", Product.VariationGroupings[0].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
+                        }
+
+                        if (Product.VariationGroupings.Count > 1)
+                        {
+                            VariationGrouping2 += Product.VariationGroupings[1].Name;
+                            VariationValue2 = string.Join(",", Product.VariationGroupings[1].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
+                        }
+
+                        if (Product.VariationGroupings.Count > 2)
+                        {
+                            VariationGrouping3 += Product.VariationGroupings[2].Name;
+                            VariationValue3 = string.Join(",", Product.VariationGroupings[2].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
+                        }
+
+                        if (Product.VariationGroupings.Count > 3)
+                        {
+                            VariationGrouping4 += Product.VariationGroupings[3].Name;
+                            VariationValue4 = string.Join(",", Product.VariationGroupings[3].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
+                        }
+                    }
                     data.Add(new object[]
                     {
                         i+1,
                         Product.Code,
                         Product.Name,
-                        string.Empty,
-                        //Product.ProductProductGroupingMappings.FirstOrDefault() != null ? Product.ProductProductGroupingMappings.FirstOrDefault().ProductGrouping.Name : string.Empty,
-                        Product.ProductType != null ? Product.ProductType.Name : string.Empty,
-                        Product.UnitOfMeasure !=null ? Product.UnitOfMeasure.Name : string.Empty,
-                        Product.UnitOfMeasureGrouping !=null ? Product.UnitOfMeasureGrouping.Name : string.Empty,
-                        Product.Supplier !=null ? Product.Supplier.Name : string.Empty,
+                        ProductGroupingName,
+                        Product.ProductType.Name,
+                        Product.UnitOfMeasure.Name,
+                        Product.UnitOfMeasureGrouping.Name,
+                        Product.Supplier.Name,
                         Product.ERPCode,
                         Product.ScanCode,
-                        Product.Brand !=null ? Product.Brand.Name : string.Empty,
+                        Product.Brand.Name,
                         Product.OtherName,
                         Product.TechnicalName,
                         Product.Description,
                         Product.SalePrice,
                         Product.RetailPrice,
-                        string.Empty,
-                        string.Empty,
-                        string.Empty,
-                        string.Empty,
-                        string.Empty,
-                        string.Empty,
+                        VariationGrouping1,
+                        VariationValue1,
+                        VariationGrouping2,
+                        VariationValue2,
+                        VariationGrouping3,
+                        VariationValue3,
+                        VariationGrouping4,
+                        VariationValue4,
                     });
                 }
                 excel.GenerateWorksheet("Product", ProductHeader, data);
@@ -586,7 +768,7 @@ namespace DMS.Rpc.product
                     Item Item = Items[i];
                     data.Add(new object[] {
                                 i+1,
-                                Item.Product !=null ? Item.Product.Code : string.Empty,
+                                Item.Product.Code,
                                 Item.Code,
                                 Item.Name,
                                 Item.ScanCode,
@@ -596,141 +778,127 @@ namespace DMS.Rpc.product
                 }
                 excel.GenerateWorksheet("Item", ItemHeader, data);
                 #endregion 
+
+                #region Sheet Product Group
+                data.Clear();
+                var ProductGroupHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "Mã nhóm sản phẩm",
+                        "Tên nhóm sản phẩm",
+                    }
+                };
+                foreach (var ProductGrouping in ProductGroupings)
+                {
+                    data.Add(new object[]
+                    {
+                        ProductGrouping.Code,
+                        ProductGrouping.Name
+                    });
+                }
+                excel.GenerateWorksheet("ProductGroup", ProductGroupHeader, data);
+                #endregion 
+
+                #region Sheet Product Type
+                data.Clear();
+                var ProductTypeHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "Mã loại sản phẩm",
+                        "Tên loại sản phẩm",
+                    }
+                };
+                foreach (var ProductType in ProductTypes)
+                {
+                    data.Add(new object[]
+                    {
+                        ProductType.Code,
+                        ProductType.Name
+                    });
+                }
+                excel.GenerateWorksheet("ProductType", ProductTypeHeader, data);
+                #endregion 
+
+                #region Sheet UOM
+                data.Clear();
+                var UOMHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "Mã đơn vị tính",
+                        "Tên đơn vị tính",
+                    }
+                };
+                foreach (var UnitOfMeasure in UnitOfMeasures)
+                {
+                    data.Add(new object[]
+                    {
+                        UnitOfMeasure.Code,
+                        UnitOfMeasure.Name
+                    });
+                }
+                excel.GenerateWorksheet("UnitOfMeasure", UOMHeader, data);
+                #endregion 
+
+                #region Sheet UOMGrouping
+                data.Clear();
+                var UOMGroupingHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "Mã nhóm đơn vị chuyển đổi",
+                        "Tên nhóm đơn vị chuyển đổi",
+                    }
+                };
+                foreach (var UnitOfMeasureGrouping in UnitOfMeasureGroupings)
+                {
+                    data.Add(new object[]
+                    {
+                        UnitOfMeasureGrouping.Code,
+                        UnitOfMeasureGrouping.Name
+                    });
+                }
+                excel.GenerateWorksheet("UnitOfMeasureGrouping", UOMGroupingHeader, data);
+                #endregion 
+
+                #region Sheet Supplier
+                data.Clear();
+                var SupplierHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "Mã nhà cung cấp",
+                        "Tên nhà cung cấp",
+                    }
+                };
+                foreach (var Supplier in Suppliers)
+                {
+                    data.Add(new object[]
+                    {
+                        Supplier.Code,
+                        Supplier.Name
+                    });
+                }
+                excel.GenerateWorksheet("Supplier", SupplierHeader, data);
+                #endregion 
+
+                #region Sheet Brand
+                data.Clear();
+                var BrandHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "Mã nhãn hiệu",
+                        "Tên nhãn hiệu",
+                    }
+                };
+                foreach (var Brand in Brands)
+                {
+                    data.Add(new object[]
+                    {
+                        Brand.Code,
+                        Brand.Name
+                    });
+                }
+                excel.GenerateWorksheet("Brand", BrandHeader, data);
+                #endregion 
                 excel.Save();
-            }
-
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
-        }
-
-        [Route(ProductRoute.ExportTemplate), HttpPost]
-        public async Task<ActionResult> ExportTemplate()
-        {
-            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = ProductGroupingSelect.ALL
-            });
-            List<ProductType> ProductTypes = await ProductTypeService.List(new ProductTypeFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = ProductTypeSelect.ALL
-            });
-            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(new UnitOfMeasureFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = UnitOfMeasureSelect.ALL
-            });
-            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(new UnitOfMeasureGroupingFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = UnitOfMeasureGroupingSelect.ALL
-            });
-            List<Supplier> Suppliers = await SupplierService.List(new SupplierFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = SupplierSelect.ALL
-            });
-            List<Brand> Brands = await BrandService.List(new BrandFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = BrandSelect.ALL
-            });
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            MemoryStream MemoryStream = new MemoryStream();
-            string tempPath = "Templates/Product_Export.xlsx";
-            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
-            {
-                #region sheet ProductGrouping 
-                var worksheet_ProductGroup = xlPackage.Workbook.Worksheets["ProductGroup"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_ProductGroup = 2;
-                int numberCell_ProductGroup = 1;
-                for (var i = 0; i < ProductGroupings.Count; i++)
-                {
-                    ProductGrouping ProductGrouping = ProductGroupings[i];
-                    worksheet_ProductGroup.Cells[startRow_ProductGroup + i, numberCell_ProductGroup].Value = ProductGrouping.Code;
-                    worksheet_ProductGroup.Cells[startRow_ProductGroup + i, numberCell_ProductGroup + 1].Value = ProductGrouping.Name;
-                }
-                #endregion
-
-                #region sheet ProductType
-                var worksheet_ProductType = xlPackage.Workbook.Worksheets["ProductType"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_ProductType = 2;
-                int numberCell_ProductType = 1;
-                for (var i = 0; i < ProductTypes.Count; i++)
-                {
-                    ProductType ProductType = ProductTypes[i];
-                    worksheet_ProductType.Cells[startRow_ProductType + i, numberCell_ProductType].Value = ProductType.Code;
-                    worksheet_ProductType.Cells[startRow_ProductType + i, numberCell_ProductType + 1].Value = ProductType.Name;
-                }
-                #endregion
-
-                #region sheet UoM
-                var worksheet_UoM = xlPackage.Workbook.Worksheets["UoM"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_UoM = 2;
-                int numberCell_UoM = 1;
-                for (var i = 0; i < UnitOfMeasures.Count; i++)
-                {
-                    UnitOfMeasure UnitOfMeasure = UnitOfMeasures[i];
-                    worksheet_UoM.Cells[startRow_UoM + i, numberCell_UoM].Value = UnitOfMeasure.Code;
-                    worksheet_UoM.Cells[startRow_UoM + i, numberCell_UoM + 1].Value = UnitOfMeasure.Name;
-                }
-                #endregion
-
-                #region sheet UoMGroup
-                var worksheet_UoMGroup = xlPackage.Workbook.Worksheets["UoMGroup"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_UoMGroup = 2;
-                int numberCell_UoMGroup = 1;
-                for (var i = 0; i < UnitOfMeasureGroupings.Count; i++)
-                {
-                    UnitOfMeasureGrouping UnitOfMeasureGrouping = UnitOfMeasureGroupings[i];
-                    worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup].Value = UnitOfMeasureGrouping.Code;
-                    worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup + 1].Value = UnitOfMeasureGrouping.Name;
-                }
-                #endregion
-
-                #region sheet Supplier
-                var worksheet_Supplier = xlPackage.Workbook.Worksheets["Supplier"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_Supplier = 2;
-                int numberCell_Supplier = 1;
-                for (var i = 0; i < Suppliers.Count; i++)
-                {
-                    Supplier Supplier = Suppliers[i];
-                    worksheet_Supplier.Cells[startRow_Supplier + i, numberCell_Supplier].Value = Supplier.Code;
-                    worksheet_Supplier.Cells[startRow_Supplier + i, numberCell_Supplier + 1].Value = Supplier.Name;
-                }
-                #endregion
-
-                #region sheet Brand
-                var worksheet_Brand = xlPackage.Workbook.Worksheets["Brand"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_Brand = 2;
-                int numberCell_Brand = 1;
-                for (var i = 0; i < Brands.Count; i++)
-                {
-                    Brand Brand = Brands[i];
-                    worksheet_Brand.Cells[startRow_Brand + i, numberCell_Brand].Value = Brand.Code;
-                    worksheet_Brand.Cells[startRow_Brand + i, numberCell_Brand + 1].Value = Brand.Name;
-                }
-                #endregion
-
-                var nameexcel = "Export sản phẩm" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff");
-                xlPackage.Workbook.Properties.Title = string.Format("{0}", nameexcel);
-                xlPackage.Workbook.Properties.Author = "Sonhx5";
-                xlPackage.Workbook.Properties.Subject = string.Format("{0}", "RD-DMS");
-                xlPackage.Workbook.Properties.Category = "RD-DMS";
-                xlPackage.Workbook.Properties.Company = "FPT-FIS-ERP-ESC";
-                xlPackage.SaveAs(MemoryStream);
             }
 
             return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
@@ -909,6 +1077,13 @@ namespace DMS.Rpc.product
                 {
                     Id = x.Id,
                     Name = x.Name,
+                    Variations = x.Variations.Select(v => new Variation
+                    {
+                        Id = v.Id,
+                        Code = v.Code,
+                        Name = v.Name,
+                        VariationGroupingId = x.Id
+                    }).ToList()
                 }).ToList();
             Product.BaseLanguage = CurrentContext.Language;
             return Product;

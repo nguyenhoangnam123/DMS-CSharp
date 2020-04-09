@@ -1,5 +1,7 @@
 using Common;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.product
 {
@@ -8,13 +10,14 @@ namespace DMS.Rpc.product
         public long Id { get; set; }
         public string Name { get; set; }
         public long ProductId { get; set; }
-
+        public List<Product_VariationDTO> Variations { get; set; }
         public Product_VariationGroupingDTO() { }
         public Product_VariationGroupingDTO(VariationGrouping VariationGrouping)
         {
             this.Id = VariationGrouping.Id;
             this.Name = VariationGrouping.Name;
             this.ProductId = VariationGrouping.ProductId;
+            this.Variations = VariationGrouping.Variations?.Select(x => new Product_VariationDTO(x)).ToList();
         }
     }
 

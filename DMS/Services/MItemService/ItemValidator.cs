@@ -20,6 +20,13 @@ namespace DMS.Services.MItem
         public enum ErrorCode
         {
             IdNotExisted,
+            ProductNotExisted,
+            NameEmpty,
+            NameOverLength,
+            CodeEmpty,
+            CodeOverLength,
+            ScanCodeEmpty,
+            ScanCodeOverLength,
         }
 
         private IUOW UOW;
@@ -45,6 +52,42 @@ namespace DMS.Services.MItem
             if (count == 0)
                 Item.AddError(nameof(ItemValidator), nameof(Item.Id), ErrorCode.IdNotExisted);
             return count == 1;
+        }
+        public async Task<bool> ValidateName(Item Item)
+        {
+            if (string.IsNullOrEmpty(Item.Name))
+            {
+                Item.AddError(nameof(ItemValidator), nameof(Item.Name), ErrorCode.NameEmpty);
+            }
+            if (Item.Name.Length > 3000)
+            {
+                Item.AddError(nameof(ItemValidator), nameof(Item.Name), ErrorCode.NameOverLength);
+            }
+            return true;
+        }
+        public async Task<bool> ValidateCode(Item Item)
+        {
+            if (string.IsNullOrEmpty(Item.Code))
+            {
+                Item.AddError(nameof(ItemValidator), nameof(Item.Code), ErrorCode.CodeEmpty);
+            }
+            if (!string.IsNullOrEmpty(Item.Code) && Item.Code.Length > 4000)
+            {
+                Item.AddError(nameof(ItemValidator), nameof(Item.Code), ErrorCode.CodeOverLength);
+            }
+            return true;
+        }
+        public async Task<bool> ValidateScanCode(Item Item)
+        {
+            if (string.IsNullOrEmpty(Item.ScanCode))
+            {
+                Item.AddError(nameof(ItemValidator), nameof(Item.ScanCode), ErrorCode.ScanCodeEmpty);
+            }
+            if (!string.IsNullOrEmpty(Item.ScanCode) && Item.ScanCode.Length > 4000)
+            {
+                Item.AddError(nameof(ItemValidator), nameof(Item.ScanCode), ErrorCode.ScanCodeOverLength);
+            }
+            return true;
         }
 
         public async Task<bool> Create(Item Item)
@@ -75,6 +118,18 @@ namespace DMS.Services.MItem
 
         public async Task<bool> Import(List<Item> Items)
         {
+            foreach (var Item in Items)
+            {
+                await ValidateName(Item);
+                await ValidateCode(Item);
+                await ValidateScanCode(Item);
+                if (!Item.IsValidated) return false;
+                if (Item.ProductId == 0)
+                {
+                    Item.AddError(nameof(ItemValidator), nameof(Item.ProductId), ErrorCode.ProductNotExisted);
+                    return false;
+                }
+            }
             return true;
         }
     }

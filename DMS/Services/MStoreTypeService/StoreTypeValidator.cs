@@ -57,13 +57,11 @@ namespace DMS.Services.MStoreType
             if (string.IsNullOrEmpty(StoreType.Code))
             {
                 StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Code), ErrorCode.CodeEmpty);
-                return false;
             }
             var Code = StoreType.Code;
             if (StoreType.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(StoreType.Code))
             {
                 StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Code), ErrorCode.CodeHasSpecialCharacter);
-                return false;
             }
             StoreTypeFilter StoreTypeFilter = new StoreTypeFilter
             {
@@ -77,7 +75,7 @@ namespace DMS.Services.MStoreType
             int count = await UOW.StoreTypeRepository.Count(StoreTypeFilter);
             if (count != 0)
                 StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Code), ErrorCode.CodeExisted);
-            return count == 0;
+            return StoreType.IsValidated;
         }
         public async Task<bool> ValidateName(StoreType StoreType)
         {
@@ -89,7 +87,7 @@ namespace DMS.Services.MStoreType
             {
                 StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Name), ErrorCode.NameOverLength);
             }
-            return true;
+            return StoreType.IsValidated;
         }
 
         public async Task<bool> ValidateStatus(StoreType StoreType)

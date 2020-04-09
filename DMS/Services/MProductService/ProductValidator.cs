@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Repositories;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,18 +23,16 @@ namespace DMS.Services.MProduct
         {
             IdNotExisted,
             CodeExisted,
-            ERPCodeExisted,
-            ScanCodeExisted,
+            CodeEmpty,
             NameEmpty,
             NameOverLength,
-            CodeEmpty,
-            CodeOverLength,
-            ERPCodeEmpty,
-            ERPCodeOverLength,
-            ScanCodeEmpty,
-            ScanCodeOverLength,
             ProductTypeNotExisted,
+            SupplierNotExisted,
+            BrandNotExisted,
             UnitOfMeasureNotExisted,
+            UnitOfMeasureEmpty,
+            UnitOfMeasureGroupingNotExisted,
+            StatusNotExisted
         }
 
         private IUOW UOW;
@@ -45,7 +44,7 @@ namespace DMS.Services.MProduct
             this.CurrentContext = CurrentContext;
         }
 
-        public async Task<bool> ValidateId(Product Product)
+        private async Task<bool> ValidateId(Product Product)
         {
             ProductFilter ProductFilter = new ProductFilter
             {
@@ -60,9 +59,9 @@ namespace DMS.Services.MProduct
                 Product.AddError(nameof(ProductValidator), nameof(Product.Id), ErrorCode.IdNotExisted);
             return count == 1;
         }
-        public async Task<bool> ValidateName(Product Product)
+        private async Task<bool> ValidateName(Product Product)
         {
-            if (string.IsNullOrEmpty(Product.Name))
+            if (string.IsNullOrWhiteSpace(Product.Name))
             {
                 Product.AddError(nameof(ProductValidator), nameof(Product.Name), ErrorCode.NameEmpty);
             }
@@ -70,46 +69,126 @@ namespace DMS.Services.MProduct
             {
                 Product.AddError(nameof(ProductValidator), nameof(Product.Name), ErrorCode.NameOverLength);
             }
-            return true;
+            return Product.IsValidated;
         }
-        public async Task<bool> ValidateCode(Product Product)
+        private async Task<bool> ValidateCode(Product Product)
         {
-            if (string.IsNullOrEmpty(Product.Code))
+            if (string.IsNullOrWhiteSpace(Product.Code))
             {
                 Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeEmpty);
             }
-            if (!string.IsNullOrEmpty(Product.Code) && Product.Code.Length > 500)
+
+            ProductFilter ProductFilter = new ProductFilter
             {
-                Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeOverLength);
-            }
-            return true;
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { NotEqual = Product.Id },
+                Code = new StringFilter { Equal = Product.Code },
+                Selects = ProductSelect.Code
+            };
+
+            int count = await UOW.ProductRepository.Count(ProductFilter);
+            if (count > 0)
+                Product.AddError(nameof(ProductValidator), nameof(Product.Id), ErrorCode.CodeExisted);
+            return Product.IsValidated;
         }
-        public async Task<bool> ValidateERPCode(Product Product)
+
+        private async Task<bool> ValidateProductType(Product Product)
         {
-            if (string.IsNullOrEmpty(Product.ERPCode))
+            ProductTypeFilter ProductTypeFilter = new ProductTypeFilter
             {
-                Product.AddError(nameof(ProductValidator), nameof(Product.ERPCode), ErrorCode.ERPCodeEmpty);
-            }
-            if (!string.IsNullOrEmpty(Product.ERPCode) && Product.ERPCode.Length > 500)
-            {
-                Product.AddError(nameof(ProductValidator), nameof(Product.ERPCode), ErrorCode.ERPCodeOverLength);
-            }
-            return true;
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { Equal = Product.ProductTypeId },
+                Selects = ProductTypeSelect.Id
+            };
+
+            int count = await UOW.ProductTypeRepository.Count(ProductTypeFilter);
+            if (count == 0)
+                Product.AddError(nameof(ProductValidator), nameof(Product.ProductType), ErrorCode.ProductTypeNotExisted);
+            return Product.IsValidated;
         }
-        public async Task<bool> ValidateScanCode(Product Product)
+
+        private async Task<bool> ValidateSupplier(Product Product)
         {
-            if (string.IsNullOrEmpty(Product.ScanCode))
+            SupplierFilter SupplierFilter = new SupplierFilter
             {
-                Product.AddError(nameof(ProductValidator), nameof(Product.ScanCode), ErrorCode.ScanCodeEmpty);
-            }
-            if (!string.IsNullOrEmpty(Product.ScanCode) && Product.ScanCode.Length > 500)
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { Equal = Product.SupplierId },
+                Selects = SupplierSelect.Id
+            };
+
+            int count = await UOW.SupplierRepository.Count(SupplierFilter);
+            if (count == 0)
+                Product.AddError(nameof(ProductValidator), nameof(Product.Supplier), ErrorCode.SupplierNotExisted);
+            return Product.IsValidated;
+        }
+
+        private async Task<bool> ValidateBrand(Product Product)
+        {
+            BrandFilter BrandFilter = new BrandFilter
             {
-                Product.AddError(nameof(ProductValidator), nameof(Product.ScanCode), ErrorCode.ScanCodeOverLength);
-            }
-            return true;
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { Equal = Product.BrandId },
+                Selects = BrandSelect.Id
+            };
+
+            int count = await UOW.BrandRepository.Count(BrandFilter);
+            if (count == 0)
+                Product.AddError(nameof(ProductValidator), nameof(Product.Brand), ErrorCode.BrandNotExisted);
+            return Product.IsValidated;
+        }
+
+        private async Task<bool> ValidateUnitOfMeasure(Product Product)
+        {
+            UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { Equal = Product.UnitOfMeasureId },
+                Selects = UnitOfMeasureSelect.Id
+            };
+
+            int count = await UOW.UnitOfMeasureRepository.Count(UnitOfMeasureFilter);
+            if (count == 0)
+                Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
+            return Product.IsValidated;
+        }
+
+        private async Task<bool> ValidateUnitOfMeasureGrouping(Product Product)
+        {
+            UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { Equal = Product.UnitOfMeasureGroupingId },
+                Selects = UnitOfMeasureGroupingSelect.Id
+            };
+
+            int count = await UOW.UnitOfMeasureGroupingRepository.Count(UnitOfMeasureGroupingFilter);
+            if (count == 0)
+                Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
+            return Product.IsValidated;
+        }
+
+        private async Task<bool> ValidateStatusId(Product Product)
+        {
+            if (StatusEnum.ACTIVE.Id != Product.StatusId && StatusEnum.INACTIVE.Id != Product.StatusId)
+                Product.AddError(nameof(ProductValidator), nameof(Product.Status), ErrorCode.StatusNotExisted);
+            return Product.IsValidated;
         }
         public async Task<bool> Create(Product Product)
         {
+            await ValidateCode(Product);
+            await ValidateName(Product);
+            await ValidateProductType(Product);
+            await ValidateSupplier(Product);
+            await ValidateBrand(Product);
+            await ValidateUnitOfMeasure(Product);
+            await ValidateUnitOfMeasureGrouping(Product);
+            await ValidateStatusId(Product);
             return Product.IsValidated;
         }
 
@@ -117,6 +196,14 @@ namespace DMS.Services.MProduct
         {
             if (await ValidateId(Product))
             {
+                await ValidateCode(Product);
+                await ValidateName(Product);
+                await ValidateProductType(Product);
+                await ValidateSupplier(Product);
+                await ValidateBrand(Product);
+                await ValidateUnitOfMeasure(Product);
+                await ValidateUnitOfMeasureGrouping(Product);
+                await ValidateStatusId(Product);
             }
             return Product.IsValidated;
         }
@@ -131,7 +218,22 @@ namespace DMS.Services.MProduct
 
         public async Task<bool> BulkDelete(List<Product> Products)
         {
-            return true;
+            ProductFilter ProductFilter = new ProductFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Id = new IdFilter { In = Products.Select(a => a.Id).ToList() },
+                Selects = ProductSelect.Id
+            };
+
+            var listInDB = await UOW.ProductRepository.List(ProductFilter);
+            var listExcept = Products.Except(listInDB);
+            if (listExcept == null || listExcept.Count() == 0) return true;
+            foreach (var Product in listExcept)
+            {
+                Product.AddError(nameof(ProductValidator), nameof(Product.Id), ErrorCode.IdNotExisted);
+            }
+            return false;
         }
 
         public async Task<bool> Import(List<Product> Products)
@@ -142,53 +244,67 @@ namespace DMS.Services.MProduct
                 Take = int.MaxValue,
                 Selects = ProductSelect.Code
             })).Select(e => e.Code);
-            var listCodeERPInDB = (await UOW.ProductRepository.List(new ProductFilter
+            var listProductTypeCodeInDB = (await UOW.ProductTypeRepository.List(new ProductTypeFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = ProductSelect.ERPCode
-            })).Select(e => e.ERPCode);
-            var listScanCodeERPInDB = (await UOW.ProductRepository.List(new ProductFilter
+                Selects = ProductTypeSelect.Code
+            })).Select(e => e.Code);
+            var listSupplierCodeInDB = (await UOW.SupplierRepository.List(new SupplierFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = ProductSelect.ScanCode
-            })).Select(e => e.ScanCode);
+                Selects = SupplierSelect.Code
+            })).Select(e => e.Code);
+            var listBrandCodeInDB = (await UOW.BrandRepository.List(new BrandFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = BrandSelect.Code
+            })).Select(e => e.Code);
+            var listUOMCodeInDB = (await UOW.UnitOfMeasureRepository.List(new UnitOfMeasureFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = UnitOfMeasureSelect.Code
+            })).Select(e => e.Code);
+            var listUOMGroupingCodeInDB = (await UOW.UnitOfMeasureGroupingRepository.List(new UnitOfMeasureGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = UnitOfMeasureGroupingSelect.Code
+            })).Select(e => e.Code);
+
             foreach (var Product in Products)
             {
-                await ValidateName(Product);
-                await ValidateCode(Product);
-                await ValidateScanCode(Product);
-                await ValidateERPCode(Product);
-                if (!Product.IsValidated) return false;
                 if (listCodeInDB.Contains(Product.Code))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeExisted);
-                    return false;
                 }
-                if (listCodeERPInDB.Contains(Product.ERPCode))
+                if (!listProductTypeCodeInDB.Contains(Product.ProductType.Code))
                 {
-                    Product.AddError(nameof(ProductValidator), nameof(Product.ERPCode), ErrorCode.ERPCodeExisted);
-                    return false;
+                    Product.AddError(nameof(ProductValidator), nameof(Product.ProductType), ErrorCode.ProductTypeNotExisted);
                 }
-                if (listScanCodeERPInDB.Contains(Product.ScanCode))
+                if (!listSupplierCodeInDB.Contains(Product.Supplier.Code))
                 {
-                    Product.AddError(nameof(ProductValidator), nameof(Product.ScanCode), ErrorCode.ScanCodeExisted);
-                    return false;
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Supplier), ErrorCode.SupplierNotExisted);
                 }
-                if (Product.ProductTypeId == 0)
+                if (!listBrandCodeInDB.Contains(Product.Brand.Code))
                 {
-                    Product.AddError(nameof(ProductValidator), nameof(Product.ProductTypeId), ErrorCode.ProductTypeNotExisted);
-                    return false;
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Brand), ErrorCode.BrandNotExisted);
+                }
+                if (!listUOMCodeInDB.Contains(Product.UnitOfMeasure.Code))
+                {
+                    Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
+                }
+                if (!listUOMGroupingCodeInDB.Contains(Product.UnitOfMeasureGrouping.Code))
+                {
+                    Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
                 }
 
-                if (Product.UnitOfMeasureId == 0)
-                {
-                    Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureId), ErrorCode.UnitOfMeasureNotExisted);
-                    return false;
-                }
-            } 
-            return true;
+                await ValidateName(Product);
+            }
+            return Products.Any(s => !s.IsValidated) ? false : true;
         }
     }
 }
