@@ -492,10 +492,9 @@ namespace DMS.Rpc.store
                         Store.OwnerPhone,
                         Store.OwnerEmail,
                         Store.Status.Code
-                });
-
-                    excel.GenerateWorksheet("Store", StoreHeaders, data);
+                    });
                 }
+                excel.GenerateWorksheet("Store", StoreHeaders, data);
                 excel.Save();
             }
 
