@@ -305,8 +305,8 @@ namespace DMS.Services.MProductType
                     subFilter.Description = Map(subFilter.Description, currentFilter.Value);
                 if (currentFilter.Value.Name == nameof(subFilter.StatusId))
                     subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.UpdatedAt))
-                    subFilter.UpdatedAt = Map(subFilter.UpdatedAt, currentFilter.Value);
+                if (currentFilter.Value.Name == nameof(subFilter.UpdatedTime))
+                    subFilter.UpdatedTime = Map(subFilter.UpdatedTime, currentFilter.Value);
             }
             return filter;
         }

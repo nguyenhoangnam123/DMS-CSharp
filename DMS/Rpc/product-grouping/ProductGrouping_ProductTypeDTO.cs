@@ -14,7 +14,7 @@ namespace DMS.Rpc.product_grouping
         public string Name { get; set; }
         public string Description { get; set; }
         public long StatusId { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime UpdatedTime { get; set; }
         public ProductGrouping_ProductTypeDTO() { }
         public ProductGrouping_ProductTypeDTO(ProductType ProductType)
         {
@@ -23,7 +23,7 @@ namespace DMS.Rpc.product_grouping
             this.Name = ProductType.Name;
             this.Description = ProductType.Description;
             this.StatusId = ProductType.StatusId;
-            this.UpdatedAt = ProductType.UpdatedAt;
+            this.UpdatedTime = ProductType.UpdatedTime;
             this.Errors = ProductType.Errors;
         }
     }
@@ -35,6 +35,7 @@ namespace DMS.Rpc.product_grouping
         public StringFilter Name { get; set; }
         public StringFilter Description { get; set; }
         public IdFilter StatusId { get; set; }
+        public DateFilter UpdatedTime { get; set; }
         public ProductTypeOrder OrderBy { get; set; }
     }
 }
