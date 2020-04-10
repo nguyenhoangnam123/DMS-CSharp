@@ -422,12 +422,12 @@ namespace DMS.Rpc.reseller
                         Reseller.TaxCode,
                         Reseller.CompanyName,
                         Reseller.DeputyName,
-                        Reseller.Organization.Code,
-                        Reseller.ResellerType.Code,
-                        Reseller.ResellerStatus.Code,
+                        Reseller.Organization == null ? null : Reseller.Organization.Code,
+                        Reseller.ResellerType == null ? null : Reseller.ResellerType.Code,
+                        Reseller.ResellerStatus,
                     });
-                    excel.GenerateWorksheet("Reseller", ResellerHeaders, data);
                 }
+                excel.GenerateWorksheet("Reseller", ResellerHeaders, data);
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", "Reseller.xlsx");

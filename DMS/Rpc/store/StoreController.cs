@@ -473,15 +473,15 @@ namespace DMS.Rpc.store
                     {
                         Store.Code,
                         Store.Name,
-                        Store.Organization.Code,
-                        Store.ParentStore.Code,
-                        Store.StoreType.Code,
-                        Store.StoreGrouping.Code,
-                        Store.Reseller.Code,
+                        Store.Organization == null ? null : Store.Organization.Code,
+                        Store.ParentStore == null ? null : Store.ParentStore.Code,
+                        Store.StoreType == null ? null : Store.StoreType.Code,
+                        Store.StoreGrouping== null ? null : Store.StoreGrouping.Code,
+                        Store.Reseller== null ? null : Store.Reseller.Code,
                         Store.Telephone,
-                        Store.Province.Code,
-                        Store.District.Code,
-                        Store.Ward.Code,
+                        Store.Province == null ? null : Store.Province.Code,
+                        Store.District == null ? null : Store.District.Code,
+                        Store.Ward.Code == null ? null : Store.Ward.Code,
                         Store.Address,
                         Store.DeliveryAddress,
                         Store.Latitude,
@@ -492,10 +492,9 @@ namespace DMS.Rpc.store
                         Store.OwnerPhone,
                         Store.OwnerEmail,
                         Store.Status.Code
-                });
-
-                    excel.GenerateWorksheet("Store", StoreHeaders, data);
+                    });
                 }
+                excel.GenerateWorksheet("Store", StoreHeaders, data);
                 excel.Save();
             }
 

@@ -265,8 +265,8 @@ namespace DMS.Rpc.reseller_type
                         ResellerType.Name,
                         ResellerType.StatusId,
                     });
-                    excel.GenerateWorksheet("ResellerType", ResellerTypeHeaders, data);
                 }
+                excel.GenerateWorksheet("ResellerType", ResellerTypeHeaders, data);
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", "ResellerType.xlsx");
