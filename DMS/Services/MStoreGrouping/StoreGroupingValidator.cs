@@ -115,7 +115,10 @@ namespace DMS.Services.MStoreGrouping
         {
             await ValidateCode(StoreGrouping);
             await ValidateName(StoreGrouping);
-            await ValidateParent(StoreGrouping);
+            if (StoreGrouping.ParentId != null)
+            {
+                await ValidateParent(StoreGrouping);
+            }
             return StoreGrouping.IsValidated;
         }
 
