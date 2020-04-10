@@ -346,10 +346,9 @@ namespace DMS.Rpc.supplier
                         Supplier.Email,
                         Supplier.PersonInCharge.DisplayName,
                         Supplier.Status.Code
-                });
-
-                    excel.GenerateWorksheet("Province", SupplierHeaders, data);
+                    });
                 }
+                excel.GenerateWorksheet("Supplier", SupplierHeaders, data);
                 excel.Save();
             }
 

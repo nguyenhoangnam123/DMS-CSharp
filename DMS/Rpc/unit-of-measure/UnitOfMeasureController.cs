@@ -225,8 +225,8 @@ namespace DMS.Rpc.unit_of_measure
                          UnitOfMeasure.Name,
                          UnitOfMeasure.Description
                     });
-                    excel.GenerateWorksheet("UnitOfMeasure", UnitOfMeasureHeaders, data);
                 }
+                excel.GenerateWorksheet("UnitOfMeasure", UnitOfMeasureHeaders, data);
                 excel.Save();
             }
 

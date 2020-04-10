@@ -426,8 +426,8 @@ namespace DMS.Rpc.reseller
                         Reseller.ResellerType.Code,
                         Reseller.ResellerStatus.Code,
                     });
-                    excel.GenerateWorksheet("Reseller", ResellerHeaders, data);
                 }
+                excel.GenerateWorksheet("Reseller", ResellerHeaders, data);
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", "Reseller.xlsx");

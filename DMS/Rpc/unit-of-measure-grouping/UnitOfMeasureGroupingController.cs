@@ -204,8 +204,8 @@ namespace DMS.Rpc.unit_of_measure_grouping
                          UnitOfMeasureGrouping.Name,
                          UnitOfMeasureGrouping.Description
                     });
-                    excel.GenerateWorksheet("UnitOfMeasureGrouping", UnitOfMeasureGroupingHeaders, data);
                 }
+                excel.GenerateWorksheet("UnitOfMeasureGrouping", UnitOfMeasureGroupingHeaders, data);
                 excel.Save();
             }
 
