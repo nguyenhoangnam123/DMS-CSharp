@@ -382,7 +382,7 @@ namespace DMS.Rpc.product
                     if (!string.IsNullOrEmpty(ProductGroupCodeValue))
                     {
                         ProductGrouping ProductGrouping = ProductGroupings.Where(pg => pg.Code.Equals(ProductGroupCodeValue)).FirstOrDefault();
-                        if(ProductGrouping != null)
+                        if (ProductGrouping != null)
                         {
                             ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
                             Product.ProductProductGroupingMappings = new List<ProductProductGroupingMapping>();
@@ -412,13 +412,13 @@ namespace DMS.Rpc.product
                     {
                         Product.VariationGroupings = new List<VariationGrouping>();
                         VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property1Value)).FirstOrDefault();
-                        if(VariationGrouping == null)
+                        if (VariationGrouping == null)
                         {
                             VariationGrouping = new VariationGrouping
                             {
                                 Name = Property1Value
                             };
-                            
+
                         }
                         VariationGrouping.Variations = new List<Variation>();
                         var Values = PropertyValue1Value.Split(',');
@@ -433,7 +433,7 @@ namespace DMS.Rpc.product
                             VariationGrouping.Variations.Add(Variation);
                         }
                         Product.VariationGroupings.Add(VariationGrouping);
-                        
+
                     }
 
                     if (!string.IsNullOrEmpty(Property2Value))
@@ -525,7 +525,7 @@ namespace DMS.Rpc.product
 
                 #region ItemSheet
                 ExcelWorksheet ItemSheet = excelPackage.Workbook.Worksheets["Item"];
-                if(ItemSheet != null)
+                if (ItemSheet != null)
                 {
                     StartColumn = 1;
                     StartRow = 1;
@@ -555,11 +555,11 @@ namespace DMS.Rpc.product
                         Item.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : decimal.Parse(SalePriceValue);
                         Item.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : decimal.Parse(RetailPriceValue);
                         var Product = Products.Where(p => p.Code == CodeValue).FirstOrDefault();
-                        if(Product != null)
+                        if (Product != null)
                         {
                             Product.Items.Add(Item);
                         }
-                        
+
                     }
                     #endregion
                 }
@@ -608,7 +608,7 @@ namespace DMS.Rpc.product
                 Selects = ItemSelect.ALL,
                 ProductId = new IdFilter { In = Products.Select(p => p.Id).ToList() }
             });
-            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter 
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
@@ -681,8 +681,11 @@ namespace DMS.Rpc.product
                 for (int i = 0; i < Products.Count; i++)
                 {
                     Product Product = Products[i];
-                    string ProductGroupingName = Product.ProductProductGroupingMappings.FirstOrDefault() == null ? null : Product.ProductProductGroupingMappings.FirstOrDefault().ProductGrouping.Name;
-
+                    string ProductGroupingName = "";
+                    if (Product.ProductProductGroupingMappings != null)
+                    {
+                        ProductGroupingName = Product.ProductProductGroupingMappings.FirstOrDefault() == null ? null : Product.ProductProductGroupingMappings.FirstOrDefault().ProductGrouping.Name;
+                    }
                     string VariationGrouping1 = "";
                     string VariationValue1 = "";
                     string VariationGrouping2 = "";
@@ -694,7 +697,7 @@ namespace DMS.Rpc.product
 
                     if (Product.VariationGroupings != null)
                     {
-                        if(Product.VariationGroupings.Count > 0)
+                        if (Product.VariationGroupings.Count > 0)
                         {
                             VariationGrouping1 += Product.VariationGroupings[0].Name;
                             VariationValue1 = string.Join(",", Product.VariationGroupings[0].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
