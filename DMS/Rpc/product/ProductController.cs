@@ -1047,7 +1047,7 @@ namespace DMS.Rpc.product
                     MemoryStream.Write(bytes, 0, (int)file.Length);
                 }
             }
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + Utils.ConvertDateTimeToString(DateTime.Now) + ".xlsx");
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
         }
 
         [Route(ProductRoute.BulkDelete), HttpPost]
