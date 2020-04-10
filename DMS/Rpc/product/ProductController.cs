@@ -943,12 +943,9 @@ namespace DMS.Rpc.product
                 Take = int.MaxValue,
                 Selects = BrandSelect.ALL
             });
-
-            var fileName = string.Format("{0}_{1}.xlsx", "ProductExport", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
-
-            var filePath = Path.Combine(_env.ContentRootPath, "File\\Export", fileName);
-            var newFile = new FileInfo(filePath);
-            string tempPath = _env.ContentRootPath + "\\File\\Template\\Product_Import.xlsx";
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            MemoryStream MemoryStream = new MemoryStream();
+            string tempPath = "Templates/Product_Export.xlsx";
             using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
             {
                 #region sheet ProductGrouping 
@@ -1035,18 +1032,9 @@ namespace DMS.Rpc.product
                 xlPackage.Workbook.Properties.Subject = string.Format("{0}", "RD-DMS");
                 xlPackage.Workbook.Properties.Category = "RD-DMS";
                 xlPackage.Workbook.Properties.Company = "FPT-FIS-ERP-ESC";
-                xlPackage.SaveAs(newFile);
+                xlPackage.SaveAs(MemoryStream);
             }
-            MemoryStream MemoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(MemoryStream))
-            {
-                using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                {
-                    byte[] bytes = new byte[file.Length];
-                    file.Read(bytes, 0, (int)file.Length);
-                    MemoryStream.Write(bytes, 0, (int)file.Length);
-                }
-            }
+
             return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
         }
 
