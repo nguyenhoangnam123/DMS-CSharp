@@ -17,9 +17,9 @@ trap term_handler TERM
 PROJECT_NAME="DMS"
 
 dotnet ${PROJECT_NAME}.dll --urls http://localhost:80 --environment Development &
-consul agent -config-dir /consul/config -node ${NODE}&
+consul agent -config-dir /consul/config -node ${NODE} &
 CONSUL_PID="$!"
 sleep 10
-consul connect envoy -sidecar-for dms-backend
+consul connect envoy -sidecar-for dms-backend &
 wait "${CONSUL_PID}"
 

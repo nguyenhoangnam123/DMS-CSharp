@@ -904,6 +904,152 @@ namespace DMS.Rpc.product
             return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
         }
 
+        [Route(ProductRoute.ExportTemplate), HttpPost]
+        public async Task<ActionResult> ExportTemplate()
+        {
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProductGroupingSelect.ALL
+            });
+            List<ProductType> ProductTypes = await ProductTypeService.List(new ProductTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProductTypeSelect.ALL
+            });
+            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(new UnitOfMeasureFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = UnitOfMeasureSelect.ALL
+            });
+            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(new UnitOfMeasureGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = UnitOfMeasureGroupingSelect.ALL
+            });
+            List<Supplier> Suppliers = await SupplierService.List(new SupplierFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = SupplierSelect.ALL
+            });
+            List<Brand> Brands = await BrandService.List(new BrandFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = BrandSelect.ALL
+            });
+
+            var fileName = string.Format("{0}_{1}.xlsx", "ProductExport", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
+
+            var filePath = Path.Combine(_env.ContentRootPath, "File\\Export", fileName);
+            var newFile = new FileInfo(filePath);
+            string tempPath = _env.ContentRootPath + "\\File\\Template\\Product_Import.xlsx";
+            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            {
+                #region sheet ProductGrouping 
+                var worksheet_ProductGroup = xlPackage.Workbook.Worksheets["ProductGroup"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_ProductGroup = 2;
+                int numberCell_ProductGroup = 1;
+                for (var i = 0; i < ProductGroupings.Count; i++)
+                {
+                    ProductGrouping ProductGrouping = ProductGroupings[i];
+                    worksheet_ProductGroup.Cells[startRow_ProductGroup + i, numberCell_ProductGroup].Value = ProductGrouping.Code;
+                    worksheet_ProductGroup.Cells[startRow_ProductGroup + i, numberCell_ProductGroup + 1].Value = ProductGrouping.Name;
+                }
+                #endregion
+
+                #region sheet ProductType
+                var worksheet_ProductType = xlPackage.Workbook.Worksheets["ProductType"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_ProductType = 2;
+                int numberCell_ProductType = 1;
+                for (var i = 0; i < ProductTypes.Count; i++)
+                {
+                    ProductType ProductType = ProductTypes[i];
+                    worksheet_ProductType.Cells[startRow_ProductType + i, numberCell_ProductType].Value = ProductType.Code;
+                    worksheet_ProductType.Cells[startRow_ProductType + i, numberCell_ProductType + 1].Value = ProductType.Name;
+                }
+                #endregion
+
+                #region sheet UoM
+                var worksheet_UoM = xlPackage.Workbook.Worksheets["UoM"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_UoM = 2;
+                int numberCell_UoM = 1;
+                for (var i = 0; i < UnitOfMeasures.Count; i++)
+                {
+                    UnitOfMeasure UnitOfMeasure = UnitOfMeasures[i];
+                    worksheet_UoM.Cells[startRow_UoM + i, numberCell_UoM].Value = UnitOfMeasure.Code;
+                    worksheet_UoM.Cells[startRow_UoM + i, numberCell_UoM + 1].Value = UnitOfMeasure.Name;
+                }
+                #endregion
+
+                #region sheet UoMGroup
+                var worksheet_UoMGroup = xlPackage.Workbook.Worksheets["UoMGroup"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_UoMGroup = 2;
+                int numberCell_UoMGroup = 1;
+                for (var i = 0; i < UnitOfMeasureGroupings.Count; i++)
+                {
+                    UnitOfMeasureGrouping UnitOfMeasureGrouping = UnitOfMeasureGroupings[i];
+                    worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup].Value = UnitOfMeasureGrouping.Code;
+                    worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup + 1].Value = UnitOfMeasureGrouping.Name;
+                }
+                #endregion
+
+                #region sheet Supplier
+                var worksheet_Supplier = xlPackage.Workbook.Worksheets["Supplier"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_Supplier = 2;
+                int numberCell_Supplier = 1;
+                for (var i = 0; i < Suppliers.Count; i++)
+                {
+                    Supplier Supplier = Suppliers[i];
+                    worksheet_Supplier.Cells[startRow_Supplier + i, numberCell_Supplier].Value = Supplier.Code;
+                    worksheet_Supplier.Cells[startRow_Supplier + i, numberCell_Supplier + 1].Value = Supplier.Name;
+                }
+                #endregion
+
+                #region sheet Brand
+                var worksheet_Brand = xlPackage.Workbook.Worksheets["Brand"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_Brand = 2;
+                int numberCell_Brand = 1;
+                for (var i = 0; i < Brands.Count; i++)
+                {
+                    Brand Brand = Brands[i];
+                    worksheet_Brand.Cells[startRow_Brand + i, numberCell_Brand].Value = Brand.Code;
+                    worksheet_Brand.Cells[startRow_Brand + i, numberCell_Brand + 1].Value = Brand.Name;
+                }
+                #endregion
+
+                var nameexcel = "Export sản phẩm" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff");
+                xlPackage.Workbook.Properties.Title = string.Format("{0}", nameexcel);
+                xlPackage.Workbook.Properties.Author = "Sonhx5";
+                xlPackage.Workbook.Properties.Subject = string.Format("{0}", "RD-DMS");
+                xlPackage.Workbook.Properties.Category = "RD-DMS";
+                xlPackage.Workbook.Properties.Company = "FPT-FIS-ERP-ESC";
+                xlPackage.SaveAs(newFile);
+            }
+            MemoryStream MemoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(MemoryStream))
+            {
+                using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    byte[] bytes = new byte[file.Length];
+                    file.Read(bytes, 0, (int)file.Length);
+                    MemoryStream.Write(bytes, 0, (int)file.Length);
+                }
+            }
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
+        }
+
         [Route(ProductRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

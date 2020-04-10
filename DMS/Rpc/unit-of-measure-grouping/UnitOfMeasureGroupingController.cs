@@ -11,7 +11,6 @@ using DMS.Entities;
 using DMS.Services.MUnitOfMeasureGrouping;
 using DMS.Services.MStatus;
 using DMS.Services.MUnitOfMeasure;
-using DMS.Services.MUnitOfMeasureGroupingContent;
 using DMS.Enums;
 using OfficeOpenXml;
 using System.IO;
@@ -49,20 +48,17 @@ namespace DMS.Rpc.unit_of_measure_grouping
     {
         private IStatusService StatusService;
         private IUnitOfMeasureService UnitOfMeasureService;
-        private IUnitOfMeasureGroupingContentService UnitOfMeasureGroupingContentService;
         private IUnitOfMeasureGroupingService UnitOfMeasureGroupingService;
         private ICurrentContext CurrentContext;
         public UnitOfMeasureGroupingController(
             IStatusService StatusService,
             IUnitOfMeasureService UnitOfMeasureService,
-            IUnitOfMeasureGroupingContentService UnitOfMeasureGroupingContentService,
             IUnitOfMeasureGroupingService UnitOfMeasureGroupingService,
             ICurrentContext CurrentContext
         )
         {
             this.StatusService = StatusService;
             this.UnitOfMeasureService = UnitOfMeasureService;
-            this.UnitOfMeasureGroupingContentService = UnitOfMeasureGroupingContentService;
             this.UnitOfMeasureGroupingService = UnitOfMeasureGroupingService;
             this.CurrentContext = CurrentContext;
         }
