@@ -261,6 +261,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(ProductGrouping ProductGrouping)
         {
+            await DataContext.ProductProductGroupingMapping.Where(x => x.ProductGroupingId == ProductGrouping.Id).DeleteFromQueryAsync();
             ProductGroupingDAO ProductGroupingDAO = await DataContext.ProductGrouping.Where(x => x.Id == ProductGrouping.Id).FirstOrDefaultAsync();
             await DataContext.ProductGrouping.Where(x => x.Path.StartsWith(ProductGroupingDAO.Id + ".")).UpdateFromQueryAsync(x => new ProductGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
             await DataContext.ProductGrouping.Where(x => x.Id == ProductGrouping.Id).UpdateFromQueryAsync(x => new ProductGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
@@ -293,6 +294,9 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<ProductGrouping> ProductGroupings)
         {
             List<long> Ids = ProductGroupings.Select(x => x.Id).ToList();
+            await DataContext.ProductProductGroupingMapping
+                .Where(x => Ids.Contains(x.ProductGroupingId))
+                .DeleteFromQueryAsync();
             await DataContext.ProductGrouping
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new ProductGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
