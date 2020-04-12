@@ -330,7 +330,7 @@ namespace Common
             if (filter.In != null)
                 source = source.Where(BuildPredicate(propertyName, "In", filter.In));
             if (filter.NotIn != null)
-                source = source.Where(BuildPredicate(propertyName, "NotIn", filter.In));
+                source = source.Where(BuildPredicate(propertyName, "NotIn", filter.NotIn));
             return source;
         }
 
