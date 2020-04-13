@@ -267,9 +267,8 @@ namespace DMS.Rpc.province
                             });
                         }
                     }
-
-                    excel.GenerateWorksheet("Province", ProvinceHeaders, data);
                 }
+                excel.GenerateWorksheet("Province", ProvinceHeaders, data);
                 excel.Save();
             }
 
