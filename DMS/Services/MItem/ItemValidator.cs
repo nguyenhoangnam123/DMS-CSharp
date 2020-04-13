@@ -59,7 +59,7 @@ namespace DMS.Services.MItem
             {
                 Item.AddError(nameof(ItemValidator), nameof(Item.Name), ErrorCode.NameEmpty);
             }
-            if (Item.Name.Length > 3000)
+            else if (Item.Name.Length > 3000)
             {
                 Item.AddError(nameof(ItemValidator), nameof(Item.Name), ErrorCode.NameOverLength);
             }
@@ -71,7 +71,7 @@ namespace DMS.Services.MItem
             {
                 Item.AddError(nameof(ItemValidator), nameof(Item.Code), ErrorCode.CodeEmpty);
             }
-            if (!string.IsNullOrEmpty(Item.Code) && Item.Code.Length > 4000)
+            else if(Item.Code.Length > 4000)
             {
                 Item.AddError(nameof(ItemValidator), nameof(Item.Code), ErrorCode.CodeOverLength);
             }
@@ -83,7 +83,7 @@ namespace DMS.Services.MItem
             {
                 Item.AddError(nameof(ItemValidator), nameof(Item.ScanCode), ErrorCode.ScanCodeEmpty);
             }
-            if (!string.IsNullOrEmpty(Item.ScanCode) && Item.ScanCode.Length > 4000)
+            else if (Item.ScanCode.Length > 4000)
             {
                 Item.AddError(nameof(ItemValidator), nameof(Item.ScanCode), ErrorCode.ScanCodeOverLength);
             }

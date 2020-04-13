@@ -66,23 +66,27 @@ namespace DMS.Services.MSupplier
             {
                 Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Code), ErrorCode.CodeEmpty);
             }
-            var Code = Supplier.Code;
-            if (Supplier.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Supplier.Code))
+            else
             {
-                Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Code), ErrorCode.CodeHasSpecialCharacter);
-            }
-            SupplierFilter SupplierFilter = new SupplierFilter
-            {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { NotEqual = Supplier.Id },
-                Code = new StringFilter { Equal = Supplier.Code },
-                Selects = SupplierSelect.Code
-            };
+                var Code = Supplier.Code;
+                if (Supplier.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Supplier.Code))
+                {
+                    Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Code), ErrorCode.CodeHasSpecialCharacter);
+                }
 
-            int count = await UOW.SupplierRepository.Count(SupplierFilter);
-            if (count != 0)
-                Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Code), ErrorCode.CodeExisted);
+                SupplierFilter SupplierFilter = new SupplierFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { NotEqual = Supplier.Id },
+                    Code = new StringFilter { Equal = Supplier.Code },
+                    Selects = SupplierSelect.Code
+                };
+
+                int count = await UOW.SupplierRepository.Count(SupplierFilter);
+                if (count != 0)
+                    Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Code), ErrorCode.CodeExisted);
+            }
             return Supplier.IsValidated;
         }
 

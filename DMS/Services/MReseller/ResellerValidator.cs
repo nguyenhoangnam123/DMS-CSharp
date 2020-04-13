@@ -74,8 +74,7 @@ namespace DMS.Services.MReseller
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Code), ErrorCode.CodeEmpty);
             }
-
-            if (!string.IsNullOrEmpty(Reseller.Code) && Reseller.Code.Length > 255)
+            else if (Reseller.Code.Length > 255)
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Code), ErrorCode.CodeOverLength);
             }
@@ -101,8 +100,7 @@ namespace DMS.Services.MReseller
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Name), ErrorCode.NameEmpty);
             }
-
-            if (!string.IsNullOrEmpty(Reseller.Name) && Reseller.Name.Length > 255)
+            else if (Reseller.Name.Length > 255)
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Name), ErrorCode.NameOverLength);
             }
@@ -160,8 +158,7 @@ namespace DMS.Services.MReseller
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Phone), ErrorCode.PhoneEmpty);
             }
-
-            if (!string.IsNullOrEmpty(Reseller.Phone) && Reseller.Phone.Length > 255)
+            else if (Reseller.Phone.Length > 255)
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Phone), ErrorCode.PhoneOverLength);
             }

@@ -81,7 +81,7 @@ namespace DMS.Services.MProvince
                 Province.AddError(nameof(ProvinceValidator), nameof(Province.Name), ErrorCode.NameEmpty);
                 return false;
             }
-            if (Province.Name.Length > 255)
+            else if (Province.Name.Length > 255)
             {
                 Province.AddError(nameof(ProvinceValidator), nameof(Province.Name), ErrorCode.NameOverLength);
                 return false;

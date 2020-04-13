@@ -62,25 +62,29 @@ namespace DMS.Services.MUnitOfMeasure
                 UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Code), ErrorCode.CodeEmpty);
                 return false;
             }
-            var Code = UnitOfMeasure.Code;
-            if (UnitOfMeasure.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(UnitOfMeasure.Code))
+            else
             {
-                UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Code), ErrorCode.CodeHasSpecialCharacter);
-                return false;
-            }
-            UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
-            {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { NotEqual = UnitOfMeasure.Id },
-                Code = new StringFilter { Equal = UnitOfMeasure.Code },
-                Selects = UnitOfMeasureSelect.Code
-            };
+                var Code = UnitOfMeasure.Code;
+                if (UnitOfMeasure.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(UnitOfMeasure.Code))
+                {
+                    UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Code), ErrorCode.CodeHasSpecialCharacter);
+                    return false;
+                }
 
-            int count = await UOW.UnitOfMeasureRepository.Count(UnitOfMeasureFilter);
-            if (count != 0)
-                UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Code), ErrorCode.CodeExisted);
-            return count == 0;
+                UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { NotEqual = UnitOfMeasure.Id },
+                    Code = new StringFilter { Equal = UnitOfMeasure.Code },
+                    Selects = UnitOfMeasureSelect.Code
+                };
+
+                int count = await UOW.UnitOfMeasureRepository.Count(UnitOfMeasureFilter);
+                if (count != 0)
+                    UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Code), ErrorCode.CodeExisted);
+            }
+            return UnitOfMeasure.IsValidated;
         }
         public async Task<bool> ValidateName(UnitOfMeasure UnitOfMeasure)
         {

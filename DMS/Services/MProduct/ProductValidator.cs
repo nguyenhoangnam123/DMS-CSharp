@@ -65,7 +65,7 @@ namespace DMS.Services.MProduct
             {
                 Product.AddError(nameof(ProductValidator), nameof(Product.Name), ErrorCode.NameEmpty);
             }
-            if (Product.Name.Length > 3000)
+            else if (Product.Name.Length > 3000)
             {
                 Product.AddError(nameof(ProductValidator), nameof(Product.Name), ErrorCode.NameOverLength);
             }

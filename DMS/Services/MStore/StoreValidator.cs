@@ -83,23 +83,28 @@ namespace DMS.Services.MStore
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeEmpty);
             }
-            var Code = Store.Code;
-            if (Store.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Store.Code))
+            else
             {
-                Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeHasSpecialCharacter);
-            }
-            StoreFilter StoreFilter = new StoreFilter
-            {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { NotEqual = Store.Id },
-                Code = new StringFilter { Equal = Store.Code },
-                Selects = StoreSelect.Code
-            };
+                var Code = Store.Code;
+                if (Store.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Store.Code))
+                {
+                    Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeHasSpecialCharacter);
+                }
 
-            int count = await UOW.StoreRepository.Count(StoreFilter);
-            if (count != 0)
-                Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeExisted);
+                StoreFilter StoreFilter = new StoreFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { NotEqual = Store.Id },
+                    Code = new StringFilter { Equal = Store.Code },
+                    Selects = StoreSelect.Code
+                };
+
+                int count = await UOW.StoreRepository.Count(StoreFilter);
+                if (count != 0)
+                    Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeExisted);
+            }
+            
             return Store.IsValidated;
         }
         #endregion
@@ -111,7 +116,7 @@ namespace DMS.Services.MStore
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Name), ErrorCode.NameEmpty);
             }
-            if (Store.Name.Length > 255)
+            else if (Store.Name.Length > 255)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Name), ErrorCode.NameOverLength);
             }
@@ -305,7 +310,7 @@ namespace DMS.Services.MStore
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Address), ErrorCode.AddressEmpty);
             }
-            if (Store.Address.Length > 255)
+            else if (Store.Address.Length > 255)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Address), ErrorCode.AddressOverLength);
             }
@@ -336,7 +341,7 @@ namespace DMS.Services.MStore
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.OwnerName), ErrorCode.OwnerNameEmpty);
             }
-            if (Store.OwnerName.Length > 255)
+            else if (Store.OwnerName.Length > 255)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.OwnerName), ErrorCode.OwnerNameOverLength);
             }
@@ -348,7 +353,7 @@ namespace DMS.Services.MStore
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.OwnerPhone), ErrorCode.OwnerPhoneEmpty);
             }
-            if (Store.OwnerPhone.Length > 255)
+            else if (Store.OwnerPhone.Length > 255)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.OwnerPhone), ErrorCode.OwnerPhoneOverLength);
             }

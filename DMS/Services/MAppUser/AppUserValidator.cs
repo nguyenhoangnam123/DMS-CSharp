@@ -80,7 +80,7 @@ namespace DMS.Services.MAppUser
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.DisplayName), ErrorCode.DisplayNameEmpty);
             }
-            if (AppUser.DisplayName.Length > 255)
+            else if (AppUser.DisplayName.Length > 255)
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.DisplayName), ErrorCode.DisplayNameOverLength);
             }
@@ -110,7 +110,7 @@ namespace DMS.Services.MAppUser
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Phone), ErrorCode.PhoneEmpty);
             }
-            if (AppUser.Phone.Length > 255)
+            else if (AppUser.Phone.Length > 255)
             {
                 AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.Phone), ErrorCode.PhoneOverLength);
             }

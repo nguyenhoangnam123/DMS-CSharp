@@ -58,23 +58,27 @@ namespace DMS.Services.MStoreType
             {
                 StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Code), ErrorCode.CodeEmpty);
             }
-            var Code = StoreType.Code;
-            if (StoreType.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(StoreType.Code))
+            else 
             {
-                StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Code), ErrorCode.CodeHasSpecialCharacter);
-            }
-            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter
-            {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { NotEqual = StoreType.Id },
-                Code = new StringFilter { Equal = StoreType.Code },
-                Selects = StoreTypeSelect.Code
-            };
+                var Code = StoreType.Code;
+                if (StoreType.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(StoreType.Code))
+                {
+                    StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Code), ErrorCode.CodeHasSpecialCharacter);
+                }
 
-            int count = await UOW.StoreTypeRepository.Count(StoreTypeFilter);
-            if (count != 0)
-                StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Code), ErrorCode.CodeExisted);
+                StoreTypeFilter StoreTypeFilter = new StoreTypeFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { NotEqual = StoreType.Id },
+                    Code = new StringFilter { Equal = StoreType.Code },
+                    Selects = StoreTypeSelect.Code
+                };
+
+                int count = await UOW.StoreTypeRepository.Count(StoreTypeFilter);
+                if (count != 0)
+                    StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Code), ErrorCode.CodeExisted);
+            }
             return StoreType.IsValidated;
         }
         public async Task<bool> ValidateName(StoreType StoreType)
@@ -83,7 +87,7 @@ namespace DMS.Services.MStoreType
             {
                 StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Name), ErrorCode.NameEmpty);
             }
-            if (StoreType.Name.Length > 255)
+            else if (StoreType.Name.Length > 255)
             {
                 StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Name), ErrorCode.NameOverLength);
             }

@@ -79,7 +79,7 @@ namespace DMS.Services.MWard
                 Ward.AddError(nameof(WardValidator), nameof(Ward.Name), ErrorCode.NameEmpty);
                 return false;
             }
-            if (Ward.Name.Length > 255)
+            else if (Ward.Name.Length > 255)
             {
                 Ward.AddError(nameof(WardValidator), nameof(Ward.Name), ErrorCode.NameOverLength);
                 return false;
