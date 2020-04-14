@@ -20,7 +20,7 @@ WORKDIR /app
 
 COPY --from=consul:latest /bin/consul /usr/local/bin/consul
 
-COPY --from=envoyproxy/envoy-alpine /usr/local/bin/envoy /usr/local/bin/envoy
+COPY --from=envoyproxy/envoy-alpine:v1.14.1 /usr/local/bin/envoy /usr/local/bin/envoy
 
 COPY /consul /consul/config 
 
