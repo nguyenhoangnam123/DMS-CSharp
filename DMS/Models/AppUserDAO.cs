@@ -16,15 +16,22 @@ namespace DMS.Models
         public string Username { get; set; }
         public string Password { get; set; }
         public string DisplayName { get; set; }
-        public long SexId { get; set; }
         public string Address { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public string Position { get; set; }
+        public string Department { get; set; }
+        public long? OrganizationId { get; set; }
+        public long? SexId { get; set; }
         public long StatusId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public string Avatar { get; set; }
+        public DateTime? Birthday { get; set; }
+        public Guid RowId { get; set; }
 
+        public virtual OrganizationDAO Organization { get; set; }
         public virtual SexDAO Sex { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }

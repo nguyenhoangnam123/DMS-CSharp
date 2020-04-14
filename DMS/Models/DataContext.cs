@@ -10,8 +10,10 @@ namespace DMS.Models
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
         public virtual DbSet<DistrictDAO> District { get; set; }
+        public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
+        public virtual DbSet<InventoryDAO> Inventory { get; set; }
         public virtual DbSet<ItemDAO> Item { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
@@ -44,6 +46,7 @@ namespace DMS.Models
         public virtual DbSet<VariationDAO> Variation { get; set; }
         public virtual DbSet<VariationGroupingDAO> VariationGrouping { get; set; }
         public virtual DbSet<WardDAO> Ward { get; set; }
+        public virtual DbSet<WarehouseDAO> Warehouse { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -62,13 +65,17 @@ namespace DMS.Models
         {
             modelBuilder.Entity<AppUserDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Address).HasMaxLength(500);
+
+                entity.Property(e => e.Avatar).HasMaxLength(4000);
+
+                entity.Property(e => e.Birthday).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Department).HasMaxLength(500);
 
                 entity.Property(e => e.DisplayName).HasMaxLength(500);
 
@@ -80,16 +87,22 @@ namespace DMS.Models
 
                 entity.Property(e => e.Phone).HasMaxLength(500);
 
+                entity.Property(e => e.Position).HasMaxLength(500);
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Username)
                     .IsRequired()
                     .HasMaxLength(500);
 
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.AppUsers)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .HasConstraintName("FK_AppUser_Organization");
+
                 entity.HasOne(d => d.Sex)
                     .WithMany(p => p.AppUsers)
                     .HasForeignKey(d => d.SexId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AppUser_Sex");
 
                 entity.HasOne(d => d.Status)
@@ -144,8 +157,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<DistrictDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Code).HasMaxLength(500);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -173,6 +184,17 @@ namespace DMS.Models
                     .HasConstraintName("FK_District_Status");
             });
 
+            modelBuilder.Entity<EventMessageDAO>(entity =>
+            {
+                entity.Property(e => e.Content).IsRequired();
+
+                entity.Property(e => e.EntityName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Time).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<FieldDAO>(entity =>
             {
                 entity.ToTable("Field", "PER");
@@ -194,6 +216,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ImageDAO>(entity =>
             {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -207,6 +231,27 @@ namespace DMS.Models
                 entity.Property(e => e.Url)
                     .IsRequired()
                     .HasMaxLength(4000);
+            });
+
+            modelBuilder.Entity<InventoryDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.Inventories)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WarehouseProductMapping_Product");
+
+                entity.HasOne(d => d.Warehouse)
+                    .WithMany(p => p.Inventories)
+                    .HasForeignKey(d => d.WarehouseId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WarehouseProductMapping_Warehouse");
             });
 
             modelBuilder.Entity<ItemDAO>(entity =>
@@ -255,8 +300,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<OrganizationDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Address).HasMaxLength(500);
 
                 entity.Property(e => e.Code)
@@ -559,8 +602,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<ProvinceDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -1108,8 +1149,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<WardDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -1137,6 +1176,46 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Ward_Status");
+            });
+
+            modelBuilder.Entity<WarehouseDAO>(entity =>
+            {
+                entity.Property(e => e.Address).HasMaxLength(500);
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.District)
+                    .WithMany(p => p.Warehouses)
+                    .HasForeignKey(d => d.DistrictId)
+                    .HasConstraintName("FK_Warehouse_District");
+
+                entity.HasOne(d => d.Province)
+                    .WithMany(p => p.Warehouses)
+                    .HasForeignKey(d => d.ProvinceId)
+                    .HasConstraintName("FK_Warehouse_Province");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Warehouses)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Warehouse_Status");
+
+                entity.HasOne(d => d.Ward)
+                    .WithMany(p => p.Warehouses)
+                    .HasForeignKey(d => d.WardId)
+                    .HasConstraintName("FK_Warehouse_Ward");
             });
 
             OnModelCreatingPartial(modelBuilder);

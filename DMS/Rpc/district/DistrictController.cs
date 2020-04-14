@@ -21,12 +21,7 @@ namespace DMS.Rpc.district
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
         public const string Export = Default + "/export";
-        public const string BulkDelete = Default + "/bulk-delete";
 
         public const string SingleListProvince = Default + "/single-list-province";
         public const string SingleListStatus = Default + "/single-list-status";
@@ -98,78 +93,6 @@ namespace DMS.Rpc.district
             return new District_DistrictDTO(District);
         }
 
-        [Route(DistrictRoute.Create), HttpPost]
-        public async Task<ActionResult<District_DistrictDTO>> Create([FromBody] District_DistrictDTO District_DistrictDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (!await HasPermission(District_DistrictDTO.Id))
-                return Forbid();
-
-            District District = ConvertDTOToEntity(District_DistrictDTO);
-            District = await DistrictService.Create(District);
-            District_DistrictDTO = new District_DistrictDTO(District);
-            if (District.IsValidated)
-                return District_DistrictDTO;
-            else
-                return BadRequest(District_DistrictDTO);
-        }
-
-        [Route(DistrictRoute.Update), HttpPost]
-        public async Task<ActionResult<District_DistrictDTO>> Update([FromBody] District_DistrictDTO District_DistrictDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (!await HasPermission(District_DistrictDTO.Id))
-                return Forbid();
-
-            District District = ConvertDTOToEntity(District_DistrictDTO);
-            District = await DistrictService.Update(District);
-            District_DistrictDTO = new District_DistrictDTO(District);
-            if (District.IsValidated)
-                return District_DistrictDTO;
-            else
-                return BadRequest(District_DistrictDTO);
-        }
-
-        [Route(DistrictRoute.Delete), HttpPost]
-        public async Task<ActionResult<District_DistrictDTO>> Delete([FromBody] District_DistrictDTO District_DistrictDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (!await HasPermission(District_DistrictDTO.Id))
-                return Forbid();
-
-            District District = ConvertDTOToEntity(District_DistrictDTO);
-            District = await DistrictService.Delete(District);
-            District_DistrictDTO = new District_DistrictDTO(District);
-            if (District.IsValidated)
-                return District_DistrictDTO;
-            else
-                return BadRequest(District_DistrictDTO);
-        }
-
-        [Route(DistrictRoute.Import), HttpPost]
-        public async Task<ActionResult<List<District_DistrictDTO>>> Import(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
-
-            List<District> Districts = await DistrictService.Import(DataFile);
-            List<District_DistrictDTO> District_DistrictDTOs = Districts
-                .Select(c => new District_DistrictDTO(c)).ToList();
-            return District_DistrictDTOs;
-        }
-
         [Route(DistrictRoute.Export), HttpPost]
         public async Task<ActionResult> Export([FromBody] District_DistrictFilterDTO District_DistrictFilterDTO)
         {
@@ -183,23 +106,6 @@ namespace DMS.Rpc.district
             {
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
-        }
-
-        [Route(DistrictRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DistrictFilter DistrictFilter = new DistrictFilter();
-            DistrictFilter.Id = new IdFilter { In = Ids };
-            DistrictFilter.Selects = DistrictSelect.Id;
-            DistrictFilter.Skip = 0;
-            DistrictFilter.Take = int.MaxValue;
-
-            List<District> Districts = await DistrictService.List(DistrictFilter);
-            Districts = await DistrictService.BulkDelete(Districts);
-            return true;
         }
 
         private async Task<bool> HasPermission(long Id)

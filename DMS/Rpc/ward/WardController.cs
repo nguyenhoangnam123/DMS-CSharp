@@ -21,12 +21,7 @@ namespace DMS.Rpc.ward
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
         public const string Export = Default + "/export";
-        public const string BulkDelete = Default + "/bulk-delete";
 
         public const string SingleListDistrict = Default + "/single-list-district";
         public const string SingleListStatus = Default + "/single-list-status";
@@ -98,78 +93,6 @@ namespace DMS.Rpc.ward
             return new Ward_WardDTO(Ward);
         }
 
-        [Route(WardRoute.Create), HttpPost]
-        public async Task<ActionResult<Ward_WardDTO>> Create([FromBody] Ward_WardDTO Ward_WardDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (!await HasPermission(Ward_WardDTO.Id))
-                return Forbid();
-
-            Ward Ward = ConvertDTOToEntity(Ward_WardDTO);
-            Ward = await WardService.Create(Ward);
-            Ward_WardDTO = new Ward_WardDTO(Ward);
-            if (Ward.IsValidated)
-                return Ward_WardDTO;
-            else
-                return BadRequest(Ward_WardDTO);
-        }
-
-        [Route(WardRoute.Update), HttpPost]
-        public async Task<ActionResult<Ward_WardDTO>> Update([FromBody] Ward_WardDTO Ward_WardDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (!await HasPermission(Ward_WardDTO.Id))
-                return Forbid();
-
-            Ward Ward = ConvertDTOToEntity(Ward_WardDTO);
-            Ward = await WardService.Update(Ward);
-            Ward_WardDTO = new Ward_WardDTO(Ward);
-            if (Ward.IsValidated)
-                return Ward_WardDTO;
-            else
-                return BadRequest(Ward_WardDTO);
-        }
-
-        [Route(WardRoute.Delete), HttpPost]
-        public async Task<ActionResult<Ward_WardDTO>> Delete([FromBody] Ward_WardDTO Ward_WardDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (!await HasPermission(Ward_WardDTO.Id))
-                return Forbid();
-
-            Ward Ward = ConvertDTOToEntity(Ward_WardDTO);
-            Ward = await WardService.Delete(Ward);
-            Ward_WardDTO = new Ward_WardDTO(Ward);
-            if (Ward.IsValidated)
-                return Ward_WardDTO;
-            else
-                return BadRequest(Ward_WardDTO);
-        }
-
-        [Route(WardRoute.Import), HttpPost]
-        public async Task<ActionResult<List<Ward_WardDTO>>> Import(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
-
-            List<Ward> Wards = await WardService.Import(DataFile);
-            List<Ward_WardDTO> Ward_WardDTOs = Wards
-                .Select(c => new Ward_WardDTO(c)).ToList();
-            return Ward_WardDTOs;
-        }
-
         [Route(WardRoute.Export), HttpPost]
         public async Task<ActionResult> Export([FromBody] Ward_WardFilterDTO Ward_WardFilterDTO)
         {
@@ -184,24 +107,6 @@ namespace DMS.Rpc.ward
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-
-        [Route(WardRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            WardFilter WardFilter = new WardFilter();
-            WardFilter.Id = new IdFilter { In = Ids };
-            WardFilter.Selects = WardSelect.Id;
-            WardFilter.Skip = 0;
-            WardFilter.Take = int.MaxValue;
-
-            List<Ward> Wards = await WardService.List(WardFilter);
-            Wards = await WardService.BulkDelete(Wards);
-            return true;
-        }
-
         private async Task<bool> HasPermission(long Id)
         {
             WardFilter WardFilter = new WardFilter();

@@ -80,23 +80,23 @@ namespace DMS.Handlers
             switch (path[0])
             {
                 case nameof(AppUser):
-                    AppUserHandler AppUserHandler = new AppUserHandler(UOW);
+                    AppUserHandler AppUserHandler = new AppUserHandler(context);
                     AppUserHandler.Handle(routingKey, content);
                     break;
                 case nameof(Organization):
-                    OrganizationHandler OrganizationHandler = new OrganizationHandler(UOW);
+                    OrganizationHandler OrganizationHandler = new OrganizationHandler(context);
                     OrganizationHandler.Handle(routingKey, content);
                     break;
                 case nameof(Province):
-                    ProvinceHandler ProvinceHandler = new ProvinceHandler(UOW);
+                    ProvinceHandler ProvinceHandler = new ProvinceHandler(context);
                     ProvinceHandler.Handle(routingKey, content);
                     break;
                 case nameof(District):
-                    DistrictHandler DistrictHandler = new DistrictHandler(UOW);
+                    DistrictHandler DistrictHandler = new DistrictHandler(context);
                     DistrictHandler.Handle(routingKey, content);
                     break;
                 case nameof(Ward):
-                    WardHandler WardHandler = new WardHandler(UOW);
+                    WardHandler WardHandler = new WardHandler(context);
                     WardHandler.Handle(routingKey, content);
                     break;
             }

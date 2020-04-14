@@ -11,14 +11,20 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+        public string NewPassword { get; set; }
+        public string Token { get; set; }
         public string DisplayName { get; set; }
         public string Address { get; set; }
+        public string Avatar { get; set; }
+        public DateTime? Birthday { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public string Position { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
-        public long SexId { get; set; }
+        public long? SexId { get; set; }
         public long StatusId { get; set; }
+        public Guid RowId { get; set; }
         public Organization Organization { get; set; }
         public Sex Sex { get; set; }
         public Status Status { get; set; }
@@ -43,10 +49,12 @@ namespace DMS.Entities
         public StringFilter Address { get; set; }
         public StringFilter Email { get; set; }
         public StringFilter Phone { get; set; }
+        public StringFilter Position { get; set; }
         public StringFilter Department { get; set; }
         public IdFilter OrganizationId { get; set; }
         public IdFilter SexId { get; set; }
         public IdFilter StatusId { get; set; }
+        public DateFilter Birthday { get; set; }
         public List<AppUserFilter> OrFilter { get; set; }
         public AppUserOrder OrderBy { get; set; }
         public AppUserSelect Selects { get; set; }
@@ -62,10 +70,12 @@ namespace DMS.Entities
         Address = 4,
         Email = 5,
         Phone = 6,
-        Department = 7,
-        Organization = 8,
-        Sex = 9,
-        Status = 10,
+        Position = 7,
+        Department = 8,
+        Organization = 9,
+        Sex = 10,
+        Status = 11,
+        Birthday = 12,
     }
 
     [Flags]
@@ -79,9 +89,12 @@ namespace DMS.Entities
         Address = E._4,
         Email = E._5,
         Phone = E._6,
-        Department = E._7,
-        Organization = E._8,
-        Sex = E._9,
-        Status = E._10,
+        Position = E._7,
+        Department = E._8,
+        Organization = E._9,
+        Sex = E._10,
+        Status = E._11,
+        Birthday = E._12,
+        RowId = E._13
     }
 }

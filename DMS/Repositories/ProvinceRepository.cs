@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(ProvinceFilter ProvinceFilter);
         Task<List<Province>> List(ProvinceFilter ProvinceFilter);
         Task<Province> Get(long Id);
-        Task<bool> Create(Province Province);
-        Task<bool> Update(Province Province);
-        Task<bool> Delete(Province Province);
-        Task<bool> BulkMerge(List<Province> Provinces);
-        Task<bool> BulkDelete(List<Province> Provinces);
     }
     public class ProvinceRepository : IProvinceRepository
     {
@@ -133,17 +128,18 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 } : null,
-                Districts = filter.Selects.Contains(ProvinceSelect.Districts) && q.Districts == null ? null : 
+                Districts = filter.Selects.Contains(ProvinceSelect.Districts) && q.Districts == null ? null :
                 q.Districts.Select(p => new District
                 {
                     Name = p.Name,
                     Code = p.Code,
-                    Wards = p.Wards.Select(w => new Ward 
-                    { 
+                    Wards = p.Wards.Select(w => new Ward
+                    {
                         Name = w.Name,
                         Code = w.Code,
                     }).ToList(),
                 }).ToList(),
+                RowId = filter.Selects.Contains(ProvinceSelect.RowId) ? q.RowId : default(Guid)
             }).ToListAsync();
             return Provinces;
         }
@@ -158,7 +154,7 @@ namespace DMS.Repositories
         public async Task<List<Province>> List(ProvinceFilter filter)
         {
             if (filter == null) return new List<Province>();
-            IQueryable<ProvinceDAO> ProvinceDAOs = DataContext.Province.AsNoTracking();
+            IQueryable<ProvinceDAO> ProvinceDAOs = DataContext.Province;
             ProvinceDAOs = DynamicFilter(ProvinceDAOs, filter);
             ProvinceDAOs = DynamicOrder(ProvinceDAOs, filter);
             List<Province> Provinces = await DynamicSelect(ProvinceDAOs, filter);
@@ -167,8 +163,7 @@ namespace DMS.Repositories
 
         public async Task<Province> Get(long Id)
         {
-            Province Province = await DataContext.Province.AsNoTracking()
-                .Where(x => x.Id == Id).Select(x => new Province()
+            Province Province = await DataContext.Province.Where(x => x.Id == Id).AsNoTracking().Select(x => new Province()
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -188,76 +183,5 @@ namespace DMS.Repositories
 
             return Province;
         }
-        public async Task<bool> Create(Province Province)
-        {
-            ProvinceDAO ProvinceDAO = new ProvinceDAO();
-            ProvinceDAO.Id = Province.Id;
-            ProvinceDAO.Code = Province.Code;
-            ProvinceDAO.Name = Province.Name;
-            ProvinceDAO.Priority = Province.Priority;
-            ProvinceDAO.StatusId = Province.StatusId;
-            ProvinceDAO.CreatedAt = StaticParams.DateTimeNow;
-            ProvinceDAO.UpdatedAt = StaticParams.DateTimeNow;
-            DataContext.Province.Add(ProvinceDAO);
-            await DataContext.SaveChangesAsync();
-            Province.Id = ProvinceDAO.Id;
-            await SaveReference(Province);
-            return true;
-        }
-
-        public async Task<bool> Update(Province Province)
-        {
-            ProvinceDAO ProvinceDAO = DataContext.Province.Where(x => x.Id == Province.Id || x.Code == Province.Code).FirstOrDefault();
-            if (ProvinceDAO == null)
-                return false;
-            ProvinceDAO.Id = Province.Id;
-            ProvinceDAO.Code = Province.Code;
-            ProvinceDAO.Name = Province.Name;
-            ProvinceDAO.Priority = Province.Priority;
-            ProvinceDAO.StatusId = Province.StatusId;
-            ProvinceDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(Province);
-            return true;
-        }
-
-        public async Task<bool> Delete(Province Province)
-        {
-            await DataContext.Province.Where(x => x.Id == Province.Id).UpdateFromQueryAsync(x => new ProvinceDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<Province> Provinces)
-        {
-            List<ProvinceDAO> ProvinceDAOs = new List<ProvinceDAO>();
-            foreach (Province Province in Provinces)
-            {
-                ProvinceDAO ProvinceDAO = new ProvinceDAO();
-                ProvinceDAO.Id = Province.Id;
-                ProvinceDAO.Code = Province.Code;
-                ProvinceDAO.Name = Province.Name;
-                ProvinceDAO.Priority = Province.Priority;
-                ProvinceDAO.StatusId = Province.StatusId;
-                ProvinceDAO.CreatedAt = StaticParams.DateTimeNow;
-                ProvinceDAO.UpdatedAt = StaticParams.DateTimeNow;
-                ProvinceDAOs.Add(ProvinceDAO);
-            }
-            await DataContext.BulkMergeAsync(ProvinceDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<Province> Provinces)
-        {
-            List<long> Ids = Provinces.Select(x => x.Id).ToList();
-            await DataContext.Province
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new ProvinceDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        private async Task SaveReference(Province Province)
-        {
-        }
-
     }
 }

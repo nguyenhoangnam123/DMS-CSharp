@@ -6,7 +6,7 @@ using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class Ward : DataEntity,  IEquatable<Ward>
+    public class Ward : DataEntity, IEquatable<Ward>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -14,6 +14,7 @@ namespace DMS.Entities
         public long? Priority { get; set; }
         public long DistrictId { get; set; }
         public long StatusId { get; set; }
+        public Guid RowId { get; set; }
         public District District { get; set; }
         public Status Status { get; set; }
 
@@ -36,8 +37,8 @@ namespace DMS.Entities
         public IdFilter DistrictId { get; set; }
         public IdFilter StatusId { get; set; }
         public List<WardFilter> OrFilter { get; set; }
-        public WardOrder OrderBy {get; set;}
-        public WardSelect Selects {get; set;}
+        public WardOrder OrderBy { get; set; }
+        public WardSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -52,7 +53,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum WardSelect:long
+    public enum WardSelect : long
     {
         ALL = E.ALL,
         Id = E._0,
@@ -61,5 +62,6 @@ namespace DMS.Entities
         Priority = E._3,
         District = E._4,
         Status = E._5,
+        RowId = E._6
     }
 }

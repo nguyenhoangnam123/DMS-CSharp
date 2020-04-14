@@ -19,9 +19,13 @@ namespace DMS.Entities
         public string Address { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
+        public Guid RowId { get; set; }
         public Organization Parent { get; set; }
         public Status Status { get; set; }
-        public List<Store> Stores { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime DeletedAt { get; set; }
+        public List<AppUser> AppUsers { get; set; }
 
         public bool Equals(Organization other)
         {
@@ -82,5 +86,6 @@ namespace DMS.Entities
         Address = E._8,
         Latitude = E._9,
         Longitude = E._10,
+        RowId = E._11,
     }
 }

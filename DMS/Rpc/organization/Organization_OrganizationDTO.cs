@@ -20,7 +20,8 @@ namespace DMS.Rpc.organization
         public decimal? Longitude { get; set; }
         public Organization_OrganizationDTO Parent { get; set; }
         public Organization_StatusDTO Status { get; set; }
-        public List<Organization_StoreDTO> Stores { get; set; }
+        
+        public List<Organization_AppUserDTO> AppUsers { get; set; }
         public Organization_OrganizationDTO() { }
         public Organization_OrganizationDTO(Organization Organization)
         {
@@ -37,7 +38,8 @@ namespace DMS.Rpc.organization
             this.Longitude = Organization.Longitude;
             this.Parent = Organization.Parent == null ? null : new Organization_OrganizationDTO(Organization.Parent);
             this.Status = Organization.Status == null ? null : new Organization_StatusDTO(Organization.Status);
-            this.Stores = Organization.Stores?.Select(x => new Organization_StoreDTO(x)).ToList();
+            
+            this.AppUsers = Organization.AppUsers?.Select(x => new Organization_AppUserDTO(x)).ToList();
             this.Errors = Organization.Errors;
         }
     }

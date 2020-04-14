@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(OrganizationFilter OrganizationFilter);
         Task<List<Organization>> List(OrganizationFilter OrganizationFilter);
         Task<Organization> Get(long Id);
-        Task<bool> Create(Organization Organization);
-        Task<bool> Update(Organization Organization);
-        Task<bool> Delete(Organization Organization);
-        Task<bool> BulkMerge(List<Organization> Organizations);
-        Task<bool> BulkDelete(List<Organization> Organizations);
     }
     public class OrganizationRepository : IOrganizationRepository
     {
@@ -215,6 +210,7 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 } : null,
+                RowId = filter.Selects.Contains(OrganizationSelect.RowId) ? q.RowId : default(Guid)
             }).ToListAsync();
             return Organizations;
         }
@@ -238,103 +234,65 @@ namespace DMS.Repositories
 
         public async Task<Organization> Get(long Id)
         {
-            Organization Organization = await DataContext.Organization.AsNoTracking()
+            Organization Organization = await DataContext.Organization
+                .AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new Organization()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                ParentId = x.ParentId,
-                Path = x.Path,
-                Level = x.Level,
-                StatusId = x.StatusId,
-                Phone = x.Phone,
-                Address = x.Address,
-                Latitude = x.Latitude,
-                Longitude = x.Longitude,
-                Parent = x.Parent == null ? null : new Organization
-                {
-                    Id = x.Parent.Id,
-                    Code = x.Parent.Code,
-                    Name = x.Parent.Name,
-                    ParentId = x.Parent.ParentId,
-                    Path = x.Parent.Path,
-                    Level = x.Parent.Level,
-                    StatusId = x.Parent.StatusId,
-                    Phone = x.Parent.Phone,
-                    Address = x.Parent.Address,
-                    Latitude = x.Parent.Latitude,
-                    Longitude = x.Parent.Longitude,
-                },
-                Status = x.Status == null ? null : new Status
-                {
-                    Id = x.Status.Id,
-                    Code = x.Status.Code,
-                    Name = x.Status.Name,
-                },
-            }).FirstOrDefaultAsync();
-
-            if (Organization == null)
-                return null;
-            Organization.Stores = await DataContext.Store
-                .Where(x => x.OrganizationId == Organization.Id)
-                .Select(x => new Store
                 {
                     Id = x.Id,
                     Code = x.Code,
                     Name = x.Name,
-                    ParentStoreId = x.ParentStoreId,
-                    OrganizationId = x.OrganizationId,
-                    StoreTypeId = x.StoreTypeId,
-                    StoreGroupingId = x.StoreGroupingId,
-                    Telephone = x.Telephone,
-                    ProvinceId = x.ProvinceId,
-                    DistrictId = x.DistrictId,
-                    WardId = x.WardId,
+                    ParentId = x.ParentId,
+                    Path = x.Path,
+                    Level = x.Level,
+                    StatusId = x.StatusId,
+                    Phone = x.Phone,
                     Address = x.Address,
-                    DeliveryAddress = x.DeliveryAddress,
                     Latitude = x.Latitude,
                     Longitude = x.Longitude,
-                    OwnerName = x.OwnerName,
-                    OwnerPhone = x.OwnerPhone,
-                    OwnerEmail = x.OwnerEmail,
+                    Parent = x.Parent == null ? null : new Organization
+                    {
+                        Id = x.Parent.Id,
+                        Code = x.Parent.Code,
+                        Name = x.Parent.Name,
+                        ParentId = x.Parent.ParentId,
+                        Path = x.Parent.Path,
+                        Level = x.Parent.Level,
+                        StatusId = x.Parent.StatusId,
+                        Phone = x.Parent.Phone,
+                        Address = x.Parent.Address,
+                        Latitude = x.Parent.Latitude,
+                        Longitude = x.Parent.Longitude,
+                    },
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
+                }).FirstOrDefaultAsync();
+
+            if (Organization == null)
+                return null;
+            Organization.AppUsers = await DataContext.AppUser
+                .Where(x => x.OrganizationId == Organization.Id)
+                .Select(x => new AppUser
+                {
+                    Id = x.Id,
+                    Username = x.Username,
+                    Password = x.Password,
+                    DisplayName = x.DisplayName,
+                    Address = x.Address,
+                    Email = x.Email,
+                    Phone = x.Phone,
+                    Department = x.Department,
+                    OrganizationId = x.OrganizationId,
+                    SexId = x.SexId,
                     StatusId = x.StatusId,
-                    District = new District
+                    Sex = new Sex
                     {
-                        Id = x.District.Id,
-                        Name = x.District.Name,
-                        Priority = x.District.Priority,
-                        ProvinceId = x.District.ProvinceId,
-                        StatusId = x.District.StatusId,
-                    },
-                    ParentStore = new Store
-                    {
-                        Id = x.ParentStore.Id,
-                        Code = x.ParentStore.Code,
-                        Name = x.ParentStore.Name,
-                        ParentStoreId = x.ParentStore.ParentStoreId,
-                        OrganizationId = x.ParentStore.OrganizationId,
-                        StoreTypeId = x.ParentStore.StoreTypeId,
-                        StoreGroupingId = x.ParentStore.StoreGroupingId,
-                        Telephone = x.ParentStore.Telephone,
-                        ProvinceId = x.ParentStore.ProvinceId,
-                        DistrictId = x.ParentStore.DistrictId,
-                        WardId = x.ParentStore.WardId,
-                        Address = x.ParentStore.Address,
-                        DeliveryAddress = x.ParentStore.DeliveryAddress,
-                        Latitude = x.ParentStore.Latitude,
-                        Longitude = x.ParentStore.Longitude,
-                        OwnerName = x.ParentStore.OwnerName,
-                        OwnerPhone = x.ParentStore.OwnerPhone,
-                        OwnerEmail = x.ParentStore.OwnerEmail,
-                        StatusId = x.ParentStore.StatusId,
-                    },
-                    Province = new Province
-                    {
-                        Id = x.Province.Id,
-                        Name = x.Province.Name,
-                        Priority = x.Province.Priority,
-                        StatusId = x.Province.StatusId,
+                        Id = x.Sex.Id,
+                        Code = x.Sex.Code,
+                        Name = x.Sex.Name,
                     },
                     Status = new Status
                     {
@@ -342,220 +300,9 @@ namespace DMS.Repositories
                         Code = x.Status.Code,
                         Name = x.Status.Name,
                     },
-                    StoreGrouping = new StoreGrouping
-                    {
-                        Id = x.StoreGrouping.Id,
-                        Code = x.StoreGrouping.Code,
-                        Name = x.StoreGrouping.Name,
-                        ParentId = x.StoreGrouping.ParentId,
-                        Path = x.StoreGrouping.Path,
-                        Level = x.StoreGrouping.Level,
-                    },
-                    StoreType = new StoreType
-                    {
-                        Id = x.StoreType.Id,
-                        Code = x.StoreType.Code,
-                        Name = x.StoreType.Name,
-                        StatusId = x.StoreType.StatusId,
-                    },
-                    Ward = new Ward
-                    {
-                        Id = x.Ward.Id,
-                        Name = x.Ward.Name,
-                        Priority = x.Ward.Priority,
-                        DistrictId = x.Ward.DistrictId,
-                        StatusId = x.Ward.StatusId,
-                    },
                 }).ToListAsync();
 
             return Organization;
-        }
-        public async Task<bool> Create(Organization Organization)
-        {
-            OrganizationDAO OrganizationDAO = new OrganizationDAO();
-            OrganizationDAO.Id = Organization.Id;
-            OrganizationDAO.Code = Organization.Code;
-            OrganizationDAO.Name = Organization.Name;
-            OrganizationDAO.ParentId = Organization.ParentId;
-            OrganizationDAO.Path = Organization.Path;
-            OrganizationDAO.Level = Organization.Level;
-            OrganizationDAO.StatusId = Organization.StatusId;
-            OrganizationDAO.Phone = Organization.Phone;
-            OrganizationDAO.Address = Organization.Address;
-            OrganizationDAO.Latitude = Organization.Latitude;
-            OrganizationDAO.Longitude = Organization.Longitude;
-            OrganizationDAO.CreatedAt = StaticParams.DateTimeNow;
-            OrganizationDAO.UpdatedAt = StaticParams.DateTimeNow;
-            DataContext.Organization.Add(OrganizationDAO);
-            await DataContext.SaveChangesAsync();
-            Organization.Id = OrganizationDAO.Id;
-            await SaveReference(Organization);
-            await BuildPath();
-            return true;
-        }
-
-        public async Task<bool> Update(Organization Organization)
-        {
-            OrganizationDAO OrganizationDAO = DataContext.Organization.Where(x => x.Id == Organization.Id).FirstOrDefault();
-            if (OrganizationDAO == null)
-                return false;
-            OrganizationDAO.Id = Organization.Id;
-            OrganizationDAO.Code = Organization.Code;
-            OrganizationDAO.Name = Organization.Name;
-            OrganizationDAO.ParentId = Organization.ParentId;
-            OrganizationDAO.Path = Organization.Path;
-            OrganizationDAO.Level = Organization.Level;
-            OrganizationDAO.StatusId = Organization.StatusId;
-            OrganizationDAO.Phone = Organization.Phone;
-            OrganizationDAO.Address = Organization.Address;
-            OrganizationDAO.Latitude = Organization.Latitude;
-            OrganizationDAO.Longitude = Organization.Longitude;
-            OrganizationDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(Organization);
-            await BuildPath();
-            return true;
-        }
-
-        public async Task<bool> Delete(Organization Organization)
-        {
-            OrganizationDAO OrganizationDAO = await DataContext.Organization.Where(x => x.Id == Organization.Id).FirstOrDefaultAsync();
-            await DataContext.Organization.Where(x => x.Path.StartsWith(OrganizationDAO.Id + ".")).UpdateFromQueryAsync(x => new OrganizationDAO { DeletedAt = StaticParams.DateTimeNow });
-            await DataContext.Organization.Where(x => x.Id == Organization.Id).UpdateFromQueryAsync(x => new OrganizationDAO { DeletedAt = StaticParams.DateTimeNow });
-            await BuildPath();
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<Organization> Organizations)
-        {
-            List<OrganizationDAO> OrganizationDAOs = new List<OrganizationDAO>();
-            foreach (Organization Organization in Organizations)
-            {
-                OrganizationDAO OrganizationDAO = new OrganizationDAO();
-                OrganizationDAO.Id = Organization.Id;
-                OrganizationDAO.Code = Organization.Code;
-                OrganizationDAO.Name = Organization.Name;
-                OrganizationDAO.ParentId = Organization.ParentId;
-                OrganizationDAO.Path = Organization.Path;
-                OrganizationDAO.Level = Organization.Level;
-                OrganizationDAO.StatusId = Organization.StatusId;
-                OrganizationDAO.Phone = Organization.Phone;
-                OrganizationDAO.Address = Organization.Address;
-                OrganizationDAO.Latitude = Organization.Latitude;
-                OrganizationDAO.Longitude = Organization.Longitude;
-                OrganizationDAO.CreatedAt = DateTime.Now;
-                OrganizationDAO.UpdatedAt = DateTime.Now;
-                OrganizationDAOs.Add(OrganizationDAO);
-            }
-            await DataContext.BulkMergeAsync(OrganizationDAOs);
-            await BuildPath();
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<Organization> Organizations)
-        {
-            List<long> Ids = Organizations.Select(x => x.Id).ToList();
-            await DataContext.Organization
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new OrganizationDAO { DeletedAt = StaticParams.DateTimeNow });
-            await BuildPath();
-            return true;
-        }
-
-        private async Task SaveReference(Organization Organization)
-        {
-            List<StoreDAO> StoreDAOs = await DataContext.Store
-                .Where(x => x.OrganizationId == Organization.Id).ToListAsync();
-            StoreDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
-            if (Organization.Stores != null)
-            {
-                foreach (Store Store in Organization.Stores)
-                {
-                    StoreDAO StoreDAO = StoreDAOs
-                        .Where(x => x.Id == Store.Id && x.Id != 0).FirstOrDefault();
-                    if (StoreDAO == null)
-                    {
-                        StoreDAO = new StoreDAO();
-                        StoreDAO.Id = Store.Id;
-                        StoreDAO.Code = Store.Code;
-                        StoreDAO.Name = Store.Name;
-                        StoreDAO.ParentStoreId = Store.ParentStoreId;
-                        StoreDAO.OrganizationId = Organization.Id;
-                        StoreDAO.StoreTypeId = Store.StoreTypeId;
-                        StoreDAO.StoreGroupingId = Store.StoreGroupingId;
-                        StoreDAO.Telephone = Store.Telephone;
-                        StoreDAO.ProvinceId = Store.ProvinceId;
-                        StoreDAO.DistrictId = Store.DistrictId;
-                        StoreDAO.WardId = Store.WardId;
-                        StoreDAO.Address = Store.Address;
-                        StoreDAO.DeliveryAddress = Store.DeliveryAddress;
-                        StoreDAO.Latitude = Store.Latitude;
-                        StoreDAO.Longitude = Store.Longitude;
-                        StoreDAO.OwnerName = Store.OwnerName;
-                        StoreDAO.OwnerPhone = Store.OwnerPhone;
-                        StoreDAO.OwnerEmail = Store.OwnerEmail;
-                        StoreDAO.StatusId = Store.StatusId;
-                        StoreDAOs.Add(StoreDAO);
-                        StoreDAO.CreatedAt = StaticParams.DateTimeNow;
-                        StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
-                        StoreDAO.DeletedAt = null;
-                    }
-                    else
-                    {
-                        StoreDAO.Id = Store.Id;
-                        StoreDAO.Code = Store.Code;
-                        StoreDAO.Name = Store.Name;
-                        StoreDAO.ParentStoreId = Store.ParentStoreId;
-                        StoreDAO.OrganizationId = Organization.Id;
-                        StoreDAO.StoreTypeId = Store.StoreTypeId;
-                        StoreDAO.StoreGroupingId = Store.StoreGroupingId;
-                        StoreDAO.Telephone = Store.Telephone;
-                        StoreDAO.ProvinceId = Store.ProvinceId;
-                        StoreDAO.DistrictId = Store.DistrictId;
-                        StoreDAO.WardId = Store.WardId;
-                        StoreDAO.Address = Store.Address;
-                        StoreDAO.DeliveryAddress = Store.DeliveryAddress;
-                        StoreDAO.Latitude = Store.Latitude;
-                        StoreDAO.Longitude = Store.Longitude;
-                        StoreDAO.OwnerName = Store.OwnerName;
-                        StoreDAO.OwnerPhone = Store.OwnerPhone;
-                        StoreDAO.OwnerEmail = Store.OwnerEmail;
-                        StoreDAO.StatusId = Store.StatusId;
-                        StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
-                        StoreDAO.DeletedAt = null;
-                    }
-                }
-                await DataContext.Store.BulkMergeAsync(StoreDAOs);
-            }
-        }
-
-        private async Task BuildPath()
-        {
-            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization
-                .Where(x => x.DeletedAt != null)
-                .ToListAsync();
-            Queue<OrganizationDAO> queue = new Queue<OrganizationDAO>();
-            OrganizationDAOs.ForEach(x =>
-            {
-                if (!x.ParentId.HasValue)
-                {
-                    x.Path = x.Id + ".";
-                    queue.Enqueue(x);
-                }
-            });
-            while (queue.Count > 0)
-            {
-                OrganizationDAO Parent = queue.Dequeue();
-                foreach (OrganizationDAO OrganizationDAO in OrganizationDAOs)
-                {
-                    if (OrganizationDAO.ParentId == Parent.Id)
-                    {
-                        OrganizationDAO.Path = Parent.Path + OrganizationDAO.Id + ".";
-                        queue.Enqueue(OrganizationDAO);
-                    }
-                }
-            }
-            await DataContext.BulkMergeAsync(OrganizationDAOs);
         }
     }
 }

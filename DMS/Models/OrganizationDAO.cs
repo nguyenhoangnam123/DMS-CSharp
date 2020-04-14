@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public OrganizationDAO()
         {
+            AppUsers = new HashSet<AppUserDAO>();
             InverseParent = new HashSet<OrganizationDAO>();
             Resellers = new HashSet<ResellerDAO>();
             Stores = new HashSet<StoreDAO>();
@@ -26,9 +27,11 @@ namespace DMS.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public Guid RowId { get; set; }
 
         public virtual OrganizationDAO Parent { get; set; }
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<AppUserDAO> AppUsers { get; set; }
         public virtual ICollection<OrganizationDAO> InverseParent { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }

@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(AppUserFilter AppUserFilter);
         Task<List<AppUser>> List(AppUserFilter AppUserFilter);
         Task<AppUser> Get(long Id);
-        Task<bool> Create(AppUser AppUser);
-        Task<bool> Update(AppUser AppUser);
-        Task<bool> Delete(AppUser AppUser);
-        Task<bool> BulkMerge(List<AppUser> AppUsers);
-        Task<bool> BulkDelete(List<AppUser> AppUsers);
     }
     public class AppUserRepository : IAppUserRepository
     {
@@ -51,6 +46,14 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.SexId != null)
                 query = query.Where(q => q.SexId, filter.SexId);
+            if (filter.Birthday != null)
+                query = query.Where(q => q.Birthday, filter.Birthday);
+            if (filter.Position != null)
+                query = query.Where(q => q.Position, filter.Position);
+            if (filter.Department != null)
+                query = query.Where(q => q.Department, filter.Department);
+            if (filter.OrganizationId != null)
+                query = query.Where(q => q.OrganizationId, filter.OrganizationId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -81,6 +84,14 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
                 if (filter.SexId != null)
                     queryable = queryable.Where(q => q.SexId, filter.SexId);
+                if (filter.Birthday != null)
+                    queryable = queryable.Where(q => q.Birthday, filter.Birthday);
+                if (filter.Position != null)
+                    queryable = queryable.Where(q => q.Position, filter.Position);
+                if (filter.Department != null)
+                    queryable = queryable.Where(q => q.Department, filter.Department);
+                if (filter.OrganizationId != null)
+                    queryable = queryable.Where(q => q.OrganizationId, filter.OrganizationId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -120,6 +131,18 @@ namespace DMS.Repositories
                         case AppUserOrder.Sex:
                             query = query.OrderBy(q => q.Sex);
                             break;
+                        case AppUserOrder.Birthday:
+                            query = query.OrderBy(q => q.Birthday);
+                            break;
+                        case AppUserOrder.Position:
+                            query = query.OrderBy(q => q.Position);
+                            break;
+                        case AppUserOrder.Department:
+                            query = query.OrderBy(q => q.Department);
+                            break;
+                        case AppUserOrder.Organization:
+                            query = query.OrderBy(q => q.OrganizationId);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -152,6 +175,18 @@ namespace DMS.Repositories
                         case AppUserOrder.Sex:
                             query = query.OrderByDescending(q => q.Sex);
                             break;
+                        case AppUserOrder.Birthday:
+                            query = query.OrderByDescending(q => q.Birthday);
+                            break;
+                        case AppUserOrder.Position:
+                            query = query.OrderByDescending(q => q.Position);
+                            break;
+                        case AppUserOrder.Department:
+                            query = query.OrderByDescending(q => q.Department);
+                            break;
+                        case AppUserOrder.Organization:
+                            query = query.OrderByDescending(q => q.OrganizationId);
+                            break;
                     }
                     break;
             }
@@ -172,6 +207,24 @@ namespace DMS.Repositories
                 Phone = filter.Selects.Contains(AppUserSelect.Phone) ? q.Phone : default(string),
                 StatusId = filter.Selects.Contains(AppUserSelect.Status) ? q.StatusId : default(long),
                 SexId = filter.Selects.Contains(AppUserSelect.Sex) ? q.SexId : default(long),
+                Birthday = filter.Selects.Contains(AppUserSelect.Birthday) ? q.Birthday : default(DateTime),
+                Position = filter.Selects.Contains(AppUserSelect.Position) ? q.Position : default(string),
+                Department = filter.Selects.Contains(AppUserSelect.Department) ? q.Department : default(string),
+                OrganizationId = filter.Selects.Contains(AppUserSelect.Organization) ? q.OrganizationId : default(long),
+                Organization = filter.Selects.Contains(AppUserSelect.Organization) && q.Organization != null ? new Organization
+                {
+                    Id = q.Organization.Id,
+                    Code = q.Organization.Code,
+                    Name = q.Organization.Name,
+                    Address = q.Organization.Address,
+                    Phone = q.Organization.Phone,
+                    Path = q.Organization.Path,
+                    ParentId = q.Organization.ParentId,
+                    Latitude = q.Organization.Latitude,
+                    Longitude = q.Organization.Longitude,
+                    StatusId = q.Organization.StatusId,
+                    Level = q.Organization.Level
+                } : null,
                 Status = filter.Selects.Contains(AppUserSelect.Status) && q.Status != null ? new Status
                 {
                     Id = q.Status.Id,
@@ -184,6 +237,7 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 } : null,
+                RowId = filter.Selects.Contains(AppUserSelect.RowId) ? q.RowId : default(Guid)
             }).ToListAsync();
             return AppUsers;
         }
@@ -198,7 +252,7 @@ namespace DMS.Repositories
         public async Task<List<AppUser>> List(AppUserFilter filter)
         {
             if (filter == null) return new List<AppUser>();
-            IQueryable<AppUserDAO> AppUserDAOs = DataContext.AppUser.AsNoTracking();
+            IQueryable<AppUserDAO> AppUserDAOs = DataContext.AppUser;
             AppUserDAOs = DynamicFilter(AppUserDAOs, filter);
             AppUserDAOs = DynamicOrder(AppUserDAOs, filter);
             List<AppUser> AppUsers = await DynamicSelect(AppUserDAOs, filter);
@@ -207,17 +261,36 @@ namespace DMS.Repositories
 
         public async Task<AppUser> Get(long Id)
         {
-            AppUser AppUser = await DataContext.AppUser.Where(x => x.Id == Id).AsNoTracking().Select(x => new AppUser()
+            AppUser AppUser = await DataContext.AppUser.Where(x => x.Id == Id).Select(x => new AppUser()
             {
                 Id = x.Id,
                 Username = x.Username,
                 Password = x.Password,
                 DisplayName = x.DisplayName,
                 Address = x.Address,
+                Avatar = x.Avatar,
+                Birthday = x.Birthday,
                 Email = x.Email,
                 Phone = x.Phone,
                 StatusId = x.StatusId,
                 SexId = x.SexId,
+                Position = x.Position,
+                Department = x.Department,
+                OrganizationId = x.OrganizationId,
+                Organization = x.Organization == null ? null : new Organization
+                {
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    Address = x.Organization.Address,
+                    Phone = x.Organization.Phone,
+                    Path = x.Organization.Path,
+                    ParentId = x.Organization.ParentId,
+                    Latitude = x.Organization.Latitude,
+                    Longitude = x.Organization.Longitude,
+                    StatusId = x.Organization.StatusId,
+                    Level = x.Organization.Level
+                },
                 Status = x.Status == null ? null : new Status
                 {
                     Id = x.Status.Id,
@@ -249,104 +322,5 @@ namespace DMS.Repositories
 
             return AppUser;
         }
-        public async Task<bool> Create(AppUser AppUser)
-        {
-            AppUserDAO AppUserDAO = new AppUserDAO();
-            AppUserDAO.Id = AppUser.Id;
-            AppUserDAO.Username = AppUser.Username;
-            AppUserDAO.Password = AppUser.Password;
-            AppUserDAO.DisplayName = AppUser.DisplayName;
-            AppUserDAO.Address = AppUser.Address;
-            AppUserDAO.Email = AppUser.Email;
-            AppUserDAO.Phone = AppUser.Phone;
-            AppUserDAO.StatusId = AppUser.StatusId;
-            AppUserDAO.SexId = AppUser.SexId;
-            AppUserDAO.CreatedAt = StaticParams.DateTimeNow;
-            AppUserDAO.UpdatedAt = StaticParams.DateTimeNow;
-            AppUserDAO.SexId = AppUser.SexId;
-            DataContext.AppUser.Add(AppUserDAO);
-            await DataContext.SaveChangesAsync();
-            AppUser.Id = AppUserDAO.Id;
-            await SaveReference(AppUser);
-            return true;
-        }
-
-        public async Task<bool> Update(AppUser AppUser)
-        {
-            AppUserDAO AppUserDAO = DataContext.AppUser.Where(x => x.Id == AppUser.Id).FirstOrDefault();
-            if (AppUserDAO == null)
-                return false;
-            AppUserDAO.Id = AppUser.Id;
-            AppUserDAO.Username = AppUser.Username;
-            AppUserDAO.Password = AppUser.Password;
-            AppUserDAO.DisplayName = AppUser.DisplayName;
-            AppUserDAO.Address = AppUser.Address;
-            AppUserDAO.Email = AppUser.Email;
-            AppUserDAO.Phone = AppUser.Phone;
-            AppUserDAO.StatusId = AppUser.StatusId;
-            AppUserDAO.SexId = AppUser.SexId;
-            AppUserDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(AppUser);
-            return true;
-        }
-
-        public async Task<bool> Delete(AppUser AppUser)
-        {
-            await DataContext.AppUser.Where(x => x.Id == AppUser.Id).UpdateFromQueryAsync(x => new AppUserDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<AppUser> AppUsers)
-        {
-            List<AppUserDAO> AppUserDAOs = new List<AppUserDAO>();
-            foreach (AppUser AppUser in AppUsers)
-            {
-                AppUserDAO AppUserDAO = new AppUserDAO();
-                AppUserDAO.Id = AppUser.Id;
-                AppUserDAO.Username = AppUser.Username;
-                AppUserDAO.Password = AppUser.Password;
-                AppUserDAO.DisplayName = AppUser.DisplayName;
-                AppUserDAO.Address = AppUser.Address;
-                AppUserDAO.Email = AppUser.Email;
-                AppUserDAO.Phone = AppUser.Phone;
-                AppUserDAO.StatusId = AppUser.StatusId;
-                AppUserDAO.SexId = AppUser.SexId;
-                AppUserDAO.CreatedAt = StaticParams.DateTimeNow;
-                AppUserDAO.UpdatedAt = StaticParams.DateTimeNow;
-                AppUserDAOs.Add(AppUserDAO);
-            }
-            await DataContext.BulkMergeAsync(AppUserDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<AppUser> AppUsers)
-        {
-            List<long> Ids = AppUsers.Select(x => x.Id).ToList();
-            await DataContext.AppUser
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new AppUserDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        private async Task SaveReference(AppUser AppUser)
-        {
-            await DataContext.AppUserRoleMapping
-                .Where(x => x.AppUserId == AppUser.Id)
-                .DeleteFromQueryAsync();
-            List<AppUserRoleMappingDAO> AppUserRoleMappingDAOs = new List<AppUserRoleMappingDAO>();
-            if (AppUser.AppUserRoleMappings != null)
-            {
-                foreach (AppUserRoleMapping AppUserRoleMapping in AppUser.AppUserRoleMappings)
-                {
-                    AppUserRoleMappingDAO AppUserRoleMappingDAO = new AppUserRoleMappingDAO();
-                    AppUserRoleMappingDAO.AppUserId = AppUserRoleMapping.AppUserId;
-                    AppUserRoleMappingDAO.RoleId = AppUserRoleMapping.RoleId;
-                    AppUserRoleMappingDAOs.Add(AppUserRoleMappingDAO);
-                }
-                await DataContext.AppUserRoleMapping.BulkMergeAsync(AppUserRoleMappingDAOs);
-            }
-        }
-
     }
 }

@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(DistrictFilter DistrictFilter);
         Task<List<District>> List(DistrictFilter DistrictFilter);
         Task<District> Get(long Id);
-        Task<bool> Create(District District);
-        Task<bool> Update(District District);
-        Task<bool> Delete(District District);
-        Task<bool> BulkMerge(List<District> Districts);
-        Task<bool> BulkDelete(List<District> Districts);
     }
     public class DistrictRepository : IDistrictRepository
     {
@@ -33,11 +28,9 @@ namespace DMS.Repositories
         {
             if (filter == null)
                 return query.Where(q => false);
-            query = query.Where(q => q.DeletedAt == null);
+            query = query.Where(q => !q.DeletedAt.HasValue);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
-            if (filter.Code != null)
-                query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.Priority != null)
@@ -95,7 +88,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Priority);
                             break;
                         case DistrictOrder.Province:
-                            query = query.OrderBy(q => q.Province.Name);
+                            query = query.OrderBy(q => q.ProvinceId);
                             break;
                         case DistrictOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
@@ -118,7 +111,7 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Priority);
                             break;
                         case DistrictOrder.Province:
-                            query = query.OrderByDescending(q => q.Province.Name);
+                            query = query.OrderByDescending(q => q.ProvinceId);
                             break;
                         case DistrictOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
@@ -153,6 +146,7 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 } : null,
+                RowId = filter.Selects.Contains(DistrictSelect.RowId) ? q.RowId : default(Guid)
             }).ToListAsync();
             return Districts;
         }
@@ -167,7 +161,7 @@ namespace DMS.Repositories
         public async Task<List<District>> List(DistrictFilter filter)
         {
             if (filter == null) return new List<District>();
-            IQueryable<DistrictDAO> DistrictDAOs = DataContext.District.AsNoTracking();
+            IQueryable<DistrictDAO> DistrictDAOs = DataContext.District;
             DistrictDAOs = DynamicFilter(DistrictDAOs, filter);
             DistrictDAOs = DynamicOrder(DistrictDAOs, filter);
             List<District> Districts = await DynamicSelect(DistrictDAOs, filter);
@@ -176,8 +170,7 @@ namespace DMS.Repositories
 
         public async Task<District> Get(long Id)
         {
-            District District = await DataContext.District.AsNoTracking()
-                .Where(x => x.Id == Id).Select(x => new District()
+            District District = await DataContext.District.Where(x => x.Id == Id).AsNoTracking().Select(x => new District()
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -205,79 +198,5 @@ namespace DMS.Repositories
 
             return District;
         }
-        public async Task<bool> Create(District District)
-        {
-            DistrictDAO DistrictDAO = new DistrictDAO();
-            DistrictDAO.Id = District.Id;
-            DistrictDAO.Code = District.Code;
-            DistrictDAO.Name = District.Name;
-            DistrictDAO.Priority = District.Priority;
-            DistrictDAO.ProvinceId = District.ProvinceId;
-            DistrictDAO.StatusId = District.StatusId;
-            DistrictDAO.CreatedAt = StaticParams.DateTimeNow;
-            DistrictDAO.UpdatedAt = StaticParams.DateTimeNow;
-            DataContext.District.Add(DistrictDAO);
-            await DataContext.SaveChangesAsync();
-            District.Id = DistrictDAO.Id;
-            await SaveReference(District);
-            return true;
-        }
-
-        public async Task<bool> Update(District District)
-        {
-            DistrictDAO DistrictDAO = DataContext.District.Where(x => x.Id == District.Id).FirstOrDefault();
-            if (DistrictDAO == null)
-                return false;
-            DistrictDAO.Id = District.Id;
-            DistrictDAO.Code = District.Code;
-            DistrictDAO.Name = District.Name;
-            DistrictDAO.Priority = District.Priority;
-            DistrictDAO.ProvinceId = District.ProvinceId;
-            DistrictDAO.StatusId = District.StatusId;
-            DistrictDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(District);
-            return true;
-        }
-
-        public async Task<bool> Delete(District District)
-        {
-            await DataContext.District.Where(x => x.Id == District.Id).UpdateFromQueryAsync(x => new DistrictDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<District> Districts)
-        {
-            List<DistrictDAO> DistrictDAOs = new List<DistrictDAO>();
-            foreach (District District in Districts)
-            {
-                DistrictDAO DistrictDAO = new DistrictDAO();
-                DistrictDAO.Id = District.Id;
-                DistrictDAO.Code = District.Code;
-                DistrictDAO.Name = District.Name;
-                DistrictDAO.Priority = District.Priority;
-                DistrictDAO.ProvinceId = District.ProvinceId;
-                DistrictDAO.StatusId = District.StatusId;
-                DistrictDAO.CreatedAt = StaticParams.DateTimeNow;
-                DistrictDAO.UpdatedAt = StaticParams.DateTimeNow;
-                DistrictDAOs.Add(DistrictDAO);
-            }
-            await DataContext.BulkMergeAsync(DistrictDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<District> Districts)
-        {
-            List<long> Ids = Districts.Select(x => x.Id).ToList();
-            await DataContext.District
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new DistrictDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        private async Task SaveReference(District District)
-        {
-        }
-
     }
 }

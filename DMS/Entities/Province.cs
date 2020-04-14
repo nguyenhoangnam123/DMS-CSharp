@@ -6,13 +6,14 @@ using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class Province : DataEntity,  IEquatable<Province>
+    public class Province : DataEntity, IEquatable<Province>
     {
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public long? Priority { get; set; }
         public long StatusId { get; set; }
+        public Guid RowId { get; set; }
         public Status Status { get; set; }
         public List<District> Districts { get; set; }
         public bool Equals(Province other)
@@ -33,8 +34,8 @@ namespace DMS.Entities
         public LongFilter Priority { get; set; }
         public IdFilter StatusId { get; set; }
         public List<ProvinceFilter> OrFilter { get; set; }
-        public ProvinceOrder OrderBy {get; set;}
-        public ProvinceSelect Selects {get; set;}
+        public ProvinceOrder OrderBy { get; set; }
+        public ProvinceSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -48,7 +49,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum ProvinceSelect:long
+    public enum ProvinceSelect : long
     {
         ALL = E.ALL,
         Id = E._0,
@@ -56,6 +57,7 @@ namespace DMS.Entities
         Name = E._2,
         Priority = E._3,
         Status = E._4,
-        Districts = E._5
+        Districts = E._5,
+        RowId = E._6
     }
 }

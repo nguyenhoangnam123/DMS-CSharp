@@ -1,4 +1,5 @@
 ﻿using DMS.Entities;
+using DMS.Models;
 using DMS.Repositories;
 using Newtonsoft.Json;
 using System;
@@ -10,11 +11,11 @@ namespace DMS.Handlers
 {
     public class OrganizationHandler
     {
-        private IUOW UOW;
+        private DataContext context;
         private const string SyncKey = "Organization.Sync";
-        public OrganizationHandler(IUOW UOW)
+        public OrganizationHandler(DataContext context)
         {
-            this.UOW = UOW;
+            this.context = context;
         }
         public bool Handle(string routingKey, string json)
         {
@@ -22,7 +23,7 @@ namespace DMS.Handlers
             {
                 case SyncKey:
                     List<Organization> Organizations = JsonConvert.DeserializeObject<List<Organization>>(json);
-                    UOW.OrganizationRepository.BulkMerge(Organizations);
+                    context.Organization.BulkMerge(Organizations);
                     break;
             }
             return true;

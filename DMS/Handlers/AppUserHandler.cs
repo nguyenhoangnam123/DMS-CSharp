@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Models;
 using DMS.Repositories;
 using DMS.Services.MAppUser;
 using Newtonsoft.Json;
@@ -13,11 +14,11 @@ namespace DMS.Handlers
 {
     public class AppUserHandler
     {
-        private IUOW UOW;
+        private DataContext context;
         private const string SyncKey = "AppUser.Sync";
-        public AppUserHandler(IUOW UOW)
+        public AppUserHandler(DataContext context)
         {
-            this.UOW = UOW;
+            this.context = context;
         }
         public bool Handle(string routingKey, string json)
         {
@@ -25,7 +26,7 @@ namespace DMS.Handlers
             {
                 case SyncKey:
                     List<AppUser> appUsers = JsonConvert.DeserializeObject<List<AppUser>>(json);
-                    UOW.AppUserRepository.BulkMerge(appUsers);
+                    context.AppUser.BulkMerge(appUsers);
                     break;
             }
             return true;
