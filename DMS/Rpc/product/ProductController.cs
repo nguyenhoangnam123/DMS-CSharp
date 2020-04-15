@@ -1253,6 +1253,7 @@ namespace DMS.Rpc.product
             ProductFilter.OtherName = Product_ProductFilterDTO.OtherName;
             ProductFilter.TechnicalName = Product_ProductFilterDTO.TechnicalName;
             ProductFilter.Note = Product_ProductFilterDTO.Note;
+            ProductFilter.Search = Product_ProductFilterDTO.Search;
             return ProductFilter;
         }
 

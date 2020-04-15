@@ -70,6 +70,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.TechnicalName, filter.TechnicalName);
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+                query = query.Where(q => q.Code.Contains(filter.Search) || q.Name.Contains(filter.Search));
             query = OrFilter(query, filter);
             return query;
         }
@@ -349,75 +351,75 @@ namespace DMS.Repositories
         {
             Product Product = await DataContext.Product.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new Product()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                SupplierCode = x.SupplierCode,
-                Name = x.Name,
-                Description = x.Description,
-                ScanCode = x.ScanCode,
-                ProductTypeId = x.ProductTypeId,
-                SupplierId = x.SupplierId,
-                BrandId = x.BrandId,
-                UnitOfMeasureId = x.UnitOfMeasureId,
-                UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
-                SalePrice = x.SalePrice,
-                RetailPrice = x.RetailPrice,
-                TaxTypeId = x.TaxTypeId,
-                StatusId = x.StatusId,
-                Brand = x.Brand == null ? null : new Brand
                 {
-                    Id = x.Brand.Id,
-                    Code = x.Brand.Code,
-                    Name = x.Brand.Name,
-                    StatusId = x.Brand.StatusId,
-                },
-                ProductType = x.ProductType == null ? null : new ProductType
-                {
-                    Id = x.ProductType.Id,
-                    Code = x.ProductType.Code,
-                    Name = x.ProductType.Name,
-                    Description = x.ProductType.Description,
-                    StatusId = x.ProductType.StatusId,
-                },
-                Status = x.Status == null ? null : new Status
-                {
-                    Id = x.Status.Id,
-                    Code = x.Status.Code,
-                    Name = x.Status.Name,
-                },
-                Supplier = x.Supplier == null ? null : new Supplier
-                {
-                    Id = x.Supplier.Id,
-                    Code = x.Supplier.Code,
-                    Name = x.Supplier.Name,
-                    TaxCode = x.Supplier.TaxCode,
-                    StatusId = x.Supplier.StatusId,
-                },
-                TaxType = x.TaxType == null ? null : new TaxType
-                {
-                    Id = x.TaxType.Id,
-                    Code = x.TaxType.Code,
-                    Name = x.TaxType.Name,
-                    Percentage = x.TaxType.Percentage,
-                    StatusId = x.TaxType.StatusId,
-                },
-                UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
-                {
-                    Id = x.UnitOfMeasure.Id,
-                    Code = x.UnitOfMeasure.Code,
-                    Name = x.UnitOfMeasure.Name,
-                    Description = x.UnitOfMeasure.Description,
-                    StatusId = x.UnitOfMeasure.StatusId,
-                },
-                UnitOfMeasureGrouping = x.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
-                {
-                    Id = x.UnitOfMeasureGrouping.Id,
-                    Name = x.UnitOfMeasureGrouping.Name,
-                    UnitOfMeasureId = x.UnitOfMeasureGrouping.UnitOfMeasureId,
-                    StatusId = x.UnitOfMeasureGrouping.StatusId,
-                },
-            }).FirstOrDefaultAsync();
+                    Id = x.Id,
+                    Code = x.Code,
+                    SupplierCode = x.SupplierCode,
+                    Name = x.Name,
+                    Description = x.Description,
+                    ScanCode = x.ScanCode,
+                    ProductTypeId = x.ProductTypeId,
+                    SupplierId = x.SupplierId,
+                    BrandId = x.BrandId,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
+                    SalePrice = x.SalePrice,
+                    RetailPrice = x.RetailPrice,
+                    TaxTypeId = x.TaxTypeId,
+                    StatusId = x.StatusId,
+                    Brand = x.Brand == null ? null : new Brand
+                    {
+                        Id = x.Brand.Id,
+                        Code = x.Brand.Code,
+                        Name = x.Brand.Name,
+                        StatusId = x.Brand.StatusId,
+                    },
+                    ProductType = x.ProductType == null ? null : new ProductType
+                    {
+                        Id = x.ProductType.Id,
+                        Code = x.ProductType.Code,
+                        Name = x.ProductType.Name,
+                        Description = x.ProductType.Description,
+                        StatusId = x.ProductType.StatusId,
+                    },
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
+                    Supplier = x.Supplier == null ? null : new Supplier
+                    {
+                        Id = x.Supplier.Id,
+                        Code = x.Supplier.Code,
+                        Name = x.Supplier.Name,
+                        TaxCode = x.Supplier.TaxCode,
+                        StatusId = x.Supplier.StatusId,
+                    },
+                    TaxType = x.TaxType == null ? null : new TaxType
+                    {
+                        Id = x.TaxType.Id,
+                        Code = x.TaxType.Code,
+                        Name = x.TaxType.Name,
+                        Percentage = x.TaxType.Percentage,
+                        StatusId = x.TaxType.StatusId,
+                    },
+                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.UnitOfMeasure.Id,
+                        Code = x.UnitOfMeasure.Code,
+                        Name = x.UnitOfMeasure.Name,
+                        Description = x.UnitOfMeasure.Description,
+                        StatusId = x.UnitOfMeasure.StatusId,
+                    },
+                    UnitOfMeasureGrouping = x.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
+                    {
+                        Id = x.UnitOfMeasureGrouping.Id,
+                        Name = x.UnitOfMeasureGrouping.Name,
+                        UnitOfMeasureId = x.UnitOfMeasureGrouping.UnitOfMeasureId,
+                        StatusId = x.UnitOfMeasureGrouping.StatusId,
+                    },
+                }).FirstOrDefaultAsync();
 
             if (Product == null)
                 return null;
@@ -575,7 +577,7 @@ namespace DMS.Repositories
             foreach (var Product in Products)
             {
                 long ProductId = ProductDAOs.Where(p => p.Code == Product.Code).Select(p => p.Id).FirstOrDefault();
-                if (Product.Items != null) 
+                if (Product.Items != null)
                     Product.Items.ForEach(i => i.ProductId = ProductId);
 
                 if (Product.VariationGroupings != null)
@@ -616,7 +618,7 @@ namespace DMS.Repositories
                 };
                 VariationGroupingDAOs.Add(VariationGroupingDAO);
             }
-            
+
             await DataContext.VariationGrouping.BulkMergeAsync(VariationGroupingDAOs);
             #endregion
 
@@ -674,7 +676,7 @@ namespace DMS.Repositories
                         .Where(x => x.Id == Item.Id && x.Id != 0).FirstOrDefault();
                     if (ItemDAO == null)
                     {
-                        ItemDAO = new ItemDAO() 
+                        ItemDAO = new ItemDAO()
                         {
                             ProductId = Product.Id,
                             Code = Item.Code,
@@ -711,7 +713,7 @@ namespace DMS.Repositories
             {
                 foreach (ProductImageMapping ProductImageMapping in Product.ProductImageMappings)
                 {
-                    ProductImageMappingDAO ProductImageMappingDAO = new ProductImageMappingDAO() 
+                    ProductImageMappingDAO ProductImageMappingDAO = new ProductImageMappingDAO()
                     {
                         ProductId = Product.Id,
                         ImageId = ProductImageMapping.ImageId,
@@ -752,7 +754,7 @@ namespace DMS.Repositories
                         VariationGroupingDAO.Id = VariationGrouping.Id;
                         VariationGroupingDAO.Name = VariationGrouping.Name;
                         VariationGroupingDAO.ProductId = Product.Id;
-                        
+
                         VariationGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
                         VariationGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
                         VariationGroupingDAO.DeletedAt = null;

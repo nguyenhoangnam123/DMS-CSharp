@@ -70,6 +70,9 @@ namespace DMS.Entities
         public StringFilter OtherName { get; set; }
         public StringFilter TechnicalName { get; set; }
         public StringFilter Note { get; set; }
+
+        public string Search { get; set; }
+
         public List<ProductFilter> OrFilter { get; set; }
         public ProductOrder OrderBy { get; set; }
         public ProductSelect Selects { get; set; }

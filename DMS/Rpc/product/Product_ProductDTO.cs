@@ -92,6 +92,8 @@ namespace DMS.Rpc.product
         public StringFilter OtherName { get; set; }
         public StringFilter TechnicalName { get; set; }
         public StringFilter Note { get; set; }
+
+        public string Search { get; set; }
         public ProductOrder OrderBy { get; set; }
     }
 }
