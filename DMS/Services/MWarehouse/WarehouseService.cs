@@ -11,7 +11,7 @@ using DMS.Entities;
 
 namespace DMS.Services.MWarehouse
 {
-    public interface IWarehouseService :  IServiceScoped
+    public interface IWarehouseService : IServiceScoped
     {
         Task<int> Count(WarehouseFilter WarehouseFilter);
         Task<List<Warehouse>> List(WarehouseFilter WarehouseFilter);
@@ -83,7 +83,7 @@ namespace DMS.Services.MWarehouse
                 return null;
             return Warehouse;
         }
-       
+
         public async Task<Warehouse> Create(Warehouse Warehouse)
         {
             if (!await WarehouseValidator.Create(Warehouse))
@@ -91,6 +91,7 @@ namespace DMS.Services.MWarehouse
 
             try
             {
+                await BuildData(Warehouse);
                 await UOW.Begin();
                 await UOW.WarehouseRepository.Create(Warehouse);
                 await UOW.Commit();
@@ -116,7 +117,7 @@ namespace DMS.Services.MWarehouse
             try
             {
                 var oldData = await UOW.WarehouseRepository.Get(Warehouse.Id);
-
+                await BuildData(Warehouse);
                 await UOW.Begin();
                 await UOW.WarehouseRepository.Update(Warehouse);
                 await UOW.Commit();
@@ -183,7 +184,7 @@ namespace DMS.Services.MWarehouse
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Warehouse>> Import(List<Warehouse> Warehouses)
         {
             if (!await WarehouseValidator.Import(Warehouses))
@@ -206,8 +207,8 @@ namespace DMS.Services.MWarehouse
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public WarehouseFilter ToFilter(WarehouseFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<WarehouseFilter>();
@@ -246,7 +247,51 @@ namespace DMS.Services.MWarehouse
                 Take = int.MaxValue,
                 Selects = ItemSelect.ALL
             });
-
+            if (Warehouse.Inventories == null)
+                Warehouse.Inventories = new List<Inventory>();
+            foreach (Item item in items)
+            {
+                Inventory Inventory = Warehouse.Inventories.Where(i => i.ItemId == item.Id).FirstOrDefault();
+                if (Inventory == null)
+                {
+                    Inventory = new Inventory();
+                    Inventory.Id = 0;
+                    Inventory.WarehouseId = Warehouse.Id;
+                    Inventory.ItemId = item.Id;
+                    Inventory.SaleStock = 0;
+                    Inventory.AccountingStock = 0;
+                    Warehouse.Inventories.Add(Inventory);
+                }
+            }
+            Warehouse ExistedWarehouse = await UOW.WarehouseRepository.Get(Warehouse.Id);
+            if (ExistedWarehouse != null)
+            {
+                foreach (Inventory inventory in Warehouse.Inventories)
+                {
+                    if (inventory.InventoryHistories == null ) inventory.InventoryHistories = new List<InventoryHistory>();
+                    Inventory ExistedInventory = ExistedWarehouse.Inventories.Where(i => i.ItemId == inventory.Id).FirstOrDefault();
+                    if (ExistedInventory == null)
+                    {
+                        InventoryHistory InventoryHistory = new InventoryHistory();
+                        InventoryHistory.SaleStock = inventory.SaleStock;
+                        InventoryHistory.AccountingStock = inventory.AccountingStock;
+                        InventoryHistory.AppUserId = CurrentContext.UserId;
+                        inventory.InventoryHistories.Add(InventoryHistory);
+                    }
+                    else
+                    {
+                        inventory.Id = ExistedInventory.Id;
+                        if (inventory.SaleStock != ExistedInventory.SaleStock || inventory.AccountingStock != ExistedInventory.AccountingStock)
+                        {
+                            InventoryHistory InventoryHistory = new InventoryHistory();
+                            InventoryHistory.SaleStock = inventory.SaleStock;
+                            InventoryHistory.AccountingStock = inventory.AccountingStock;
+                            InventoryHistory.AppUserId = CurrentContext.UserId;
+                            inventory.InventoryHistories.Add(InventoryHistory);
+                        }    
+                    }
+                }
+            }
         }
     }
 }

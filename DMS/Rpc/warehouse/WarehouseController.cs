@@ -443,6 +443,20 @@ namespace DMS.Rpc.warehouse
                         ScanCode = x.Item.ScanCode,
                         SalePrice = x.Item.SalePrice,
                         RetailPrice = x.Item.RetailPrice,
+                        Product = x.Item.Product == null ? null : new Product
+                        {
+                            Id = x.Item.Product.Id,
+                            Code = x.Item.Product.Code,
+                            Name = x.Item.Product.Name,
+                            ERPCode = x.Item.Product.ERPCode,
+                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
+                            UnitOfMeasure = x.Item.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
+                            {
+                                Id = x.Item.Product.UnitOfMeasure.Id,
+                                Code = x.Item.Product.UnitOfMeasure.Code,
+                                Name = x.Item.Product.UnitOfMeasure.Name,
+                            }
+                        }
                     },
                 }).ToList();
             Warehouse.BaseLanguage = CurrentContext.Language;

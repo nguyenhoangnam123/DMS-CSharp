@@ -416,7 +416,6 @@ namespace DMS.Repositories
                     }
                     else
                     {
-                        InventoryDAO.Id = Inventory.Id;
                         InventoryDAO.WarehouseId = Warehouse.Id;
                         InventoryDAO.ItemId = Inventory.ItemId;
                         InventoryDAO.SaleStock = Inventory.SaleStock;
@@ -426,8 +425,37 @@ namespace DMS.Repositories
                     }
                 }
                 await DataContext.Inventory.BulkMergeAsync(InventoryDAOs);
+
+                List<InventoryHistoryDAO> InventoryHistoryDAOs = new List<InventoryHistoryDAO>();
+                foreach (Inventory Inventory in Warehouse.Inventories)
+                {
+                    InventoryDAO InventoryDAO = InventoryDAOs
+                       .Where(x => x.Id == Inventory.Id && x.Id != 0).FirstOrDefault();
+                    if (InventoryDAO != null)
+                    {
+                        Inventory.Id = InventoryDAO.Id;
+                        if (Inventory.InventoryHistories != null)
+                        {
+                            foreach (InventoryHistory inventoryHistory in Inventory.InventoryHistories)
+                            {
+                                InventoryHistoryDAO InventoryHistoryDAO = new InventoryHistoryDAO
+                                {
+                                    InventoryId = InventoryDAO.Id,
+                                    AppUserId = inventoryHistory.AppUserId,
+                                    SaleStock = inventoryHistory.SaleStock,
+                                    AccountingStock = inventoryHistory.AccountingStock,
+                                    CreatedAt = StaticParams.DateTimeNow,
+                                    UpdatedAt = StaticParams.DateTimeNow,
+                                    DeletedAt = null,
+                                };
+                                InventoryHistoryDAOs.Add(InventoryHistoryDAO);
+                            }
+                        }
+                    }
+                }
+
+                await DataContext.InventoryHistory.BulkMergeAsync(InventoryHistoryDAOs);
             }
         }
-
     }
 }

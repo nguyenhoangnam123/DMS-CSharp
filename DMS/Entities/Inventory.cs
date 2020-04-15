@@ -15,6 +15,7 @@ namespace DMS.Entities
         public long AccountingStock { get; set; }
         public Item Item { get; set; }
         public Warehouse Warehouse { get; set; }
+        public List<InventoryHistory> InventoryHistories { get; set; }
 
         public bool Equals(Inventory other)
         {
