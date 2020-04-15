@@ -30,7 +30,7 @@ namespace DMS.Rpc.product
         public Product_StatusDTO Status { get; set; }
         public Product_SupplierDTO Supplier { get; set; }
         public Product_TaxTypeDTO TaxType { get; set; }
-        public Warehouse_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+        public Product_UnitOfMeasureDTO UnitOfMeasure { get; set; }
         public Product_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping { get; set; }
         public List<Product_ItemDTO> Items { get; set; }
         public List<Product_ProductImageMappingDTO> ProductImageMappings { get; set; }
@@ -62,7 +62,7 @@ namespace DMS.Rpc.product
             this.Status = Product.Status == null ? null : new Product_StatusDTO(Product.Status);
             this.Supplier = Product.Supplier == null ? null : new Product_SupplierDTO(Product.Supplier);
             this.TaxType = Product.TaxType == null ? null : new Product_TaxTypeDTO(Product.TaxType);
-            this.UnitOfMeasure = Product.UnitOfMeasure == null ? null : new Warehouse_UnitOfMeasureDTO(Product.UnitOfMeasure);
+            this.UnitOfMeasure = Product.UnitOfMeasure == null ? null : new Product_UnitOfMeasureDTO(Product.UnitOfMeasure);
             this.UnitOfMeasureGrouping = Product.UnitOfMeasureGrouping == null ? null : new Product_UnitOfMeasureGroupingDTO(Product.UnitOfMeasureGrouping);
             this.Items = Product.Items?.Select(x => new Product_ItemDTO(x)).ToList();
             this.ProductImageMappings = Product.ProductImageMappings?.Select(x => new Product_ProductImageMappingDTO(x)).ToList();

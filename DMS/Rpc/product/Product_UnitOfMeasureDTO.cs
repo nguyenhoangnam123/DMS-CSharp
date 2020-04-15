@@ -3,7 +3,7 @@ using DMS.Entities;
 
 namespace DMS.Rpc.product
 {
-    public class Warehouse_UnitOfMeasureDTO : DataDTO
+    public class Product_UnitOfMeasureDTO : DataDTO
     {
 
         public long Id { get; set; }
@@ -17,8 +17,8 @@ namespace DMS.Rpc.product
         public long StatusId { get; set; }
 
 
-        public Warehouse_UnitOfMeasureDTO() { }
-        public Warehouse_UnitOfMeasureDTO(UnitOfMeasure UnitOfMeasure)
+        public Product_UnitOfMeasureDTO() { }
+        public Product_UnitOfMeasureDTO(UnitOfMeasure UnitOfMeasure)
         {
 
             this.Id = UnitOfMeasure.Id;
