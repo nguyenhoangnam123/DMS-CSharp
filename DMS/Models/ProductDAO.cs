@@ -7,7 +7,6 @@ namespace DMS.Models
     {
         public ProductDAO()
         {
-            Inventories = new HashSet<InventoryDAO>();
             Items = new HashSet<ItemDAO>();
             ProductImageMappings = new HashSet<ProductImageMappingDAO>();
             ProductProductGroupingMappings = new HashSet<ProductProductGroupingMappingDAO>();
@@ -44,7 +43,6 @@ namespace DMS.Models
         public virtual TaxTypeDAO TaxType { get; set; }
         public virtual UnitOfMeasureDAO UnitOfMeasure { get; set; }
         public virtual UnitOfMeasureGroupingDAO UnitOfMeasureGrouping { get; set; }
-        public virtual ICollection<InventoryDAO> Inventories { get; set; }
         public virtual ICollection<ItemDAO> Items { get; set; }
         public virtual ICollection<ProductImageMappingDAO> ProductImageMappings { get; set; }
         public virtual ICollection<ProductProductGroupingMappingDAO> ProductProductGroupingMappings { get; set; }

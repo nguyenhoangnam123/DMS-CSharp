@@ -8,6 +8,7 @@ namespace DMS.Models
         public AppUserDAO()
         {
             AppUserRoleMappings = new HashSet<AppUserRoleMappingDAO>();
+            InventoryHistories = new HashSet<InventoryHistoryDAO>();
             Resellers = new HashSet<ResellerDAO>();
             Suppliers = new HashSet<SupplierDAO>();
         }
@@ -35,6 +36,7 @@ namespace DMS.Models
         public virtual SexDAO Sex { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
+        public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
     }

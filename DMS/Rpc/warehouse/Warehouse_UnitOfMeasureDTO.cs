@@ -1,7 +1,7 @@
 using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.product
+namespace DMS.Rpc.warehouse
 {
     public class Warehouse_UnitOfMeasureDTO : DataDTO
     {

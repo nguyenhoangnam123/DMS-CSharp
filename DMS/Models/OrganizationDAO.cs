@@ -11,6 +11,7 @@ namespace DMS.Models
             InverseParent = new HashSet<OrganizationDAO>();
             Resellers = new HashSet<ResellerDAO>();
             Stores = new HashSet<StoreDAO>();
+            Warehouses = new HashSet<WarehouseDAO>();
         }
 
         public long Id { get; set; }
@@ -35,5 +36,6 @@ namespace DMS.Models
         public virtual ICollection<OrganizationDAO> InverseParent { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
+        public virtual ICollection<WarehouseDAO> Warehouses { get; set; }
     }
 }

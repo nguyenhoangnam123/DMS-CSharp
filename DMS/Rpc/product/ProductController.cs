@@ -1350,7 +1350,7 @@ namespace DMS.Rpc.product
             return Product_TaxTypeDTOs;
         }
         [Route(ProductRoute.SingleListUnitOfMeasure), HttpPost]
-        public async Task<List<Product_UnitOfMeasureDTO>> SingleListUnitOfMeasure([FromBody] Product_UnitOfMeasureFilterDTO Product_UnitOfMeasureFilterDTO)
+        public async Task<List<Warehouse_UnitOfMeasureDTO>> SingleListUnitOfMeasure([FromBody] Product_UnitOfMeasureFilterDTO Product_UnitOfMeasureFilterDTO)
         {
             UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter();
             UnitOfMeasureFilter.Skip = 0;
@@ -1364,8 +1364,8 @@ namespace DMS.Rpc.product
             UnitOfMeasureFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
-            List<Product_UnitOfMeasureDTO> Product_UnitOfMeasureDTOs = UnitOfMeasures
-                .Select(x => new Product_UnitOfMeasureDTO(x)).ToList();
+            List<Warehouse_UnitOfMeasureDTO> Product_UnitOfMeasureDTOs = UnitOfMeasures
+                .Select(x => new Warehouse_UnitOfMeasureDTO(x)).ToList();
             return Product_UnitOfMeasureDTOs;
         }
         [Route(ProductRoute.SingleListUnitOfMeasureGrouping), HttpPost]

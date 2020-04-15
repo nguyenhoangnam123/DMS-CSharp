@@ -24,6 +24,7 @@ namespace DMS.Models
         public DateTime? DeletedAt { get; set; }
 
         public virtual DistrictDAO District { get; set; }
+        public virtual OrganizationDAO Organization { get; set; }
         public virtual ProvinceDAO Province { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual WardDAO Ward { get; set; }

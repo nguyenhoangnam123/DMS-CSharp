@@ -33,7 +33,7 @@ namespace DMS.Repositories
         {
             if (filter == null)
                 return query.Where(q => false);
-            query = query.Where(q => !q.DeletedAt.HasValue);
+            query = query.Where(q => q.DeletedAt == null);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.ProductId != null)
@@ -168,6 +168,12 @@ namespace DMS.Repositories
                     RetailPrice = q.Product.RetailPrice,
                     TaxTypeId = q.Product.TaxTypeId,
                     StatusId = q.Product.StatusId,
+                    UnitOfMeasure = new UnitOfMeasure
+                    {
+                        Id = q.Product.UnitOfMeasure.Id,
+                        Code = q.Product.UnitOfMeasure.Code,
+                        Name = q.Product.UnitOfMeasure.Name,
+                    }
                 } : null,
             }).ToListAsync();
             return Items;

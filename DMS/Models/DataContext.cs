@@ -14,6 +14,7 @@ namespace DMS.Models
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
         public virtual DbSet<InventoryDAO> Inventory { get; set; }
+        public virtual DbSet<InventoryHistoryDAO> InventoryHistory { get; set; }
         public virtual DbSet<ItemDAO> Item { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
@@ -241,17 +242,40 @@ namespace DMS.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-                entity.HasOne(d => d.Product)
+                entity.HasOne(d => d.Item)
                     .WithMany(p => p.Inventories)
-                    .HasForeignKey(d => d.ProductId)
+                    .HasForeignKey(d => d.ItemId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_WarehouseProductMapping_Product");
+                    .HasConstraintName("FK_Inventory_Item");
 
                 entity.HasOne(d => d.Warehouse)
                     .WithMany(p => p.Inventories)
                     .HasForeignKey(d => d.WarehouseId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WarehouseProductMapping_Warehouse");
+            });
+
+            modelBuilder.Entity<InventoryHistoryDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.InventoryHistories)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_InventoryHistory_AppUser");
+
+                entity.HasOne(d => d.Inventory)
+                    .WithMany(p => p.InventoryHistories)
+                    .HasForeignKey(d => d.InventoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_InventoryHistory_Inventory");
             });
 
             modelBuilder.Entity<ItemDAO>(entity =>
@@ -1200,6 +1224,12 @@ namespace DMS.Models
                     .WithMany(p => p.Warehouses)
                     .HasForeignKey(d => d.DistrictId)
                     .HasConstraintName("FK_Warehouse_District");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.Warehouses)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Warehouse_Organization");
 
                 entity.HasOne(d => d.Province)
                     .WithMany(p => p.Warehouses)

@@ -57,6 +57,7 @@ namespace DMS.Entities
         public StringFilter Name { get; set; }
         public StringFilter Description { get; set; }
         public StringFilter ScanCode { get; set; }
+        public StringFilter ERPCode { get; set; }
         public IdFilter ProductTypeId { get; set; }
         public IdFilter SupplierId { get; set; }
         public IdFilter BrandId { get; set; }
