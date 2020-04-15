@@ -50,7 +50,7 @@ namespace DMS.Handlers
                 // handle the received message  
                 try
                 {
-                    HandleMessage(routingKey, content);
+                    _= HandleMessage(routingKey, content);
                     _channel.BasicAck(ea.DeliveryTag, false);
                 }
                 catch (Exception e)
@@ -68,7 +68,7 @@ namespace DMS.Handlers
             return Task.CompletedTask;
         }
 
-        private void HandleMessage(string routingKey, string content)
+        private async Task HandleMessage(string routingKey, string content)
         {
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
             optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DataContext"));
@@ -80,24 +80,24 @@ namespace DMS.Handlers
             switch (path[0])
             {
                 case nameof(AppUser):
-                    AppUserHandler AppUserHandler = new AppUserHandler(context);
-                    AppUserHandler.Handle(routingKey, content);
+                    AppUserHandler AppUserHandler = new AppUserHandler(context, UOW);
+                    await AppUserHandler.Handle(routingKey, content);
                     break;
                 case nameof(Organization):
-                    OrganizationHandler OrganizationHandler = new OrganizationHandler(context);
-                    OrganizationHandler.Handle(routingKey, content);
+                    OrganizationHandler OrganizationHandler = new OrganizationHandler(context, UOW);
+                    await OrganizationHandler.Handle(routingKey, content);
                     break;
                 case nameof(Province):
-                    ProvinceHandler ProvinceHandler = new ProvinceHandler(context);
-                    ProvinceHandler.Handle(routingKey, content);
+                    ProvinceHandler ProvinceHandler = new ProvinceHandler(context, UOW);
+                    await ProvinceHandler.Handle(routingKey, content);
                     break;
                 case nameof(District):
-                    DistrictHandler DistrictHandler = new DistrictHandler(context);
-                    DistrictHandler.Handle(routingKey, content);
+                    DistrictHandler DistrictHandler = new DistrictHandler(context, UOW);
+                    await DistrictHandler.Handle(routingKey, content);
                     break;
                 case nameof(Ward):
-                    WardHandler WardHandler = new WardHandler(context);
-                    WardHandler.Handle(routingKey, content);
+                    WardHandler WardHandler = new WardHandler(context, UOW);
+                    await WardHandler.Handle(routingKey, content);
                     break;
             }
         }

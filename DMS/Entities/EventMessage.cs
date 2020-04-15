@@ -1,5 +1,7 @@
 ﻿using Common;
 using Helpers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,5 +25,34 @@ namespace DMS.Entities
             EntityName = typeof(T).Name;
             this.Content = content;
         }
+    }
+
+    public class EventMessageFilter : FilterEntity
+    {
+        public IdFilter Id { get; set; }
+        public DateFilter Time { get; set; }
+        public GuidFilter RowId { get; set; }
+        public StringFilter EntityName { get; set; }
+        public EventMessageOrder OrderBy { get; set; }
+        public EventMessageSelect Selects { get; set; }
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum EventMessageOrder
+    {
+        Id = 0,
+        Time = 1,
+        RowId = 2,
+        EntityName = 3,
+    }
+
+    [Flags]
+    public enum EventMessageSelect : long
+    {
+        ALL = E.ALL,
+        Id = E._0,
+        Time = E._1,
+        RowId = E._2,
+        EntityName = E._3
     }
 }
