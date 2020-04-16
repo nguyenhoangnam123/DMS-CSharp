@@ -10,6 +10,7 @@ namespace DMS.Rpc.product
         public long Id { get; set; }
         public string Code { get; set; }
         public string SupplierCode { get; set; }
+        public string ERPCode { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string ScanCode { get; set; }
@@ -42,6 +43,7 @@ namespace DMS.Rpc.product
             this.Id = Product.Id;
             this.Code = Product.Code;
             this.SupplierCode = Product.SupplierCode;
+            this.ERPCode = Product.ERPCode;
             this.Name = Product.Name;
             this.Description = Product.Description;
             this.ScanCode = Product.ScanCode;

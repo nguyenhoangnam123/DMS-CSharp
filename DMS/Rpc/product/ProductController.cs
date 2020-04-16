@@ -1108,6 +1108,7 @@ namespace DMS.Rpc.product
             Product.Code = Product_ProductDTO.Code;
             Product.SupplierCode = Product_ProductDTO.SupplierCode;
             Product.Name = Product_ProductDTO.Name;
+            Product.ERPCode = Product_ProductDTO.ERPCode;
             Product.Description = Product_ProductDTO.Description;
             Product.ScanCode = Product_ProductDTO.ScanCode;
             Product.ProductTypeId = Product_ProductDTO.ProductTypeId;

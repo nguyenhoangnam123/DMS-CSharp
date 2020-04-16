@@ -356,6 +356,9 @@ namespace DMS.Repositories
                     Code = x.Code,
                     SupplierCode = x.SupplierCode,
                     Name = x.Name,
+                    ERPCode = x.ERPCode,
+                    TechnicalName = x.TechnicalName,
+                    OtherName = x.OtherName,
                     Description = x.Description,
                     ScanCode = x.ScanCode,
                     ProductTypeId = x.ProductTypeId,
@@ -490,7 +493,10 @@ namespace DMS.Repositories
             ProductDAO.Id = Product.Id;
             ProductDAO.Code = Product.Code;
             ProductDAO.SupplierCode = Product.SupplierCode;
+            ProductDAO.ERPCode = Product.ERPCode;
             ProductDAO.Name = Product.Name;
+            ProductDAO.TechnicalName = Product.TechnicalName;
+            ProductDAO.OtherName = Product.OtherName;
             ProductDAO.Description = Product.Description;
             ProductDAO.ScanCode = Product.ScanCode;
             ProductDAO.ProductTypeId = Product.ProductTypeId;
@@ -519,7 +525,10 @@ namespace DMS.Repositories
             ProductDAO.Id = Product.Id;
             ProductDAO.Code = Product.Code;
             ProductDAO.SupplierCode = Product.SupplierCode;
+            ProductDAO.ERPCode = Product.ERPCode;
             ProductDAO.Name = Product.Name;
+            ProductDAO.TechnicalName = Product.TechnicalName;
+            ProductDAO.OtherName = Product.OtherName;
             ProductDAO.Description = Product.Description;
             ProductDAO.ScanCode = Product.ScanCode;
             ProductDAO.ProductTypeId = Product.ProductTypeId;
