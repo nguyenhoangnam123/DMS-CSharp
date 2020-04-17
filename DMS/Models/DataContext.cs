@@ -141,6 +141,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.Description).HasMaxLength(2000);
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);

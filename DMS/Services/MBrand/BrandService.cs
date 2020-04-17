@@ -20,8 +20,7 @@ namespace DMS.Services.MBrand
         Task<Brand> Update(Brand Brand);
         Task<Brand> Delete(Brand Brand);
         Task<List<Brand>> BulkDelete(List<Brand> Brands);
-        Task<List<Brand>> Import(DataFile DataFile);
-        Task<DataFile> Export(BrandFilter BrandFilter);
+        Task<List<Brand>> Import(List<Brand> Brands);
         BrandFilter ToFilter(BrandFilter BrandFilter);
     }
 
@@ -185,35 +184,8 @@ namespace DMS.Services.MBrand
             }
         }
 
-        public async Task<List<Brand>> Import(DataFile DataFile)
+        public async Task<List<Brand>> Import(List<Brand> Brands)
         {
-            List<Brand> Brands = new List<Brand>();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
-            {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return Brands;
-                int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int StatusIdColumn = 3 + StartColumn;
-                for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
-                {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, IdColumn].Value?.ToString()))
-                        break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    Brand Brand = new Brand();
-                    Brand.Code = CodeValue;
-                    Brand.Name = NameValue;
-                    Brands.Add(Brand);
-                }
-            }
-
             if (!await BrandValidator.Import(Brands))
                 return Brands;
 
@@ -237,50 +209,6 @@ namespace DMS.Services.MBrand
             }
         }
 
-        public async Task<DataFile> Export(BrandFilter BrandFilter)
-        {
-            List<Brand> Brands = await UOW.BrandRepository.List(BrandFilter);
-            MemoryStream MemoryStream = new MemoryStream();
-            using (ExcelPackage excelPackage = new ExcelPackage(MemoryStream))
-            {
-                //Set some properties of the Excel document
-                excelPackage.Workbook.Properties.Author = CurrentContext.UserName;
-                excelPackage.Workbook.Properties.Title = nameof(Brand);
-                excelPackage.Workbook.Properties.Created = StaticParams.DateTimeNow;
-
-                //Create the WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
-                int StartColumn = 1;
-                int StartRow = 2;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int StatusIdColumn = 3 + StartColumn;
-
-                worksheet.Cells[1, IdColumn].Value = nameof(Brand.Id);
-                worksheet.Cells[1, CodeColumn].Value = nameof(Brand.Code);
-                worksheet.Cells[1, NameColumn].Value = nameof(Brand.Name);
-                worksheet.Cells[1, StatusIdColumn].Value = nameof(Brand.StatusId);
-
-                for (int i = 0; i < Brands.Count; i++)
-                {
-                    Brand Brand = Brands[i];
-                    worksheet.Cells[i + StartRow, IdColumn].Value = Brand.Id;
-                    worksheet.Cells[i + StartRow, CodeColumn].Value = Brand.Code;
-                    worksheet.Cells[i + StartRow, NameColumn].Value = Brand.Name;
-                    worksheet.Cells[i + StartRow, StatusIdColumn].Value = Brand.StatusId;
-                }
-                excelPackage.Save();
-            }
-
-            DataFile DataFile = new DataFile
-            {
-                Name = nameof(Brand),
-                Content = MemoryStream,
-            };
-            return DataFile;
-        }
-
         public BrandFilter ToFilter(BrandFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<BrandFilter>();
@@ -295,6 +223,8 @@ namespace DMS.Services.MBrand
                     subFilter.Code = Map(subFilter.Code, currentFilter.Value);
                 if (currentFilter.Value.Name == nameof(subFilter.Name))
                     subFilter.Name = Map(subFilter.Name, currentFilter.Value);
+                if (currentFilter.Value.Name == nameof(subFilter.Description))
+                    subFilter.Description = Map(subFilter.Description, currentFilter.Value);
                 if (currentFilter.Value.Name == nameof(subFilter.StatusId))
                     subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
             }

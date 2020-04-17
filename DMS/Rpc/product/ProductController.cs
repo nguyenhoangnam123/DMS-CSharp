@@ -1128,6 +1128,7 @@ namespace DMS.Rpc.product
                 Id = Product_ProductDTO.Brand.Id,
                 Code = Product_ProductDTO.Brand.Code,
                 Name = Product_ProductDTO.Brand.Name,
+                Description = Product_ProductDTO.Brand.Description,
                 StatusId = Product_ProductDTO.Brand.StatusId,
             };
             Product.ProductType = Product_ProductDTO.ProductType == null ? null : new ProductType
@@ -1270,6 +1271,7 @@ namespace DMS.Rpc.product
             BrandFilter.Id = Product_BrandFilterDTO.Id;
             BrandFilter.Code = Product_BrandFilterDTO.Code;
             BrandFilter.Name = Product_BrandFilterDTO.Name;
+            BrandFilter.Description = Product_BrandFilterDTO.Description;
             BrandFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Brand> Brands = await BrandService.List(BrandFilter);

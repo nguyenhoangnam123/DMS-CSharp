@@ -14,7 +14,7 @@ namespace DMS.Rpc.product_grouping
         public string Code { get; set; }
 
         public string Name { get; set; }
-
+        public string Description { get; set; }
         public long StatusId { get; set; }
 
 
@@ -27,6 +27,7 @@ namespace DMS.Rpc.product_grouping
             this.Code = Brand.Code;
 
             this.Name = Brand.Name;
+            this.Description = Brand.Description;
 
             this.StatusId = Brand.StatusId;
 
@@ -41,7 +42,7 @@ namespace DMS.Rpc.product_grouping
         public StringFilter Code { get; set; }
 
         public StringFilter Name { get; set; }
-
+        public StringFilter Description { get; set; }
         public IdFilter StatusId { get; set; }
 
         public BrandOrder OrderBy { get; set; }
