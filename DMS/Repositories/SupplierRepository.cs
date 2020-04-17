@@ -62,6 +62,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Description, filter.Description);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
+            if (filter.UpdatedTime != null)
+                query = query.Where(q => q.UpdatedAt, filter.UpdatedTime);
             query = OrFilter(query, filter);
             return query;
         }
@@ -102,6 +104,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Description, filter.Description);
                 if (filter.StatusId != null)
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (filter.UpdatedTime != null)
+                    queryable = queryable.Where(q => q.UpdatedAt, filter.UpdatedTime);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -156,6 +160,9 @@ namespace DMS.Repositories
                         case SupplierOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
                             break;
+                        case SupplierOrder.UpdatedTime:
+                            query = query.OrderBy(q => q.UpdatedAt);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -203,6 +210,9 @@ namespace DMS.Repositories
                         case SupplierOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
                             break;
+                        case SupplierOrder.UpdatedTime:
+                            query = query.OrderByDescending(q => q.UpdatedAt);
+                            break;
                     }
                     break;
             }
@@ -228,6 +238,7 @@ namespace DMS.Repositories
                 OwnerName = filter.Selects.Contains(SupplierSelect.OwnerName) ? q.OwnerName : default(string),
                 Description = filter.Selects.Contains(SupplierSelect.Description) ? q.Description : default(string),
                 StatusId = filter.Selects.Contains(SupplierSelect.Status) ? q.StatusId : default(long),
+                UpdatedTime = filter.Selects.Contains(SupplierSelect.UpdatedTime) ? q.UpdatedAt : default(DateTime),
                 District = filter.Selects.Contains(SupplierSelect.District) && q.District != null ? new District
                 {
                     Id = q.District.Id,
@@ -307,6 +318,7 @@ namespace DMS.Repositories
                 PersonInChargeId = x.PersonInChargeId,
                 Description = x.Description,
                 StatusId = x.StatusId,
+                UpdatedTime = x.UpdatedAt,
                 District = x.District == null ? null : new District
                 {
                     Id = x.District.Id,

@@ -55,6 +55,7 @@ namespace DMS.Rpc.supplier
             { nameof(SupplierFilter.PersonInChargeId), FieldType.ID },
             { nameof(SupplierFilter.StatusId), FieldType.ID },
             { nameof(SupplierFilter.Description), FieldType.STRING },
+            { nameof(SupplierFilter.UpdatedTime), FieldType.DATE },
         };
     }
 
@@ -475,6 +476,7 @@ namespace DMS.Rpc.supplier
             SupplierFilter.PersonInChargeId = Supplier_SupplierFilterDTO.PersonInChargeId;
             SupplierFilter.Description = Supplier_SupplierFilterDTO.Description;
             SupplierFilter.StatusId = Supplier_SupplierFilterDTO.StatusId;
+            SupplierFilter.UpdatedTime = Supplier_SupplierFilterDTO.UpdatedTime;
             return SupplierFilter;
         }
 

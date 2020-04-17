@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using System;
 
 namespace DMS.Rpc.supplier
 {
@@ -19,6 +20,7 @@ namespace DMS.Rpc.supplier
         public string Description { get; set; }
         public long PersonInChargeId { get; set; }
         public long StatusId { get; set; }
+        public DateTime UpdatedTime { get; set; }
         public Supplier_AppUserDTO PersonInCharge { get; set; }
         public Supplier_ProvinceDTO Province { get; set; }
         public Supplier_DistrictDTO District { get; set; }
@@ -41,6 +43,7 @@ namespace DMS.Rpc.supplier
             this.PersonInChargeId = Supplier.PersonInChargeId;
             this.Description = Supplier.Description;
             this.StatusId = Supplier.StatusId;
+            this.UpdatedTime = Supplier.UpdatedTime;
             this.District = Supplier.District == null ? null : new Supplier_DistrictDTO(Supplier.District);
             this.PersonInCharge = Supplier.PersonInCharge == null ? null : new Supplier_AppUserDTO(Supplier.PersonInCharge);
             this.Province = Supplier.Province == null ? null : new Supplier_ProvinceDTO(Supplier.Province);
@@ -66,6 +69,7 @@ namespace DMS.Rpc.supplier
         public StringFilter Description { get; set; }
         public IdFilter PersonInChargeId { get; set; }
         public IdFilter StatusId { get; set; }
+        public DateFilter UpdatedTime { get; set; }
         public SupplierOrder OrderBy { get; set; }
     }
 }

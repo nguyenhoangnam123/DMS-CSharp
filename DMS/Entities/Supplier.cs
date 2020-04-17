@@ -22,6 +22,7 @@ namespace DMS.Entities
         public string Description { get; set; }
         public long PersonInChargeId { get; set; }
         public long StatusId { get; set; }
+        public DateTime UpdatedTime { get; set; }
         public District District { get; set; }
         public Province Province { get; set; }
         public Ward Ward { get; set; }
@@ -55,6 +56,7 @@ namespace DMS.Entities
         public StringFilter Description { get; set; }
         public IdFilter PersonInChargeId { get; set; }
         public IdFilter StatusId { get; set; }
+        public DateFilter UpdatedTime { get; set; }
         public List<SupplierFilter> OrFilter { get; set; }
         public SupplierOrder OrderBy { get; set; }
         public SupplierSelect Selects { get; set; }
@@ -77,6 +79,7 @@ namespace DMS.Entities
         Description = 11,
         PersonInCharge = 12,
         Status = 13,
+        UpdatedTime = 14,
     }
 
     [Flags]
@@ -97,5 +100,6 @@ namespace DMS.Entities
         Description = E._11,
         PersonInCharge = E._12,
         Status = E._13,
+        UpdatedTime = E._14,
     }
 }
