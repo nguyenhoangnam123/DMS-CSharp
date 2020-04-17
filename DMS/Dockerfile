@@ -15,8 +15,11 @@ FROM build AS publish
 RUN dotnet publish "DMS.csproj" -c Release -o /app/publish
 
 FROM base AS final
-WORKDIR /app
 
+RUN apt-get update \
+    && apt-get install -y libc6-dev libgdiplus \
+    && mkdir /app
+WORKDIR /app
 
 COPY --from=consul:latest /bin/consul /usr/local/bin/consul
 
