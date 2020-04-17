@@ -96,8 +96,7 @@ namespace DMS.Services.MSupplier
             {
                 Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameEmpty);
             }
-            var Name = Supplier.Name;
-            if (Supplier.Name.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Name).Equals(Supplier.Name))
+            if (Supplier.Name.Contains(" "))
             {
                 Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameHasSpecialCharacter);
             }
