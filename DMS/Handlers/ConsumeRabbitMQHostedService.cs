@@ -45,7 +45,7 @@ namespace DMS.Handlers
             consumer.Received += (ch, ea) =>
             {
                 // received message  
-                var content = System.Text.Encoding.UTF8.GetString(ea.Body);
+                var content = System.Text.Encoding.UTF8.GetString(ea.Body.ToArray());
                 var routingKey = ea.RoutingKey;
                 // handle the received message  
                 try
