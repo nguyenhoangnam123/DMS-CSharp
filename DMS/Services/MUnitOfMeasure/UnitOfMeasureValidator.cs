@@ -57,7 +57,7 @@ namespace DMS.Services.MUnitOfMeasure
         }
         public async Task<bool> ValidateCode(UnitOfMeasure UnitOfMeasure)
         {
-            if (string.IsNullOrEmpty(UnitOfMeasure.Code))
+            if (string.IsNullOrWhiteSpace(UnitOfMeasure.Code))
             {
                 UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Code), ErrorCode.CodeEmpty);
                 return false;
@@ -65,7 +65,7 @@ namespace DMS.Services.MUnitOfMeasure
             else
             {
                 var Code = UnitOfMeasure.Code;
-                if (UnitOfMeasure.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(UnitOfMeasure.Code))
+                if ( !FilterExtension.ChangeToEnglishChar(Code).Equals(UnitOfMeasure.Code))
                 {
                     UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Code), ErrorCode.CodeHasSpecialCharacter);
                     return false;
@@ -88,7 +88,7 @@ namespace DMS.Services.MUnitOfMeasure
         }
         public async Task<bool> ValidateName(UnitOfMeasure UnitOfMeasure)
         {
-            if (string.IsNullOrEmpty(UnitOfMeasure.Name))
+            if (string.IsNullOrWhiteSpace(UnitOfMeasure.Name))
             {
                 UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Name), ErrorCode.NameEmpty);
             }

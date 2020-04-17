@@ -79,14 +79,14 @@ namespace DMS.Services.MStore
         #region Code
         private async Task<bool> ValidateCode(Store Store)
         {
-            if (string.IsNullOrEmpty(Store.Code))
+            if (string.IsNullOrWhiteSpace(Store.Code))
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeEmpty);
             }
             else
             {
                 var Code = Store.Code;
-                if (Store.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Store.Code))
+                if (!FilterExtension.ChangeToEnglishChar(Code).Equals(Store.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
@@ -112,7 +112,7 @@ namespace DMS.Services.MStore
         #region Name
         private async Task<bool> ValidateName(Store Store)
         {
-            if (string.IsNullOrEmpty(Store.Name))
+            if (string.IsNullOrWhiteSpace(Store.Name))
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Name), ErrorCode.NameEmpty);
             }
@@ -306,7 +306,7 @@ namespace DMS.Services.MStore
         #region Address + Location
         private async Task<bool> ValidateAddress(Store Store)
         {
-            if (string.IsNullOrEmpty(Store.Address))
+            if (string.IsNullOrWhiteSpace(Store.Address))
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Address), ErrorCode.AddressEmpty);
             }
@@ -337,7 +337,7 @@ namespace DMS.Services.MStore
         #region Owner
         private async Task<bool> ValidateOwnerName(Store Store)
         {
-            if (string.IsNullOrEmpty(Store.OwnerName))
+            if (string.IsNullOrWhiteSpace(Store.OwnerName))
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.OwnerName), ErrorCode.OwnerNameEmpty);
             }
@@ -349,7 +349,7 @@ namespace DMS.Services.MStore
         }
         private async Task<bool> ValidateOwnerPhone(Store Store)
         {
-            if (string.IsNullOrEmpty(Store.OwnerPhone))
+            if (string.IsNullOrWhiteSpace(Store.OwnerPhone))
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.OwnerPhone), ErrorCode.OwnerPhoneEmpty);
             }

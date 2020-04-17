@@ -58,7 +58,7 @@ namespace DMS.Services.MUnitOfMeasureGrouping
 
         public async Task<bool> ValidateCode(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
-            if (string.IsNullOrEmpty(UnitOfMeasureGrouping.Code))
+            if (string.IsNullOrWhiteSpace(UnitOfMeasureGrouping.Code))
             {
                 UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.Code), ErrorCode.CodeEmpty);
                 return false;
@@ -66,7 +66,7 @@ namespace DMS.Services.MUnitOfMeasureGrouping
             else
             {
                 var Code = UnitOfMeasureGrouping.Code;
-                if (UnitOfMeasureGrouping.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(UnitOfMeasureGrouping.Code))
+                if (!FilterExtension.ChangeToEnglishChar(Code).Equals(UnitOfMeasureGrouping.Code))
                 {
                     UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.Code), ErrorCode.CodeHasSpecialCharacter);
                     return false;
@@ -89,7 +89,7 @@ namespace DMS.Services.MUnitOfMeasureGrouping
         }
         public async Task<bool> ValidateName(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
-            if (string.IsNullOrEmpty(UnitOfMeasureGrouping.Name))
+            if (string.IsNullOrWhiteSpace(UnitOfMeasureGrouping.Name))
             {
                 UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.Name), ErrorCode.NameEmpty);
             }

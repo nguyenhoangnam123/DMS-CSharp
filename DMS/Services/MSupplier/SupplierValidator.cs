@@ -26,7 +26,6 @@ namespace DMS.Services.MSupplier
             CodeHasSpecialCharacter,
             CodeExisted,
             NameEmpty,
-            NameHasSpecialCharacter,
             NameExisted,
             StatusNotExisted,
             ProvinceNotExisted,
@@ -62,14 +61,14 @@ namespace DMS.Services.MSupplier
 
         private async Task<bool> ValidateCode(Supplier Supplier)
         {
-            if (string.IsNullOrEmpty(Supplier.Code))
+            if (string.IsNullOrWhiteSpace(Supplier.Code))
             {
                 Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Code), ErrorCode.CodeEmpty);
             }
             else
             {
                 var Code = Supplier.Code;
-                if (Supplier.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Supplier.Code))
+                if (!FilterExtension.ChangeToEnglishChar(Code).Equals(Supplier.Code))
                 {
                     Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
@@ -92,13 +91,9 @@ namespace DMS.Services.MSupplier
 
         private async Task<bool> ValidateName(Supplier Supplier)
         {
-            if (string.IsNullOrEmpty(Supplier.Name))
+            if (string.IsNullOrWhiteSpace(Supplier.Name))
             {
                 Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameEmpty);
-            }
-            if (Supplier.Name.Contains(" "))
-            {
-                Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameHasSpecialCharacter);
             }
             SupplierFilter SupplierFilter = new SupplierFilter
             {

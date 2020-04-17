@@ -55,7 +55,7 @@ namespace DMS.Services.MItem
         }
         public async Task<bool> ValidateName(Item Item)
         {
-            if (string.IsNullOrEmpty(Item.Name))
+            if (string.IsNullOrWhiteSpace(Item.Name))
             {
                 Item.AddError(nameof(ItemValidator), nameof(Item.Name), ErrorCode.NameEmpty);
             }
@@ -67,7 +67,7 @@ namespace DMS.Services.MItem
         }
         public async Task<bool> ValidateCode(Item Item)
         {
-            if (string.IsNullOrEmpty(Item.Code))
+            if (string.IsNullOrWhiteSpace(Item.Code))
             {
                 Item.AddError(nameof(ItemValidator), nameof(Item.Code), ErrorCode.CodeEmpty);
             }
@@ -79,7 +79,7 @@ namespace DMS.Services.MItem
         }
         public async Task<bool> ValidateScanCode(Item Item)
         {
-            if (string.IsNullOrEmpty(Item.ScanCode))
+            if (string.IsNullOrWhiteSpace(Item.ScanCode))
             {
                 Item.AddError(nameof(ItemValidator), nameof(Item.ScanCode), ErrorCode.ScanCodeEmpty);
             }

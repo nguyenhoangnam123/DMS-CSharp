@@ -54,14 +54,14 @@ namespace DMS.Services.MStoreType
         }
         public async Task<bool> ValidateCode(StoreType StoreType)
         {
-            if (string.IsNullOrEmpty(StoreType.Code))
+            if (string.IsNullOrWhiteSpace(StoreType.Code))
             {
                 StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Code), ErrorCode.CodeEmpty);
             }
             else 
             {
                 var Code = StoreType.Code;
-                if (StoreType.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(StoreType.Code))
+                if (!FilterExtension.ChangeToEnglishChar(Code).Equals(StoreType.Code))
                 {
                     StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
@@ -83,7 +83,7 @@ namespace DMS.Services.MStoreType
         }
         public async Task<bool> ValidateName(StoreType StoreType)
         {
-            if (string.IsNullOrEmpty(StoreType.Name))
+            if (string.IsNullOrWhiteSpace(StoreType.Name))
             {
                 StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Name), ErrorCode.NameEmpty);
             }

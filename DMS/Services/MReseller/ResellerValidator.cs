@@ -70,7 +70,7 @@ namespace DMS.Services.MReseller
 
         public async Task<bool> ValidateCode(Reseller Reseller)
         {
-            if (string.IsNullOrEmpty(Reseller.Code))
+            if (string.IsNullOrWhiteSpace(Reseller.Code))
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Code), ErrorCode.CodeEmpty);
             }
@@ -96,7 +96,7 @@ namespace DMS.Services.MReseller
 
         public async Task<bool> ValidateName(Reseller Reseller)
         {
-            if (string.IsNullOrEmpty(Reseller.Name))
+            if (string.IsNullOrWhiteSpace(Reseller.Name))
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Name), ErrorCode.NameEmpty);
             }
@@ -154,7 +154,7 @@ namespace DMS.Services.MReseller
 
         public async Task<bool> ValidatePhone(Reseller Reseller)
         {
-            if (string.IsNullOrEmpty(Reseller.Phone))
+            if (string.IsNullOrWhiteSpace(Reseller.Phone))
             {
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Phone), ErrorCode.PhoneEmpty);
             }

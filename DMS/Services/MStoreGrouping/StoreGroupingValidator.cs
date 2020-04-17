@@ -58,14 +58,14 @@ namespace DMS.Services.MStoreGrouping
 
         private async Task<bool> ValidateCode(StoreGrouping StoreGrouping)
         {
-            if (string.IsNullOrEmpty(StoreGrouping.Code))
+            if (string.IsNullOrWhiteSpace(StoreGrouping.Code))
             {
                 StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Code), ErrorCode.CodeEmpty);
             }
             else
             {
                 var Code = StoreGrouping.Code;
-                if (StoreGrouping.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(StoreGrouping.Code))
+                if (!FilterExtension.ChangeToEnglishChar(Code).Equals(StoreGrouping.Code))
                 {
                     StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
@@ -88,7 +88,7 @@ namespace DMS.Services.MStoreGrouping
 
         private async Task<bool> ValidateName(StoreGrouping StoreGrouping)
         {
-            if (string.IsNullOrEmpty(StoreGrouping.Name))
+            if (string.IsNullOrWhiteSpace(StoreGrouping.Name))
             {
                 StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Name), ErrorCode.NameEmpty);
             }
