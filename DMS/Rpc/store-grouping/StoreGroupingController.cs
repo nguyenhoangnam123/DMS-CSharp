@@ -390,6 +390,12 @@ namespace DMS.Rpc.store_grouping
             StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
             StoreGroupingFilter.OrderType = OrderType.ASC;
             StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Id = StoreGrouping_StoreGroupingFilterDTO.Id;
+            StoreGroupingFilter.Code = StoreGrouping_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = StoreGrouping_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.ParentId = StoreGrouping_StoreGroupingFilterDTO.ParentId;
+            StoreGroupingFilter.Path = StoreGrouping_StoreGroupingFilterDTO.Path;
+            StoreGroupingFilter.Level = StoreGrouping_StoreGroupingFilterDTO.Level;
             StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<StoreGrouping_StoreGroupingDTO> StoreGrouping_StoreGroupingDTOs = StoreGroupings
