@@ -471,6 +471,7 @@ namespace DMS.Repositories
                 }).ToListAsync();
             Product.VariationGroupings = await DataContext.VariationGrouping
                 .Where(x => x.ProductId == Product.Id)
+                .Where(x => x.DeletedAt == null)
                 .Select(x => new VariationGrouping
                 {
                     Id = x.Id,
@@ -794,6 +795,7 @@ namespace DMS.Repositories
                 List<Variation> Variations = Product.VariationGroupings.SelectMany(p => p.Variations).ToList();
                 List<VariationDAO> VariationDAOs = Variations.Select(v => new VariationDAO
                 {
+                    Id = v.Id,
                     Code = v.Code,
                     Name = v.Name,
                     VariationGroupingId = v.VariationGroupingId
