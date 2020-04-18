@@ -11,6 +11,7 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public long StatusId { get; set; }
         public Status Status { get; set; }
 
@@ -29,6 +30,7 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public StringFilter Description { get; set; }
         public IdFilter StatusId { get; set; }
         public List<BrandFilter> OrFilter { get; set; }
         public BrandOrder OrderBy { get; set; }
@@ -41,7 +43,8 @@ namespace DMS.Entities
         Id = 0,
         Code = 1,
         Name = 2,
-        Status = 3,
+        Description = 3,
+        Status = 4,
     }
 
     [Flags]
@@ -51,6 +54,7 @@ namespace DMS.Entities
         Id = E._0,
         Code = E._1,
         Name = E._2,
-        Status = E._3,
+        Description = E._3,
+        Status = E._4,
     }
 }

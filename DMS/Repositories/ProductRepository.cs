@@ -279,6 +279,7 @@ namespace DMS.Repositories
                     Id = q.Brand.Id,
                     Code = q.Brand.Code,
                     Name = q.Brand.Name,
+                    Description = q.Brand.Description,
                     StatusId = q.Brand.StatusId,
                 } : null,
                 ProductType = filter.Selects.Contains(ProductSelect.ProductType) && q.ProductType != null ? new ProductType
@@ -390,6 +391,7 @@ namespace DMS.Repositories
                         Id = x.Brand.Id,
                         Code = x.Brand.Code,
                         Name = x.Brand.Name,
+                        Description = x.Brand.Description,
                         StatusId = x.Brand.StatusId,
                     },
                     ProductType = x.ProductType == null ? null : new ProductType

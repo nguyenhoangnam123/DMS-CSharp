@@ -40,6 +40,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
+            if (filter.Description != null)
+                query = query.Where(q => q.Description, filter.Description);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
             query = OrFilter(query, filter);
@@ -60,6 +62,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Code, filter.Code);
                 if (filter.Name != null)
                     queryable = queryable.Where(q => q.Name, filter.Name);
+                if (filter.Description != null)
+                    queryable = queryable.Where(q => q.Description, filter.Description);
                 if (filter.StatusId != null)
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
                 initQuery = initQuery.Union(queryable);
@@ -83,6 +87,9 @@ namespace DMS.Repositories
                         case BrandOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
+                        case BrandOrder.Description:
+                            query = query.OrderBy(q => q.Description);
+                            break;
                         case BrandOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
                             break;
@@ -99,6 +106,9 @@ namespace DMS.Repositories
                             break;
                         case BrandOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
+                            break;
+                        case BrandOrder.Description:
+                            query = query.OrderByDescending(q => q.Description);
                             break;
                         case BrandOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
@@ -117,6 +127,7 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(BrandSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(BrandSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(BrandSelect.Name) ? q.Name : default(string),
+                Description = filter.Selects.Contains(BrandSelect.Description) ? q.Description : default(string),
                 StatusId = filter.Selects.Contains(BrandSelect.Status) ? q.StatusId : default(long),
                 Status = filter.Selects.Contains(BrandSelect.Status) && q.Status != null ? new Status
                 {
@@ -153,6 +164,7 @@ namespace DMS.Repositories
                 Id = x.Id,
                 Code = x.Code,
                 Name = x.Name,
+                Description = x.Description,
                 StatusId = x.StatusId,
                 Status = x.Status == null ? null : new Status
                 {
@@ -173,6 +185,7 @@ namespace DMS.Repositories
             BrandDAO.Id = Brand.Id;
             BrandDAO.Code = Brand.Code;
             BrandDAO.Name = Brand.Name;
+            BrandDAO.Description = Brand.Description;
             BrandDAO.StatusId = Brand.StatusId;
             BrandDAO.CreatedAt = StaticParams.DateTimeNow;
             BrandDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -191,6 +204,7 @@ namespace DMS.Repositories
             BrandDAO.Id = Brand.Id;
             BrandDAO.Code = Brand.Code;
             BrandDAO.Name = Brand.Name;
+            BrandDAO.Description = Brand.Description;
             BrandDAO.StatusId = Brand.StatusId;
             BrandDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
@@ -213,6 +227,7 @@ namespace DMS.Repositories
                 BrandDAO.Id = Brand.Id;
                 BrandDAO.Code = Brand.Code;
                 BrandDAO.Name = Brand.Name;
+                BrandDAO.Description = Brand.Description;
                 BrandDAO.StatusId = Brand.StatusId;
                 BrandDAO.CreatedAt = StaticParams.DateTimeNow;
                 BrandDAO.UpdatedAt = StaticParams.DateTimeNow;

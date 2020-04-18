@@ -1,11 +1,14 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Services.MBrand;
 using DMS.Services.MStatus;
 using Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,6 +27,7 @@ namespace DMS.Rpc.brand
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
+        public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
 
         public const string SingleListStatus = Default + "/single-list-status";
@@ -32,6 +36,7 @@ namespace DMS.Rpc.brand
             { nameof(BrandFilter.Id), FieldType.ID },
             { nameof(BrandFilter.Code), FieldType.STRING },
             { nameof(BrandFilter.Name), FieldType.STRING },
+            { nameof(BrandFilter.Description), FieldType.STRING },
             { nameof(BrandFilter.StatusId), FieldType.ID },
         };
     }
@@ -150,14 +155,42 @@ namespace DMS.Rpc.brand
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
                 Content = file.OpenReadStream(),
             };
+            List<Brand> Brands = new List<Brand>();
+            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                int StartColumn = 1;
+                int StartRow = 1;
 
-            List<Brand> Brands = await BrandService.Import(DataFile);
+                int CodeColumn = 1 + StartColumn;
+                int NameColumn = 2 + StartColumn;
+                int DescriptionColumn = 3 + StartColumn;
+
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString()))
+                        break;
+
+                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
+                    string DescriptionValue = worksheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
+
+                    Brand Brand = new Brand();
+
+                    Brand.Code = CodeValue;
+                    Brand.Name = NameValue;
+                    Brand.Description = DescriptionValue;
+
+                    Brands.Add(Brand);
+                }
+            }
+            Brands = await BrandService.Import(Brands);
+
             List<Brand_BrandDTO> Brand_BrandDTOs = Brands
                 .Select(c => new Brand_BrandDTO(c)).ToList();
             return Brand_BrandDTOs;
@@ -171,11 +204,55 @@ namespace DMS.Rpc.brand
 
             BrandFilter BrandFilter = ConvertFilterDTOToFilterEntity(Brand_BrandFilterDTO);
             BrandFilter = BrandService.ToFilter(BrandFilter);
-            DataFile DataFile = await BrandService.Export(BrandFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
+
+            BrandFilter.Skip = 0;
+            BrandFilter.Take = int.MaxValue;
+            BrandFilter = BrandService.ToFilter(BrandFilter);
+
+            List<Brand> Brands = await BrandService.List(BrandFilter);
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
+                var BrandHeaders = new List<string[]>()
+                {
+                    new string[] {  "Mã nhãn hiệu", "Tên nhãn hiệu", "Mô tả"}
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < Brands.Count; i++)
+                {
+                    var Brand = Brands[i];
+                    data.Add(new Object[]
+                    {
+                        Brand.Code,
+                        Brand.Name,
+                        Brand.Description
+                    });
+                }
+                excel.GenerateWorksheet("Brand", BrandHeaders, data);
+                excel.Save();
+            }
+            return File(memoryStream.ToArray(), "application/octet-stream", "Brand.xlsx");
+        }
+
+        [Route(BrandRoute.ExportTemplate), HttpPost]
+        public async Task<ActionResult> ExportTemplate()
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            MemoryStream MemoryStream = new MemoryStream();
+            string tempPath = "Templates/Brand_Export.xlsx";
+            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            {
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                var nameexcel = "Export nhãn hiệu" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff");
+                xlPackage.Workbook.Properties.Title = string.Format("{0}", nameexcel);
+                xlPackage.Workbook.Properties.Author = "Sonhx5";
+                xlPackage.Workbook.Properties.Subject = string.Format("{0}", "RD-DMS");
+                xlPackage.Workbook.Properties.Category = "RD-DMS";
+                xlPackage.Workbook.Properties.Company = "FPT-FIS-ERP-ESC";
+                xlPackage.SaveAs(MemoryStream);
+            }
+
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Brand" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
         }
 
         [Route(BrandRoute.BulkDelete), HttpPost]
@@ -219,6 +296,7 @@ namespace DMS.Rpc.brand
             Brand.Id = Brand_BrandDTO.Id;
             Brand.Code = Brand_BrandDTO.Code;
             Brand.Name = Brand_BrandDTO.Name;
+            Brand.Description = Brand_BrandDTO.Description;
             Brand.StatusId = Brand_BrandDTO.StatusId;
             Brand.Status = Brand_BrandDTO.Status == null ? null : new Status
             {
@@ -242,6 +320,7 @@ namespace DMS.Rpc.brand
             BrandFilter.Id = Brand_BrandFilterDTO.Id;
             BrandFilter.Code = Brand_BrandFilterDTO.Code;
             BrandFilter.Name = Brand_BrandFilterDTO.Name;
+            BrandFilter.Description = Brand_BrandFilterDTO.Description;
             BrandFilter.StatusId = Brand_BrandFilterDTO.StatusId;
             return BrandFilter;
         }
