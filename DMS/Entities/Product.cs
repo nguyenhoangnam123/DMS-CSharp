@@ -124,5 +124,6 @@ namespace DMS.Entities
         TechnicalName = E._16,
         Note = E._17,
         ERPCode = E._18,
+        ProductProductGroupingMapping = E._19
     }
 }

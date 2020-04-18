@@ -326,7 +326,22 @@ namespace DMS.Repositories
                     UnitOfMeasureId = q.UnitOfMeasureGrouping.UnitOfMeasureId,
                     StatusId = q.UnitOfMeasureGrouping.StatusId,
                 } : null,
-            }).ToListAsync();
+                ProductProductGroupingMappings = filter.Selects.Contains(ProductSelect.ProductProductGroupingMapping) && q.ProductProductGroupingMappings != null ?
+                q.ProductProductGroupingMappings.Select(p => new ProductProductGroupingMapping 
+                {
+                    ProductId = p.ProductId,
+                    ProductGroupingId = p.ProductGroupingId,
+                    ProductGrouping = new ProductGrouping
+                    {
+                        Id = p.ProductGrouping.Id,
+                        Code = p.ProductGrouping.Code,
+                        Name = p.ProductGrouping.Name,
+                        ParentId = p.ProductGrouping.ParentId,
+                        Path = p.ProductGrouping.Path,
+                        Description = p.ProductGrouping.Description,
+                    },
+                }).ToList() : null,
+        }).ToListAsync();
             return Products;
         }
 
