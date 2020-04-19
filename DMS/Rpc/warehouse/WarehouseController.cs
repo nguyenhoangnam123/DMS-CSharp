@@ -512,6 +512,7 @@ namespace DMS.Rpc.warehouse
             return Warehouse_DistrictDTOs;
         }
 
+        [Route(WarehouseRoute.SingleListOrganization), HttpPost]
         public async Task<List<Warehouse_OrganizationDTO>> SingleListOrganization([FromBody] Warehouse_OrganizationFilterDTO Warehouse_OrganizationFilterDTO)
         {
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
