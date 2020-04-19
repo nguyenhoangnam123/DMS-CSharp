@@ -16,6 +16,8 @@ using DMS.Services.MProvince;
 using DMS.Services.MStatus;
 using DMS.Services.MWard;
 using DMS.Services.MItem;
+using DMS.Enums;
+using DMS.Services.MOrganization;
 
 namespace DMS.Rpc.warehouse
 {
@@ -34,6 +36,7 @@ namespace DMS.Rpc.warehouse
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
         public const string SingleListDistrict = Default + "/single-list-district";
+        public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListProvince = Default + "/single-list-province";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListWard = Default + "/single-list-ward";
@@ -55,6 +58,7 @@ namespace DMS.Rpc.warehouse
     public class WarehouseController : RpcController
     {
         private IDistrictService DistrictService;
+        private IOrganizationService OrganizationService;
         private IProvinceService ProvinceService;
         private IStatusService StatusService;
         private IWardService WardService;
@@ -63,6 +67,7 @@ namespace DMS.Rpc.warehouse
         private ICurrentContext CurrentContext;
         public WarehouseController(
             IDistrictService DistrictService,
+            IOrganizationService OrganizationService,
             IProvinceService ProvinceService,
             IStatusService StatusService,
             IWardService WardService,
@@ -72,6 +77,7 @@ namespace DMS.Rpc.warehouse
         )
         {
             this.DistrictService = DistrictService;
+            this.OrganizationService = OrganizationService;
             this.ProvinceService = ProvinceService;
             this.StatusService = StatusService;
             this.WardService = WardService;
@@ -504,6 +510,26 @@ namespace DMS.Rpc.warehouse
             List<Warehouse_DistrictDTO> Warehouse_DistrictDTOs = Districts
                 .Select(x => new Warehouse_DistrictDTO(x)).ToList();
             return Warehouse_DistrictDTOs;
+        }
+
+        public async Task<List<Warehouse_OrganizationDTO>> SingleListOrganization([FromBody] Warehouse_OrganizationFilterDTO Warehouse_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = int.MaxValue;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            OrganizationFilter.Code = Warehouse_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = Warehouse_OrganizationFilterDTO.Name;
+            OrganizationFilter.Path = Warehouse_OrganizationFilterDTO.Path;
+            OrganizationFilter.Level = Warehouse_OrganizationFilterDTO.Level;
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<Warehouse_OrganizationDTO> Warehouse_OrganizationDTOs = Organizations
+                .Select(x => new Warehouse_OrganizationDTO(x)).ToList();
+            return Warehouse_OrganizationDTOs;
         }
         [Route(WarehouseRoute.SingleListProvince), HttpPost]
         public async Task<List<Warehouse_ProvinceDTO>> SingleListProvince([FromBody] Warehouse_ProvinceFilterDTO Warehouse_ProvinceFilterDTO)
