@@ -334,8 +334,8 @@ namespace DMS.Rpc.warehouse
                         Inventory.SaleStock,
                         Inventory.AccountingStock
                     });
-                    excel.GenerateWorksheet("Inventory", InventoryHeaders, data);
                 }
+                excel.GenerateWorksheet("Inventory", InventoryHeaders, data);
 
                 data.Clear();
                 var WarehouseHeader = new List<string[]>()
