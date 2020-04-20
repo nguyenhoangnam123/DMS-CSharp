@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
@@ -6,12 +6,14 @@ using DMS.Services.MMenu;
 using DMS.Services.MPermission;
 using DMS.Services.MRole;
 using DMS.Services.MStatus;
-using Helpers;
+using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace DMS.Rpc.role
 {
@@ -26,8 +28,11 @@ namespace DMS.Rpc.role
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
+        public const string AssignAppUser = Default + "/assign-app-user";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
+        public const string ExportTemplate = Default + "/export-template";
+
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListStatus = Default + "/single-list-status";
@@ -48,18 +53,21 @@ namespace DMS.Rpc.role
         private IAppUserService AppUserService;
         private IMenuService MenuService;
         private IRoleService RoleService;
+        private IPermissionService PermissionService;
         private IStatusService StatusService;
 
         public RoleController(
             IAppUserService AppUserService,
             IMenuService MenuService,
             IRoleService RoleService,
+            IPermissionService PermissionService,
             IStatusService StatusService
         )
         {
             this.AppUserService = AppUserService;
             this.MenuService = MenuService;
             this.RoleService = RoleService;
+            this.PermissionService = PermissionService;
             this.StatusService = StatusService;
         }
 
@@ -156,11 +164,36 @@ namespace DMS.Rpc.role
                 return BadRequest(Role_RoleDTO);
         }
 
+        [Route(RoleRoute.AssignAppUser), HttpPost]
+        public async Task<ActionResult<Role_RoleDTO>> AssignAppUser([FromBody] Role_RoleDTO Role_RoleDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Role_RoleDTO.Id))
+                return Forbid();
+
+            Role Role = ConvertDTOToEntity(Role_RoleDTO);
+            Role = await RoleService.AssignAppUser(Role);
+            Role_RoleDTO = new Role_RoleDTO(Role);
+            if (Role.IsValidated)
+                return Role_RoleDTO;
+            else
+                return BadRequest(Role_RoleDTO);
+        }
+
         [Route(RoleRoute.Import), HttpPost]
         public async Task<ActionResult<List<Role_RoleDTO>>> Import(IFormFile file)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            List<Menu> MenusInDB = await MenuService.List(new MenuFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = MenuSelect.ALL
+            });
 
             DataFile DataFile = new DataFile
             {
@@ -168,25 +201,287 @@ namespace DMS.Rpc.role
                 Content = file.OpenReadStream(),
             };
 
-            List<Role> Roles = await RoleService.Import(DataFile);
+            List<Role> Roles = new List<Role>();
+            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+            {
+                #region page sheet
+                ExcelWorksheet pageWorkSheet = excelPackage.Workbook.Worksheets[0];
+                if (pageWorkSheet == null)
+                    return null;
+                int StartColumn = 1;
+                int StartRow = 1;
+
+                int RoleCodeColumn = 0 + StartColumn;
+                int RoleNameColumn = 1 + StartColumn;
+                int PermissionCodeColumn = 2 + StartColumn;
+                int PermissionNameColumn = 3 + StartColumn;
+                int MenuCodeColumn = 4 + StartColumn;
+                int PagePathColumn = 5 + StartColumn;
+
+                for (int i = StartRow; i <= pageWorkSheet.Dimension.End.Row; i++)
+                {
+                    string RoleCodeValue = pageWorkSheet.Cells[i + StartRow, RoleCodeColumn].Value?.ToString();
+                    string RoleNameValue = pageWorkSheet.Cells[i + StartRow, RoleNameColumn].Value?.ToString();
+                    string PermissionCodeValue = pageWorkSheet.Cells[i + StartRow, PermissionCodeColumn].Value?.ToString();
+                    string PermissionNameValue = pageWorkSheet.Cells[i + StartRow, PermissionNameColumn].Value?.ToString();
+                    string MenuCodeValue = pageWorkSheet.Cells[i + StartRow, MenuCodeColumn].Value?.ToString();
+                    string PagePathValue = pageWorkSheet.Cells[i + StartRow, PagePathColumn].Value?.ToString();
+
+                    if (string.IsNullOrEmpty(RoleCodeValue))
+                        continue;
+
+                    var Role = Roles.Where(r => r.Code == RoleCodeValue).FirstOrDefault();
+                    if (Role == null)
+                    {
+                        Role = new Role
+                        {
+                            Code = RoleCodeValue,
+                            Name = RoleNameValue,
+                            Permissions = new List<Permission>()
+                        };
+
+                        Permission Permission = new Permission
+                        {
+                            Code = PermissionCodeValue,
+                            Name = PermissionNameValue,
+                            PermissionPageMappings = new List<PermissionPageMapping>()
+                        };
+
+                        var Menu = MenusInDB.Where(m => m.Code == MenuCodeValue).FirstOrDefault();
+                        if (Menu == null) continue;
+
+                        var Page = Menu.Pages.Where(p => p.Path == PagePathValue).FirstOrDefault();
+                        if (Page == null) continue;
+                        Permission.PermissionPageMappings.Add(new PermissionPageMapping { PageId = Page.Id, Page = Page });
+                        Role.Permissions.Add(Permission);
+                        Roles.Add(Role);
+                    }
+                    else
+                    {
+                        Permission Permission = Role.Permissions.Where(p => p.Code == PermissionCodeValue).FirstOrDefault();
+                        if (Permission == null)
+                        {
+                            Permission = new Permission
+                            {
+                                Code = PermissionCodeValue,
+                                Name = PermissionNameValue,
+                                PermissionPageMappings = new List<PermissionPageMapping>()
+                            };
+
+                            var Menu = MenusInDB.Where(m => m.Code == MenuCodeValue).FirstOrDefault();
+                            if (Menu == null) continue;
+
+                            var Page = Menu.Pages.Where(p => p.Path == PagePathValue).FirstOrDefault();
+                            if (Page == null) continue;
+                            Permission.PermissionPageMappings.Add(new PermissionPageMapping { PageId = Page.Id, Page = Page });
+                            Role.Permissions.Add(Permission);
+                        }
+                        else
+                        {
+                            if (!Permission.PermissionPageMappings.Any(p => p.Page.Path == PagePathValue))
+                            {
+                                var Menu = MenusInDB.Where(m => m.Code == MenuCodeValue).FirstOrDefault();
+                                if (Menu == null) continue;
+
+                                var Page = Menu.Pages.Where(p => p.Path == PagePathValue).FirstOrDefault();
+                                if (Page == null) continue;
+                                Permission.PermissionPageMappings.Add(new PermissionPageMapping { PageId = Page.Id, Page = Page });
+                            }
+                        }
+                    }
+                }
+                #endregion
+
+                #region field sheet
+                ExcelWorksheet fieldWorkSheet = excelPackage.Workbook.Worksheets[1];
+                if (fieldWorkSheet == null)
+                    return null;
+                StartColumn = 1;
+                StartRow = 1;
+
+                RoleCodeColumn = 0 + StartColumn;
+                RoleNameColumn = 1 + StartColumn;
+                PermissionCodeColumn = 2 + StartColumn;
+                PermissionNameColumn = 3 + StartColumn;
+                MenuCodeColumn = 4 + StartColumn;
+                int FieldNameColumn = 5 + StartColumn;
+                int FieldValueColumn = 5 + StartColumn;
+
+                for (int i = StartRow; i <= fieldWorkSheet.Dimension.End.Row; i++)
+                {
+                    string RoleCodeValue = fieldWorkSheet.Cells[i + StartRow, RoleCodeColumn].Value?.ToString();
+                    string RoleNameValue = fieldWorkSheet.Cells[i + StartRow, RoleNameColumn].Value?.ToString();
+                    string PermissionCodeValue = fieldWorkSheet.Cells[i + StartRow, PermissionCodeColumn].Value?.ToString();
+                    string PermissionNameValue = fieldWorkSheet.Cells[i + StartRow, PermissionNameColumn].Value?.ToString();
+                    string MenuCodeValue = fieldWorkSheet.Cells[i + StartRow, MenuCodeColumn].Value?.ToString();
+                    string FieldNameValue = fieldWorkSheet.Cells[i + StartRow, FieldNameColumn].Value?.ToString();
+                    string FieldValueValue = fieldWorkSheet.Cells[i + StartRow, FieldValueColumn].Value?.ToString();
+
+                    if (string.IsNullOrEmpty(RoleCodeValue))
+                        continue;
+
+                    var Role = Roles.Where(r => r.Code == RoleCodeValue).FirstOrDefault();
+                    if (Role == null)
+                    {
+                        Role = new Role
+                        {
+                            Code = RoleCodeValue,
+                            Name = RoleNameValue,
+                            Permissions = new List<Permission>()
+                        };
+
+                        Permission Permission = new Permission
+                        {
+                            Code = PermissionCodeValue,
+                            Name = PermissionNameValue,
+                            PermissionFieldMappings = new List<PermissionFieldMapping>()
+                        };
+
+                        var Menu = MenusInDB.Where(m => m.Code == MenuCodeValue).FirstOrDefault();
+                        if (Menu == null) continue;
+
+                        var Field = Menu.Fields.Where(p => p.Name == FieldNameValue).FirstOrDefault();
+                        if (Field == null) continue;
+                        Permission.PermissionFieldMappings.Add(new PermissionFieldMapping { FieldId = Field.Id, Field = Field, Value = FieldValueValue });
+                        Role.Permissions.Add(Permission);
+                        Roles.Add(Role);
+                    }
+                    else
+                    {
+                        Permission Permission = Role.Permissions.Where(p => p.Code == PermissionCodeValue).FirstOrDefault();
+                        if (Permission == null)
+                        {
+                            Permission = new Permission
+                            {
+                                Code = PermissionCodeValue,
+                                Name = PermissionNameValue,
+                                PermissionFieldMappings = new List<PermissionFieldMapping>()
+                            };
+
+                            var Menu = MenusInDB.Where(m => m.Code == MenuCodeValue).FirstOrDefault();
+                            if (Menu == null) continue;
+
+                            var Field = Menu.Fields.Where(p => p.Name == FieldNameValue).FirstOrDefault();
+                            if (Field == null) continue;
+                            Permission.PermissionFieldMappings.Add(new PermissionFieldMapping { FieldId = Field.Id, Field = Field, Value = FieldValueValue });
+                            Role.Permissions.Add(Permission);
+                        }
+                        else
+                        {
+                            if (!Permission.PermissionFieldMappings.Any(p => p.Field.Name == FieldNameValue))
+                            {
+                                var Menu = MenusInDB.Where(m => m.Code == MenuCodeValue).FirstOrDefault();
+                                if (Menu == null) continue;
+
+                                var Field = Menu.Fields.Where(p => p.Name == FieldNameValue).FirstOrDefault();
+                                if (Field == null) continue;
+                                Permission.PermissionFieldMappings.Add(new PermissionFieldMapping { FieldId = Field.Id, Field = Field, Value = FieldValueValue });
+                            }
+                        }
+                    }
+                }
+                #endregion
+            }
+            Roles = await RoleService.Import(Roles);
             List<Role_RoleDTO> Role_RoleDTOs = Roles
                 .Select(c => new Role_RoleDTO(c)).ToList();
             return Role_RoleDTOs;
         }
 
         [Route(RoleRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] Role_RoleFilterDTO Role_RoleFilterDTO)
+        public async Task<FileResult> Export([FromBody] Role_RoleFilterDTO Role_RoleFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
             RoleFilter RoleFilter = ConvertFilterDTOToFilterEntity(Role_RoleFilterDTO);
+            RoleFilter.Skip = 0;
+            RoleFilter.Take = int.MaxValue;
+            RoleFilter.Selects = RoleSelect.ALL;
             RoleFilter = RoleService.ToFilter(RoleFilter);
-            DataFile DataFile = await RoleService.Export(RoleFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
+
+            List<Role> Roles = await RoleService.List(RoleFilter);
+            MemoryStream MemoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(MemoryStream))
             {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
+                var FieldHeader = new List<string[]>()
+                {
+                    new string[] { "Mã vai trò", "Tên vai trò", "Mã quyền","Tên quyền", "Menu", "Field", "Giá trị"}
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < Roles.Count; i++)
+                {
+                    Role Role = Roles[i];
+                    if (Role.Permissions != null)
+                        foreach (var rolePermission in Role.Permissions)
+                        {
+                            foreach (var permissionFieldMapping in rolePermission.PermissionFieldMappings)
+                            {
+                                data.Add(new object[] {
+                                Role.Code,
+                                Role.Name,
+                                rolePermission.Code,
+                                rolePermission.Name,
+                                rolePermission.Menu.Code,
+                                permissionFieldMapping.Field.Name,
+                                permissionFieldMapping.Value,
+                                });
+                            }
+
+                        }
+                    excel.GenerateWorksheet("Role_Field", FieldHeader, data);
+                }
+                data.Clear();
+                var PageHeader = new List<string[]>()
+                {
+                    new string[] { "Mã vai trò", "Tên vai trò", "Mã quyền", "Tên quyền", "Menu", "Page Path" }
+                };
+                for (int i = 0; i < Roles.Count; i++)
+                {
+                    Role Role = Roles[i];
+                    if (Role.Permissions != null)
+                        foreach (var rolePermission in Role.Permissions)
+                        {
+                            foreach (var permissionPageMapping in rolePermission.PermissionPageMappings)
+                            {
+                                data.Add(new object[] {
+                                Role.Code,
+                                Role.Name,
+                                rolePermission.Code,
+                                rolePermission.Name,
+                                rolePermission.Menu.Code,
+                                permissionPageMapping.Page.Path
+                                });
+                            }
+
+                        }
+                }
+                excel.GenerateWorksheet("Role_Page", FieldHeader, data);
+                excel.Save();
+            }
+
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Role.xlsx");
+        }
+
+        [Route(RoleRoute.ExportTemplate), HttpPost]
+        public async Task<ActionResult> ExportTemplate()
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            MemoryStream MemoryStream = new MemoryStream();
+            string tempPath = "Templates/Role_Export.xlsx";
+            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            {
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                var nameexcel = "Export vai trò" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff");
+                xlPackage.Workbook.Properties.Title = string.Format("{0}", nameexcel);
+                xlPackage.Workbook.Properties.Author = "Sonhx5";
+                xlPackage.Workbook.Properties.Subject = string.Format("{0}", "RD-DMS");
+                xlPackage.Workbook.Properties.Category = "RD-DMS";
+                xlPackage.Workbook.Properties.Company = "FPT-FIS-ERP-ESC";
+                xlPackage.SaveAs(MemoryStream);
+            }
+
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Role" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)
@@ -214,26 +509,11 @@ namespace DMS.Rpc.role
             Role.Code = Role_RoleDTO.Code;
             Role.Name = Role_RoleDTO.Name;
             Role.StatusId = Role_RoleDTO.StatusId;
-            Role.AppUserRoleMappings = Role_RoleDTO.AppUserRoleMappings?
-                .Select(x => new AppUserRoleMapping
-                {
-                    AppUserId = x.AppUserId,
-                    RoleId = x.RoleId,
-                    AppUser = new AppUser
-                    {
-                        Id = x.AppUser.Id,
-                        Username = x.AppUser.Username,
-                        Password = x.AppUser.Password,
-                        DisplayName = x.AppUser.DisplayName,
-                        Email = x.AppUser.Email,
-                        Phone = x.AppUser.Phone,
-                        StatusId = x.AppUser.StatusId,
-                    },
-                }).ToList();
             Role.Permissions = Role_RoleDTO.Permissions?
                 .Select(x => new Permission
                 {
                     Id = x.Id,
+                    Code = x.Code,
                     Name = x.Name,
                     RoleId = x.RoleId,
                     MenuId = x.MenuId,
@@ -241,12 +521,38 @@ namespace DMS.Rpc.role
                     Menu = new Menu
                     {
                         Id = x.Menu.Id,
+                        Code = x.Menu.Code,
                         Name = x.Menu.Name,
                         Path = x.Menu.Path,
                         IsDeleted = x.Menu.IsDeleted,
+                        Fields = x.Menu.Fields?.Select(f => new Field
+                        {
+                            Id = f.Id,
+                            Name = f.Name,
+                            Type = f.Type,
+                        }).ToList(),
+                        Pages = x.Menu.Pages?.Select(p => new Page
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            Path = p.Path,
+                        }).ToList(),
                     },
+                    PermissionFieldMappings = x.PermissionFieldMappings?.Select(pf => new PermissionFieldMapping
+                    {
+                        FieldId = pf.FieldId
+                    }).ToList(),
+                    PermissionPageMappings = x.PermissionPageMappings?.Select(pp => new PermissionPageMapping
+                    {
+                        PageId = pp.PageId,
+                    }).ToList(),
                 }).ToList();
-
+            Role.AppUserRoleMappings = Role_RoleDTO.AppUserRoleMappings?
+                .Select(x => new AppUserRoleMapping
+                {
+                    AppUserId = x.AppUserId,
+                    RoleId = x.RoleId
+                }).ToList();
             return Role;
         }
 
@@ -277,7 +583,6 @@ namespace DMS.Rpc.role
             AppUserFilter.Selects = AppUserSelect.ALL;
             AppUserFilter.Id = Role_AppUserFilterDTO.Id;
             AppUserFilter.Username = Role_AppUserFilterDTO.Username;
-            AppUserFilter.Password = Role_AppUserFilterDTO.Password;
             AppUserFilter.DisplayName = Role_AppUserFilterDTO.DisplayName;
             AppUserFilter.Email = Role_AppUserFilterDTO.Email;
             AppUserFilter.Phone = Role_AppUserFilterDTO.Phone;
@@ -298,6 +603,7 @@ namespace DMS.Rpc.role
             MenuFilter.OrderType = OrderType.ASC;
             MenuFilter.Selects = MenuSelect.ALL;
             MenuFilter.Id = Role_MenuFilterDTO.Id;
+            MenuFilter.Code = Role_MenuFilterDTO.Code;
             MenuFilter.Name = Role_MenuFilterDTO.Name;
             MenuFilter.Path = Role_MenuFilterDTO.Path;
 
@@ -328,6 +634,13 @@ namespace DMS.Rpc.role
         public async Task<long> CountAppUser([FromBody] Role_AppUserFilterDTO Role_AppUserFilterDTO)
         {
             AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Id = Role_AppUserFilterDTO.Id;
+            AppUserFilter.Username = Role_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = Role_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Email = Role_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = Role_AppUserFilterDTO.Phone;
+            AppUserFilter.OrganizationId = Role_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             return await AppUserService.Count(AppUserFilter);
         }
@@ -341,6 +654,13 @@ namespace DMS.Rpc.role
             AppUserFilter.OrderBy = AppUserOrder.Id;
             AppUserFilter.OrderType = OrderType.ASC;
             AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = Role_AppUserFilterDTO.Id;
+            AppUserFilter.Username = Role_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = Role_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Email = Role_AppUserFilterDTO.Email;
+            AppUserFilter.OrganizationId = Role_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.Phone = Role_AppUserFilterDTO.Phone;
+            AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<Role_AppUserDTO> Role_AppUserDTOs = AppUsers

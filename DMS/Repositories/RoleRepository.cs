@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -116,19 +117,19 @@ namespace DMS.Repositories
                 Code = filter.Selects.Contains(RoleSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(RoleSelect.Name) ? q.Name : default(string),
                 StatusId = filter.Selects.Contains(RoleSelect.Status) ? q.StatusId : default(long),
-                Status = filter.Selects.Contains(RoleSelect.Status) && q.Status != null ? new Status
+                Status = filter.Selects.Contains(RoleSelect.Status) && q.Status == null ? null : new Status
                 {
                     Id = q.Status.Id,
                     Code = q.Status.Code,
                     Name = q.Status.Name,
-                } : null,
+                },
             }).ToListAsync();
             return Roles;
         }
 
         public async Task<int> Count(RoleFilter filter)
         {
-            IQueryable<RoleDAO> Roles = DataContext.Role;
+            IQueryable<RoleDAO> Roles = DataContext.Role.AsNoTracking();
             Roles = DynamicFilter(Roles, filter);
             return await Roles.CountAsync();
         }
@@ -147,22 +148,22 @@ namespace DMS.Repositories
         {
             Role Role = await DataContext.Role.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new Role()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                StatusId = x.StatusId,
-                Status = x.Status == null ? null : new Status
                 {
-                    Id = x.Status.Id,
-                    Code = x.Status.Code,
-                    Name = x.Status.Name,
-                },
-            }).FirstOrDefaultAsync();
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    StatusId = x.StatusId,
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
+                }).FirstOrDefaultAsync();
             if (Role == null)
                 return null;
             Role.AppUserRoleMappings = await DataContext.AppUserRoleMapping
-                .Where(x => x.RoleId == Role.Id)
+                .Where(x => x.RoleId == Role.Id && x.AppUser.StatusId == StatusEnum.ACTIVE.Id)
                 .Select(x => new AppUserRoleMapping
                 {
                     AppUserId = x.AppUserId,
@@ -171,45 +172,59 @@ namespace DMS.Repositories
                     {
                         Id = x.AppUser.Id,
                         Username = x.AppUser.Username,
-                        Password = x.AppUser.Password,
                         DisplayName = x.AppUser.DisplayName,
                         Email = x.AppUser.Email,
                         Phone = x.AppUser.Phone,
+                        Address = x.AppUser.Address,
+                        Department = x.AppUser.Department,
+                        Position = x.AppUser.Position,
+                        RowId = x.AppUser.RowId,
+                        SexId = x.AppUser.SexId,
                         StatusId = x.AppUser.StatusId,
+                        OrganizationId = x.AppUser.OrganizationId,
+                        Organization = x.AppUser.Organization == null ? null : new Organization
+                        {
+                            Id = x.AppUser.Organization.Id,
+                            Code = x.AppUser.Organization.Code,
+                            Name = x.AppUser.Organization.Name,
+                        },
                     },
                 }).ToListAsync();
-            Role.Permissions = await DataContext.Permission.Include(p => p.PermissionFieldMappings).Include(p => p.PermissionPageMappings)
+            List<Menu> Menus = await DataContext.Menu.Where(m => m.Permissions.Any(p => p.RoleId == Role.Id))
+                .Select(x => new Menu
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Code = x.Code,
+                    Path = x.Path,
+                    IsDeleted = x.IsDeleted,
+                    Fields = x.Fields.Select(f => new Field
+                    {
+                        Id = f.Id,
+                        MenuId = f.MenuId,
+                        Name = f.Name,
+                        Type = f.Type,
+                        IsDeleted = f.IsDeleted
+                    }).ToList(),
+                    Pages = x.Pages.Select(p => new Page
+                    {
+                        Id = p.Id,
+                        MenuId = p.MenuId,
+                        Name = p.Name,
+                        Path = p.Path,
+                        IsDeleted = p.IsDeleted
+                    }).ToList()
+                }).ToListAsync();
+            Role.Permissions = await DataContext.Permission
                 .Where(x => x.RoleId == Role.Id)
                 .Select(x => new Permission
                 {
                     Id = x.Id,
                     Name = x.Name,
+                    Code = x.Code,
                     RoleId = x.RoleId,
                     MenuId = x.MenuId,
                     StatusId = x.StatusId,
-                    Menu = new Menu
-                    {
-                        Id = x.Menu.Id,
-                        Name = x.Menu.Name,
-                        Path = x.Menu.Path,
-                        IsDeleted = x.Menu.IsDeleted,
-                        Fields = x.Menu.Fields.Select(f => new Field
-                        {
-                            Id = f.Id,
-                            MenuId = f.MenuId,
-                            Name = f.Name,
-                            Type = f.Type,
-                            IsDeleted = f.IsDeleted
-                        }).ToList(),
-                        Pages = x.Menu.Pages.Select(p => new Page
-                        {
-                            Id = p.Id,
-                            MenuId = p.MenuId,
-                            Name = p.Name,
-                            Path = p.Path,
-                            IsDeleted = p.IsDeleted
-                        }).ToList()
-                    },
                     PermissionFieldMappings = x.PermissionFieldMappings.Select(pf => new PermissionFieldMapping
                     {
                         PermissionId = pf.PermissionId,
@@ -222,6 +237,10 @@ namespace DMS.Repositories
                         PageId = pp.PageId,
                     }).ToList()
                 }).ToListAsync();
+            Role.Permissions.ForEach(p =>
+            {
+                p.Menu = Menus.Where(m => m.Id == p.MenuId).FirstOrDefault();
+            });
             return Role;
         }
         public async Task<bool> Create(Role Role)
@@ -254,6 +273,9 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Role Role)
         {
+            await DataContext.PermissionPageMapping.Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
+            await DataContext.PermissionFieldMapping.Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
+            await DataContext.Permission.Where(x => x.RoleId == Role.Id).DeleteFromQueryAsync();
             await DataContext.Role.Where(x => x.Id == Role.Id).DeleteFromQueryAsync();
             return true;
         }
@@ -294,14 +316,19 @@ namespace DMS.Repositories
                 {
                     AppUserRoleMappingDAO AppUserRoleMappingDAO = new AppUserRoleMappingDAO();
                     AppUserRoleMappingDAO.AppUserId = AppUserRoleMapping.AppUserId;
-                    AppUserRoleMappingDAO.RoleId = AppUserRoleMapping.RoleId;
+                    AppUserRoleMappingDAO.RoleId = Role.Id;
                     AppUserRoleMappingDAOs.Add(AppUserRoleMappingDAO);
                 }
                 await DataContext.AppUserRoleMapping.BulkMergeAsync(AppUserRoleMappingDAOs);
             }
+
+            await DataContext.PermissionFieldMapping
+               .Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
+            await DataContext.PermissionPageMapping
+             .Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
             await DataContext.Permission
-                .Where(x => x.RoleId == Role.Id)
-                .DeleteFromQueryAsync();
+                .Where(x => x.RoleId == Role.Id).DeleteFromQueryAsync();
+
             List<PermissionDAO> PermissionDAOs = new List<PermissionDAO>();
             if (Role.Permissions != null)
             {
@@ -309,6 +336,7 @@ namespace DMS.Repositories
                 {
                     PermissionDAO PermissionDAO = new PermissionDAO();
                     PermissionDAO.Id = Permission.Id;
+                    PermissionDAO.Code = Permission.Code;
                     PermissionDAO.Name = Permission.Name;
                     PermissionDAO.RoleId = Permission.RoleId;
                     PermissionDAO.MenuId = Permission.MenuId;

@@ -11,6 +11,7 @@ namespace DMS.Services.MRole
     {
         Task<bool> Create(Role Role);
         Task<bool> Update(Role Role);
+        Task<bool> AssignAppUser(Role Role);
         Task<bool> Delete(Role Role);
         Task<bool> BulkDelete(List<Role> Roles);
         Task<bool> Import(List<Role> Roles);
@@ -26,7 +27,8 @@ namespace DMS.Services.MRole
             NameExisted,
             StatusNotExisted,
             PageNotExisted,
-            FieldNotExisted
+            FieldNotExisted,
+            AppUserNotExisted
         }
 
         private IUOW UOW;
@@ -147,6 +149,32 @@ namespace DMS.Services.MRole
             return Menu.IsValidated;
         }
 
+        private async Task<bool> ValidateAssignAppUser(Role Role)
+        {
+            List<long> ids = Role.AppUserRoleMappings.Select(a => a.AppUserId).ToList();
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Id = new IdFilter { In = ids },
+                OrganizationId = new IdFilter(),
+                Selects = AppUserSelect.Id,
+                OrderBy = AppUserOrder.Id,
+            };
+
+            var listInDB = await UOW.AppUserRepository.List(AppUserFilter);
+            var listExcept = Role.AppUserRoleMappings.Select(a => a.AppUserId).Except(listInDB.Select(a => a.Id));
+            if (listExcept.Any())
+            {
+                foreach (var AppUserID in listExcept)
+                {
+                    Role.AddError(nameof(RoleValidator), AppUserID.ToString(), ErrorCode.AppUserNotExisted);
+                }
+            }
+
+            return Role.IsValidated;
+        }
+
         public async Task<bool> Create(Role Role)
         {
             await ValidateCode(Role);
@@ -160,6 +188,15 @@ namespace DMS.Services.MRole
             {
                 await ValidateCode(Role);
                 await ValidateStatus(Role);
+            }
+            return Role.IsValidated;
+        }
+
+        public async Task<bool> AssignAppUser(Role Role)
+        {
+            if (await ValidateId(Role))
+            {
+                await ValidateAssignAppUser(Role);
             }
             return Role.IsValidated;
         }

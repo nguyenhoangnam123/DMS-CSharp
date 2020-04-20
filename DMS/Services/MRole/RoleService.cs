@@ -18,10 +18,10 @@ namespace DMS.Services.MRole
         Task<Role> Get(long Id);
         Task<Role> Create(Role Role);
         Task<Role> Update(Role Role);
+        Task<Role> AssignAppUser(Role Role);
         Task<Role> Delete(Role Role);
         Task<List<Role>> BulkDelete(List<Role> Roles);
-        Task<List<Role>> Import(DataFile DataFile);
-        Task<DataFile> Export(RoleFilter RoleFilter);
+        Task<List<Role>> Import(List<Role> Roles);
         RoleFilter ToFilter(RoleFilter RoleFilter);
     }
 
@@ -120,7 +120,36 @@ namespace DMS.Services.MRole
                 var oldData = await UOW.RoleRepository.Get(Role.Id);
 
                 await UOW.Begin();
+                Role.AppUserRoleMappings = oldData.AppUserRoleMappings;
+                Role.Permissions = oldData.Permissions;
                 await UOW.RoleRepository.Update(Role);
+                await UOW.Commit();
+
+                var newData = await UOW.RoleRepository.Get(Role.Id);
+                await Logging.CreateAuditLog(newData, oldData, nameof(RoleService));
+                return newData;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+        }
+
+        public async Task<Role> AssignAppUser(Role Role)
+        {
+            if (!await RoleValidator.AssignAppUser(Role))
+                return Role;
+            try
+            {
+                var oldData = await UOW.RoleRepository.Get(Role.Id);
+                oldData.AppUserRoleMappings = Role.AppUserRoleMappings;
+                await UOW.Begin();
+                await UOW.RoleRepository.Update(oldData);
                 await UOW.Commit();
 
                 var newData = await UOW.RoleRepository.Get(Role.Id);
@@ -186,35 +215,8 @@ namespace DMS.Services.MRole
             }
         }
 
-        public async Task<List<Role>> Import(DataFile DataFile)
+        public async Task<List<Role>> Import(List<Role> Roles)
         {
-            List<Role> Roles = new List<Role>();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
-            {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return Roles;
-                int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int StatusIdColumn = 3 + StartColumn;
-                for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
-                {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, IdColumn].Value?.ToString()))
-                        break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    Role Role = new Role();
-                    Role.Code = CodeValue;
-                    Role.Name = NameValue;
-                    Roles.Add(Role);
-                }
-            }
-
             if (!await RoleValidator.Import(Roles))
                 return Roles;
 
@@ -223,6 +225,30 @@ namespace DMS.Services.MRole
                 Roles.ForEach(r => r.Id = 0);
                 await UOW.Begin();
                 await UOW.RoleRepository.BulkMerge(Roles);
+                var listRolesInDb = await UOW.RoleRepository.List(new RoleFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = RoleSelect.ALL
+                });
+
+                List<Permission> Permissions = new List<Permission>();
+                foreach (var Role in Roles)
+                {
+                    var r = listRolesInDb.Where(r => r.Code == Role.Code).FirstOrDefault();
+                    Role.Id = r != null ? r.Id : 0;
+                    if (Role.Permissions.Any())
+                    {
+                        foreach (var Permission in Role.Permissions)
+                        {
+                            Permission.RoleId = Role.Id;
+                            Permissions.Add(Permission);
+                        }
+                    }
+                }
+                var listPermissionInDB = Roles.SelectMany(r => r.Permissions).ToList();
+                await UOW.PermissionRepository.BulkDelete(listPermissionInDB);
+                await UOW.PermissionRepository.BulkMerge(Permissions);
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(Roles, new { }, nameof(RoleService));
@@ -237,50 +263,6 @@ namespace DMS.Services.MRole
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }
-
-        public async Task<DataFile> Export(RoleFilter RoleFilter)
-        {
-            List<Role> Roles = await UOW.RoleRepository.List(RoleFilter);
-            MemoryStream MemoryStream = new MemoryStream();
-            using (ExcelPackage excelPackage = new ExcelPackage(MemoryStream))
-            {
-                //Set some properties of the Excel document
-                excelPackage.Workbook.Properties.Author = CurrentContext.UserName;
-                excelPackage.Workbook.Properties.Title = nameof(Role);
-                excelPackage.Workbook.Properties.Created = StaticParams.DateTimeNow;
-
-                //Create the WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
-                int StartColumn = 1;
-                int StartRow = 2;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int StatusIdColumn = 3 + StartColumn;
-
-                worksheet.Cells[1, IdColumn].Value = nameof(Role.Id);
-                worksheet.Cells[1, CodeColumn].Value = nameof(Role.Code);
-                worksheet.Cells[1, NameColumn].Value = nameof(Role.Name);
-                worksheet.Cells[1, StatusIdColumn].Value = nameof(Role.StatusId);
-
-                for (int i = 0; i < Roles.Count; i++)
-                {
-                    Role Role = Roles[i];
-                    worksheet.Cells[i + StartRow, IdColumn].Value = Role.Id;
-                    worksheet.Cells[i + StartRow, CodeColumn].Value = Role.Code;
-                    worksheet.Cells[i + StartRow, NameColumn].Value = Role.Name;
-                    worksheet.Cells[i + StartRow, StatusIdColumn].Value = Role.StatusId;
-                }
-                excelPackage.Save();
-            }
-
-            DataFile DataFile = new DataFile
-            {
-                Name = nameof(Role),
-                Content = MemoryStream,
-            };
-            return DataFile;
         }
 
         public RoleFilter ToFilter(RoleFilter filter)
