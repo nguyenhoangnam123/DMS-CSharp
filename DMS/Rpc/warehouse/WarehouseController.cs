@@ -19,6 +19,7 @@ using DMS.Services.MItem;
 using DMS.Enums;
 using DMS.Services.MOrganization;
 using DMS.Services.MInventoryHistoryHistory;
+using DMS.Services.MInventory;
 
 namespace DMS.Rpc.warehouse
 {
@@ -37,6 +38,7 @@ namespace DMS.Rpc.warehouse
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
+        public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
         public const string SingleListDistrict = Default + "/single-list-district";
         public const string SingleListOrganization = Default + "/single-list-organization";
@@ -61,6 +63,7 @@ namespace DMS.Rpc.warehouse
     public class WarehouseController : RpcController
     {
         private IDistrictService DistrictService;
+        private IInventoryService InventoryService;
         private IInventoryHistoryService InventoryHistoryService;
         private IOrganizationService OrganizationService;
         private IProvinceService ProvinceService;
@@ -71,6 +74,7 @@ namespace DMS.Rpc.warehouse
         private ICurrentContext CurrentContext;
         public WarehouseController(
             IDistrictService DistrictService,
+            IInventoryService InventoryService,
             IInventoryHistoryService InventoryHistoryService,
             IOrganizationService OrganizationService,
             IProvinceService ProvinceService,
@@ -82,6 +86,7 @@ namespace DMS.Rpc.warehouse
         )
         {
             this.DistrictService = DistrictService;
+            this.InventoryService = InventoryService;
             this.InventoryHistoryService = InventoryHistoryService;
             this.OrganizationService = OrganizationService;
             this.ProvinceService = ProvinceService;
@@ -204,39 +209,25 @@ namespace DMS.Rpc.warehouse
         }
         
         [Route(WarehouseRoute.Import), HttpPost]
-        public async Task<ActionResult> Import(IFormFile file)
+        public async Task<ActionResult<List<Warehouse_WarehouseDTO>>> Import(IFormFile file)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            DistrictFilter DistrictFilter = new DistrictFilter
+            ItemFilter ItemFilter = new ItemFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = DistrictSelect.ALL
+                Selects = ItemSelect.ALL
             };
-            List<District> Districts = await DistrictService.List(DistrictFilter);
-            ProvinceFilter ProvinceFilter = new ProvinceFilter
+            List<Item> Items = await ItemService.List(ItemFilter);
+            WarehouseFilter WarehouseFilter = new WarehouseFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = ProvinceSelect.ALL
+                Selects = WarehouseSelect.ALL
             };
-            List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
-            StatusFilter StatusFilter = new StatusFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StatusSelect.ALL
-            };
-            List<Status> Statuses = await StatusService.List(StatusFilter);
-            WardFilter WardFilter = new WardFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = WardSelect.ALL
-            };
-            List<Ward> Wards = await WardService.List(WardFilter);
-            List<Warehouse> Warehouses = new List<Warehouse>();
+            List<Warehouse> Warehouses = await WarehouseService.List(WarehouseFilter);
+            Warehouses.ForEach(w => w.Inventories = new List<Inventory>());
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
@@ -244,137 +235,149 @@ namespace DMS.Rpc.warehouse
                     return Ok(Warehouses);
                 int StartColumn = 1;
                 int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int AddressColumn = 3 + StartColumn;
-                int OrganizationIdColumn = 4 + StartColumn;
-                int ProvinceIdColumn = 5 + StartColumn;
-                int DistrictIdColumn = 6 + StartColumn;
-                int WardIdColumn = 7 + StartColumn;
-                int StatusIdColumn = 8 + StartColumn;
+
+                int WarehouseCodeColumn = 1 + StartColumn;
+                int WarehouseNameColumn = 2 + StartColumn;
+                int ItemCodeColumn = 3 + StartColumn;
+                int ItemNameColumn = 4 + StartColumn;
+                int SaleStockColumn = 5 + StartColumn;
+                int AccountingStockColumn = 6 + StartColumn;
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
                     if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, StartColumn].Value?.ToString()))
                         break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string AddressValue = worksheet.Cells[i + StartRow, AddressColumn].Value?.ToString();
-                    string OrganizationIdValue = worksheet.Cells[i + StartRow, OrganizationIdColumn].Value?.ToString();
-                    string ProvinceIdValue = worksheet.Cells[i + StartRow, ProvinceIdColumn].Value?.ToString();
-                    string DistrictIdValue = worksheet.Cells[i + StartRow, DistrictIdColumn].Value?.ToString();
-                    string WardIdValue = worksheet.Cells[i + StartRow, WardIdColumn].Value?.ToString();
-                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
+                    string WarehouseCodeValue = worksheet.Cells[i + StartRow, WarehouseCodeColumn].Value?.ToString();
+                    string WarehouseNameValue = worksheet.Cells[i + StartRow, WarehouseNameColumn].Value?.ToString();
+                    string ItemCodeValue = worksheet.Cells[i + StartRow, ItemCodeColumn].Value?.ToString();
+                    string ItemNameValue = worksheet.Cells[i + StartRow, ItemNameColumn].Value?.ToString();
+                    string SaleStockValue = worksheet.Cells[i + StartRow, SaleStockColumn].Value?.ToString();
+                    string AccountingStockValue = worksheet.Cells[i + StartRow, AccountingStockColumn].Value?.ToString();
+
+                    Inventory Inventory = new Inventory();
+                    Inventory.SaleStock = string.IsNullOrEmpty(SaleStockValue) ? 0 : long.Parse(SaleStockValue);
+                    Inventory.AccountingStock = string.IsNullOrEmpty(AccountingStockValue) ? 0 : long.Parse(AccountingStockValue);
+                    Inventory.Item = Items.Where(x => x.Code == ItemCodeValue).FirstOrDefault();
+                    Inventory.ItemId = Inventory.Item.Id;
                     
-                    Warehouse Warehouse = new Warehouse();
-                    Warehouse.Code = CodeValue;
-                    Warehouse.Name = NameValue;
-                    Warehouse.Address = AddressValue;
-                    District District = Districts.Where(x => x.Id.ToString() == DistrictIdValue).FirstOrDefault();
-                    Warehouse.DistrictId = District == null ? 0 : District.Id;
-                    Warehouse.District = District;
-                    Province Province = Provinces.Where(x => x.Id.ToString() == ProvinceIdValue).FirstOrDefault();
-                    Warehouse.ProvinceId = Province == null ? 0 : Province.Id;
-                    Warehouse.Province = Province;
-                    Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
-                    Warehouse.StatusId = Status == null ? 0 : Status.Id;
-                    Warehouse.Status = Status;
-                    Ward Ward = Wards.Where(x => x.Id.ToString() == WardIdValue).FirstOrDefault();
-                    Warehouse.WardId = Ward == null ? 0 : Ward.Id;
-                    Warehouse.Ward = Ward;
-                    
-                    Warehouses.Add(Warehouse);
+                    Warehouse Warehouse = Warehouses.Where(x => x.Code == ItemCodeValue).FirstOrDefault();
+                    if (Warehouse == null) continue;
+                    Inventory.Warehouse = Warehouse;
+                    Inventory.WarehouseId = Inventory.Warehouse.Id;
+
+                    Warehouse.Inventories.Add(Inventory);
                 }
             }
             Warehouses = await WarehouseService.Import(Warehouses);
-            if (Warehouses.All(x => x.IsValidated))
-                return Ok(true);
-            else
-            {
-                List<string> Errors = new List<string>();
-                for (int i = 0; i < Warehouses.Count; i++)
-                {
-                    Warehouse Warehouse = Warehouses[i];
-                    if (!Warehouse.IsValidated)
-                    {
-                        string Error = $"Dòng {i + 2} có lỗi:";
-                        if (Warehouse.Errors.ContainsKey(nameof(Warehouse.Id)))
-                            Error += Warehouse.Errors[nameof(Warehouse.Id)];
-                        if (Warehouse.Errors.ContainsKey(nameof(Warehouse.Code)))
-                            Error += Warehouse.Errors[nameof(Warehouse.Code)];
-                        if (Warehouse.Errors.ContainsKey(nameof(Warehouse.Name)))
-                            Error += Warehouse.Errors[nameof(Warehouse.Name)];
-                        if (Warehouse.Errors.ContainsKey(nameof(Warehouse.Address)))
-                            Error += Warehouse.Errors[nameof(Warehouse.Address)];
-                        if (Warehouse.Errors.ContainsKey(nameof(Warehouse.OrganizationId)))
-                            Error += Warehouse.Errors[nameof(Warehouse.OrganizationId)];
-                        if (Warehouse.Errors.ContainsKey(nameof(Warehouse.ProvinceId)))
-                            Error += Warehouse.Errors[nameof(Warehouse.ProvinceId)];
-                        if (Warehouse.Errors.ContainsKey(nameof(Warehouse.DistrictId)))
-                            Error += Warehouse.Errors[nameof(Warehouse.DistrictId)];
-                        if (Warehouse.Errors.ContainsKey(nameof(Warehouse.WardId)))
-                            Error += Warehouse.Errors[nameof(Warehouse.WardId)];
-                        if (Warehouse.Errors.ContainsKey(nameof(Warehouse.StatusId)))
-                            Error += Warehouse.Errors[nameof(Warehouse.StatusId)];
-                        Errors.Add(Error);
-                    }
-                }
-                return BadRequest(Errors);
-            }
+            List<Warehouse_WarehouseDTO> Warehouse_WarehouseDTOs = Warehouses
+                 .Select(c => new Warehouse_WarehouseDTO(c)).ToList();
+            return Warehouse_WarehouseDTOs;
         }
         
         [Route(WarehouseRoute.Export), HttpPost]
-        public async Task<FileResult> Export([FromBody] Warehouse_WarehouseFilterDTO Warehouse_WarehouseFilterDTO)
+        public async Task<FileResult> Export([FromBody] Warehouse_InventoryFilterDTO Warehouse_InventoryFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            var WarehouseFilter = ConvertFilterDTOToFilterEntity(Warehouse_WarehouseFilterDTO);
-            WarehouseFilter.Skip = 0;
-            WarehouseFilter.Take = int.MaxValue;
-            WarehouseFilter = WarehouseService.ToFilter(WarehouseFilter);
-
+            WarehouseFilter WarehouseFilter = new WarehouseFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = WarehouseSelect.ALL
+            };
             List<Warehouse> Warehouses = await WarehouseService.List(WarehouseFilter);
+
+            var InventoryFilter = new InventoryFilter
+            {
+                Id = Warehouse_InventoryFilterDTO.Id,
+                ItemId = Warehouse_InventoryFilterDTO.ItemId,
+                WarehouseId = Warehouse_InventoryFilterDTO.WarehouseId,
+                SaleStock = Warehouse_InventoryFilterDTO.SaleStock,
+                AccountingStock = Warehouse_InventoryFilterDTO.AccountingStock,
+
+                Selects = InventorySelect.ALL,
+                Skip = Warehouse_InventoryFilterDTO.Skip,
+                Take = Warehouse_InventoryFilterDTO.Take,
+                OrderBy = Warehouse_InventoryFilterDTO.OrderBy,
+                OrderType = Warehouse_InventoryFilterDTO.OrderType,
+            };
+            InventoryFilter = InventoryService.ToFilter(InventoryFilter);
+
+            List<Inventory> Inventories = await InventoryService.List(InventoryFilter);
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
-                var WarehouseHeaders = new List<string[]>()
+                var InventoryHeaders = new List<string[]>()
                 {
                     new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                        "Address",
-                        "OrganizationId",
-                        "ProvinceId",
-                        "DistrictId",
-                        "WardId",
-                        "StatusId",
+                        "STT",
+                        "Mã kho",
+                        "Tên kho",
+                        "Mã sản phẩm",
+                        "Tên sản phẩm",
+                        "Có thể bán",
+                        "Tồn kế toán",
                     }
                 };
                 List<object[]> data = new List<object[]>();
-                for (int i = 0; i < Warehouses.Count; i++)
+                for (int i = 0; i < Inventories.Count; i++)
                 {
-                    var Warehouse = Warehouses[i];
+                    var Inventory = Inventories[i];
                     data.Add(new Object[]
                     {
-                        Warehouse.Id,
-                        Warehouse.Code,
-                        Warehouse.Name,
-                        Warehouse.Address,
-                        Warehouse.OrganizationId,
-                        Warehouse.ProvinceId,
-                        Warehouse.DistrictId,
-                        Warehouse.WardId,
-                        Warehouse.StatusId,
+                        i+1,
+                        Inventory.Warehouse.Code,
+                        Inventory.Warehouse.Name,
+                        Inventory.Item.Code,
+                        Inventory.Item.Name,
+                        Inventory.SaleStock,
+                        Inventory.AccountingStock
                     });
-                    excel.GenerateWorksheet("Warehouse", WarehouseHeaders, data);
+                    excel.GenerateWorksheet("Inventory", InventoryHeaders, data);
                 }
+
+                data.Clear();
+                var WarehouseHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "Mã",
+                        "Tên",
+                    }
+                };
+                foreach (var Warehouse in Warehouses)
+                {
+                    data.Add(new object[]
+                    {
+                        Warehouse.Code,
+                        Warehouse.Name
+                    });
+                }
+                excel.GenerateWorksheet("Warehouse", WarehouseHeader, data);
                 excel.Save();
             }
-            return File(memoryStream.ToArray(), "application/octet-stream", "Warehouse.xlsx");
+            return File(memoryStream.ToArray(), "application/octet-stream", "Inventory.xlsx");
+        }
+
+        [Route(WarehouseRoute.ExportTemplate), HttpPost]
+        public async Task<ActionResult> ExportTemplate()
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            MemoryStream MemoryStream = new MemoryStream();
+            string tempPath = "Templates/Inventory_Export.xlsx";
+            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            {
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                var nameexcel = "Export kho" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff");
+                xlPackage.Workbook.Properties.Title = string.Format("{0}", nameexcel);
+                xlPackage.Workbook.Properties.Author = "Sonhx5";
+                xlPackage.Workbook.Properties.Subject = string.Format("{0}", "RD-DMS");
+                xlPackage.Workbook.Properties.Category = "RD-DMS";
+                xlPackage.Workbook.Properties.Company = "FPT-FIS-ERP-ESC";
+                xlPackage.SaveAs(MemoryStream);
+            }
+
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Inventory" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)
