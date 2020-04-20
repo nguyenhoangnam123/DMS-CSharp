@@ -204,7 +204,7 @@ namespace DMS.Repositories
             DataContext.ProductType.Add(ProductTypeDAO);
             await DataContext.SaveChangesAsync();
             ProductType.Id = ProductTypeDAO.Id;
-            await SaveReference(ProductType);
+            //await SaveReference(ProductType);
             return true;
         }
 

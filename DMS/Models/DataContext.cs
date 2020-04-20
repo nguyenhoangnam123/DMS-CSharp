@@ -147,8 +147,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Status)
@@ -615,8 +613,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(255);
 
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Status)
@@ -790,9 +786,13 @@ namespace DMS.Models
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Code).HasMaxLength(500);
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
 
-                entity.Property(e => e.Name).HasMaxLength(500);
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
             });
 
             modelBuilder.Entity<StoreDAO>(entity =>
