@@ -10,9 +10,12 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public long InventoryId { get; set; }
+        public long OldSaleStock { get; set; }
         public long SaleStock { get; set; }
+        public long OldAccountingStock { get; set; }
         public long AccountingStock { get; set; }
         public long AppUserId { get; set; }
+        public DateTime UpdateTime { get; set; }
         public AppUser AppUser { get; set; }
         public Inventory Inventory { get; set; }
 
@@ -30,9 +33,12 @@ namespace DMS.Entities
     {
         public IdFilter Id { get; set; }
         public IdFilter InventoryId { get; set; }
+        public LongFilter OldSaleStock { get; set; }
         public LongFilter SaleStock { get; set; }
+        public LongFilter OldAccountingStock { get; set; }
         public LongFilter AccountingStock { get; set; }
         public IdFilter AppUserId { get; set; }
+        public DateFilter UpdateTime { get; set; }
         public List<InventoryHistoryFilter> OrFilter { get; set; }
         public InventoryHistoryOrder OrderBy {get; set;}
         public InventoryHistorySelect Selects {get; set;}
@@ -43,9 +49,12 @@ namespace DMS.Entities
     {
         Id = 0,
         Inventory = 1,
-        SaleStock = 2,
-        AccountingStock = 3,
-        AppUser = 4,
+        OldSaleStock = 2,
+        SaleStock = 3,
+        OldAccountingStock = 4,
+        AccountingStock = 5,
+        AppUser = 6,
+        UpdateTime = 7
     }
 
     [Flags]
@@ -54,8 +63,11 @@ namespace DMS.Entities
         ALL = E.ALL,
         Id = E._0,
         Inventory = E._1,
-        SaleStock = E._2,
-        AccountingStock = E._3,
-        AppUser = E._4,
+        OldSaleStock = E._2,
+        SaleStock = E._3,
+        OldAccountingStock = E._4,
+        AccountingStock = E._5,
+        AppUser = E._6,
+        UpdateTime = E._7
     }
 }
