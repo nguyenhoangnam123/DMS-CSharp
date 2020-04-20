@@ -14,6 +14,7 @@ namespace DMS.Rpc.warehouse
         public long SaleStock { get; set; }
         public long AccountingStock { get; set; }
         public Warehouse_ItemDTO Item { get; set; }   
+        public List<Warehouse_InventoryHistoryDTO> InventoryHistories { get; set; }
         
         public Warehouse_InventoryDTO() {}
         public Warehouse_InventoryDTO(Inventory Inventory)
@@ -24,6 +25,7 @@ namespace DMS.Rpc.warehouse
             this.SaleStock = Inventory.SaleStock;
             this.AccountingStock = Inventory.AccountingStock;
             this.Item = Inventory.Item == null ? null : new Warehouse_ItemDTO(Inventory.Item);
+            this.InventoryHistories = Inventory.InventoryHistories?.Select(i => new Warehouse_InventoryHistoryDTO(i)).ToList();
             this.Errors = Inventory.Errors;
         }
     }

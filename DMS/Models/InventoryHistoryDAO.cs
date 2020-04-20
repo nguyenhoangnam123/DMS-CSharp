@@ -7,7 +7,9 @@ namespace DMS.Models
     {
         public long Id { get; set; }
         public long InventoryId { get; set; }
+        public long OldSaleStock { get; set; }
         public long SaleStock { get; set; }
+        public long OldAccountingStock { get; set; }
         public long AccountingStock { get; set; }
         public long AppUserId { get; set; }
         public DateTime CreatedAt { get; set; }

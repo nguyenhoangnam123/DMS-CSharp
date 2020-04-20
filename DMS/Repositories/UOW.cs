@@ -18,6 +18,8 @@ namespace DMS.Repositories
         IEventMessageRepository EventMessageRepository { get; }
         IImageRepository ImageRepository { get; }
         IItemRepository ItemRepository { get; }
+        IInventoryRepository InventoryRepository { get; }
+        IInventoryHistoryRepository InventoryHistoryRepository { get; }
         IMenuRepository MenuRepository { get; }
         IOrganizationRepository OrganizationRepository { get; }
         IPermissionRepository PermissionRepository { get; }
@@ -56,6 +58,8 @@ namespace DMS.Repositories
         public IEventMessageRepository EventMessageRepository { get; private set; }
         public IImageRepository ImageRepository { get; private set; }
         public IItemRepository ItemRepository { get; private set; }
+        public IInventoryRepository InventoryRepository { get; private set; }
+        public IInventoryHistoryRepository InventoryHistoryRepository { get; private set; }
         public IMenuRepository MenuRepository { get; private set; }
         public IOrganizationRepository OrganizationRepository { get; private set; }
         public IPermissionRepository PermissionRepository { get; private set; }
@@ -92,6 +96,8 @@ namespace DMS.Repositories
             EventMessageRepository = new EventMessageRepository(DataContext);
             ImageRepository = new ImageRepository(DataContext);
             ItemRepository = new ItemRepository(DataContext);
+            InventoryRepository = new InventoryRepository(DataContext);
+            InventoryHistoryRepository = new InventoryHistoryRepository(DataContext);
             MenuRepository = new MenuRepository(DataContext);
             OrganizationRepository = new OrganizationRepository(DataContext);
             PermissionRepository = new PermissionRepository(DataContext);

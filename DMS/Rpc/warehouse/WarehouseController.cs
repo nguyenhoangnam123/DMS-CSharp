@@ -18,6 +18,7 @@ using DMS.Services.MWard;
 using DMS.Services.MItem;
 using DMS.Enums;
 using DMS.Services.MOrganization;
+using DMS.Services.MInventoryHistoryHistory;
 
 namespace DMS.Rpc.warehouse
 {
@@ -29,6 +30,8 @@ namespace DMS.Rpc.warehouse
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string ListHistory = Default + "/list-history";
+        public const string CountHistory = Default + "/count-history";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
@@ -58,6 +61,7 @@ namespace DMS.Rpc.warehouse
     public class WarehouseController : RpcController
     {
         private IDistrictService DistrictService;
+        private IInventoryHistoryService InventoryHistoryService;
         private IOrganizationService OrganizationService;
         private IProvinceService ProvinceService;
         private IStatusService StatusService;
@@ -67,6 +71,7 @@ namespace DMS.Rpc.warehouse
         private ICurrentContext CurrentContext;
         public WarehouseController(
             IDistrictService DistrictService,
+            IInventoryHistoryService InventoryHistoryService,
             IOrganizationService OrganizationService,
             IProvinceService ProvinceService,
             IStatusService StatusService,
@@ -77,6 +82,7 @@ namespace DMS.Rpc.warehouse
         )
         {
             this.DistrictService = DistrictService;
+            this.InventoryHistoryService = InventoryHistoryService;
             this.OrganizationService = OrganizationService;
             this.ProvinceService = ProvinceService;
             this.StatusService = StatusService;
@@ -488,6 +494,65 @@ namespace DMS.Rpc.warehouse
             WarehouseFilter.WardId = Warehouse_WarehouseFilterDTO.WardId;
             WarehouseFilter.StatusId = Warehouse_WarehouseFilterDTO.StatusId;
             return WarehouseFilter;
+        }
+
+        [Route(WarehouseRoute.CountHistory), HttpPost]
+        public async Task<int> CountHistory(Warehouse_InventoryHistoryFilterDTO Warehouse_InventoryHistoryFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            InventoryHistoryFilter InventoryHistoryFilter = new InventoryHistoryFilter
+            {
+                Id = Warehouse_InventoryHistoryFilterDTO.Id,
+                InventoryId = Warehouse_InventoryHistoryFilterDTO.InventoryId,
+                OldSaleStock = Warehouse_InventoryHistoryFilterDTO.OldSaleStock,
+                OldAccountingStock = Warehouse_InventoryHistoryFilterDTO.OldAccountingStock,
+                SaleStock = Warehouse_InventoryHistoryFilterDTO.SaleStock,
+                AccountingStock = Warehouse_InventoryHistoryFilterDTO.AccountingStock,
+                AppUserId = Warehouse_InventoryHistoryFilterDTO.AppUserId,
+                UpdateTime = Warehouse_InventoryHistoryFilterDTO.UpdateTime,
+
+                Selects = InventoryHistorySelect.ALL,
+                Skip = Warehouse_InventoryHistoryFilterDTO.Skip,
+                Take = Warehouse_InventoryHistoryFilterDTO.Take,
+                OrderBy = Warehouse_InventoryHistoryFilterDTO.OrderBy,
+                OrderType = Warehouse_InventoryHistoryFilterDTO.OrderType,
+            };
+            InventoryHistoryFilter = InventoryHistoryService.ToFilter(InventoryHistoryFilter);
+            int count = await InventoryHistoryService.Count(InventoryHistoryFilter);
+            return count;
+        }
+
+        [Route(WarehouseRoute.ListHistory), HttpPost]
+        public async Task<List<Warehouse_InventoryHistoryDTO>> ListHistory(Warehouse_InventoryHistoryFilterDTO Warehouse_InventoryHistoryFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            InventoryHistoryFilter InventoryHistoryFilter = new InventoryHistoryFilter
+            {
+                Id = Warehouse_InventoryHistoryFilterDTO.Id,
+                InventoryId = Warehouse_InventoryHistoryFilterDTO.InventoryId,
+                OldSaleStock = Warehouse_InventoryHistoryFilterDTO.OldSaleStock,
+                OldAccountingStock = Warehouse_InventoryHistoryFilterDTO.OldAccountingStock,
+                SaleStock = Warehouse_InventoryHistoryFilterDTO.SaleStock,
+                AccountingStock = Warehouse_InventoryHistoryFilterDTO.AccountingStock,
+                AppUserId = Warehouse_InventoryHistoryFilterDTO.AppUserId,
+                UpdateTime = Warehouse_InventoryHistoryFilterDTO.UpdateTime,
+
+                Selects = InventoryHistorySelect.ALL,
+                Skip = Warehouse_InventoryHistoryFilterDTO.Skip,
+                Take = Warehouse_InventoryHistoryFilterDTO.Take,
+                OrderBy = Warehouse_InventoryHistoryFilterDTO.OrderBy,
+                OrderType = Warehouse_InventoryHistoryFilterDTO.OrderType,
+            };
+
+            InventoryHistoryFilter = InventoryHistoryService.ToFilter(InventoryHistoryFilter);
+            List<InventoryHistory> InventoryHistories = await InventoryHistoryService.List(InventoryHistoryFilter);
+            List<Warehouse_InventoryHistoryDTO> Warehouse_InventoryHistoryDTOs = InventoryHistories
+                .Select(c => new Warehouse_InventoryHistoryDTO(c)).ToList();
+            return Warehouse_InventoryHistoryDTOs;
         }
 
         [Route(WarehouseRoute.SingleListDistrict), HttpPost]
