@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
@@ -266,7 +266,7 @@ namespace DMS.Services.MStore
             {
                 StoreFilter subFilter = new StoreFilter();
                 filter.OrFilter.Add(subFilter);
-                
+
             }
             return filter;
         }
@@ -282,7 +282,7 @@ namespace DMS.Services.MStore
                 Take = 1,
                 Selects = WorkflowDefinitionSelect.Id,
             })).FirstOrDefault();
-           
+
             if (WorkflowDefinition == null)
             {
 
@@ -294,17 +294,23 @@ namespace DMS.Services.MStore
                 Store.RequestStateId = RequestStateEnum.APPROVING.Id;
                 Store.StoreWorkflows = new List<StoreWorkflow>();
                 WorkflowStep Start = null;
+                // tìm điểm bắt đầu của workflow
+                // nút không có ai trỏ đến là nút bắt đầu
+                // trong trường hợp có nhiều nút bắt đầu thì xét có nút nào thuộc các role hiện tại không
                 foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
                 {
-                    if (!WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id))
+                    if (!WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id) &&
+                        CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
                     {
                         Start = WorkflowStep;
                         break;
                     }
                 }
+                // khởi tạo trạng thái cho tất cả các nút
                 foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
                 {
                     StoreWorkflow StoreWorkflow = new StoreWorkflow();
+                    Store.StoreWorkflows.Add(StoreWorkflow);
                     StoreWorkflow.WorkflowStepId = WorkflowStep.Id;
                     StoreWorkflow.WorkflowStateId = WorkflowStateEnum.NEW.Id;
                     StoreWorkflow.UpdatedAt = null;
@@ -312,7 +318,7 @@ namespace DMS.Services.MStore
                     if (Start.Id == WorkflowStep.Id)
                     {
                         StoreWorkflow.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
-                    }    
+                    }
                 }
             }
             return Store;
@@ -320,6 +326,18 @@ namespace DMS.Services.MStore
 
         public async Task<Store> Approve(Store Store)
         {
+            Store = await UOW.StoreRepository.Get(Store.Id);
+            WorkflowDefinition WorkflowDefinition = await WorkflowDefinitionService.Get(Store.WorkflowDefinitionId.Value);
+            // tìm điểm bắt đầu
+            // tìm điểm nhảy tiếp theo
+            // chuyển trạng thái điểm nhảy
+            // gửi mail cho các điểm nhảy có trạng thái thay đổi.
+
+            List<WorkflowStep> WorkflowSteps = new List<WorkflowStep>();
+            foreach(WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+            {
+
+            }    
             return Store;
         }
 
