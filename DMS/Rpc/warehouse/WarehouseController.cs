@@ -1,25 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MWarehouse;
+using DMS.Enums;
 using DMS.Services.MDistrict;
+using DMS.Services.MInventory;
+using DMS.Services.MInventoryHistoryHistory;
+using DMS.Services.MItem;
+using DMS.Services.MOrganization;
+using DMS.Services.MProductGrouping;
 using DMS.Services.MProvince;
 using DMS.Services.MStatus;
+using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MWard;
-using DMS.Services.MItem;
-using DMS.Enums;
-using DMS.Services.MOrganization;
-using DMS.Services.MInventoryHistoryHistory;
-using DMS.Services.MInventory;
+using DMS.Services.MWarehouse;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.warehouse
 {
@@ -46,6 +46,8 @@ namespace DMS.Rpc.warehouse
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListWard = Default + "/single-list-ward";
         public const string SingleListItem = Default + "/single-list-item";
+        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
+        public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(WarehouseFilter.Id), FieldType.ID },
@@ -66,10 +68,12 @@ namespace DMS.Rpc.warehouse
         private IInventoryService InventoryService;
         private IInventoryHistoryService InventoryHistoryService;
         private IOrganizationService OrganizationService;
+        private IProductGroupingService ProductGroupingService;
         private IProvinceService ProvinceService;
         private IStatusService StatusService;
         private IWardService WardService;
         private IItemService ItemService;
+        private IUnitOfMeasureService UnitOfMeasureService;
         private IWarehouseService WarehouseService;
         private ICurrentContext CurrentContext;
         public WarehouseController(
@@ -77,10 +81,12 @@ namespace DMS.Rpc.warehouse
             IInventoryService InventoryService,
             IInventoryHistoryService InventoryHistoryService,
             IOrganizationService OrganizationService,
+            IProductGroupingService ProductGroupingService,
             IProvinceService ProvinceService,
             IStatusService StatusService,
             IWardService WardService,
             IItemService ItemService,
+            IUnitOfMeasureService UnitOfMeasureService,
             IWarehouseService WarehouseService,
             ICurrentContext CurrentContext
         )
@@ -89,10 +95,12 @@ namespace DMS.Rpc.warehouse
             this.InventoryService = InventoryService;
             this.InventoryHistoryService = InventoryHistoryService;
             this.OrganizationService = OrganizationService;
+            this.ProductGroupingService = ProductGroupingService;
             this.ProvinceService = ProvinceService;
             this.StatusService = StatusService;
             this.WardService = WardService;
             this.ItemService = ItemService;
+            this.UnitOfMeasureService = UnitOfMeasureService;
             this.WarehouseService = WarehouseService;
             this.CurrentContext = CurrentContext;
         }
@@ -680,6 +688,41 @@ namespace DMS.Rpc.warehouse
             return Warehouse_ItemDTOs;
         }
 
+        [Route(WarehouseRoute.SingleListUnitOfMeasure), HttpPost]
+        public async Task<List<Warehouse_UnitOfMeasureDTO>> SingleListUnitOfMeasure([FromBody] Warehouse_UnitOfMeasureFilterDTO Warehouse_UnitOfMeasureFilterDTO)
+        {
+            UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter();
+            UnitOfMeasureFilter.Skip = 0;
+            UnitOfMeasureFilter.Take = 20;
+            UnitOfMeasureFilter.OrderBy = UnitOfMeasureOrder.Id;
+            UnitOfMeasureFilter.OrderType = OrderType.ASC;
+            UnitOfMeasureFilter.Selects = UnitOfMeasureSelect.ALL;
+            UnitOfMeasureFilter.Id = Warehouse_UnitOfMeasureFilterDTO.Id;
+            UnitOfMeasureFilter.Code = Warehouse_UnitOfMeasureFilterDTO.Code;
+            UnitOfMeasureFilter.Name = Warehouse_UnitOfMeasureFilterDTO.Name;
+            UnitOfMeasureFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
+            List<Warehouse_UnitOfMeasureDTO> Warehouse_UnitOfMeasureDTOs = UnitOfMeasures
+                .Select(x => new Warehouse_UnitOfMeasureDTO(x)).ToList();
+            return Warehouse_UnitOfMeasureDTOs;
+        }
+        [Route(WarehouseRoute.SingleListProductGrouping), HttpPost]
+        public async Task<List<Warehouse_ProductGroupingDTO>> SingleListWarehouseGrouping([FromBody] Warehouse_ProductGroupingFilterDTO Warehouse_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+
+            List<ProductGrouping> WarehouseGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<Warehouse_ProductGroupingDTO> Warehouse_ProductGroupingDTOs = WarehouseGroupings
+                .Select(x => new Warehouse_ProductGroupingDTO(x)).ToList();
+            return Warehouse_ProductGroupingDTOs;
+        }
     }
 }
 

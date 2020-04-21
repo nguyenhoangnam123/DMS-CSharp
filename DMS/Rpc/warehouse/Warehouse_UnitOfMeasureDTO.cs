@@ -34,7 +34,7 @@ namespace DMS.Rpc.warehouse
         }
     }
 
-    public class Product_UnitOfMeasureFilterDTO : FilterDTO
+    public class Warehouse_UnitOfMeasureFilterDTO : FilterDTO
     {
 
         public IdFilter Id { get; set; }
