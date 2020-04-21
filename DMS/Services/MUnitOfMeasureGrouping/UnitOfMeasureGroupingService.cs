@@ -21,7 +21,6 @@ namespace DMS.Services.MUnitOfMeasureGrouping
         Task<UnitOfMeasureGrouping> Delete(UnitOfMeasureGrouping UnitOfMeasureGrouping);
         Task<List<UnitOfMeasureGrouping>> BulkDelete(List<UnitOfMeasureGrouping> UnitOfMeasureGroupings);
         Task<List<UnitOfMeasureGrouping>> Import(DataFile DataFile);
-        UnitOfMeasureGroupingFilter ToFilter(UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter);
     }
 
     public class UnitOfMeasureGroupingService : BaseService, IUnitOfMeasureGroupingService
@@ -233,26 +232,6 @@ namespace DMS.Services.MUnitOfMeasureGrouping
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }
-
-        public UnitOfMeasureGroupingFilter ToFilter(UnitOfMeasureGroupingFilter filter)
-        {
-            if (filter.OrFilter == null) filter.OrFilter = new List<UnitOfMeasureGroupingFilter>();
-            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
-            foreach (var currentFilter in CurrentContext.Filters)
-            {
-                UnitOfMeasureGroupingFilter subFilter = new UnitOfMeasureGroupingFilter();
-                filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.UnitOfMeasureId))
-                    subFilter.UnitOfMeasureId = Map(subFilter.UnitOfMeasureId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
-            }
-            return filter;
         }
     }
 }

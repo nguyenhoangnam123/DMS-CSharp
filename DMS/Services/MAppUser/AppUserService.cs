@@ -91,20 +91,36 @@ namespace DMS.Services.MAppUser
             {
                 AppUserFilter subFilter = new AppUserFilter();
                 filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Username))
-                    subFilter.Username = Map(subFilter.Username, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Password))
-                    subFilter.Password = Map(subFilter.Password, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.DisplayName))
-                    subFilter.DisplayName = Map(subFilter.DisplayName, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Email))
-                    subFilter.Email = Map(subFilter.Email, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Phone))
-                    subFilter.Phone = Map(subFilter.Phone, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Username))
+                        subFilter.Username = Map(subFilter.Username, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Password))
+                        subFilter.Password = Map(subFilter.Password, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.DisplayName))
+                        subFilter.DisplayName = Map(subFilter.DisplayName, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Address))
+                        subFilter.Address = Map(subFilter.Address, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Email))
+                        subFilter.Email = Map(subFilter.Email, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Phone))
+                        subFilter.Phone = Map(subFilter.Phone, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Position))
+                        subFilter.Position = Map(subFilter.Position, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Department))
+                        subFilter.Department = Map(subFilter.Department, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
+                        subFilter.OrganizationId = Map(subFilter.OrganizationId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.SexId))
+                        subFilter.SexId = Map(subFilter.SexId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
+                        subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Birthday))
+                        subFilter.Birthday = Map(subFilter.Birthday, FilterPermissionDefinition);
+                }
             }
             return filter;
         }

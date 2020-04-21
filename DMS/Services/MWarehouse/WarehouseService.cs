@@ -217,24 +217,28 @@ namespace DMS.Services.MWarehouse
             {
                 WarehouseFilter subFilter = new WarehouseFilter();
                 filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Code))
-                    subFilter.Code = Map(subFilter.Code, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Address))
-                    subFilter.Address = Map(subFilter.Address, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.OrganizationId))
-                    subFilter.OrganizationId = Map(subFilter.OrganizationId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ProvinceId))
-                    subFilter.ProvinceId = Map(subFilter.ProvinceId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.DistrictId))
-                    subFilter.DistrictId = Map(subFilter.DistrictId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.WardId))
-                    subFilter.WardId = Map(subFilter.WardId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
+                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
+                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Address))
+                        subFilter.Address = Map(subFilter.Address, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
+                        subFilter.OrganizationId = Map(subFilter.OrganizationId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ProvinceId))
+                        subFilter.ProvinceId = Map(subFilter.ProvinceId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.DistrictId))
+                        subFilter.DistrictId = Map(subFilter.DistrictId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.WardId))
+                        subFilter.WardId = Map(subFilter.WardId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
+                        subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
+                }
             }
             return filter;
         }

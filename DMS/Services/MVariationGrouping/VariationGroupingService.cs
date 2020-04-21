@@ -16,13 +16,6 @@ namespace DMS.Services.MVariationGrouping
         Task<int> Count(VariationGroupingFilter VariationGroupingFilter);
         Task<List<VariationGrouping>> List(VariationGroupingFilter VariationGroupingFilter);
         Task<VariationGrouping> Get(long Id);
-        Task<VariationGrouping> Create(VariationGrouping VariationGrouping);
-        Task<VariationGrouping> Update(VariationGrouping VariationGrouping);
-        Task<VariationGrouping> Delete(VariationGrouping VariationGrouping);
-        Task<List<VariationGrouping>> BulkDelete(List<VariationGrouping> VariationGroupings);
-        Task<List<VariationGrouping>> Import(DataFile DataFile);
-        Task<DataFile> Export(VariationGroupingFilter VariationGroupingFilter);
-        VariationGroupingFilter ToFilter(VariationGroupingFilter VariationGroupingFilter);
     }
 
     public class VariationGroupingService : BaseService, IVariationGroupingService
@@ -273,24 +266,6 @@ namespace DMS.Services.MVariationGrouping
                 Content = MemoryStream,
             };
             return DataFile;
-        }
-
-        public VariationGroupingFilter ToFilter(VariationGroupingFilter filter)
-        {
-            if (filter.OrFilter == null) filter.OrFilter = new List<VariationGroupingFilter>();
-            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
-            foreach (var currentFilter in CurrentContext.Filters)
-            {
-                VariationGroupingFilter subFilter = new VariationGroupingFilter();
-                filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ProductId))
-                    subFilter.ProductId = Map(subFilter.ProductId, currentFilter.Value);
-            }
-            return filter;
         }
     }
 }

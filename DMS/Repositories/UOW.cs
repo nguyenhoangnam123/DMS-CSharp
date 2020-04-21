@@ -46,6 +46,9 @@ namespace DMS.Repositories
         IVariationGroupingRepository VariationGroupingRepository { get; }
         IWardRepository WardRepository { get; }
         IWarehouseRepository WarehouseRepository { get; }
+        IWorkflowDefinitionRepository WorkflowDefinitionRepository { get; }
+        IWorkflowStateRepository WorkflowStateRepository { get; }
+        IWorkflowTypeRepository WorkflowTypeRepository { get; }
     }
 
     public class UOW : IUOW
@@ -86,6 +89,9 @@ namespace DMS.Repositories
         public IVariationGroupingRepository VariationGroupingRepository { get; private set; }
         public IWardRepository WardRepository { get; private set; }
         public IWarehouseRepository WarehouseRepository { get; private set; }
+        public IWorkflowDefinitionRepository WorkflowDefinitionRepository { get; private set; }
+        public IWorkflowStateRepository WorkflowStateRepository { get; private set; }
+        public IWorkflowTypeRepository WorkflowTypeRepository { get; private set; }
         public UOW(DataContext DataContext)
         {
             this.DataContext = DataContext;
@@ -124,6 +130,9 @@ namespace DMS.Repositories
             VariationGroupingRepository = new VariationGroupingRepository(DataContext);
             WardRepository = new WardRepository(DataContext);
             WarehouseRepository = new WarehouseRepository(DataContext);
+            WorkflowDefinitionRepository = new WorkflowDefinitionRepository(DataContext);
+            WorkflowStateRepository = new WorkflowStateRepository(DataContext);
+            WorkflowTypeRepository = new WorkflowTypeRepository(DataContext);
         }
         public async Task Begin()
         {

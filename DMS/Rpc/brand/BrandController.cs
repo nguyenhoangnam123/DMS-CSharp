@@ -64,7 +64,6 @@ namespace DMS.Rpc.brand
                 throw new BindException(ModelState);
 
             BrandFilter BrandFilter = ConvertFilterDTOToFilterEntity(Brand_BrandFilterDTO);
-            BrandFilter = BrandService.ToFilter(BrandFilter);
             int count = await BrandService.Count(BrandFilter);
             return count;
         }
@@ -76,7 +75,6 @@ namespace DMS.Rpc.brand
                 throw new BindException(ModelState);
 
             BrandFilter BrandFilter = ConvertFilterDTOToFilterEntity(Brand_BrandFilterDTO);
-            BrandFilter = BrandService.ToFilter(BrandFilter);
             List<Brand> Brands = await BrandService.List(BrandFilter);
             List<Brand_BrandDTO> Brand_BrandDTOs = Brands
                 .Select(c => new Brand_BrandDTO(c)).ToList();
@@ -203,11 +201,9 @@ namespace DMS.Rpc.brand
                 throw new BindException(ModelState);
 
             BrandFilter BrandFilter = ConvertFilterDTOToFilterEntity(Brand_BrandFilterDTO);
-            BrandFilter = BrandService.ToFilter(BrandFilter);
 
             BrandFilter.Skip = 0;
             BrandFilter.Take = int.MaxValue;
-            BrandFilter = BrandService.ToFilter(BrandFilter);
 
             List<Brand> Brands = await BrandService.List(BrandFilter);
             MemoryStream memoryStream = new MemoryStream();
@@ -275,7 +271,6 @@ namespace DMS.Rpc.brand
         private async Task<bool> HasPermission(long Id)
         {
             BrandFilter BrandFilter = new BrandFilter();
-            BrandFilter = BrandService.ToFilter(BrandFilter);
             if (Id == 0)
             {
 

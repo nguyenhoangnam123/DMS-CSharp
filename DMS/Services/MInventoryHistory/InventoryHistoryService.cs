@@ -81,20 +81,24 @@ namespace DMS.Services.MInventoryHistoryHistory
             {
                 InventoryHistoryFilter subFilter = new InventoryHistoryFilter();
                 filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.InventoryId))
-                    subFilter.InventoryId = Map(subFilter.InventoryId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.AppUserId))
-                    subFilter.AppUserId = Map(subFilter.AppUserId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.SaleStock))
-                    subFilter.SaleStock = Map(subFilter.SaleStock, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.AccountingStock))
-                    subFilter.AccountingStock = Map(subFilter.AccountingStock, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.OldSaleStock))
-                    subFilter.OldSaleStock = Map(subFilter.OldSaleStock, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.OldAccountingStock))
-                    subFilter.OldAccountingStock = Map(subFilter.OldAccountingStock, currentFilter.Value);
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.InventoryId))
+                        subFilter.InventoryId = Map(subFilter.InventoryId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OldSaleStock))
+                        subFilter.OldSaleStock = Map(subFilter.OldSaleStock, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleStock))
+                        subFilter.SaleStock = Map(subFilter.SaleStock, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OldAccountingStock))
+                        subFilter.OldAccountingStock = Map(subFilter.OldAccountingStock, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.AccountingStock))
+                        subFilter.AccountingStock = Map(subFilter.AccountingStock, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
+                        subFilter.AppUserId = Map(subFilter.AppUserId, FilterPermissionDefinition);
+                }
             }
             return filter;
         }

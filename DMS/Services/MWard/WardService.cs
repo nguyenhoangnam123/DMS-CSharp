@@ -17,7 +17,6 @@ namespace DMS.Services.MWard
         Task<List<Ward>> List(WardFilter WardFilter);
         Task<Ward> Get(long Id);
         Task<DataFile> Export(WardFilter WardFilter);
-        WardFilter ToFilter(WardFilter WardFilter);
     }
 
     public class WardService : BaseService, IWardService
@@ -125,28 +124,6 @@ namespace DMS.Services.MWard
                 Content = MemoryStream,
             };
             return DataFile;
-        }
-
-        public WardFilter ToFilter(WardFilter filter)
-        {
-            if (filter.OrFilter == null) filter.OrFilter = new List<WardFilter>();
-            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
-            foreach (var currentFilter in CurrentContext.Filters)
-            {
-                WardFilter subFilter = new WardFilter();
-                filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Priority))
-                    subFilter.Priority = Map(subFilter.Priority, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.DistrictId))
-                    subFilter.DistrictId = Map(subFilter.DistrictId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
-            }
-            return filter;
         }
     }
 }

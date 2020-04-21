@@ -291,12 +291,18 @@ namespace DMS.Services.MMenu
             {
                 MenuFilter subFilter = new MenuFilter();
                 filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Path))
-                    subFilter.Path = Map(subFilter.Path, currentFilter.Value);
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
+                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
+                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Path))
+                        subFilter.Path = Map(subFilter.Path, FilterPermissionDefinition);
+                }
             }
             return filter;
         }

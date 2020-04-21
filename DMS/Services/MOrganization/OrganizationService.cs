@@ -153,28 +153,32 @@ namespace DMS.Services.MOrganization
             {
                 OrganizationFilter subFilter = new OrganizationFilter();
                 filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Code))
-                    subFilter.Code = Map(subFilter.Code, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ParentId))
-                    subFilter.ParentId = Map(subFilter.ParentId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Path))
-                    subFilter.Path = Map(subFilter.Path, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Level))
-                    subFilter.Level = Map(subFilter.Level, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Phone))
-                    subFilter.Phone = Map(subFilter.Phone, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Address))
-                    subFilter.Address = Map(subFilter.Address, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Latitude))
-                    subFilter.Latitude = Map(subFilter.Latitude, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Longitude))
-                    subFilter.Longitude = Map(subFilter.Longitude, currentFilter.Value);
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
+                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
+                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ParentId))
+                        subFilter.ParentId = Map(subFilter.ParentId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Path))
+                        subFilter.Path = Map(subFilter.Path, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Level))
+                        subFilter.Level = Map(subFilter.Level, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
+                        subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Phone))
+                        subFilter.Phone = Map(subFilter.Phone, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Address))
+                        subFilter.Address = Map(subFilter.Address, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Latitude))
+                        subFilter.Latitude = Map(subFilter.Latitude, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Longitude))
+                        subFilter.Longitude = Map(subFilter.Longitude, FilterPermissionDefinition);
+                }
             }
             return filter;
         }

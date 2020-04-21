@@ -22,7 +22,6 @@ namespace DMS.Services.MTaxType
         Task<List<TaxType>> BulkDelete(List<TaxType> TaxTypes);
         Task<List<TaxType>> Import(DataFile DataFile);
         Task<DataFile> Export(TaxTypeFilter TaxTypeFilter);
-        TaxTypeFilter ToFilter(TaxTypeFilter TaxTypeFilter);
     }
 
     public class TaxTypeService : BaseService, ITaxTypeService
@@ -285,28 +284,6 @@ namespace DMS.Services.MTaxType
                 Content = MemoryStream,
             };
             return DataFile;
-        }
-
-        public TaxTypeFilter ToFilter(TaxTypeFilter filter)
-        {
-            if (filter.OrFilter == null) filter.OrFilter = new List<TaxTypeFilter>();
-            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
-            foreach (var currentFilter in CurrentContext.Filters)
-            {
-                TaxTypeFilter subFilter = new TaxTypeFilter();
-                filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Code))
-                    subFilter.Code = Map(subFilter.Code, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Percentage))
-                    subFilter.Percentage = Map(subFilter.Percentage, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
-            }
-            return filter;
         }
     }
 }

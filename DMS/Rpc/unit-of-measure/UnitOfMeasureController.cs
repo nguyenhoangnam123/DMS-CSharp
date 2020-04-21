@@ -63,7 +63,6 @@ namespace DMS.Rpc.unit_of_measure
                 throw new BindException(ModelState);
 
             UnitOfMeasureFilter UnitOfMeasureFilter = ConvertFilterDTOToFilterEntity(UnitOfMeasure_UnitOfMeasureFilterDTO);
-            UnitOfMeasureFilter = UnitOfMeasureService.ToFilter(UnitOfMeasureFilter);
             int count = await UnitOfMeasureService.Count(UnitOfMeasureFilter);
             return count;
         }
@@ -75,7 +74,6 @@ namespace DMS.Rpc.unit_of_measure
                 throw new BindException(ModelState);
 
             UnitOfMeasureFilter UnitOfMeasureFilter = ConvertFilterDTOToFilterEntity(UnitOfMeasure_UnitOfMeasureFilterDTO);
-            UnitOfMeasureFilter = UnitOfMeasureService.ToFilter(UnitOfMeasureFilter);
             List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
             List<UnitOfMeasure_UnitOfMeasureDTO> UnitOfMeasure_UnitOfMeasureDTOs = UnitOfMeasures
                 .Select(c => new UnitOfMeasure_UnitOfMeasureDTO(c)).ToList();
@@ -204,7 +202,6 @@ namespace DMS.Rpc.unit_of_measure
             UnitOfMeasureFilter UnitOfMeasureFilter = ConvertFilterDTOToFilterEntity(UnitOfMeasure_UnitOfMeasureFilterDTO);
             UnitOfMeasureFilter.Skip = 0;
             UnitOfMeasureFilter.Take = int.MaxValue;
-            UnitOfMeasureFilter = UnitOfMeasureService.ToFilter(UnitOfMeasureFilter);
 
             List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
             MemoryStream memoryStream = new MemoryStream();
@@ -254,7 +251,6 @@ namespace DMS.Rpc.unit_of_measure
         private async Task<bool> HasPermission(long Id)
         {
             UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter();
-            UnitOfMeasureFilter = UnitOfMeasureService.ToFilter(UnitOfMeasureFilter);
             if (Id == 0)
             {
 

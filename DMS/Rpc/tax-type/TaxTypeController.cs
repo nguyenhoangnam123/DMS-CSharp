@@ -60,7 +60,6 @@ namespace DMS.Rpc.tax_type
                 throw new BindException(ModelState);
 
             TaxTypeFilter TaxTypeFilter = ConvertFilterDTOToFilterEntity(TaxType_TaxTypeFilterDTO);
-            TaxTypeFilter = TaxTypeService.ToFilter(TaxTypeFilter);
             int count = await TaxTypeService.Count(TaxTypeFilter);
             return count;
         }
@@ -72,7 +71,6 @@ namespace DMS.Rpc.tax_type
                 throw new BindException(ModelState);
 
             TaxTypeFilter TaxTypeFilter = ConvertFilterDTOToFilterEntity(TaxType_TaxTypeFilterDTO);
-            TaxTypeFilter = TaxTypeService.ToFilter(TaxTypeFilter);
             List<TaxType> TaxTypes = await TaxTypeService.List(TaxTypeFilter);
             List<TaxType_TaxTypeDTO> TaxType_TaxTypeDTOs = TaxTypes
                 .Select(c => new TaxType_TaxTypeDTO(c)).ToList();
@@ -171,7 +169,6 @@ namespace DMS.Rpc.tax_type
                 throw new BindException(ModelState);
 
             TaxTypeFilter TaxTypeFilter = ConvertFilterDTOToFilterEntity(TaxType_TaxTypeFilterDTO);
-            TaxTypeFilter = TaxTypeService.ToFilter(TaxTypeFilter);
             DataFile DataFile = await TaxTypeService.Export(TaxTypeFilter);
             return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
             {
@@ -199,7 +196,6 @@ namespace DMS.Rpc.tax_type
         private async Task<bool> HasPermission(long Id)
         {
             TaxTypeFilter TaxTypeFilter = new TaxTypeFilter();
-            TaxTypeFilter = TaxTypeService.ToFilter(TaxTypeFilter);
             if (Id == 0)
             {
 

@@ -2,6 +2,7 @@ using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
+using DMS.Services.MWorkflowDefinition;
 using Helpers;
 using OfficeOpenXml;
 using System;
@@ -20,6 +21,10 @@ namespace DMS.Services.MStore
         Task<Store> Create(Store Store);
         Task<Store> Update(Store Store);
         Task<Store> Delete(Store Store);
+        Task<Store> Start(Store Store);
+        Task<Store> End(Store Store);
+        Task<Store> Approve(Store Store);
+        Task<Store> Reject(Store Store);
         Task<List<Store>> BulkDelete(List<Store> Stores);
         Task<List<Store>> Import(List<Store> Stores);
         StoreFilter ToFilter(StoreFilter StoreFilter);
@@ -31,17 +36,20 @@ namespace DMS.Services.MStore
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IStoreValidator StoreValidator;
+        private IWorkflowDefinitionService WorkflowDefinitionService;
 
         public StoreService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
+            IWorkflowDefinitionService WorkflowDefinitionService,
             IStoreValidator StoreValidator
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
+            this.WorkflowDefinitionService = WorkflowDefinitionService;
             this.StoreValidator = StoreValidator;
         }
         public async Task<int> Count(StoreFilter StoreFilter)
@@ -258,54 +266,71 @@ namespace DMS.Services.MStore
             {
                 StoreFilter subFilter = new StoreFilter();
                 filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Code))
-                    subFilter.Code = Map(subFilter.Code, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ParentStoreId))
-                    subFilter.ParentStoreId = Map(subFilter.ParentStoreId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.OrganizationId))
-                    subFilter.OrganizationId = Map(subFilter.OrganizationId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StoreTypeId))
-                    subFilter.StoreTypeId = Map(subFilter.StoreTypeId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StoreGroupingId))
-                    subFilter.StoreGroupingId = Map(subFilter.StoreGroupingId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ResellerId))
-                    subFilter.ResellerId = Map(subFilter.ResellerId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Telephone))
-                    subFilter.Telephone = Map(subFilter.Telephone, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ProvinceId))
-                    subFilter.ProvinceId = Map(subFilter.ProvinceId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.DistrictId))
-                    subFilter.DistrictId = Map(subFilter.DistrictId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.WardId))
-                    subFilter.WardId = Map(subFilter.WardId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Address))
-                    subFilter.Address = Map(subFilter.Address, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.DeliveryAddress))
-                    subFilter.DeliveryAddress = Map(subFilter.DeliveryAddress, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Latitude))
-                    subFilter.Latitude = Map(subFilter.Latitude, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Longitude))
-                    subFilter.Longitude = Map(subFilter.Longitude, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.DeliveryLatitude))
-                    subFilter.DeliveryLatitude = Map(subFilter.DeliveryLatitude, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.DeliveryLongitude))
-                    subFilter.DeliveryLongitude = Map(subFilter.DeliveryLongitude, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.OwnerName))
-                    subFilter.OwnerName = Map(subFilter.OwnerName, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.OwnerPhone))
-                    subFilter.OwnerPhone = Map(subFilter.OwnerPhone, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.OwnerEmail))
-                    subFilter.OwnerEmail = Map(subFilter.OwnerEmail, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StoreStatusId))
-                    subFilter.StoreStatusId = Map(subFilter.StoreStatusId, currentFilter.Value);
+                
             }
             return filter;
+        }
+
+        public async Task<Store> Start(Store Store)
+        {
+            WorkflowDefinition WorkflowDefinition = (await WorkflowDefinitionService.List(new WorkflowDefinitionFilter
+            {
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                OrderBy = WorkflowDefinitionOrder.StartDate,
+                OrderType = OrderType.DESC,
+                Skip = 0,
+                Take = 1,
+                Selects = WorkflowDefinitionSelect.Id,
+            })).FirstOrDefault();
+           
+            if (WorkflowDefinition == null)
+            {
+
+            }
+            else
+            {
+                WorkflowDefinition = await WorkflowDefinitionService.Get(WorkflowDefinition.Id);
+                Store.WorkflowDefinitionId = WorkflowDefinition.Id;
+                Store.RequestStateId = RequestStateEnum.APPROVING.Id;
+                Store.StoreWorkflows = new List<StoreWorkflow>();
+                WorkflowStep Start = null;
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (!WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id))
+                    {
+                        Start = WorkflowStep;
+                        break;
+                    }
+                }
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    StoreWorkflow StoreWorkflow = new StoreWorkflow();
+                    StoreWorkflow.WorkflowStepId = WorkflowStep.Id;
+                    StoreWorkflow.WorkflowStateId = WorkflowStateEnum.NEW.Id;
+                    StoreWorkflow.UpdatedAt = null;
+                    StoreWorkflow.AppUserId = null;
+                    if (Start.Id == WorkflowStep.Id)
+                    {
+                        StoreWorkflow.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
+                    }    
+                }
+            }
+            return Store;
+        }
+
+        public async Task<Store> Approve(Store Store)
+        {
+            return Store;
+        }
+
+        public Task<Store> Reject(Store Store)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Store> End(Store Store)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -22,7 +22,6 @@ namespace DMS.Services.MStoreType
         Task<List<StoreType>> BulkDelete(List<StoreType> StoreTypes);
         Task<List<StoreType>> Import(DataFile DataFile);
         Task<DataFile> Export(StoreTypeFilter StoreTypeFilter);
-        StoreTypeFilter ToFilter(StoreTypeFilter StoreTypeFilter);
     }
 
     public class StoreTypeService : BaseService, IStoreTypeService
@@ -279,26 +278,6 @@ namespace DMS.Services.MStoreType
                 Content = MemoryStream,
             };
             return DataFile;
-        }
-
-        public StoreTypeFilter ToFilter(StoreTypeFilter filter)
-        {
-            if (filter.OrFilter == null) filter.OrFilter = new List<StoreTypeFilter>();
-            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
-            foreach (var currentFilter in CurrentContext.Filters)
-            {
-                StoreTypeFilter subFilter = new StoreTypeFilter();
-                filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Code))
-                    subFilter.Code = Map(subFilter.Code, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
-            }
-            return filter;
         }
     }
 }

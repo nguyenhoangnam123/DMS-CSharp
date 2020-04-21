@@ -1,4 +1,5 @@
 ﻿using Common;
+using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -252,8 +253,10 @@ namespace DMS
         private void InitEnum()
         {
             InitStatusEnum();
-            InitStoreStatusEnum();
             InitResellerStatusEnum();
+            InitStoreStatusEnum();
+            InitWorkflowStateEnum();
+            InitWorkflowTypeEnum();
             DataContext.SaveChanges();
         }
 
@@ -369,17 +372,136 @@ namespace DMS
             }
         }
 
-        private string HashPassword(string password)
+        private void InitWorkflowStateEnum()
         {
-            byte[] salt;
-            new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
-            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000);
-            byte[] hash = pbkdf2.GetBytes(20);
-            byte[] hashBytes = new byte[36];
-            Array.Copy(salt, 0, hashBytes, 0, 16);
-            Array.Copy(hash, 0, hashBytes, 16, 20);
-            string savedPasswordHash = Convert.ToBase64String(hashBytes);
-            return savedPasswordHash;
+            List<WorkflowStateDAO> list = DataContext.WorkflowState.ToList();
+            if (!list.Any(pt => pt.Id == WorkflowStateEnum.APPROVED.Id))
+            {
+                DataContext.WorkflowState.Add(new WorkflowStateDAO
+                {
+                    Id = WorkflowStateEnum.APPROVED.Id,
+                    Code = WorkflowStateEnum.APPROVED.Code,
+                    Name = WorkflowStateEnum.APPROVED.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == WorkflowStateEnum.NEW.Id))
+            {
+                DataContext.WorkflowState.Add(new WorkflowStateDAO
+                {
+                    Id = WorkflowStateEnum.NEW.Id,
+                    Code = WorkflowStateEnum.NEW.Code,
+                    Name = WorkflowStateEnum.NEW.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == WorkflowStateEnum.PENDING.Id))
+            {
+                DataContext.WorkflowState.Add(new WorkflowStateDAO
+                {
+                    Id = WorkflowStateEnum.PENDING.Id,
+                    Code = WorkflowStateEnum.PENDING.Code,
+                    Name = WorkflowStateEnum.PENDING.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == WorkflowStateEnum.REJECTED.Id))
+            {
+                DataContext.WorkflowState.Add(new WorkflowStateDAO
+                {
+                    Id = WorkflowStateEnum.REJECTED.Id,
+                    Code = WorkflowStateEnum.REJECTED.Code,
+                    Name = WorkflowStateEnum.REJECTED.Name,
+                });
+            }
+        }
+
+        private void InitWorkflowTypeEnum()
+        {
+            List<WorkflowTypeDAO> list = DataContext.WorkflowType.ToList();
+            if (!list.Any(pt => pt.Id == WorkflowTypeEnum.ORDER.Id))
+            {
+                DataContext.WorkflowType.Add(new WorkflowTypeDAO
+                {
+                    Id = WorkflowTypeEnum.ORDER.Id,
+                    Code = WorkflowTypeEnum.ORDER.Code,
+                    Name = WorkflowTypeEnum.ORDER.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == WorkflowTypeEnum.PRODUCT.Id))
+            {
+                DataContext.WorkflowType.Add(new WorkflowTypeDAO
+                {
+                    Id = WorkflowTypeEnum.PRODUCT.Id,
+                    Code = WorkflowTypeEnum.PRODUCT.Code,
+                    Name = WorkflowTypeEnum.PRODUCT.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == WorkflowTypeEnum.ROUTE.Id))
+            {
+                DataContext.WorkflowType.Add(new WorkflowTypeDAO
+                {
+                    Id = WorkflowTypeEnum.ROUTE.Id,
+                    Code = WorkflowTypeEnum.ROUTE.Code,
+                    Name = WorkflowTypeEnum.ROUTE.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == WorkflowTypeEnum.STORE.Id))
+            {
+                DataContext.WorkflowType.Add(new WorkflowTypeDAO
+                {
+                    Id = WorkflowTypeEnum.STORE.Id,
+                    Code = WorkflowTypeEnum.STORE.Code,
+                    Name = WorkflowTypeEnum.STORE.Name,
+                });
+            }
+        }
+
+        private void InitRequestStateEnum()
+        {
+            List<RequestStateDAO> list = DataContext.RequestState.ToList();
+            if (!list.Any(pt => pt.Id == RequestStateEnum.APPROVED.Id))
+            {
+                DataContext.RequestState.Add(new RequestStateDAO
+                {
+                    Id = RequestStateEnum.APPROVED.Id,
+                    Code = RequestStateEnum.APPROVED.Code,
+                    Name = RequestStateEnum.APPROVED.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == RequestStateEnum.NEW.Id))
+            {
+                DataContext.RequestState.Add(new RequestStateDAO
+                {
+                    Id = RequestStateEnum.NEW.Id,
+                    Code = RequestStateEnum.NEW.Code,
+                    Name = RequestStateEnum.NEW.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == RequestStateEnum.APPROVING.Id))
+            {
+                DataContext.RequestState.Add(new RequestStateDAO
+                {
+                    Id = RequestStateEnum.APPROVING.Id,
+                    Code = RequestStateEnum.APPROVING.Code,
+                    Name = RequestStateEnum.APPROVING.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == RequestStateEnum.REJECTED.Id))
+            {
+                DataContext.RequestState.Add(new RequestStateDAO
+                {
+                    Id = RequestStateEnum.REJECTED.Id,
+                    Code = RequestStateEnum.REJECTED.Code,
+                    Name = RequestStateEnum.REJECTED.Name,
+                });
+            }
         }
     }
 
@@ -392,9 +514,13 @@ namespace DMS
     public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
     {
         private ICurrentContext CurrentContext;
-        public PermissionHandler(ICurrentContext CurrentContext)
+        private DataContext DataContext;
+        public PermissionHandler(ICurrentContext CurrentContext, IConfiguration Configuration)
         {
             this.CurrentContext = CurrentContext;
+            var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
+            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DataContext"));
+            DataContext = new DataContext(optionsBuilder.Options);
         }
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
@@ -414,6 +540,33 @@ namespace DMS
             CurrentContext.UserId = UserId;
             CurrentContext.TimeZone = int.TryParse(TimeZone, out int t) ? t : 0;
             CurrentContext.Language = Language ?? "vi";
+
+            List<long> permissionIds = await
+                (from p in DataContext.Permission
+                 join ru in DataContext.AppUserRoleMapping on p.RoleId equals ru.RoleId
+                 join ppm in DataContext.PermissionPageMapping on p.Id equals ppm.PermissionId
+                 join page in DataContext.Page on ppm.PageId equals page.Id
+                 where page.Path == url && ru.AppUserId == UserId
+                 select p.Id).Distinct().ToListAsync();
+
+            List<PermissionDAO> PermissionDAOs = await DataContext.Permission.AsNoTracking()
+                .Include(p => p.PermissionFieldMappings).ThenInclude(pf => pf.Field)
+                .Where(p => permissionIds.Contains(p.Id))
+                .ToListAsync();
+            CurrentContext.RoleIds = PermissionDAOs.Select(p => p.RoleId).Distinct().ToList();
+            CurrentContext.Filters = new Dictionary<long, List<FilterPermissionDefinition>>();
+            foreach (PermissionDAO PermissionDAO in PermissionDAOs)
+            {
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = new List<FilterPermissionDefinition>();
+                CurrentContext.Filters.Add(PermissionDAO.Id, FilterPermissionDefinitions);
+                foreach(PermissionFieldMappingDAO PermissionFieldMappingDAO in PermissionDAO.PermissionFieldMappings)
+                {
+                    FilterPermissionDefinition FilterPermissionDefinition = new FilterPermissionDefinition(PermissionFieldMappingDAO.Field.Name, PermissionFieldMappingDAO.Field.Type);
+                    FilterPermissionDefinition.Value = PermissionFieldMappingDAO.Value;
+                    FilterPermissionDefinitions.Add(FilterPermissionDefinition);
+                }
+                
+            }    
             context.Succeed(requirement);
         }
     }

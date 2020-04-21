@@ -9,7 +9,8 @@ namespace Common
         int TimeZone { get; set; }
         string Language { get; set; }
         string Token { get; set; }
-        Dictionary<long, FilterPermissionDefinition> Filters { get; set; }
+        List<long> RoleIds { get; set; }
+        Dictionary<long, List<FilterPermissionDefinition>> Filters { get; set; }
     }
     public class CurrentContext : ICurrentContext
     {
@@ -18,6 +19,7 @@ namespace Common
         public int TimeZone { get; set; }
         public string Language { get; set; } = "vi";
         public string Token { get; set; }
-        public Dictionary<long, FilterPermissionDefinition> Filters { get; set; }
+        public List<long> RoleIds { get; set; }
+        public Dictionary<long, List<FilterPermissionDefinition>> Filters { get; set; }
     }
 }

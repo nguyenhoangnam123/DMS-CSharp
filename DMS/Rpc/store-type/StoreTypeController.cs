@@ -59,7 +59,6 @@ namespace DMS.Rpc.store_type
                 throw new BindException(ModelState);
 
             StoreTypeFilter StoreTypeFilter = ConvertFilterDTOToFilterEntity(StoreType_StoreTypeFilterDTO);
-            StoreTypeFilter = StoreTypeService.ToFilter(StoreTypeFilter);
             int count = await StoreTypeService.Count(StoreTypeFilter);
             return count;
         }
@@ -71,7 +70,6 @@ namespace DMS.Rpc.store_type
                 throw new BindException(ModelState);
 
             StoreTypeFilter StoreTypeFilter = ConvertFilterDTOToFilterEntity(StoreType_StoreTypeFilterDTO);
-            StoreTypeFilter = StoreTypeService.ToFilter(StoreTypeFilter);
             List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
             List<StoreType_StoreTypeDTO> StoreType_StoreTypeDTOs = StoreTypes
                 .Select(c => new StoreType_StoreTypeDTO(c)).ToList();
@@ -170,7 +168,6 @@ namespace DMS.Rpc.store_type
                 throw new BindException(ModelState);
 
             StoreTypeFilter StoreTypeFilter = ConvertFilterDTOToFilterEntity(StoreType_StoreTypeFilterDTO);
-            StoreTypeFilter = StoreTypeService.ToFilter(StoreTypeFilter);
             DataFile DataFile = await StoreTypeService.Export(StoreTypeFilter);
             return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
             {
@@ -198,7 +195,6 @@ namespace DMS.Rpc.store_type
         private async Task<bool> HasPermission(long Id)
         {
             StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
-            StoreTypeFilter = StoreTypeService.ToFilter(StoreTypeFilter);
             if (Id == 0)
             {
 

@@ -81,16 +81,20 @@ namespace DMS.Services.MInventory
             {
                 InventoryFilter subFilter = new InventoryFilter();
                 filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.WarehouseId))
-                    subFilter.WarehouseId = Map(subFilter.WarehouseId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ItemId))
-                    subFilter.ItemId = Map(subFilter.ItemId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.SaleStock))
-                    subFilter.SaleStock = Map(subFilter.SaleStock, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.AccountingStock))
-                    subFilter.AccountingStock = Map(subFilter.AccountingStock, currentFilter.Value);
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.WarehouseId))
+                        subFilter.WarehouseId = Map(subFilter.WarehouseId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ItemId))
+                        subFilter.ItemId = Map(subFilter.ItemId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleStock))
+                        subFilter.SaleStock = Map(subFilter.SaleStock, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.AccountingStock))
+                        subFilter.AccountingStock = Map(subFilter.AccountingStock, FilterPermissionDefinition);
+                }
             }
             return filter;
         }

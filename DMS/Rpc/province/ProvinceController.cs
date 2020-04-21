@@ -57,7 +57,6 @@ namespace DMS.Rpc.province
                 throw new BindException(ModelState);
 
             ProvinceFilter ProvinceFilter = ConvertFilterDTOToFilterEntity(Province_ProvinceFilterDTO);
-            ProvinceFilter = ProvinceService.ToFilter(ProvinceFilter);
             int count = await ProvinceService.Count(ProvinceFilter);
             return count;
         }
@@ -69,7 +68,6 @@ namespace DMS.Rpc.province
                 throw new BindException(ModelState);
 
             ProvinceFilter ProvinceFilter = ConvertFilterDTOToFilterEntity(Province_ProvinceFilterDTO);
-            ProvinceFilter = ProvinceService.ToFilter(ProvinceFilter);
             List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
             List<Province_ProvinceDTO> Province_ProvinceDTOs = Provinces
                 .Select(c => new Province_ProvinceDTO(c)).ToList();
@@ -98,7 +96,6 @@ namespace DMS.Rpc.province
             ProvinceFilter ProvinceFilter = ConvertFilterDTOToFilterEntity(Province_ProvinceFilterDTO);
             ProvinceFilter.Skip = 0;
             ProvinceFilter.Take = int.MaxValue;
-            ProvinceFilter = ProvinceService.ToFilter(ProvinceFilter);
 
             List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
             MemoryStream memoryStream = new MemoryStream();
@@ -139,7 +136,6 @@ namespace DMS.Rpc.province
         private async Task<bool> HasPermission(long Id)
         {
             ProvinceFilter ProvinceFilter = new ProvinceFilter();
-            ProvinceFilter = ProvinceService.ToFilter(ProvinceFilter);
             if (Id == 0)
             {
 
