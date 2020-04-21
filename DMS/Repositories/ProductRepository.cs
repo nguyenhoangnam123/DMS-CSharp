@@ -70,6 +70,19 @@ namespace DMS.Repositories
                 query = query.Where(q => q.TechnicalName, filter.TechnicalName);
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
+            if (filter.ProductGroupingId != null)
+            {
+                if (filter.ProductGroupingId.Equal.HasValue)
+                {
+                    ProductGroupingDAO ProductGroupingDAO = DataContext.ProductGrouping
+                        .Where(pg => pg.Id == filter.ProductGroupingId.Equal.Value).FirstOrDefault();
+                    query = from q in query
+                            join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductId
+                            join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
+                            where pg.Path.StartsWith(ProductGroupingDAO.Path)
+                            select q;
+                }
+            }
             if (!string.IsNullOrWhiteSpace(filter.Search))
                 query = query.Where(q => q.Code.Contains(filter.Search) || q.Name.Contains(filter.Search));
             query = OrFilter(query, filter);
@@ -328,7 +341,7 @@ namespace DMS.Repositories
                     StatusId = q.UnitOfMeasureGrouping.StatusId,
                 } : null,
                 ProductProductGroupingMappings = filter.Selects.Contains(ProductSelect.ProductProductGroupingMapping) && q.ProductProductGroupingMappings != null ?
-                q.ProductProductGroupingMappings.Select(p => new ProductProductGroupingMapping 
+                q.ProductProductGroupingMappings.Select(p => new ProductProductGroupingMapping
                 {
                     ProductId = p.ProductId,
                     ProductGroupingId = p.ProductGroupingId,
@@ -342,7 +355,7 @@ namespace DMS.Repositories
                         Description = p.ProductGrouping.Description,
                     },
                 }).ToList() : null,
-        }).ToListAsync();
+            }).ToListAsync();
             return Products;
         }
 
