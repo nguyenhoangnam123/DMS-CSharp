@@ -46,7 +46,7 @@ namespace DMS.Rpc.warehouse
         public string TechnicalName { get; set; }
         
         public string Note { get; set; }
-        
+        public List<Warehouse_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
         public Warehouse_UnitOfMeasureDTO UnitOfMeasure { get; set; }
 
         public Warehouse_ProductDTO() {}
@@ -90,7 +90,7 @@ namespace DMS.Rpc.warehouse
             this.TechnicalName = Product.TechnicalName;
             
             this.Note = Product.Note;
-
+            this.ProductProductGroupingMappings = Product.ProductProductGroupingMappings?.Select(p => new Warehouse_ProductProductGroupingMappingDTO(p)).ToList();
             this.UnitOfMeasure = Product.UnitOfMeasure == null ? null : new Warehouse_UnitOfMeasureDTO(Product.UnitOfMeasure);
 
             this.Errors = Product.Errors;

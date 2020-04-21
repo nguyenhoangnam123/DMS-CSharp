@@ -273,7 +273,7 @@ namespace DMS.Repositories
 
             if (Warehouse == null)
                 return null;
-            Warehouse.Inventories = await DataContext.Inventory
+            Warehouse.Inventories = await DataContext.Inventory.Include(x => x.Item.Product.ProductProductGroupingMappings)
                 .Where(x => x.WarehouseId == Warehouse.Id)
                 .Where(x => x.DeletedAt == null && x.Item.DeletedAt == null)
                 .Select(x => new Inventory
@@ -304,7 +304,22 @@ namespace DMS.Repositories
                                 Id = x.Item.Product.UnitOfMeasure.Id,
                                 Code = x.Item.Product.UnitOfMeasure.Code,
                                 Name = x.Item.Product.UnitOfMeasure.Name,
-                            }
+                            },
+                            ProductProductGroupingMappings = x.Item.Product.ProductProductGroupingMappings.Select(g => new ProductProductGroupingMapping
+                            {
+                                ProductId = g.ProductId,
+                                ProductGroupingId = g.ProductGroupingId,
+                                ProductGrouping = new ProductGrouping
+                                {
+                                    Id = g.ProductGrouping.Id,
+                                    Code = g.ProductGrouping.Code,
+                                    Name = g.ProductGrouping.Name,
+                                    Path = g.ProductGrouping.Path,
+                                    Level = g.ProductGrouping.Level,
+                                    Description = g.ProductGrouping.Description,
+                                    ParentId = g.ProductGrouping.ParentId,
+                                }
+                            }).ToList()
                         }
                     },
                 }).ToListAsync();
