@@ -486,7 +486,7 @@ namespace DMS.Repositories
                         Description = x.ProductGrouping.Description,
                     },
                 }).ToListAsync();
-            Product.VariationGroupings = await DataContext.VariationGrouping
+            Product.VariationGroupings = await DataContext.VariationGrouping.Include(x => x.Variations)
                 .Where(x => x.ProductId == Product.Id)
                 .Where(x => x.DeletedAt == null)
                 .Select(x => new VariationGrouping

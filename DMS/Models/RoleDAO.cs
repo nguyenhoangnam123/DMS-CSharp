@@ -9,6 +9,7 @@ namespace DMS.Models
         {
             AppUserRoleMappings = new HashSet<AppUserRoleMappingDAO>();
             Permissions = new HashSet<PermissionDAO>();
+            WorkflowSteps = new HashSet<WorkflowStepDAO>();
         }
 
         public long Id { get; set; }
@@ -19,5 +20,6 @@ namespace DMS.Models
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
         public virtual ICollection<PermissionDAO> Permissions { get; set; }
+        public virtual ICollection<WorkflowStepDAO> WorkflowSteps { get; set; }
     }
 }

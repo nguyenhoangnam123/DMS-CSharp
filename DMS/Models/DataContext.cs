@@ -48,6 +48,10 @@ namespace DMS.Models
         public virtual DbSet<VariationGroupingDAO> VariationGrouping { get; set; }
         public virtual DbSet<WardDAO> Ward { get; set; }
         public virtual DbSet<WarehouseDAO> Warehouse { get; set; }
+        public virtual DbSet<WorkflowDefinitionDAO> WorkflowDefinition { get; set; }
+        public virtual DbSet<WorkflowDirectionDAO> WorkflowDirection { get; set; }
+        public virtual DbSet<WorkflowStepDAO> WorkflowStep { get; set; }
+        public virtual DbSet<WorkflowTypeDAO> WorkflowType { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -1246,6 +1250,90 @@ namespace DMS.Models
                     .WithMany(p => p.Warehouses)
                     .HasForeignKey(d => d.WardId)
                     .HasConstraintName("FK_Warehouse_Ward");
+            });
+
+            modelBuilder.Entity<WorkflowDefinitionDAO>(entity =>
+            {
+                entity.ToTable("WorkflowDefinition", "PER");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.WorkflowType)
+                    .WithMany(p => p.WorkflowDefinitions)
+                    .HasForeignKey(d => d.WorkflowTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowDefinition_WorkflowType");
+            });
+
+            modelBuilder.Entity<WorkflowDirectionDAO>(entity =>
+            {
+                entity.ToTable("WorkflowDirection", "PER");
+
+                entity.HasOne(d => d.FromStep)
+                    .WithMany(p => p.WorkflowDirectionFromSteps)
+                    .HasForeignKey(d => d.FromStepId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowDirection_WorkflowStep");
+
+                entity.HasOne(d => d.ToStep)
+                    .WithMany(p => p.WorkflowDirectionToSteps)
+                    .HasForeignKey(d => d.ToStepId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowDirection_WorkflowStep1");
+
+                entity.HasOne(d => d.WorkflowDefinition)
+                    .WithMany(p => p.WorkflowDirections)
+                    .HasForeignKey(d => d.WorkflowDefinitionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowDirection_WorkflowDefinition");
+            });
+
+            modelBuilder.Entity<WorkflowStepDAO>(entity =>
+            {
+                entity.ToTable("WorkflowStep", "PER");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.WorkflowSteps)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowStep_Role");
+
+                entity.HasOne(d => d.WorkflowDefinition)
+                    .WithMany(p => p.WorkflowSteps)
+                    .HasForeignKey(d => d.WorkflowDefinitionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowStep_WorkflowDefinition");
+            });
+
+            modelBuilder.Entity<WorkflowTypeDAO>(entity =>
+            {
+                entity.ToTable("WorkflowType", "PER");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
             });
 
             OnModelCreatingPartial(modelBuilder);
