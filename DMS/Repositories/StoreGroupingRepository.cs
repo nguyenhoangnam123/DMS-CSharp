@@ -192,6 +192,7 @@ namespace DMS.Repositories
                     OwnerPhone = s.OwnerPhone,
                     OwnerEmail = s.OwnerEmail,
                     StatusId = s.StatusId,
+                    StoreStatusId = s.StoreStatusId,
                 }).ToList(),
             }).ToListAsync();
             return StoreGroupings;
@@ -270,6 +271,7 @@ namespace DMS.Repositories
                     OwnerName = x.OwnerName,
                     OwnerPhone = x.OwnerPhone,
                     OwnerEmail = x.OwnerEmail,
+                    StoreStatusId = x.StoreStatusId,
                     StatusId = x.StatusId,
                     District = new District
                     {
@@ -330,6 +332,12 @@ namespace DMS.Repositories
                         Id = x.Status.Id,
                         Code = x.Status.Code,
                         Name = x.Status.Name,
+                    },
+                    StoreStatus = new StoreStatus
+                    {
+                        Id = x.StoreStatus.Id,
+                        Code = x.StoreStatus.Code,
+                        Name = x.StoreStatus.Name,
                     },
                     StoreType = new StoreType
                     {
@@ -466,6 +474,7 @@ namespace DMS.Repositories
                         StoreDAO.OwnerPhone = Store.OwnerPhone;
                         StoreDAO.OwnerEmail = Store.OwnerEmail;
                         StoreDAO.StatusId = Store.StatusId;
+                        StoreDAO.StoreStatusId = Enums.StoreStatusEnum.NEW.Id;
                         StoreDAOs.Add(StoreDAO);
                         StoreDAO.CreatedAt = StaticParams.DateTimeNow;
                         StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -495,6 +504,7 @@ namespace DMS.Repositories
                         StoreDAO.OwnerPhone = Store.OwnerPhone;
                         StoreDAO.OwnerEmail = Store.OwnerEmail;
                         StoreDAO.StatusId = Store.StatusId;
+                        StoreDAO.StoreStatusId = Store.StoreStatusId;
                         StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
                         StoreDAO.DeletedAt = null;
                     }
