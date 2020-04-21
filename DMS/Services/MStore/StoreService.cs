@@ -281,6 +281,7 @@ namespace DMS.Services.MStore
                 Skip = 0,
                 Take = 1,
                 Selects = WorkflowDefinitionSelect.Id,
+                WorkflowTypeId = new IdFilter{ Equal = WorkflowTypeEnum.STORE.Id }
             })).FirstOrDefault();
 
             if (WorkflowDefinition == null)
@@ -333,11 +334,49 @@ namespace DMS.Services.MStore
             // chuyển trạng thái điểm nhảy
             // gửi mail cho các điểm nhảy có trạng thái thay đổi.
 
-            List<WorkflowStep> WorkflowSteps = new List<WorkflowStep>();
-            foreach(WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+            if(WorkflowDefinition != null && Store.StoreWorkflows != null)
             {
+                List<WorkflowStep> ToSteps = new List<WorkflowStep>();
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
+                    {
+                        var StartNode = Store.StoreWorkflows
+                            .Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
+                            .Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
+                        StartNode.WorkflowStateId = WorkflowStateEnum.APPROVED.Id;
 
-            }    
+                        var NextSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.FromStepId == WorkflowStep.Id).Select(x => x.ToStep) ?? new List<WorkflowStep>();
+                        ToSteps.AddRange(NextSteps);
+                    }
+                }
+
+                ToSteps = ToSteps.Distinct().ToList();
+
+                foreach (WorkflowStep WorkflowStep in ToSteps)
+                {
+                    var FromSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.ToStepId == WorkflowStep.Id).Select(x => x.FromStep) ?? new List<WorkflowStep>();
+                    var FromNodes = new List<StoreWorkflow>();
+                    foreach (var FromStep in FromSteps)
+                    {
+                        var FromNode = Store.StoreWorkflows.Where(x => x.WorkflowStepId == FromStep.Id).FirstOrDefault();
+                        FromNodes.Add(FromNode);
+                    }
+
+                    if(FromNodes.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
+                    {
+                        var StoreWorkflow = Store.StoreWorkflows.Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
+                        StoreWorkflow.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
+                        StoreWorkflow.UpdatedAt = StaticParams.DateTimeNow;
+                        StoreWorkflow.AppUserId = CurrentContext.UserId;
+
+                        {
+                            //gửi mail
+                        }
+                    }
+                }
+            }
+            
             return Store;
         }
 
