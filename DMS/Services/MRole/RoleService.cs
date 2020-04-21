@@ -121,7 +121,6 @@ namespace DMS.Services.MRole
 
                 await UOW.Begin();
                 Role.AppUserRoleMappings = oldData.AppUserRoleMappings;
-                Role.Permissions = oldData.Permissions;
                 await UOW.RoleRepository.Update(Role);
                 await UOW.Commit();
 
