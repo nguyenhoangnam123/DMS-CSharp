@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MStoreType
@@ -21,6 +22,7 @@ namespace DMS.Services.MStoreType
         public enum ErrorCode
         {
             IdNotExisted,
+            IdInUsed,
             CodeExisted,
             CodeEmpty,
             CodeHasSpecialCharacter,
@@ -123,13 +125,24 @@ namespace DMS.Services.MStoreType
         {
             if (await ValidateId(StoreType))
             {
+                StoreFilter storeFilter = new StoreFilter
+                {
+                    StoreTypeId = new IdFilter { Equal = StoreType.Id},
+                };
+                int count = await UOW.StoreRepository.Count(storeFilter);
+                if (count > 0 )
+                    StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Id), ErrorCode.IdInUsed);
             }
             return StoreType.IsValidated;
         }
 
         public async Task<bool> BulkDelete(List<StoreType> StoreTypes)
         {
-            return true;
+            foreach(StoreType StoreType in StoreTypes)
+            {
+                await Delete(StoreType);
+            }    
+            return StoreTypes.All(st => st.IsValidated);
         }
 
         public async Task<bool> Import(List<StoreType> StoreTypes)
