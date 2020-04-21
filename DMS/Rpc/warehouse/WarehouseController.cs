@@ -500,7 +500,7 @@ namespace DMS.Rpc.warehouse
         }
 
         [Route(WarehouseRoute.CountHistory), HttpPost]
-        public async Task<int> CountHistory(Warehouse_InventoryHistoryFilterDTO Warehouse_InventoryHistoryFilterDTO)
+        public async Task<int> CountHistory([FromBody] Warehouse_InventoryHistoryFilterDTO Warehouse_InventoryHistoryFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -528,7 +528,7 @@ namespace DMS.Rpc.warehouse
         }
 
         [Route(WarehouseRoute.ListHistory), HttpPost]
-        public async Task<List<Warehouse_InventoryHistoryDTO>> ListHistory(Warehouse_InventoryHistoryFilterDTO Warehouse_InventoryHistoryFilterDTO)
+        public async Task<List<Warehouse_InventoryHistoryDTO>> ListHistory([FromBody] Warehouse_InventoryHistoryFilterDTO Warehouse_InventoryHistoryFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
