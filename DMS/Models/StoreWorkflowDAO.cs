@@ -7,6 +7,9 @@ namespace DMS.Models
     {
         public long Id { get; set; }
         public long StoreId { get; set; }
+        public long WorkflowStepId { get; set; }
         public long WorkflowStateId { get; set; }
+        public long? UpdatedAt { get; set; }
+        public long? AppUserId { get; set; }
     }
 }

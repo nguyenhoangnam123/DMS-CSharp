@@ -145,8 +145,9 @@ namespace DMS.Repositories
                     Id = q.WorkflowType.Id,
                     Code = q.WorkflowType.Code,
                     Name = q.WorkflowType.Name,
-                } : null,
-            }).AsNoTracking().ToListAsync();
+                } : null
+            }).ToListAsync();
+
             return WorkflowDefinitions;
         }
 
@@ -187,6 +188,43 @@ namespace DMS.Repositories
 
             if (WorkflowDefinition == null)
                 return null;
+
+            WorkflowDefinition.WorkflowDirections = await DataContext.WorkflowDirection
+                .Where(x => x.WorkflowDefinitionId == Id).Select(x => new WorkflowDirection
+                {
+                    Id = x.Id,
+                    FromStepId = x.FromStepId,
+                    ToStepId = x.ToStepId,
+                    SubjectMailForCreator = x.SubjectMailForCreator,
+                    SubjectMailForNextStep = x.SubjectMailForNextStep,
+                    BodyMailForCreator = x.BodyMailForCreator,
+                    BodyMailForNextStep = x.BodyMailForNextStep,
+                    WorkflowDefinitionId = x.WorkflowDefinitionId,
+                    FromStep = new WorkflowStep
+                    {
+                        Id = x.FromStep.Id,
+                        Name = x.FromStep.Name,
+                        RoleId = x.FromStep.RoleId,
+                        WorkflowDefinitionId = x.FromStep.WorkflowDefinitionId,
+                    },
+                    ToStep = new WorkflowStep
+                    {
+                        Id = x.FromStep.Id,
+                        Name = x.FromStep.Name,
+                        RoleId = x.FromStep.RoleId,
+                        WorkflowDefinitionId = x.FromStep.WorkflowDefinitionId,
+                    },
+                    
+                }).ToListAsync();
+
+            WorkflowDefinition.WorkflowParameters = await DataContext.WorkflowParameter
+                .Where(x => x.WorkflowDefinitionId == Id)
+                .Select(x => new WorkflowParameter
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    WorkflowDefinitionId = x.WorkflowDefinitionId
+                }).ToListAsync();
 
             return WorkflowDefinition;
         }

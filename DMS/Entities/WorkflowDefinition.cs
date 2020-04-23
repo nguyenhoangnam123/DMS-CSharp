@@ -17,6 +17,7 @@ namespace DMS.Entities
         public WorkflowType WorkflowType { get; set; }
         public List<WorkflowStep> WorkflowSteps { get; set; }
         public List<WorkflowDirection> WorkflowDirections { get; set; }
+        public List<WorkflowParameter> WorkflowParameters { get; set; }
 
         public bool Equals(WorkflowDefinition other)
         {
@@ -50,6 +51,7 @@ namespace DMS.Entities
         StartDate = 3,
         EndDate = 4,
         Status = 5,
+        WorkflowDirection = 6,
     }
 
     [Flags]
@@ -62,5 +64,6 @@ namespace DMS.Entities
         StartDate = E._3,
         EndDate = E._4,
         Status = E._5,
+        WorkflowDirection = E._6,
     }
 }

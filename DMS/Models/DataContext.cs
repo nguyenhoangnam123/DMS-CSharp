@@ -41,6 +41,7 @@ namespace DMS.Models
         public virtual DbSet<StoreStatusDAO> StoreStatus { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<StoreWorkflowDAO> StoreWorkflow { get; set; }
+        public virtual DbSet<StoreWorkflowParameterMappingDAO> StoreWorkflowParameterMapping { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
         public virtual DbSet<TaxTypeDAO> TaxType { get; set; }
         public virtual DbSet<UnitOfMeasureDAO> UnitOfMeasure { get; set; }
@@ -52,6 +53,7 @@ namespace DMS.Models
         public virtual DbSet<WarehouseDAO> Warehouse { get; set; }
         public virtual DbSet<WorkflowDefinitionDAO> WorkflowDefinition { get; set; }
         public virtual DbSet<WorkflowDirectionDAO> WorkflowDirection { get; set; }
+        public virtual DbSet<WorkflowParameterDAO> WorkflowParameter { get; set; }
         public virtual DbSet<WorkflowStateDAO> WorkflowState { get; set; }
         public virtual DbSet<WorkflowStepDAO> WorkflowStep { get; set; }
         public virtual DbSet<WorkflowTypeDAO> WorkflowType { get; set; }
@@ -65,7 +67,7 @@ namespace DMS.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("data source=.;initial catalog=dms;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
+                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=dms;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
             }
         }
 
@@ -1006,6 +1008,25 @@ namespace DMS.Models
                 entity.Property(e => e.Id).ValueGeneratedNever();
             });
 
+            modelBuilder.Entity<StoreWorkflowParameterMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.WorkflowParameterId, e.StoreId });
+
+                entity.Property(e => e.Value).HasMaxLength(500);
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.StoreWorkflowParameterMappings)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreWorkflowParameterMapping_Store");
+
+                entity.HasOne(d => d.WorkflowParameter)
+                    .WithMany(p => p.StoreWorkflowParameterMappings)
+                    .HasForeignKey(d => d.WorkflowParameterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreWorkflowParameterMapping_WorkflowParameter");
+            });
+
             modelBuilder.Entity<SupplierDAO>(entity =>
             {
                 entity.Property(e => e.Address).HasMaxLength(2000);
@@ -1309,6 +1330,22 @@ namespace DMS.Models
             {
                 entity.ToTable("WorkflowDirection", "PER");
 
+                entity.Property(e => e.BodyMailForCreator)
+                    .IsRequired()
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.BodyMailForNextStep)
+                    .IsRequired()
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.SubjectMailForCreator)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.SubjectMailForNextStep)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
                 entity.HasOne(d => d.FromStep)
                     .WithMany(p => p.WorkflowDirectionFromSteps)
                     .HasForeignKey(d => d.FromStepId)
@@ -1326,6 +1363,21 @@ namespace DMS.Models
                     .HasForeignKey(d => d.WorkflowDefinitionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WorkflowDirection_WorkflowDefinition");
+            });
+
+            modelBuilder.Entity<WorkflowParameterDAO>(entity =>
+            {
+                entity.ToTable("WorkflowParameter", "PER");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.WorkflowDefinition)
+                    .WithMany(p => p.WorkflowParameters)
+                    .HasForeignKey(d => d.WorkflowDefinitionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowParameter_WorkflowDefinition");
             });
 
             modelBuilder.Entity<WorkflowStateDAO>(entity =>

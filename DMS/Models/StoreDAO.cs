@@ -9,6 +9,7 @@ namespace DMS.Models
         {
             InverseParentStore = new HashSet<StoreDAO>();
             StoreImageMappings = new HashSet<StoreImageMappingDAO>();
+            StoreWorkflowParameterMappings = new HashSet<StoreWorkflowParameterMappingDAO>();
         }
 
         public long Id { get; set; }
@@ -34,11 +35,11 @@ namespace DMS.Models
         public string OwnerEmail { get; set; }
         public long StoreStatusId { get; set; }
         public long StatusId { get; set; }
-        public long? WorkflowDefinitionId { get; set; }
-        public long? RequestStateId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public long? WorkflowDefinitionId { get; set; }
+        public long? RequestStateId { get; set; }
 
         public virtual DistrictDAO District { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
@@ -53,5 +54,6 @@ namespace DMS.Models
         public virtual WardDAO Ward { get; set; }
         public virtual ICollection<StoreDAO> InverseParentStore { get; set; }
         public virtual ICollection<StoreImageMappingDAO> StoreImageMappings { get; set; }
+        public virtual ICollection<StoreWorkflowParameterMappingDAO> StoreWorkflowParameterMappings { get; set; }
     }
 }

@@ -9,6 +9,10 @@ namespace DMS.Models
         public long WorkflowDefinitionId { get; set; }
         public long FromStepId { get; set; }
         public long ToStepId { get; set; }
+        public string SubjectMailForCreator { get; set; }
+        public string SubjectMailForNextStep { get; set; }
+        public string BodyMailForCreator { get; set; }
+        public string BodyMailForNextStep { get; set; }
 
         public virtual WorkflowStepDAO FromStep { get; set; }
         public virtual WorkflowStepDAO ToStep { get; set; }

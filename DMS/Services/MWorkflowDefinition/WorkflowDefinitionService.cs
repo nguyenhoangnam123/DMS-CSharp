@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
+using DMS.Enums;
 
 namespace DMS.Services.MWorkflowDefinition
 {
-    public interface IWorkflowDefinitionService :  IServiceScoped
+    public interface IWorkflowDefinitionService : IServiceScoped
     {
         Task<int> Count(WorkflowDefinitionFilter WorkflowDefinitionFilter);
         Task<List<WorkflowDefinition>> List(WorkflowDefinitionFilter WorkflowDefinitionFilter);
@@ -30,7 +31,8 @@ namespace DMS.Services.MWorkflowDefinition
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IWorkflowDefinitionValidator WorkflowDefinitionValidator;
-
+        private List<string> StoreParameters;
+        private List<string> ROUTER;
         public WorkflowDefinitionService(
             IUOW UOW,
             ILogging Logging,
@@ -42,6 +44,8 @@ namespace DMS.Services.MWorkflowDefinition
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.WorkflowDefinitionValidator = WorkflowDefinitionValidator;
+
+            StoreParameters = new List<string> { nameof(Store.Code), nameof(Store.Name), nameof(Store.StoreTypeId) };
         }
         public async Task<int> Count(WorkflowDefinitionFilter WorkflowDefinitionFilter)
         {
@@ -83,7 +87,7 @@ namespace DMS.Services.MWorkflowDefinition
                 return null;
             return WorkflowDefinition;
         }
-       
+
         public async Task<WorkflowDefinition> Create(WorkflowDefinition WorkflowDefinition)
         {
             if (!await WorkflowDefinitionValidator.Create(WorkflowDefinition))
@@ -92,6 +96,7 @@ namespace DMS.Services.MWorkflowDefinition
             try
             {
                 await UOW.Begin();
+                InitParameter(WorkflowDefinition);
                 await UOW.WorkflowDefinitionRepository.Create(WorkflowDefinition);
                 await UOW.Commit();
 
@@ -116,6 +121,7 @@ namespace DMS.Services.MWorkflowDefinition
             try
             {
                 var oldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
+                InitParameter(WorkflowDefinition);
 
                 await UOW.Begin();
                 await UOW.WorkflowDefinitionRepository.Update(WorkflowDefinition);
@@ -183,7 +189,7 @@ namespace DMS.Services.MWorkflowDefinition
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<WorkflowDefinition>> Import(List<WorkflowDefinition> WorkflowDefinitions)
         {
             if (!await WorkflowDefinitionValidator.Import(WorkflowDefinitions))
@@ -234,6 +240,17 @@ namespace DMS.Services.MWorkflowDefinition
                 }
             }
             return filter;
+        }
+
+        private void InitParameter(WorkflowDefinition WorkflowDefinition)
+        {
+            if (WorkflowDefinition.WorkflowTypeId == WorkflowTypeEnum.STORE.Id)
+            {
+                WorkflowDefinition.WorkflowParameters = StoreParameters.Select(x => new WorkflowParameter
+                {
+                    Name = x
+                }).ToList();
+            }
         }
     }
 }

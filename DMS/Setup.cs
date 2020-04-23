@@ -439,13 +439,13 @@ namespace DMS
                 });
             }
 
-            if (!list.Any(pt => pt.Id == WorkflowTypeEnum.ROUTE.Id))
+            if (!list.Any(pt => pt.Id == WorkflowTypeEnum.ROUTER.Id))
             {
                 DataContext.WorkflowType.Add(new WorkflowTypeDAO
                 {
-                    Id = WorkflowTypeEnum.ROUTE.Id,
-                    Code = WorkflowTypeEnum.ROUTE.Code,
-                    Name = WorkflowTypeEnum.ROUTE.Name,
+                    Id = WorkflowTypeEnum.ROUTER.Id,
+                    Code = WorkflowTypeEnum.ROUTER.Code,
+                    Name = WorkflowTypeEnum.ROUTER.Name,
                 });
             }
 

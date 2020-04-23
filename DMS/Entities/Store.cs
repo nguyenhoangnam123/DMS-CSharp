@@ -45,6 +45,7 @@ namespace DMS.Entities
         public Ward Ward { get; set; }
         public List<StoreImageMapping> StoreImageMappings { get; set; }
         public List<StoreWorkflow> StoreWorkflows { get; set; }
+        public List<StoreWorkflowParameterMapping> StoreWorkflowParameterMappings { get; set; }
 
         public bool Equals(Store other)
         {

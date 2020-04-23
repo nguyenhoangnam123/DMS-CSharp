@@ -54,6 +54,7 @@ namespace DMS.Entities
         public IdFilter OrganizationId { get; set; }
         public IdFilter SexId { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter RoleId { get; set; }
         public DateFilter Birthday { get; set; }
         public List<AppUserFilter> OrFilter { get; set; }
         public AppUserOrder OrderBy { get; set; }

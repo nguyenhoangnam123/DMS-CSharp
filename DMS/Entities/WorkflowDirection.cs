@@ -14,7 +14,13 @@ namespace DMS.Entities
         public long ToStepId { get; set; }
         public WorkflowStep FromStep { get; set; }
         public WorkflowStep ToStep { get; set; }
+        public string SubjectMailForCreator { get; set; }
+        public string SubjectMailForNextStep { get; set; }
+        public string BodyMailForCreator { get; set; }
+        public string BodyMailForNextStep { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }
+        
+
 
         public bool Equals(WorkflowDirection other)
         {
