@@ -691,7 +691,8 @@ namespace DMS.Rpc.store
             StoreFilter.OwnerName = Store_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = Store_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Store_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = Store_StoreFilterDTO.StatusId;
+            StoreFilter.StoreStatusId = Store_StoreFilterDTO.StoreStatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
             return StoreFilter;
         }
 
@@ -808,6 +809,11 @@ namespace DMS.Rpc.store
             StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
             StoreGroupingFilter.OrderType = OrderType.ASC;
             StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Code = Store_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = Store_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.Level = Store_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.Path = Store_StoreGroupingFilterDTO.Path;
+            StoreGroupingFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<Store_StoreGroupingDTO> Store_StoreGroupingDTOs = StoreGroupings
                 .Select(x => new Store_StoreGroupingDTO(x)).ToList();

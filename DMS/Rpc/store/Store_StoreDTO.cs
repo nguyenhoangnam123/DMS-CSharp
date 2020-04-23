@@ -100,6 +100,7 @@ namespace DMS.Rpc.store
         public StringFilter OwnerPhone { get; set; }
         public StringFilter OwnerEmail { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter StoreStatusId { get; set; }
         public StoreOrder OrderBy { get; set; }
     }
 }
