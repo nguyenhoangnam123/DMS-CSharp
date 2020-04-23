@@ -1,10 +1,12 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
 using DMS.Repositories;
 using DMS.Services.MWorkflowDefinition;
 using Helpers;
 using OfficeOpenXml;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -345,6 +347,8 @@ namespace DMS.Services.MStore
                             .Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
                             .Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
                         StartNode.WorkflowStateId = WorkflowStateEnum.APPROVED.Id;
+                        StartNode.UpdatedAt = StaticParams.DateTimeNow;
+                        StartNode.AppUserId = CurrentContext.UserId;
 
                         var NextSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.FromStepId == WorkflowStep.Id).Select(x => x.ToStep) ?? new List<WorkflowStep>();
                         ToSteps.AddRange(NextSteps);
@@ -367,8 +371,8 @@ namespace DMS.Services.MStore
                     {
                         var StoreWorkflow = Store.StoreWorkflows.Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
                         StoreWorkflow.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
-                        StoreWorkflow.UpdatedAt = StaticParams.DateTimeNow;
-                        StoreWorkflow.AppUserId = CurrentContext.UserId;
+                        StoreWorkflow.UpdatedAt = null;
+                        StoreWorkflow.AppUserId = null;
 
                         {
                             //gửi mail
@@ -380,14 +384,101 @@ namespace DMS.Services.MStore
             return Store;
         }
 
-        public Task<Store> Reject(Store Store)
+        public async Task<Store> Reject(Store Store)
         {
-            throw new NotImplementedException();
+            Store = await UOW.StoreRepository.Get(Store.Id);
+            WorkflowDefinition WorkflowDefinition = await WorkflowDefinitionService.Get(Store.WorkflowDefinitionId.Value);
+
+            if (WorkflowDefinition != null && Store.StoreWorkflows != null)
+            {
+                List<WorkflowStep> ToSteps = new List<WorkflowStep>();
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
+                    {
+                        var StartNode = Store.StoreWorkflows
+                            .Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
+                            .Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
+                        StartNode.WorkflowStateId = WorkflowStateEnum.REJECTED.Id;
+                        StartNode.UpdatedAt = StaticParams.DateTimeNow;
+                        StartNode.AppUserId = CurrentContext.UserId;
+                    }
+                }
+
+                WorkflowStep StartStep = null;
+                // tìm điểm bắt đầu của workflow
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (!WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id) &&
+                        CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
+                    {
+                        StartStep = WorkflowStep;
+                        break;
+                    }
+                }
+
+                //tìm node đầu tiên để gửi mail thông báo yêu cầu đã bị từ chối
+                if (StartStep != null)
+                {
+                    StoreWorkflow StartNode = Store.StoreWorkflows.Where(x => x.WorkflowStepId == StartStep.Id).FirstOrDefault();
+                    if(StartNode != null)
+                    {
+                        //gửi mail
+                    }
+                }
+            }
+
+            return Store;
         }
 
-        public Task<Store> End(Store Store)
+        public async Task<Store> End(Store Store)
         {
-            throw new NotImplementedException();
+            Store = await UOW.StoreRepository.Get(Store.Id);
+            WorkflowDefinition WorkflowDefinition = await WorkflowDefinitionService.Get(Store.WorkflowDefinitionId.Value);
+
+            if(WorkflowDefinition != null && Store.StoreWorkflows != null)
+            {
+                if(Store.StoreWorkflows.Any(x => x.WorkflowStateId == WorkflowStateEnum.REJECTED.Id))
+                {
+                    Store.RequestStateId = RequestStateEnum.REJECTED.Id;
+                }
+                else if(Store.StoreWorkflows.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
+                {
+                    Store.RequestStateId = RequestStateEnum.APPROVED.Id;
+                }
+            }
+
+            return Store;
         }
+
+        //private async Task<Mail> SendMail(Mail Mail)
+        //{
+        //    RestClient restClient = new RestClient($"http://localhost:{Modules.Utils}");
+        //    RestRequest restRequest = new RestRequest("/rpc/utils/mail/create");
+        //    restRequest.RequestFormat = DataFormat.Json;
+        //    restRequest.Method = Method.POST;
+        //    restRequest.AddCookie("Token", CurrentContext.Token);
+        //    restRequest.AddCookie("X-Language", CurrentContext.Language);
+        //    restRequest.AddHeader("Content-Type", "multipart/form-data");
+        //    restRequest.AddJsonBody(Mail);
+        //    try
+        //    {
+        //        var response = restClient.Execute<Mail>(restRequest);
+        //        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        //        {
+        //            Image.Id = response.Data.Id;
+        //            Image.Url = "/rpc/utils/file/download" + response.Data.Path;
+        //            await UOW.Begin();
+        //            await UOW.ImageRepository.Create(Image);
+        //            await UOW.Commit();
+        //            return Image;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        return null;
+        //    }
+        //    return null;
+        //}
     }
 }
