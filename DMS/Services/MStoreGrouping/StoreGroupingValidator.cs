@@ -29,7 +29,7 @@ namespace DMS.Services.MStoreGrouping
             NameOverLength,
             StatusNotExisted,
             ParentNotExisted,
-            StoreGroupingHasBeenUsed
+            StoreGroupingInUsed
         }
 
         private IUOW UOW;
@@ -144,40 +144,24 @@ namespace DMS.Services.MStoreGrouping
             {
                 StoreFilter StoreFilter = new StoreFilter
                 {
-                    Skip = 0,
-                    Take = 10,
                     StoreGroupingId = new IdFilter { Equal = StoreGrouping.Id },
-                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
-                    Selects = StoreSelect.Id
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                 };
 
                 var count = await UOW.StoreRepository.Count(StoreFilter);
                 if(count > 0)
-                {
-                    StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Id), ErrorCode.StoreGroupingHasBeenUsed);
-                }
+                    StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Id), ErrorCode.StoreGroupingInUsed);
             }
             return StoreGrouping.IsValidated;
         }
 
         public async Task<bool> BulkDelete(List<StoreGrouping> StoreGroupings)
         {
-            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter
+            foreach (StoreGrouping StoreGrouping in StoreGroupings)
             {
-                Skip = 0,
-                Take = int.MaxValue,
-                Id = new IdFilter { In = StoreGroupings.Select(a => a.Id).ToList() },
-                Selects = StoreGroupingSelect.Id
-            };
-
-            var listInDB = await UOW.StoreGroupingRepository.List(StoreGroupingFilter);
-            var listExcept = StoreGroupings.Except(listInDB);
-            if (listExcept == null || listExcept.Count() == 0) return true;
-            foreach (var StoreGrouping in listExcept)
-            {
-                StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Id), ErrorCode.IdNotExisted);
+                await Delete(StoreGrouping);
             }
-            return false;
+            return StoreGroupings.All(st => st.IsValidated);
         }
 
         public async Task<bool> Import(List<StoreGrouping> StoreGroupings)

@@ -383,11 +383,8 @@ namespace DMS.Services.MStore
         {
             StoreFilter StoreFilter = new StoreFilter
             {
-                Skip = 0,
-                Take = 10,
                 ParentStoreId = new IdFilter { Equal = Store.Id },
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
-                Selects = StoreSelect.Id
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
             };
 
             int count = await UOW.StoreRepository.Count(StoreFilter);
@@ -455,22 +452,11 @@ namespace DMS.Services.MStore
 
         public async Task<bool> BulkDelete(List<Store> Stores)
         {
-            StoreFilter StoreFilter = new StoreFilter
+            foreach (Store Store in Stores)
             {
-                Skip = 0,
-                Take = int.MaxValue,
-                Id = new IdFilter { In = Stores.Select(a => a.Id).ToList() },
-                Selects = StoreSelect.Id
-            };
-
-            var listInDB = await UOW.StoreRepository.List(StoreFilter);
-            var listExcept = Stores.Except(listInDB);
-            if (listExcept == null || listExcept.Count() == 0) return true;
-            foreach (var Store in listExcept)
-            {
-                Store.AddError(nameof(StoreValidator), nameof(Store.Id), ErrorCode.IdNotExisted);
+                await Delete(Store);
             }
-            return false;
+            return Stores.All(st => st.IsValidated);
         }
 
         public async Task<bool> Import(List<Store> Stores)

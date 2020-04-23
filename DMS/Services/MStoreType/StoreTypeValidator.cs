@@ -22,7 +22,7 @@ namespace DMS.Services.MStoreType
         public enum ErrorCode
         {
             IdNotExisted,
-            IdInUsed,
+            StoreTypeInUsed,
             CodeExisted,
             CodeEmpty,
             CodeHasSpecialCharacter,
@@ -102,6 +102,20 @@ namespace DMS.Services.MStoreType
                 StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Status), ErrorCode.StatusNotExisted);
             return true;
         }
+
+        private async Task<bool> ValidateStoreTypeInUsed(StoreType StoreType)
+        {
+            StoreFilter storeFilter = new StoreFilter
+            {
+                StoreTypeId = new IdFilter { Equal = StoreType.Id },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+            };
+            int count = await UOW.StoreRepository.Count(storeFilter);
+            if (count > 0)
+                StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Id), ErrorCode.StoreTypeInUsed);
+        
+            return StoreType.IsValidated;
+        }
         public async Task<bool> Create(StoreType StoreType)
         {
             await ValidateCode(StoreType);
@@ -125,13 +139,7 @@ namespace DMS.Services.MStoreType
         {
             if (await ValidateId(StoreType))
             {
-                StoreFilter storeFilter = new StoreFilter
-                {
-                    StoreTypeId = new IdFilter { Equal = StoreType.Id},
-                };
-                int count = await UOW.StoreRepository.Count(storeFilter);
-                if (count > 0 )
-                    StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Id), ErrorCode.IdInUsed);
+                await ValidateStoreTypeInUsed(StoreType);
             }
             return StoreType.IsValidated;
         }
