@@ -27,7 +27,8 @@ namespace DMS.Services.MUnitOfMeasure
             CodeHasSpecialCharacter,
             NameEmpty,
             NameOverLength,
-            StatusNotExisted
+            StatusNotExisted,
+            UnitOfMeasureInUsed
         }
 
 
@@ -106,6 +107,20 @@ namespace DMS.Services.MUnitOfMeasure
             return true;
         }
 
+        private async Task<bool> ValidateUnitOfMeasureInUsed(UnitOfMeasure UnitOfMeasure)
+        {
+            ProductFilter ProductFilter = new ProductFilter
+            {
+                UnitOfMeasureId = new IdFilter { Equal = UnitOfMeasure.Id },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+            };
+            int count = await UOW.ProductRepository.Count(ProductFilter);
+            if (count > 0)
+                UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Id), ErrorCode.UnitOfMeasureInUsed);
+
+            return UnitOfMeasure.IsValidated;
+        }
+
         public async Task<bool> Create(UnitOfMeasure UnitOfMeasure)
         {
             await ValidateCode(UnitOfMeasure);
@@ -129,13 +144,19 @@ namespace DMS.Services.MUnitOfMeasure
         {
             if (await ValidateId(UnitOfMeasure))
             {
+                await ValidateUnitOfMeasureInUsed(UnitOfMeasure);
             }
             return UnitOfMeasure.IsValidated;
         }
 
         public async Task<bool> BulkDelete(List<UnitOfMeasure> UnitOfMeasures)
         {
-            return true;
+            foreach (var UnitOfMeasure in UnitOfMeasures)
+            {
+                await Delete(UnitOfMeasure);
+            }
+            return UnitOfMeasures.All(st => st.IsValidated);
+
         }
         public async Task<bool> BulkMerge(List<UnitOfMeasure> UnitOfMeasures)
         {
