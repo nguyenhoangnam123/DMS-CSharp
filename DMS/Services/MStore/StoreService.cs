@@ -1,15 +1,11 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
-using DMS.Helpers;
 using DMS.Repositories;
 using DMS.Services.MWorkflowDefinition;
 using Helpers;
-using OfficeOpenXml;
-using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -450,35 +446,5 @@ namespace DMS.Services.MStore
 
             return Store;
         }
-
-        //private async Task<Mail> SendMail(Mail Mail)
-        //{
-        //    RestClient restClient = new RestClient($"http://localhost:{Modules.Utils}");
-        //    RestRequest restRequest = new RestRequest("/rpc/utils/mail/create");
-        //    restRequest.RequestFormat = DataFormat.Json;
-        //    restRequest.Method = Method.POST;
-        //    restRequest.AddCookie("Token", CurrentContext.Token);
-        //    restRequest.AddCookie("X-Language", CurrentContext.Language);
-        //    restRequest.AddHeader("Content-Type", "multipart/form-data");
-        //    restRequest.AddJsonBody(Mail);
-        //    try
-        //    {
-        //        var response = restClient.Execute<Mail>(restRequest);
-        //        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        //        {
-        //            Image.Id = response.Data.Id;
-        //            Image.Url = "/rpc/utils/file/download" + response.Data.Path;
-        //            await UOW.Begin();
-        //            await UOW.ImageRepository.Create(Image);
-        //            await UOW.Commit();
-        //            return Image;
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        return null;
-        //    }
-        //    return null;
-        //}
     }
 }

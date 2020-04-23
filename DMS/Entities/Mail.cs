@@ -12,6 +12,7 @@ namespace DMS.Entities
         public List<string> Recipients { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }
+        public List<Attachment> Attachments { get; set; }
         public long RetryCount { get; set; }
         public string Error { get; set; }
         public Mail() { }
