@@ -28,7 +28,8 @@ namespace DMS.Services.MStoreGrouping
             NameEmpty,
             NameOverLength,
             StatusNotExisted,
-            ParentNotExisted
+            ParentNotExisted,
+            StoreGroupingHasBeenUsed
         }
 
         private IUOW UOW;
@@ -141,6 +142,20 @@ namespace DMS.Services.MStoreGrouping
         {
             if (await ValidateId(StoreGrouping))
             {
+                StoreFilter StoreFilter = new StoreFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    StoreGroupingId = new IdFilter { Equal = StoreGrouping.Id },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
+                    Selects = StoreSelect.Id
+                };
+
+                var count = await UOW.StoreRepository.Count(StoreFilter);
+                if(count > 0)
+                {
+                    StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Id), ErrorCode.StoreGroupingHasBeenUsed);
+                }
             }
             return StoreGrouping.IsValidated;
         }
