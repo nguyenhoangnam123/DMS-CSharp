@@ -194,7 +194,7 @@ namespace DMS.Repositories
 
             if (ProductGrouping == null)
                 return null;
-            ProductGrouping.ProductProductGroupingMappings = await DataContext.ProductProductGroupingMapping
+            ProductGrouping.ProductProductGroupingMappings = await DataContext.ProductProductGroupingMapping.Include(x => x.Product)
                 .Where(x => x.ProductGrouping.Path.StartsWith(ProductGrouping.Path) && x.Product.DeletedAt == null)
                 .Select(x => new ProductProductGroupingMapping
                 {
@@ -217,6 +217,59 @@ namespace DMS.Repositories
                         RetailPrice = x.Product.RetailPrice,
                         TaxTypeId = x.Product.TaxTypeId,
                         StatusId = x.Product.StatusId,
+                        Brand = x.Product.Brand == null ? null : new Brand
+                        {
+                            Id = x.Product.Brand.Id,
+                            Code = x.Product.Brand.Code,
+                            Name = x.Product.Brand.Name,
+                            Description = x.Product.Brand.Description,
+                            StatusId = x.Product.Brand.StatusId,
+                        },
+                        ProductType = x.Product.ProductType == null ? null : new ProductType
+                        {
+                            Id = x.Product.ProductType.Id,
+                            Code = x.Product.ProductType.Code,
+                            Name = x.Product.ProductType.Name,
+                            Description = x.Product.ProductType.Description,
+                            StatusId = x.Product.ProductType.StatusId,
+                        },
+                        Status = x.Product.Status == null ? null : new Status
+                        {
+                            Id = x.Product.Status.Id,
+                            Code = x.Product.Status.Code,
+                            Name = x.Product.Status.Name,
+                        },
+                        Supplier = x.Product.Supplier == null ? null : new Supplier
+                        {
+                            Id = x.Product.Supplier.Id,
+                            Code = x.Product.Supplier.Code,
+                            Name = x.Product.Supplier.Name,
+                            TaxCode = x.Product.Supplier.TaxCode,
+                            StatusId = x.Product.Supplier.StatusId,
+                        },
+                        TaxType = x.Product.TaxType == null ? null : new TaxType
+                        {
+                            Id = x.Product.TaxType.Id,
+                            Code = x.Product.TaxType.Code,
+                            Name = x.Product.TaxType.Name,
+                            Percentage = x.Product.TaxType.Percentage,
+                            StatusId = x.Product.TaxType.StatusId,
+                        },
+                        UnitOfMeasure = x.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
+                        {
+                            Id = x.Product.UnitOfMeasure.Id,
+                            Code = x.Product.UnitOfMeasure.Code,
+                            Name = x.Product.UnitOfMeasure.Name,
+                            Description = x.Product.UnitOfMeasure.Description,
+                            StatusId = x.Product.UnitOfMeasure.StatusId,
+                        },
+                        UnitOfMeasureGrouping = x.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
+                        {
+                            Id = x.Product.UnitOfMeasureGrouping.Id,
+                            Name = x.Product.UnitOfMeasureGrouping.Name,
+                            UnitOfMeasureId = x.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
+                            StatusId = x.Product.UnitOfMeasureGrouping.StatusId
+                        },
                     },
                 }).ToListAsync();
 
