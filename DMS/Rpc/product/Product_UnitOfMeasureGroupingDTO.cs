@@ -1,5 +1,7 @@
 using Common;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.product
 {
@@ -14,7 +16,7 @@ namespace DMS.Rpc.product
 
         public long StatusId { get; set; }
 
-
+        public List<Product_UnitOfMeasureGroupingContentDTO> UnitOfMeasureGroupingContents { get; set; }
         public Product_UnitOfMeasureGroupingDTO() { }
         public Product_UnitOfMeasureGroupingDTO(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
@@ -26,7 +28,7 @@ namespace DMS.Rpc.product
             this.UnitOfMeasureId = UnitOfMeasureGrouping.UnitOfMeasureId;
 
             this.StatusId = UnitOfMeasureGrouping.StatusId;
-
+            this.UnitOfMeasureGroupingContents = UnitOfMeasureGrouping.UnitOfMeasureGroupingContents?.Select(x => new Product_UnitOfMeasureGroupingContentDTO(x)).ToList();
         }
     }
 

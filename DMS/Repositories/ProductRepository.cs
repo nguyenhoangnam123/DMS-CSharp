@@ -339,6 +339,13 @@ namespace DMS.Repositories
                     Name = q.UnitOfMeasureGrouping.Name,
                     UnitOfMeasureId = q.UnitOfMeasureGrouping.UnitOfMeasureId,
                     StatusId = q.UnitOfMeasureGrouping.StatusId,
+                    UnitOfMeasureGroupingContents = q.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(x => new UnitOfMeasureGroupingContent
+                    {
+                        Id = x.Id,
+                        UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
+                        UnitOfMeasureId = x.UnitOfMeasureId,
+                        Factor = x.Factor
+                    }).ToList()
                 } : null,
                 ProductProductGroupingMappings = filter.Selects.Contains(ProductSelect.ProductProductGroupingMapping) && q.ProductProductGroupingMappings != null ?
                 q.ProductProductGroupingMappings.Select(p => new ProductProductGroupingMapping
@@ -378,7 +385,7 @@ namespace DMS.Repositories
 
         public async Task<Product> Get(long Id)
         {
-            Product Product = await DataContext.Product.AsNoTracking()
+            Product Product = await DataContext.Product.AsNoTracking().Include(x => x.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents)
                 .Where(x => x.Id == Id).Select(x => new Product()
                 {
                     Id = x.Id,
@@ -451,6 +458,13 @@ namespace DMS.Repositories
                         Name = x.UnitOfMeasureGrouping.Name,
                         UnitOfMeasureId = x.UnitOfMeasureGrouping.UnitOfMeasureId,
                         StatusId = x.UnitOfMeasureGrouping.StatusId,
+                        UnitOfMeasureGroupingContents = x.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(c => new UnitOfMeasureGroupingContent
+                        {
+                            Id = c.Id,
+                            UnitOfMeasureGroupingId = c.UnitOfMeasureGroupingId,
+                            UnitOfMeasureId = c.UnitOfMeasureId,
+                            Factor = c.Factor
+                        }).ToList()
                     },
                 }).FirstOrDefaultAsync();
 
