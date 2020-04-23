@@ -779,9 +779,11 @@ namespace DMS.Repositories
                 }
                 await DataContext.ProductProductGroupingMapping.BulkMergeAsync(ProductProductGroupingMappingDAOs);
             }
-            List<VariationGroupingDAO> VariationGroupingDAOs = await DataContext.VariationGrouping
+            List<VariationGroupingDAO> VariationGroupingDAOs = await DataContext.VariationGrouping.Include(x => x.Variations)
                 .Where(x => x.ProductId == Product.Id).ToListAsync();
             VariationGroupingDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
+            var VariationIds = VariationGroupingDAOs.SelectMany(x => x.Variations).Select(x => x.Id);
+            await DataContext.Variation.Where(x => VariationIds.Contains(x.Id)).DeleteFromQueryAsync();
             if (Product.VariationGroupings != null)
             {
                 foreach (VariationGrouping VariationGrouping in Product.VariationGroupings)
