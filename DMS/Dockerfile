@@ -20,7 +20,7 @@ RUN apt-get update \
     && apt-get install -y libc6-dev libgdiplus
 WORKDIR /app
 
-COPY --from=consul:latest /bin/consul /usr/local/bin/consul
+COPY --from=consul:1.7.2 /bin/consul /usr/local/bin/consul
 
 COPY --from=envoyproxy/envoy-alpine:v1.14.1 /usr/local/bin/envoy /usr/local/bin/envoy
 
