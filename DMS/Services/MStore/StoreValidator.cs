@@ -46,7 +46,8 @@ namespace DMS.Services.MStore
             OwnerPhoneEmpty,
             OwnerPhoneOverLength,
             OwnerEmailOverLength,
-            StatusNotExisted
+            StatusNotExisted,
+            StoreHasChild
         }
 
         private IUOW UOW;
@@ -377,6 +378,23 @@ namespace DMS.Services.MStore
             return Store.IsValidated;
         }
         #endregion
+
+        private async Task<bool> ValidateStoreHasChild(Store Store)
+        {
+            StoreFilter StoreFilter = new StoreFilter
+            {
+                Skip = 0,
+                Take = 10,
+                ParentStoreId = new IdFilter { Equal = Store.Id },
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
+                Selects = StoreSelect.Id
+            };
+
+            int count = await UOW.StoreRepository.Count(StoreFilter);
+            if (count != 0)
+                Store.AddError(nameof(StoreValidator), nameof(Store.ParentStoreId), ErrorCode.StoreHasChild);
+            return Store.IsValidated;
+        }
         public async Task<bool> Create(Store Store)
         {
             await ValidateCode(Store);
@@ -430,6 +448,7 @@ namespace DMS.Services.MStore
         {
             if (await ValidateId(Store))
             {
+                await ValidateStoreHasChild(Store);
             }
             return Store.IsValidated;
         }
