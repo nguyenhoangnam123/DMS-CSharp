@@ -692,7 +692,7 @@ namespace DMS.Rpc.store
             StoreFilter.OwnerPhone = Store_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Store_StoreFilterDTO.OwnerEmail;
             StoreFilter.StoreStatusId = Store_StoreFilterDTO.StoreStatusId;
-            StoreFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            StoreFilter.StatusId = Store_StoreFilterDTO.StatusId;
             return StoreFilter;
         }
 
