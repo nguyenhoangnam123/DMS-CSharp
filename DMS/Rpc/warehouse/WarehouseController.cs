@@ -6,6 +6,7 @@ using DMS.Services.MInventory;
 using DMS.Services.MInventoryHistoryHistory;
 using DMS.Services.MItem;
 using DMS.Services.MOrganization;
+using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProvince;
 using DMS.Services.MStatus;
@@ -73,6 +74,7 @@ namespace DMS.Rpc.warehouse
         private IStatusService StatusService;
         private IWardService WardService;
         private IItemService ItemService;
+        private IProductService ProductService;
         private IUnitOfMeasureService UnitOfMeasureService;
         private IWarehouseService WarehouseService;
         private ICurrentContext CurrentContext;
@@ -86,6 +88,7 @@ namespace DMS.Rpc.warehouse
             IStatusService StatusService,
             IWardService WardService,
             IItemService ItemService,
+            IProductService ProductService,
             IUnitOfMeasureService UnitOfMeasureService,
             IWarehouseService WarehouseService,
             ICurrentContext CurrentContext
@@ -100,6 +103,7 @@ namespace DMS.Rpc.warehouse
             this.StatusService = StatusService;
             this.WardService = WardService;
             this.ItemService = ItemService;
+            this.ProductService = ProductService;
             this.UnitOfMeasureService = UnitOfMeasureService;
             this.WarehouseService = WarehouseService;
             this.CurrentContext = CurrentContext;
@@ -368,24 +372,99 @@ namespace DMS.Rpc.warehouse
         }
 
         [Route(WarehouseRoute.ExportTemplate), HttpPost]
-        public async Task<ActionResult> ExportTemplate()
+        public async Task<FileResult> ExportTemplate()
         {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            MemoryStream MemoryStream = new MemoryStream();
-            string tempPath = "Templates/Inventory_Export.xlsx";
-            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
-            {
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                var nameexcel = "Export kho" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff");
-                xlPackage.Workbook.Properties.Title = string.Format("{0}", nameexcel);
-                xlPackage.Workbook.Properties.Author = "Sonhx5";
-                xlPackage.Workbook.Properties.Subject = string.Format("{0}", "RD-DMS");
-                xlPackage.Workbook.Properties.Category = "RD-DMS";
-                xlPackage.Workbook.Properties.Company = "FPT-FIS-ERP-ESC";
-                xlPackage.SaveAs(MemoryStream);
-            }
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
 
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Inventory" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
+            WarehouseFilter WarehouseFilter = new WarehouseFilter
+            {
+                Skip = 0,
+                Take = 1,
+                Selects = WarehouseSelect.ALL
+            };
+            List<Warehouse> Warehouses = await WarehouseService.List(WarehouseFilter);
+
+            var ProductFilter = new ProductFilter
+            {
+                Selects = ProductSelect.Id,
+                Skip = 0,
+                Take = int.MaxValue,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+            var Products = await ProductService.List(ProductFilter);
+            var ItemFilter = new ItemFilter
+            {
+                Selects = ItemSelect.Id,
+                Skip = 0,
+                Take = int.MaxValue,
+                ProductId = new IdFilter { In = Products.Select(x => x.Id).ToList() }
+            };
+            var Items = await ItemService.List(ItemFilter);
+
+            var InventoryFilter = new InventoryFilter
+            {
+                ItemId = new IdFilter { In = Items .Select(x => x.Id).ToList() },
+
+                Selects = InventorySelect.ALL,
+                Skip = 0,
+                Take = int.MaxValue,
+            };
+            InventoryFilter = InventoryService.ToFilter(InventoryFilter);
+
+            List<Inventory> Inventories = await InventoryService.List(InventoryFilter);
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            {
+                var InventoryHeaders = new List<string[]>()
+                {
+                    new string[] {
+                        "STT",
+                        "Mã kho",
+                        "Tên kho",
+                        "Mã sản phẩm",
+                        "Tên sản phẩm",
+                        "Có thể bán",
+                        "Tồn kế toán",
+                    }
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < Inventories.Count; i++)
+                {
+                    var Inventory = Inventories[i];
+                    data.Add(new Object[]
+                    {
+                        i+1,
+                        Inventory.Warehouse.Code,
+                        Inventory.Warehouse.Name,
+                        Inventory.Item.Code,
+                        Inventory.Item.Name,
+                        Inventory.SaleStock,
+                        Inventory.AccountingStock
+                    });
+                }
+                excel.GenerateWorksheet("Inventory", InventoryHeaders, data);
+
+                data.Clear();
+                var WarehouseHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "Mã",
+                        "Tên",
+                    }
+                };
+                foreach (var Warehouse in Warehouses)
+                {
+                    data.Add(new object[]
+                    {
+                        Warehouse.Code,
+                        Warehouse.Name
+                    });
+                }
+                excel.GenerateWorksheet("Warehouse", WarehouseHeader, data);
+                excel.Save();
+            }
+            return File(memoryStream.ToArray(), "application/octet-stream", "Temmplate Inventory.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)
