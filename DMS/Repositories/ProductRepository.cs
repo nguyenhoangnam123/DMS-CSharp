@@ -362,6 +362,19 @@ namespace DMS.Repositories
                         Description = p.ProductGrouping.Description,
                     },
                 }).ToList() : null,
+
+                ProductImageMappings = q.ProductImageMappings.Skip(0).Take(1)
+                .Select(x => new ProductImageMapping
+                {
+                    ProductId = x.ProductId,
+                    ImageId = x.ImageId,
+                    Image = new Image
+                    {
+                        Id = x.Image.Id,
+                        Name = x.Image.Name,
+                        Url = x.Image.Url,
+                    },
+                }).ToList()
             }).ToListAsync();
             return Products;
         }

@@ -65,7 +65,7 @@ namespace DMS.Services.MProductGrouping
             else
             {
                 var Code = ProductGrouping.Code;
-                if (!FilterExtension.ChangeToEnglishChar(Code).Equals(ProductGrouping.Code))
+                if (ProductGrouping.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(ProductGrouping.Code))
                 {
                     ProductGrouping.AddError(nameof(ProductGroupingValidator), nameof(ProductGrouping.Code), ErrorCode.CodeHasSpecialCharacter);
                 }

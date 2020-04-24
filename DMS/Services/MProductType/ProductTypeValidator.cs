@@ -65,7 +65,7 @@ namespace DMS.Services.MProductType
             else
             {
                 var Code = ProductType.Code;
-                if (!FilterExtension.ChangeToEnglishChar(Code).Equals(ProductType.Code))
+                if (ProductType.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(ProductType.Code))
                 {
                     ProductType.AddError(nameof(ProductTypeValidator), nameof(ProductType.Code), ErrorCode.CodeHasSpecialCharacter);
                 }

@@ -424,6 +424,17 @@ namespace DMS.Repositories
                     DistrictId = q.Ward.DistrictId,
                     StatusId = q.Ward.StatusId,
                 } : null,
+                StoreImageMappings = q.StoreImageMappings.Skip(0).Take(1).Select(x => new StoreImageMapping
+                {
+                    StoreId = x.StoreId,
+                    ImageId = x.ImageId,
+                    Image = new Image
+                    {
+                        Id = x.Image.Id,
+                        Name = x.Image.Name,
+                        Url = x.Image.Url
+                    }
+                }).ToList()
             }).ToListAsync();
             return Stores;
         }
@@ -578,6 +589,18 @@ namespace DMS.Repositories
             if (Store == null)
                 return null;
 
+            Store.StoreImageMappings = await DataContext.StoreImageMapping
+                .Where(x => x.StoreId == Id).Select(x => new StoreImageMapping
+                {
+                    StoreId = x.StoreId,
+                    ImageId = x.ImageId,
+                    Image = new Image
+                    {
+                        Id = x.Image.Id,
+                        Name = x.Image.Name,
+                        Url = x.Image.Url
+                    }
+                }).ToListAsync();
             return Store;
         }
         public async Task<bool> Create(Store Store)

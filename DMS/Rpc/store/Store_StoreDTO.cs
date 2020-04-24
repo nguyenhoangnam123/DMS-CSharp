@@ -1,6 +1,7 @@
 using Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.store
 {
@@ -37,7 +38,7 @@ namespace DMS.Rpc.store
         public Store_StoreGroupingDTO StoreGrouping { get; set; }
         public Store_StoreTypeDTO StoreType { get; set; }
         public Store_WardDTO Ward { get; set; }
-        public List<StoreImageMapping> StoreImageMappings { get; set; }
+        public List<Store_StoreImageMappingDTO> StoreImageMappings { get; set; }
         public Store_StoreDTO() { }
         public Store_StoreDTO(Store Store)
         {
@@ -72,6 +73,7 @@ namespace DMS.Rpc.store
             this.StoreGrouping = Store.StoreGrouping == null ? null : new Store_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new Store_StoreTypeDTO(Store.StoreType);
             this.Ward = Store.Ward == null ? null : new Store_WardDTO(Store.Ward);
+            this.StoreImageMappings = Store.StoreImageMappings?.Select(x => new Store_StoreImageMappingDTO(x)).ToList();
             this.Errors = Store.Errors;
         }
     }

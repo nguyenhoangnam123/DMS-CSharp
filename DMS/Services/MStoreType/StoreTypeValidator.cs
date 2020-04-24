@@ -63,7 +63,7 @@ namespace DMS.Services.MStoreType
             else 
             {
                 var Code = StoreType.Code;
-                if (!FilterExtension.ChangeToEnglishChar(Code).Equals(StoreType.Code))
+                if (StoreType.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(StoreType.Code))
                 {
                     StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Code), ErrorCode.CodeHasSpecialCharacter);
                 }

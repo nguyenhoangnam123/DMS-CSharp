@@ -66,7 +66,7 @@ namespace DMS.Services.MUnitOfMeasureGrouping
             else
             {
                 var Code = UnitOfMeasureGrouping.Code;
-                if (!FilterExtension.ChangeToEnglishChar(Code).Equals(UnitOfMeasureGrouping.Code))
+                if (UnitOfMeasureGrouping.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(UnitOfMeasureGrouping.Code))
                 {
                     UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.Code), ErrorCode.CodeHasSpecialCharacter);
                     return false;

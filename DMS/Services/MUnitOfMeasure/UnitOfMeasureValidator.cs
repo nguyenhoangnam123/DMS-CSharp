@@ -66,7 +66,7 @@ namespace DMS.Services.MUnitOfMeasure
             else
             {
                 var Code = UnitOfMeasure.Code;
-                if ( !FilterExtension.ChangeToEnglishChar(Code).Equals(UnitOfMeasure.Code))
+                if (UnitOfMeasure.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(UnitOfMeasure.Code))
                 {
                     UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Code), ErrorCode.CodeHasSpecialCharacter);
                     return false;

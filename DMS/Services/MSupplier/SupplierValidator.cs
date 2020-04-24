@@ -68,7 +68,7 @@ namespace DMS.Services.MSupplier
             else
             {
                 var Code = Supplier.Code;
-                if (!FilterExtension.ChangeToEnglishChar(Code).Equals(Supplier.Code))
+                if (Supplier.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Supplier.Code))
                 {
                     Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Code), ErrorCode.CodeHasSpecialCharacter);
                 }

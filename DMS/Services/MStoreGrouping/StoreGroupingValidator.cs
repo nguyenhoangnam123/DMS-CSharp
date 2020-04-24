@@ -59,7 +59,7 @@ namespace DMS.Services.MStoreGrouping
 
         private async Task<bool> ValidateCode(StoreGrouping StoreGrouping)
         {
-            if (string.IsNullOrWhiteSpace(StoreGrouping.Code))
+            if (StoreGrouping.Code.Contains(" ") || string.IsNullOrWhiteSpace(StoreGrouping.Code))
             {
                 StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Code), ErrorCode.CodeEmpty);
             }

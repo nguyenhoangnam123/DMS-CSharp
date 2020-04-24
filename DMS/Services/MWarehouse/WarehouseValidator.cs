@@ -72,7 +72,7 @@ namespace DMS.Services.MWarehouse
             else
             {
                 var Code = Warehouse.Code;
-                if (!FilterExtension.ChangeToEnglishChar(Code).Equals(Warehouse.Code))
+                if (Warehouse.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Warehouse.Code))
                 {
                     Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
