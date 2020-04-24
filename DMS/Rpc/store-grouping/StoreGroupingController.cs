@@ -377,7 +377,7 @@ namespace DMS.Rpc.store_grouping
             StoreGroupingFilter.ParentId = StoreGrouping_StoreGroupingFilterDTO.ParentId;
             StoreGroupingFilter.Path = StoreGrouping_StoreGroupingFilterDTO.Path;
             StoreGroupingFilter.Level = StoreGrouping_StoreGroupingFilterDTO.Level;
-            StoreGroupingFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            StoreGroupingFilter.StatusId = StoreGrouping_StoreGroupingFilterDTO.StatusId;
             return StoreGroupingFilter;
         }
 

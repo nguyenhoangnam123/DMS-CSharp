@@ -463,7 +463,15 @@ namespace DMS.Repositories
                             Id = c.Id,
                             UnitOfMeasureGroupingId = c.UnitOfMeasureGroupingId,
                             UnitOfMeasureId = c.UnitOfMeasureId,
-                            Factor = c.Factor
+                            Factor = c.Factor,
+                            UnitOfMeasure = new UnitOfMeasure
+                            {
+                                Id = c.UnitOfMeasure.Id,
+                                Code = c.UnitOfMeasure.Code,
+                                Name = c.UnitOfMeasure.Name,
+                                Description = c.UnitOfMeasure.Description,
+                                StatusId = c.UnitOfMeasure.StatusId,
+                            }
                         }).ToList()
                     },
                 }).FirstOrDefaultAsync();
