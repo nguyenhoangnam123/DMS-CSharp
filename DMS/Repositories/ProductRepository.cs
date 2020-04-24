@@ -398,7 +398,7 @@ namespace DMS.Repositories
 
         public async Task<Product> Get(long Id)
         {
-            Product Product = await DataContext.Product.AsNoTracking().Include(x => x.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents)
+            Product Product = await DataContext.Product.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new Product()
                 {
                     Id = x.Id,
@@ -471,26 +471,31 @@ namespace DMS.Repositories
                         Name = x.UnitOfMeasureGrouping.Name,
                         UnitOfMeasureId = x.UnitOfMeasureGrouping.UnitOfMeasureId,
                         StatusId = x.UnitOfMeasureGrouping.StatusId,
-                        UnitOfMeasureGroupingContents = x.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(c => new UnitOfMeasureGroupingContent
-                        {
-                            Id = c.Id,
-                            UnitOfMeasureGroupingId = c.UnitOfMeasureGroupingId,
-                            UnitOfMeasureId = c.UnitOfMeasureId,
-                            Factor = c.Factor,
-                            UnitOfMeasure = new UnitOfMeasure
-                            {
-                                Id = c.UnitOfMeasure.Id,
-                                Code = c.UnitOfMeasure.Code,
-                                Name = c.UnitOfMeasure.Name,
-                                Description = c.UnitOfMeasure.Description,
-                                StatusId = c.UnitOfMeasure.StatusId,
-                            }
-                        }).ToList()
+
                     },
                 }).FirstOrDefaultAsync();
 
             if (Product == null)
                 return null;
+            if (Product.UnitOfMeasureGrouping != null)
+            {
+                Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents = await DataContext.UnitOfMeasureGroupingContent
+                    .Where(uomgc => uomgc.UnitOfMeasureGroupingId == Product.UnitOfMeasureGroupingId.Value)
+                    .Select(uomgc => new UnitOfMeasureGroupingContent
+                    {
+                        Id = uomgc.Id,
+                        Factor = uomgc.Factor,
+                        UnitOfMeasureId = uomgc.UnitOfMeasureId,
+                        UnitOfMeasure = new UnitOfMeasure
+                        {
+                            Id = uomgc.UnitOfMeasure.Id,
+                            Code = uomgc.UnitOfMeasure.Code,
+                            Name = uomgc.UnitOfMeasure.Name,
+                            Description = uomgc.UnitOfMeasure.Description,
+                        }
+                    }).ToListAsync();
+            }
+
             Product.Items = await DataContext.Item
                 .Where(x => x.ProductId == Product.Id)
                 .Where(x => x.DeletedAt == null)

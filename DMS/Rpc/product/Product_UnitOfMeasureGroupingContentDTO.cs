@@ -25,6 +25,7 @@ namespace DMS.Rpc.product
             this.UnitOfMeasureGroupingId = UnitOfMeasureGroupingContent.UnitOfMeasureGroupingId;
             this.UnitOfMeasureId = UnitOfMeasureGroupingContent.UnitOfMeasureId;
             this.Factor = UnitOfMeasureGroupingContent.Factor;
+            this.UnitOfMeasure = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? null : new Product_UnitOfMeasureDTO(UnitOfMeasureGroupingContent.UnitOfMeasure);
         }
     }
 
