@@ -2,6 +2,7 @@ using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
+using DMS.Services.MImage;
 using Helpers;
 using OfficeOpenXml;
 using System;
@@ -23,6 +24,7 @@ namespace DMS.Services.MStore
         Task<List<Store>> BulkDelete(List<Store> Stores);
         Task<List<Store>> Import(List<Store> Stores);
         StoreFilter ToFilter(StoreFilter StoreFilter);
+        Task<Image> SaveImage(Image Image);
     }
 
     public class StoreService : BaseService, IStoreService
@@ -31,18 +33,21 @@ namespace DMS.Services.MStore
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IStoreValidator StoreValidator;
+        private IImageService ImageService;
 
         public StoreService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IStoreValidator StoreValidator
+            IStoreValidator StoreValidator,
+            IImageService ImageService
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.StoreValidator = StoreValidator;
+            this.ImageService = ImageService;
         }
         public async Task<int> Count(StoreFilter StoreFilter)
         {
@@ -306,6 +311,14 @@ namespace DMS.Services.MStore
                     subFilter.StoreStatusId = Map(subFilter.StoreStatusId, currentFilter.Value);
             }
             return filter;
+        }
+
+        public async Task<Image> SaveImage(Image Image)
+        {
+            FileInfo fileInfo = new FileInfo(Image.Name);
+            string path = $"/store/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            Image = await ImageService.Create(Image, path);
+            return Image;
         }
     }
 }

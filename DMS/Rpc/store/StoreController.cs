@@ -39,6 +39,7 @@ namespace DMS.Rpc.store
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
+        public const string SaveImage = Default + "/save-image";
 
         public const string SingleListDistrict = Default + "/single-list-district";
         public const string SingleListOrganization = Default + "/single-list-organization";
@@ -516,6 +517,31 @@ namespace DMS.Rpc.store
             List<Store> Stores = await StoreService.List(StoreFilter);
             Stores = await StoreService.BulkDelete(Stores);
             return true;
+        }
+
+        [HttpPost]
+        [Route(StoreRoute.SaveImage)]
+        public async Task<ActionResult<Store_ImageDTO>> SaveImage(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            MemoryStream memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            Image Image = new Image
+            {
+                Name = file.FileName,
+                Content = memoryStream.ToArray()
+            };
+            Image = await StoreService.SaveImage(Image);
+            if (Image == null)
+                return BadRequest();
+            Store_ImageDTO Store_ImageDTO = new Store_ImageDTO
+            {
+                Id = Image.Id,
+                Name = Image.Name,
+                Url = Image.Url,
+            };
+            return Ok(Store_ImageDTO);
         }
 
         private async Task<bool> HasPermission(long Id)
