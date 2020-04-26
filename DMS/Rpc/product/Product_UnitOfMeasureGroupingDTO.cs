@@ -20,13 +20,9 @@ namespace DMS.Rpc.product
         public Product_UnitOfMeasureGroupingDTO() { }
         public Product_UnitOfMeasureGroupingDTO(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
-
             this.Id = UnitOfMeasureGrouping.Id;
-
             this.Name = UnitOfMeasureGrouping.Name;
-
             this.UnitOfMeasureId = UnitOfMeasureGrouping.UnitOfMeasureId;
-
             this.StatusId = UnitOfMeasureGrouping.StatusId;
             this.UnitOfMeasureGroupingContents = UnitOfMeasureGrouping.UnitOfMeasureGroupingContents?.Select(x => new Product_UnitOfMeasureGroupingContentDTO(x)).ToList();
         }

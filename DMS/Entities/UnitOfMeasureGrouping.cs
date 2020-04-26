@@ -62,5 +62,6 @@ namespace DMS.Entities
         Description = E._3,
         UnitOfMeasure = E._4,
         Status = E._5,
+        UnitOfMeasureGroupingContents = E._6,
     }
 }

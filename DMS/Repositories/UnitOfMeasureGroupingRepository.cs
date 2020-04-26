@@ -154,6 +154,18 @@ namespace DMS.Repositories
                     Description = q.UnitOfMeasure.Description,
                     StatusId = q.UnitOfMeasure.StatusId,
                 } : null,
+                UnitOfMeasureGroupingContents = filter.Selects.Contains(UnitOfMeasureGroupingSelect.UnitOfMeasureGroupingContents) && q.UnitOfMeasureGroupingContents == null ? null :
+                q.UnitOfMeasureGroupingContents.Select(x => new UnitOfMeasureGroupingContent
+                {
+                    Id = x.Id,
+                    Factor = x.Factor,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    UnitOfMeasure = new UnitOfMeasure
+                    {
+                        Name = x.UnitOfMeasure.Name,
+                        Code = x.UnitOfMeasure.Code,
+                    }
+                }).ToList(),
             }).ToListAsync();
             return UnitOfMeasureGroupings;
         }
@@ -179,28 +191,28 @@ namespace DMS.Repositories
         {
             UnitOfMeasureGrouping UnitOfMeasureGrouping = await DataContext.UnitOfMeasureGrouping.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new UnitOfMeasureGrouping()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                Description = x.Description,
-                UnitOfMeasureId = x.UnitOfMeasureId,
-                StatusId = x.StatusId,
-                Status = x.Status == null ? null : new Status
                 {
-                    Id = x.Status.Id,
-                    Code = x.Status.Code,
-                    Name = x.Status.Name,
-                },
-                UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
-                {
-                    Id = x.UnitOfMeasure.Id,
-                    Code = x.UnitOfMeasure.Code,
-                    Name = x.UnitOfMeasure.Name,
-                    Description = x.UnitOfMeasure.Description,
-                    StatusId = x.UnitOfMeasure.StatusId,
-                },
-            }).FirstOrDefaultAsync();
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    Description = x.Description,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    StatusId = x.StatusId,
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
+                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.UnitOfMeasure.Id,
+                        Code = x.UnitOfMeasure.Code,
+                        Name = x.UnitOfMeasure.Name,
+                        Description = x.UnitOfMeasure.Description,
+                        StatusId = x.UnitOfMeasure.StatusId,
+                    },
+                }).FirstOrDefaultAsync();
 
             if (UnitOfMeasureGrouping == null)
                 return null;
