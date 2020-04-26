@@ -10,6 +10,7 @@ namespace DMS.Models
             AppUsers = new HashSet<AppUserDAO>();
             Brands = new HashSet<BrandDAO>();
             Districts = new HashSet<DistrictDAO>();
+            Items = new HashSet<ItemDAO>();
             Organizations = new HashSet<OrganizationDAO>();
             Permissions = new HashSet<PermissionDAO>();
             ProductTypes = new HashSet<ProductTypeDAO>();
@@ -36,6 +37,7 @@ namespace DMS.Models
         public virtual ICollection<AppUserDAO> AppUsers { get; set; }
         public virtual ICollection<BrandDAO> Brands { get; set; }
         public virtual ICollection<DistrictDAO> Districts { get; set; }
+        public virtual ICollection<ItemDAO> Items { get; set; }
         public virtual ICollection<OrganizationDAO> Organizations { get; set; }
         public virtual ICollection<PermissionDAO> Permissions { get; set; }
         public virtual ICollection<ProductTypeDAO> ProductTypes { get; set; }

@@ -1186,6 +1186,7 @@ namespace DMS.Rpc.product
                     SalePrice = x.SalePrice,
                     RetailPrice = x.RetailPrice,
                     CanDelete = x.CanDelete,
+                    StatusId = x.StatusId,
                 }).ToList();
             Product.ProductImageMappings = Product_ProductDTO.ProductImageMappings?
                 .Select(x => new ProductImageMapping

@@ -10,6 +10,7 @@ namespace DMS.Models
             AppUserRoleMappings = new HashSet<AppUserRoleMappingDAO>();
             InventoryHistories = new HashSet<InventoryHistoryDAO>();
             Resellers = new HashSet<ResellerDAO>();
+            StoreWorkflows = new HashSet<StoreWorkflowDAO>();
             Suppliers = new HashSet<SupplierDAO>();
         }
 
@@ -20,6 +21,7 @@ namespace DMS.Models
         public string Address { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public long? ProvinceId { get; set; }
         public string Position { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
@@ -33,11 +35,13 @@ namespace DMS.Models
         public Guid RowId { get; set; }
 
         public virtual OrganizationDAO Organization { get; set; }
+        public virtual ProvinceDAO Province { get; set; }
         public virtual SexDAO Sex { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
         public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
+        public virtual ICollection<StoreWorkflowDAO> StoreWorkflows { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
     }
 }

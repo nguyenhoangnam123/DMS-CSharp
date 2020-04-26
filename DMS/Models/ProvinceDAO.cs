@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public ProvinceDAO()
         {
+            AppUsers = new HashSet<AppUserDAO>();
             Districts = new HashSet<DistrictDAO>();
             Stores = new HashSet<StoreDAO>();
             Suppliers = new HashSet<SupplierDAO>();
@@ -24,6 +25,7 @@ namespace DMS.Models
         public Guid RowId { get; set; }
 
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<AppUserDAO> AppUsers { get; set; }
         public virtual ICollection<DistrictDAO> Districts { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }

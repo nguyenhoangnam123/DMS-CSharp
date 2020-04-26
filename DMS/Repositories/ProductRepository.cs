@@ -508,6 +508,7 @@ namespace DMS.Repositories
                     ScanCode = x.ScanCode,
                     SalePrice = x.SalePrice,
                     RetailPrice = x.RetailPrice,
+                    StatusId = x.StatusId,
                 }).ToListAsync();
             Product.ProductImageMappings = await DataContext.ProductImageMapping
                 .Where(x => x.ProductId == Product.Id)
@@ -678,6 +679,7 @@ namespace DMS.Repositories
                 ItemDAO.RetailPrice = Item.RetailPrice;
                 ItemDAO.CreatedAt = StaticParams.DateTimeNow;
                 ItemDAO.UpdatedAt = StaticParams.DateTimeNow;
+                ItemDAO.StatusId = 1;
                 ItemDAOs.Add(ItemDAO);
             }
             await DataContext.Item.BulkMergeAsync(ItemDAOs);
@@ -764,6 +766,7 @@ namespace DMS.Repositories
                             ScanCode = Item.ScanCode,
                             SalePrice = Item.SalePrice,
                             RetailPrice = Item.RetailPrice,
+                            StatusId = Item.StatusId,
                             CreatedAt = StaticParams.DateTimeNow,
                             UpdatedAt = StaticParams.DateTimeNow,
                             DeletedAt = null
@@ -779,6 +782,7 @@ namespace DMS.Repositories
                         ItemDAO.ScanCode = Item.ScanCode;
                         ItemDAO.SalePrice = Item.SalePrice;
                         ItemDAO.RetailPrice = Item.RetailPrice;
+                        ItemDAO.StatusId = Item.StatusId;
                         ItemDAO.UpdatedAt = StaticParams.DateTimeNow;
                         ItemDAO.DeletedAt = null;
                     }

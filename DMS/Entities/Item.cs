@@ -16,6 +16,7 @@ namespace DMS.Entities
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public bool CanDelete { get; set; }
+        public long StatusId { get; set; }
         public Product Product { get; set; }
 
         public bool Equals(Item other)

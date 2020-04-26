@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public WorkflowStepDAO()
         {
+            StoreWorkflows = new HashSet<StoreWorkflowDAO>();
             WorkflowDirectionFromSteps = new HashSet<WorkflowDirectionDAO>();
             WorkflowDirectionToSteps = new HashSet<WorkflowDirectionDAO>();
         }
@@ -18,6 +19,7 @@ namespace DMS.Models
 
         public virtual RoleDAO Role { get; set; }
         public virtual WorkflowDefinitionDAO WorkflowDefinition { get; set; }
+        public virtual ICollection<StoreWorkflowDAO> StoreWorkflows { get; set; }
         public virtual ICollection<WorkflowDirectionDAO> WorkflowDirectionFromSteps { get; set; }
         public virtual ICollection<WorkflowDirectionDAO> WorkflowDirectionToSteps { get; set; }
     }
