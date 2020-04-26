@@ -203,6 +203,7 @@ namespace DMS.Repositories
                 Password = filter.Selects.Contains(AppUserSelect.Password) ? q.Password : default(string),
                 DisplayName = filter.Selects.Contains(AppUserSelect.DisplayName) ? q.DisplayName : default(string),
                 Address = filter.Selects.Contains(AppUserSelect.Address) ? q.Address : default(string),
+                Avatar = filter.Selects.Contains(AppUserSelect.Avatar) ? q.Avatar : default(string),
                 Email = filter.Selects.Contains(AppUserSelect.Email) ? q.Email : default(string),
                 Phone = filter.Selects.Contains(AppUserSelect.Phone) ? q.Phone : default(string),
                 StatusId = filter.Selects.Contains(AppUserSelect.Status) ? q.StatusId : default(long),

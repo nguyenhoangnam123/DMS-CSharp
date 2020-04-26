@@ -95,6 +95,7 @@ namespace DMS.Entities
         Sex = E._10,
         Status = E._11,
         Birthday = E._12,
-        RowId = E._13
+        RowId = E._13,
+        Avatar = E._14,
     }
 }

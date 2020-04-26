@@ -15,6 +15,7 @@ namespace DMS.Entities
         public string ScanCode { get; set; }
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
+        public bool CanDelete { get; set; }
         public Product Product { get; set; }
 
         public bool Equals(Item other)

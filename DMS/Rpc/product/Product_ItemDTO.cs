@@ -12,6 +12,7 @@ namespace DMS.Rpc.product
         public string ScanCode { get; set; }
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
+        public bool CanDelete { get; set; }
 
         public Product_ItemDTO() { }
         public Product_ItemDTO(Item Item)
@@ -23,6 +24,7 @@ namespace DMS.Rpc.product
             this.ScanCode = Item.ScanCode;
             this.SalePrice = Item.SalePrice;
             this.RetailPrice = Item.RetailPrice;
+            this.CanDelete = Item.CanDelete;
             this.Errors = Item.Errors;
         }
     }

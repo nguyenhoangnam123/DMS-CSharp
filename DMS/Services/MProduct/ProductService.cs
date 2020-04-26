@@ -88,6 +88,18 @@ namespace DMS.Services.MProduct
             Product Product = await UOW.ProductRepository.Get(Id);
             if (Product == null)
                 return null;
+            if(Product.Items != null && Product.Items.Any())
+            {
+                Product.Items.ForEach(x => x.CanDelete = true);
+
+                //foreach (var Item in Product.Items)
+                //{
+                //    if (abc)
+                //    {
+                //        Item.CanDelete = false;
+                //    }
+                //}
+            }
             return Product;
         }
 
