@@ -7,6 +7,8 @@ namespace DMS.Models
     {
         public StoreDAO()
         {
+            IndirectSalesOrderBuyerStores = new HashSet<IndirectSalesOrderDAO>();
+            IndirectSalesOrderSellerStores = new HashSet<IndirectSalesOrderDAO>();
             InverseParentStore = new HashSet<StoreDAO>();
             StoreImageMappings = new HashSet<StoreImageMappingDAO>();
             StoreWorkflowParameterMappings = new HashSet<StoreWorkflowParameterMappingDAO>();
@@ -36,11 +38,11 @@ namespace DMS.Models
         public string OwnerEmail { get; set; }
         public long StoreStatusId { get; set; }
         public long StatusId { get; set; }
+        public long? WorkflowDefinitionId { get; set; }
+        public long? RequestStateId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-        public long? WorkflowDefinitionId { get; set; }
-        public long? RequestStateId { get; set; }
 
         public virtual DistrictDAO District { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
@@ -53,6 +55,8 @@ namespace DMS.Models
         public virtual StoreStatusDAO StoreStatus { get; set; }
         public virtual StoreTypeDAO StoreType { get; set; }
         public virtual WardDAO Ward { get; set; }
+        public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrderBuyerStores { get; set; }
+        public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrderSellerStores { get; set; }
         public virtual ICollection<StoreDAO> InverseParentStore { get; set; }
         public virtual ICollection<StoreImageMappingDAO> StoreImageMappings { get; set; }
         public virtual ICollection<StoreWorkflowParameterMappingDAO> StoreWorkflowParameterMappings { get; set; }

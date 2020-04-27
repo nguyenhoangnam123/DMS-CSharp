@@ -13,6 +13,10 @@ namespace DMS.Models
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
+        public virtual DbSet<IndirectSalesOrderDAO> IndirectSalesOrder { get; set; }
+        public virtual DbSet<IndirectSalesOrderContentDAO> IndirectSalesOrderContent { get; set; }
+        public virtual DbSet<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotion { get; set; }
+        public virtual DbSet<IndirectSalesOrderStatusDAO> IndirectSalesOrderStatus { get; set; }
         public virtual DbSet<InventoryDAO> Inventory { get; set; }
         public virtual DbSet<InventoryHistoryDAO> InventoryHistory { get; set; }
         public virtual DbSet<ItemDAO> Item { get; set; }
@@ -75,6 +79,10 @@ namespace DMS.Models
         {
             modelBuilder.Entity<AppUserDAO>(entity =>
             {
+                entity.ToTable("AppUser", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Address).HasMaxLength(500);
 
                 entity.Property(e => e.Avatar).HasMaxLength(4000);
@@ -132,6 +140,8 @@ namespace DMS.Models
                 entity.HasKey(e => new { e.AppUserId, e.RoleId })
                     .HasName("PK_UserRoleMapping");
 
+                entity.ToTable("AppUserRoleMapping", "MDM");
+
                 entity.HasOne(d => d.AppUser)
                     .WithMany(p => p.AppUserRoleMappings)
                     .HasForeignKey(d => d.AppUserId)
@@ -147,6 +157,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<BrandDAO>(entity =>
             {
+                entity.ToTable("Brand", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -172,6 +184,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<DistrictDAO>(entity =>
             {
+                entity.ToTable("District", "MDM");
+
                 entity.Property(e => e.Code).HasMaxLength(500);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -201,6 +215,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<EventMessageDAO>(entity =>
             {
+                entity.ToTable("EventMessage", "MDM");
+
                 entity.Property(e => e.Content).IsRequired();
 
                 entity.Property(e => e.EntityName)
@@ -231,6 +247,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ImageDAO>(entity =>
             {
+                entity.ToTable("Image", "MDM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -248,8 +266,124 @@ namespace DMS.Models
                     .HasMaxLength(4000);
             });
 
+            modelBuilder.Entity<IndirectSalesOrderDAO>(entity =>
+            {
+                entity.Property(e => e.DeliveryAddress).HasMaxLength(4000);
+
+                entity.Property(e => e.DeliveryDate).HasColumnType("date");
+
+                entity.Property(e => e.Note).HasMaxLength(4000);
+
+                entity.Property(e => e.OrderDate).HasColumnType("date");
+
+                entity.Property(e => e.PhoneNumber).HasMaxLength(50);
+
+                entity.Property(e => e.StoreAddress).HasMaxLength(4000);
+
+                entity.HasOne(d => d.BuyerStore)
+                    .WithMany(p => p.IndirectSalesOrderBuyerStores)
+                    .HasForeignKey(d => d.BuyerStoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrder_Store");
+
+                entity.HasOne(d => d.IndirectSalesOrderStatus)
+                    .WithMany(p => p.IndirectSalesOrders)
+                    .HasForeignKey(d => d.IndirectSalesOrderStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrder_IndirectSalesOrderStatus");
+
+                entity.HasOne(d => d.SaleEmployee)
+                    .WithMany(p => p.IndirectSalesOrders)
+                    .HasForeignKey(d => d.SaleEmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrder_AppUser");
+
+                entity.HasOne(d => d.SellerStore)
+                    .WithMany(p => p.IndirectSalesOrderSellerStores)
+                    .HasForeignKey(d => d.SellerStoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrder_Store1");
+            });
+
+            modelBuilder.Entity<IndirectSalesOrderContentDAO>(entity =>
+            {
+                entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.TaxPercentage).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.IndirectSalesOrder)
+                    .WithMany(p => p.IndirectSalesOrderContents)
+                    .HasForeignKey(d => d.IndirectSalesOrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderContent_IndirectSalesOrder");
+
+                entity.HasOne(d => d.IndirectSalesOrderNavigation)
+                    .WithMany(p => p.IndirectSalesOrderContents)
+                    .HasForeignKey(d => d.IndirectSalesOrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderContent_Item");
+
+                entity.HasOne(d => d.PrimaryUnitOfMeasure)
+                    .WithMany(p => p.IndirectSalesOrderContentPrimaryUnitOfMeasures)
+                    .HasForeignKey(d => d.PrimaryUnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderContent_UnitOfMeasure1");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.IndirectSalesOrderContentUnitOfMeasures)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderContent_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<IndirectSalesOrderPromotionDAO>(entity =>
+            {
+                entity.Property(e => e.Note).HasMaxLength(4000);
+
+                entity.HasOne(d => d.IndirectSalesOrder)
+                    .WithMany(p => p.IndirectSalesOrderPromotions)
+                    .HasForeignKey(d => d.IndirectSalesOrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderPromotion_IndirectSalesOrder");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.IndirectSalesOrderPromotions)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderPromotion_Item");
+
+                entity.HasOne(d => d.PrimaryUnitOfMeasure)
+                    .WithMany(p => p.IndirectSalesOrderPromotionPrimaryUnitOfMeasures)
+                    .HasForeignKey(d => d.PrimaryUnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderPromotion_UnitOfMeasure1");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.IndirectSalesOrderPromotionUnitOfMeasures)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderPromotion_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<IndirectSalesOrderStatusDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+            });
+
             modelBuilder.Entity<InventoryDAO>(entity =>
             {
+                entity.ToTable("Inventory", "MDM");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -271,6 +405,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<InventoryHistoryDAO>(entity =>
             {
+                entity.ToTable("InventoryHistory", "MDM");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -292,6 +428,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ItemDAO>(entity =>
             {
+                entity.ToTable("Item", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(4000);
@@ -342,6 +480,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<OrganizationDAO>(entity =>
             {
+                entity.ToTable("Organization", "MDM");
+
                 entity.Property(e => e.Address).HasMaxLength(500);
 
                 entity.Property(e => e.Code)
@@ -478,6 +618,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ProductDAO>(entity =>
             {
+                entity.ToTable("Product", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -553,6 +695,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ProductGroupingDAO>(entity =>
             {
+                entity.ToTable("ProductGrouping", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(255);
@@ -583,6 +727,8 @@ namespace DMS.Models
             {
                 entity.HasKey(e => new { e.ProductId, e.ImageId });
 
+                entity.ToTable("ProductImageMapping", "MDM");
+
                 entity.HasOne(d => d.Image)
                     .WithMany(p => p.ProductImageMappings)
                     .HasForeignKey(d => d.ImageId)
@@ -601,6 +747,8 @@ namespace DMS.Models
                 entity.HasKey(e => new { e.ProductId, e.ProductGroupingId })
                     .HasName("PK_ProductProductGrouping");
 
+                entity.ToTable("ProductProductGroupingMapping", "MDM");
+
                 entity.HasOne(d => d.ProductGrouping)
                     .WithMany(p => p.ProductProductGroupingMappings)
                     .HasForeignKey(d => d.ProductGroupingId)
@@ -616,6 +764,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ProductTypeDAO>(entity =>
             {
+                entity.ToTable("ProductType", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(100)
@@ -642,6 +792,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ProvinceDAO>(entity =>
             {
+                entity.ToTable("Province", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -682,6 +834,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ResellerDAO>(entity =>
             {
+                entity.ToTable("Reseller", "MDM");
+
                 entity.Property(e => e.Address)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -747,6 +901,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ResellerStatusDAO>(entity =>
             {
+                entity.ToTable("ResellerStatus", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -758,6 +914,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ResellerTypeDAO>(entity =>
             {
+                entity.ToTable("ResellerType", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -792,6 +950,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<SexDAO>(entity =>
             {
+                entity.ToTable("Sex", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -830,6 +990,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<StoreDAO>(entity =>
             {
+                entity.ToTable("Store", "MDM");
+
                 entity.Property(e => e.Address).HasMaxLength(3000);
 
                 entity.Property(e => e.Code).HasMaxLength(500);
@@ -931,6 +1093,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<StoreGroupingDAO>(entity =>
             {
+                entity.ToTable("StoreGrouping", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -965,6 +1129,8 @@ namespace DMS.Models
             {
                 entity.HasKey(e => new { e.StoreId, e.ImageId });
 
+                entity.ToTable("StoreImageMapping", "MDM");
+
                 entity.HasOne(d => d.Image)
                     .WithMany(p => p.StoreImageMappings)
                     .HasForeignKey(d => d.ImageId)
@@ -980,6 +1146,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<StoreStatusDAO>(entity =>
             {
+                entity.ToTable("StoreStatus", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -991,6 +1159,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<StoreTypeDAO>(entity =>
             {
+                entity.ToTable("StoreType", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -1016,6 +1186,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<StoreWorkflowDAO>(entity =>
             {
+                entity.ToTable("StoreWorkflow", "MDM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.HasOne(d => d.AppUser)
@@ -1046,6 +1218,8 @@ namespace DMS.Models
             {
                 entity.HasKey(e => new { e.WorkflowParameterId, e.StoreId });
 
+                entity.ToTable("StoreWorkflowParameterMapping", "MDM");
+
                 entity.Property(e => e.Value).HasMaxLength(500);
 
                 entity.HasOne(d => d.Store)
@@ -1063,6 +1237,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<SupplierDAO>(entity =>
             {
+                entity.ToTable("Supplier", "MDM");
+
                 entity.Property(e => e.Address).HasMaxLength(2000);
 
                 entity.Property(e => e.Code)
@@ -1124,6 +1300,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<TaxTypeDAO>(entity =>
             {
+                entity.ToTable("TaxType", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -1151,6 +1329,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<UnitOfMeasureDAO>(entity =>
             {
+                entity.ToTable("UnitOfMeasure", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -1176,6 +1356,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<UnitOfMeasureGroupingDAO>(entity =>
             {
+                entity.ToTable("UnitOfMeasureGrouping", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -1209,6 +1391,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<UnitOfMeasureGroupingContentDAO>(entity =>
             {
+                entity.ToTable("UnitOfMeasureGroupingContent", "MDM");
+
                 entity.HasOne(d => d.UnitOfMeasureGrouping)
                     .WithMany(p => p.UnitOfMeasureGroupingContents)
                     .HasForeignKey(d => d.UnitOfMeasureGroupingId)
@@ -1224,6 +1408,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<VariationDAO>(entity =>
             {
+                entity.ToTable("Variation", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -1241,6 +1427,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<VariationGroupingDAO>(entity =>
             {
+                entity.ToTable("VariationGrouping", "MDM");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -1260,6 +1448,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<WardDAO>(entity =>
             {
+                entity.ToTable("Ward", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -1291,6 +1481,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<WarehouseDAO>(entity =>
             {
+                entity.ToTable("Warehouse", "MDM");
+
                 entity.Property(e => e.Address).HasMaxLength(500);
 
                 entity.Property(e => e.Code)
@@ -1337,7 +1529,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowDefinitionDAO>(entity =>
             {
-                entity.ToTable("WorkflowDefinition", "PER");
+                entity.ToTable("WorkflowDefinition", "MDM");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1362,7 +1554,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowDirectionDAO>(entity =>
             {
-                entity.ToTable("WorkflowDirection", "PER");
+                entity.ToTable("WorkflowDirection", "MDM");
 
                 entity.Property(e => e.BodyMailForCreator)
                     .IsRequired()
@@ -1401,7 +1593,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowParameterDAO>(entity =>
             {
-                entity.ToTable("WorkflowParameter", "PER");
+                entity.ToTable("WorkflowParameter", "MDM");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -1416,7 +1608,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowStateDAO>(entity =>
             {
-                entity.ToTable("WorkflowState", "PER");
+                entity.ToTable("WorkflowState", "MDM");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -1431,7 +1623,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowStepDAO>(entity =>
             {
-                entity.ToTable("WorkflowStep", "PER");
+                entity.ToTable("WorkflowStep", "MDM");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -1452,7 +1644,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowTypeDAO>(entity =>
             {
-                entity.ToTable("WorkflowType", "PER");
+                entity.ToTable("WorkflowType", "MDM");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
