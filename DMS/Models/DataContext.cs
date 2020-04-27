@@ -85,8 +85,6 @@ namespace DMS.Models
 
                 entity.Property(e => e.Address).HasMaxLength(500);
 
-                entity.Property(e => e.Avatar).HasMaxLength(4000);
-
                 entity.Property(e => e.Birthday).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -185,6 +183,8 @@ namespace DMS.Models
             modelBuilder.Entity<DistrictDAO>(entity =>
             {
                 entity.ToTable("District", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code).HasMaxLength(500);
 
@@ -481,6 +481,8 @@ namespace DMS.Models
             modelBuilder.Entity<OrganizationDAO>(entity =>
             {
                 entity.ToTable("Organization", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Address).HasMaxLength(500);
 
@@ -794,6 +796,8 @@ namespace DMS.Models
             {
                 entity.ToTable("Province", "MDM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -954,31 +958,21 @@ namespace DMS.Models
             {
                 entity.ToTable("Sex", "MDM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Status)
-                    .WithMany(p => p.Sexes)
-                    .HasForeignKey(d => d.StatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Sex_Status");
             });
 
             modelBuilder.Entity<StatusDAO>(entity =>
             {
+                entity.ToTable("Status", "MDM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -1149,6 +1143,8 @@ namespace DMS.Models
             modelBuilder.Entity<StoreStatusDAO>(entity =>
             {
                 entity.ToTable("StoreStatus", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
                     .IsRequired()
@@ -1451,6 +1447,8 @@ namespace DMS.Models
             modelBuilder.Entity<WardDAO>(entity =>
             {
                 entity.ToTable("Ward", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
                     .IsRequired()
