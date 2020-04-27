@@ -105,7 +105,7 @@ namespace DMS.Services.MStore
                 if (count != 0)
                     Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeExisted);
             }
-            
+
             return Store.IsValidated;
         }
         #endregion
@@ -128,7 +128,7 @@ namespace DMS.Services.MStore
         #region Organization
         private async Task<bool> ValidateOrganizationId(Store Store)
         {
-            if(Store.OrganizationId != 0)
+            if (Store.OrganizationId != 0)
             {
                 OrganizationFilter OrganizationFilter = new OrganizationFilter
                 {
@@ -150,7 +150,7 @@ namespace DMS.Services.MStore
         #region Parent Store
         private async Task<bool> ValidateParentStoreId(Store Store)
         {
-            if(Store.ParentStoreId != 0)
+            if (Store.ParentStoreId != 0)
             {
                 StoreFilter StoreFilter = new StoreFilter
                 {
@@ -172,7 +172,7 @@ namespace DMS.Services.MStore
         #region Store Type
         private async Task<bool> ValidateStoreTypeId(Store Store)
         {
-            if(Store.StoreTypeId == 0)
+            if (Store.StoreTypeId == 0)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.StoreTypeId), ErrorCode.StoreTypeEmpty);
             }
@@ -195,7 +195,7 @@ namespace DMS.Services.MStore
         #region Store Grouping
         private async Task<bool> ValidateStoreGroupingId(Store Store)
         {
-            if(Store.StoreGroupingId != 0)
+            if (Store.StoreGroupingId != 0)
             {
                 StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter
                 {
@@ -247,7 +247,7 @@ namespace DMS.Services.MStore
         #region Province + District + Ward
         private async Task<bool> ValidateProvinceId(Store Store)
         {
-            if(Store.ProvinceId != 0)
+            if (Store.ProvinceId != 0)
             {
                 ProvinceFilter ProvinceFilter = new ProvinceFilter
                 {
@@ -266,7 +266,7 @@ namespace DMS.Services.MStore
         }
         private async Task<bool> ValidateDistrictId(Store Store)
         {
-            if(Store.DistrictId != 0)
+            if (Store.DistrictId != 0)
             {
                 DistrictFilter DistrictFilter = new DistrictFilter
                 {
@@ -285,7 +285,7 @@ namespace DMS.Services.MStore
         }
         private async Task<bool> ValidateWardId(Store Store)
         {
-            if(Store.WardId != 0)
+            if (Store.WardId != 0)
             {
                 WardFilter WardFilter = new WardFilter
                 {
@@ -397,7 +397,8 @@ namespace DMS.Services.MStore
             await ValidateCode(Store);
             await ValidateName(Store);
             await ValidateOrganizationId(Store);
-            await ValidateParentStoreId(Store);
+            if (Store.ParentStoreId.HasValue)
+                await ValidateParentStoreId(Store);
             await ValidateStoreTypeId(Store);
             await ValidateStoreGroupingId(Store);
             await ValidatePhone(Store);
@@ -422,7 +423,8 @@ namespace DMS.Services.MStore
                 await ValidateCode(Store);
                 await ValidateName(Store);
                 await ValidateOrganizationId(Store);
-                await ValidateParentStoreId(Store);
+                if (Store.ParentStoreId.HasValue)
+                    await ValidateParentStoreId(Store);
                 await ValidateStoreTypeId(Store);
                 await ValidateStoreGroupingId(Store);
                 await ValidatePhone(Store);
@@ -543,7 +545,7 @@ namespace DMS.Services.MStore
                 await (ValidateOwnerName(Store));
                 await (ValidateOwnerPhone(Store));
                 await (ValidateOwnerEmail(Store));
-                
+
             }
             return Stores.Any(s => !s.IsValidated) ? false : true;
         }
