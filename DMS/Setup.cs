@@ -84,6 +84,7 @@ namespace DMS
                 {
                     permission = new PermissionDAO
                     {
+                        Code = Admin + "_" + Menu.Name,
                         Name = Admin + "_" + Menu.Name,
                         MenuId = Menu.Id,
                         RoleId = Admin.Id,

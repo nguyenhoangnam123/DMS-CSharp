@@ -903,6 +903,8 @@ namespace DMS.Models
             {
                 entity.ToTable("ResellerStatus", "MDM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(50);
