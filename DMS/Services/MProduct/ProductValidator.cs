@@ -34,7 +34,10 @@ namespace DMS.Services.MProduct
             UnitOfMeasureNotExisted,
             UnitOfMeasureEmpty,
             UnitOfMeasureGroupingNotExisted,
-            StatusNotExisted
+            StatusNotExisted,
+            VariationGroupingExisted,
+            VariationCodeExisted,
+            VariationNameExisted
         }
 
         private IUOW UOW;
@@ -224,6 +227,50 @@ namespace DMS.Services.MProduct
             return Product.IsValidated;
         }
 
+        private async Task<bool> ValidateVariation(Product Product)
+        {
+            if(Product.VariationGroupings != null && Product.VariationGroupings.Any())
+            {
+                foreach (var VariationGrouping in Product.VariationGroupings)
+                {
+                    VariationGroupingFilter VariationGroupingFilter = new VariationGroupingFilter
+                    {
+                        Name = new StringFilter { Equal = VariationGrouping.Name }
+                    };
+
+                    int count = await UOW.VariationGroupingRepository.Count(VariationGroupingFilter);
+                    if(count > 0)
+                        Product.AddError(nameof(ProductValidator), nameof(VariationGrouping) + VariationGrouping.Name, ErrorCode.VariationGroupingExisted);
+
+                    if(VariationGrouping.Variations != null && VariationGrouping.Variations.Any())
+                    {
+                        foreach (var Variation in VariationGrouping.Variations)
+                        {
+                            VariationFilter VariationFilter = new VariationFilter
+                            {
+                                Code = new StringFilter { Equal = Variation.Code }
+                            };
+
+                            count = await UOW.VariationRepository.Count(VariationFilter);
+                            if (count > 0)
+                                Product.AddError(nameof(ProductValidator), nameof(Variation) + Variation.Code, ErrorCode.VariationCodeExisted);
+
+                            VariationFilter = new VariationFilter
+                            {
+                                Name = new StringFilter { Equal = Variation.Name }
+                            };
+
+                            count = await UOW.VariationRepository.Count(VariationFilter);
+                            if (count > 0)
+                                Product.AddError(nameof(ProductValidator), nameof(Variation) + Variation.Name, ErrorCode.VariationNameExisted);
+                        }
+                        
+                    }
+                }
+            }
+            return Product.IsValidated;
+        }
+
         public async Task<bool> Create(Product Product)
         {
             await ValidateCode(Product);
@@ -235,6 +282,7 @@ namespace DMS.Services.MProduct
             await ValidateUnitOfMeasureGrouping(Product);
             await ValidateStatusId(Product);
             await ValidateItem(Product);
+            await ValidateVariation(Product);
             return Product.IsValidated;
         }
 
@@ -251,6 +299,7 @@ namespace DMS.Services.MProduct
                 await ValidateUnitOfMeasureGrouping(Product);
                 await ValidateStatusId(Product);
                 await ValidateItem(Product);
+                await ValidateVariation(Product);
             }
             return Product.IsValidated;
         }
