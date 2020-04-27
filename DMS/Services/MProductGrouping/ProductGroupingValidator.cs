@@ -119,7 +119,8 @@ namespace DMS.Services.MProductGrouping
         {
             await ValidateCode(ProductGrouping);
             await ValidateName(ProductGrouping);
-            await ValidateParent(ProductGrouping);
+            if (ProductGrouping.ParentId.HasValue)
+                await ValidateParent(ProductGrouping);
             return ProductGrouping.IsValidated;
         }
 

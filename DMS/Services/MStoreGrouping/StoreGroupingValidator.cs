@@ -120,7 +120,7 @@ namespace DMS.Services.MStoreGrouping
         {
             await ValidateCode(StoreGrouping);
             await ValidateName(StoreGrouping);
-            if (StoreGrouping.ParentId != null)
+            if (StoreGrouping.ParentId.HasValue)
             {
                 await ValidateParent(StoreGrouping);
             }
