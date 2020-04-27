@@ -110,6 +110,19 @@ namespace DMS.Services.MProduct
 
             try
             {
+                if(Product.Items == null || !Product.Items.Any())
+                {
+                    Product.Items = new List<Item>();
+                    Product.Items.Add(new Item
+                    {
+                        Code = Product.Code,
+                        Name = Product.Name,
+                        ScanCode = Product.ScanCode,
+                        RetailPrice = Product.RetailPrice,
+                        SalePrice = Product.SalePrice,
+                        ProductId = Product.Id
+                    });
+                }
                 await UOW.Begin();
                 await UOW.ProductRepository.Create(Product);
                 await UOW.Commit();

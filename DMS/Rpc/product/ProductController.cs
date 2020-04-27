@@ -568,7 +568,7 @@ namespace DMS.Rpc.product
             foreach (var Product in Products)
             {
                 if (Product.Items != null && Product.Items.Count > 0) continue;
-
+                Product.Items = new List<Item>();
                 Product.Items.Add(new Item
                 {
                     Code = Product.Code,

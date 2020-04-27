@@ -26,6 +26,7 @@ namespace DMS.Services.MProduct
             CodeHasSpecialCharacter,
             CodeEmpty,
             NameEmpty,
+            NameExisted,
             NameOverLength,
             ProductTypeNotExisted,
             SupplierNotExisted,
@@ -189,6 +190,40 @@ namespace DMS.Services.MProduct
                 Product.AddError(nameof(ProductValidator), nameof(Product.Status), ErrorCode.StatusNotExisted);
             return Product.IsValidated;
         }
+
+        private async Task<bool> ValidateItem(Product Product)
+        {
+            if(Product.Items != null && Product.Items.Any())
+            {
+                foreach (var item in Product.Items)
+                {
+                    ItemFilter ItemFilter = new ItemFilter
+                    {
+                        Code = new StringFilter { Equal = item.Code }
+                    };
+
+                    int count = await UOW.ItemRepository.Count(ItemFilter);
+                    if(count > 0)
+                    {
+                        Product.AddError(nameof(ProductValidator), nameof(item) + item.Code, ErrorCode.CodeExisted);
+                    }
+
+                    ItemFilter = new ItemFilter
+                    {
+                        Name = new StringFilter { Equal = item.Name }
+                    };
+
+                    count = await UOW.ItemRepository.Count(ItemFilter);
+                    if (count > 0)
+                    {
+                        Product.AddError(nameof(ProductValidator), nameof(item) + item.Name, ErrorCode.NameExisted);
+                    }
+                }
+            }
+
+            return Product.IsValidated;
+        }
+
         public async Task<bool> Create(Product Product)
         {
             await ValidateCode(Product);
@@ -199,6 +234,7 @@ namespace DMS.Services.MProduct
             await ValidateUnitOfMeasure(Product);
             await ValidateUnitOfMeasureGrouping(Product);
             await ValidateStatusId(Product);
+            await ValidateItem(Product);
             return Product.IsValidated;
         }
 
@@ -214,6 +250,7 @@ namespace DMS.Services.MProduct
                 await ValidateUnitOfMeasure(Product);
                 await ValidateUnitOfMeasureGrouping(Product);
                 await ValidateStatusId(Product);
+                await ValidateItem(Product);
             }
             return Product.IsValidated;
         }
@@ -228,22 +265,11 @@ namespace DMS.Services.MProduct
 
         public async Task<bool> BulkDelete(List<Product> Products)
         {
-            ProductFilter ProductFilter = new ProductFilter
+            foreach (Product Product in Products)
             {
-                Skip = 0,
-                Take = int.MaxValue,
-                Id = new IdFilter { In = Products.Select(a => a.Id).ToList() },
-                Selects = ProductSelect.Id
-            };
-
-            var listInDB = await UOW.ProductRepository.List(ProductFilter);
-            var listExcept = Products.Except(listInDB);
-            if (listExcept == null || listExcept.Count() == 0) return true;
-            foreach (var Product in listExcept)
-            {
-                Product.AddError(nameof(ProductValidator), nameof(Product.Id), ErrorCode.IdNotExisted);
+                await Delete(Product);
             }
-            return false;
+            return Products.All(st => st.IsValidated);
         }
 
         public async Task<bool> Import(List<Product> Products)
