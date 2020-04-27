@@ -23,6 +23,7 @@ namespace DMS.Services.MProduct
         {
             IdNotExisted,
             CodeExisted,
+            CodeHasSpecialCharacter,
             CodeEmpty,
             NameEmpty,
             NameOverLength,
@@ -77,19 +78,28 @@ namespace DMS.Services.MProduct
             {
                 Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeEmpty);
             }
-
-            ProductFilter ProductFilter = new ProductFilter
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { NotEqual = Product.Id },
-                Code = new StringFilter { Equal = Product.Code },
-                Selects = ProductSelect.Code
-            };
+                var Code = Product.Code;
+                if (Product.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Product.Code))
+                {
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeHasSpecialCharacter);
+                }
 
-            int count = await UOW.ProductRepository.Count(ProductFilter);
-            if (count > 0)
-                Product.AddError(nameof(ProductValidator), nameof(Product.Id), ErrorCode.CodeExisted);
+                ProductFilter ProductFilter = new ProductFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { NotEqual = Product.Id },
+                    Code = new StringFilter { Equal = Product.Code },
+                    Selects = ProductSelect.Code
+                };
+
+                int count = await UOW.ProductRepository.Count(ProductFilter);
+                if (count != 0)
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeExisted);
+            }
+
             return Product.IsValidated;
         }
 
