@@ -24,6 +24,7 @@ namespace DMS.Services.MBrand
             IdNotExisted,
             CodeEmpty,
             CodeExisted,
+            CodeHasSpecialCharacter,
             NameEmpty,
             NameOverLength,
             DescriptionOverLength,
@@ -63,6 +64,12 @@ namespace DMS.Services.MBrand
             }
             else
             {
+                var Code = Brand.Code;
+                if (Brand.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Brand.Code))
+                {
+                    Brand.AddError(nameof(BrandValidator), nameof(Brand.Code), ErrorCode.CodeHasSpecialCharacter);
+                }
+
                 BrandFilter BrandFilter = new BrandFilter
                 {
                     Skip = 0,

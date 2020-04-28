@@ -150,7 +150,7 @@ namespace DMS.Services.MStore
         #region Parent Store
         private async Task<bool> ValidateParentStoreId(Store Store)
         {
-            if (Store.ParentStoreId != 0)
+            if (Store.ParentStoreId.HasValue)
             {
                 StoreFilter StoreFilter = new StoreFilter
                 {
@@ -397,8 +397,7 @@ namespace DMS.Services.MStore
             await ValidateCode(Store);
             await ValidateName(Store);
             await ValidateOrganizationId(Store);
-            if (Store.ParentStoreId.HasValue)
-                await ValidateParentStoreId(Store);
+            await ValidateParentStoreId(Store);
             await ValidateStoreTypeId(Store);
             await ValidateStoreGroupingId(Store);
             await ValidatePhone(Store);
@@ -423,8 +422,7 @@ namespace DMS.Services.MStore
                 await ValidateCode(Store);
                 await ValidateName(Store);
                 await ValidateOrganizationId(Store);
-                if (Store.ParentStoreId.HasValue)
-                    await ValidateParentStoreId(Store);
+                await ValidateParentStoreId(Store);
                 await ValidateStoreTypeId(Store);
                 await ValidateStoreGroupingId(Store);
                 await ValidatePhone(Store);
