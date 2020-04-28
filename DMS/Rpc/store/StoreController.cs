@@ -320,7 +320,7 @@ namespace DMS.Rpc.store
             List<Store> Stores = new List<Store>();
             using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Store"];
                 if (worksheet == null)
                     return null;
                 int StartColumn = 1;
