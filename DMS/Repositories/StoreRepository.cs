@@ -424,7 +424,7 @@ namespace DMS.Repositories
                     DistrictId = q.Ward.DistrictId,
                     StatusId = q.Ward.StatusId,
                 } : null,
-                StoreImageMappings = q.StoreImageMappings.Skip(0).Take(1).Select(x => new StoreImageMapping
+                StoreImageMappings = filter.Selects.Contains(StoreSelect.StoreImageMappings) &&  q.StoreImageMappings != null ? q.StoreImageMappings.Skip(0).Take(1).Select(x => new StoreImageMapping
                 {
                     StoreId = x.StoreId,
                     ImageId = x.ImageId,
@@ -434,7 +434,7 @@ namespace DMS.Repositories
                         Name = x.Image.Name,
                         Url = x.Image.Url
                     }
-                }).ToList()
+                }).ToList() : null,
             }).ToListAsync();
             return Stores;
         }

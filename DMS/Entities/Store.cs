@@ -142,5 +142,6 @@ namespace DMS.Entities
         OwnerEmail = E._20,
         Status = E._21,
         StoreStatus = E._22,
+        StoreImageMappings = E._23
     }
 }

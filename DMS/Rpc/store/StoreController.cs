@@ -38,6 +38,7 @@ namespace DMS.Rpc.store
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
+        public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
         public const string SaveImage = Default + "/save-image";
 
@@ -403,13 +404,13 @@ namespace DMS.Rpc.store
                             Code = ParentStoreCodeValue
                         };
                     }
-                    Store.Organization = Organizations.Where(x => x.Code == OrganizationCodeValue).FirstOrDefault();
-                    Store.Reseller = Resellers.Where(x => x.Code == ResellerCodeValue).FirstOrDefault();
-                    Store.StoreType = StoreTypes.Where(x => x.Code == StoreTypeCodeValue).FirstOrDefault();
-                    Store.StoreGrouping = StoreGroupings.Where(x => x.Code == StoreGroupingCodeValue).FirstOrDefault();
-                    Store.Province = Provinces.Where(x => x.Code == ProvinceCodeValue).FirstOrDefault();
-                    Store.District = Districts.Where(x => x.Code == DistrictCodeValue).FirstOrDefault();
-                    Store.Ward = Wards.Where(x => x.Code == WardCodeValue).FirstOrDefault();
+                    Store.Organization = Organizations.Where(x => x.Code == OrganizationCodeValue).FirstOrDefault() ?? new Organization { Code = OrganizationCodeValue };
+                    Store.Reseller = Resellers.Where(x => x.Code == ResellerCodeValue).FirstOrDefault() ?? new Reseller { Code = ResellerCodeValue };
+                    Store.StoreType = StoreTypes.Where(x => x.Code == StoreTypeCodeValue).FirstOrDefault() ?? new StoreType { Code = StoreTypeCodeValue };
+                    Store.StoreGrouping = StoreGroupings.Where(x => x.Code == StoreGroupingCodeValue).FirstOrDefault() ?? new StoreGrouping { Code = StoreGroupingCodeValue };
+                    Store.Province = Provinces.Where(x => x.Code == ProvinceCodeValue).FirstOrDefault() ?? new Province { Code = ProvinceCodeValue };
+                    Store.District = Districts.Where(x => x.Code == DistrictCodeValue).FirstOrDefault() ?? new District { Code = DistrictCodeValue };
+                    Store.Ward = Wards.Where(x => x.Code == WardCodeValue).FirstOrDefault() ?? new Ward { Code = WardCodeValue };
                     Store.Status = Statuses.Where(x => x.Code == StatusCodeValue).FirstOrDefault();
                     Store.StoreStatusId = StoreStatusEnum.PENDING.Id;
                     Stores.Add(Store);
@@ -429,6 +430,62 @@ namespace DMS.Rpc.store
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            List<Store> ParentStores = await StoreService.List(new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.Code | StoreSelect.Name
+            });
+
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Code | OrganizationSelect.Name | OrganizationSelect.Path
+            });
+
+            List<Reseller> Resellers = await ResellerService.List(new ResellerFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ResellerSelect.Id | ResellerSelect.Code
+            });
+
+            List<StoreType> StoreTypes = await StoreTypeService.List(new StoreTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreTypeSelect.Id | StoreTypeSelect.Code
+            });
+
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(new StoreGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreGroupingSelect.Id | StoreGroupingSelect.Code
+            });
+
+            List<Province> Provinces = await ProvinceService.List(new ProvinceFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProvinceSelect.Id | ProvinceSelect.Code
+            });
+
+            List<District> Districts = await DistrictService.List(new DistrictFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = DistrictSelect.Id | DistrictSelect.Code
+            });
+
+            List<Ward> Wards = await WardService.List(new WardFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = WardSelect.Id | WardSelect.Code
+            });
+
             StoreFilter StoreFilter = ConvertFilterDTOToFilterEntity(Store_StoreFilterDTO);
             StoreFilter = StoreService.ToFilter(StoreFilter);
             StoreFilter.Skip = 0;
@@ -439,10 +496,12 @@ namespace DMS.Rpc.store
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
+                #region Store
                 var StoreHeaders = new List<string[]>()
                 {
                     new string[]
                     {
+                        "STT",
                         "Mã Cửa Hàng",
                         "Tên Cửa Hàng",
                         "Đơn Vị Quản Lý",
@@ -450,7 +509,6 @@ namespace DMS.Rpc.store
                         "Câp Cửa Hàng" ,
                         "Nhóm Cửa Hàng",
                         "Mã Khách Hàng",
-                        "Điện Thoại",
                         "Tỉnh/Thành phố",
                         "Quận/Huyện",
                         "Phường/Xã",
@@ -460,10 +518,10 @@ namespace DMS.Rpc.store
                         "Vĩ Độ",
                         "Kinh Độ Giao Hàng",
                         "Vĩ Độ Giao Hàng",
+                        "Điện Thoại",
                         "Tên Chủ Cửa Hàng",
-                        "Số Điện Thoại Liên Hệ",
-                        "Email",
-                        "Trạng Thái",
+                        "Điện Thoại Liên Hệ",
+                        "Email"
                     }
                 };
                 List<object[]> data = new List<object[]>();
@@ -472,6 +530,7 @@ namespace DMS.Rpc.store
                     var Store = Stores[i];
                     data.Add(new Object[]
                     {
+                        i+1,
                         Store.Code,
                         Store.Name,
                         Store.Organization == null ? null : Store.Organization.Code,
@@ -479,7 +538,6 @@ namespace DMS.Rpc.store
                         Store.StoreType == null ? null : Store.StoreType.Code,
                         Store.StoreGrouping== null ? null : Store.StoreGrouping.Code,
                         Store.Reseller== null ? null : Store.Reseller.Code,
-                        Store.Telephone,
                         Store.Province == null ? null : Store.Province.Code,
                         Store.District == null ? null : Store.District.Code,
                         Store.Ward.Code == null ? null : Store.Ward.Code,
@@ -489,17 +547,214 @@ namespace DMS.Rpc.store
                         Store.Longitude,
                         Store.DeliveryLatitude,
                         Store.DeliveryLongitude,
+                        Store.Telephone,
                         Store.OwnerName,
                         Store.OwnerPhone,
-                        Store.OwnerEmail,
-                        Store.Status.Code
+                        Store.OwnerEmail
                     });
                 }
                 excel.GenerateWorksheet("Store", StoreHeaders, data);
+                #endregion
+
+                #region Organization
+                var OrganizationHeaders = new List<string[]>()
+                {
+                    new string[]
+                    {
+                        "Mã đơn vị",
+                        "Tên đơn vị",
+                    }
+                };
+                data = new List<object[]>();
+                for (int i = 0; i < Organizations.Count; i++)
+                {
+                    var Organization = Organizations[i];
+                    data.Add(new Object[]
+                    {
+                        Organization.Code,
+                        Organization.Name,
+                    });
+                }
+                excel.GenerateWorksheet("Organization", OrganizationHeaders, data);
+                #endregion
+
+                #region ParentStore
+                var ParentStoreHeaders = new List<string[]>()
+                {
+                    new string[]
+                    {
+                        "Mã",
+                        "Tên",
+                    }
+                };
+                data = new List<object[]>();
+                for (int i = 0; i < ParentStores.Count; i++)
+                {
+                    var ParentStore = ParentStores[i];
+                    data.Add(new Object[]
+                    {
+                        ParentStore.Code,
+                        ParentStore.Name,
+                    });
+                }
+                excel.GenerateWorksheet("StoreParent", ParentStoreHeaders, data);
+                #endregion
+
+                #region StoreType
+                var StoreTypeHeaders = new List<string[]>()
+                {
+                    new string[]
+                    {
+                        "Mã",
+                        "Tên",
+                    }
+                };
+                data = new List<object[]>();
+                for (int i = 0; i < StoreTypes.Count; i++)
+                {
+                    var StoreType = StoreTypes[i];
+                    data.Add(new Object[]
+                    {
+                        StoreType.Code,
+                        StoreType.Name,
+                    });
+                }
+                excel.GenerateWorksheet("StoreType", StoreTypeHeaders, data);
+                #endregion
+
+                #region StoreGrouping
+                var StoreGroupingHeaders = new List<string[]>()
+                {
+                    new string[]
+                    {
+                        "Mã",
+                        "Tên",
+                    }
+                };
+                data = new List<object[]>();
+                for (int i = 0; i < StoreGroupings.Count; i++)
+                {
+                    var StoreGrouping = StoreGroupings[i];
+                    data.Add(new Object[]
+                    {
+                        StoreGrouping.Code,
+                        StoreGrouping.Name,
+                    });
+                }
+                excel.GenerateWorksheet("StoreGroup", StoreGroupingHeaders, data);
+                #endregion
+
+                #region Reseller
+                var ResellerHeaders = new List<string[]>()
+                {
+                    new string[]
+                    {
+                        "Mã",
+                        "Tên",
+                    }
+                };
+                data = new List<object[]>();
+                for (int i = 0; i < Resellers.Count; i++)
+                {
+                    var Reseller = Resellers[i];
+                    data.Add(new Object[]
+                    {
+                        Reseller.Code,
+                        Reseller.Name,
+                    });
+                }
+                excel.GenerateWorksheet("Reseller", ResellerHeaders, data);
+                #endregion
+
+                #region Province
+                var ProvinceHeaders = new List<string[]>()
+                {
+                    new string[]
+                    {
+                        "Mã",
+                        "Tên",
+                    }
+                };
+                data = new List<object[]>();
+                for (int i = 0; i < Provinces.Count; i++)
+                {
+                    var Province = Provinces[i];
+                    data.Add(new Object[]
+                    {
+                        Province.Code,
+                        Province.Name,
+                    });
+                }
+                excel.GenerateWorksheet("Province", ProvinceHeaders, data);
+                #endregion
+
+                #region District
+                var DistrictHeaders = new List<string[]>()
+                {
+                    new string[]
+                    {
+                        "Mã",
+                        "Tên",
+                    }
+                };
+                data = new List<object[]>();
+                for (int i = 0; i < Districts.Count; i++)
+                {
+                    var District = Districts[i];
+                    data.Add(new Object[]
+                    {
+                        District.Code,
+                        District.Name,
+                    });
+                }
+                excel.GenerateWorksheet("District", DistrictHeaders, data);
+                #endregion
+
+                #region Ward
+                var WardHeaders = new List<string[]>()
+                {
+                    new string[]
+                    {
+                        "Mã",
+                        "Tên",
+                    }
+                };
+                data = new List<object[]>();
+                for (int i = 0; i < Wards.Count; i++)
+                {
+                    var Ward = Wards[i];
+                    data.Add(new Object[]
+                    {
+                        Ward.Code,
+                        Ward.Name,
+                    });
+                }
+                excel.GenerateWorksheet("Ward", WardHeaders, data);
+                #endregion
                 excel.Save();
             }
 
             return File(memoryStream.ToArray(), "application/octet-stream", "Store.xlsx");
+        }
+
+        [Route(StoreRoute.ExportTemplate), HttpPost]
+        public async Task<ActionResult> ExportTemplate()
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            MemoryStream MemoryStream = new MemoryStream();
+            string tempPath = "Templates/Store_Template.xlsx";
+            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            {
+                var nameexcel = "Export cửa hàng" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff");
+                xlPackage.Workbook.Properties.Title = string.Format("{0}", nameexcel);
+                xlPackage.Workbook.Properties.Author = "Sonhx5";
+                xlPackage.Workbook.Properties.Subject = string.Format("{0}", "RD-DMS");
+                xlPackage.Workbook.Properties.Category = "RD-DMS";
+                xlPackage.Workbook.Properties.Company = "FPT-FIS-ERP-ESC";
+                xlPackage.SaveAs(MemoryStream);
+            }
+
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Store" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
         }
 
         [Route(StoreRoute.BulkDelete), HttpPost]
