@@ -20,8 +20,6 @@ namespace DMS.Services.MItem
         Task<Item> Update(Item Item);
         Task<Item> Delete(Item Item);
         Task<List<Item>> BulkDelete(List<Item> Items);
-        Task<List<Item>> Import(List<Item> Items);
-        Task<DataFile> Export(ItemFilter ItemFilter);
         ItemFilter ToFilter(ItemFilter ItemFilter);
     }
 
@@ -66,6 +64,18 @@ namespace DMS.Services.MItem
             try
             {
                 List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
+                foreach (var item in Items)
+                {
+                    InventoryFilter InventoryFilter = new InventoryFilter
+                    {
+                        ItemId = new IdFilter { Equal = item.Id },
+                        AccountingStock = new LongFilter { Greater = 0 }
+                    };
+
+                    int count = await UOW.InventoryRepository.Count(InventoryFilter);
+                    if (count > 0) item.HasInventory = true;
+                    else item.HasInventory = false;
+                }
                 return Items;
             }
             catch (Exception ex)
@@ -185,84 +195,6 @@ namespace DMS.Services.MItem
             }
         }
 
-        public async Task<List<Item>> Import(List<Item> Items)
-        {  
-            if (!await ItemValidator.Import(Items))
-                return Items;
-
-            try
-            {
-                await UOW.Begin();
-                await UOW.ItemRepository.BulkMerge(Items);
-                await UOW.Commit();
-
-                await Logging.CreateAuditLog(Items, new { }, nameof(ItemService));
-                return Items;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ItemService));
-                if (ex.InnerException == null)
-                    throw new MessageException(ex);
-                else
-                    throw new MessageException(ex.InnerException);
-            }
-        }
-
-        public async Task<DataFile> Export(ItemFilter ItemFilter)
-        {
-            List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
-            MemoryStream MemoryStream = new MemoryStream();
-            using (ExcelPackage excelPackage = new ExcelPackage(MemoryStream))
-            {
-                //Set some properties of the Excel document
-                excelPackage.Workbook.Properties.Author = CurrentContext.UserName;
-                excelPackage.Workbook.Properties.Title = nameof(Item);
-                excelPackage.Workbook.Properties.Created = StaticParams.DateTimeNow;
-
-                //Create the WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
-                int StartColumn = 1;
-                int StartRow = 2;
-                int IdColumn = 0 + StartColumn;
-                int ProductIdColumn = 1 + StartColumn;
-                int CodeColumn = 2 + StartColumn;
-                int NameColumn = 3 + StartColumn;
-                int ScanCodeColumn = 4 + StartColumn;
-                int SalePriceColumn = 5 + StartColumn;
-                int RetailPriceColumn = 6 + StartColumn;
-
-                worksheet.Cells[1, IdColumn].Value = nameof(Item.Id);
-                worksheet.Cells[1, ProductIdColumn].Value = nameof(Item.ProductId);
-                worksheet.Cells[1, CodeColumn].Value = nameof(Item.Code);
-                worksheet.Cells[1, NameColumn].Value = nameof(Item.Name);
-                worksheet.Cells[1, ScanCodeColumn].Value = nameof(Item.ScanCode);
-                worksheet.Cells[1, SalePriceColumn].Value = nameof(Item.SalePrice);
-                worksheet.Cells[1, RetailPriceColumn].Value = nameof(Item.RetailPrice);
-
-                for (int i = 0; i < Items.Count; i++)
-                {
-                    Item Item = Items[i];
-                    worksheet.Cells[i + StartRow, IdColumn].Value = Item.Id;
-                    worksheet.Cells[i + StartRow, ProductIdColumn].Value = Item.ProductId;
-                    worksheet.Cells[i + StartRow, CodeColumn].Value = Item.Code;
-                    worksheet.Cells[i + StartRow, NameColumn].Value = Item.Name;
-                    worksheet.Cells[i + StartRow, ScanCodeColumn].Value = Item.ScanCode;
-                    worksheet.Cells[i + StartRow, SalePriceColumn].Value = Item.SalePrice;
-                    worksheet.Cells[i + StartRow, RetailPriceColumn].Value = Item.RetailPrice;
-                }
-                excelPackage.Save();
-            }
-
-            DataFile DataFile = new DataFile
-            {
-                Name = nameof(Item),
-                Content = MemoryStream,
-            };
-            return DataFile;
-        }
-
         public ItemFilter ToFilter(ItemFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ItemFilter>();
@@ -292,5 +224,6 @@ namespace DMS.Services.MItem
             }
             return filter;
         }
+
     }
 }

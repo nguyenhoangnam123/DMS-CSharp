@@ -13,6 +13,7 @@ namespace DMS.Rpc.product
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public bool CanDelete { get; set; }
+        public bool HasInventory { get; set; }
         public long StatusId { get; set; }
 
         public Product_ItemDTO() { }
@@ -26,6 +27,7 @@ namespace DMS.Rpc.product
             this.SalePrice = Item.SalePrice;
             this.RetailPrice = Item.RetailPrice;
             this.CanDelete = Item.CanDelete;
+            this.HasInventory = Item.HasInventory;
             this.StatusId = Item.StatusId;
             this.Errors = Item.Errors;
         }

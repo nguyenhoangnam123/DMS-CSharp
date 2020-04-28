@@ -1264,19 +1264,16 @@ namespace DMS.Models
                 entity.HasOne(d => d.District)
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.DistrictId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Supplier_District");
 
                 entity.HasOne(d => d.PersonInCharge)
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.PersonInChargeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Supplier_AppUser");
 
                 entity.HasOne(d => d.Province)
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.ProvinceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Supplier_Province");
 
                 entity.HasOne(d => d.Status)
@@ -1288,7 +1285,6 @@ namespace DMS.Models
                 entity.HasOne(d => d.Ward)
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.WardId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Supplier_Ward");
             });
 

@@ -24,6 +24,7 @@ using System.IO;
 using System;
 using System.Data;
 using Microsoft.AspNetCore.Hosting;
+using DMS.Services.MInventory;
 
 namespace DMS.Rpc.product
 {
@@ -59,6 +60,10 @@ namespace DMS.Rpc.product
         public const string SingleListVariationGrouping = Default + "/single-list-variation-grouping";
         public const string CountProductGrouping = Default + "/count-product-grouping";
         public const string ListProductGrouping = Default + "/list-product-grouping";
+        public const string ListItem = Default + "/list-item";
+        public const string CountItem = Default + "/count-item";
+        public const string ListInventory = Default + "/list-inventory";
+        public const string CountInventory = Default + "/count-inventory";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(ProductFilter.Id), FieldType.ID },
@@ -92,6 +97,7 @@ namespace DMS.Rpc.product
         private IUnitOfMeasureGroupingService UnitOfMeasureGroupingService;
         private IItemService ItemService;
         private IImageService ImageService;
+        private IInventoryService InventoryService;
         private IProductGroupingService ProductGroupingService;
         private IVariationGroupingService VariationGroupingService;
         private IProductService ProductService;
@@ -107,6 +113,7 @@ namespace DMS.Rpc.product
             IUnitOfMeasureGroupingService UnitOfMeasureGroupingService,
             IItemService ItemService,
             IImageService ImageService,
+            IInventoryService InventoryService,
             IProductGroupingService ProductGroupingService,
             IVariationGroupingService VariationGroupingService,
             IProductService ProductService,
@@ -123,6 +130,7 @@ namespace DMS.Rpc.product
             this.UnitOfMeasureGroupingService = UnitOfMeasureGroupingService;
             this.ItemService = ItemService;
             this.ImageService = ImageService;
+            this.InventoryService = InventoryService;
             this.ProductGroupingService = ProductGroupingService;
             this.VariationGroupingService = VariationGroupingService;
             this.ProductService = ProductService;
@@ -1444,6 +1452,67 @@ namespace DMS.Rpc.product
             List<Product_ProductGroupingDTO> Product_ProductGroupingDTOs = ProductGroupings
                 .Select(x => new Product_ProductGroupingDTO(x)).ToList();
             return Product_ProductGroupingDTOs;
+        }
+
+        [Route(ProductRoute.CountItem), HttpPost]
+        public async Task<long> CountItem([FromBody] Product_ItemFilterDTO Product_ItemFilterDTO)
+        {
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Id = Product_ItemFilterDTO.Id;
+            ItemFilter.Code = Product_ItemFilterDTO.Code;
+            ItemFilter.Name = Product_ItemFilterDTO.Name;
+            ItemFilter.ProductId = Product_ItemFilterDTO.ProductId;
+            ItemFilter.SalePrice = Product_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = Product_ItemFilterDTO.ScanCode;
+            ItemFilter.RetailPrice = Product_ItemFilterDTO.RetailPrice;
+            return await ItemService.Count(ItemFilter);
+        }
+
+        [Route(ProductRoute.ListItem), HttpPost]
+        public async Task<List<Product_ItemDTO>> ListItem([FromBody] Product_ItemFilterDTO Product_ItemFilterDTO)
+        {
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Skip = Product_ItemFilterDTO.Skip;
+            ItemFilter.Take = Product_ItemFilterDTO.Take;
+            ItemFilter.OrderBy = ItemOrder.Id;
+            ItemFilter.OrderType = OrderType.ASC;
+            ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Id = Product_ItemFilterDTO.Id;
+            ItemFilter.Code = Product_ItemFilterDTO.Code;
+            ItemFilter.Name = Product_ItemFilterDTO.Name;
+            ItemFilter.ProductId = Product_ItemFilterDTO.ProductId;
+            ItemFilter.SalePrice = Product_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = Product_ItemFilterDTO.ScanCode;
+            ItemFilter.RetailPrice = Product_ItemFilterDTO.RetailPrice;
+
+            List<Item> Items = await ItemService.List(ItemFilter);
+            List<Product_ItemDTO> Product_ItemDTOs = Items
+                .Select(x => new Product_ItemDTO(x)).ToList();
+            return Product_ItemDTOs;
+        }
+
+        [Route(ProductRoute.CountInventory), HttpPost]
+        public async Task<long> CountInventory([FromBody] Product_InventoryFilterDTO Product_InventoryFilterDTO)
+        {
+            InventoryFilter InventoryFilter = new InventoryFilter();
+            InventoryFilter.Id = Product_InventoryFilterDTO.ItemId;
+            return await InventoryService.Count(InventoryFilter);
+        }
+        [Route(ProductRoute.ListInventory), HttpPost]
+        public async Task<List<Product_InventoryDTO>> ListInventory([FromBody] Product_InventoryFilterDTO Product_InventoryFilterDTO)
+        {
+            InventoryFilter InventoryFilter = new InventoryFilter();
+            InventoryFilter.Skip = Product_InventoryFilterDTO.Skip;
+            InventoryFilter.Take = Product_InventoryFilterDTO.Take;
+            InventoryFilter.OrderBy = InventoryOrder.Id;
+            InventoryFilter.OrderType = OrderType.ASC;
+            InventoryFilter.Selects = InventorySelect.ALL;
+            InventoryFilter.Id = Product_InventoryFilterDTO.ItemId;
+
+            List<Inventory> Inventories = await InventoryService.List(InventoryFilter);
+            List<Product_InventoryDTO> Product_InventoryDTOs = Inventories
+                .Select(x => new Product_InventoryDTO(x)).ToList();
+            return Product_InventoryDTOs;
         }
     }
 }

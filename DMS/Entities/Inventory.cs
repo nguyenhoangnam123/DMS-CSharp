@@ -13,6 +13,7 @@ namespace DMS.Entities
         public long ItemId { get; set; }
         public long SaleStock { get; set; }
         public long AccountingStock { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public Item Item { get; set; }
         public Warehouse Warehouse { get; set; }
         public List<InventoryHistory> InventoryHistories { get; set; }
@@ -47,6 +48,7 @@ namespace DMS.Entities
         Item = 2,
         SaleStock = 3,
         AccountingStock = 4,
+        UpdatedAt = 4,
     }
 
     [Flags]
@@ -58,5 +60,6 @@ namespace DMS.Entities
         Item = E._2,
         SaleStock = E._3,
         AccountingStock = E._4,
+        UpdatedAt = E._5,
     }
 }

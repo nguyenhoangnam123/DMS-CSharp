@@ -123,6 +123,7 @@ namespace DMS.Repositories
                 ItemId = filter.Selects.Contains(InventorySelect.Item) ? q.ItemId : default(long),
                 SaleStock = filter.Selects.Contains(InventorySelect.SaleStock) ? q.SaleStock : default(long),
                 AccountingStock = filter.Selects.Contains(InventorySelect.AccountingStock) ? q.AccountingStock : default(long),
+                UpdatedAt = filter.Selects.Contains(InventorySelect.UpdatedAt) ? q.UpdatedAt : default(DateTime),
                 Warehouse = filter.Selects.Contains(InventorySelect.Warehouse) && q.Warehouse != null ? new Warehouse
                 {
                     Id = q.Warehouse.Id,
@@ -176,6 +177,7 @@ namespace DMS.Repositories
                     ItemId = x.ItemId,
                     SaleStock = x.SaleStock,
                     AccountingStock = x.AccountingStock,
+                    UpdatedAt = x.UpdatedAt,
                     Warehouse = x.Warehouse == null ? null : new Warehouse
                     {
                         Id = x.Warehouse.Id,
