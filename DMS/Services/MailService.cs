@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace DMS.Services
 {
-    public interface IMailService
+    public interface IMailService : IServiceScoped
     {
-        Task<Mail> Send(Mail Mail);
+        Task<bool> Send(Mail Mail);
     }
-    public class MailService : IServiceScoped
+    public class MailService : IMailService
     {
         private ICurrentContext CurrentContext;
         public MailService(ICurrentContext CurrentContext)
