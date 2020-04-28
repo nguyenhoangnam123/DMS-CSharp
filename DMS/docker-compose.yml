@@ -1,4 +1,4 @@
 version: "3"
 services:
     dms-backend:
-        image: registry.rangdong2020.ml/dms-backend:latest
+        image: truesight.asia:8443/dms-backend:latest

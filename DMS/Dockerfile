@@ -20,8 +20,8 @@ RUN apt-get update \
     && apt-get install -y libc6-dev libgdiplus
 WORKDIR /app
 
-COPY --from=registry.rangdong2020.ml/consul:stable /bin/consul /usr/local/bin/consul
-COPY --from=registry.rangdong2020.ml/envoy:stable /usr/local/bin/envoy /usr/local/bin/envoy
+COPY --from=truesight.asia:8443/consul:stable /bin/consul /usr/local/bin/consul
+COPY --from=truesight.asia:8443/envoy:stable /usr/local/bin/envoy /usr/local/bin/envoy
 
 COPY /consul /consul/config 
 
