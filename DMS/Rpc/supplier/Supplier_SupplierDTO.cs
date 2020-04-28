@@ -13,12 +13,12 @@ namespace DMS.Rpc.supplier
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
-        public long ProvinceId { get; set; }
-        public long DistrictId { get; set; }
-        public long WardId { get; set; }
+        public long? ProvinceId { get; set; }
+        public long? DistrictId { get; set; }
+        public long? WardId { get; set; }
         public string OwnerName { get; set; }
         public string Description { get; set; }
-        public long PersonInChargeId { get; set; }
+        public long? PersonInChargeId { get; set; }
         public long StatusId { get; set; }
         public DateTime UpdatedTime { get; set; }
         public Supplier_AppUserDTO PersonInCharge { get; set; }
