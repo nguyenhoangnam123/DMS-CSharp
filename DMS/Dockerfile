@@ -1,9 +1,9 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
+FROM truesight.asia:8443/aspnet:3.1-buster-slim AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+FROM truesight.asia:8443/dotnet-sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["DMS.csproj", "./"]
 RUN dotnet restore "DMS.csproj"
