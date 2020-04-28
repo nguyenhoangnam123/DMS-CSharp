@@ -38,6 +38,7 @@ namespace DMS.Entities
         public StringFilter ScanCode { get; set; }
         public DecimalFilter SalePrice { get; set; }
         public DecimalFilter RetailPrice { get; set; }
+        public IdFilter StatusId { get; set; }
         public List<ItemFilter> OrFilter { get; set; }
         public ItemOrder OrderBy { get; set; }
         public ItemSelect Selects { get; set; }

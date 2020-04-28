@@ -49,6 +49,7 @@ namespace DMS.Rpc.app_user
             { nameof(AppUserFilter.OrganizationId), FieldType.ID },
             { nameof(AppUserFilter.SexId), FieldType.ID },
             { nameof(AppUserFilter.StatusId), FieldType.ID },
+            { nameof(AppUserFilter.ProvinceId), FieldType.ID },
         };
     }
 
@@ -276,6 +277,7 @@ namespace DMS.Rpc.app_user
             AppUser.Position = AppUser_AppUserDTO.Position;
             AppUser.Department = AppUser_AppUserDTO.Department;
             AppUser.OrganizationId = AppUser_AppUserDTO.OrganizationId;
+            AppUser.ProvinceId = AppUser_AppUserDTO.ProvinceId;
             AppUser.SexId = AppUser_AppUserDTO.SexId;
             AppUser.StatusId = AppUser_AppUserDTO.StatusId;
             AppUser.Organization = AppUser_AppUserDTO.Organization == null ? null : new Organization
@@ -291,6 +293,14 @@ namespace DMS.Rpc.app_user
                 Address = AppUser_AppUserDTO.Organization.Address,
                 Latitude = AppUser_AppUserDTO.Organization.Latitude,
                 Longitude = AppUser_AppUserDTO.Organization.Longitude,
+            };
+            AppUser.Province = AppUser_AppUserDTO.Province == null ? null : new Province
+            {
+                Id = AppUser_AppUserDTO.Province.Id,
+                Code = AppUser_AppUserDTO.Province.Code,
+                Name = AppUser_AppUserDTO.Province.Name,
+                Priority = AppUser_AppUserDTO.Province.Priority,
+                StatusId = AppUser_AppUserDTO.Province.StatusId,
             };
             AppUser.Sex = AppUser_AppUserDTO.Sex == null ? null : new Sex
             {
@@ -341,6 +351,7 @@ namespace DMS.Rpc.app_user
             AppUserFilter.OrganizationId = AppUser_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = AppUser_AppUserFilterDTO.SexId;
             AppUserFilter.StatusId = AppUser_AppUserFilterDTO.StatusId;
+            AppUserFilter.ProvinceId = AppUser_AppUserFilterDTO.ProvinceId;
             return AppUserFilter;
         }
 

@@ -54,6 +54,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Department, filter.Department);
             if (filter.OrganizationId != null)
                 query = query.Where(q => q.OrganizationId, filter.OrganizationId);
+            if (filter.ProvinceId != null)
+                query = query.Where(q => q.ProvinceId, filter.OrganizationId);
             if (filter.RoleId != null)
             {
                 if (filter.RoleId.Equal.HasValue)
@@ -102,6 +104,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Department, filter.Department);
                 if (filter.OrganizationId != null)
                     queryable = queryable.Where(q => q.OrganizationId, filter.OrganizationId);
+                if (filter.ProvinceId != null)
+                    queryable = queryable.Where(q => q.ProvinceId, filter.ProvinceId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -153,6 +157,9 @@ namespace DMS.Repositories
                         case AppUserOrder.Organization:
                             query = query.OrderBy(q => q.OrganizationId);
                             break;
+                        case AppUserOrder.Province:
+                            query = query.OrderBy(q => q.ProvinceId);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -197,6 +204,9 @@ namespace DMS.Repositories
                         case AppUserOrder.Organization:
                             query = query.OrderByDescending(q => q.OrganizationId);
                             break;
+                        case AppUserOrder.Province:
+                            query = query.OrderByDescending(q => q.ProvinceId);
+                            break;
                     }
                     break;
             }
@@ -222,6 +232,7 @@ namespace DMS.Repositories
                 Position = filter.Selects.Contains(AppUserSelect.Position) ? q.Position : default(string),
                 Department = filter.Selects.Contains(AppUserSelect.Department) ? q.Department : default(string),
                 OrganizationId = filter.Selects.Contains(AppUserSelect.Organization) ? q.OrganizationId : default(long),
+                ProvinceId = filter.Selects.Contains(AppUserSelect.Province) ? q.ProvinceId : default(long),
                 Organization = filter.Selects.Contains(AppUserSelect.Organization) && q.Organization != null ? new Organization
                 {
                     Id = q.Organization.Id,
@@ -235,6 +246,14 @@ namespace DMS.Repositories
                     Longitude = q.Organization.Longitude,
                     StatusId = q.Organization.StatusId,
                     Level = q.Organization.Level
+                } : null,
+                Province = filter.Selects.Contains(AppUserSelect.Province) && q.Province != null ? new Province
+                {
+                    Id = q.Province.Id,
+                    Code = q.Province.Code,
+                    Name = q.Province.Name,
+                    Priority = q.Province.Priority,
+                    StatusId = q.Province.StatusId,
                 } : null,
                 Status = filter.Selects.Contains(AppUserSelect.Status) && q.Status != null ? new Status
                 {
@@ -288,6 +307,7 @@ namespace DMS.Repositories
                 Position = x.Position,
                 Department = x.Department,
                 OrganizationId = x.OrganizationId,
+                ProvinceId = x.ProvinceId,
                 Organization = x.Organization == null ? null : new Organization
                 {
                     Id = x.Organization.Id,
@@ -301,6 +321,14 @@ namespace DMS.Repositories
                     Longitude = x.Organization.Longitude,
                     StatusId = x.Organization.StatusId,
                     Level = x.Organization.Level
+                },
+                Province = x.Province == null ? null : new Province
+                {
+                    Id = x.Province.Id,
+                    Code = x.Province.Code,
+                    Name = x.Province.Name,
+                    Priority = x.Province.Priority,
+                    StatusId = x.Province.StatusId,
                 },
                 Status = x.Status == null ? null : new Status
                 {
