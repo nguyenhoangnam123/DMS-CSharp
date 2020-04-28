@@ -418,10 +418,11 @@ namespace DMS.Rpc.store
             }
 
             Stores = await StoreService.Import(Stores);
-
             List<Store_StoreDTO> Store_StoreDTOs = Stores
                 .Select(c => new Store_StoreDTO(c)).ToList();
-            return Store_StoreDTOs;
+            if (Stores.Any(s => !s.IsValidated))
+                return BadRequest(Store_StoreDTOs);
+            return Ok(Store_StoreDTOs);
         }
 
         [Route(StoreRoute.Export), HttpPost]
