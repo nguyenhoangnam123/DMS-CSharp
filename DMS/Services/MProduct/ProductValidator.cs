@@ -202,6 +202,7 @@ namespace DMS.Services.MProduct
                 {
                     ItemFilter ItemFilter = new ItemFilter
                     {
+                        Id = new IdFilter { NotEqual = item.Id},
                         Code = new StringFilter { Equal = item.Code }
                     };
 
@@ -213,6 +214,7 @@ namespace DMS.Services.MProduct
 
                     ItemFilter = new ItemFilter
                     {
+                        Id = new IdFilter { NotEqual = item.Id },
                         Name = new StringFilter { Equal = item.Name }
                     };
 
@@ -229,7 +231,8 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateVariation(Product Product)
         {
-            if(Product.VariationGroupings != null && Product.VariationGroupings.Any())
+            return Product.IsValidated;
+            if (Product.VariationGroupings != null && Product.VariationGroupings.Any())
             {
                 foreach (var VariationGrouping in Product.VariationGroupings)
                 {
