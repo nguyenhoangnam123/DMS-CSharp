@@ -271,20 +271,24 @@ namespace DMS.Services.MItem
             {
                 ItemFilter subFilter = new ItemFilter();
                 filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ProductId))
-                    subFilter.ProductId = Map(subFilter.ProductId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Code))
-                    subFilter.Code = Map(subFilter.Code, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ScanCode))
-                    subFilter.ScanCode = Map(subFilter.ScanCode, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.SalePrice))
-                    subFilter.SalePrice = Map(subFilter.SalePrice, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.RetailPrice))
-                    subFilter.RetailPrice = Map(subFilter.RetailPrice, currentFilter.Value);
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ProductId))
+                        subFilter.ProductId = Map(subFilter.ProductId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
+                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
+                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ScanCode))
+                        subFilter.ScanCode = Map(subFilter.ScanCode, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.SalePrice))
+                        subFilter.SalePrice = Map(subFilter.SalePrice, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.RetailPrice))
+                        subFilter.RetailPrice = Map(subFilter.RetailPrice, FilterPermissionDefinition);
+                }
             }
             return filter;
         }

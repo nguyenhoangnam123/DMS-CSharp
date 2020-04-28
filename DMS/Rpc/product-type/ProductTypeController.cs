@@ -61,7 +61,6 @@ namespace DMS.Rpc.product_type
                 throw new BindException(ModelState);
 
             ProductTypeFilter ProductTypeFilter = ConvertFilterDTOToFilterEntity(ProductType_ProductTypeFilterDTO);
-            ProductTypeFilter = ProductTypeService.ToFilter(ProductTypeFilter);
             int count = await ProductTypeService.Count(ProductTypeFilter);
             return count;
         }
@@ -73,7 +72,6 @@ namespace DMS.Rpc.product_type
                 throw new BindException(ModelState);
 
             ProductTypeFilter ProductTypeFilter = ConvertFilterDTOToFilterEntity(ProductType_ProductTypeFilterDTO);
-            ProductTypeFilter = ProductTypeService.ToFilter(ProductTypeFilter);
             List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
             List<ProductType_ProductTypeDTO> ProductType_ProductTypeDTOs = ProductTypes
                 .Select(c => new ProductType_ProductTypeDTO(c)).ToList();
@@ -172,7 +170,6 @@ namespace DMS.Rpc.product_type
                 throw new BindException(ModelState);
 
             ProductTypeFilter ProductTypeFilter = ConvertFilterDTOToFilterEntity(ProductType_ProductTypeFilterDTO);
-            ProductTypeFilter = ProductTypeService.ToFilter(ProductTypeFilter);
             DataFile DataFile = await ProductTypeService.Export(ProductTypeFilter);
             return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
             {
@@ -200,7 +197,6 @@ namespace DMS.Rpc.product_type
         private async Task<bool> HasPermission(long Id)
         {
             ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
-            ProductTypeFilter = ProductTypeService.ToFilter(ProductTypeFilter);
             if (Id == 0)
             {
 

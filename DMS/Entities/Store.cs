@@ -31,6 +31,8 @@ namespace DMS.Entities
         public string OwnerEmail { get; set; }
         public long StatusId { get; set; }
         public long StoreStatusId { get; set; }
+        public long? WorkflowDefinitionId { get; set; }
+        public long? RequestStateId { get; set; }
         public District District { get; set; }
         public Organization Organization { get; set; }
         public Store ParentStore { get; set; }
@@ -42,6 +44,8 @@ namespace DMS.Entities
         public StoreStatus StoreStatus { get; set; }
         public Ward Ward { get; set; }
         public List<StoreImageMapping> StoreImageMappings { get; set; }
+        public List<StoreWorkflow> StoreWorkflows { get; set; }
+        public List<StoreWorkflowParameterMapping> StoreWorkflowParameterMappings { get; set; }
 
         public bool Equals(Store other)
         {

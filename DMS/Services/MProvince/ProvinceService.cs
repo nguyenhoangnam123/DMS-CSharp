@@ -17,7 +17,6 @@ namespace DMS.Services.MProvince
         Task<List<Province>> List(ProvinceFilter ProvinceFilter);
         Task<Province> Get(long Id);
         Task<DataFile> Export(ProvinceFilter ProvinceFilter);
-        ProvinceFilter ToFilter(ProvinceFilter ProvinceFilter);
     }
 
     public class ProvinceService : BaseService, IProvinceService
@@ -122,26 +121,6 @@ namespace DMS.Services.MProvince
                 Content = MemoryStream,
             };
             return DataFile;
-        }
-
-        public ProvinceFilter ToFilter(ProvinceFilter filter)
-        {
-            if (filter.OrFilter == null) filter.OrFilter = new List<ProvinceFilter>();
-            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
-            foreach (var currentFilter in CurrentContext.Filters)
-            {
-                ProvinceFilter subFilter = new ProvinceFilter();
-                filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Priority))
-                    subFilter.Priority = Map(subFilter.Priority, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
-            }
-            return filter;
         }
     }
 }

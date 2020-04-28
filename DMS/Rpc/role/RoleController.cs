@@ -3,7 +3,6 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
 using DMS.Services.MMenu;
-using DMS.Services.MPermission;
 using DMS.Services.MRole;
 using DMS.Services.MStatus;
 using System.IO;
@@ -53,21 +52,18 @@ namespace DMS.Rpc.role
         private IAppUserService AppUserService;
         private IMenuService MenuService;
         private IRoleService RoleService;
-        private IPermissionService PermissionService;
         private IStatusService StatusService;
 
         public RoleController(
             IAppUserService AppUserService,
             IMenuService MenuService,
             IRoleService RoleService,
-            IPermissionService PermissionService,
             IStatusService StatusService
         )
         {
             this.AppUserService = AppUserService;
             this.MenuService = MenuService;
             this.RoleService = RoleService;
-            this.PermissionService = PermissionService;
             this.StatusService = StatusService;
         }
 

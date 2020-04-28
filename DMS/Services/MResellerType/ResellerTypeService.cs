@@ -21,7 +21,6 @@ namespace DMS.Services.MResellerType
         Task<ResellerType> Delete(ResellerType ResellerType);
         Task<List<ResellerType>> BulkDelete(List<ResellerType> ResellerTypes);
         Task<List<ResellerType>> Import(List<ResellerType> ResellerTypes);
-        ResellerTypeFilter ToFilter(ResellerTypeFilter ResellerTypeFilter);
     }
 
     public class ResellerTypeService : BaseService, IResellerTypeService
@@ -207,25 +206,5 @@ namespace DMS.Services.MResellerType
                     throw new MessageException(ex.InnerException);
             }
         }     
-        
-        public ResellerTypeFilter ToFilter(ResellerTypeFilter filter)
-        {
-            if (filter.OrFilter == null) filter.OrFilter = new List<ResellerTypeFilter>();
-            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
-            foreach (var currentFilter in CurrentContext.Filters)
-            {
-                ResellerTypeFilter subFilter = new ResellerTypeFilter();
-                filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Code))
-                    subFilter.Code = Map(subFilter.Code, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
-            }
-            return filter;
-        }
     }
 }

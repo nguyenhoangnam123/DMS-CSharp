@@ -70,7 +70,6 @@ namespace DMS.Rpc.unit_of_measure_grouping
                 throw new BindException(ModelState);
 
             UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = ConvertFilterDTOToFilterEntity(UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO);
-            UnitOfMeasureGroupingFilter = UnitOfMeasureGroupingService.ToFilter(UnitOfMeasureGroupingFilter);
             int count = await UnitOfMeasureGroupingService.Count(UnitOfMeasureGroupingFilter);
             return count;
         }
@@ -82,7 +81,6 @@ namespace DMS.Rpc.unit_of_measure_grouping
                 throw new BindException(ModelState);
 
             UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = ConvertFilterDTOToFilterEntity(UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO);
-            UnitOfMeasureGroupingFilter = UnitOfMeasureGroupingService.ToFilter(UnitOfMeasureGroupingFilter);
             List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(UnitOfMeasureGroupingFilter);
             List<UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO> UnitOfMeasureGrouping_UnitOfMeasureGroupingDTOs = UnitOfMeasureGroupings
                 .Select(c => new UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO(c)).ToList();
@@ -183,7 +181,6 @@ namespace DMS.Rpc.unit_of_measure_grouping
             UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = ConvertFilterDTOToFilterEntity(UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO);
             UnitOfMeasureGroupingFilter.Skip = 0;
             UnitOfMeasureGroupingFilter.Take = int.MaxValue;
-            UnitOfMeasureGroupingFilter = UnitOfMeasureGroupingService.ToFilter(UnitOfMeasureGroupingFilter);
 
             List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(UnitOfMeasureGroupingFilter);
             MemoryStream memoryStream = new MemoryStream();
@@ -220,7 +217,6 @@ namespace DMS.Rpc.unit_of_measure_grouping
                 throw new BindException(ModelState);
 
             UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter();
-            UnitOfMeasureGroupingFilter = UnitOfMeasureGroupingService.ToFilter(UnitOfMeasureGroupingFilter);
             UnitOfMeasureGroupingFilter.Id = new IdFilter { In = Ids };
             UnitOfMeasureGroupingFilter.Selects = UnitOfMeasureGroupingSelect.Id;
             UnitOfMeasureGroupingFilter.Skip = 0;
@@ -234,7 +230,6 @@ namespace DMS.Rpc.unit_of_measure_grouping
         private async Task<bool> HasPermission(long Id)
         {
             UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter();
-            UnitOfMeasureGroupingFilter = UnitOfMeasureGroupingService.ToFilter(UnitOfMeasureGroupingFilter);
             if (Id == 0)
             {
 

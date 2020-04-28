@@ -1,10 +1,10 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
 using DMS.Services.MImage;
+using DMS.Services.MWorkflowDefinition;
 using Helpers;
-using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +21,10 @@ namespace DMS.Services.MStore
         Task<Store> Create(Store Store);
         Task<Store> Update(Store Store);
         Task<Store> Delete(Store Store);
+        Task<Store> Start(Store Store);
+        Task<Store> End(Store Store);
+        Task<Store> Approve(Store Store);
+        Task<Store> Reject(Store Store);
         Task<List<Store>> BulkDelete(List<Store> Stores);
         Task<List<Store>> Import(List<Store> Stores);
         StoreFilter ToFilter(StoreFilter StoreFilter);
@@ -32,20 +36,26 @@ namespace DMS.Services.MStore
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
+        private IMailService MailService;
         private IStoreValidator StoreValidator;
+        private IWorkflowDefinitionService WorkflowDefinitionService;
         private IImageService ImageService;
 
         public StoreService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IStoreValidator StoreValidator,
-            IImageService ImageService
+            IImageService ImageService,
+            IMailService MailService,
+            IWorkflowDefinitionService WorkflowDefinitionService,
+            IStoreValidator StoreValidator
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
+            this.MailService = MailService;
+            this.WorkflowDefinitionService = WorkflowDefinitionService;
             this.StoreValidator = StoreValidator;
             this.ImageService = ImageService;
         }
@@ -263,54 +273,240 @@ namespace DMS.Services.MStore
             {
                 StoreFilter subFilter = new StoreFilter();
                 filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Code))
-                    subFilter.Code = Map(subFilter.Code, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ParentStoreId))
-                    subFilter.ParentStoreId = Map(subFilter.ParentStoreId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.OrganizationId))
-                    subFilter.OrganizationId = Map(subFilter.OrganizationId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StoreTypeId))
-                    subFilter.StoreTypeId = Map(subFilter.StoreTypeId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StoreGroupingId))
-                    subFilter.StoreGroupingId = Map(subFilter.StoreGroupingId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ResellerId))
-                    subFilter.ResellerId = Map(subFilter.ResellerId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Telephone))
-                    subFilter.Telephone = Map(subFilter.Telephone, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ProvinceId))
-                    subFilter.ProvinceId = Map(subFilter.ProvinceId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.DistrictId))
-                    subFilter.DistrictId = Map(subFilter.DistrictId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.WardId))
-                    subFilter.WardId = Map(subFilter.WardId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Address))
-                    subFilter.Address = Map(subFilter.Address, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.DeliveryAddress))
-                    subFilter.DeliveryAddress = Map(subFilter.DeliveryAddress, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Latitude))
-                    subFilter.Latitude = Map(subFilter.Latitude, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Longitude))
-                    subFilter.Longitude = Map(subFilter.Longitude, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.DeliveryLatitude))
-                    subFilter.DeliveryLatitude = Map(subFilter.DeliveryLatitude, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.DeliveryLongitude))
-                    subFilter.DeliveryLongitude = Map(subFilter.DeliveryLongitude, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.OwnerName))
-                    subFilter.OwnerName = Map(subFilter.OwnerName, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.OwnerPhone))
-                    subFilter.OwnerPhone = Map(subFilter.OwnerPhone, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.OwnerEmail))
-                    subFilter.OwnerEmail = Map(subFilter.OwnerEmail, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StoreStatusId))
-                    subFilter.StoreStatusId = Map(subFilter.StoreStatusId, currentFilter.Value);
+
             }
             return filter;
+        }
+
+        public async Task<Store> Start(Store Store)
+        {
+            WorkflowDefinition WorkflowDefinition = (await WorkflowDefinitionService.List(new WorkflowDefinitionFilter
+            {
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                OrderBy = WorkflowDefinitionOrder.StartDate,
+                OrderType = OrderType.DESC,
+                Skip = 0,
+                Take = 1,
+                Selects = WorkflowDefinitionSelect.Id,
+                WorkflowTypeId = new IdFilter { Equal = WorkflowTypeEnum.STORE.Id }
+            })).FirstOrDefault();
+
+            if (WorkflowDefinition == null)
+            {
+
+            }
+            else
+            {
+                WorkflowDefinition = await WorkflowDefinitionService.Get(WorkflowDefinition.Id);
+                Store.WorkflowDefinitionId = WorkflowDefinition.Id;
+                Store.RequestStateId = RequestStateEnum.APPROVING.Id;
+                Store.StoreWorkflows = new List<StoreWorkflow>();
+                WorkflowStep Start = null;
+                // tìm điểm bắt đầu của workflow
+                // nút không có ai trỏ đến là nút bắt đầu
+                // trong trường hợp có nhiều nút bắt đầu thì xét có nút nào thuộc các role hiện tại không
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (!WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id) &&
+                        CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
+                    {
+                        Start = WorkflowStep;
+                        break;
+                    }
+                }
+                // khởi tạo trạng thái cho tất cả các nút
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    StoreWorkflow StoreWorkflow = new StoreWorkflow();
+                    Store.StoreWorkflows.Add(StoreWorkflow);
+                    StoreWorkflow.WorkflowStepId = WorkflowStep.Id;
+                    StoreWorkflow.WorkflowStateId = WorkflowStateEnum.NEW.Id;
+                    StoreWorkflow.UpdatedAt = null;
+                    StoreWorkflow.AppUserId = null;
+                    if (Start.Id == WorkflowStep.Id)
+                    {
+                        StoreWorkflow.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
+                    }
+                }
+                Store.StoreWorkflowParameterMappings = new List<StoreWorkflowParameterMapping>();
+                foreach (WorkflowParameter WorkflowParameter in WorkflowDefinition.WorkflowParameters)
+                {
+                    StoreWorkflowParameterMapping StoreWorkflowParameterMapping = new StoreWorkflowParameterMapping();
+                    Store.StoreWorkflowParameterMappings.Add(StoreWorkflowParameterMapping);
+                    StoreWorkflowParameterMapping.WorkflowParameterId = WorkflowParameter.Id;
+                    StoreWorkflowParameterMapping.StoreId = Store.Id;
+                    StoreWorkflowParameterMapping.Value = null;
+                    switch (WorkflowParameter.Name)
+                    {
+                        case nameof(Store.Code):
+                            StoreWorkflowParameterMapping.Value = Store.Code;
+                            break;
+                        case nameof(Store.Name):
+                            StoreWorkflowParameterMapping.Value = Store.Name;
+                            break;
+                        case nameof(Store.StoreTypeId):
+                            StoreWorkflowParameterMapping.Value = Store.StoreTypeId.ToString();
+                            break;
+                    }
+                }
+
+            }
+            return Store;
+        }
+
+        public async Task<Store> Approve(Store Store)
+        {
+            Store = await UOW.StoreRepository.Get(Store.Id);
+            WorkflowDefinition WorkflowDefinition = await WorkflowDefinitionService.Get(Store.WorkflowDefinitionId.Value);
+            // tìm điểm bắt đầu
+            // tìm điểm nhảy tiếp theo
+            // chuyển trạng thái điểm nhảy
+            // gửi mail cho các điểm nhảy có trạng thái thay đổi.
+
+            if (WorkflowDefinition != null && Store.StoreWorkflows != null)
+            {
+                List<WorkflowStep> ToSteps = new List<WorkflowStep>();
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
+                    {
+                        var StartNode = Store.StoreWorkflows
+                            .Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
+                            .Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
+                        StartNode.WorkflowStateId = WorkflowStateEnum.APPROVED.Id;
+                        StartNode.UpdatedAt = StaticParams.DateTimeNow;
+                        StartNode.AppUserId = CurrentContext.UserId;
+
+                        var NextSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.FromStepId == WorkflowStep.Id).Select(x => x.ToStep) ?? new List<WorkflowStep>();
+                        ToSteps.AddRange(NextSteps);
+                    }
+                }
+
+                ToSteps = ToSteps.Distinct().ToList();
+                List<Mail> Mails = new List<Mail>();
+                var NextStepIds = new List<long>();
+                foreach (WorkflowStep WorkflowStep in ToSteps)
+                {
+                    var FromSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.ToStepId == WorkflowStep.Id).Select(x => x.FromStep) ?? new List<WorkflowStep>();
+                    var FromNodes = new List<StoreWorkflow>();
+                    foreach (var FromStep in FromSteps)
+                    {
+                        var FromNode = Store.StoreWorkflows.Where(x => x.WorkflowStepId == FromStep.Id).FirstOrDefault();
+                        FromNodes.Add(FromNode);
+                    }
+
+                    if (FromNodes.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
+                    {
+                        var StoreWorkflow = Store.StoreWorkflows.Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
+                        StoreWorkflow.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
+                        StoreWorkflow.UpdatedAt = null;
+                        StoreWorkflow.AppUserId = null;
+                        NextStepIds.Add(WorkflowStep.Id);
+                    }
+                }
+
+                List<WorkflowDirection> WorkflowDirections = WorkflowDefinition.WorkflowDirections.Where(x => NextStepIds.Contains(x.ToStepId)).ToList();
+                foreach (var WorkflowDirection in WorkflowDirections)
+                {
+                    //gửi mail
+                    AppUserFilter AppUserFilter = new AppUserFilter
+                    {
+                        RoleId = new IdFilter { Equal = WorkflowDirection.ToStep.RoleId },
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = AppUserSelect.Email
+                    };
+                    List<AppUser> appUsers = await UOW.AppUserRepository.List(AppUserFilter);
+                    List<string> recipients = appUsers.Select(au => au.Email).Distinct().ToList();
+
+                    Mail MailForCreator = new Mail
+                    {
+                        Recipients = recipients,
+                        Subject = WorkflowDirection.SubjectMailForCreator,
+                        Body = WorkflowDirection.BodyMailForCreator
+                    };
+
+                    Mail MailForNextStep = new Mail
+                    {
+                        Recipients = recipients,
+                        Subject = WorkflowDirection.SubjectMailForNextStep,
+                        Body = WorkflowDirection.BodyMailForNextStep
+                    };
+                    Mails.Add(MailForCreator);
+                    Mails.Add(MailForNextStep);
+                }
+                Mails.Distinct();
+                Mails.ForEach(x => MailService.Send(x));
+            }
+
+            return Store;
+        }
+
+        public async Task<Store> Reject(Store Store)
+        {
+            Store = await UOW.StoreRepository.Get(Store.Id);
+            WorkflowDefinition WorkflowDefinition = await WorkflowDefinitionService.Get(Store.WorkflowDefinitionId.Value);
+
+            if (WorkflowDefinition != null && Store.StoreWorkflows != null)
+            {
+                List<WorkflowStep> ToSteps = new List<WorkflowStep>();
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
+                    {
+                        var StartNode = Store.StoreWorkflows
+                            .Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
+                            .Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
+                        StartNode.WorkflowStateId = WorkflowStateEnum.REJECTED.Id;
+                        StartNode.UpdatedAt = StaticParams.DateTimeNow;
+                        StartNode.AppUserId = CurrentContext.UserId;
+                    }
+                }
+
+                WorkflowStep StartStep = null;
+                // tìm điểm bắt đầu của workflow
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (!WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id) &&
+                        CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
+                    {
+                        StartStep = WorkflowStep;
+                        break;
+                    }
+                }
+
+                //tìm node đầu tiên để gửi mail thông báo yêu cầu đã bị từ chối
+                if (StartStep != null)
+                {
+                    StoreWorkflow StartNode = Store.StoreWorkflows.Where(x => x.WorkflowStepId == StartStep.Id).FirstOrDefault();
+                    if (StartNode != null)
+                    {
+                        //gửi mail
+                    }
+                }
+            }
+
+            return Store;
+        }
+
+        public async Task<Store> End(Store Store)
+        {
+            Store = await UOW.StoreRepository.Get(Store.Id);
+            WorkflowDefinition WorkflowDefinition = await WorkflowDefinitionService.Get(Store.WorkflowDefinitionId.Value);
+
+            if (WorkflowDefinition != null && Store.StoreWorkflows != null)
+            {
+                if (Store.StoreWorkflows.Any(x => x.WorkflowStateId == WorkflowStateEnum.REJECTED.Id))
+                {
+                    Store.RequestStateId = RequestStateEnum.REJECTED.Id;
+                }
+                else if (Store.StoreWorkflows.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
+                {
+                    Store.RequestStateId = RequestStateEnum.APPROVED.Id;
+                }
+            }
+
+            return Store;
         }
 
         public async Task<Image> SaveImage(Image Image)

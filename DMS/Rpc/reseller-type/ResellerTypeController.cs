@@ -63,7 +63,6 @@ namespace DMS.Rpc.reseller_type
                 throw new BindException(ModelState);
 
             ResellerTypeFilter ResellerTypeFilter = ConvertFilterDTOToFilterEntity(ResellerType_ResellerTypeFilterDTO);
-            ResellerTypeFilter = ResellerTypeService.ToFilter(ResellerTypeFilter);
             int count = await ResellerTypeService.Count(ResellerTypeFilter);
             return count;
         }
@@ -75,7 +74,6 @@ namespace DMS.Rpc.reseller_type
                 throw new BindException(ModelState);
 
             ResellerTypeFilter ResellerTypeFilter = ConvertFilterDTOToFilterEntity(ResellerType_ResellerTypeFilterDTO);
-            ResellerTypeFilter = ResellerTypeService.ToFilter(ResellerTypeFilter);
             List<ResellerType> ResellerTypes = await ResellerTypeService.List(ResellerTypeFilter);
             List<ResellerType_ResellerTypeDTO> ResellerType_ResellerTypeDTOs = ResellerTypes
                 .Select(c => new ResellerType_ResellerTypeDTO(c)).ToList();
@@ -156,7 +154,6 @@ namespace DMS.Rpc.reseller_type
                 throw new BindException(ModelState);
 
             ResellerTypeFilter ResellerTypeFilter = new ResellerTypeFilter();
-            ResellerTypeFilter = ResellerTypeService.ToFilter(ResellerTypeFilter);
             ResellerTypeFilter.Id = new IdFilter { In = Ids };
             ResellerTypeFilter.Selects = ResellerTypeSelect.Id;
             ResellerTypeFilter.Skip = 0;
@@ -238,7 +235,6 @@ namespace DMS.Rpc.reseller_type
             var ResellerTypeFilter = ConvertFilterDTOToFilterEntity(ResellerType_ResellerTypeFilterDTO);
             ResellerTypeFilter.Skip = 0;
             ResellerTypeFilter.Take = int.MaxValue;
-            ResellerTypeFilter = ResellerTypeService.ToFilter(ResellerTypeFilter);
 
             List<ResellerType> ResellerTypes = await ResellerTypeService.List(ResellerTypeFilter);
             MemoryStream memoryStream = new MemoryStream();
@@ -275,7 +271,6 @@ namespace DMS.Rpc.reseller_type
         private async Task<bool> HasPermission(long Id)
         {
             ResellerTypeFilter ResellerTypeFilter = new ResellerTypeFilter();
-            ResellerTypeFilter = ResellerTypeService.ToFilter(ResellerTypeFilter);
             if (Id == 0)
             {
 

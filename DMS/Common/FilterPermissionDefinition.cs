@@ -66,6 +66,29 @@ namespace Common
             this.Name = name;
             this.Type = type;
         }
+
+        public FilterPermissionDefinition(string name, string type)
+        {
+            this.Name = name;
+            switch(type)
+            {
+                case nameof(FieldType.ID):
+                    this.Type = FieldType.ID;
+                    break;
+                case nameof(FieldType.LONG):
+                    this.Type = FieldType.LONG;
+                    break;
+                case nameof(FieldType.DECIMAL):
+                    this.Type = FieldType.DECIMAL;
+                    break;
+                case nameof(FieldType.STRING):
+                    this.Type = FieldType.STRING;
+                    break;
+                case nameof(FieldType.DATE):
+                    this.Type = FieldType.DATE;
+                    break;
+            }
+        }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]

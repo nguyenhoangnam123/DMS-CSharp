@@ -54,6 +54,16 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Department, filter.Department);
             if (filter.OrganizationId != null)
                 query = query.Where(q => q.OrganizationId, filter.OrganizationId);
+            if (filter.RoleId != null)
+            {
+                if (filter.RoleId.Equal.HasValue)
+                {
+                    query = from q in query
+                            join ar in DataContext.AppUserRoleMapping on q.Id equals ar.AppUserId
+                            where ar.RoleId == filter.RoleId.Equal.Value
+                            select q;
+                }
+            }
             query = OrFilter(query, filter);
             return query;
         }

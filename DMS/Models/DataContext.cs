@@ -1171,8 +1171,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Status)
@@ -1258,8 +1256,6 @@ namespace DMS.Models
                 entity.Property(e => e.OwnerName).HasMaxLength(50);
 
                 entity.Property(e => e.Phone).HasMaxLength(50);
-
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.TaxCode).HasMaxLength(500);
 
@@ -1369,8 +1365,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
-
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 

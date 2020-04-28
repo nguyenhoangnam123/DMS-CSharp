@@ -61,7 +61,6 @@ namespace DMS.Rpc.district
                 throw new BindException(ModelState);
 
             DistrictFilter DistrictFilter = ConvertFilterDTOToFilterEntity(District_DistrictFilterDTO);
-            DistrictFilter = DistrictService.ToFilter(DistrictFilter);
             int count = await DistrictService.Count(DistrictFilter);
             return count;
         }
@@ -73,7 +72,6 @@ namespace DMS.Rpc.district
                 throw new BindException(ModelState);
 
             DistrictFilter DistrictFilter = ConvertFilterDTOToFilterEntity(District_DistrictFilterDTO);
-            DistrictFilter = DistrictService.ToFilter(DistrictFilter);
             List<District> Districts = await DistrictService.List(DistrictFilter);
             List<District_DistrictDTO> District_DistrictDTOs = Districts
                 .Select(c => new District_DistrictDTO(c)).ToList();
@@ -100,7 +98,6 @@ namespace DMS.Rpc.district
                 throw new BindException(ModelState);
 
             DistrictFilter DistrictFilter = ConvertFilterDTOToFilterEntity(District_DistrictFilterDTO);
-            DistrictFilter = DistrictService.ToFilter(DistrictFilter);
             DataFile DataFile = await DistrictService.Export(DistrictFilter);
             return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
             {
@@ -111,7 +108,6 @@ namespace DMS.Rpc.district
         private async Task<bool> HasPermission(long Id)
         {
             DistrictFilter DistrictFilter = new DistrictFilter();
-            DistrictFilter = DistrictService.ToFilter(DistrictFilter);
             if (Id == 0)
             {
 

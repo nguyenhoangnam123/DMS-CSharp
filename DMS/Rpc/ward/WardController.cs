@@ -61,7 +61,6 @@ namespace DMS.Rpc.ward
                 throw new BindException(ModelState);
 
             WardFilter WardFilter = ConvertFilterDTOToFilterEntity(Ward_WardFilterDTO);
-            WardFilter = WardService.ToFilter(WardFilter);
             int count = await WardService.Count(WardFilter);
             return count;
         }
@@ -73,7 +72,6 @@ namespace DMS.Rpc.ward
                 throw new BindException(ModelState);
 
             WardFilter WardFilter = ConvertFilterDTOToFilterEntity(Ward_WardFilterDTO);
-            WardFilter = WardService.ToFilter(WardFilter);
             List<Ward> Wards = await WardService.List(WardFilter);
             List<Ward_WardDTO> Ward_WardDTOs = Wards
                 .Select(c => new Ward_WardDTO(c)).ToList();
@@ -100,7 +98,6 @@ namespace DMS.Rpc.ward
                 throw new BindException(ModelState);
 
             WardFilter WardFilter = ConvertFilterDTOToFilterEntity(Ward_WardFilterDTO);
-            WardFilter = WardService.ToFilter(WardFilter);
             DataFile DataFile = await WardService.Export(WardFilter);
             return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
             {
@@ -110,7 +107,6 @@ namespace DMS.Rpc.ward
         private async Task<bool> HasPermission(long Id)
         {
             WardFilter WardFilter = new WardFilter();
-            WardFilter = WardService.ToFilter(WardFilter);
             if (Id == 0)
             {
 

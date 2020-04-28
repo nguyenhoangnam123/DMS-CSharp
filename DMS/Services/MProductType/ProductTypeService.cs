@@ -22,7 +22,6 @@ namespace DMS.Services.MProductType
         Task<List<ProductType>> BulkDelete(List<ProductType> ProductTypes);
         Task<List<ProductType>> Import(DataFile DataFile);
         Task<DataFile> Export(ProductTypeFilter ProductTypeFilter);
-        ProductTypeFilter ToFilter(ProductTypeFilter ProductTypeFilter);
     }
 
     public class ProductTypeService : BaseService, IProductTypeService
@@ -285,30 +284,6 @@ namespace DMS.Services.MProductType
                 Content = MemoryStream,
             };
             return DataFile;
-        }
-
-        public ProductTypeFilter ToFilter(ProductTypeFilter filter)
-        {
-            if (filter.OrFilter == null) filter.OrFilter = new List<ProductTypeFilter>();
-            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
-            foreach (var currentFilter in CurrentContext.Filters)
-            {
-                ProductTypeFilter subFilter = new ProductTypeFilter();
-                filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Code))
-                    subFilter.Code = Map(subFilter.Code, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Description))
-                    subFilter.Description = Map(subFilter.Description, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.UpdatedTime))
-                    subFilter.UpdatedTime = Map(subFilter.UpdatedTime, currentFilter.Value);
-            }
-            return filter;
         }
     }
 }

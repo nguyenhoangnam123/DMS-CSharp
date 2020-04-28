@@ -17,7 +17,6 @@ namespace DMS.Services.MDistrict
         Task<List<District>> List(DistrictFilter DistrictFilter);
         Task<District> Get(long Id);
         Task<DataFile> Export(DistrictFilter DistrictFilter);
-        DistrictFilter ToFilter(DistrictFilter DistrictFilter);
     }
 
     public class DistrictService : BaseService, IDistrictService
@@ -125,28 +124,6 @@ namespace DMS.Services.MDistrict
                 Content = MemoryStream,
             };
             return DataFile;
-        }
-
-        public DistrictFilter ToFilter(DistrictFilter filter)
-        {
-            if (filter.OrFilter == null) filter.OrFilter = new List<DistrictFilter>();
-            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
-            foreach (var currentFilter in CurrentContext.Filters)
-            {
-                DistrictFilter subFilter = new DistrictFilter();
-                filter.OrFilter.Add(subFilter);
-                if (currentFilter.Value.Name == nameof(subFilter.Id))
-                    subFilter.Id = Map(subFilter.Id, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Name))
-                    subFilter.Name = Map(subFilter.Name, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.Priority))
-                    subFilter.Priority = Map(subFilter.Priority, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.ProvinceId))
-                    subFilter.ProvinceId = Map(subFilter.ProvinceId, currentFilter.Value);
-                if (currentFilter.Value.Name == nameof(subFilter.StatusId))
-                    subFilter.StatusId = Map(subFilter.StatusId, currentFilter.Value);
-            }
-            return filter;
         }
     }
 }
