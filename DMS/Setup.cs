@@ -242,7 +242,6 @@ namespace DMS
                 }
             }
             DataContext.BulkMerge(fields);
-            string sql = DataContext.PermissionPageMapping.Where(ppm => ppm.Page.IsDeleted).ToSql();
             DataContext.PermissionPageMapping.Where(ppm => ppm.Page.IsDeleted).DeleteFromQuery();
             DataContext.Page.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.PermissionFieldMapping.Where(pd => pd.Field.IsDeleted).DeleteFromQuery();
@@ -258,6 +257,7 @@ namespace DMS
             InitStoreStatusEnum();
             InitWorkflowStateEnum();
             InitWorkflowTypeEnum();
+            InitRequestStateEnum();
             DataContext.SaveChanges();
         }
 
