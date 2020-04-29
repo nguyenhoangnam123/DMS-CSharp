@@ -134,6 +134,7 @@ namespace Common
             string path = string.Format("{0}.{1}.{2}", DataPath, Key, Value.ToString());
             JToken token = ErrorResource.GetValueOrDefault(file)?.SelectToken(path);
             string content = token == null ? Value.ToString() : token.ToString();
+            Key = ToCamel(Key);
             if (Errors.ContainsKey(Key))
             {
                 if (!Errors[Key].Contains(content))
@@ -141,6 +142,11 @@ namespace Common
             }
             else
                 Errors.Add(Key, content);
+        }
+
+        private string ToCamel(string name)
+        {
+            return Char.ToLowerInvariant(name[0]) + name.Substring(1);
         }
     }
 
