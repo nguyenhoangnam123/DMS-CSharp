@@ -293,6 +293,7 @@ namespace DMS.Rpc.brand
             Brand.Name = Brand_BrandDTO.Name;
             Brand.Description = Brand_BrandDTO.Description;
             Brand.StatusId = Brand_BrandDTO.StatusId;
+            Brand.UpdatedAt = Brand_BrandDTO.UpdatedAt;
             Brand.Status = Brand_BrandDTO.Status == null ? null : new Status
             {
                 Id = Brand_BrandDTO.Status.Id,
@@ -317,6 +318,7 @@ namespace DMS.Rpc.brand
             BrandFilter.Name = Brand_BrandFilterDTO.Name;
             BrandFilter.Description = Brand_BrandFilterDTO.Description;
             BrandFilter.StatusId = Brand_BrandFilterDTO.StatusId;
+            BrandFilter.UpdatedAt = Brand_BrandFilterDTO.UpdatedAt;
             return BrandFilter;
         }
 

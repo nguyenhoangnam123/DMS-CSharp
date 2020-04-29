@@ -1284,6 +1284,7 @@ namespace DMS.Rpc.product
             BrandFilter.Name = Product_BrandFilterDTO.Name;
             BrandFilter.Description = Product_BrandFilterDTO.Description;
             BrandFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            BrandFilter.UpdatedAt = Product_BrandFilterDTO.UpdatedAt;
 
             List<Brand> Brands = await BrandService.List(BrandFilter);
             List<Product_BrandDTO> Product_BrandDTOs = Brands
