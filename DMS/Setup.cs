@@ -68,11 +68,11 @@ namespace DMS
                 DataContext.SaveChanges();
             }
 
-            List<MenuDAO> Menus = DataContext.Menu
+            List<MenuDAO> Menus = DataContext.Menu.AsNoTracking()
                 .Include(v => v.Pages)
                 .Include(v => v.Fields)
                 .ToList();
-            List<PermissionDAO> permissions = DataContext.Permission
+            List<PermissionDAO> permissions = DataContext.Permission.AsNoTracking()
                 .Include(p => p.PermissionFieldMappings)
                 .Include(p => p.PermissionPageMappings)
                 .ToList();
@@ -156,7 +156,7 @@ namespace DMS
                .Where(x => typeof(Root).IsAssignableFrom(x) && x.IsClass)
                .ToList();
 
-            List<MenuDAO> Menus = DataContext.Menu.ToList();
+            List<MenuDAO> Menus = DataContext.Menu.AsNoTracking().ToList();
             Menus.ForEach(m => m.IsDeleted = true);
             foreach (Type type in routeTypes)
             {
@@ -177,8 +177,8 @@ namespace DMS
                 }
             }
             DataContext.BulkMerge(Menus);
-            Menus = DataContext.Menu.ToList();
-            List<PageDAO> pages = DataContext.Page.OrderBy(p => p.Path).ToList();
+            Menus = DataContext.Menu.AsNoTracking().ToList();
+            List<PageDAO> pages = DataContext.Page.AsNoTracking().OrderBy(p => p.Path).ToList();
             pages.ForEach(p => p.IsDeleted = true);
             foreach (Type type in routeTypes)
             {
@@ -208,7 +208,7 @@ namespace DMS
                 }
             }
             DataContext.BulkMerge(pages);
-            List<FieldDAO> fields = DataContext.Field.ToList();
+            List<FieldDAO> fields = DataContext.Field.AsNoTracking().ToList();
             fields.ForEach(p => p.IsDeleted = true);
             foreach (Type type in routeTypes)
             {
