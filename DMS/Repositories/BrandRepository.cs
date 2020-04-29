@@ -44,8 +44,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Description, filter.Description);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
-            if (filter.UpdatedAt != null)
-                query = query.Where(q => q.UpdatedAt, filter.UpdatedAt);
+            if (filter.UpdateTime != null)
+                query = query.Where(q => q.UpdatedAt, filter.UpdateTime);
             query = OrFilter(query, filter);
             return query;
         }
@@ -68,8 +68,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Description, filter.Description);
                 if (filter.StatusId != null)
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.UpdatedAt != null)
-                    queryable = queryable.Where(q => q.UpdatedAt, filter.UpdatedAt);
+                if (filter.UpdateTime != null)
+                    queryable = queryable.Where(q => q.UpdatedAt, filter.UpdateTime);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -97,7 +97,7 @@ namespace DMS.Repositories
                         case BrandOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
                             break;
-                        case BrandOrder.UpdatedAt:
+                        case BrandOrder.UpdateTime:
                             query = query.OrderBy(q => q.UpdatedAt);
                             break;
                     }
@@ -120,7 +120,7 @@ namespace DMS.Repositories
                         case BrandOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
                             break;
-                        case BrandOrder.UpdatedAt:
+                        case BrandOrder.UpdateTime:
                             query = query.OrderByDescending(q => q.UpdatedAt);
                             break;
                     }
@@ -139,7 +139,7 @@ namespace DMS.Repositories
                 Name = filter.Selects.Contains(BrandSelect.Name) ? q.Name : default(string),
                 Description = filter.Selects.Contains(BrandSelect.Description) ? q.Description : default(string),
                 StatusId = filter.Selects.Contains(BrandSelect.Status) ? q.StatusId : default(long),
-                UpdatedAt = filter.Selects.Contains(BrandSelect.UpdatedAt) ? q.UpdatedAt : default(DateTime),
+                UpdateTime = filter.Selects.Contains(BrandSelect.UpdateTime) ? q.UpdatedAt : default(DateTime),
                 Status = filter.Selects.Contains(BrandSelect.Status) && q.Status != null ? new Status
                 {
                     Id = q.Status.Id,
@@ -177,7 +177,7 @@ namespace DMS.Repositories
                 Name = x.Name,
                 Description = x.Description,
                 StatusId = x.StatusId,
-                UpdatedAt = x.UpdatedAt,
+                UpdateTime = x.UpdatedAt,
                 Status = x.Status == null ? null : new Status
                 {
                     Id = x.Status.Id,

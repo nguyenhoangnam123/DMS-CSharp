@@ -11,7 +11,7 @@ namespace DMS.Rpc.brand
         public string Name { get; set; }
         public string Description { get; set; }
         public long StatusId { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime UpdateTime { get; set; }
         public Brand_StatusDTO Status { get; set; }
         public Brand_BrandDTO() { }
         public Brand_BrandDTO(Brand Brand)
@@ -21,7 +21,7 @@ namespace DMS.Rpc.brand
             this.Name = Brand.Name;
             this.Description = Brand.Description;
             this.StatusId = Brand.StatusId;
-            this.UpdatedAt = Brand.UpdatedAt;
+            this.UpdateTime = Brand.UpdateTime;
             this.Status = Brand.Status == null ? null : new Brand_StatusDTO(Brand.Status);
             this.Errors = Brand.Errors;
         }
@@ -34,7 +34,7 @@ namespace DMS.Rpc.brand
         public StringFilter Name { get; set; }
         public StringFilter Description { get; set; }
         public IdFilter StatusId { get; set; }
-        public DateFilter UpdatedAt { get; set; }
+        public DateFilter UpdateTime { get; set; }
         public BrandOrder OrderBy { get; set; }
     }
 }

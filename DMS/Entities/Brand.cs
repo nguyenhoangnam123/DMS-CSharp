@@ -13,7 +13,7 @@ namespace DMS.Entities
         public string Name { get; set; }
         public string Description { get; set; }
         public long StatusId { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime UpdateTime { get; set; }
         public Status Status { get; set; }
 
         public bool Equals(Brand other)
@@ -33,7 +33,7 @@ namespace DMS.Entities
         public StringFilter Name { get; set; }
         public StringFilter Description { get; set; }
         public IdFilter StatusId { get; set; }
-        public DateFilter UpdatedAt { get; set; }
+        public DateFilter UpdateTime { get; set; }
         public List<BrandFilter> OrFilter { get; set; }
         public BrandOrder OrderBy { get; set; }
         public BrandSelect Selects { get; set; }
@@ -47,7 +47,7 @@ namespace DMS.Entities
         Name = 2,
         Description = 3,
         Status = 4,
-        UpdatedAt = 5
+        UpdateTime = 5
     }
 
     [Flags]
@@ -59,6 +59,6 @@ namespace DMS.Entities
         Name = E._2,
         Description = E._3,
         Status = E._4,
-        UpdatedAt = E._5
+        UpdateTime = E._5
     }
 }
