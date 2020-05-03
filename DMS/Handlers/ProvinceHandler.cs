@@ -45,7 +45,7 @@ namespace DMS.Handlers
                         if (EventMessage != null)
                             Provinces.Add(EventMessage.Content);
                     }
-                    context.Province.BulkMerge(Provinces);
+                    context.BulkMerge<ProvinceDAO>(Provinces);
                     break;
             }
             return true;

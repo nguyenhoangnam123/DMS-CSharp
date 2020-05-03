@@ -47,7 +47,7 @@ namespace DMS.Handlers
                         if (EventMessage != null)
                             AppUsers.Add(EventMessage.Content);
                     }
-                    context.AppUser.BulkMerge(AppUsers);
+                    context.BulkMerge<AppUserDAO>(AppUsers);
                     break;
             }
             return true;

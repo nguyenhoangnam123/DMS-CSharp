@@ -45,7 +45,7 @@ namespace DMS.Handlers
                         if (EventMessage != null)
                             Wards.Add(EventMessage.Content);
                     }
-                    context.Ward.BulkMerge(Wards);
+                    context.BulkMerge<WardDAO>(Wards);
                     break;
             }
             return true;

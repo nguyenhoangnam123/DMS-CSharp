@@ -45,7 +45,7 @@ namespace DMS.Handlers
                         if (EventMessage != null)
                             Districts.Add(EventMessage.Content);
                     }
-                    context.District.BulkMerge(Districts);
+                    context.BulkMerge<DistrictDAO>(Districts);
                     break;
             }
             return true;

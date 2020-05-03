@@ -45,7 +45,7 @@ namespace DMS.Handlers
                         if (EventMessage != null)
                             Organizations.Add(EventMessage.Content);
                     }
-                    context.Organization.BulkMerge(Organizations);
+                    context.BulkMerge<OrganizationDAO>(Organizations);
                     break;
             }
             return true;
