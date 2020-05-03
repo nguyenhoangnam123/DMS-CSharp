@@ -1,38 +1,152 @@
-﻿using Common;
-using DMS.Entities;
-using DMS.Enums;
-using DMS.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Common;
+using DMS.Enums;
+using DMS.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace DMS
+namespace DMS.Rpc
 {
-    public class Setup
+    public class SetupController : ControllerBase
     {
-        private readonly DataContext DataContext;
-        public Setup(IConfiguration Configuration)
+        private DataContext DataContext;
+        public SetupController(DataContext DataContext)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
-            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DataContext"));
-            DataContext = new DataContext(optionsBuilder.Options);
-            DataContext.Database.Migrate();
-            InitEnum();
-            Init();
+            this.DataContext = DataContext;
         }
 
-        private void Init()
+        [HttpGet, Route("rpc/dms/setup/init")]
+        public ActionResult Init()
         {
+            InitEnum();
             InitRoute();
+            InitAdmin();
+            return Ok();
+        }
 
+        [HttpGet, Route("rpc/dms/setup/init-route")]
+        public ActionResult InitRoute()
+        {
+            List<Type> routeTypes = typeof(SetupController).Assembly.GetTypes()
+               .Where(x => typeof(Root).IsAssignableFrom(x) && x.IsClass)
+               .ToList();
+
+            List<MenuDAO> Menus = DataContext.Menu.AsNoTracking().ToList();
+            Menus.ForEach(m => m.IsDeleted = true);
+            foreach (Type type in routeTypes)
+            {
+                MenuDAO Menu = Menus.Where(m => m.Name == type.Name).FirstOrDefault();
+                if (Menu == null)
+                {
+                    Menu = new MenuDAO
+                    {
+                        Code = type.Name,
+                        Name = type.Name,
+                        IsDeleted = false,
+                    };
+                    Menus.Add(Menu);
+                }
+                else
+                {
+                    Menu.IsDeleted = false;
+                }
+            }
+            DataContext.BulkMerge(Menus);
+            Menus = DataContext.Menu.AsNoTracking().ToList();
+            List<PageDAO> pages = DataContext.Page.AsNoTracking().OrderBy(p => p.Path).ToList();
+            pages.ForEach(p => p.IsDeleted = true);
+            foreach (Type type in routeTypes)
+            {
+                MenuDAO Menu = Menus.Where(m => m.Code == type.Name).FirstOrDefault();
+                var values = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(string))
+                .Select(x => (string)x.GetRawConstantValue())
+                .ToList();
+                foreach (string value in values)
+                {
+                    PageDAO page = pages.Where(p => p.Path == value).FirstOrDefault();
+                    if (page == null)
+                    {
+                        page = new PageDAO
+                        {
+                            Name = value,
+                            Path = value,
+                            IsDeleted = false,
+                            MenuId = Menu.Id,
+                        };
+                        pages.Add(page);
+                    }
+                    else
+                    {
+                        page.IsDeleted = false;
+                    }
+                }
+            }
+            DataContext.BulkMerge(pages);
+            List<FieldDAO> fields = DataContext.Field.AsNoTracking().ToList();
+            fields.ForEach(p => p.IsDeleted = true);
+            foreach (Type type in routeTypes)
+            {
+                MenuDAO Menu = Menus.Where(m => m.Code == type.Name).FirstOrDefault();
+                var value = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, FieldType>))
+                .Select(x => (Dictionary<string, FieldType>)x.GetValue(x))
+                .FirstOrDefault();
+                if (value == null)
+                    continue;
+                foreach (var pair in value)
+                {
+                    FieldDAO field = fields
+                        .Where(p => p.MenuId == Menu.Id && p.Name == pair.Key)
+                        .FirstOrDefault();
+                    if (field == null)
+                    {
+                        field = new FieldDAO
+                        {
+                            MenuId = Menu.Id,
+                            Name = pair.Key,
+                            Type = pair.Value.ToString(),
+                            IsDeleted = false,
+                        };
+                        fields.Add(field);
+                    }
+                    else
+                    {
+                        field.IsDeleted = false;
+                    }
+                }
+            }
+            DataContext.BulkMerge(fields);
+            DataContext.PermissionPageMapping.Where(ppm => ppm.Page.IsDeleted).DeleteFromQuery();
+            DataContext.Page.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
+            DataContext.PermissionFieldMapping.Where(pd => pd.Field.IsDeleted).DeleteFromQuery();
+            DataContext.Field.Where(pf => pf.IsDeleted || pf.Menu.IsDeleted).DeleteFromQuery();
+            DataContext.Permission.Where(p => p.Menu.IsDeleted).DeleteFromQuery();
+            DataContext.Menu.Where(v => v.IsDeleted).DeleteFromQuery();
+            return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/init-enum")]
+        public ActionResult InitEnum()
+        {
+            InitStatusEnum();
+            InitResellerStatusEnum();
+            InitStoreStatusEnum();
+            InitWorkflowStateEnum();
+            InitWorkflowTypeEnum();
+            InitRequestStateEnum();
+            DataContext.SaveChanges();
+            return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/init-admin")]
+        public ActionResult InitAdmin()
+        {
             RoleDAO Admin = DataContext.Role
                .Where(r => r.Name == "ADMIN")
                .FirstOrDefault();
@@ -51,7 +165,7 @@ namespace DMS
                 .FirstOrDefault();
             if (AppUser == null)
             {
-                return;
+                return Ok();
             }
 
             AppUserRoleMappingDAO AppUserRoleMappingDAO = DataContext.AppUserRoleMapping
@@ -148,117 +262,7 @@ namespace DMS
             DataContext.PermissionFieldMapping.BulkMerge(permissionFieldMappings);
             DataContext.PermissionPageMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
             DataContext.PermissionPageMapping.BulkMerge(permissionPageMappings);
-        }
-
-        private void InitRoute()
-        {
-            List<Type> routeTypes = typeof(Setup).Assembly.GetTypes()
-               .Where(x => typeof(Root).IsAssignableFrom(x) && x.IsClass)
-               .ToList();
-
-            List<MenuDAO> Menus = DataContext.Menu.AsNoTracking().ToList();
-            Menus.ForEach(m => m.IsDeleted = true);
-            foreach (Type type in routeTypes)
-            {
-                MenuDAO Menu = Menus.Where(m => m.Name == type.Name).FirstOrDefault();
-                if (Menu == null)
-                {
-                    Menu = new MenuDAO
-                    {
-                        Code = type.Name,
-                        Name = type.Name,
-                        IsDeleted = false,
-                    };
-                    Menus.Add(Menu);
-                }
-                else
-                {
-                    Menu.IsDeleted = false;
-                }
-            }
-            DataContext.BulkMerge(Menus);
-            Menus = DataContext.Menu.AsNoTracking().ToList();
-            List<PageDAO> pages = DataContext.Page.AsNoTracking().OrderBy(p => p.Path).ToList();
-            pages.ForEach(p => p.IsDeleted = true);
-            foreach (Type type in routeTypes)
-            {
-                MenuDAO Menu = Menus.Where(m => m.Code == type.Name).FirstOrDefault();
-                var values = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-                .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(string))
-                .Select(x => (string)x.GetRawConstantValue())
-                .ToList();
-                foreach (string value in values)
-                {
-                    PageDAO page = pages.Where(p => p.Path == value).FirstOrDefault();
-                    if (page == null)
-                    {
-                        page = new PageDAO
-                        {
-                            Name = value,
-                            Path = value,
-                            IsDeleted = false,
-                            MenuId = Menu.Id,
-                        };
-                        pages.Add(page);
-                    }
-                    else
-                    {
-                        page.IsDeleted = false;
-                    }
-                }
-            }
-            DataContext.BulkMerge(pages);
-            List<FieldDAO> fields = DataContext.Field.AsNoTracking().ToList();
-            fields.ForEach(p => p.IsDeleted = true);
-            foreach (Type type in routeTypes)
-            {
-                MenuDAO Menu = Menus.Where(m => m.Code == type.Name).FirstOrDefault();
-                var value = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-                .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, FieldType>))
-                .Select(x => (Dictionary<string, FieldType>)x.GetValue(x))
-                .FirstOrDefault();
-                if (value == null)
-                    continue;
-                foreach (var pair in value)
-                {
-                    FieldDAO field = fields
-                        .Where(p => p.MenuId == Menu.Id && p.Name == pair.Key)
-                        .FirstOrDefault();
-                    if (field == null)
-                    {
-                        field = new FieldDAO
-                        {
-                            MenuId = Menu.Id,
-                            Name = pair.Key,
-                            Type = pair.Value.ToString(),
-                            IsDeleted = false,
-                        };
-                        fields.Add(field);
-                    }
-                    else
-                    {
-                        field.IsDeleted = false;
-                    }
-                }
-            }
-            DataContext.BulkMerge(fields);
-            DataContext.PermissionPageMapping.Where(ppm => ppm.Page.IsDeleted).DeleteFromQuery();
-            DataContext.Page.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
-            DataContext.PermissionFieldMapping.Where(pd => pd.Field.IsDeleted).DeleteFromQuery();
-            DataContext.Field.Where(pf => pf.IsDeleted || pf.Menu.IsDeleted).DeleteFromQuery();
-            DataContext.Permission.Where(p => p.Menu.IsDeleted).DeleteFromQuery();
-            DataContext.Menu.Where(v => v.IsDeleted).DeleteFromQuery();
-        }
-
-        private void InitEnum()
-        {
-            InitStatusEnum();
-            InitResellerStatusEnum();
-            InitStoreStatusEnum();
-            InitWorkflowStateEnum();
-            InitWorkflowTypeEnum();
-            InitRequestStateEnum();
-            DataContext.SaveChanges();
+            return Ok();
         }
 
         private void InitStatusEnum()
@@ -503,72 +507,6 @@ namespace DMS
                     Name = RequestStateEnum.REJECTED.Name,
                 });
             }
-        }
-    }
-
-    public class PermissionRequirement : IAuthorizationRequirement
-    {
-        public PermissionRequirement()
-        {
-        }
-    }
-    public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
-    {
-        private ICurrentContext CurrentContext;
-        private DataContext DataContext;
-        public PermissionHandler(ICurrentContext CurrentContext, IConfiguration Configuration)
-        {
-            this.CurrentContext = CurrentContext;
-            var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
-            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DataContext"));
-            DataContext = new DataContext(optionsBuilder.Options);
-        }
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
-        {
-            var types = context.User.Claims.Select(c => c.Type).ToList();
-            if (!context.User.HasClaim(c => c.Type == ClaimTypes.NameIdentifier))
-            {
-                context.Fail();
-                return;
-            }
-            long UserId = long.TryParse(context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value, out long u) ? u : 0;
-            string UserName = context.User.FindFirst(c => c.Type == ClaimTypes.Name).Value;
-            var mvcContext = context.Resource as AuthorizationFilterContext;
-            var HttpContext = mvcContext.HttpContext;
-            string url = HttpContext.Request.Path.Value;
-            string TimeZone = HttpContext.Request.Headers["X-TimeZone"];
-            string Language = HttpContext.Request.Headers["X-Language"];
-            CurrentContext.UserId = UserId;
-            CurrentContext.TimeZone = int.TryParse(TimeZone, out int t) ? t : 0;
-            CurrentContext.Language = Language ?? "vi";
-
-            List<long> permissionIds = await
-                (from p in DataContext.Permission
-                 join ru in DataContext.AppUserRoleMapping on p.RoleId equals ru.RoleId
-                 join ppm in DataContext.PermissionPageMapping on p.Id equals ppm.PermissionId
-                 join page in DataContext.Page on ppm.PageId equals page.Id
-                 where page.Path == url && ru.AppUserId == UserId
-                 select p.Id).Distinct().ToListAsync();
-
-            List<PermissionDAO> PermissionDAOs = await DataContext.Permission.AsNoTracking()
-                .Include(p => p.PermissionFieldMappings).ThenInclude(pf => pf.Field)
-                .Where(p => permissionIds.Contains(p.Id))
-                .ToListAsync();
-            CurrentContext.RoleIds = PermissionDAOs.Select(p => p.RoleId).Distinct().ToList();
-            CurrentContext.Filters = new Dictionary<long, List<FilterPermissionDefinition>>();
-            foreach (PermissionDAO PermissionDAO in PermissionDAOs)
-            {
-                List<FilterPermissionDefinition> FilterPermissionDefinitions = new List<FilterPermissionDefinition>();
-                CurrentContext.Filters.Add(PermissionDAO.Id, FilterPermissionDefinitions);
-                foreach(PermissionFieldMappingDAO PermissionFieldMappingDAO in PermissionDAO.PermissionFieldMappings)
-                {
-                    FilterPermissionDefinition FilterPermissionDefinition = new FilterPermissionDefinition(PermissionFieldMappingDAO.Field.Name, PermissionFieldMappingDAO.Field.Type);
-                    FilterPermissionDefinition.Value = PermissionFieldMappingDAO.Value;
-                    FilterPermissionDefinitions.Add(FilterPermissionDefinition);
-                }
-                
-            }    
-            context.Succeed(requirement);
         }
     }
 }

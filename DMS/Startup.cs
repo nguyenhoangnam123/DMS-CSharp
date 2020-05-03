@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Winton.Extensions.Configuration.Consul;
 using Z.EntityFramework.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using DMS.Rpc;
 
 namespace DMS
 {
@@ -127,7 +128,6 @@ namespace DMS
 
             };
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);
-            Setup Setup = new Setup(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
