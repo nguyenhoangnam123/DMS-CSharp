@@ -64,18 +64,22 @@ namespace DMS.Services.MItem
             try
             {
                 List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
+
+                var Ids = Items.Select(x => x.Id).ToList();
+                InventoryFilter InventoryFilter = new InventoryFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    ItemId = new IdFilter { In = Ids },
+                    Selects = InventorySelect.SaleStock | InventorySelect.Item
+                };
+
+                var inventories = await UOW.InventoryRepository.List(InventoryFilter);
+                var list = inventories.GroupBy(x => x.ItemId).Select(x => new { ItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
+
                 foreach (var item in Items)
                 {
-                    InventoryFilter InventoryFilter = new InventoryFilter
-                    {
-                        Skip = 0,
-                        Take = int.MaxValue,
-                        ItemId = new IdFilter { Equal = item.Id },
-                        Selects = InventorySelect.SaleStock
-                    };
-
-                    var list = await UOW.InventoryRepository.List(InventoryFilter);
-                    item.SaleStock = list.Select(x => x.SaleStock).Sum();
+                    item.SaleStock = list.Where(i => i.ItemId == x.Id).Select(i => i.SaleStock).FirstOrDefault();
                 }
                 return Items;
             }
