@@ -68,13 +68,14 @@ namespace DMS.Services.MItem
                 {
                     InventoryFilter InventoryFilter = new InventoryFilter
                     {
+                        Skip = 0,
+                        Take = int.MaxValue,
                         ItemId = new IdFilter { Equal = item.Id },
-                        AccountingStock = new LongFilter { Greater = 0 }
+                        Selects = InventorySelect.SaleStock
                     };
 
-                    int count = await UOW.InventoryRepository.Count(InventoryFilter);
-                    if (count > 0) item.HasInventory = true;
-                    else item.HasInventory = false;
+                    var list = await UOW.InventoryRepository.List(InventoryFilter);
+                    item.SaleStock = list.Select(x => x.SaleStock).Sum();
                 }
                 return Items;
             }

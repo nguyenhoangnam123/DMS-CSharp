@@ -15,6 +15,7 @@ namespace DMS.Entities
         public string ScanCode { get; set; }
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
+        public long SaleStock { get; set; }
         public bool CanDelete { get; set; }
         public long StatusId { get; set; }
         public bool HasInventory { get; set; }
@@ -36,9 +37,13 @@ namespace DMS.Entities
         public IdFilter ProductId { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public StringFilter OtherName { get; set; }
         public StringFilter ScanCode { get; set; }
         public DecimalFilter SalePrice { get; set; }
         public DecimalFilter RetailPrice { get; set; }
+        public IdFilter ProductGroupingId { get; set; }
+        public IdFilter ProductTypeId { get; set; }
+        public IdFilter SupplierId { get; set; }
         public IdFilter StatusId { get; set; }
         public List<ItemFilter> OrFilter { get; set; }
         public ItemOrder OrderBy { get; set; }
