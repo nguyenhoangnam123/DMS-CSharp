@@ -256,18 +256,9 @@ namespace DMS.Services.MWorkflowDefinition
             }
         }
 
-        public async Task<bool> Start(Guid RequestId, long WorkflowDefinitionId, Dictionary<string,string> Parameters)
+        public async Task<bool> Start(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters)
         {
-            WorkflowDefinition WorkflowDefinition = (await List(new WorkflowDefinitionFilter
-            {
-                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
-                OrderBy = WorkflowDefinitionOrder.StartDate,
-                OrderType = OrderType.DESC,
-                Skip = 0,
-                Take = 1,
-                Selects = WorkflowDefinitionSelect.Id,
-                WorkflowTypeId = new IdFilter { Equal = WorkflowType.Id }
-            })).FirstOrDefault();
+            WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinitionId);
 
             if (WorkflowDefinition == null)
             {
@@ -313,36 +304,39 @@ namespace DMS.Services.MWorkflowDefinition
                     RequestWorkflowParameterMapping.WorkflowParameterId = WorkflowParameter.Id;
                     RequestWorkflowParameterMapping.RequestId = RequestId;
                     RequestWorkflowParameterMapping.Value = null;
-                    foreach(var pair in Parameters)
+                    foreach (var pair in Parameters)
                     {
                         if (WorkflowParameter.Name == pair.Key)
                         {
                             RequestWorkflowParameterMapping.Value = pair.Value;
-                        }    
-                    }    
+                        }
+                    }
                 }
 
             }
             return true;
         }
 
-        public async Task<Store> Approve(Guid RequestId, GenericEnum WorkflowType, Dictionary<string, string> Parameters)
+        public async Task<bool> Approve(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters)
         {
-            Store = await UOW.StoreRepository.Get(Store.Id);
-            WorkflowDefinition WorkflowDefinition = await Get(Store.WorkflowDefinitionId.Value);
+            WorkflowDefinition WorkflowDefinition = await Get(WorkflowDefinitionId);
             // tìm điểm bắt đầu
             // tìm điểm nhảy tiếp theo
             // chuyển trạng thái điểm nhảy
             // gửi mail cho các điểm nhảy có trạng thái thay đổi.
-
-            if (WorkflowDefinition != null && Store.StoreWorkflows != null)
+            RequestWorkflowFilter RequestWorkflowFilter = new RequestWorkflowFilter
+            {
+                RequestId = new GuidFilter { Equal = RequestId }
+            };
+            List<RequestWorkflow> RequestWorkflows = await UOW.RequestWorkflowRepository.List(RequestWorkflowFilter);
+            if (WorkflowDefinition != null && RequestWorkflows.Count > 0)
             {
                 List<WorkflowStep> ToSteps = new List<WorkflowStep>();
                 foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
                 {
                     if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
                     {
-                        var StartNode = Store.StoreWorkflows
+                        var StartNode = RequestWorkflows
                             .Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
                             .Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
                         StartNode.WorkflowStateId = WorkflowStateEnum.APPROVED.Id;
@@ -363,13 +357,13 @@ namespace DMS.Services.MWorkflowDefinition
                     var FromNodes = new List<RequestWorkflow>();
                     foreach (var FromStep in FromSteps)
                     {
-                        var FromNode = Store.StoreWorkflows.Where(x => x.WorkflowStepId == FromStep.Id).FirstOrDefault();
+                        var FromNode = RequestWorkflows.Where(x => x.WorkflowStepId == FromStep.Id).FirstOrDefault();
                         FromNodes.Add(FromNode);
                     }
 
                     if (FromNodes.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
                     {
-                        var StoreWorkflow = Store.StoreWorkflows.Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
+                        var StoreWorkflow = RequestWorkflows.Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
                         StoreWorkflow.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
                         StoreWorkflow.UpdatedAt = null;
                         StoreWorkflow.AppUserId = null;
@@ -409,24 +403,28 @@ namespace DMS.Services.MWorkflowDefinition
                 }
                 Mails.Distinct();
                 Mails.ForEach(x => MailService.Send(x));
+                return true;
             }
 
-            return Store;
+            return false;
         }
 
-        public async Task<Store> Reject(Store Store)
+        public async Task<bool> Reject(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters)
         {
-            Store = await UOW.StoreRepository.Get(Store.Id);
-            WorkflowDefinition WorkflowDefinition = await Get(Store.WorkflowDefinitionId.Value);
-
-            if (WorkflowDefinition != null && Store.StoreWorkflows != null)
+            WorkflowDefinition WorkflowDefinition = await Get(WorkflowDefinitionId);
+            RequestWorkflowFilter RequestWorkflowFilter = new RequestWorkflowFilter
+            {
+                RequestId = new GuidFilter { Equal = RequestId }
+            };
+            List<RequestWorkflow> RequestWorkflows = await UOW.RequestWorkflowRepository.List(RequestWorkflowFilter);
+            if (WorkflowDefinition != null && RequestWorkflows.Count > 0)
             {
                 List<WorkflowStep> ToSteps = new List<WorkflowStep>();
                 foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
                 {
                     if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
                     {
-                        var StartNode = Store.StoreWorkflows
+                        var StartNode = RequestWorkflows
                             .Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
                             .Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
                         StartNode.WorkflowStateId = WorkflowStateEnum.REJECTED.Id;
@@ -450,7 +448,7 @@ namespace DMS.Services.MWorkflowDefinition
                 //tìm node đầu tiên để gửi mail thông báo yêu cầu đã bị từ chối
                 if (StartStep != null)
                 {
-                    RequestWorkflow StartNode = Store.StoreWorkflows.Where(x => x.WorkflowStepId == StartStep.Id).FirstOrDefault();
+                    RequestWorkflow StartNode = RequestWorkflows.Where(x => x.WorkflowStepId == StartStep.Id).FirstOrDefault();
                     if (StartNode != null)
                     {
                         //gửi mail
@@ -458,27 +456,30 @@ namespace DMS.Services.MWorkflowDefinition
                 }
             }
 
-            return Store;
+            return true;
         }
 
-        public async Task<Store> End(Store Store)
+        public async Task<GenericEnum> End(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters)
         {
-            Store = await UOW.StoreRepository.Get(Store.Id);
-            WorkflowDefinition WorkflowDefinition = await Get(Store.WorkflowDefinitionId.Value);
-
-            if (WorkflowDefinition != null && Store.StoreWorkflows != null)
+            WorkflowDefinition WorkflowDefinition = await Get(WorkflowDefinitionId);
+            RequestWorkflowFilter RequestWorkflowFilter = new RequestWorkflowFilter
             {
-                if (Store.StoreWorkflows.Any(x => x.WorkflowStateId == WorkflowStateEnum.REJECTED.Id))
+                RequestId = new GuidFilter { Equal = RequestId }
+            };
+            List<RequestWorkflow> RequestWorkflows = await UOW.RequestWorkflowRepository.List(RequestWorkflowFilter);
+            if (WorkflowDefinition != null && RequestWorkflows != null)
+            {
+                if (RequestWorkflows.Any(x => x.WorkflowStateId == WorkflowStateEnum.REJECTED.Id))
                 {
-                    Store.RequestStateId = RequestStateEnum.REJECTED.Id;
+                    return RequestStateEnum.REJECTED;
                 }
-                else if (Store.StoreWorkflows.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
+                else if (RequestWorkflows.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
                 {
-                    Store.RequestStateId = RequestStateEnum.APPROVED.Id;
+                    return RequestStateEnum.APPROVED;
                 }
             }
 
-            return Store;
+            return null;
         }
     }
 }

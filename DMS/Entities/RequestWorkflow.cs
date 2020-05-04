@@ -9,11 +9,15 @@ namespace DMS.Entities
     public class RequestWorkflow : DataEntity,  IEquatable<RequestWorkflow>
     {
         public long Id { get; set; }
-        public long StoreId { get; set; }
+        public Guid RequestId { get; set; }
         public long WorkflowStepId { get; set; }
         public long WorkflowStateId { get; set; }
-        public DateTime? UpdatedAt { get; set; }
         public long? AppUserId { get; set; }
+        public AppUser AppUser { get; set; }
+        public WorkflowState WorkflowState { get; set; }
+        public WorkflowStep WorkflowStep { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public bool Equals(RequestWorkflow other)
         {
@@ -25,30 +29,40 @@ namespace DMS.Entities
         }
     }
 
-    public class StoreWorkflowFilter : FilterEntity
+    public class RequestWorkflowFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
-        public IdFilter StoreId { get; set; }
+        public GuidFilter RequestId { get; set; }
+        public IdFilter WorkflowStepId { get; set; }
         public IdFilter WorkflowStateId { get; set; }
-        public List<StoreWorkflowFilter> OrFilter { get; set; }
-        public StoreWorkflowOrder OrderBy {get; set;}
-        public StoreWorkflowSelect Selects {get; set;}
+        public IdFilter AppUserId { get; set; }
+        public DateFilter CreatedAt { get; set; }
+        public DateFilter UpdatedAt { get; set; }
+        public List<RequestWorkflowFilter> OrFilter { get; set; }
+        public RequestWorkflowOrder OrderBy {get; set;}
+        public RequestWorkflowSelect Selects {get; set;}
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum StoreWorkflowOrder
+    public enum RequestWorkflowOrder
     {
         Id = 0,
-        Store = 1,
-        WorkflowState = 2,
+        WorkflowStep = 2,
+        WorkflowState = 3,
+        RequestId = 4,
+        AppUser = 5,
+        CreatedAt = 50,
+        UpdatedAt = 51,
     }
 
     [Flags]
-    public enum StoreWorkflowSelect:long
+    public enum RequestWorkflowSelect:long
     {
         ALL = E.ALL,
         Id = E._0,
-        Store = E._1,
-        WorkflowState = E._2,
+        WorkflowStep = E._2,
+        WorkflowState = E._3,
+        RequestId = E._4,
+        AppUser = E._5,
     }
 }

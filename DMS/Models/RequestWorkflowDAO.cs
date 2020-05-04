@@ -9,7 +9,9 @@ namespace DMS.Models
         public Guid RequestId { get; set; }
         public long WorkflowStepId { get; set; }
         public long WorkflowStateId { get; set; }
-        public long? UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public long? AppUserId { get; set; }
 
         public virtual AppUserDAO AppUser { get; set; }

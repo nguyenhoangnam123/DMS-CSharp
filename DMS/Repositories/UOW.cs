@@ -32,6 +32,8 @@ namespace DMS.Repositories
         IProductProductGroupingMappingRepository ProductProductGroupingMappingRepository { get; }
         IProductTypeRepository ProductTypeRepository { get; }
         IProvinceRepository ProvinceRepository { get; }
+        IRequestStateRepository RequestStateRepository { get; }
+        IRequestWorkflowRepository RequestWorkflowRepository { get; }
         IResellerRepository ResellerRepository { get; }
         IResellerStatusRepository ResellerStatusRepository { get; }
         IResellerTypeRepository ResellerTypeRepository { get; }
@@ -79,6 +81,8 @@ namespace DMS.Repositories
         public IProductProductGroupingMappingRepository ProductProductGroupingMappingRepository { get; private set; }
         public IProductTypeRepository ProductTypeRepository { get; private set; }
         public IProvinceRepository ProvinceRepository { get; private set; }
+        public IRequestStateRepository RequestStateRepository { get; private set; }
+        public IRequestWorkflowRepository RequestWorkflowRepository { get; private set; }
         public IResellerRepository ResellerRepository { get; private set; }
         public IResellerStatusRepository ResellerStatusRepository { get; private set; }
         public IResellerTypeRepository ResellerTypeRepository { get; private set; }
@@ -124,6 +128,8 @@ namespace DMS.Repositories
             ProductProductGroupingMappingRepository = new ProductProductGroupingMappingRepository(DataContext);
             ProductTypeRepository = new ProductTypeRepository(DataContext);
             ProvinceRepository = new ProvinceRepository(DataContext);
+            RequestStateRepository = new RequestStateRepository(DataContext);
+            RequestWorkflowRepository = new RequestWorkflowRepository(DataContext);
             ResellerRepository = new ResellerRepository(DataContext);
             ResellerStatusRepository = new ResellerStatusRepository(DataContext);
             ResellerTypeRepository = new ResellerTypeRepository(DataContext);

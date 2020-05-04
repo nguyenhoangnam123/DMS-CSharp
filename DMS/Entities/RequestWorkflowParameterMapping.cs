@@ -23,27 +23,28 @@ namespace DMS.Entities
         }
     }
 
-    public class StoreWorkflowParameterMappingFilter : FilterEntity
+    public class RequestWorkflowParameterMappingFilter : FilterEntity
     {
         public IdFilter WorkflowParameterId { get; set; }
+        public IdFilter RequestId { get; set; }
         public StringFilter Value { get; set; }
-        public List<StoreWorkflowParameterMappingFilter> OrFilter { get; set; }
-        public StoreWorkflowParameterMappingOrder OrderBy {get; set;}
-        public StoreWorkflowParameterMappingSelect Selects {get; set;}
+        public List<RequestWorkflowParameterMappingFilter> OrFilter { get; set; }
+        public RequestWorkflowParameterMappingOrder OrderBy {get; set;}
+        public RequestWorkflowParameterMappingSelect Selects {get; set;}
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum StoreWorkflowParameterMappingOrder
+    public enum RequestWorkflowParameterMappingOrder
     {
         WorkflowParameter = 0,
-        Value = 1,
+        Value = 2,
     }
 
     [Flags]
-    public enum StoreWorkflowParameterMappingSelect:long
+    public enum RequestWorkflowParameterMappingSelect:long
     {
         ALL = E.ALL,
         WorkflowParameter = E._0,
-        Value = E._1,
+        Value = E._2,
     }
 }
