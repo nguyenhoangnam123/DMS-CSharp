@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
-    public partial class IndirectSalesOrderStatusDAO
+    public partial class EditedPriceStatusDAO
     {
-        public IndirectSalesOrderStatusDAO()
+        public EditedPriceStatusDAO()
         {
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
         }

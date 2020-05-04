@@ -24,7 +24,6 @@ namespace DMS.Rpc.indirect_sales_order_content
         public decimal? TaxPercentage { get; set; }
         public long? TaxAmount { get; set; }
         public IndirectSalesOrderContent_IndirectSalesOrderDTO IndirectSalesOrder { get; set; }
-        public IndirectSalesOrderContent_ItemDTO IndirectSalesOrderNavigation { get; set; }
         public IndirectSalesOrderContent_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }
         public IndirectSalesOrderContent_UnitOfMeasureDTO UnitOfMeasure { get; set; }
         public IndirectSalesOrderContent_IndirectSalesOrderContentDTO() {}
@@ -46,7 +45,6 @@ namespace DMS.Rpc.indirect_sales_order_content
             this.TaxPercentage = IndirectSalesOrderContent.TaxPercentage;
             this.TaxAmount = IndirectSalesOrderContent.TaxAmount;
             this.IndirectSalesOrder = IndirectSalesOrderContent.IndirectSalesOrder == null ? null : new IndirectSalesOrderContent_IndirectSalesOrderDTO(IndirectSalesOrderContent.IndirectSalesOrder);
-            this.IndirectSalesOrderNavigation = IndirectSalesOrderContent.IndirectSalesOrderNavigation == null ? null : new IndirectSalesOrderContent_ItemDTO(IndirectSalesOrderContent.IndirectSalesOrderNavigation);
             this.PrimaryUnitOfMeasure = IndirectSalesOrderContent.PrimaryUnitOfMeasure == null ? null : new IndirectSalesOrderContent_UnitOfMeasureDTO(IndirectSalesOrderContent.PrimaryUnitOfMeasure);
             this.UnitOfMeasure = IndirectSalesOrderContent.UnitOfMeasure == null ? null : new IndirectSalesOrderContent_UnitOfMeasureDTO(IndirectSalesOrderContent.UnitOfMeasure);
             this.Errors = IndirectSalesOrderContent.Errors;

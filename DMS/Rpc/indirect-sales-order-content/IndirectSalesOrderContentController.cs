@@ -12,8 +12,8 @@ using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MIndirectSalesOrderContent;
 using DMS.Services.MIndirectSalesOrder;
-using DMS.Services.MItem;
 using DMS.Services.MUnitOfMeasure;
+using DMS.Enums;
 
 namespace DMS.Rpc.indirect_sales_order_content
 {
@@ -30,10 +30,15 @@ namespace DMS.Rpc.indirect_sales_order_content
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
+        public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
+        
+        public const string FilterListIndirectSalesOrder = Default + "/filter-list-indirect-sales-order";
+        public const string FilterListUnitOfMeasure = Default + "/filter-list-unit-of-measure";
+
         public const string SingleListIndirectSalesOrder = Default + "/single-list-indirect-sales-order";
-        public const string SingleListItem = Default + "/single-list-item";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
+        
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(IndirectSalesOrderContentFilter.Id), FieldType.ID },
@@ -57,20 +62,17 @@ namespace DMS.Rpc.indirect_sales_order_content
     public class IndirectSalesOrderContentController : RpcController
     {
         private IIndirectSalesOrderService IndirectSalesOrderService;
-        private IItemService ItemService;
         private IUnitOfMeasureService UnitOfMeasureService;
         private IIndirectSalesOrderContentService IndirectSalesOrderContentService;
         private ICurrentContext CurrentContext;
         public IndirectSalesOrderContentController(
             IIndirectSalesOrderService IndirectSalesOrderService,
-            IItemService ItemService,
             IUnitOfMeasureService UnitOfMeasureService,
             IIndirectSalesOrderContentService IndirectSalesOrderContentService,
             ICurrentContext CurrentContext
         )
         {
             this.IndirectSalesOrderService = IndirectSalesOrderService;
-            this.ItemService = ItemService;
             this.UnitOfMeasureService = UnitOfMeasureService;
             this.IndirectSalesOrderContentService = IndirectSalesOrderContentService;
             this.CurrentContext = CurrentContext;
@@ -199,13 +201,13 @@ namespace DMS.Rpc.indirect_sales_order_content
                 Selects = IndirectSalesOrderSelect.ALL
             };
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
-            ItemFilter ItemFilter = new ItemFilter
+            UnitOfMeasureFilter PrimaryUnitOfMeasureFilter = new UnitOfMeasureFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = ItemSelect.ALL
+                Selects = UnitOfMeasureSelect.ALL
             };
-            List<Item> Items = await ItemService.List(ItemFilter);
+            List<UnitOfMeasure> PrimaryUnitOfMeasures = await UnitOfMeasureService.List(PrimaryUnitOfMeasureFilter);
             UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
             {
                 Skip = 0,
@@ -271,8 +273,9 @@ namespace DMS.Rpc.indirect_sales_order_content
                     IndirectSalesOrder IndirectSalesOrder = IndirectSalesOrders.Where(x => x.Id.ToString() == IndirectSalesOrderIdValue).FirstOrDefault();
                     IndirectSalesOrderContent.IndirectSalesOrderId = IndirectSalesOrder == null ? 0 : IndirectSalesOrder.Id;
                     IndirectSalesOrderContent.IndirectSalesOrder = IndirectSalesOrder;
-                    Item Item = Items.Where(x => x.Id.ToString() == ItemIdValue).FirstOrDefault();
-                    IndirectSalesOrderContent.ItemId = Item == null ? 0 : Item.Id;
+                    UnitOfMeasure PrimaryUnitOfMeasure = PrimaryUnitOfMeasures.Where(x => x.Id.ToString() == PrimaryUnitOfMeasureIdValue).FirstOrDefault();
+                    IndirectSalesOrderContent.PrimaryUnitOfMeasureId = PrimaryUnitOfMeasure == null ? 0 : PrimaryUnitOfMeasure.Id;
+                    IndirectSalesOrderContent.PrimaryUnitOfMeasure = PrimaryUnitOfMeasure;
                     UnitOfMeasure UnitOfMeasure = UnitOfMeasures.Where(x => x.Id.ToString() == UnitOfMeasureIdValue).FirstOrDefault();
                     IndirectSalesOrderContent.UnitOfMeasureId = UnitOfMeasure == null ? 0 : UnitOfMeasure.Id;
                     IndirectSalesOrderContent.UnitOfMeasure = UnitOfMeasure;
@@ -334,16 +337,17 @@ namespace DMS.Rpc.indirect_sales_order_content
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            var IndirectSalesOrderContentFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrderContent_IndirectSalesOrderContentFilterDTO);
-            IndirectSalesOrderContentFilter.Skip = 0;
-            IndirectSalesOrderContentFilter.Take = int.MaxValue;
-            IndirectSalesOrderContentFilter = IndirectSalesOrderContentService.ToFilter(IndirectSalesOrderContentFilter);
-
-            List<IndirectSalesOrderContent> IndirectSalesOrderContents = await IndirectSalesOrderContentService.List(IndirectSalesOrderContentFilter);
+            
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
+                #region IndirectSalesOrderContent
+                var IndirectSalesOrderContentFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrderContent_IndirectSalesOrderContentFilterDTO);
+                IndirectSalesOrderContentFilter.Skip = 0;
+                IndirectSalesOrderContentFilter.Take = int.MaxValue;
+                IndirectSalesOrderContentFilter = IndirectSalesOrderContentService.ToFilter(IndirectSalesOrderContentFilter);
+                List<IndirectSalesOrderContent> IndirectSalesOrderContents = await IndirectSalesOrderContentService.List(IndirectSalesOrderContentFilter);
+
                 var IndirectSalesOrderContentHeaders = new List<string[]>()
                 {
                     new string[] { 
@@ -364,11 +368,11 @@ namespace DMS.Rpc.indirect_sales_order_content
                         "TaxAmount",
                     }
                 };
-                List<object[]> data = new List<object[]>();
+                List<object[]> IndirectSalesOrderContentData = new List<object[]>();
                 for (int i = 0; i < IndirectSalesOrderContents.Count; i++)
                 {
                     var IndirectSalesOrderContent = IndirectSalesOrderContents[i];
-                    data.Add(new Object[]
+                    IndirectSalesOrderContentData.Add(new Object[]
                     {
                         IndirectSalesOrderContent.Id,
                         IndirectSalesOrderContent.IndirectSalesOrderId,
@@ -386,8 +390,237 @@ namespace DMS.Rpc.indirect_sales_order_content
                         IndirectSalesOrderContent.TaxPercentage,
                         IndirectSalesOrderContent.TaxAmount,
                     });
-                    excel.GenerateWorksheet("IndirectSalesOrderContent", IndirectSalesOrderContentHeaders, data);
                 }
+                excel.GenerateWorksheet("IndirectSalesOrderContent", IndirectSalesOrderContentHeaders, IndirectSalesOrderContentData);
+                #endregion
+                
+                #region IndirectSalesOrder
+                var IndirectSalesOrderFilter = new IndirectSalesOrderFilter();
+                IndirectSalesOrderFilter.Selects = IndirectSalesOrderSelect.ALL;
+                IndirectSalesOrderFilter.OrderBy = IndirectSalesOrderOrder.Id;
+                IndirectSalesOrderFilter.OrderType = OrderType.ASC;
+                IndirectSalesOrderFilter.Skip = 0;
+                IndirectSalesOrderFilter.Take = int.MaxValue;
+                List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+
+                var IndirectSalesOrderHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "Code",
+                        "BuyerStoreId",
+                        "PhoneNumber",
+                        "StoreAddress",
+                        "DeliveryAddress",
+                        "SellerStoreId",
+                        "SaleEmployeeId",
+                        "OrderDate",
+                        "DeliveryDate",
+                        "IndirectSalesOrderStatusId",
+                        "EditedPriceStatusId",
+                        "Note",
+                        "SubTotal",
+                        "GeneralDiscountPercentage",
+                        "GeneralDiscountAmount",
+                        "TotalTaxAmount",
+                        "Total",
+                    }
+                };
+                List<object[]> IndirectSalesOrderData = new List<object[]>();
+                for (int i = 0; i < IndirectSalesOrders.Count; i++)
+                {
+                    var IndirectSalesOrder = IndirectSalesOrders[i];
+                    IndirectSalesOrderData.Add(new Object[]
+                    {
+                        IndirectSalesOrder.Id,
+                        IndirectSalesOrder.Code,
+                        IndirectSalesOrder.BuyerStoreId,
+                        IndirectSalesOrder.PhoneNumber,
+                        IndirectSalesOrder.StoreAddress,
+                        IndirectSalesOrder.DeliveryAddress,
+                        IndirectSalesOrder.SellerStoreId,
+                        IndirectSalesOrder.SaleEmployeeId,
+                        IndirectSalesOrder.OrderDate,
+                        IndirectSalesOrder.DeliveryDate,
+                        IndirectSalesOrder.IndirectSalesOrderStatusId,
+                        IndirectSalesOrder.EditedPriceStatusId,
+                        IndirectSalesOrder.Note,
+                        IndirectSalesOrder.SubTotal,
+                        IndirectSalesOrder.GeneralDiscountPercentage,
+                        IndirectSalesOrder.GeneralDiscountAmount,
+                        IndirectSalesOrder.TotalTaxAmount,
+                        IndirectSalesOrder.Total,
+                    });
+                }
+                excel.GenerateWorksheet("IndirectSalesOrder", IndirectSalesOrderHeaders, IndirectSalesOrderData);
+                #endregion
+                #region UnitOfMeasure
+                var UnitOfMeasureFilter = new UnitOfMeasureFilter();
+                UnitOfMeasureFilter.Selects = UnitOfMeasureSelect.ALL;
+                UnitOfMeasureFilter.OrderBy = UnitOfMeasureOrder.Id;
+                UnitOfMeasureFilter.OrderType = OrderType.ASC;
+                UnitOfMeasureFilter.Skip = 0;
+                UnitOfMeasureFilter.Take = int.MaxValue;
+                List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
+
+                var UnitOfMeasureHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "Code",
+                        "Name",
+                        "Description",
+                        "StatusId",
+                    }
+                };
+                List<object[]> UnitOfMeasureData = new List<object[]>();
+                for (int i = 0; i < UnitOfMeasures.Count; i++)
+                {
+                    var UnitOfMeasure = UnitOfMeasures[i];
+                    UnitOfMeasureData.Add(new Object[]
+                    {
+                        UnitOfMeasure.Id,
+                        UnitOfMeasure.Code,
+                        UnitOfMeasure.Name,
+                        UnitOfMeasure.Description,
+                        UnitOfMeasure.StatusId,
+                    });
+                }
+                excel.GenerateWorksheet("UnitOfMeasure", UnitOfMeasureHeaders, UnitOfMeasureData);
+                #endregion
+                excel.Save();
+            }
+            return File(memoryStream.ToArray(), "application/octet-stream", "IndirectSalesOrderContent.xlsx");
+        }
+
+        [Route(IndirectSalesOrderContentRoute.ExportTemplate), HttpPost]
+        public async Task<FileResult> ExportTemplate([FromBody] IndirectSalesOrderContent_IndirectSalesOrderContentFilterDTO IndirectSalesOrderContent_IndirectSalesOrderContentFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            {
+                #region IndirectSalesOrderContent
+                var IndirectSalesOrderContentHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "IndirectSalesOrderId",
+                        "ItemId",
+                        "UnitOfMeasureId",
+                        "Quantity",
+                        "PrimaryUnitOfMeasureId",
+                        "RequestedQuantity",
+                        "SalePrice",
+                        "DiscountPercentage",
+                        "DiscountAmount",
+                        "GeneralDiscountPercentage",
+                        "GeneralDiscountAmount",
+                        "Amount",
+                        "TaxPercentage",
+                        "TaxAmount",
+                    }
+                };
+                List<object[]> IndirectSalesOrderContentData = new List<object[]>();
+                excel.GenerateWorksheet("IndirectSalesOrderContent", IndirectSalesOrderContentHeaders, IndirectSalesOrderContentData);
+                #endregion
+                
+                #region IndirectSalesOrder
+                var IndirectSalesOrderFilter = new IndirectSalesOrderFilter();
+                IndirectSalesOrderFilter.Selects = IndirectSalesOrderSelect.ALL;
+                IndirectSalesOrderFilter.OrderBy = IndirectSalesOrderOrder.Id;
+                IndirectSalesOrderFilter.OrderType = OrderType.ASC;
+                IndirectSalesOrderFilter.Skip = 0;
+                IndirectSalesOrderFilter.Take = int.MaxValue;
+                List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+
+                var IndirectSalesOrderHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "Code",
+                        "BuyerStoreId",
+                        "PhoneNumber",
+                        "StoreAddress",
+                        "DeliveryAddress",
+                        "SellerStoreId",
+                        "SaleEmployeeId",
+                        "OrderDate",
+                        "DeliveryDate",
+                        "IndirectSalesOrderStatusId",
+                        "EditedPriceStatusId",
+                        "Note",
+                        "SubTotal",
+                        "GeneralDiscountPercentage",
+                        "GeneralDiscountAmount",
+                        "TotalTaxAmount",
+                        "Total",
+                    }
+                };
+                List<object[]> IndirectSalesOrderData = new List<object[]>();
+                for (int i = 0; i < IndirectSalesOrders.Count; i++)
+                {
+                    var IndirectSalesOrder = IndirectSalesOrders[i];
+                    IndirectSalesOrderData.Add(new Object[]
+                    {
+                        IndirectSalesOrder.Id,
+                        IndirectSalesOrder.Code,
+                        IndirectSalesOrder.BuyerStoreId,
+                        IndirectSalesOrder.PhoneNumber,
+                        IndirectSalesOrder.StoreAddress,
+                        IndirectSalesOrder.DeliveryAddress,
+                        IndirectSalesOrder.SellerStoreId,
+                        IndirectSalesOrder.SaleEmployeeId,
+                        IndirectSalesOrder.OrderDate,
+                        IndirectSalesOrder.DeliveryDate,
+                        IndirectSalesOrder.IndirectSalesOrderStatusId,
+                        IndirectSalesOrder.EditedPriceStatusId,
+                        IndirectSalesOrder.Note,
+                        IndirectSalesOrder.SubTotal,
+                        IndirectSalesOrder.GeneralDiscountPercentage,
+                        IndirectSalesOrder.GeneralDiscountAmount,
+                        IndirectSalesOrder.TotalTaxAmount,
+                        IndirectSalesOrder.Total,
+                    });
+                }
+                excel.GenerateWorksheet("IndirectSalesOrder", IndirectSalesOrderHeaders, IndirectSalesOrderData);
+                #endregion
+                #region UnitOfMeasure
+                var UnitOfMeasureFilter = new UnitOfMeasureFilter();
+                UnitOfMeasureFilter.Selects = UnitOfMeasureSelect.ALL;
+                UnitOfMeasureFilter.OrderBy = UnitOfMeasureOrder.Id;
+                UnitOfMeasureFilter.OrderType = OrderType.ASC;
+                UnitOfMeasureFilter.Skip = 0;
+                UnitOfMeasureFilter.Take = int.MaxValue;
+                List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
+
+                var UnitOfMeasureHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "Code",
+                        "Name",
+                        "Description",
+                        "StatusId",
+                    }
+                };
+                List<object[]> UnitOfMeasureData = new List<object[]>();
+                for (int i = 0; i < UnitOfMeasures.Count; i++)
+                {
+                    var UnitOfMeasure = UnitOfMeasures[i];
+                    UnitOfMeasureData.Add(new Object[]
+                    {
+                        UnitOfMeasure.Id,
+                        UnitOfMeasure.Code,
+                        UnitOfMeasure.Name,
+                        UnitOfMeasure.Description,
+                        UnitOfMeasure.StatusId,
+                    });
+                }
+                excel.GenerateWorksheet("UnitOfMeasure", UnitOfMeasureHeaders, UnitOfMeasureData);
+                #endregion
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", "IndirectSalesOrderContent.xlsx");
@@ -432,6 +665,7 @@ namespace DMS.Rpc.indirect_sales_order_content
             IndirectSalesOrderContent.IndirectSalesOrder = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder == null ? null : new IndirectSalesOrder
             {
                 Id = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.Id,
+                Code = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.Code,
                 BuyerStoreId = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.BuyerStoreId,
                 PhoneNumber = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.PhoneNumber,
                 StoreAddress = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.StoreAddress,
@@ -441,24 +675,13 @@ namespace DMS.Rpc.indirect_sales_order_content
                 OrderDate = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.OrderDate,
                 DeliveryDate = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.DeliveryDate,
                 IndirectSalesOrderStatusId = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.IndirectSalesOrderStatusId,
-                IsEditedPrice = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.IsEditedPrice,
+                EditedPriceStatusId = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.EditedPriceStatusId,
                 Note = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.Note,
                 SubTotal = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.SubTotal,
                 GeneralDiscountPercentage = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.GeneralDiscountPercentage,
                 GeneralDiscountAmount = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.GeneralDiscountAmount,
                 TotalTaxAmount = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.TotalTaxAmount,
                 Total = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrder.Total,
-            };
-            IndirectSalesOrderContent.IndirectSalesOrderNavigation = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrderNavigation == null ? null : new Item
-            {
-                Id = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrderNavigation.Id,
-                ProductId = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrderNavigation.ProductId,
-                Code = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrderNavigation.Code,
-                Name = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrderNavigation.Name,
-                ScanCode = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrderNavigation.ScanCode,
-                SalePrice = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrderNavigation.SalePrice,
-                RetailPrice = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrderNavigation.RetailPrice,
-                StatusId = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.IndirectSalesOrderNavigation.StatusId,
             };
             IndirectSalesOrderContent.PrimaryUnitOfMeasure = IndirectSalesOrderContent_IndirectSalesOrderContentDTO.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
             {
@@ -507,8 +730,8 @@ namespace DMS.Rpc.indirect_sales_order_content
             return IndirectSalesOrderContentFilter;
         }
 
-        [Route(IndirectSalesOrderContentRoute.SingleListIndirectSalesOrder), HttpPost]
-        public async Task<List<IndirectSalesOrderContent_IndirectSalesOrderDTO>> SingleListIndirectSalesOrder([FromBody] IndirectSalesOrderContent_IndirectSalesOrderFilterDTO IndirectSalesOrderContent_IndirectSalesOrderFilterDTO)
+        [Route(IndirectSalesOrderContentRoute.FilterListIndirectSalesOrder), HttpPost]
+        public async Task<List<IndirectSalesOrderContent_IndirectSalesOrderDTO>> FilterListIndirectSalesOrder([FromBody] IndirectSalesOrderContent_IndirectSalesOrderFilterDTO IndirectSalesOrderContent_IndirectSalesOrderFilterDTO)
         {
             IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter();
             IndirectSalesOrderFilter.Skip = 0;
@@ -517,6 +740,7 @@ namespace DMS.Rpc.indirect_sales_order_content
             IndirectSalesOrderFilter.OrderType = OrderType.ASC;
             IndirectSalesOrderFilter.Selects = IndirectSalesOrderSelect.ALL;
             IndirectSalesOrderFilter.Id = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.Id;
+            IndirectSalesOrderFilter.Code = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.Code;
             IndirectSalesOrderFilter.BuyerStoreId = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.BuyerStoreId;
             IndirectSalesOrderFilter.PhoneNumber = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.PhoneNumber;
             IndirectSalesOrderFilter.StoreAddress = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.StoreAddress;
@@ -526,6 +750,7 @@ namespace DMS.Rpc.indirect_sales_order_content
             IndirectSalesOrderFilter.OrderDate = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.OrderDate;
             IndirectSalesOrderFilter.DeliveryDate = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.DeliveryDate;
             IndirectSalesOrderFilter.IndirectSalesOrderStatusId = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.IndirectSalesOrderStatusId;
+            IndirectSalesOrderFilter.EditedPriceStatusId = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.EditedPriceStatusId;
             IndirectSalesOrderFilter.Note = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.Note;
             IndirectSalesOrderFilter.SubTotal = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.SubTotal;
             IndirectSalesOrderFilter.GeneralDiscountPercentage = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.GeneralDiscountPercentage;
@@ -538,28 +763,59 @@ namespace DMS.Rpc.indirect_sales_order_content
                 .Select(x => new IndirectSalesOrderContent_IndirectSalesOrderDTO(x)).ToList();
             return IndirectSalesOrderContent_IndirectSalesOrderDTOs;
         }
-        [Route(IndirectSalesOrderContentRoute.SingleListItem), HttpPost]
-        public async Task<List<IndirectSalesOrderContent_ItemDTO>> SingleListItem([FromBody] IndirectSalesOrderContent_ItemFilterDTO IndirectSalesOrderContent_ItemFilterDTO)
+        [Route(IndirectSalesOrderContentRoute.FilterListUnitOfMeasure), HttpPost]
+        public async Task<List<IndirectSalesOrderContent_UnitOfMeasureDTO>> FilterListUnitOfMeasure([FromBody] IndirectSalesOrderContent_UnitOfMeasureFilterDTO IndirectSalesOrderContent_UnitOfMeasureFilterDTO)
         {
-            ItemFilter ItemFilter = new ItemFilter();
-            ItemFilter.Skip = 0;
-            ItemFilter.Take = 20;
-            ItemFilter.OrderBy = ItemOrder.Id;
-            ItemFilter.OrderType = OrderType.ASC;
-            ItemFilter.Selects = ItemSelect.ALL;
-            ItemFilter.Id = IndirectSalesOrderContent_ItemFilterDTO.Id;
-            ItemFilter.ProductId = IndirectSalesOrderContent_ItemFilterDTO.ProductId;
-            ItemFilter.Code = IndirectSalesOrderContent_ItemFilterDTO.Code;
-            ItemFilter.Name = IndirectSalesOrderContent_ItemFilterDTO.Name;
-            ItemFilter.ScanCode = IndirectSalesOrderContent_ItemFilterDTO.ScanCode;
-            ItemFilter.SalePrice = IndirectSalesOrderContent_ItemFilterDTO.SalePrice;
-            ItemFilter.RetailPrice = IndirectSalesOrderContent_ItemFilterDTO.RetailPrice;
-            ItemFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter();
+            UnitOfMeasureFilter.Skip = 0;
+            UnitOfMeasureFilter.Take = 20;
+            UnitOfMeasureFilter.OrderBy = UnitOfMeasureOrder.Id;
+            UnitOfMeasureFilter.OrderType = OrderType.ASC;
+            UnitOfMeasureFilter.Selects = UnitOfMeasureSelect.ALL;
+            UnitOfMeasureFilter.Id = IndirectSalesOrderContent_UnitOfMeasureFilterDTO.Id;
+            UnitOfMeasureFilter.Code = IndirectSalesOrderContent_UnitOfMeasureFilterDTO.Code;
+            UnitOfMeasureFilter.Name = IndirectSalesOrderContent_UnitOfMeasureFilterDTO.Name;
+            UnitOfMeasureFilter.Description = IndirectSalesOrderContent_UnitOfMeasureFilterDTO.Description;
+            UnitOfMeasureFilter.StatusId = IndirectSalesOrderContent_UnitOfMeasureFilterDTO.StatusId;
 
-            List<Item> Items = await ItemService.List(ItemFilter);
-            List<IndirectSalesOrderContent_ItemDTO> IndirectSalesOrderContent_ItemDTOs = Items
-                .Select(x => new IndirectSalesOrderContent_ItemDTO(x)).ToList();
-            return IndirectSalesOrderContent_ItemDTOs;
+            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
+            List<IndirectSalesOrderContent_UnitOfMeasureDTO> IndirectSalesOrderContent_UnitOfMeasureDTOs = UnitOfMeasures
+                .Select(x => new IndirectSalesOrderContent_UnitOfMeasureDTO(x)).ToList();
+            return IndirectSalesOrderContent_UnitOfMeasureDTOs;
+        }
+
+        [Route(IndirectSalesOrderContentRoute.SingleListIndirectSalesOrder), HttpPost]
+        public async Task<List<IndirectSalesOrderContent_IndirectSalesOrderDTO>> SingleListIndirectSalesOrder([FromBody] IndirectSalesOrderContent_IndirectSalesOrderFilterDTO IndirectSalesOrderContent_IndirectSalesOrderFilterDTO)
+        {
+            IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter();
+            IndirectSalesOrderFilter.Skip = 0;
+            IndirectSalesOrderFilter.Take = 20;
+            IndirectSalesOrderFilter.OrderBy = IndirectSalesOrderOrder.Id;
+            IndirectSalesOrderFilter.OrderType = OrderType.ASC;
+            IndirectSalesOrderFilter.Selects = IndirectSalesOrderSelect.ALL;
+            IndirectSalesOrderFilter.Id = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.Id;
+            IndirectSalesOrderFilter.Code = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.Code;
+            IndirectSalesOrderFilter.BuyerStoreId = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.BuyerStoreId;
+            IndirectSalesOrderFilter.PhoneNumber = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.PhoneNumber;
+            IndirectSalesOrderFilter.StoreAddress = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.StoreAddress;
+            IndirectSalesOrderFilter.DeliveryAddress = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.DeliveryAddress;
+            IndirectSalesOrderFilter.SellerStoreId = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.SellerStoreId;
+            IndirectSalesOrderFilter.SaleEmployeeId = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.SaleEmployeeId;
+            IndirectSalesOrderFilter.OrderDate = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.OrderDate;
+            IndirectSalesOrderFilter.DeliveryDate = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.DeliveryDate;
+            IndirectSalesOrderFilter.IndirectSalesOrderStatusId = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.IndirectSalesOrderStatusId;
+            IndirectSalesOrderFilter.EditedPriceStatusId = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.EditedPriceStatusId;
+            IndirectSalesOrderFilter.Note = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.Note;
+            IndirectSalesOrderFilter.SubTotal = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.SubTotal;
+            IndirectSalesOrderFilter.GeneralDiscountPercentage = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.GeneralDiscountPercentage;
+            IndirectSalesOrderFilter.GeneralDiscountAmount = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.GeneralDiscountAmount;
+            IndirectSalesOrderFilter.TotalTaxAmount = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.TotalTaxAmount;
+            IndirectSalesOrderFilter.Total = IndirectSalesOrderContent_IndirectSalesOrderFilterDTO.Total;
+
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+            List<IndirectSalesOrderContent_IndirectSalesOrderDTO> IndirectSalesOrderContent_IndirectSalesOrderDTOs = IndirectSalesOrders
+                .Select(x => new IndirectSalesOrderContent_IndirectSalesOrderDTO(x)).ToList();
+            return IndirectSalesOrderContent_IndirectSalesOrderDTOs;
         }
         [Route(IndirectSalesOrderContentRoute.SingleListUnitOfMeasure), HttpPost]
         public async Task<List<IndirectSalesOrderContent_UnitOfMeasureDTO>> SingleListUnitOfMeasure([FromBody] IndirectSalesOrderContent_UnitOfMeasureFilterDTO IndirectSalesOrderContent_UnitOfMeasureFilterDTO)
@@ -574,7 +830,7 @@ namespace DMS.Rpc.indirect_sales_order_content
             UnitOfMeasureFilter.Code = IndirectSalesOrderContent_UnitOfMeasureFilterDTO.Code;
             UnitOfMeasureFilter.Name = IndirectSalesOrderContent_UnitOfMeasureFilterDTO.Name;
             UnitOfMeasureFilter.Description = IndirectSalesOrderContent_UnitOfMeasureFilterDTO.Description;
-            UnitOfMeasureFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            UnitOfMeasureFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
             List<IndirectSalesOrderContent_UnitOfMeasureDTO> IndirectSalesOrderContent_UnitOfMeasureDTOs = UnitOfMeasures

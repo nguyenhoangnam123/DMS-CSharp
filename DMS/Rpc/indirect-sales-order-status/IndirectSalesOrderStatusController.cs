@@ -21,6 +21,10 @@ namespace DMS.Rpc.indirect_sales_order_status
         private const string Default = Rpc + Module + "/indirect-sales-order-status";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
+        
+        
+
+        
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(IndirectSalesOrderStatusFilter.Id), FieldType.ID },
@@ -81,6 +85,7 @@ namespace DMS.Rpc.indirect_sales_order_status
             IndirectSalesOrderStatusFilter.Name = IndirectSalesOrderStatus_IndirectSalesOrderStatusFilterDTO.Name;
             return IndirectSalesOrderStatusFilter;
         }
+
 
 
     }

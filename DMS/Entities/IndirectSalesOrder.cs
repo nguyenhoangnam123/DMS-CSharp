@@ -9,6 +9,7 @@ namespace DMS.Entities
     public class IndirectSalesOrder : DataEntity,  IEquatable<IndirectSalesOrder>
     {
         public long Id { get; set; }
+        public string Code { get; set; }
         public long BuyerStoreId { get; set; }
         public string PhoneNumber { get; set; }
         public string StoreAddress { get; set; }
@@ -18,7 +19,7 @@ namespace DMS.Entities
         public DateTime OrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
         public long IndirectSalesOrderStatusId { get; set; }
-        public bool IsEditedPrice { get; set; }
+        public long EditedPriceStatusId { get; set; }
         public string Note { get; set; }
         public long SubTotal { get; set; }
         public long? GeneralDiscountPercentage { get; set; }
@@ -26,6 +27,7 @@ namespace DMS.Entities
         public long TotalTaxAmount { get; set; }
         public long Total { get; set; }
         public Store BuyerStore { get; set; }
+        public EditedPriceStatus EditedPriceStatus { get; set; }
         public IndirectSalesOrderStatus IndirectSalesOrderStatus { get; set; }
         public AppUser SaleEmployee { get; set; }
         public Store SellerStore { get; set; }
@@ -45,6 +47,7 @@ namespace DMS.Entities
     public class IndirectSalesOrderFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
+        public StringFilter Code { get; set; }
         public IdFilter BuyerStoreId { get; set; }
         public StringFilter PhoneNumber { get; set; }
         public StringFilter StoreAddress { get; set; }
@@ -54,6 +57,7 @@ namespace DMS.Entities
         public DateFilter OrderDate { get; set; }
         public DateFilter DeliveryDate { get; set; }
         public IdFilter IndirectSalesOrderStatusId { get; set; }
+        public IdFilter EditedPriceStatusId { get; set; }
         public StringFilter Note { get; set; }
         public LongFilter SubTotal { get; set; }
         public LongFilter GeneralDiscountPercentage { get; set; }
@@ -69,22 +73,23 @@ namespace DMS.Entities
     public enum IndirectSalesOrderOrder
     {
         Id = 0,
-        BuyerStore = 1,
-        PhoneNumber = 2,
-        StoreAddress = 3,
-        DeliveryAddress = 4,
-        SellerStore = 5,
-        SaleEmployee = 6,
-        OrderDate = 7,
-        DeliveryDate = 8,
-        IndirectSalesOrderStatus = 9,
-        IsEditedPrice = 10,
-        Note = 11,
-        SubTotal = 12,
-        GeneralDiscountPercentage = 13,
-        GeneralDiscountAmount = 14,
-        TotalTaxAmount = 15,
-        Total = 16,
+        Code = 1,
+        BuyerStore = 2,
+        PhoneNumber = 3,
+        StoreAddress = 4,
+        DeliveryAddress = 5,
+        SellerStore = 6,
+        SaleEmployee = 7,
+        OrderDate = 8,
+        DeliveryDate = 9,
+        IndirectSalesOrderStatus = 10,
+        EditedPriceStatus = 11,
+        Note = 12,
+        SubTotal = 13,
+        GeneralDiscountPercentage = 14,
+        GeneralDiscountAmount = 15,
+        TotalTaxAmount = 16,
+        Total = 17,
     }
 
     [Flags]
@@ -92,21 +97,22 @@ namespace DMS.Entities
     {
         ALL = E.ALL,
         Id = E._0,
-        BuyerStore = E._1,
-        PhoneNumber = E._2,
-        StoreAddress = E._3,
-        DeliveryAddress = E._4,
-        SellerStore = E._5,
-        SaleEmployee = E._6,
-        OrderDate = E._7,
-        DeliveryDate = E._8,
-        IndirectSalesOrderStatus = E._9,
-        IsEditedPrice = E._10,
-        Note = E._11,
-        SubTotal = E._12,
-        GeneralDiscountPercentage = E._13,
-        GeneralDiscountAmount = E._14,
-        TotalTaxAmount = E._15,
-        Total = E._16,
+        Code = E._1,
+        BuyerStore = E._2,
+        PhoneNumber = E._3,
+        StoreAddress = E._4,
+        DeliveryAddress = E._5,
+        SellerStore = E._6,
+        SaleEmployee = E._7,
+        OrderDate = E._8,
+        DeliveryDate = E._9,
+        IndirectSalesOrderStatus = E._10,
+        EditedPriceStatus = E._11,
+        Note = E._12,
+        SubTotal = E._13,
+        GeneralDiscountPercentage = E._14,
+        GeneralDiscountAmount = E._15,
+        TotalTaxAmount = E._16,
+        Total = E._17,
     }
 }

@@ -11,6 +11,8 @@ namespace DMS.Rpc.indirect_sales_order_promotion
         
         public long Id { get; set; }
         
+        public string Code { get; set; }
+        
         public long BuyerStoreId { get; set; }
         
         public string PhoneNumber { get; set; }
@@ -29,7 +31,7 @@ namespace DMS.Rpc.indirect_sales_order_promotion
         
         public long IndirectSalesOrderStatusId { get; set; }
         
-        public bool IsEditedPrice { get; set; }
+        public long EditedPriceStatusId { get; set; }
         
         public string Note { get; set; }
         
@@ -50,6 +52,8 @@ namespace DMS.Rpc.indirect_sales_order_promotion
             
             this.Id = IndirectSalesOrder.Id;
             
+            this.Code = IndirectSalesOrder.Code;
+            
             this.BuyerStoreId = IndirectSalesOrder.BuyerStoreId;
             
             this.PhoneNumber = IndirectSalesOrder.PhoneNumber;
@@ -68,7 +72,7 @@ namespace DMS.Rpc.indirect_sales_order_promotion
             
             this.IndirectSalesOrderStatusId = IndirectSalesOrder.IndirectSalesOrderStatusId;
             
-            this.IsEditedPrice = IndirectSalesOrder.IsEditedPrice;
+            this.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
             
             this.Note = IndirectSalesOrder.Note;
             
@@ -91,6 +95,8 @@ namespace DMS.Rpc.indirect_sales_order_promotion
         
         public IdFilter Id { get; set; }
         
+        public StringFilter Code { get; set; }
+        
         public IdFilter BuyerStoreId { get; set; }
         
         public StringFilter PhoneNumber { get; set; }
@@ -108,6 +114,8 @@ namespace DMS.Rpc.indirect_sales_order_promotion
         public DateFilter DeliveryDate { get; set; }
         
         public IdFilter IndirectSalesOrderStatusId { get; set; }
+        
+        public IdFilter EditedPriceStatusId { get; set; }
         
         public StringFilter Note { get; set; }
         

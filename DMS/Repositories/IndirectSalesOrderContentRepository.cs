@@ -241,6 +241,7 @@ namespace DMS.Repositories
                 IndirectSalesOrder = filter.Selects.Contains(IndirectSalesOrderContentSelect.IndirectSalesOrder) && q.IndirectSalesOrder != null ? new IndirectSalesOrder
                 {
                     Id = q.IndirectSalesOrder.Id,
+                    Code = q.IndirectSalesOrder.Code,
                     BuyerStoreId = q.IndirectSalesOrder.BuyerStoreId,
                     PhoneNumber = q.IndirectSalesOrder.PhoneNumber,
                     StoreAddress = q.IndirectSalesOrder.StoreAddress,
@@ -250,24 +251,13 @@ namespace DMS.Repositories
                     OrderDate = q.IndirectSalesOrder.OrderDate,
                     DeliveryDate = q.IndirectSalesOrder.DeliveryDate,
                     IndirectSalesOrderStatusId = q.IndirectSalesOrder.IndirectSalesOrderStatusId,
-                    IsEditedPrice = q.IndirectSalesOrder.IsEditedPrice,
+                    EditedPriceStatusId = q.IndirectSalesOrder.EditedPriceStatusId,
                     Note = q.IndirectSalesOrder.Note,
                     SubTotal = q.IndirectSalesOrder.SubTotal,
                     GeneralDiscountPercentage = q.IndirectSalesOrder.GeneralDiscountPercentage,
                     GeneralDiscountAmount = q.IndirectSalesOrder.GeneralDiscountAmount,
                     TotalTaxAmount = q.IndirectSalesOrder.TotalTaxAmount,
                     Total = q.IndirectSalesOrder.Total,
-                } : null,
-                IndirectSalesOrderNavigation = filter.Selects.Contains(IndirectSalesOrderContentSelect.IndirectSalesOrderNavigation) && q.IndirectSalesOrderNavigation != null ? new Item
-                {
-                    Id = q.IndirectSalesOrderNavigation.Id,
-                    ProductId = q.IndirectSalesOrderNavigation.ProductId,
-                    Code = q.IndirectSalesOrderNavigation.Code,
-                    Name = q.IndirectSalesOrderNavigation.Name,
-                    ScanCode = q.IndirectSalesOrderNavigation.ScanCode,
-                    SalePrice = q.IndirectSalesOrderNavigation.SalePrice,
-                    RetailPrice = q.IndirectSalesOrderNavigation.RetailPrice,
-                    StatusId = q.IndirectSalesOrderNavigation.StatusId,
                 } : null,
                 PrimaryUnitOfMeasure = filter.Selects.Contains(IndirectSalesOrderContentSelect.PrimaryUnitOfMeasure) && q.PrimaryUnitOfMeasure != null ? new UnitOfMeasure
                 {
@@ -329,6 +319,7 @@ namespace DMS.Repositories
                 IndirectSalesOrder = x.IndirectSalesOrder == null ? null : new IndirectSalesOrder
                 {
                     Id = x.IndirectSalesOrder.Id,
+                    Code = x.IndirectSalesOrder.Code,
                     BuyerStoreId = x.IndirectSalesOrder.BuyerStoreId,
                     PhoneNumber = x.IndirectSalesOrder.PhoneNumber,
                     StoreAddress = x.IndirectSalesOrder.StoreAddress,
@@ -338,24 +329,13 @@ namespace DMS.Repositories
                     OrderDate = x.IndirectSalesOrder.OrderDate,
                     DeliveryDate = x.IndirectSalesOrder.DeliveryDate,
                     IndirectSalesOrderStatusId = x.IndirectSalesOrder.IndirectSalesOrderStatusId,
-                    IsEditedPrice = x.IndirectSalesOrder.IsEditedPrice,
+                    EditedPriceStatusId = x.IndirectSalesOrder.EditedPriceStatusId,
                     Note = x.IndirectSalesOrder.Note,
                     SubTotal = x.IndirectSalesOrder.SubTotal,
                     GeneralDiscountPercentage = x.IndirectSalesOrder.GeneralDiscountPercentage,
                     GeneralDiscountAmount = x.IndirectSalesOrder.GeneralDiscountAmount,
                     TotalTaxAmount = x.IndirectSalesOrder.TotalTaxAmount,
                     Total = x.IndirectSalesOrder.Total,
-                },
-                IndirectSalesOrderNavigation = x.IndirectSalesOrderNavigation == null ? null : new Item
-                {
-                    Id = x.IndirectSalesOrderNavigation.Id,
-                    ProductId = x.IndirectSalesOrderNavigation.ProductId,
-                    Code = x.IndirectSalesOrderNavigation.Code,
-                    Name = x.IndirectSalesOrderNavigation.Name,
-                    ScanCode = x.IndirectSalesOrderNavigation.ScanCode,
-                    SalePrice = x.IndirectSalesOrderNavigation.SalePrice,
-                    RetailPrice = x.IndirectSalesOrderNavigation.RetailPrice,
-                    StatusId = x.IndirectSalesOrderNavigation.StatusId,
                 },
                 PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
                 {

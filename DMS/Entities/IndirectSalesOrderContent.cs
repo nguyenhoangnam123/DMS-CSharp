@@ -24,7 +24,6 @@ namespace DMS.Entities
         public decimal? TaxPercentage { get; set; }
         public long? TaxAmount { get; set; }
         public IndirectSalesOrder IndirectSalesOrder { get; set; }
-        public Item IndirectSalesOrderNavigation { get; set; }
         public UnitOfMeasure PrimaryUnitOfMeasure { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
 
@@ -99,6 +98,5 @@ namespace DMS.Entities
         Amount = E._12,
         TaxPercentage = E._13,
         TaxAmount = E._14,
-        IndirectSalesOrderNavigation = E._15
     }
 }

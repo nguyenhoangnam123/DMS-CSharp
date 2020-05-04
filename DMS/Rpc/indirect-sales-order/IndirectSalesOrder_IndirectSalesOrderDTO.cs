@@ -9,6 +9,7 @@ namespace DMS.Rpc.indirect_sales_order
     public class IndirectSalesOrder_IndirectSalesOrderDTO : DataDTO
     {
         public long Id { get; set; }
+        public string Code { get; set; }
         public long BuyerStoreId { get; set; }
         public string PhoneNumber { get; set; }
         public string StoreAddress { get; set; }
@@ -18,7 +19,7 @@ namespace DMS.Rpc.indirect_sales_order
         public DateTime OrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
         public long IndirectSalesOrderStatusId { get; set; }
-        public bool IsEditedPrice { get; set; }
+        public long EditedPriceStatusId { get; set; }
         public string Note { get; set; }
         public long SubTotal { get; set; }
         public long? GeneralDiscountPercentage { get; set; }
@@ -26,6 +27,7 @@ namespace DMS.Rpc.indirect_sales_order
         public long TotalTaxAmount { get; set; }
         public long Total { get; set; }
         public IndirectSalesOrder_StoreDTO BuyerStore { get; set; }
+        public IndirectSalesOrder_EditedPriceStatusDTO EditedPriceStatus { get; set; }
         public IndirectSalesOrder_IndirectSalesOrderStatusDTO IndirectSalesOrderStatus { get; set; }
         public IndirectSalesOrder_AppUserDTO SaleEmployee { get; set; }
         public IndirectSalesOrder_StoreDTO SellerStore { get; set; }
@@ -35,6 +37,7 @@ namespace DMS.Rpc.indirect_sales_order
         public IndirectSalesOrder_IndirectSalesOrderDTO(IndirectSalesOrder IndirectSalesOrder)
         {
             this.Id = IndirectSalesOrder.Id;
+            this.Code = IndirectSalesOrder.Code;
             this.BuyerStoreId = IndirectSalesOrder.BuyerStoreId;
             this.PhoneNumber = IndirectSalesOrder.PhoneNumber;
             this.StoreAddress = IndirectSalesOrder.StoreAddress;
@@ -44,7 +47,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.OrderDate = IndirectSalesOrder.OrderDate;
             this.DeliveryDate = IndirectSalesOrder.DeliveryDate;
             this.IndirectSalesOrderStatusId = IndirectSalesOrder.IndirectSalesOrderStatusId;
-            this.IsEditedPrice = IndirectSalesOrder.IsEditedPrice;
+            this.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
             this.Note = IndirectSalesOrder.Note;
             this.SubTotal = IndirectSalesOrder.SubTotal;
             this.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
@@ -52,6 +55,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
             this.Total = IndirectSalesOrder.Total;
             this.BuyerStore = IndirectSalesOrder.BuyerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.BuyerStore);
+            this.EditedPriceStatus = IndirectSalesOrder.EditedPriceStatus == null ? null : new IndirectSalesOrder_EditedPriceStatusDTO(IndirectSalesOrder.EditedPriceStatus);
             this.IndirectSalesOrderStatus = IndirectSalesOrder.IndirectSalesOrderStatus == null ? null : new IndirectSalesOrder_IndirectSalesOrderStatusDTO(IndirectSalesOrder.IndirectSalesOrderStatus);
             this.SaleEmployee = IndirectSalesOrder.SaleEmployee == null ? null : new IndirectSalesOrder_AppUserDTO(IndirectSalesOrder.SaleEmployee);
             this.SellerStore = IndirectSalesOrder.SellerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.SellerStore);
@@ -64,6 +68,7 @@ namespace DMS.Rpc.indirect_sales_order
     public class IndirectSalesOrder_IndirectSalesOrderFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
+        public StringFilter Code { get; set; }
         public IdFilter BuyerStoreId { get; set; }
         public StringFilter PhoneNumber { get; set; }
         public StringFilter StoreAddress { get; set; }
@@ -73,6 +78,7 @@ namespace DMS.Rpc.indirect_sales_order
         public DateFilter OrderDate { get; set; }
         public DateFilter DeliveryDate { get; set; }
         public IdFilter IndirectSalesOrderStatusId { get; set; }
+        public IdFilter EditedPriceStatusId { get; set; }
         public StringFilter Note { get; set; }
         public LongFilter SubTotal { get; set; }
         public LongFilter GeneralDiscountPercentage { get; set; }

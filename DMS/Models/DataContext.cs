@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -10,6 +10,7 @@ namespace DMS.Models
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
         public virtual DbSet<DistrictDAO> District { get; set; }
+        public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
@@ -71,12 +72,14 @@ namespace DMS.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=dms;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
+                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=DMS;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
+
             modelBuilder.Entity<AppUserDAO>(entity =>
             {
                 entity.ToTable("AppUser", "MDM");
@@ -213,6 +216,19 @@ namespace DMS.Models
                     .HasConstraintName("FK_District_Status");
             });
 
+            modelBuilder.Entity<EditedPriceStatusDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
             modelBuilder.Entity<EventMessageDAO>(entity =>
             {
                 entity.ToTable("EventMessage", "MDM");
@@ -268,6 +284,10 @@ namespace DMS.Models
 
             modelBuilder.Entity<IndirectSalesOrderDAO>(entity =>
             {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
                 entity.Property(e => e.DeliveryAddress).HasMaxLength(4000);
 
                 entity.Property(e => e.DeliveryDate).HasColumnType("date");
@@ -285,6 +305,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.BuyerStoreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrder_Store");
+
+                entity.HasOne(d => d.EditedPriceStatus)
+                    .WithMany(p => p.IndirectSalesOrders)
+                    .HasForeignKey(d => d.EditedPriceStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrder_EditedPriceStatus");
 
                 entity.HasOne(d => d.IndirectSalesOrderStatus)
                     .WithMany(p => p.IndirectSalesOrders)
@@ -770,8 +796,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(100)
-                    .IsFixedLength();
+                    .HasMaxLength(100);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1264,19 +1289,16 @@ namespace DMS.Models
                 entity.HasOne(d => d.District)
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.DistrictId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Supplier_District");
 
                 entity.HasOne(d => d.PersonInCharge)
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.PersonInChargeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Supplier_AppUser");
 
                 entity.HasOne(d => d.Province)
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.ProvinceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Supplier_Province");
 
                 entity.HasOne(d => d.Status)
@@ -1288,7 +1310,6 @@ namespace DMS.Models
                 entity.HasOne(d => d.Ward)
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.WardId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Supplier_Ward");
             });
 
@@ -1651,9 +1672,9 @@ namespace DMS.Models
                     .HasMaxLength(500);
             });
 
-            OnModelCreatingPartial(modelBuilder);
+            OnModelCreatingExt(modelBuilder);
         }
 
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+        partial void OnModelCreatingExt(ModelBuilder modelBuilder);
     }
 }

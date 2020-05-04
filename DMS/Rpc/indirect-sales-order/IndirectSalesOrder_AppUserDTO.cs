@@ -37,8 +37,6 @@ namespace DMS.Rpc.indirect_sales_order
         
         public DateTime? Birthday { get; set; }
         
-        public Guid RowId { get; set; }
-        
         public long? ProvinceId { get; set; }
         
 
@@ -74,9 +72,7 @@ namespace DMS.Rpc.indirect_sales_order
             
             this.Birthday = AppUser.Birthday;
             
-            this.RowId = AppUser.RowId;
-            
-            //this.ProvinceId = AppUser.ProvinceId;
+            this.ProvinceId = AppUser.ProvinceId;
             
             this.Errors = AppUser.Errors;
         }
@@ -112,8 +108,6 @@ namespace DMS.Rpc.indirect_sales_order
         public StringFilter Avatar { get; set; }
         
         public DateFilter Birthday { get; set; }
-        
-        public IdFilter RowId { get; set; }
         
         public IdFilter ProvinceId { get; set; }
         

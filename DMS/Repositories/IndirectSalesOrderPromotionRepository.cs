@@ -164,6 +164,7 @@ namespace DMS.Repositories
                 IndirectSalesOrder = filter.Selects.Contains(IndirectSalesOrderPromotionSelect.IndirectSalesOrder) && q.IndirectSalesOrder != null ? new IndirectSalesOrder
                 {
                     Id = q.IndirectSalesOrder.Id,
+                    Code = q.IndirectSalesOrder.Code,
                     BuyerStoreId = q.IndirectSalesOrder.BuyerStoreId,
                     PhoneNumber = q.IndirectSalesOrder.PhoneNumber,
                     StoreAddress = q.IndirectSalesOrder.StoreAddress,
@@ -173,7 +174,7 @@ namespace DMS.Repositories
                     OrderDate = q.IndirectSalesOrder.OrderDate,
                     DeliveryDate = q.IndirectSalesOrder.DeliveryDate,
                     IndirectSalesOrderStatusId = q.IndirectSalesOrder.IndirectSalesOrderStatusId,
-                    IsEditedPrice = q.IndirectSalesOrder.IsEditedPrice,
+                    EditedPriceStatusId = q.IndirectSalesOrder.EditedPriceStatusId,
                     Note = q.IndirectSalesOrder.Note,
                     SubTotal = q.IndirectSalesOrder.SubTotal,
                     GeneralDiscountPercentage = q.IndirectSalesOrder.GeneralDiscountPercentage,
@@ -245,6 +246,7 @@ namespace DMS.Repositories
                 IndirectSalesOrder = x.IndirectSalesOrder == null ? null : new IndirectSalesOrder
                 {
                     Id = x.IndirectSalesOrder.Id,
+                    Code = x.IndirectSalesOrder.Code,
                     BuyerStoreId = x.IndirectSalesOrder.BuyerStoreId,
                     PhoneNumber = x.IndirectSalesOrder.PhoneNumber,
                     StoreAddress = x.IndirectSalesOrder.StoreAddress,
@@ -254,7 +256,7 @@ namespace DMS.Repositories
                     OrderDate = x.IndirectSalesOrder.OrderDate,
                     DeliveryDate = x.IndirectSalesOrder.DeliveryDate,
                     IndirectSalesOrderStatusId = x.IndirectSalesOrder.IndirectSalesOrderStatusId,
-                    IsEditedPrice = x.IndirectSalesOrder.IsEditedPrice,
+                    EditedPriceStatusId = x.IndirectSalesOrder.EditedPriceStatusId,
                     Note = x.IndirectSalesOrder.Note,
                     SubTotal = x.IndirectSalesOrder.SubTotal,
                     GeneralDiscountPercentage = x.IndirectSalesOrder.GeneralDiscountPercentage,
