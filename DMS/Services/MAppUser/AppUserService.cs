@@ -120,6 +120,8 @@ namespace DMS.Services.MAppUser
                         subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Birthday))
                         subFilter.Birthday = Map(subFilter.Birthday, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ProvinceId))
+                        subFilter.ProvinceId = Map(subFilter.ProvinceId, FilterPermissionDefinition);
                 }
             }
             return filter;

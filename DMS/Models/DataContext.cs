@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -72,12 +72,14 @@ namespace DMS.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=dms;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
+                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=DMS;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
+
             modelBuilder.Entity<AppUserDAO>(entity =>
             {
                 entity.ToTable("AppUser", "MDM");
@@ -792,8 +794,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(100)
-                    .IsFixedLength();
+                    .HasMaxLength(100);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1669,9 +1670,9 @@ namespace DMS.Models
                     .HasMaxLength(500);
             });
 
-            OnModelCreatingPartial(modelBuilder);
+            OnModelCreatingExt(modelBuilder);
         }
 
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+        partial void OnModelCreatingExt(ModelBuilder modelBuilder);
     }
 }

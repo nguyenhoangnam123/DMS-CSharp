@@ -24,8 +24,10 @@ namespace DMS.Entities
         public long? OrganizationId { get; set; }
         public long? SexId { get; set; }
         public long StatusId { get; set; }
+        public long? ProvinceId { get; set; }
         public Guid RowId { get; set; }
         public Organization Organization { get; set; }
+        public Province Province { get; set; }
         public Sex Sex { get; set; }
         public Status Status { get; set; }
         public List<AppUserRoleMapping> AppUserRoleMappings { get; set; }
@@ -55,6 +57,7 @@ namespace DMS.Entities
         public IdFilter SexId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter RoleId { get; set; }
+        public IdFilter ProvinceId { get; set; }
         public DateFilter Birthday { get; set; }
         public List<AppUserFilter> OrFilter { get; set; }
         public AppUserOrder OrderBy { get; set; }
@@ -77,6 +80,7 @@ namespace DMS.Entities
         Sex = 10,
         Status = 11,
         Birthday = 12,
+        Province = 13,
     }
 
     [Flags]
@@ -98,5 +102,6 @@ namespace DMS.Entities
         Birthday = E._12,
         RowId = E._13,
         Avatar = E._14,
+        Province = E._15,
     }
 }
