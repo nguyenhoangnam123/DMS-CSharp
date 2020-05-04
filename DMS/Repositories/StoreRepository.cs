@@ -340,8 +340,7 @@ namespace DMS.Repositories
                     StatusId = q.Organization.StatusId,
                     Phone = q.Organization.Phone,
                     Address = q.Organization.Address,
-                    Latitude = q.Organization.Latitude,
-                    Longitude = q.Organization.Longitude,
+                    Email = q.Organization.Email,
                 } : null,
                 ParentStore = filter.Selects.Contains(StoreSelect.ParentStore) && q.ParentStore != null ? new Store
                 {
@@ -503,8 +502,7 @@ namespace DMS.Repositories
                     StatusId = x.Organization.StatusId,
                     Phone = x.Organization.Phone,
                     Address = x.Organization.Address,
-                    Latitude = x.Organization.Latitude,
-                    Longitude = x.Organization.Longitude,
+                    Email = x.Organization.Email,
                 },
                 ParentStore = x.ParentStore == null ? null : new Store
                 {

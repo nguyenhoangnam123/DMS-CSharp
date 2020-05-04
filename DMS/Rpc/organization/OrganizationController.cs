@@ -45,9 +45,8 @@ namespace DMS.Rpc.organization
             { nameof(OrganizationFilter.Level), FieldType.LONG },
             { nameof(OrganizationFilter.StatusId), FieldType.ID },
             { nameof(OrganizationFilter.Phone), FieldType.STRING },
+            { nameof(OrganizationFilter.Email), FieldType.STRING },
             { nameof(OrganizationFilter.Address), FieldType.STRING },
-            { nameof(OrganizationFilter.Latitude), FieldType.DECIMAL },
-            { nameof(OrganizationFilter.Longitude), FieldType.DECIMAL },
         };
     }
 
@@ -178,8 +177,7 @@ namespace DMS.Rpc.organization
             Organization.StatusId = Organization_OrganizationDTO.StatusId;
             Organization.Phone = Organization_OrganizationDTO.Phone;
             Organization.Address = Organization_OrganizationDTO.Address;
-            Organization.Latitude = Organization_OrganizationDTO.Latitude;
-            Organization.Longitude = Organization_OrganizationDTO.Longitude;
+            Organization.Email = Organization_OrganizationDTO.Email;
             Organization.Parent = Organization_OrganizationDTO.Parent == null ? null : new Organization
             {
                 Id = Organization_OrganizationDTO.Parent.Id,
@@ -191,8 +189,7 @@ namespace DMS.Rpc.organization
                 StatusId = Organization_OrganizationDTO.Parent.StatusId,
                 Phone = Organization_OrganizationDTO.Parent.Phone,
                 Address = Organization_OrganizationDTO.Parent.Address,
-                Latitude = Organization_OrganizationDTO.Parent.Latitude,
-                Longitude = Organization_OrganizationDTO.Parent.Longitude,
+                Email = Organization_OrganizationDTO.Parent.Email,
             };
             Organization.Status = Organization_OrganizationDTO.Status == null ? null : new Status
             {
@@ -242,8 +239,7 @@ namespace DMS.Rpc.organization
             OrganizationFilter.StatusId = Organization_OrganizationFilterDTO.StatusId;
             OrganizationFilter.Phone = Organization_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = Organization_OrganizationFilterDTO.Address;
-            OrganizationFilter.Latitude = Organization_OrganizationFilterDTO.Latitude;
-            OrganizationFilter.Longitude = Organization_OrganizationFilterDTO.Longitude;
+            OrganizationFilter.Email = Organization_OrganizationFilterDTO.Email;
             return OrganizationFilter;
         }
 

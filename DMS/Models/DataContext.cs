@@ -10,6 +10,7 @@ namespace DMS.Models
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
         public virtual DbSet<DistrictDAO> District { get; set; }
+        public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
@@ -213,6 +214,19 @@ namespace DMS.Models
                     .HasConstraintName("FK_District_Status");
             });
 
+            modelBuilder.Entity<EditedPriceStatusDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
             modelBuilder.Entity<EventMessageDAO>(entity =>
             {
                 entity.ToTable("EventMessage", "MDM");
@@ -268,6 +282,10 @@ namespace DMS.Models
 
             modelBuilder.Entity<IndirectSalesOrderDAO>(entity =>
             {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
                 entity.Property(e => e.DeliveryAddress).HasMaxLength(4000);
 
                 entity.Property(e => e.DeliveryDate).HasColumnType("date");
@@ -285,6 +303,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.BuyerStoreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrder_Store");
+
+                entity.HasOne(d => d.EditedPriceStatus)
+                    .WithMany(p => p.IndirectSalesOrders)
+                    .HasForeignKey(d => d.EditedPriceStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrder_EditedPriceStatus");
 
                 entity.HasOne(d => d.IndirectSalesOrderStatus)
                     .WithMany(p => p.IndirectSalesOrders)
@@ -494,9 +518,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Email).HasMaxLength(100);
 
                 entity.Property(e => e.Name)
                     .IsRequired()

@@ -862,8 +862,7 @@ namespace DMS.Rpc.store
                 StatusId = Store_StoreDTO.Organization.StatusId,
                 Phone = Store_StoreDTO.Organization.Phone,
                 Address = Store_StoreDTO.Organization.Address,
-                Latitude = Store_StoreDTO.Organization.Latitude,
-                Longitude = Store_StoreDTO.Organization.Longitude,
+                Email = Store_StoreDTO.Organization.Email,
             };
             Store.ParentStore = Store_StoreDTO.ParentStore == null ? null : new Store
             {

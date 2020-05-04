@@ -25,13 +25,8 @@ namespace DMS.Rpc.warehouse
         public long StatusId { get; set; }
 
         public string Phone { get; set; }
-
+        public string Email { get; set; }
         public string Address { get; set; }
-
-        public decimal? Latitude { get; set; }
-
-        public decimal? Longitude { get; set; }
-
 
         public Warehouse_OrganizationDTO() { }
         public Warehouse_OrganizationDTO(Organization Organization)
@@ -55,10 +50,7 @@ namespace DMS.Rpc.warehouse
 
             this.Address = Organization.Address;
 
-            this.Latitude = Organization.Latitude;
-
-            this.Longitude = Organization.Longitude;
-
+            this.Email = Organization.Email;
         }
     }
 
@@ -80,12 +72,8 @@ namespace DMS.Rpc.warehouse
         public IdFilter StatusId { get; set; }
 
         public StringFilter Phone { get; set; }
-
+        public StringFilter Email { get; set; }
         public StringFilter Address { get; set; }
-
-        public DecimalFilter Latitude { get; set; }
-
-        public DecimalFilter Longitude { get; set; }
 
         public OrganizationOrder OrderBy { get; set; }
     }

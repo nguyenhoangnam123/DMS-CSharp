@@ -292,8 +292,7 @@ namespace DMS.Repositories
                         StatusId = x.Organization.StatusId,
                         Phone = x.Organization.Phone,
                         Address = x.Organization.Address,
-                        Latitude = x.Organization.Latitude,
-                        Longitude = x.Organization.Longitude,
+                        Email = x.Organization.Email,
                     },
                     ParentStore = new Store
                     {

@@ -45,12 +45,10 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.Phone != null)
                 query = query.Where(q => q.Phone, filter.Phone);
+            if (filter.Email != null)
+                query = query.Where(q => q.Email, filter.Email);
             if (filter.Address != null)
                 query = query.Where(q => q.Address, filter.Address);
-            if (filter.Latitude != null)
-                query = query.Where(q => q.Latitude, filter.Latitude);
-            if (filter.Longitude != null)
-                query = query.Where(q => q.Longitude, filter.Longitude);
             query = OrFilter(query, filter);
             return query;
         }
@@ -79,12 +77,10 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
                 if (filter.Phone != null)
                     queryable = queryable.Where(q => q.Phone, filter.Phone);
+                if (filter.Email != null)
+                    queryable = queryable.Where(q => q.Email, filter.Email);
                 if (filter.Address != null)
                     queryable = queryable.Where(q => q.Address, filter.Address);
-                if (filter.Latitude != null)
-                    queryable = queryable.Where(q => q.Latitude, filter.Latitude);
-                if (filter.Longitude != null)
-                    queryable = queryable.Where(q => q.Longitude, filter.Longitude);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -124,11 +120,8 @@ namespace DMS.Repositories
                         case OrganizationOrder.Address:
                             query = query.OrderBy(q => q.Address);
                             break;
-                        case OrganizationOrder.Latitude:
-                            query = query.OrderBy(q => q.Latitude);
-                            break;
-                        case OrganizationOrder.Longitude:
-                            query = query.OrderBy(q => q.Longitude);
+                        case OrganizationOrder.Email:
+                            query = query.OrderBy(q => q.Email);
                             break;
                     }
                     break;
@@ -162,11 +155,8 @@ namespace DMS.Repositories
                         case OrganizationOrder.Address:
                             query = query.OrderByDescending(q => q.Address);
                             break;
-                        case OrganizationOrder.Latitude:
-                            query = query.OrderByDescending(q => q.Latitude);
-                            break;
-                        case OrganizationOrder.Longitude:
-                            query = query.OrderByDescending(q => q.Longitude);
+                        case OrganizationOrder.Email:
+                            query = query.OrderByDescending(q => q.Email);
                             break;
                     }
                     break;
@@ -188,8 +178,7 @@ namespace DMS.Repositories
                 StatusId = filter.Selects.Contains(OrganizationSelect.Status) ? q.StatusId : default(long),
                 Phone = filter.Selects.Contains(OrganizationSelect.Phone) ? q.Phone : default(string),
                 Address = filter.Selects.Contains(OrganizationSelect.Address) ? q.Address : default(string),
-                Latitude = filter.Selects.Contains(OrganizationSelect.Latitude) ? q.Latitude : default(decimal?),
-                Longitude = filter.Selects.Contains(OrganizationSelect.Longitude) ? q.Longitude : default(decimal?),
+                Email = filter.Selects.Contains(OrganizationSelect.Email) ? q.Email : default(string),
                 Parent = filter.Selects.Contains(OrganizationSelect.Parent) && q.Parent != null ? new Organization
                 {
                     Id = q.Parent.Id,
@@ -201,8 +190,7 @@ namespace DMS.Repositories
                     StatusId = q.Parent.StatusId,
                     Phone = q.Parent.Phone,
                     Address = q.Parent.Address,
-                    Latitude = q.Parent.Latitude,
-                    Longitude = q.Parent.Longitude,
+                    Email = q.Parent.Email,
                 } : null,
                 Status = filter.Selects.Contains(OrganizationSelect.Status) && q.Status != null ? new Status
                 {
@@ -247,8 +235,7 @@ namespace DMS.Repositories
                     StatusId = x.StatusId,
                     Phone = x.Phone,
                     Address = x.Address,
-                    Latitude = x.Latitude,
-                    Longitude = x.Longitude,
+                    Email = x.Email,
                     Parent = x.Parent == null ? null : new Organization
                     {
                         Id = x.Parent.Id,
@@ -260,8 +247,7 @@ namespace DMS.Repositories
                         StatusId = x.Parent.StatusId,
                         Phone = x.Parent.Phone,
                         Address = x.Parent.Address,
-                        Latitude = x.Parent.Latitude,
-                        Longitude = x.Parent.Longitude,
+                        Email = x.Parent.Email,
                     },
                     Status = x.Status == null ? null : new Status
                     {

@@ -16,9 +16,8 @@ namespace DMS.Entities
         public long Level { get; set; }
         public long StatusId { get; set; }
         public string Phone { get; set; }
+        public string Email { get; set; }
         public string Address { get; set; }
-        public decimal? Latitude { get; set; }
-        public decimal? Longitude { get; set; }
         public Guid RowId { get; set; }
         public Organization Parent { get; set; }
         public Status Status { get; set; }
@@ -47,9 +46,8 @@ namespace DMS.Entities
         public LongFilter Level { get; set; }
         public IdFilter StatusId { get; set; }
         public StringFilter Phone { get; set; }
+        public StringFilter Email { get; set; }
         public StringFilter Address { get; set; }
-        public DecimalFilter Latitude { get; set; }
-        public DecimalFilter Longitude { get; set; }
         public List<OrganizationFilter> OrFilter { get; set; }
         public OrganizationOrder OrderBy { get; set; }
         public OrganizationSelect Selects { get; set; }
@@ -67,8 +65,7 @@ namespace DMS.Entities
         Status = 6,
         Phone = 7,
         Address = 8,
-        Latitude = 9,
-        Longitude = 10,
+        Email = 9,
     }
 
     [Flags]
@@ -84,8 +81,7 @@ namespace DMS.Entities
         Status = E._6,
         Phone = E._7,
         Address = E._8,
-        Latitude = E._9,
-        Longitude = E._10,
-        RowId = E._11,
+        Email = E._9,
+        RowId = E._10,
     }
 }

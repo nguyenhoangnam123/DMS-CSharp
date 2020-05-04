@@ -289,8 +289,7 @@ namespace DMS.Rpc.app_user
                 StatusId = AppUser_AppUserDTO.Organization.StatusId,
                 Phone = AppUser_AppUserDTO.Organization.Phone,
                 Address = AppUser_AppUserDTO.Organization.Address,
-                Latitude = AppUser_AppUserDTO.Organization.Latitude,
-                Longitude = AppUser_AppUserDTO.Organization.Longitude,
+                Email = AppUser_AppUserDTO.Organization.Email,
             };
             AppUser.Sex = AppUser_AppUserDTO.Sex == null ? null : new Sex
             {
@@ -362,8 +361,7 @@ namespace DMS.Rpc.app_user
             OrganizationFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
             OrganizationFilter.Phone = AppUser_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = AppUser_OrganizationFilterDTO.Address;
-            OrganizationFilter.Latitude = AppUser_OrganizationFilterDTO.Latitude;
-            OrganizationFilter.Longitude = AppUser_OrganizationFilterDTO.Longitude;
+            OrganizationFilter.Email = AppUser_OrganizationFilterDTO.Email;
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<AppUser_OrganizationDTO> AppUser_OrganizationDTOs = Organizations

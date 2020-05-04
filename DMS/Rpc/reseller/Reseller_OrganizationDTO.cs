@@ -17,9 +17,8 @@ namespace DMS.Rpc.reseller
         public long Level { get; set; }
         public long StatusId { get; set; }
         public string Phone { get; set; }
+        public string Email { get; set; }
         public string Address { get; set; }
-        public decimal? Latitude { get; set; }
-        public decimal? Longitude { get; set; }
         public Reseller_OrganizationDTO Parent { get; set; }
         public Reseller_OrganizationDTO() { }
         public Reseller_OrganizationDTO(Organization Organization)
@@ -33,8 +32,7 @@ namespace DMS.Rpc.reseller
             this.StatusId = Organization.StatusId;
             this.Phone = Organization.Phone;
             this.Address = Organization.Address;
-            this.Latitude = Organization.Latitude;
-            this.Longitude = Organization.Longitude;
+            this.Email = Organization.Email;
             this.Parent = Organization.Parent == null ? null : new Reseller_OrganizationDTO(Organization.Parent);
             this.Errors = Organization.Errors;
         }
@@ -50,9 +48,8 @@ namespace DMS.Rpc.reseller
         public LongFilter Level { get; set; }
         public IdFilter StatusId { get; set; }
         public StringFilter Phone { get; set; }
+        public StringFilter Email { get; set; }
         public StringFilter Address { get; set; }
-        public DecimalFilter Latitude { get; set; }
-        public DecimalFilter Longitude { get; set; }
         public OrganizationOrder OrderBy { get; set; }
     }
 }

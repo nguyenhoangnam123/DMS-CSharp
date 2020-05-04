@@ -231,8 +231,7 @@ namespace DMS.Repositories
                     Phone = q.Organization.Phone,
                     Path = q.Organization.Path,
                     ParentId = q.Organization.ParentId,
-                    Latitude = q.Organization.Latitude,
-                    Longitude = q.Organization.Longitude,
+                    Email = q.Organization.Email,
                     StatusId = q.Organization.StatusId,
                     Level = q.Organization.Level
                 } : null,
@@ -297,8 +296,7 @@ namespace DMS.Repositories
                     Phone = x.Organization.Phone,
                     Path = x.Organization.Path,
                     ParentId = x.Organization.ParentId,
-                    Latitude = x.Organization.Latitude,
-                    Longitude = x.Organization.Longitude,
+                    Email = x.Organization.Email,
                     StatusId = x.Organization.StatusId,
                     Level = x.Organization.Level
                 },

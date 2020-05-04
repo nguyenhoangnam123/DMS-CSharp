@@ -557,8 +557,7 @@ namespace DMS.Rpc.reseller
             OrganizationFilter.Code = Reseller_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = Reseller_OrganizationFilterDTO.Name;
             OrganizationFilter.Address = Reseller_OrganizationFilterDTO.Address;
-            OrganizationFilter.Latitude = Reseller_OrganizationFilterDTO.Latitude;
-            OrganizationFilter.Longitude = Reseller_OrganizationFilterDTO.Longitude;
+            OrganizationFilter.Email = Reseller_OrganizationFilterDTO.Email;
             OrganizationFilter.ParentId = Reseller_OrganizationFilterDTO.ParentId;
             OrganizationFilter.Path = Reseller_OrganizationFilterDTO.Path;
             OrganizationFilter.Phone = Reseller_OrganizationFilterDTO.Phone;
