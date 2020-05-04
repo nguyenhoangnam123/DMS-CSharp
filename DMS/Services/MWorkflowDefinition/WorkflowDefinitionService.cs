@@ -266,10 +266,10 @@ namespace DMS.Services.MWorkflowDefinition
             }
             else
             {
-                WorkflowDefinition = await Get(WorkflowDefinition.Id);
+                WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
                 long RequestStateId = RequestStateEnum.APPROVING.Id;
                 List<RequestWorkflow> RequestWorkflows = new List<RequestWorkflow>();
-                WorkflowStep Start = null;
+                List<WorkflowStep> Starts = new List<WorkflowStep>();
                 // tìm điểm bắt đầu của workflow
                 // nút không có ai trỏ đến là nút bắt đầu
                 // trong trường hợp có nhiều nút bắt đầu thì xét có nút nào thuộc các role hiện tại không
@@ -278,8 +278,7 @@ namespace DMS.Services.MWorkflowDefinition
                     if (!WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id) &&
                         CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
                     {
-                        Start = WorkflowStep;
-                        break;
+                        Starts.Add(WorkflowStep);
                     }
                 }
                 // khởi tạo trạng thái cho tất cả các nút
@@ -291,7 +290,7 @@ namespace DMS.Services.MWorkflowDefinition
                     RequestWorkflow.WorkflowStateId = WorkflowStateEnum.NEW.Id;
                     RequestWorkflow.UpdatedAt = null;
                     RequestWorkflow.AppUserId = null;
-                    if (Start.Id == WorkflowStep.Id)
+                    if (Starts.Any(s => s.Id == WorkflowStep.Id))
                     {
                         RequestWorkflow.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
                     }
@@ -319,7 +318,7 @@ namespace DMS.Services.MWorkflowDefinition
 
         public async Task<bool> Approve(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters)
         {
-            WorkflowDefinition WorkflowDefinition = await Get(WorkflowDefinitionId);
+            WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinitionId);
             // tìm điểm bắt đầu
             // tìm điểm nhảy tiếp theo
             // chuyển trạng thái điểm nhảy
@@ -343,7 +342,8 @@ namespace DMS.Services.MWorkflowDefinition
                         StartNode.UpdatedAt = StaticParams.DateTimeNow;
                         StartNode.AppUserId = CurrentContext.UserId;
 
-                        var NextSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.FromStepId == WorkflowStep.Id).Select(x => x.ToStep) ?? new List<WorkflowStep>();
+                        var NextSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.FromStepId == WorkflowStep.Id)
+                            .Select(x => x.ToStep) ?? new List<WorkflowStep>();
                         ToSteps.AddRange(NextSteps);
                     }
                 }
@@ -354,19 +354,19 @@ namespace DMS.Services.MWorkflowDefinition
                 foreach (WorkflowStep WorkflowStep in ToSteps)
                 {
                     var FromSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.ToStepId == WorkflowStep.Id).Select(x => x.FromStep) ?? new List<WorkflowStep>();
-                    var FromNodes = new List<RequestWorkflow>();
+                    var ApprovedFromSteps = new List<RequestWorkflow>();
                     foreach (var FromStep in FromSteps)
                     {
                         var FromNode = RequestWorkflows.Where(x => x.WorkflowStepId == FromStep.Id).FirstOrDefault();
-                        FromNodes.Add(FromNode);
+                        ApprovedFromSteps.Add(FromNode);
                     }
 
-                    if (FromNodes.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
+                    if (ApprovedFromSteps.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
                     {
-                        var StoreWorkflow = RequestWorkflows.Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
-                        StoreWorkflow.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
-                        StoreWorkflow.UpdatedAt = null;
-                        StoreWorkflow.AppUserId = null;
+                        var RequestWorkflow = RequestWorkflows.Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
+                        RequestWorkflow.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
+                        RequestWorkflow.UpdatedAt = null;
+                        RequestWorkflow.AppUserId = null;
                         NextStepIds.Add(WorkflowStep.Id);
                     }
                 }
