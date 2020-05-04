@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
-    public partial class StoreStatusDAO
+    public partial class RequestState1DAO
     {
-        public StoreStatusDAO()
+        public RequestState1DAO()
         {
             Stores = new HashSet<StoreDAO>();
         }

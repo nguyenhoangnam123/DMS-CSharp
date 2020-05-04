@@ -523,7 +523,6 @@ namespace DMS.Rpc.indirect_sales_order
                         Store.OwnerName,
                         Store.OwnerPhone,
                         Store.OwnerEmail,
-                        Store.StoreStatusId,
                         Store.StatusId,
                         Store.WorkflowDefinitionId,
                         Store.RequestStateId,
@@ -891,7 +890,6 @@ namespace DMS.Rpc.indirect_sales_order
                         Store.OwnerName,
                         Store.OwnerPhone,
                         Store.OwnerEmail,
-                        Store.StoreStatusId,
                         Store.StatusId,
                         Store.WorkflowDefinitionId,
                         Store.RequestStateId,
@@ -1218,7 +1216,6 @@ namespace DMS.Rpc.indirect_sales_order
                 OwnerName = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.OwnerName,
                 OwnerPhone = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.OwnerPhone,
                 OwnerEmail = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.OwnerEmail,
-                StoreStatusId = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.StoreStatusId,
                 StatusId = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.StatusId,
                 WorkflowDefinitionId = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.WorkflowDefinitionId,
                 RequestStateId = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.RequestStateId,
@@ -1276,7 +1273,6 @@ namespace DMS.Rpc.indirect_sales_order
                 OwnerName = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.OwnerName,
                 OwnerPhone = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.OwnerPhone,
                 OwnerEmail = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.OwnerEmail,
-                StoreStatusId = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.StoreStatusId,
                 StatusId = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.StatusId,
                 WorkflowDefinitionId = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.WorkflowDefinitionId,
                 RequestStateId = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.RequestStateId,
@@ -1417,7 +1413,6 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StoreStatusId = IndirectSalesOrder_StoreFilterDTO.StoreStatusId;
             StoreFilter.StatusId = IndirectSalesOrder_StoreFilterDTO.StatusId;
 
             List<Store> Stores = await StoreService.List(StoreFilter);
@@ -1598,7 +1593,6 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StoreStatusId = IndirectSalesOrder_StoreFilterDTO.StoreStatusId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Store> Stores = await StoreService.List(StoreFilter);

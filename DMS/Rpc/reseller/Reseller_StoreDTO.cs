@@ -29,7 +29,6 @@ namespace DMS.Rpc.reseller
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
         public long StatusId { get; set; }
-        public long StoreStatusId { get; set; }
         public Reseller_StoreDTO ParentStore { get; set; }
         public Reseller_StoreDTO() { }
         public Reseller_StoreDTO(Store Store)
@@ -54,7 +53,6 @@ namespace DMS.Rpc.reseller
             this.OwnerPhone = Store.OwnerPhone;
             this.OwnerEmail = Store.OwnerEmail;
             this.StatusId = Store.StatusId;
-            this.StoreStatusId = Store.StoreStatusId;
             this.ParentStore = Store.ParentStore == null ? null : new Reseller_StoreDTO(Store.ParentStore);
             this.Errors = Store.Errors;
         }
@@ -82,7 +80,6 @@ namespace DMS.Rpc.reseller
         public StringFilter OwnerPhone { get; set; }
         public StringFilter OwnerEmail { get; set; }
         public IdFilter StatusId { get; set; }
-        public IdFilter StoreStatusId { get; set; }
         public StoreOrder OrderBy { get; set; }
     }
 }

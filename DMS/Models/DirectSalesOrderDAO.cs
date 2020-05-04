@@ -3,39 +3,36 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
-    public partial class IndirectSalesOrderDAO
+    public partial class DirectSalesOrderDAO
     {
-        public IndirectSalesOrderDAO()
+        public DirectSalesOrderDAO()
         {
-            IndirectSalesOrderContents = new HashSet<IndirectSalesOrderContentDAO>();
-            IndirectSalesOrderPromotions = new HashSet<IndirectSalesOrderPromotionDAO>();
+            DirectSalesOrderContents = new HashSet<DirectSalesOrderContentDAO>();
+            DirectSalesOrderPromotions = new HashSet<DirectSalesOrderPromotionDAO>();
         }
 
         public long Id { get; set; }
         public string Code { get; set; }
         public long BuyerStoreId { get; set; }
-        public string PhoneNumber { get; set; }
+        public string StorePhone { get; set; }
         public string StoreAddress { get; set; }
-        public string DeliveryAddress { get; set; }
-        public long SellerStoreId { get; set; }
+        public string StoreDeliveryAddress { get; set; }
+        public string TaxCode { get; set; }
         public long SaleEmployeeId { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
-        public long IndirectSalesOrderStatusId { get; set; }
         public long EditedPriceStatusId { get; set; }
         public string Note { get; set; }
         public long SubTotal { get; set; }
-        public long? GeneralDiscountPercentage { get; set; }
+        public decimal? GeneralDiscountPercentage { get; set; }
         public long? GeneralDiscountAmount { get; set; }
         public long TotalTaxAmount { get; set; }
         public long Total { get; set; }
 
         public virtual StoreDAO BuyerStore { get; set; }
         public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }
-        public virtual IndirectSalesOrderStatusDAO IndirectSalesOrderStatus { get; set; }
         public virtual AppUserDAO SaleEmployee { get; set; }
-        public virtual StoreDAO SellerStore { get; set; }
-        public virtual ICollection<IndirectSalesOrderContentDAO> IndirectSalesOrderContents { get; set; }
-        public virtual ICollection<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotions { get; set; }
+        public virtual ICollection<DirectSalesOrderContentDAO> DirectSalesOrderContents { get; set; }
+        public virtual ICollection<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotions { get; set; }
     }
 }

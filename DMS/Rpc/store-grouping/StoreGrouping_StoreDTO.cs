@@ -60,7 +60,6 @@ namespace DMS.Rpc.store_grouping
             this.OwnerPhone = Store.OwnerPhone;
             this.OwnerEmail = Store.OwnerEmail;
             this.StatusId = Store.StatusId;
-            this.StoreStatusId = Store.StoreStatusId;
             this.District = Store.District == null ? null : new StoreGrouping_DistrictDTO(Store.District);
             this.Organization = Store.Organization == null ? null : new StoreGrouping_OrganizationDTO(Store.Organization);
             this.ParentStore = Store.ParentStore == null ? null : new StoreGrouping_StoreDTO(Store.ParentStore);
@@ -114,7 +113,6 @@ namespace DMS.Rpc.store_grouping
         public StringFilter OwnerEmail { get; set; }
 
         public IdFilter StatusId { get; set; }
-        public IdFilter StoreStatusId { get; set; }
         public StoreOrder OrderBy { get; set; }
     }
 }

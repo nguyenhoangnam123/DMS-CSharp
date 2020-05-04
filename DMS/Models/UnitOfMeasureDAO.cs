@@ -7,6 +7,10 @@ namespace DMS.Models
     {
         public UnitOfMeasureDAO()
         {
+            DirectSalesOrderContentPrimaryUnitOfMeasures = new HashSet<DirectSalesOrderContentDAO>();
+            DirectSalesOrderContentUnitOfMeasures = new HashSet<DirectSalesOrderContentDAO>();
+            DirectSalesOrderPromotionPrimaryUnitOfMeasures = new HashSet<DirectSalesOrderPromotionDAO>();
+            DirectSalesOrderPromotionUnitOfMeasures = new HashSet<DirectSalesOrderPromotionDAO>();
             IndirectSalesOrderContentPrimaryUnitOfMeasures = new HashSet<IndirectSalesOrderContentDAO>();
             IndirectSalesOrderContentUnitOfMeasures = new HashSet<IndirectSalesOrderContentDAO>();
             IndirectSalesOrderPromotionPrimaryUnitOfMeasures = new HashSet<IndirectSalesOrderPromotionDAO>();
@@ -26,6 +30,10 @@ namespace DMS.Models
         public DateTime? DeletedAt { get; set; }
 
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<DirectSalesOrderContentDAO> DirectSalesOrderContentPrimaryUnitOfMeasures { get; set; }
+        public virtual ICollection<DirectSalesOrderContentDAO> DirectSalesOrderContentUnitOfMeasures { get; set; }
+        public virtual ICollection<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotionPrimaryUnitOfMeasures { get; set; }
+        public virtual ICollection<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotionUnitOfMeasures { get; set; }
         public virtual ICollection<IndirectSalesOrderContentDAO> IndirectSalesOrderContentPrimaryUnitOfMeasures { get; set; }
         public virtual ICollection<IndirectSalesOrderContentDAO> IndirectSalesOrderContentUnitOfMeasures { get; set; }
         public virtual ICollection<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotionPrimaryUnitOfMeasures { get; set; }

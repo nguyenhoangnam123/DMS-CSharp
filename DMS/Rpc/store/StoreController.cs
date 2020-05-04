@@ -77,7 +77,6 @@ namespace DMS.Rpc.store
             { nameof(StoreFilter.OwnerPhone), FieldType.STRING },
             { nameof(StoreFilter.OwnerEmail), FieldType.STRING },
             { nameof(StoreFilter.StatusId), FieldType.ID },
-            { nameof(StoreFilter.StoreStatusId), FieldType.ID },
         };
     }
 
@@ -167,7 +166,6 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            Store.StoreStatusId = StoreStatusEnum.NEW.Id;
             Store = await StoreService.Create(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
@@ -186,7 +184,6 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            Store.StoreStatusId = StoreStatusEnum.PENDING.Id;
             Store = await StoreService.Update(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
@@ -205,7 +202,6 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            Store.StoreStatusId = StoreStatusEnum.APPROVED.Id;
             Store = await StoreService.Update(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
@@ -224,7 +220,6 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            Store.StoreStatusId = StoreStatusEnum.REJECTED.Id;
             Store = await StoreService.Update(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
@@ -412,7 +407,6 @@ namespace DMS.Rpc.store
                     Store.District = Districts.Where(x => x.Code == DistrictCodeValue).FirstOrDefault() ?? new District { Code = DistrictCodeValue };
                     Store.Ward = Wards.Where(x => x.Code == WardCodeValue).FirstOrDefault() ?? new Ward { Code = WardCodeValue };
                     Store.Status = Statuses.Where(x => x.Code == StatusCodeValue).FirstOrDefault();
-                    Store.StoreStatusId = StoreStatusEnum.PENDING.Id;
                     Stores.Add(Store);
                 }
             }
@@ -972,7 +966,6 @@ namespace DMS.Rpc.store
             StoreFilter.OwnerName = Store_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = Store_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Store_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StoreStatusId = Store_StoreFilterDTO.StoreStatusId;
             StoreFilter.StatusId = Store_StoreFilterDTO.StatusId;
             return StoreFilter;
         }

@@ -106,8 +106,6 @@ namespace DMS.Rpc.indirect_sales_order
             
             this.OwnerEmail = Store.OwnerEmail;
             
-            this.StoreStatusId = Store.StoreStatusId;
-            
             this.StatusId = Store.StatusId;
             
             this.WorkflowDefinitionId = Store.WorkflowDefinitionId;

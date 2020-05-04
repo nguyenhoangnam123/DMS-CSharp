@@ -8,10 +8,11 @@ namespace DMS.Models
         public AppUserDAO()
         {
             AppUserRoleMappings = new HashSet<AppUserRoleMappingDAO>();
+            DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
             InventoryHistories = new HashSet<InventoryHistoryDAO>();
+            RequestWorkflows = new HashSet<RequestWorkflowDAO>();
             Resellers = new HashSet<ResellerDAO>();
-            StoreWorkflows = new HashSet<StoreWorkflowDAO>();
             Suppliers = new HashSet<SupplierDAO>();
         }
 
@@ -40,10 +41,11 @@ namespace DMS.Models
         public virtual SexDAO Sex { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
+        public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
         public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
+        public virtual ICollection<RequestWorkflowDAO> RequestWorkflows { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
-        public virtual ICollection<StoreWorkflowDAO> StoreWorkflows { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
     }
 }

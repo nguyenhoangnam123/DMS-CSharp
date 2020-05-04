@@ -136,10 +136,9 @@ namespace DMS.Rpc
         {
             InitStatusEnum();
             InitResellerStatusEnum();
-            InitStoreStatusEnum();
+            InitRequestStateEnum();
             InitWorkflowStateEnum();
             InitWorkflowTypeEnum();
-            InitRequestStateEnum();
             DataContext.SaveChanges();
             return Ok();
         }
@@ -333,46 +332,46 @@ namespace DMS.Rpc
             }
         }
 
-        private void InitStoreStatusEnum()
+        private void InitRequestStateEnum()
         {
-            List<StoreStatusDAO> statuses = DataContext.StoreStatus.ToList();
-            if (!statuses.Any(pt => pt.Id == StoreStatusEnum.NEW.Id))
+            List<RequestStateDAO> statuses = DataContext.RequestState.ToList();
+            if (!statuses.Any(pt => pt.Id == RequestStateEnum.NEW.Id))
             {
-                DataContext.StoreStatus.Add(new StoreStatusDAO
+                DataContext.RequestState.Add(new RequestStateDAO
                 {
-                    Id = StoreStatusEnum.NEW.Id,
-                    Code = StoreStatusEnum.NEW.Code,
-                    Name = StoreStatusEnum.NEW.Name,
+                    Id = RequestStateEnum.NEW.Id,
+                    Code = RequestStateEnum.NEW.Code,
+                    Name = RequestStateEnum.NEW.Name,
                 });
             }
 
-            if (!statuses.Any(pt => pt.Id == StoreStatusEnum.PENDING.Id))
+            if (!statuses.Any(pt => pt.Id == RequestStateEnum.APPROVING.Id))
             {
-                DataContext.StoreStatus.Add(new StoreStatusDAO
+                DataContext.RequestState.Add(new RequestStateDAO
                 {
-                    Id = StoreStatusEnum.PENDING.Id,
-                    Code = StoreStatusEnum.PENDING.Code,
-                    Name = StoreStatusEnum.PENDING.Name,
+                    Id = RequestStateEnum.APPROVING.Id,
+                    Code = RequestStateEnum.APPROVING.Code,
+                    Name = RequestStateEnum.APPROVING.Name,
                 });
             }
 
-            if (!statuses.Any(pt => pt.Id == StoreStatusEnum.APPROVED.Id))
+            if (!statuses.Any(pt => pt.Id == RequestStateEnum.APPROVED.Id))
             {
-                DataContext.StoreStatus.Add(new StoreStatusDAO
+                DataContext.RequestState.Add(new RequestStateDAO
                 {
-                    Id = StoreStatusEnum.APPROVED.Id,
-                    Code = StoreStatusEnum.APPROVED.Code,
-                    Name = StoreStatusEnum.APPROVED.Name,
+                    Id = RequestStateEnum.APPROVED.Id,
+                    Code = RequestStateEnum.APPROVED.Code,
+                    Name = RequestStateEnum.APPROVED.Name,
                 });
             }
 
-            if (!statuses.Any(pt => pt.Id == StoreStatusEnum.REJECTED.Id))
+            if (!statuses.Any(pt => pt.Id == RequestStateEnum.REJECTED.Id))
             {
-                DataContext.StoreStatus.Add(new StoreStatusDAO
+                DataContext.RequestState.Add(new RequestStateDAO
                 {
-                    Id = StoreStatusEnum.REJECTED.Id,
-                    Code = StoreStatusEnum.REJECTED.Code,
-                    Name = StoreStatusEnum.REJECTED.Name,
+                    Id = RequestStateEnum.REJECTED.Id,
+                    Code = RequestStateEnum.REJECTED.Code,
+                    Name = RequestStateEnum.REJECTED.Name,
                 });
             }
         }
@@ -461,50 +460,6 @@ namespace DMS.Rpc
                     Id = WorkflowTypeEnum.STORE.Id,
                     Code = WorkflowTypeEnum.STORE.Code,
                     Name = WorkflowTypeEnum.STORE.Name,
-                });
-            }
-        }
-
-        private void InitRequestStateEnum()
-        {
-            List<RequestStateDAO> list = DataContext.RequestState.ToList();
-            if (!list.Any(pt => pt.Id == RequestStateEnum.APPROVED.Id))
-            {
-                DataContext.RequestState.Add(new RequestStateDAO
-                {
-                    Id = RequestStateEnum.APPROVED.Id,
-                    Code = RequestStateEnum.APPROVED.Code,
-                    Name = RequestStateEnum.APPROVED.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == RequestStateEnum.NEW.Id))
-            {
-                DataContext.RequestState.Add(new RequestStateDAO
-                {
-                    Id = RequestStateEnum.NEW.Id,
-                    Code = RequestStateEnum.NEW.Code,
-                    Name = RequestStateEnum.NEW.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == RequestStateEnum.APPROVING.Id))
-            {
-                DataContext.RequestState.Add(new RequestStateDAO
-                {
-                    Id = RequestStateEnum.APPROVING.Id,
-                    Code = RequestStateEnum.APPROVING.Code,
-                    Name = RequestStateEnum.APPROVING.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == RequestStateEnum.REJECTED.Id))
-            {
-                DataContext.RequestState.Add(new RequestStateDAO
-                {
-                    Id = RequestStateEnum.REJECTED.Id,
-                    Code = RequestStateEnum.REJECTED.Code,
-                    Name = RequestStateEnum.REJECTED.Name,
                 });
             }
         }

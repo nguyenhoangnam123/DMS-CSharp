@@ -7,7 +7,7 @@ namespace DMS.Models
     {
         public WorkflowParameterDAO()
         {
-            StoreWorkflowParameterMappings = new HashSet<StoreWorkflowParameterMappingDAO>();
+            RequestWorkflowParameterMappings = new HashSet<RequestWorkflowParameterMappingDAO>();
         }
 
         public long Id { get; set; }
@@ -15,6 +15,6 @@ namespace DMS.Models
         public string Name { get; set; }
 
         public virtual WorkflowDefinitionDAO WorkflowDefinition { get; set; }
-        public virtual ICollection<StoreWorkflowParameterMappingDAO> StoreWorkflowParameterMappings { get; set; }
+        public virtual ICollection<RequestWorkflowParameterMappingDAO> RequestWorkflowParameterMappings { get; set; }
     }
 }

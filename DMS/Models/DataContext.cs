@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -9,6 +9,9 @@ namespace DMS.Models
         public virtual DbSet<AppUserDAO> AppUser { get; set; }
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
+        public virtual DbSet<DirectSalesOrderDAO> DirectSalesOrder { get; set; }
+        public virtual DbSet<DirectSalesOrderContentDAO> DirectSalesOrderContent { get; set; }
+        public virtual DbSet<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotion { get; set; }
         public virtual DbSet<DistrictDAO> District { get; set; }
         public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
@@ -34,6 +37,8 @@ namespace DMS.Models
         public virtual DbSet<ProductTypeDAO> ProductType { get; set; }
         public virtual DbSet<ProvinceDAO> Province { get; set; }
         public virtual DbSet<RequestStateDAO> RequestState { get; set; }
+        public virtual DbSet<RequestWorkflowDAO> RequestWorkflow { get; set; }
+        public virtual DbSet<RequestWorkflowParameterMappingDAO> RequestWorkflowParameterMapping { get; set; }
         public virtual DbSet<ResellerDAO> Reseller { get; set; }
         public virtual DbSet<ResellerStatusDAO> ResellerStatus { get; set; }
         public virtual DbSet<ResellerTypeDAO> ResellerType { get; set; }
@@ -43,10 +48,7 @@ namespace DMS.Models
         public virtual DbSet<StoreDAO> Store { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
-        public virtual DbSet<StoreStatusDAO> StoreStatus { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
-        public virtual DbSet<StoreWorkflowDAO> StoreWorkflow { get; set; }
-        public virtual DbSet<StoreWorkflowParameterMappingDAO> StoreWorkflowParameterMapping { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
         public virtual DbSet<TaxTypeDAO> TaxType { get; set; }
         public virtual DbSet<UnitOfMeasureDAO> UnitOfMeasure { get; set; }
@@ -72,14 +74,12 @@ namespace DMS.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=DMS;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
+                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=dms;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
-
             modelBuilder.Entity<AppUserDAO>(entity =>
             {
                 entity.ToTable("AppUser", "MDM");
@@ -181,6 +181,111 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Brand_Status");
+            });
+
+            modelBuilder.Entity<DirectSalesOrderDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.DeliveryDate).HasColumnType("date");
+
+                entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(8, 2)");
+
+                entity.Property(e => e.Note).HasMaxLength(4000);
+
+                entity.Property(e => e.OrderDate).HasColumnType("date");
+
+                entity.Property(e => e.StoreAddress).HasMaxLength(500);
+
+                entity.Property(e => e.StoreDeliveryAddress).HasMaxLength(500);
+
+                entity.Property(e => e.StorePhone).HasMaxLength(500);
+
+                entity.Property(e => e.TaxCode).HasMaxLength(500);
+
+                entity.HasOne(d => d.BuyerStore)
+                    .WithMany(p => p.DirectSalesOrders)
+                    .HasForeignKey(d => d.BuyerStoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrder_Store");
+
+                entity.HasOne(d => d.EditedPriceStatus)
+                    .WithMany(p => p.DirectSalesOrders)
+                    .HasForeignKey(d => d.EditedPriceStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrder_EditedPriceStatus");
+
+                entity.HasOne(d => d.SaleEmployee)
+                    .WithMany(p => p.DirectSalesOrders)
+                    .HasForeignKey(d => d.SaleEmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrder_AppUser");
+            });
+
+            modelBuilder.Entity<DirectSalesOrderContentDAO>(entity =>
+            {
+                entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
+
+                entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(8, 2)");
+
+                entity.Property(e => e.TaxPercentage).HasColumnType("decimal(8, 2)");
+
+                entity.HasOne(d => d.DirectSalesOrder)
+                    .WithMany(p => p.DirectSalesOrderContents)
+                    .HasForeignKey(d => d.DirectSalesOrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderContent_DirectSalesOrder");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.DirectSalesOrderContents)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderContent_Item");
+
+                entity.HasOne(d => d.PrimaryUnitOfMeasure)
+                    .WithMany(p => p.DirectSalesOrderContentPrimaryUnitOfMeasures)
+                    .HasForeignKey(d => d.PrimaryUnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderContent_UnitOfMeasure1");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.DirectSalesOrderContentUnitOfMeasures)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderContent_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<DirectSalesOrderPromotionDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Note).HasMaxLength(4000);
+
+                entity.HasOne(d => d.DirectSalesOrder)
+                    .WithMany(p => p.DirectSalesOrderPromotions)
+                    .HasForeignKey(d => d.DirectSalesOrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderPromotion_DirectSalesOrder");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.DirectSalesOrderPromotions)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderPromotion_Item");
+
+                entity.HasOne(d => d.PrimaryUnitOfMeasure)
+                    .WithMany(p => p.DirectSalesOrderPromotionPrimaryUnitOfMeasures)
+                    .HasForeignKey(d => d.PrimaryUnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderPromotion_UnitOfMeasure1");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.DirectSalesOrderPromotionUnitOfMeasures)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderPromotion_UnitOfMeasure");
             });
 
             modelBuilder.Entity<DistrictDAO>(entity =>
@@ -794,7 +899,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(100);
+                    .HasMaxLength(100)
+                    .IsFixedLength();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -846,17 +952,56 @@ namespace DMS.Models
 
             modelBuilder.Entity<RequestStateDAO>(entity =>
             {
-                entity.ToTable("RequestState", "PER");
+                entity.ToTable("RequestState", "MDM");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<RequestWorkflowDAO>(entity =>
+            {
+                entity.ToTable("RequestWorkflow", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.RequestWorkflows)
+                    .HasForeignKey(d => d.AppUserId)
+                    .HasConstraintName("FK_StoreWorkflow_AppUser");
+
+                entity.HasOne(d => d.WorkflowState)
+                    .WithMany(p => p.RequestWorkflows)
+                    .HasForeignKey(d => d.WorkflowStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreWorkflow_WorkflowState");
+
+                entity.HasOne(d => d.WorkflowStep)
+                    .WithMany(p => p.RequestWorkflows)
+                    .HasForeignKey(d => d.WorkflowStepId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreWorkflow_WorkflowStep");
+            });
+
+            modelBuilder.Entity<RequestWorkflowParameterMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.WorkflowParameterId, e.RequestId });
+
+                entity.ToTable("RequestWorkflowParameterMapping", "MDM");
+
+                entity.Property(e => e.Value).HasMaxLength(500);
+
+                entity.HasOne(d => d.WorkflowParameter)
+                    .WithMany(p => p.RequestWorkflowParameterMappings)
+                    .HasForeignKey(d => d.WorkflowParameterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreWorkflowParameterMapping_WorkflowParameter");
             });
 
             modelBuilder.Entity<ResellerDAO>(entity =>
@@ -1091,12 +1236,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StoreGroupingId)
                     .HasConstraintName("FK_Store_StoreGrouping");
 
-                entity.HasOne(d => d.StoreStatus)
-                    .WithMany(p => p.Stores)
-                    .HasForeignKey(d => d.StoreStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Store_StoreStatus");
-
                 entity.HasOne(d => d.StoreType)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.StoreTypeId)
@@ -1163,21 +1302,6 @@ namespace DMS.Models
                     .HasConstraintName("FK_StoreImageMapping_Store");
             });
 
-            modelBuilder.Entity<StoreStatusDAO>(entity =>
-            {
-                entity.ToTable("StoreStatus", "MDM");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Code)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
-
             modelBuilder.Entity<StoreTypeDAO>(entity =>
             {
                 entity.ToTable("StoreType", "MDM");
@@ -1201,57 +1325,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreType_Status");
-            });
-
-            modelBuilder.Entity<StoreWorkflowDAO>(entity =>
-            {
-                entity.ToTable("StoreWorkflow", "MDM");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.HasOne(d => d.AppUser)
-                    .WithMany(p => p.StoreWorkflows)
-                    .HasForeignKey(d => d.AppUserId)
-                    .HasConstraintName("FK_StoreWorkflow_AppUser");
-
-                entity.HasOne(d => d.Store)
-                    .WithMany(p => p.StoreWorkflows)
-                    .HasForeignKey(d => d.StoreId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreWorkflow_Store");
-
-                entity.HasOne(d => d.WorkflowState)
-                    .WithMany(p => p.StoreWorkflows)
-                    .HasForeignKey(d => d.WorkflowStateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreWorkflow_WorkflowState");
-
-                entity.HasOne(d => d.WorkflowStep)
-                    .WithMany(p => p.StoreWorkflows)
-                    .HasForeignKey(d => d.WorkflowStepId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreWorkflow_WorkflowStep");
-            });
-
-            modelBuilder.Entity<StoreWorkflowParameterMappingDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.WorkflowParameterId, e.StoreId });
-
-                entity.ToTable("StoreWorkflowParameterMapping", "MDM");
-
-                entity.Property(e => e.Value).HasMaxLength(500);
-
-                entity.HasOne(d => d.Store)
-                    .WithMany(p => p.StoreWorkflowParameterMappings)
-                    .HasForeignKey(d => d.StoreId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreWorkflowParameterMapping_Store");
-
-                entity.HasOne(d => d.WorkflowParameter)
-                    .WithMany(p => p.StoreWorkflowParameterMappings)
-                    .HasForeignKey(d => d.WorkflowParameterId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreWorkflowParameterMapping_WorkflowParameter");
             });
 
             modelBuilder.Entity<SupplierDAO>(entity =>
@@ -1670,9 +1743,9 @@ namespace DMS.Models
                     .HasMaxLength(500);
             });
 
-            OnModelCreatingExt(modelBuilder);
+            OnModelCreatingPartial(modelBuilder);
         }
 
-        partial void OnModelCreatingExt(ModelBuilder modelBuilder);
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

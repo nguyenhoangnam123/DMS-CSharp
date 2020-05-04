@@ -78,8 +78,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.OwnerEmail, filter.OwnerEmail);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
-            if (filter.StoreStatusId != null)
-                query = query.Where(q => q.StoreStatusId, filter.StoreStatusId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -136,8 +134,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.OwnerEmail, filter.OwnerEmail);
                 if (filter.StatusId != null)
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.StoreStatusId != null)
-                    queryable = queryable.Where(q => q.StoreStatusId, filter.StoreStatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -320,7 +316,6 @@ namespace DMS.Repositories
                 OwnerPhone = filter.Selects.Contains(StoreSelect.OwnerPhone) ? q.OwnerPhone : default(string),
                 OwnerEmail = filter.Selects.Contains(StoreSelect.OwnerEmail) ? q.OwnerEmail : default(string),
                 StatusId = filter.Selects.Contains(StoreSelect.Status) ? q.StatusId : default(long),
-                StoreStatusId = filter.Selects.Contains(StoreSelect.StoreStatus) ? q.StoreStatusId : default(long),
                 District = filter.Selects.Contains(StoreSelect.District) && q.District != null ? new District
                 {
                     Id = q.District.Id,
@@ -366,7 +361,6 @@ namespace DMS.Repositories
                     OwnerPhone = q.ParentStore.OwnerPhone,
                     OwnerEmail = q.ParentStore.OwnerEmail,
                     StatusId = q.ParentStore.StatusId,
-                    StoreStatusId = q.ParentStore.StoreStatusId,
                 } : null,
                 Reseller = filter.Selects.Contains(StoreSelect.Reseller) && q.Reseller != null ? new Reseller
                 {
@@ -482,7 +476,6 @@ namespace DMS.Repositories
                 OwnerPhone = x.OwnerPhone,
                 OwnerEmail = x.OwnerEmail,
                 StatusId = x.StatusId,
-                StoreStatusId = x.StoreStatusId,
                 District = x.District == null ? null : new District
                 {
                     Id = x.District.Id,
@@ -525,7 +518,6 @@ namespace DMS.Repositories
                     OwnerPhone = x.ParentStore.OwnerPhone,
                     OwnerEmail = x.ParentStore.OwnerEmail,
                     StatusId = x.ParentStore.StatusId,
-                    StoreStatusId = x.ParentStore.StoreStatusId,
                 },
                 Province = x.Province == null ? null : new Province
                 {
@@ -626,7 +618,6 @@ namespace DMS.Repositories
             StoreDAO.OwnerPhone = Store.OwnerPhone;
             StoreDAO.OwnerEmail = Store.OwnerEmail;
             StoreDAO.StatusId = Store.StatusId;
-            StoreDAO.StoreStatusId = Store.StoreStatusId;
             StoreDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.Store.Add(StoreDAO);
@@ -663,7 +654,6 @@ namespace DMS.Repositories
             StoreDAO.OwnerPhone = Store.OwnerPhone;
             StoreDAO.OwnerEmail = Store.OwnerEmail;
             StoreDAO.StatusId = Store.StatusId;
-            StoreDAO.StoreStatusId = Store.StoreStatusId;
             StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(Store);
@@ -705,7 +695,6 @@ namespace DMS.Repositories
                 StoreDAO.OwnerPhone = Store.OwnerPhone;
                 StoreDAO.OwnerEmail = Store.OwnerEmail;
                 StoreDAO.StatusId = Store.StatusId;
-                StoreDAO.StoreStatusId = Store.StoreStatusId;
                 StoreDAO.CreatedAt = StaticParams.DateTimeNow;
                 StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
                 StoreDAOs.Add(StoreDAO);

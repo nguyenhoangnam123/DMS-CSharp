@@ -30,7 +30,6 @@ namespace DMS.Entities
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
         public long StatusId { get; set; }
-        public long StoreStatusId { get; set; }
         public long? WorkflowDefinitionId { get; set; }
         public long? RequestStateId { get; set; }
         public District District { get; set; }
@@ -41,7 +40,6 @@ namespace DMS.Entities
         public Status Status { get; set; }
         public StoreGrouping StoreGrouping { get; set; }
         public StoreType StoreType { get; set; }
-        public StoreStatus StoreStatus { get; set; }
         public Ward Ward { get; set; }
         public List<StoreImageMapping> StoreImageMappings { get; set; }
         public List<StoreWorkflow> StoreWorkflows { get; set; }
@@ -81,7 +79,6 @@ namespace DMS.Entities
         public StringFilter OwnerPhone { get; set; }
         public StringFilter OwnerEmail { get; set; }
         public IdFilter StatusId { get; set; }
-        public IdFilter StoreStatusId { get; set; }
         public List<StoreFilter> OrFilter { get; set; }
         public StoreOrder OrderBy { get; set; }
         public StoreSelect Selects { get; set; }
@@ -112,7 +109,6 @@ namespace DMS.Entities
         OwnerPhone = 19,
         OwnerEmail = 20,
         Status = 21,
-        StoreStatus = 22,
     }
 
     [Flags]
@@ -141,7 +137,6 @@ namespace DMS.Entities
         OwnerPhone = E._19,
         OwnerEmail = E._20,
         Status = E._21,
-        StoreStatus = E._22,
         StoreImageMappings = E._23
     }
 }

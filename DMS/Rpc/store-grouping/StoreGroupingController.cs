@@ -280,7 +280,6 @@ namespace DMS.Rpc.store_grouping
                     OwnerEmail = x.OwnerEmail,
                     StatusId = x.StatusId,
                     StoreGroupingId = x.StoreGroupingId,
-                    StoreStatusId = x.StoreStatusId,
                     District = new District
                     {
                         Id = x.District.Id,
@@ -326,7 +325,6 @@ namespace DMS.Rpc.store_grouping
                         OwnerPhone = x.ParentStore.OwnerPhone,
                         OwnerEmail = x.ParentStore.OwnerEmail,
                         StatusId = x.ParentStore.StatusId,
-                        StoreStatusId = x.ParentStore.StoreStatusId
                     },
                     Province = new Province
                     {
