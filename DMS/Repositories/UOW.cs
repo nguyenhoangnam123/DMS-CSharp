@@ -15,6 +15,7 @@ namespace DMS.Repositories
         IAppUserRepository AppUserRepository { get; }
         IBrandRepository BrandRepository { get; }
         IDistrictRepository DistrictRepository { get; }
+        IEditedPriceStatusRepository EditedPriceStatusRepository { get; }
         IEventMessageRepository EventMessageRepository { get; }
         IImageRepository ImageRepository { get; }
         IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; }
@@ -62,6 +63,7 @@ namespace DMS.Repositories
         public IAppUserRepository AppUserRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
         public IDistrictRepository DistrictRepository { get; private set; }
+        public IEditedPriceStatusRepository EditedPriceStatusRepository { get; private set; }
         public IEventMessageRepository EventMessageRepository { get; private set; }
         public IImageRepository ImageRepository { get; private set; }
         public IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; private set; }
@@ -107,6 +109,7 @@ namespace DMS.Repositories
             AppUserRepository = new AppUserRepository(DataContext);
             BrandRepository = new BrandRepository(DataContext);
             DistrictRepository = new DistrictRepository(DataContext);
+            EditedPriceStatusRepository = new EditedPriceStatusRepository(DataContext);
             EventMessageRepository = new EventMessageRepository(DataContext);
             ImageRepository = new ImageRepository(DataContext);
             IndirectSalesOrderContentRepository = new IndirectSalesOrderContentRepository(DataContext);
