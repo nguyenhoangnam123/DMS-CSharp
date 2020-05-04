@@ -6,15 +6,14 @@ using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class StoreWorkflowParameterMapping : DataEntity,  IEquatable<StoreWorkflowParameterMapping>
+    public class RequestWorkflowParameterMapping : DataEntity,  IEquatable<RequestWorkflowParameterMapping>
     {
         public long WorkflowParameterId { get; set; }
-        public long StoreId { get; set; }
+        public Guid RequestId { get; set; }
         public string Value { get; set; }
-        public Store Store { get; set; }
         public WorkflowParameter WorkflowParameter { get; set; }
 
-        public bool Equals(StoreWorkflowParameterMapping other)
+        public bool Equals(RequestWorkflowParameterMapping other)
         {
             return true;
         }
@@ -27,7 +26,6 @@ namespace DMS.Entities
     public class StoreWorkflowParameterMappingFilter : FilterEntity
     {
         public IdFilter WorkflowParameterId { get; set; }
-        public IdFilter StoreId { get; set; }
         public StringFilter Value { get; set; }
         public List<StoreWorkflowParameterMappingFilter> OrFilter { get; set; }
         public StoreWorkflowParameterMappingOrder OrderBy {get; set;}
@@ -38,8 +36,7 @@ namespace DMS.Entities
     public enum StoreWorkflowParameterMappingOrder
     {
         WorkflowParameter = 0,
-        Store = 1,
-        Value = 2,
+        Value = 1,
     }
 
     [Flags]
@@ -47,7 +44,6 @@ namespace DMS.Entities
     {
         ALL = E.ALL,
         WorkflowParameter = E._0,
-        Store = E._1,
-        Value = E._2,
+        Value = E._1,
     }
 }

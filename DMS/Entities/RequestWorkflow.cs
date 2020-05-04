@@ -6,7 +6,7 @@ using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class StoreWorkflow : DataEntity,  IEquatable<StoreWorkflow>
+    public class RequestWorkflow : DataEntity,  IEquatable<RequestWorkflow>
     {
         public long Id { get; set; }
         public long StoreId { get; set; }
@@ -15,7 +15,7 @@ namespace DMS.Entities
         public DateTime? UpdatedAt { get; set; }
         public long? AppUserId { get; set; }
 
-        public bool Equals(StoreWorkflow other)
+        public bool Equals(RequestWorkflow other)
         {
             return other != null && Id == other.Id;
         }

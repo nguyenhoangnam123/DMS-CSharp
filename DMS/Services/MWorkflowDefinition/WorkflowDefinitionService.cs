@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using Helpers;
 using System;
 using System.Collections.Generic;
@@ -33,15 +33,18 @@ namespace DMS.Services.MWorkflowDefinition
         private IWorkflowDefinitionValidator WorkflowDefinitionValidator;
         private List<string> StoreParameters;
         private List<string> ROUTER;
+        private IMailService MailService;
         public WorkflowDefinitionService(
             IUOW UOW,
             ILogging Logging,
+            IMailService MailService,
             ICurrentContext CurrentContext,
             IWorkflowDefinitionValidator WorkflowDefinitionValidator
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
+            this.MailService = MailService;
             this.CurrentContext = CurrentContext;
             this.WorkflowDefinitionValidator = WorkflowDefinitionValidator;
 
@@ -251,6 +254,231 @@ namespace DMS.Services.MWorkflowDefinition
                     Name = x
                 }).ToList();
             }
+        }
+
+        public async Task<bool> Start(Guid RequestId, long WorkflowDefinitionId, Dictionary<string,string> Parameters)
+        {
+            WorkflowDefinition WorkflowDefinition = (await List(new WorkflowDefinitionFilter
+            {
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                OrderBy = WorkflowDefinitionOrder.StartDate,
+                OrderType = OrderType.DESC,
+                Skip = 0,
+                Take = 1,
+                Selects = WorkflowDefinitionSelect.Id,
+                WorkflowTypeId = new IdFilter { Equal = WorkflowType.Id }
+            })).FirstOrDefault();
+
+            if (WorkflowDefinition == null)
+            {
+                return true;
+            }
+            else
+            {
+                WorkflowDefinition = await Get(WorkflowDefinition.Id);
+                long RequestStateId = RequestStateEnum.APPROVING.Id;
+                List<RequestWorkflow> RequestWorkflows = new List<RequestWorkflow>();
+                WorkflowStep Start = null;
+                // tìm điểm bắt đầu của workflow
+                // nút không có ai trỏ đến là nút bắt đầu
+                // trong trường hợp có nhiều nút bắt đầu thì xét có nút nào thuộc các role hiện tại không
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (!WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id) &&
+                        CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
+                    {
+                        Start = WorkflowStep;
+                        break;
+                    }
+                }
+                // khởi tạo trạng thái cho tất cả các nút
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    RequestWorkflow RequestWorkflow = new RequestWorkflow();
+                    RequestWorkflows.Add(RequestWorkflow);
+                    RequestWorkflow.WorkflowStepId = WorkflowStep.Id;
+                    RequestWorkflow.WorkflowStateId = WorkflowStateEnum.NEW.Id;
+                    RequestWorkflow.UpdatedAt = null;
+                    RequestWorkflow.AppUserId = null;
+                    if (Start.Id == WorkflowStep.Id)
+                    {
+                        RequestWorkflow.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
+                    }
+                }
+                List<RequestWorkflowParameterMapping> RequestWorkflowParameterMappings = new List<RequestWorkflowParameterMapping>();
+                foreach (WorkflowParameter WorkflowParameter in WorkflowDefinition.WorkflowParameters)
+                {
+                    RequestWorkflowParameterMapping RequestWorkflowParameterMapping = new RequestWorkflowParameterMapping();
+                    RequestWorkflowParameterMappings.Add(RequestWorkflowParameterMapping);
+                    RequestWorkflowParameterMapping.WorkflowParameterId = WorkflowParameter.Id;
+                    RequestWorkflowParameterMapping.RequestId = RequestId;
+                    RequestWorkflowParameterMapping.Value = null;
+                    foreach(var pair in Parameters)
+                    {
+                        if (WorkflowParameter.Name == pair.Key)
+                        {
+                            RequestWorkflowParameterMapping.Value = pair.Value;
+                        }    
+                    }    
+                }
+
+            }
+            return true;
+        }
+
+        public async Task<Store> Approve(Guid RequestId, GenericEnum WorkflowType, Dictionary<string, string> Parameters)
+        {
+            Store = await UOW.StoreRepository.Get(Store.Id);
+            WorkflowDefinition WorkflowDefinition = await Get(Store.WorkflowDefinitionId.Value);
+            // tìm điểm bắt đầu
+            // tìm điểm nhảy tiếp theo
+            // chuyển trạng thái điểm nhảy
+            // gửi mail cho các điểm nhảy có trạng thái thay đổi.
+
+            if (WorkflowDefinition != null && Store.StoreWorkflows != null)
+            {
+                List<WorkflowStep> ToSteps = new List<WorkflowStep>();
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
+                    {
+                        var StartNode = Store.StoreWorkflows
+                            .Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
+                            .Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
+                        StartNode.WorkflowStateId = WorkflowStateEnum.APPROVED.Id;
+                        StartNode.UpdatedAt = StaticParams.DateTimeNow;
+                        StartNode.AppUserId = CurrentContext.UserId;
+
+                        var NextSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.FromStepId == WorkflowStep.Id).Select(x => x.ToStep) ?? new List<WorkflowStep>();
+                        ToSteps.AddRange(NextSteps);
+                    }
+                }
+
+                ToSteps = ToSteps.Distinct().ToList();
+                List<Mail> Mails = new List<Mail>();
+                var NextStepIds = new List<long>();
+                foreach (WorkflowStep WorkflowStep in ToSteps)
+                {
+                    var FromSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.ToStepId == WorkflowStep.Id).Select(x => x.FromStep) ?? new List<WorkflowStep>();
+                    var FromNodes = new List<RequestWorkflow>();
+                    foreach (var FromStep in FromSteps)
+                    {
+                        var FromNode = Store.StoreWorkflows.Where(x => x.WorkflowStepId == FromStep.Id).FirstOrDefault();
+                        FromNodes.Add(FromNode);
+                    }
+
+                    if (FromNodes.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
+                    {
+                        var StoreWorkflow = Store.StoreWorkflows.Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
+                        StoreWorkflow.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
+                        StoreWorkflow.UpdatedAt = null;
+                        StoreWorkflow.AppUserId = null;
+                        NextStepIds.Add(WorkflowStep.Id);
+                    }
+                }
+
+                List<WorkflowDirection> WorkflowDirections = WorkflowDefinition.WorkflowDirections.Where(x => NextStepIds.Contains(x.ToStepId)).ToList();
+                foreach (var WorkflowDirection in WorkflowDirections)
+                {
+                    //gửi mail
+                    AppUserFilter AppUserFilter = new AppUserFilter
+                    {
+                        RoleId = new IdFilter { Equal = WorkflowDirection.ToStep.RoleId },
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = AppUserSelect.Email
+                    };
+                    List<AppUser> appUsers = await UOW.AppUserRepository.List(AppUserFilter);
+                    List<string> recipients = appUsers.Select(au => au.Email).Distinct().ToList();
+
+                    Mail MailForCreator = new Mail
+                    {
+                        Recipients = recipients,
+                        Subject = WorkflowDirection.SubjectMailForCreator,
+                        Body = WorkflowDirection.BodyMailForCreator
+                    };
+
+                    Mail MailForNextStep = new Mail
+                    {
+                        Recipients = recipients,
+                        Subject = WorkflowDirection.SubjectMailForNextStep,
+                        Body = WorkflowDirection.BodyMailForNextStep
+                    };
+                    Mails.Add(MailForCreator);
+                    Mails.Add(MailForNextStep);
+                }
+                Mails.Distinct();
+                Mails.ForEach(x => MailService.Send(x));
+            }
+
+            return Store;
+        }
+
+        public async Task<Store> Reject(Store Store)
+        {
+            Store = await UOW.StoreRepository.Get(Store.Id);
+            WorkflowDefinition WorkflowDefinition = await Get(Store.WorkflowDefinitionId.Value);
+
+            if (WorkflowDefinition != null && Store.StoreWorkflows != null)
+            {
+                List<WorkflowStep> ToSteps = new List<WorkflowStep>();
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
+                    {
+                        var StartNode = Store.StoreWorkflows
+                            .Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
+                            .Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
+                        StartNode.WorkflowStateId = WorkflowStateEnum.REJECTED.Id;
+                        StartNode.UpdatedAt = StaticParams.DateTimeNow;
+                        StartNode.AppUserId = CurrentContext.UserId;
+                    }
+                }
+
+                WorkflowStep StartStep = null;
+                // tìm điểm bắt đầu của workflow
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (!WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id) &&
+                        CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
+                    {
+                        StartStep = WorkflowStep;
+                        break;
+                    }
+                }
+
+                //tìm node đầu tiên để gửi mail thông báo yêu cầu đã bị từ chối
+                if (StartStep != null)
+                {
+                    RequestWorkflow StartNode = Store.StoreWorkflows.Where(x => x.WorkflowStepId == StartStep.Id).FirstOrDefault();
+                    if (StartNode != null)
+                    {
+                        //gửi mail
+                    }
+                }
+            }
+
+            return Store;
+        }
+
+        public async Task<Store> End(Store Store)
+        {
+            Store = await UOW.StoreRepository.Get(Store.Id);
+            WorkflowDefinition WorkflowDefinition = await Get(Store.WorkflowDefinitionId.Value);
+
+            if (WorkflowDefinition != null && Store.StoreWorkflows != null)
+            {
+                if (Store.StoreWorkflows.Any(x => x.WorkflowStateId == WorkflowStateEnum.REJECTED.Id))
+                {
+                    Store.RequestStateId = RequestStateEnum.REJECTED.Id;
+                }
+                else if (Store.StoreWorkflows.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
+                {
+                    Store.RequestStateId = RequestStateEnum.APPROVED.Id;
+                }
+            }
+
+            return Store;
         }
     }
 }
