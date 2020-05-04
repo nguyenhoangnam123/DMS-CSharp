@@ -2,6 +2,7 @@ using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
+using DMS.Services.MEditedPriceStatus;
 using DMS.Services.MIndirectSalesOrder;
 using DMS.Services.MIndirectSalesOrderContent;
 using DMS.Services.MIndirectSalesOrderPromotion;
@@ -61,6 +62,7 @@ namespace DMS.Rpc.indirect_sales_order
         public const string SingleListIndirectSalesOrderContent = Default + "/single-list-indirect-sales-order-content";
         public const string SingleListIndirectSalesOrderPromotion = Default + "/single-list-indirect-sales-order-promotion";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
+        public const string SingleListEditedPriceStatus = Default + "/single-list-edit-price-status";
 
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
@@ -91,6 +93,7 @@ namespace DMS.Rpc.indirect_sales_order
 
     public class IndirectSalesOrderController : RpcController
     {
+        private IEditedPriceStatusService EditedPriceStatusService;
         private IStoreService StoreService;
         private IIndirectSalesOrderStatusService IndirectSalesOrderStatusService;
         private IAppUserService AppUserService;
@@ -106,6 +109,7 @@ namespace DMS.Rpc.indirect_sales_order
         private IStoreTypeService StoreTypeService;
         private ICurrentContext CurrentContext;
         public IndirectSalesOrderController(
+            IEditedPriceStatusService EditedPriceStatusService,
             IStoreService StoreService,
             IIndirectSalesOrderStatusService IndirectSalesOrderStatusService,
             IAppUserService AppUserService,
@@ -122,6 +126,7 @@ namespace DMS.Rpc.indirect_sales_order
             ICurrentContext CurrentContext
         )
         {
+            this.EditedPriceStatusService = EditedPriceStatusService;
             this.StoreService = StoreService;
             this.IndirectSalesOrderStatusService = IndirectSalesOrderStatusService;
             this.AppUserService = AppUserService;
@@ -1862,6 +1867,25 @@ namespace DMS.Rpc.indirect_sales_order
             List<IndirectSalesOrder_ProductTypeDTO> IndirectSalesOrder_ProductTypeDTOs = ProductTypes
                 .Select(x => new IndirectSalesOrder_ProductTypeDTO(x)).ToList();
             return IndirectSalesOrder_ProductTypeDTOs;
+        }
+
+        [Route(IndirectSalesOrderRoute.SingleListEditedPriceStatus), HttpPost]
+        public async Task<List<IndirectSalesOrder_EditedPriceStatusDTO>> SingleListEditedPriceStatus([FromBody] IndirectSalesOrder_EditedPriceStatusFilterDTO IndirectSalesOrder_EditedPriceStatusFilterDTO)
+        {
+            EditedPriceStatusFilter EditedPriceStatusFilter = new EditedPriceStatusFilter();
+            EditedPriceStatusFilter.Skip = 0;
+            EditedPriceStatusFilter.Take = 20;
+            EditedPriceStatusFilter.OrderBy = EditedPriceStatusOrder.Id;
+            EditedPriceStatusFilter.OrderType = OrderType.ASC;
+            EditedPriceStatusFilter.Selects = EditedPriceStatusSelect.ALL;
+            EditedPriceStatusFilter.Id = IndirectSalesOrder_EditedPriceStatusFilterDTO.Id;
+            EditedPriceStatusFilter.Code = IndirectSalesOrder_EditedPriceStatusFilterDTO.Code;
+            EditedPriceStatusFilter.Name = IndirectSalesOrder_EditedPriceStatusFilterDTO.Name;
+
+            List<EditedPriceStatus> EditedPriceStatuses = await EditedPriceStatusService.List(EditedPriceStatusFilter);
+            List<IndirectSalesOrder_EditedPriceStatusDTO> IndirectSalesOrder_EditedPriceStatusDTOs = EditedPriceStatuses
+                .Select(x => new IndirectSalesOrder_EditedPriceStatusDTO(x)).ToList();
+            return IndirectSalesOrder_EditedPriceStatusDTOs;
         }
         [Route(IndirectSalesOrderRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] IndirectSalesOrder_StoreFilterDTO IndirectSalesOrder_StoreFilterDTO)
