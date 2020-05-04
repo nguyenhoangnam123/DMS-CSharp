@@ -48,6 +48,29 @@ namespace DMS.Repositories
                 query = query.Where(q => q.SalePrice, filter.SalePrice);
             if (filter.RetailPrice != null)
                 query = query.Where(q => q.RetailPrice, filter.RetailPrice);
+            if (filter.ProductGroupingId != null)
+            {
+                if (filter.ProductGroupingId.Equal.HasValue)
+                {
+                    ProductGroupingDAO ProductGroupingDAO = DataContext.ProductGrouping
+                        .Where(pg => pg.Id == filter.ProductGroupingId.Equal.Value).FirstOrDefault();
+                    query = from q in query
+                            join ppg in DataContext.ProductProductGroupingMapping on q.ProductId equals ppg.ProductId
+                            join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
+                            where pg.Path.StartsWith(ProductGroupingDAO.Path)
+                            select q;
+                }
+            }
+
+            if (filter.ProductTypeId != null)
+            {
+                query = query.Where(q => q.Product.ProductTypeId, filter.ProductTypeId);
+            }
+
+            if (filter.SupplierId != null)
+            {
+                query = query.Where(q => q.Product.SupplierId, filter.SupplierId);
+            }
             query = OrFilter(query, filter);
             return query;
         }
@@ -168,12 +191,54 @@ namespace DMS.Repositories
                     RetailPrice = q.Product.RetailPrice,
                     TaxTypeId = q.Product.TaxTypeId,
                     StatusId = q.Product.StatusId,
+                    ProductType = new ProductType
+                    {
+                        Id = q.Product.ProductType.Id,
+                        Code = q.Product.ProductType.Code,
+                        Name = q.Product.ProductType.Name,
+                        Description = q.Product.ProductType.Description,
+                        StatusId = q.Product.ProductType.StatusId,
+                        UpdatedTime = q.Product.ProductType.UpdatedAt,
+                    },
+                    Supplier = new Supplier
+                    {
+                        Id = q.Product.Supplier.Id,
+                        Code = q.Product.Supplier.Code,
+                        Name = q.Product.Supplier.Name,
+                        Address = q.Product.Supplier.Address,
+                        Description = q.Product.Supplier.Description,
+                        DistrictId = q.Product.Supplier.DistrictId,
+                        Email = q.Product.Supplier.Email,
+                        OwnerName = q.Product.Supplier.OwnerName,
+                        PersonInChargeId = q.Product.Supplier.PersonInChargeId,
+                        Phone = q.Product.Supplier.Phone,
+                        ProvinceId = q.Product.Supplier.ProvinceId,
+                        StatusId = q.Product.Supplier.StatusId,
+                        TaxCode = q.Product.Supplier.TaxCode,
+                        UpdatedTime = q.Product.Supplier.UpdatedAt,
+                        WardId = q.Product.Supplier.WardId,
+                    },
                     UnitOfMeasure = new UnitOfMeasure
                     {
                         Id = q.Product.UnitOfMeasure.Id,
                         Code = q.Product.UnitOfMeasure.Code,
                         Name = q.Product.UnitOfMeasure.Name,
-                    }
+                    },
+                    ProductProductGroupingMappings = q.Product.ProductProductGroupingMappings != null ?
+                    q.Product.ProductProductGroupingMappings.Select(p => new ProductProductGroupingMapping
+                    {
+                        ProductId = p.ProductId,
+                        ProductGroupingId = p.ProductGroupingId,
+                        ProductGrouping = new ProductGrouping
+                        {
+                            Id = p.ProductGrouping.Id,
+                            Code = p.ProductGrouping.Code,
+                            Name = p.ProductGrouping.Name,
+                            ParentId = p.ProductGrouping.ParentId,
+                            Path = p.ProductGrouping.Path,
+                            Description = p.ProductGrouping.Description,
+                        },
+                    }).ToList() : null,
                 } : null,
             }).ToListAsync();
             return Items;

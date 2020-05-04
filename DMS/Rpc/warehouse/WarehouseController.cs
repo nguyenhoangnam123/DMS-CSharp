@@ -787,7 +787,7 @@ namespace DMS.Rpc.warehouse
             return Warehouse_UnitOfMeasureDTOs;
         }
         [Route(WarehouseRoute.SingleListProductGrouping), HttpPost]
-        public async Task<List<Warehouse_ProductGroupingDTO>> SingleListWarehouseGrouping([FromBody] Warehouse_ProductGroupingFilterDTO Warehouse_ProductGroupingFilterDTO)
+        public async Task<List<Warehouse_ProductGroupingDTO>> SingleListProductGrouping([FromBody] Warehouse_ProductGroupingFilterDTO Warehouse_ProductGroupingFilterDTO)
         {
             ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
             ProductGroupingFilter.Skip = 0;

@@ -66,6 +66,19 @@ namespace DMS.Services.MItem
             try
             {
                 List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
+                foreach (var item in Items)
+                {
+                    InventoryFilter InventoryFilter = new InventoryFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        ItemId = new IdFilter { Equal = item.Id },
+                        Selects = InventorySelect.SaleStock
+                    };
+
+                    var list = await UOW.InventoryRepository.List(InventoryFilter);
+                    item.SaleStock = list.Select(x => x.SaleStock).Sum();
+                }
                 return Items;
             }
             catch (Exception ex)

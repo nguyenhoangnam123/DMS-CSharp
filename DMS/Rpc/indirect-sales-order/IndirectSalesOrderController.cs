@@ -7,7 +7,12 @@ using DMS.Services.MIndirectSalesOrderContent;
 using DMS.Services.MIndirectSalesOrderPromotion;
 using DMS.Services.MIndirectSalesOrderStatus;
 using DMS.Services.MItem;
+using DMS.Services.MProductGrouping;
+using DMS.Services.MProductType;
 using DMS.Services.MStore;
+using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreType;
+using DMS.Services.MSupplier;
 using DMS.Services.MUnitOfMeasure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +51,12 @@ namespace DMS.Rpc.indirect_sales_order
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListItem = Default + "/single-list-item";
+        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
+        public const string SingleListProductType = Default + "/single-list-product-type";
+        public const string SingleListSupplier = Default + "/single-list-supplier";
         public const string SingleListStore = Default + "/single-list-store";
+        public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
+        public const string SingleListStoreType = Default + "/single-list-store-type";
         public const string SingleListIndirectSalesOrderStatus = Default + "/single-list-indirect-sales-order-status";
         public const string SingleListIndirectSalesOrderContent = Default + "/single-list-indirect-sales-order-content";
         public const string SingleListIndirectSalesOrderPromotion = Default + "/single-list-indirect-sales-order-promotion";
@@ -54,6 +64,8 @@ namespace DMS.Rpc.indirect_sales_order
 
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
+        public const string CountItem = Default + "/count-item";
+        public const string ListItem = Default + "/list-item";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(IndirectSalesOrderFilter.Id), FieldType.ID },
@@ -87,6 +99,11 @@ namespace DMS.Rpc.indirect_sales_order
         private IIndirectSalesOrderPromotionService IndirectSalesOrderPromotionService;
         private IItemService ItemService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
+        private IProductGroupingService ProductGroupingService;
+        private IProductTypeService ProductTypeService;
+        private ISupplierService SupplierService;
+        private IStoreGroupingService StoreGroupingService;
+        private IStoreTypeService StoreTypeService;
         private ICurrentContext CurrentContext;
         public IndirectSalesOrderController(
             IStoreService StoreService,
@@ -97,6 +114,11 @@ namespace DMS.Rpc.indirect_sales_order
             IIndirectSalesOrderPromotionService IndirectSalesOrderPromotionService,
             IItemService ItemService,
             IIndirectSalesOrderService IndirectSalesOrderService,
+            IProductGroupingService ProductGroupingService,
+            IProductTypeService ProductTypeService,
+            ISupplierService SupplierService,
+            IStoreGroupingService StoreGroupingService,
+            IStoreTypeService StoreTypeService,
             ICurrentContext CurrentContext
         )
         {
@@ -108,6 +130,11 @@ namespace DMS.Rpc.indirect_sales_order
             this.IndirectSalesOrderPromotionService = IndirectSalesOrderPromotionService;
             this.ItemService = ItemService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
+            this.ProductGroupingService = ProductGroupingService;
+            this.ProductTypeService = ProductTypeService;
+            this.SupplierService = SupplierService;
+            this.StoreGroupingService = StoreGroupingService;
+            this.StoreTypeService = StoreTypeService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -1724,6 +1751,64 @@ namespace DMS.Rpc.indirect_sales_order
                 .Select(x => new IndirectSalesOrder_IndirectSalesOrderPromotionDTO(x)).ToList();
             return IndirectSalesOrder_IndirectSalesOrderPromotionDTOs;
         }
+        [Route(IndirectSalesOrderRoute.SingleListSupplier), HttpPost]
+        public async Task<List<IndirectSalesOrder_SupplierDTO>> SingleListSupplier([FromBody] IndirectSalesOrder_SupplierFilterDTO Product_SupplierFilterDTO)
+        {
+            SupplierFilter SupplierFilter = new SupplierFilter();
+            SupplierFilter.Skip = 0;
+            SupplierFilter.Take = 20;
+            SupplierFilter.OrderBy = SupplierOrder.Id;
+            SupplierFilter.OrderType = OrderType.ASC;
+            SupplierFilter.Selects = SupplierSelect.ALL;
+            SupplierFilter.Id = Product_SupplierFilterDTO.Id;
+            SupplierFilter.Code = Product_SupplierFilterDTO.Code;
+            SupplierFilter.Name = Product_SupplierFilterDTO.Name;
+            SupplierFilter.TaxCode = Product_SupplierFilterDTO.TaxCode;
+            SupplierFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
+            List<IndirectSalesOrder_SupplierDTO> IndirectSalesOrder_SupplierDTOs = Suppliers
+                .Select(x => new IndirectSalesOrder_SupplierDTO(x)).ToList();
+            return IndirectSalesOrder_SupplierDTOs;
+        }
+        [Route(IndirectSalesOrderRoute.SingleListStoreGrouping), HttpPost]
+        public async Task<List<IndirectSalesOrder_StoreGroupingDTO>> SingleListStoreGrouping([FromBody] IndirectSalesOrder_StoreGroupingFilterDTO IndirectSalesOrder_StoreGroupingFilterDTO)
+        {
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = 0;
+            StoreGroupingFilter.Take = 99999;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Code = IndirectSalesOrder_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = IndirectSalesOrder_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.Level = IndirectSalesOrder_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.Path = IndirectSalesOrder_StoreGroupingFilterDTO.Path;
+            StoreGroupingFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+            List<IndirectSalesOrder_StoreGroupingDTO> IndirectSalesOrder_StoreGroupingDTOs = StoreGroupings
+                .Select(x => new IndirectSalesOrder_StoreGroupingDTO(x)).ToList();
+            return IndirectSalesOrder_StoreGroupingDTOs;
+        }
+        [Route(IndirectSalesOrderRoute.SingleListStoreType), HttpPost]
+        public async Task<List<IndirectSalesOrder_StoreTypeDTO>> SingleListStoreType([FromBody] IndirectSalesOrder_StoreTypeFilterDTO IndirectSalesOrder_StoreTypeFilterDTO)
+        {
+            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
+            StoreTypeFilter.Skip = 0;
+            StoreTypeFilter.Take = 20;
+            StoreTypeFilter.OrderBy = StoreTypeOrder.Id;
+            StoreTypeFilter.OrderType = OrderType.ASC;
+            StoreTypeFilter.Selects = StoreTypeSelect.ALL;
+            StoreTypeFilter.Id = IndirectSalesOrder_StoreTypeFilterDTO.Id;
+            StoreTypeFilter.Code = IndirectSalesOrder_StoreTypeFilterDTO.Code;
+            StoreTypeFilter.Name = IndirectSalesOrder_StoreTypeFilterDTO.Name;
+            StoreTypeFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
+            List<IndirectSalesOrder_StoreTypeDTO> IndirectSalesOrder_StoreTypeDTOs = StoreTypes
+                .Select(x => new IndirectSalesOrder_StoreTypeDTO(x)).ToList();
+            return IndirectSalesOrder_StoreTypeDTOs;
+        }
         [Route(IndirectSalesOrderRoute.SingleListItem), HttpPost]
         public async Task<List<IndirectSalesOrder_ItemDTO>> SingleListItem([FromBody] IndirectSalesOrder_ItemFilterDTO IndirectSalesOrder_ItemFilterDTO)
         {
@@ -1748,6 +1833,42 @@ namespace DMS.Rpc.indirect_sales_order
             return IndirectSalesOrder_ItemDTOs;
         }
 
+        [Route(IndirectSalesOrderRoute.SingleListProductGrouping), HttpPost]
+        public async Task<List<IndirectSalesOrder_ProductGroupingDTO>> SingleListProductGrouping([FromBody] IndirectSalesOrder_ProductGroupingFilterDTO IndirectSalesOrder_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+
+            List<ProductGrouping> IndirectSalesOrderGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<IndirectSalesOrder_ProductGroupingDTO> IndirectSalesOrder_ProductGroupingDTOs = IndirectSalesOrderGroupings
+                .Select(x => new IndirectSalesOrder_ProductGroupingDTO(x)).ToList();
+            return IndirectSalesOrder_ProductGroupingDTOs;
+        }
+        [Route(IndirectSalesOrderRoute.SingleListProductType), HttpPost]
+        public async Task<List<IndirectSalesOrder_ProductTypeDTO>> SingleListProductType([FromBody] IndirectSalesOrder_ProductTypeFilterDTO IndirectSalesOrder_ProductTypeFilterDTO)
+        {
+            ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
+            ProductTypeFilter.Skip = 0;
+            ProductTypeFilter.Take = 20;
+            ProductTypeFilter.OrderBy = ProductTypeOrder.Id;
+            ProductTypeFilter.OrderType = OrderType.ASC;
+            ProductTypeFilter.Selects = ProductTypeSelect.ALL;
+            ProductTypeFilter.Id = IndirectSalesOrder_ProductTypeFilterDTO.Id;
+            ProductTypeFilter.Code = IndirectSalesOrder_ProductTypeFilterDTO.Code;
+            ProductTypeFilter.Name = IndirectSalesOrder_ProductTypeFilterDTO.Name;
+            ProductTypeFilter.Description = IndirectSalesOrder_ProductTypeFilterDTO.Description;
+            ProductTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
+            List<IndirectSalesOrder_ProductTypeDTO> IndirectSalesOrder_ProductTypeDTOs = ProductTypes
+                .Select(x => new IndirectSalesOrder_ProductTypeDTO(x)).ToList();
+            return IndirectSalesOrder_ProductTypeDTOs;
+        }
         [Route(IndirectSalesOrderRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] IndirectSalesOrder_StoreFilterDTO IndirectSalesOrder_StoreFilterDTO)
         {
@@ -1807,6 +1928,53 @@ namespace DMS.Rpc.indirect_sales_order
             List<IndirectSalesOrder_StoreDTO> IndirectSalesOrder_StoreDTOs = Stores
                 .Select(x => new IndirectSalesOrder_StoreDTO(x)).ToList();
             return IndirectSalesOrder_StoreDTOs;
+        }
+
+        [Route(IndirectSalesOrderRoute.CountItem), HttpPost]
+        public async Task<long> CountItem([FromBody] IndirectSalesOrder_ItemFilterDTO IndirectSalesOrder_ItemFilterDTO)
+        {
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Id = IndirectSalesOrder_ItemFilterDTO.Id;
+            ItemFilter.Code = IndirectSalesOrder_ItemFilterDTO.Code;
+            ItemFilter.Name = IndirectSalesOrder_ItemFilterDTO.Name;
+            ItemFilter.OtherName = IndirectSalesOrder_ItemFilterDTO.OtherName;
+            ItemFilter.ProductGroupingId = IndirectSalesOrder_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductId = IndirectSalesOrder_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = IndirectSalesOrder_ItemFilterDTO.ProductTypeId;
+            ItemFilter.RetailPrice = IndirectSalesOrder_ItemFilterDTO.RetailPrice;
+            ItemFilter.SalePrice = IndirectSalesOrder_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = IndirectSalesOrder_ItemFilterDTO.ScanCode;
+            ItemFilter.StatusId = IndirectSalesOrder_ItemFilterDTO.StatusId;
+            ItemFilter.SupplierId = IndirectSalesOrder_ItemFilterDTO.SupplierId;
+            return await ItemService.Count(ItemFilter);
+        }
+
+        [Route(IndirectSalesOrderRoute.ListItem), HttpPost]
+        public async Task<List<IndirectSalesOrder_ItemDTO>> ListItem([FromBody] IndirectSalesOrder_ItemFilterDTO IndirectSalesOrder_ItemFilterDTO)
+        {
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Skip = IndirectSalesOrder_ItemFilterDTO.Skip;
+            ItemFilter.Take = IndirectSalesOrder_ItemFilterDTO.Take;
+            ItemFilter.OrderBy = ItemOrder.Id;
+            ItemFilter.OrderType = OrderType.ASC;
+            ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Id = IndirectSalesOrder_ItemFilterDTO.Id;
+            ItemFilter.Code = IndirectSalesOrder_ItemFilterDTO.Code;
+            ItemFilter.Name = IndirectSalesOrder_ItemFilterDTO.Name;
+            ItemFilter.OtherName = IndirectSalesOrder_ItemFilterDTO.OtherName;
+            ItemFilter.ProductGroupingId = IndirectSalesOrder_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductId = IndirectSalesOrder_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = IndirectSalesOrder_ItemFilterDTO.ProductTypeId;
+            ItemFilter.RetailPrice = IndirectSalesOrder_ItemFilterDTO.RetailPrice;
+            ItemFilter.SalePrice = IndirectSalesOrder_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = IndirectSalesOrder_ItemFilterDTO.ScanCode;
+            ItemFilter.StatusId = IndirectSalesOrder_ItemFilterDTO.StatusId;
+            ItemFilter.SupplierId = IndirectSalesOrder_ItemFilterDTO.SupplierId;
+
+            List<Item> Items = await ItemService.List(ItemFilter);
+            List<IndirectSalesOrder_ItemDTO> IndirectSalesOrder_ItemDTOs = Items
+                .Select(x => new IndirectSalesOrder_ItemDTO(x)).ToList();
+            return IndirectSalesOrder_ItemDTOs;
         }
     }
 }
