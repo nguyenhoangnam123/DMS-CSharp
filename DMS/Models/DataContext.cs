@@ -20,7 +20,6 @@ namespace DMS.Models
         public virtual DbSet<IndirectSalesOrderDAO> IndirectSalesOrder { get; set; }
         public virtual DbSet<IndirectSalesOrderContentDAO> IndirectSalesOrderContent { get; set; }
         public virtual DbSet<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotion { get; set; }
-        public virtual DbSet<IndirectSalesOrderStatusDAO> IndirectSalesOrderStatus { get; set; }
         public virtual DbSet<InventoryDAO> Inventory { get; set; }
         public virtual DbSet<InventoryHistoryDAO> InventoryHistory { get; set; }
         public virtual DbSet<ItemDAO> Item { get; set; }
@@ -417,11 +416,11 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrder_EditedPriceStatus");
 
-                entity.HasOne(d => d.IndirectSalesOrderStatus)
+                entity.HasOne(d => d.RequestState)
                     .WithMany(p => p.IndirectSalesOrders)
-                    .HasForeignKey(d => d.IndirectSalesOrderStatusId)
+                    .HasForeignKey(d => d.RequestStateId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_IndirectSalesOrder_IndirectSalesOrderStatus");
+                    .HasConstraintName("FK_IndirectSalesOrder_RequestState");
 
                 entity.HasOne(d => d.SaleEmployee)
                     .WithMany(p => p.IndirectSalesOrders)
@@ -496,19 +495,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.UnitOfMeasureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrderPromotion_UnitOfMeasure");
-            });
-
-            modelBuilder.Entity<IndirectSalesOrderStatusDAO>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Code)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(500);
             });
 
             modelBuilder.Entity<InventoryDAO>(entity =>

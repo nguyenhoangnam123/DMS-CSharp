@@ -6,7 +6,6 @@ using DMS.Services.MEditedPriceStatus;
 using DMS.Services.MIndirectSalesOrder;
 using DMS.Services.MIndirectSalesOrderContent;
 using DMS.Services.MIndirectSalesOrderPromotion;
-using DMS.Services.MIndirectSalesOrderStatus;
 using DMS.Services.MItem;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
@@ -45,7 +44,6 @@ namespace DMS.Rpc.indirect_sales_order
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListItem = Default + "/filter-list-item";
         public const string FilterListStore = Default + "/filter-list-store";
-        public const string FilterListIndirectSalesOrderStatus = Default + "/filter-list-indirect-sales-order-status";
         public const string FilterListIndirectSalesOrderContent = Default + "/filter-list-indirect-sales-order-content";
         public const string FilterListIndirectSalesOrderPromotion = Default + "/filter-list-indirect-sales-order-promotion";
         public const string FilterListUnitOfMeasure = Default + "/filter-list-unit-of-measure";
@@ -95,7 +93,6 @@ namespace DMS.Rpc.indirect_sales_order
     {
         private IEditedPriceStatusService EditedPriceStatusService;
         private IStoreService StoreService;
-        private IIndirectSalesOrderStatusService IndirectSalesOrderStatusService;
         private IAppUserService AppUserService;
         private IIndirectSalesOrderContentService IndirectSalesOrderContentService;
         private IUnitOfMeasureService UnitOfMeasureService;
@@ -111,7 +108,6 @@ namespace DMS.Rpc.indirect_sales_order
         public IndirectSalesOrderController(
             IEditedPriceStatusService EditedPriceStatusService,
             IStoreService StoreService,
-            IIndirectSalesOrderStatusService IndirectSalesOrderStatusService,
             IAppUserService AppUserService,
             IIndirectSalesOrderContentService IndirectSalesOrderContentService,
             IUnitOfMeasureService UnitOfMeasureService,
@@ -128,7 +124,6 @@ namespace DMS.Rpc.indirect_sales_order
         {
             this.EditedPriceStatusService = EditedPriceStatusService;
             this.StoreService = StoreService;
-            this.IndirectSalesOrderStatusService = IndirectSalesOrderStatusService;
             this.AppUserService = AppUserService;
             this.IndirectSalesOrderContentService = IndirectSalesOrderContentService;
             this.UnitOfMeasureService = UnitOfMeasureService;
@@ -266,13 +261,7 @@ namespace DMS.Rpc.indirect_sales_order
                 Selects = StoreSelect.ALL
             };
             List<Store> BuyerStores = await StoreService.List(BuyerStoreFilter);
-            IndirectSalesOrderStatusFilter IndirectSalesOrderStatusFilter = new IndirectSalesOrderStatusFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = IndirectSalesOrderStatusSelect.ALL
-            };
-            List<IndirectSalesOrderStatus> IndirectSalesOrderStatuses = await IndirectSalesOrderStatusService.List(IndirectSalesOrderStatusFilter);
+           
             AppUserFilter SaleEmployeeFilter = new AppUserFilter
             {
                 Skip = 0,
@@ -353,9 +342,6 @@ namespace DMS.Rpc.indirect_sales_order
                     Store BuyerStore = BuyerStores.Where(x => x.Id.ToString() == BuyerStoreIdValue).FirstOrDefault();
                     IndirectSalesOrder.BuyerStoreId = BuyerStore == null ? 0 : BuyerStore.Id;
                     IndirectSalesOrder.BuyerStore = BuyerStore;
-                    IndirectSalesOrderStatus IndirectSalesOrderStatus = IndirectSalesOrderStatuses.Where(x => x.Id.ToString() == IndirectSalesOrderStatusIdValue).FirstOrDefault();
-                    IndirectSalesOrder.IndirectSalesOrderStatusId = IndirectSalesOrderStatus == null ? 0 : IndirectSalesOrderStatus.Id;
-                    IndirectSalesOrder.IndirectSalesOrderStatus = IndirectSalesOrderStatus;
                     AppUser SaleEmployee = SaleEmployees.Where(x => x.Id.ToString() == SaleEmployeeIdValue).FirstOrDefault();
                     IndirectSalesOrder.SaleEmployeeId = SaleEmployee == null ? 0 : SaleEmployee.Id;
                     IndirectSalesOrder.SaleEmployee = SaleEmployee;
@@ -561,36 +547,6 @@ namespace DMS.Rpc.indirect_sales_order
                     });
                 }
                 excel.GenerateWorksheet("Store", StoreHeaders, StoreData);
-                #endregion
-                #region IndirectSalesOrderStatus
-                var IndirectSalesOrderStatusFilter = new IndirectSalesOrderStatusFilter();
-                IndirectSalesOrderStatusFilter.Selects = IndirectSalesOrderStatusSelect.ALL;
-                IndirectSalesOrderStatusFilter.OrderBy = IndirectSalesOrderStatusOrder.Id;
-                IndirectSalesOrderStatusFilter.OrderType = OrderType.ASC;
-                IndirectSalesOrderStatusFilter.Skip = 0;
-                IndirectSalesOrderStatusFilter.Take = int.MaxValue;
-                List<IndirectSalesOrderStatus> IndirectSalesOrderStatuses = await IndirectSalesOrderStatusService.List(IndirectSalesOrderStatusFilter);
-
-                var IndirectSalesOrderStatusHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> IndirectSalesOrderStatusData = new List<object[]>();
-                for (int i = 0; i < IndirectSalesOrderStatuses.Count; i++)
-                {
-                    var IndirectSalesOrderStatus = IndirectSalesOrderStatuses[i];
-                    IndirectSalesOrderStatusData.Add(new Object[]
-                    {
-                        IndirectSalesOrderStatus.Id,
-                        IndirectSalesOrderStatus.Code,
-                        IndirectSalesOrderStatus.Name,
-                    });
-                }
-                excel.GenerateWorksheet("IndirectSalesOrderStatus", IndirectSalesOrderStatusHeaders, IndirectSalesOrderStatusData);
                 #endregion
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
@@ -929,36 +885,6 @@ namespace DMS.Rpc.indirect_sales_order
                 }
                 excel.GenerateWorksheet("Store", StoreHeaders, StoreData);
                 #endregion
-                #region IndirectSalesOrderStatus
-                var IndirectSalesOrderStatusFilter = new IndirectSalesOrderStatusFilter();
-                IndirectSalesOrderStatusFilter.Selects = IndirectSalesOrderStatusSelect.ALL;
-                IndirectSalesOrderStatusFilter.OrderBy = IndirectSalesOrderStatusOrder.Id;
-                IndirectSalesOrderStatusFilter.OrderType = OrderType.ASC;
-                IndirectSalesOrderStatusFilter.Skip = 0;
-                IndirectSalesOrderStatusFilter.Take = int.MaxValue;
-                List<IndirectSalesOrderStatus> IndirectSalesOrderStatuses = await IndirectSalesOrderStatusService.List(IndirectSalesOrderStatusFilter);
-
-                var IndirectSalesOrderStatusHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> IndirectSalesOrderStatusData = new List<object[]>();
-                for (int i = 0; i < IndirectSalesOrderStatuses.Count; i++)
-                {
-                    var IndirectSalesOrderStatus = IndirectSalesOrderStatuses[i];
-                    IndirectSalesOrderStatusData.Add(new Object[]
-                    {
-                        IndirectSalesOrderStatus.Id,
-                        IndirectSalesOrderStatus.Code,
-                        IndirectSalesOrderStatus.Name,
-                    });
-                }
-                excel.GenerateWorksheet("IndirectSalesOrderStatus", IndirectSalesOrderStatusHeaders, IndirectSalesOrderStatusData);
-                #endregion
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -1258,12 +1184,6 @@ namespace DMS.Rpc.indirect_sales_order
                 Code = IndirectSalesOrder_IndirectSalesOrderDTO.EditedPriceStatus.Code,
                 Name = IndirectSalesOrder_IndirectSalesOrderDTO.EditedPriceStatus.Name,
             };
-            IndirectSalesOrder.IndirectSalesOrderStatus = IndirectSalesOrder_IndirectSalesOrderDTO.IndirectSalesOrderStatus == null ? null : new IndirectSalesOrderStatus
-            {
-                Id = IndirectSalesOrder_IndirectSalesOrderDTO.IndirectSalesOrderStatus.Id,
-                Code = IndirectSalesOrder_IndirectSalesOrderDTO.IndirectSalesOrderStatus.Code,
-                Name = IndirectSalesOrder_IndirectSalesOrderDTO.IndirectSalesOrderStatus.Name,
-            };
             IndirectSalesOrder.SaleEmployee = IndirectSalesOrder_IndirectSalesOrderDTO.SaleEmployee == null ? null : new AppUser
             {
                 Id = IndirectSalesOrder_IndirectSalesOrderDTO.SaleEmployee.Id,
@@ -1453,22 +1373,6 @@ namespace DMS.Rpc.indirect_sales_order
             return IndirectSalesOrder_StoreDTOs;
         }
 
-        [Route(IndirectSalesOrderRoute.FilterListIndirectSalesOrderStatus), HttpPost]
-        public async Task<List<IndirectSalesOrder_IndirectSalesOrderStatusDTO>> FilterListIndirectSalesOrderStatus([FromBody] IndirectSalesOrder_IndirectSalesOrderStatusFilterDTO IndirectSalesOrder_IndirectSalesOrderStatusFilterDTO)
-        {
-            IndirectSalesOrderStatusFilter IndirectSalesOrderStatusFilter = new IndirectSalesOrderStatusFilter();
-            IndirectSalesOrderStatusFilter.Skip = 0;
-            IndirectSalesOrderStatusFilter.Take = int.MaxValue;
-            IndirectSalesOrderStatusFilter.Take = 20;
-            IndirectSalesOrderStatusFilter.OrderBy = IndirectSalesOrderStatusOrder.Id;
-            IndirectSalesOrderStatusFilter.OrderType = OrderType.ASC;
-            IndirectSalesOrderStatusFilter.Selects = IndirectSalesOrderStatusSelect.ALL;
-
-            List<IndirectSalesOrderStatus> IndirectSalesOrderStatuses = await IndirectSalesOrderStatusService.List(IndirectSalesOrderStatusFilter);
-            List<IndirectSalesOrder_IndirectSalesOrderStatusDTO> IndirectSalesOrder_IndirectSalesOrderStatusDTOs = IndirectSalesOrderStatuses
-                .Select(x => new IndirectSalesOrder_IndirectSalesOrderStatusDTO(x)).ToList();
-            return IndirectSalesOrder_IndirectSalesOrderStatusDTOs;
-        }
         [Route(IndirectSalesOrderRoute.FilterListAppUser), HttpPost]
         public async Task<List<IndirectSalesOrder_AppUserDTO>> FilterListAppUser([FromBody] IndirectSalesOrder_AppUserFilterDTO IndirectSalesOrder_AppUserFilterDTO)
         {
@@ -1631,22 +1535,6 @@ namespace DMS.Rpc.indirect_sales_order
             List<IndirectSalesOrder_StoreDTO> IndirectSalesOrder_StoreDTOs = Stores
                 .Select(x => new IndirectSalesOrder_StoreDTO(x)).ToList();
             return IndirectSalesOrder_StoreDTOs;
-        }
-        [Route(IndirectSalesOrderRoute.SingleListIndirectSalesOrderStatus), HttpPost]
-        public async Task<List<IndirectSalesOrder_IndirectSalesOrderStatusDTO>> SingleListIndirectSalesOrderStatus([FromBody] IndirectSalesOrder_IndirectSalesOrderStatusFilterDTO IndirectSalesOrder_IndirectSalesOrderStatusFilterDTO)
-        {
-            IndirectSalesOrderStatusFilter IndirectSalesOrderStatusFilter = new IndirectSalesOrderStatusFilter();
-            IndirectSalesOrderStatusFilter.Skip = 0;
-            IndirectSalesOrderStatusFilter.Take = int.MaxValue;
-            IndirectSalesOrderStatusFilter.Take = 20;
-            IndirectSalesOrderStatusFilter.OrderBy = IndirectSalesOrderStatusOrder.Id;
-            IndirectSalesOrderStatusFilter.OrderType = OrderType.ASC;
-            IndirectSalesOrderStatusFilter.Selects = IndirectSalesOrderStatusSelect.ALL;
-
-            List<IndirectSalesOrderStatus> IndirectSalesOrderStatuses = await IndirectSalesOrderStatusService.List(IndirectSalesOrderStatusFilter);
-            List<IndirectSalesOrder_IndirectSalesOrderStatusDTO> IndirectSalesOrder_IndirectSalesOrderStatusDTOs = IndirectSalesOrderStatuses
-                .Select(x => new IndirectSalesOrder_IndirectSalesOrderStatusDTO(x)).ToList();
-            return IndirectSalesOrder_IndirectSalesOrderStatusDTOs;
         }
         [Route(IndirectSalesOrderRoute.SingleListAppUser), HttpPost]
         public async Task<List<IndirectSalesOrder_AppUserDTO>> SingleListAppUser([FromBody] IndirectSalesOrder_AppUserFilterDTO IndirectSalesOrder_AppUserFilterDTO)

@@ -53,8 +53,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.OrderDate, filter.OrderDate);
             if (filter.DeliveryDate != null)
                 query = query.Where(q => q.DeliveryDate, filter.DeliveryDate);
-            if (filter.IndirectSalesOrderStatusId != null)
-                query = query.Where(q => q.IndirectSalesOrderStatusId, filter.IndirectSalesOrderStatusId);
             if (filter.EditedPriceStatusId != null)
                 query = query.Where(q => q.EditedPriceStatusId, filter.EditedPriceStatusId);
             if (filter.Note != null)
@@ -101,8 +99,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.OrderDate, filter.OrderDate);
                 if (filter.DeliveryDate != null)
                     queryable = queryable.Where(q => q.DeliveryDate, filter.DeliveryDate);
-                if (filter.IndirectSalesOrderStatusId != null)
-                    queryable = queryable.Where(q => q.IndirectSalesOrderStatusId, filter.IndirectSalesOrderStatusId);
                 if (filter.EditedPriceStatusId != null)
                     queryable = queryable.Where(q => q.EditedPriceStatusId, filter.EditedPriceStatusId);
                 if (filter.Note != null)
@@ -158,9 +154,6 @@ namespace DMS.Repositories
                             break;
                         case IndirectSalesOrderOrder.DeliveryDate:
                             query = query.OrderBy(q => q.DeliveryDate);
-                            break;
-                        case IndirectSalesOrderOrder.IndirectSalesOrderStatus:
-                            query = query.OrderBy(q => q.IndirectSalesOrderStatusId);
                             break;
                         case IndirectSalesOrderOrder.EditedPriceStatus:
                             query = query.OrderBy(q => q.EditedPriceStatusId);
@@ -218,9 +211,6 @@ namespace DMS.Repositories
                         case IndirectSalesOrderOrder.DeliveryDate:
                             query = query.OrderByDescending(q => q.DeliveryDate);
                             break;
-                        case IndirectSalesOrderOrder.IndirectSalesOrderStatus:
-                            query = query.OrderByDescending(q => q.IndirectSalesOrderStatusId);
-                            break;
                         case IndirectSalesOrderOrder.EditedPriceStatus:
                             query = query.OrderByDescending(q => q.EditedPriceStatusId);
                             break;
@@ -263,7 +253,6 @@ namespace DMS.Repositories
                 SaleEmployeeId = filter.Selects.Contains(IndirectSalesOrderSelect.SaleEmployee) ? q.SaleEmployeeId : default(long),
                 OrderDate = filter.Selects.Contains(IndirectSalesOrderSelect.OrderDate) ? q.OrderDate : default(DateTime),
                 DeliveryDate = filter.Selects.Contains(IndirectSalesOrderSelect.DeliveryDate) ? q.DeliveryDate : default(DateTime?),
-                IndirectSalesOrderStatusId = filter.Selects.Contains(IndirectSalesOrderSelect.IndirectSalesOrderStatus) ? q.IndirectSalesOrderStatusId : default(long),
                 EditedPriceStatusId = filter.Selects.Contains(IndirectSalesOrderSelect.EditedPriceStatus) ? q.EditedPriceStatusId : default(long),
                 Note = filter.Selects.Contains(IndirectSalesOrderSelect.Note) ? q.Note : default(string),
                 SubTotal = filter.Selects.Contains(IndirectSalesOrderSelect.SubTotal) ? q.SubTotal : default(long),
@@ -303,12 +292,6 @@ namespace DMS.Repositories
                     Id = q.EditedPriceStatus.Id,
                     Code = q.EditedPriceStatus.Code,
                     Name = q.EditedPriceStatus.Name,
-                } : null,
-                IndirectSalesOrderStatus = filter.Selects.Contains(IndirectSalesOrderSelect.IndirectSalesOrderStatus) && q.IndirectSalesOrderStatus != null ? new IndirectSalesOrderStatus
-                {
-                    Id = q.IndirectSalesOrderStatus.Id,
-                    Code = q.IndirectSalesOrderStatus.Code,
-                    Name = q.IndirectSalesOrderStatus.Name,
                 } : null,
                 SaleEmployee = filter.Selects.Contains(IndirectSalesOrderSelect.SaleEmployee) && q.SaleEmployee != null ? new AppUser
                 {
@@ -391,7 +374,6 @@ namespace DMS.Repositories
                 SaleEmployeeId = x.SaleEmployeeId,
                 OrderDate = x.OrderDate,
                 DeliveryDate = x.DeliveryDate,
-                IndirectSalesOrderStatusId = x.IndirectSalesOrderStatusId,
                 EditedPriceStatusId = x.EditedPriceStatusId,
                 Note = x.Note,
                 SubTotal = x.SubTotal,
@@ -431,12 +413,6 @@ namespace DMS.Repositories
                     Id = x.EditedPriceStatus.Id,
                     Code = x.EditedPriceStatus.Code,
                     Name = x.EditedPriceStatus.Name,
-                },
-                IndirectSalesOrderStatus = x.IndirectSalesOrderStatus == null ? null : new IndirectSalesOrderStatus
-                {
-                    Id = x.IndirectSalesOrderStatus.Id,
-                    Code = x.IndirectSalesOrderStatus.Code,
-                    Name = x.IndirectSalesOrderStatus.Name,
                 },
                 SaleEmployee = x.SaleEmployee == null ? null : new AppUser
                 {
@@ -579,7 +555,6 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.SaleEmployeeId = IndirectSalesOrder.SaleEmployeeId;
             IndirectSalesOrderDAO.OrderDate = IndirectSalesOrder.OrderDate;
             IndirectSalesOrderDAO.DeliveryDate = IndirectSalesOrder.DeliveryDate;
-            IndirectSalesOrderDAO.IndirectSalesOrderStatusId = IndirectSalesOrder.IndirectSalesOrderStatusId;
             IndirectSalesOrderDAO.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
             IndirectSalesOrderDAO.Note = IndirectSalesOrder.Note;
             IndirectSalesOrderDAO.SubTotal = IndirectSalesOrder.SubTotal;
@@ -609,7 +584,6 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.SaleEmployeeId = IndirectSalesOrder.SaleEmployeeId;
             IndirectSalesOrderDAO.OrderDate = IndirectSalesOrder.OrderDate;
             IndirectSalesOrderDAO.DeliveryDate = IndirectSalesOrder.DeliveryDate;
-            IndirectSalesOrderDAO.IndirectSalesOrderStatusId = IndirectSalesOrder.IndirectSalesOrderStatusId;
             IndirectSalesOrderDAO.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
             IndirectSalesOrderDAO.Note = IndirectSalesOrder.Note;
             IndirectSalesOrderDAO.SubTotal = IndirectSalesOrder.SubTotal;
@@ -644,7 +618,6 @@ namespace DMS.Repositories
                 IndirectSalesOrderDAO.SaleEmployeeId = IndirectSalesOrder.SaleEmployeeId;
                 IndirectSalesOrderDAO.OrderDate = IndirectSalesOrder.OrderDate;
                 IndirectSalesOrderDAO.DeliveryDate = IndirectSalesOrder.DeliveryDate;
-                IndirectSalesOrderDAO.IndirectSalesOrderStatusId = IndirectSalesOrder.IndirectSalesOrderStatusId;
                 IndirectSalesOrderDAO.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
                 IndirectSalesOrderDAO.Note = IndirectSalesOrder.Note;
                 IndirectSalesOrderDAO.SubTotal = IndirectSalesOrder.SubTotal;

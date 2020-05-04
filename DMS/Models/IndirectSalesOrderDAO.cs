@@ -21,7 +21,7 @@ namespace DMS.Models
         public long SaleEmployeeId { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
-        public long IndirectSalesOrderStatusId { get; set; }
+        public long RequestStateId { get; set; }
         public long EditedPriceStatusId { get; set; }
         public string Note { get; set; }
         public long SubTotal { get; set; }
@@ -32,7 +32,7 @@ namespace DMS.Models
 
         public virtual StoreDAO BuyerStore { get; set; }
         public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }
-        public virtual IndirectSalesOrderStatusDAO IndirectSalesOrderStatus { get; set; }
+        public virtual RequestStateDAO RequestState { get; set; }
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StoreDAO SellerStore { get; set; }
         public virtual ICollection<IndirectSalesOrderContentDAO> IndirectSalesOrderContents { get; set; }

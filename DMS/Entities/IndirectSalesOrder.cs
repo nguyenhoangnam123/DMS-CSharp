@@ -28,7 +28,6 @@ namespace DMS.Entities
         public long Total { get; set; }
         public Store BuyerStore { get; set; }
         public EditedPriceStatus EditedPriceStatus { get; set; }
-        public IndirectSalesOrderStatus IndirectSalesOrderStatus { get; set; }
         public AppUser SaleEmployee { get; set; }
         public Store SellerStore { get; set; }
         public List<IndirectSalesOrderContent> IndirectSalesOrderContents { get; set; }

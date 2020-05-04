@@ -28,7 +28,6 @@ namespace DMS.Rpc.indirect_sales_order
         public long Total { get; set; }
         public IndirectSalesOrder_StoreDTO BuyerStore { get; set; }
         public IndirectSalesOrder_EditedPriceStatusDTO EditedPriceStatus { get; set; }
-        public IndirectSalesOrder_IndirectSalesOrderStatusDTO IndirectSalesOrderStatus { get; set; }
         public IndirectSalesOrder_AppUserDTO SaleEmployee { get; set; }
         public IndirectSalesOrder_StoreDTO SellerStore { get; set; }
         public List<IndirectSalesOrder_IndirectSalesOrderContentDTO> IndirectSalesOrderContents { get; set; }
@@ -56,7 +55,6 @@ namespace DMS.Rpc.indirect_sales_order
             this.Total = IndirectSalesOrder.Total;
             this.BuyerStore = IndirectSalesOrder.BuyerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.BuyerStore);
             this.EditedPriceStatus = IndirectSalesOrder.EditedPriceStatus == null ? null : new IndirectSalesOrder_EditedPriceStatusDTO(IndirectSalesOrder.EditedPriceStatus);
-            this.IndirectSalesOrderStatus = IndirectSalesOrder.IndirectSalesOrderStatus == null ? null : new IndirectSalesOrder_IndirectSalesOrderStatusDTO(IndirectSalesOrder.IndirectSalesOrderStatus);
             this.SaleEmployee = IndirectSalesOrder.SaleEmployee == null ? null : new IndirectSalesOrder_AppUserDTO(IndirectSalesOrder.SaleEmployee);
             this.SellerStore = IndirectSalesOrder.SellerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.SellerStore);
             this.IndirectSalesOrderContents = IndirectSalesOrder.IndirectSalesOrderContents?.Select(x => new IndirectSalesOrder_IndirectSalesOrderContentDTO(x)).ToList();
