@@ -79,7 +79,7 @@ namespace DMS.Services.MItem
 
                 foreach (var item in Items)
                 {
-                    item.SaleStock = list.Where(i => i.ItemId == x.Id).Select(i => i.SaleStock).FirstOrDefault();
+                    item.SaleStock = list.Where(i => i.ItemId == item.Id).Select(i => i.SaleStock).FirstOrDefault();
                 }
                 return Items;
             }
