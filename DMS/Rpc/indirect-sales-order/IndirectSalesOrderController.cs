@@ -62,7 +62,7 @@ namespace DMS.Rpc.indirect_sales_order
         public const string SingleListIndirectSalesOrderPromotion = Default + "/single-list-indirect-sales-order-promotion";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public const string SingleListEditedPriceStatus = Default + "/single-list-edit-price-status";
-        public const string SingleListRequestState = Default + "single-list-request-state";
+        public const string SingleListRequestState = Default + "/single-list-request-state";
 
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
