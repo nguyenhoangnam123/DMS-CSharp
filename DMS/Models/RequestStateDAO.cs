@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public RequestStateDAO()
         {
+            DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
             Stores = new HashSet<StoreDAO>();
         }
@@ -15,6 +16,7 @@ namespace DMS.Models
         public string Code { get; set; }
         public string Name { get; set; }
 
+        public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
     }

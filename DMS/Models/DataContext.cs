@@ -13,6 +13,8 @@ namespace DMS.Models
         public virtual DbSet<DirectSalesOrderContentDAO> DirectSalesOrderContent { get; set; }
         public virtual DbSet<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotion { get; set; }
         public virtual DbSet<DistrictDAO> District { get; set; }
+        public virtual DbSet<ERouteDAO> ERoute { get; set; }
+        public virtual DbSet<ERouteContentDAO> ERouteContent { get; set; }
         public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
@@ -216,6 +218,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrder_EditedPriceStatus");
 
+                entity.HasOne(d => d.RequestState)
+                    .WithMany(p => p.DirectSalesOrders)
+                    .HasForeignKey(d => d.RequestStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrder_RequestState");
+
                 entity.HasOne(d => d.SaleEmployee)
                     .WithMany(p => p.DirectSalesOrders)
                     .HasForeignKey(d => d.SaleEmployeeId)
@@ -318,6 +326,25 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_District_Status");
+            });
+
+            modelBuilder.Entity<ERouteDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAT).HasColumnType("datetime");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Name).HasMaxLength(500);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<EditedPriceStatusDAO>(entity =>
@@ -956,6 +983,12 @@ namespace DMS.Models
                 entity.ToTable("RequestWorkflow", "MDM");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.AppUser)
                     .WithMany(p => p.RequestWorkflows)

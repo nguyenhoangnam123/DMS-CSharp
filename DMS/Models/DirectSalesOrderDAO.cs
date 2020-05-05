@@ -28,9 +28,11 @@ namespace DMS.Models
         public long? GeneralDiscountAmount { get; set; }
         public long TotalTaxAmount { get; set; }
         public long Total { get; set; }
+        public long RequestStateId { get; set; }
 
         public virtual StoreDAO BuyerStore { get; set; }
         public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }
+        public virtual RequestStateDAO RequestState { get; set; }
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual ICollection<DirectSalesOrderContentDAO> DirectSalesOrderContents { get; set; }
         public virtual ICollection<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotions { get; set; }
