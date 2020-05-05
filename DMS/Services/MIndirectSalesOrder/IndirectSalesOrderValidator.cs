@@ -50,6 +50,19 @@ namespace DMS.Services.MIndirectSalesOrder
             return count == 1;
         }
 
+        private async Task<bool> ValidateStore(IndirectSalesOrder IndirectSalesOrder)
+        {
+            StoreFilter StoreFilter = new StoreFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { In = new List<long> { IndirectSalesOrder.BuyerStoreId } },
+                Selects = StoreSelect.Id
+            };
+
+            return IndirectSalesOrder.IsValidated;
+        }
+
         public async Task<bool>Create(IndirectSalesOrder IndirectSalesOrder)
         {
             return IndirectSalesOrder.IsValidated;
