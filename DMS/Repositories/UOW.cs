@@ -19,6 +19,8 @@ namespace DMS.Repositories
         IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; }
         IDistrictRepository DistrictRepository { get; }
         IEditedPriceStatusRepository EditedPriceStatusRepository { get; }
+        IERouteContentRepository ERouteContentRepository { get; }
+        IERouteRepository ERouteRepository { get; }
         IEventMessageRepository EventMessageRepository { get; }
         IImageRepository ImageRepository { get; }
         IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; }
@@ -71,6 +73,8 @@ namespace DMS.Repositories
         public IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; private set; }
         public IDistrictRepository DistrictRepository { get; private set; }
         public IEditedPriceStatusRepository EditedPriceStatusRepository { get; private set; }
+        public IERouteContentRepository ERouteContentRepository { get; private set; }
+        public IERouteRepository ERouteRepository { get; private set; }
         public IEventMessageRepository EventMessageRepository { get; private set; }
         public IImageRepository ImageRepository { get; private set; }
         public IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; private set; }
@@ -121,6 +125,8 @@ namespace DMS.Repositories
             DirectSalesOrderPromotionRepository = new DirectSalesOrderPromotionRepository(DataContext);
             DistrictRepository = new DistrictRepository(DataContext);
             EditedPriceStatusRepository = new EditedPriceStatusRepository(DataContext);
+            ERouteContentRepository = new ERouteContentRepository(DataContext);
+            ERouteRepository = new ERouteRepository(DataContext);
             EventMessageRepository = new EventMessageRepository(DataContext);
             ImageRepository = new ImageRepository(DataContext);
             IndirectSalesOrderContentRepository = new IndirectSalesOrderContentRepository(DataContext);

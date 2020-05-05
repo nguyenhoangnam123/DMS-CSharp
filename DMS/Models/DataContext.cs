@@ -336,7 +336,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.DeletedAT).HasColumnType("datetime");
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
 
@@ -345,6 +345,45 @@ namespace DMS.Models
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.ERouteCreators)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERoute_AppUser1");
+
+                entity.HasOne(d => d.RequestState)
+                    .WithMany(p => p.ERoutes)
+                    .HasForeignKey(d => d.RequestStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERoute_RequestState");
+
+                entity.HasOne(d => d.SaleEmployee)
+                    .WithMany(p => p.ERouteSaleEmployees)
+                    .HasForeignKey(d => d.SaleEmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERoute_AppUser");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.ERoutes)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERoute_Status");
+            });
+
+            modelBuilder.Entity<ERouteContentDAO>(entity =>
+            {
+                entity.HasOne(d => d.ERoute)
+                    .WithMany(p => p.ERouteContents)
+                    .HasForeignKey(d => d.ERouteId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERouteContent_ERoute");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.ERouteContents)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERouteContent_Store");
             });
 
             modelBuilder.Entity<EditedPriceStatusDAO>(entity =>
