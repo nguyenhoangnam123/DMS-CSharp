@@ -93,7 +93,10 @@ namespace DMS.Services.MDirectSalesOrder
             {
                 await Calculator(DirectSalesOrder);
                 await UOW.Begin();
+                DirectSalesOrder.Code = DirectSalesOrder.Id.ToString();
                 await UOW.DirectSalesOrderRepository.Create(DirectSalesOrder);
+                DirectSalesOrder.Code = DirectSalesOrder.Id.ToString();
+                await UOW.DirectSalesOrderRepository.Update(DirectSalesOrder);
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderService));
@@ -278,6 +281,28 @@ namespace DMS.Services.MDirectSalesOrder
                     //giá tiền từng line = số lượng yc*đơn giá*(100-%chiết khấu)
                     DirectSalesOrderContent.Amount = Convert.ToInt64((DirectSalesOrderContent.RequestedQuantity * DirectSalesOrderContent.Price) * ((100 - DirectSalesOrderContent.DiscountPercentage.Value) / 100));
                 }
+
+                //tổng trước chiết khấu
+                DirectSalesOrder.SubTotal = DirectSalesOrder.DirectSalesOrderContents.Sum(x => x.Amount);
+
+                //tính tổng chiết khấu theo % chiết khấu chung
+                if (DirectSalesOrder.GeneralDiscountPercentage.HasValue)
+                {
+                    DirectSalesOrder.GeneralDiscountAmount = Convert.ToInt64(DirectSalesOrder.SubTotal * DirectSalesOrder.GeneralDiscountPercentage);
+                }
+
+                if (DirectSalesOrder.GeneralDiscountAmount.HasValue && DirectSalesOrder.GeneralDiscountAmount > 0)
+                {
+                    foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
+                    {
+                        //phân bổ chiết khấu chung = tổng chiết khấu chung * (tổng từng line/tổng trc chiết khấu)
+                        DirectSalesOrderContent.GeneralDiscountAmount = DirectSalesOrder.GeneralDiscountAmount * (DirectSalesOrderContent.Amount / DirectSalesOrder.SubTotal);
+                        //thuê từng line = (tổng từng line - chiết khấu phân bổ) * % thuế
+                        DirectSalesOrderContent.TaxAmount = Convert.ToInt64((DirectSalesOrderContent.Amount - DirectSalesOrderContent.GeneralDiscountAmount) * DirectSalesOrderContent.TaxPercentage);
+                    }
+                }
+                DirectSalesOrder.TotalTaxAmount = DirectSalesOrder.DirectSalesOrderContents.Sum(x => x.TaxAmount.Value);
+                DirectSalesOrder.Total = DirectSalesOrder.SubTotal - DirectSalesOrder.GeneralDiscountAmount ?? 0 + DirectSalesOrder.TotalTaxAmount;
             }
 
             //sản phẩm khuyến mãi
@@ -292,28 +317,9 @@ namespace DMS.Services.MDirectSalesOrder
                     var UOMGC = UOMG.UnitOfMeasureGroupingContents.Where(x => x.UnitOfMeasureId == DirectSalesOrderPromotion.UnitOfMeasureId).FirstOrDefault();
                     DirectSalesOrderPromotion.RequestedQuantity = DirectSalesOrderPromotion.Quantity * UOMGC.Factor.Value;
                 }
-            }
-            //tổng trước chiết khấu
-            DirectSalesOrder.SubTotal = DirectSalesOrder.DirectSalesOrderContents.Sum(x => x.Amount);
 
-            //tính tổng chiết khấu theo % chiết khấu chung
-            if (DirectSalesOrder.GeneralDiscountPercentage.HasValue)
-            {
-                DirectSalesOrder.GeneralDiscountAmount = Convert.ToInt64(DirectSalesOrder.SubTotal * DirectSalesOrder.GeneralDiscountPercentage);
             }
-
-            if (DirectSalesOrder.GeneralDiscountAmount.HasValue && DirectSalesOrder.GeneralDiscountAmount > 0)
-            {
-                foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
-                {
-                    //phân bổ chiết khấu chung = tổng chiết khấu chung * (tổng từng line/tổng trc chiết khấu)
-                    DirectSalesOrderContent.GeneralDiscountAmount = DirectSalesOrder.GeneralDiscountAmount * (DirectSalesOrderContent.Amount / DirectSalesOrder.SubTotal);
-                    //thuê từng line = (tổng từng line - chiết khấu phân bổ) * % thuế
-                    DirectSalesOrderContent.TaxAmount = Convert.ToInt64((DirectSalesOrderContent.Amount - DirectSalesOrderContent.GeneralDiscountAmount) * DirectSalesOrderContent.TaxPercentage);
-                }
-            }
-            DirectSalesOrder.TotalTaxAmount = DirectSalesOrder.DirectSalesOrderContents.Sum(x => x.TaxAmount.Value);
-            DirectSalesOrder.Total = DirectSalesOrder.SubTotal - DirectSalesOrder.GeneralDiscountAmount ?? 0 + DirectSalesOrder.TotalTaxAmount;
+            
             return DirectSalesOrder;
         }
     }
