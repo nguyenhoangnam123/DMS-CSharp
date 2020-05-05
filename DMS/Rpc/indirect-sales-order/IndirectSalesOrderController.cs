@@ -9,6 +9,7 @@ using DMS.Services.MIndirectSalesOrderPromotion;
 using DMS.Services.MItem;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
+using DMS.Services.MRequestState;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
@@ -61,6 +62,7 @@ namespace DMS.Rpc.indirect_sales_order
         public const string SingleListIndirectSalesOrderPromotion = Default + "/single-list-indirect-sales-order-promotion";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public const string SingleListEditedPriceStatus = Default + "/single-list-edit-price-status";
+        public const string SingleListRequestState = Default + "single-list-request-state";
 
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
@@ -101,6 +103,7 @@ namespace DMS.Rpc.indirect_sales_order
         private IIndirectSalesOrderService IndirectSalesOrderService;
         private IProductGroupingService ProductGroupingService;
         private IProductTypeService ProductTypeService;
+        private IRequestStateService RequestStateService;
         private ISupplierService SupplierService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
@@ -116,6 +119,7 @@ namespace DMS.Rpc.indirect_sales_order
             IIndirectSalesOrderService IndirectSalesOrderService,
             IProductGroupingService ProductGroupingService,
             IProductTypeService ProductTypeService,
+            IRequestStateService RequestStateService,
             ISupplierService SupplierService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
@@ -132,6 +136,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.IndirectSalesOrderService = IndirectSalesOrderService;
             this.ProductGroupingService = ProductGroupingService;
             this.ProductTypeService = ProductTypeService;
+            this.RequestStateService = RequestStateService;
             this.SupplierService = SupplierService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
@@ -1774,6 +1779,24 @@ namespace DMS.Rpc.indirect_sales_order
             List<IndirectSalesOrder_EditedPriceStatusDTO> IndirectSalesOrder_EditedPriceStatusDTOs = EditedPriceStatuses
                 .Select(x => new IndirectSalesOrder_EditedPriceStatusDTO(x)).ToList();
             return IndirectSalesOrder_EditedPriceStatusDTOs;
+        }
+        [Route(IndirectSalesOrderRoute.SingleListRequestState), HttpPost]
+        public async Task<List<IndirectSalesOrder_RequestStateDTO>> SingleListRequestState([FromBody] IndirectSalesOrder_RequestStateFilterDTO IndirectSalesOrder_RequestStateFilterDTO)
+        {
+            RequestStateFilter RequestStateFilter = new RequestStateFilter();
+            RequestStateFilter.Skip = 0;
+            RequestStateFilter.Take = 20;
+            RequestStateFilter.OrderBy = RequestStateOrder.Id;
+            RequestStateFilter.OrderType = OrderType.ASC;
+            RequestStateFilter.Selects = RequestStateSelect.ALL;
+            RequestStateFilter.Id = IndirectSalesOrder_RequestStateFilterDTO.Id;
+            RequestStateFilter.Code = IndirectSalesOrder_RequestStateFilterDTO.Code;
+            RequestStateFilter.Name = IndirectSalesOrder_RequestStateFilterDTO.Name;
+
+            List<RequestState> RequestStatees = await RequestStateService.List(RequestStateFilter);
+            List<IndirectSalesOrder_RequestStateDTO> IndirectSalesOrder_RequestStateDTOs = RequestStatees
+                .Select(x => new IndirectSalesOrder_RequestStateDTO(x)).ToList();
+            return IndirectSalesOrder_RequestStateDTOs;
         }
         [Route(IndirectSalesOrderRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] IndirectSalesOrder_StoreFilterDTO IndirectSalesOrder_StoreFilterDTO)
