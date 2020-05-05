@@ -224,6 +224,12 @@ namespace DMS.Repositories
                         Code = q.Product.UnitOfMeasure.Code,
                         Name = q.Product.UnitOfMeasure.Name,
                     },
+                    UnitOfMeasureGrouping = new UnitOfMeasureGrouping
+                    {
+                        Id = q.Product.UnitOfMeasureGrouping.Id,
+                        Code = q.Product.UnitOfMeasureGrouping.Code,
+                        Name = q.Product.UnitOfMeasureGrouping.Name
+                    },
                     ProductProductGroupingMappings = q.Product.ProductProductGroupingMappings != null ?
                     q.Product.ProductProductGroupingMappings.Select(p => new ProductProductGroupingMapping
                     {
@@ -289,6 +295,32 @@ namespace DMS.Repositories
                     RetailPrice = x.Product.RetailPrice,
                     TaxTypeId = x.Product.TaxTypeId,
                     StatusId = x.Product.StatusId,
+                    ProductType = x.Product.ProductType == null? null: new ProductType
+                    {
+                        Id = x.Product.ProductType.Id,
+                        Code = x.Product.ProductType.Code,
+                        Name = x.Product.ProductType.Name,
+                        Description = x.Product.ProductType.Description,
+                        StatusId = x.Product.ProductType.StatusId,
+                        UpdatedTime = x.Product.ProductType.UpdatedAt,
+                    },
+                    UnitOfMeasure = x.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.Product.UnitOfMeasure.Id,
+                        Code = x.Product.UnitOfMeasure.Code,    
+                        Name = x.Product.UnitOfMeasure.Name,
+                        Description = x.Product.UnitOfMeasure.Description,
+                        StatusId = x.Product.UnitOfMeasure.StatusId,    
+                    },
+                    UnitOfMeasureGrouping = x.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
+                    {
+                        Id = x.Product.UnitOfMeasureGrouping.Id,
+                        Code = x.Product.UnitOfMeasureGrouping.Code,
+                        Name = x.Product.UnitOfMeasureGrouping.Name,
+                        Description = x.Product.UnitOfMeasureGrouping.Description,
+                        StatusId = x.Product.UnitOfMeasureGrouping.StatusId,
+                        UnitOfMeasureId = x.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
+                    }
                 },
             }).FirstOrDefaultAsync();
 
