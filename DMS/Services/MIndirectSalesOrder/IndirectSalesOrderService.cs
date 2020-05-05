@@ -255,5 +255,27 @@ namespace DMS.Services.MIndirectSalesOrder
             }
             return filter;
         }
+
+        private async Task<IndirectSalesOrder> Calculator(IndirectSalesOrder IndirectSalesOrder)
+        {
+            if(IndirectSalesOrder.IndirectSalesOrderContents != null)
+            {
+                foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
+                {
+                    var item = await UOW.ItemRepository.Get(IndirectSalesOrderContent.ItemId);
+                    IndirectSalesOrderContent.PrimaryUnitOfMeasureId = item.Product.UnitOfMeasureId;
+
+                    var UOMG = await UOW.UnitOfMeasureGroupingRepository.Get(item.Product.UnitOfMeasureGroupingId.Value);
+                    var UOMGC = UOMG.UnitOfMeasureGroupingContents.Where(x => x.UnitOfMeasureId == IndirectSalesOrderContent.UnitOfMeasureId).FirstOrDefault();
+                    IndirectSalesOrderContent.RequestedQuantity = IndirectSalesOrderContent.Quantity * UOMGC.Factor.Value;
+
+                    IndirectSalesOrderContent.Amount = Convert.ToInt64((IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.SalePrice) * ((100 - IndirectSalesOrderContent.DiscountPercentage.Value) / 100));
+                    IndirectSalesOrderContent.TaxAmount = Convert.ToInt64(IndirectSalesOrderContent.Amount * IndirectSalesOrderContent.TaxPercentage);
+                }
+
+            }
+
+            return IndirectSalesOrder;
+        }
     }
 }

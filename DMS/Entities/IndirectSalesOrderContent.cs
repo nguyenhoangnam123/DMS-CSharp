@@ -23,6 +23,7 @@ namespace DMS.Entities
         public long Amount { get; set; }
         public decimal? TaxPercentage { get; set; }
         public long? TaxAmount { get; set; }
+        public Item Item { get; set; }
         public IndirectSalesOrder IndirectSalesOrder { get; set; }
         public UnitOfMeasure PrimaryUnitOfMeasure { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
