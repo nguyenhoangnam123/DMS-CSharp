@@ -58,8 +58,8 @@ namespace DMS.Rpc.indirect_sales_order
         public long? WorkflowDefinitionId { get; set; }
         
         public long? RequestStateId { get; set; }
-        
-
+        public IndirectSalesOrder_StoreGroupingDTO StoreGrouping { get; set; }
+        public IndirectSalesOrder_StoreTypeDTO StoreType { get; set; }
         public IndirectSalesOrder_StoreDTO() {}
         public IndirectSalesOrder_StoreDTO(Store Store)
         {
@@ -111,7 +111,8 @@ namespace DMS.Rpc.indirect_sales_order
             this.WorkflowDefinitionId = Store.WorkflowDefinitionId;
             
             this.RequestStateId = Store.RequestStateId;
-            
+            this.StoreGrouping = Store.StoreGrouping == null ? null : new IndirectSalesOrder_StoreGroupingDTO(Store.StoreGrouping);
+            this.StoreType = Store.StoreType == null ? null : new IndirectSalesOrder_StoreTypeDTO(Store.StoreType);
             this.Errors = Store.Errors;
         }
     }
