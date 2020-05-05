@@ -31,6 +31,7 @@ namespace DMS.Rpc.direct_sales_order
         public DirectSalesOrder_ProductTypeDTO ProductType { get; set; }
         public DirectSalesOrder_SupplierDTO Supplier { get; set; }
         public DirectSalesOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+        public List<DirectSalesOrder_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
         public DirectSalesOrder_ProductDTO() { }
         public DirectSalesOrder_ProductDTO(Product Product)
         {
@@ -56,6 +57,7 @@ namespace DMS.Rpc.direct_sales_order
             this.ProductType = Product.ProductType == null ? null : new DirectSalesOrder_ProductTypeDTO(Product.ProductType);
             this.Supplier = Product.Supplier == null ? null : new DirectSalesOrder_SupplierDTO(Product.Supplier);
             this.UnitOfMeasure = Product.UnitOfMeasure == null ? null : new DirectSalesOrder_UnitOfMeasureDTO(Product.UnitOfMeasure);
+            this.ProductProductGroupingMappings = Product.ProductProductGroupingMappings?.Select(x => new DirectSalesOrder_ProductProductGroupingMappingDTO(x)).ToList();
             this.Errors = Product.Errors;
         }
     }

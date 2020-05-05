@@ -8,56 +8,32 @@ namespace DMS.Rpc.direct_sales_order
 {
     public class DirectSalesOrder_StoreDTO : DataDTO
     {
-        
         public long Id { get; set; }
-        
         public string Code { get; set; }
-        
         public string Name { get; set; }
-        
         public long? ParentStoreId { get; set; }
-        
         public long OrganizationId { get; set; }
-        
         public long StoreTypeId { get; set; }
-        
         public long? StoreGroupingId { get; set; }
-        
         public long? ResellerId { get; set; }
-        
         public string Telephone { get; set; }
-        
         public long ProvinceId { get; set; }
-        
         public long DistrictId { get; set; }
-        
         public long WardId { get; set; }
-        
         public string Address { get; set; }
-        
         public string DeliveryAddress { get; set; }
-        
         public decimal? Latitude { get; set; }
-        
         public decimal? Longitude { get; set; }
-        
         public decimal? DeliveryLatitude { get; set; }
-        
         public decimal? DeliveryLongitude { get; set; }
-        
         public string OwnerName { get; set; }
-        
         public string OwnerPhone { get; set; }
-        
         public string OwnerEmail { get; set; }
-        
         public long StatusId { get; set; }
-        
         public long? WorkflowDefinitionId { get; set; }
-        
         public long? RequestStateId { get; set; }
-        
-
+        public DirectSalesOrder_StoreGroupingDTO StoreGrouping { get; set; }
+        public DirectSalesOrder_StoreTypeDTO StoreType { get; set; }
         public DirectSalesOrder_StoreDTO() {}
         public DirectSalesOrder_StoreDTO(Store Store)
         {
@@ -109,7 +85,8 @@ namespace DMS.Rpc.direct_sales_order
             this.WorkflowDefinitionId = Store.WorkflowDefinitionId;
             
             this.RequestStateId = Store.RequestStateId;
-            
+            this.StoreGrouping = Store.StoreGrouping == null ? null : new DirectSalesOrder_StoreGroupingDTO(Store.StoreGrouping);
+            this.StoreType = Store.StoreType == null ? null : new DirectSalesOrder_StoreTypeDTO(Store.StoreType);
             this.Errors = Store.Errors;
         }
     }

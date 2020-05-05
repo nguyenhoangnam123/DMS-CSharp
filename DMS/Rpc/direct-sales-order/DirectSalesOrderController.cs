@@ -1,20 +1,28 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Services.MAppUser;
+using DMS.Services.MEditedPriceStatus;
+using DMS.Services.MDirectSalesOrder;
+using DMS.Services.MDirectSalesOrderContent;
+using DMS.Services.MDirectSalesOrderPromotion;
+using DMS.Services.MItem;
+using DMS.Services.MProductGrouping;
+using DMS.Services.MProductType;
+using DMS.Services.MRequestState;
+using DMS.Services.MStore;
+using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreType;
+using DMS.Services.MSupplier;
+using DMS.Services.MUnitOfMeasure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
 using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MDirectSalesOrder;
-using DMS.Services.MStore;
-using DMS.Services.MEditedPriceStatus;
-using DMS.Services.MRequestState;
-using DMS.Services.MAppUser;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.direct_sales_order
 {
@@ -33,17 +41,32 @@ namespace DMS.Rpc.direct_sales_order
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
-        
-        public const string FilterListStore = Default + "/filter-list-store";
-        public const string FilterListEditedPriceStatus = Default + "/filter-list-edited-price-status";
-        public const string FilterListRequestState = Default + "/filter-list-request-state";
+
         public const string FilterListAppUser = Default + "/filter-list-app-user";
-        
+        public const string FilterListItem = Default + "/filter-list-item";
+        public const string FilterListStore = Default + "/filter-list-store";
+        public const string FilterListDirectSalesOrderContent = Default + "/filter-list-direct-sales-order-content";
+        public const string FilterListDirectSalesOrderPromotion = Default + "/filter-list-direct-sales-order-promotion";
+        public const string FilterListUnitOfMeasure = Default + "/filter-list-unit-of-measure";
+
+        public const string SingleListAppUser = Default + "/single-list-app-user";
+        public const string SingleListItem = Default + "/single-list-item";
+        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
+        public const string SingleListProductType = Default + "/single-list-product-type";
+        public const string SingleListSupplier = Default + "/single-list-supplier";
         public const string SingleListStore = Default + "/single-list-store";
+        public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
+        public const string SingleListStoreType = Default + "/single-list-store-type";
+        public const string SingleListDirectSalesOrderContent = Default + "/single-list-direct-sales-order-content";
+        public const string SingleListDirectSalesOrderPromotion = Default + "/single-list-direct-sales-order-promotion";
+        public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public const string SingleListEditedPriceStatus = Default + "/single-list-edited-price-status";
         public const string SingleListRequestState = Default + "/single-list-request-state";
-        public const string SingleListAppUser = Default + "/single-list-app-user";
 
+        public const string CountStore = Default + "/count-store";
+        public const string ListStore = Default + "/list-store";
+        public const string CountItem = Default + "/count-item";
+        public const string ListItem = Default + "/list-item";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(DirectSalesOrderFilter.Id), FieldType.ID },
@@ -69,26 +92,53 @@ namespace DMS.Rpc.direct_sales_order
 
     public class DirectSalesOrderController : RpcController
     {
-        private IStoreService StoreService;
         private IEditedPriceStatusService EditedPriceStatusService;
-        private IRequestStateService RequestStateService;
+        private IStoreService StoreService;
         private IAppUserService AppUserService;
+        private IDirectSalesOrderContentService DirectSalesOrderContentService;
+        private IUnitOfMeasureService UnitOfMeasureService;
+        private IDirectSalesOrderPromotionService DirectSalesOrderPromotionService;
+        private IItemService ItemService;
         private IDirectSalesOrderService DirectSalesOrderService;
+        private IProductGroupingService ProductGroupingService;
+        private IProductTypeService ProductTypeService;
+        private IRequestStateService RequestStateService;
+        private ISupplierService SupplierService;
+        private IStoreGroupingService StoreGroupingService;
+        private IStoreTypeService StoreTypeService;
         private ICurrentContext CurrentContext;
         public DirectSalesOrderController(
-            IStoreService StoreService,
             IEditedPriceStatusService EditedPriceStatusService,
-            IRequestStateService RequestStateService,
+            IStoreService StoreService,
             IAppUserService AppUserService,
+            IDirectSalesOrderContentService DirectSalesOrderContentService,
+            IUnitOfMeasureService UnitOfMeasureService,
+            IDirectSalesOrderPromotionService DirectSalesOrderPromotionService,
+            IItemService ItemService,
             IDirectSalesOrderService DirectSalesOrderService,
+            IProductGroupingService ProductGroupingService,
+            IProductTypeService ProductTypeService,
+            IRequestStateService RequestStateService,
+            ISupplierService SupplierService,
+            IStoreGroupingService StoreGroupingService,
+            IStoreTypeService StoreTypeService,
             ICurrentContext CurrentContext
         )
         {
-            this.StoreService = StoreService;
             this.EditedPriceStatusService = EditedPriceStatusService;
-            this.RequestStateService = RequestStateService;
+            this.StoreService = StoreService;
             this.AppUserService = AppUserService;
+            this.DirectSalesOrderContentService = DirectSalesOrderContentService;
+            this.UnitOfMeasureService = UnitOfMeasureService;
+            this.DirectSalesOrderPromotionService = DirectSalesOrderPromotionService;
+            this.ItemService = ItemService;
             this.DirectSalesOrderService = DirectSalesOrderService;
+            this.ProductGroupingService = ProductGroupingService;
+            this.ProductTypeService = ProductTypeService;
+            this.RequestStateService = RequestStateService;
+            this.SupplierService = SupplierService;
+            this.StoreGroupingService = StoreGroupingService;
+            this.StoreTypeService = StoreTypeService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -955,6 +1005,35 @@ namespace DMS.Rpc.direct_sales_order
                 ProvinceId = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.ProvinceId,
             };
             DirectSalesOrder.BaseLanguage = CurrentContext.Language;
+            DirectSalesOrder.DirectSalesOrderContents = DirectSalesOrder_DirectSalesOrderDTO.DirectSalesOrderContents?.Select(x => new DirectSalesOrderContent
+            {
+                Id = x.Id,
+                Amount = x.Amount,
+                DirectSalesOrderId = x.DirectSalesOrderId,
+                DiscountAmount = x.DiscountAmount,
+                DiscountPercentage = x.DiscountPercentage,
+                GeneralDiscountAmount = x.GeneralDiscountAmount,
+                GeneralDiscountPercentage = x.GeneralDiscountPercentage,
+                ItemId = x.ItemId,
+                Price = x.Price,
+                PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
+                Quantity = x.Quantity,
+                RequestedQuantity = x.RequestedQuantity,
+                TaxAmount = x.TaxAmount,
+                TaxPercentage = x.TaxPercentage,
+                UnitOfMeasureId = x.UnitOfMeasureId,
+            }).ToList();
+            DirectSalesOrder.DirectSalesOrderPromotions = DirectSalesOrder_DirectSalesOrderDTO.DirectSalesOrderPromotions?.Select(x => new DirectSalesOrderPromotion
+            {
+                Id = x.Id,
+                DirectSalesOrderId = x.DirectSalesOrderId,
+                ItemId = x.ItemId,
+                PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
+                Quantity = x.Quantity,
+                RequestedQuantity = x.RequestedQuantity,
+                UnitOfMeasureId = x.UnitOfMeasureId,
+                Note = x.Note
+            }).ToList();
             return DirectSalesOrder;
         }
 
@@ -1025,42 +1104,6 @@ namespace DMS.Rpc.direct_sales_order
                 .Select(x => new DirectSalesOrder_StoreDTO(x)).ToList();
             return DirectSalesOrder_StoreDTOs;
         }
-        [Route(DirectSalesOrderRoute.FilterListEditedPriceStatus), HttpPost]
-        public async Task<List<DirectSalesOrder_EditedPriceStatusDTO>> FilterListEditedPriceStatus([FromBody] DirectSalesOrder_EditedPriceStatusFilterDTO DirectSalesOrder_EditedPriceStatusFilterDTO)
-        {
-            EditedPriceStatusFilter EditedPriceStatusFilter = new EditedPriceStatusFilter();
-            EditedPriceStatusFilter.Skip = 0;
-            EditedPriceStatusFilter.Take = 20;
-            EditedPriceStatusFilter.OrderBy = EditedPriceStatusOrder.Id;
-            EditedPriceStatusFilter.OrderType = OrderType.ASC;
-            EditedPriceStatusFilter.Selects = EditedPriceStatusSelect.ALL;
-            EditedPriceStatusFilter.Id = DirectSalesOrder_EditedPriceStatusFilterDTO.Id;
-            EditedPriceStatusFilter.Code = DirectSalesOrder_EditedPriceStatusFilterDTO.Code;
-            EditedPriceStatusFilter.Name = DirectSalesOrder_EditedPriceStatusFilterDTO.Name;
-
-            List<EditedPriceStatus> EditedPriceStatuses = await EditedPriceStatusService.List(EditedPriceStatusFilter);
-            List<DirectSalesOrder_EditedPriceStatusDTO> DirectSalesOrder_EditedPriceStatusDTOs = EditedPriceStatuses
-                .Select(x => new DirectSalesOrder_EditedPriceStatusDTO(x)).ToList();
-            return DirectSalesOrder_EditedPriceStatusDTOs;
-        }
-        [Route(DirectSalesOrderRoute.FilterListRequestState), HttpPost]
-        public async Task<List<DirectSalesOrder_RequestStateDTO>> FilterListRequestState([FromBody] DirectSalesOrder_RequestStateFilterDTO DirectSalesOrder_RequestStateFilterDTO)
-        {
-            RequestStateFilter RequestStateFilter = new RequestStateFilter();
-            RequestStateFilter.Skip = 0;
-            RequestStateFilter.Take = 20;
-            RequestStateFilter.OrderBy = RequestStateOrder.Id;
-            RequestStateFilter.OrderType = OrderType.ASC;
-            RequestStateFilter.Selects = RequestStateSelect.ALL;
-            RequestStateFilter.Id = DirectSalesOrder_RequestStateFilterDTO.Id;
-            RequestStateFilter.Code = DirectSalesOrder_RequestStateFilterDTO.Code;
-            RequestStateFilter.Name = DirectSalesOrder_RequestStateFilterDTO.Name;
-
-            List<RequestState> RequestStates = await RequestStateService.List(RequestStateFilter);
-            List<DirectSalesOrder_RequestStateDTO> DirectSalesOrder_RequestStateDTOs = RequestStates
-                .Select(x => new DirectSalesOrder_RequestStateDTO(x)).ToList();
-            return DirectSalesOrder_RequestStateDTOs;
-        }
         [Route(DirectSalesOrderRoute.FilterListAppUser), HttpPost]
         public async Task<List<DirectSalesOrder_AppUserDTO>> FilterListAppUser([FromBody] DirectSalesOrder_AppUserFilterDTO DirectSalesOrder_AppUserFilterDTO)
         {
@@ -1089,6 +1132,102 @@ namespace DMS.Rpc.direct_sales_order
             List<DirectSalesOrder_AppUserDTO> DirectSalesOrder_AppUserDTOs = AppUsers
                 .Select(x => new DirectSalesOrder_AppUserDTO(x)).ToList();
             return DirectSalesOrder_AppUserDTOs;
+        }
+        [Route(DirectSalesOrderRoute.FilterListDirectSalesOrderContent), HttpPost]
+        public async Task<List<DirectSalesOrder_DirectSalesOrderContentDTO>> FilterListDirectSalesOrderContent([FromBody] DirectSalesOrder_DirectSalesOrderContentFilterDTO DirectSalesOrder_DirectSalesOrderContentFilterDTO)
+        {
+            DirectSalesOrderContentFilter DirectSalesOrderContentFilter = new DirectSalesOrderContentFilter();
+            DirectSalesOrderContentFilter.Skip = 0;
+            DirectSalesOrderContentFilter.Take = 20;
+            DirectSalesOrderContentFilter.OrderBy = DirectSalesOrderContentOrder.Id;
+            DirectSalesOrderContentFilter.OrderType = OrderType.ASC;
+            DirectSalesOrderContentFilter.Selects = DirectSalesOrderContentSelect.ALL;
+            DirectSalesOrderContentFilter.Id = DirectSalesOrder_DirectSalesOrderContentFilterDTO.Id;
+            DirectSalesOrderContentFilter.DirectSalesOrderId = DirectSalesOrder_DirectSalesOrderContentFilterDTO.DirectSalesOrderId;
+            DirectSalesOrderContentFilter.ItemId = DirectSalesOrder_DirectSalesOrderContentFilterDTO.ItemId;
+            DirectSalesOrderContentFilter.UnitOfMeasureId = DirectSalesOrder_DirectSalesOrderContentFilterDTO.UnitOfMeasureId;
+            DirectSalesOrderContentFilter.Quantity = DirectSalesOrder_DirectSalesOrderContentFilterDTO.Quantity;
+            DirectSalesOrderContentFilter.PrimaryUnitOfMeasureId = DirectSalesOrder_DirectSalesOrderContentFilterDTO.PrimaryUnitOfMeasureId;
+            DirectSalesOrderContentFilter.RequestedQuantity = DirectSalesOrder_DirectSalesOrderContentFilterDTO.RequestedQuantity;
+            DirectSalesOrderContentFilter.Price = DirectSalesOrder_DirectSalesOrderContentFilterDTO.Price;
+            DirectSalesOrderContentFilter.DiscountPercentage = DirectSalesOrder_DirectSalesOrderContentFilterDTO.DiscountPercentage;
+            DirectSalesOrderContentFilter.DiscountAmount = DirectSalesOrder_DirectSalesOrderContentFilterDTO.DiscountAmount;
+            DirectSalesOrderContentFilter.GeneralDiscountPercentage = DirectSalesOrder_DirectSalesOrderContentFilterDTO.GeneralDiscountPercentage;
+            DirectSalesOrderContentFilter.GeneralDiscountAmount = DirectSalesOrder_DirectSalesOrderContentFilterDTO.GeneralDiscountAmount;
+            DirectSalesOrderContentFilter.Amount = DirectSalesOrder_DirectSalesOrderContentFilterDTO.Amount;
+            DirectSalesOrderContentFilter.TaxPercentage = DirectSalesOrder_DirectSalesOrderContentFilterDTO.TaxPercentage;
+            DirectSalesOrderContentFilter.TaxAmount = DirectSalesOrder_DirectSalesOrderContentFilterDTO.TaxAmount;
+
+            List<DirectSalesOrderContent> DirectSalesOrderContents = await DirectSalesOrderContentService.List(DirectSalesOrderContentFilter);
+            List<DirectSalesOrder_DirectSalesOrderContentDTO> DirectSalesOrder_DirectSalesOrderContentDTOs = DirectSalesOrderContents
+                .Select(x => new DirectSalesOrder_DirectSalesOrderContentDTO(x)).ToList();
+            return DirectSalesOrder_DirectSalesOrderContentDTOs;
+        }
+        [Route(DirectSalesOrderRoute.FilterListUnitOfMeasure), HttpPost]
+        public async Task<List<DirectSalesOrder_UnitOfMeasureDTO>> FilterListUnitOfMeasure([FromBody] DirectSalesOrder_UnitOfMeasureFilterDTO DirectSalesOrder_UnitOfMeasureFilterDTO)
+        {
+            UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter();
+            UnitOfMeasureFilter.Skip = 0;
+            UnitOfMeasureFilter.Take = 20;
+            UnitOfMeasureFilter.OrderBy = UnitOfMeasureOrder.Id;
+            UnitOfMeasureFilter.OrderType = OrderType.ASC;
+            UnitOfMeasureFilter.Selects = UnitOfMeasureSelect.ALL;
+            UnitOfMeasureFilter.Id = DirectSalesOrder_UnitOfMeasureFilterDTO.Id;
+            UnitOfMeasureFilter.Code = DirectSalesOrder_UnitOfMeasureFilterDTO.Code;
+            UnitOfMeasureFilter.Name = DirectSalesOrder_UnitOfMeasureFilterDTO.Name;
+            UnitOfMeasureFilter.Description = DirectSalesOrder_UnitOfMeasureFilterDTO.Description;
+            UnitOfMeasureFilter.StatusId = DirectSalesOrder_UnitOfMeasureFilterDTO.StatusId;
+
+            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
+            List<DirectSalesOrder_UnitOfMeasureDTO> DirectSalesOrder_UnitOfMeasureDTOs = UnitOfMeasures
+                .Select(x => new DirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
+            return DirectSalesOrder_UnitOfMeasureDTOs;
+        }
+        [Route(DirectSalesOrderRoute.FilterListDirectSalesOrderPromotion), HttpPost]
+        public async Task<List<DirectSalesOrder_DirectSalesOrderPromotionDTO>> FilterListDirectSalesOrderPromotion([FromBody] DirectSalesOrder_DirectSalesOrderPromotionFilterDTO DirectSalesOrder_DirectSalesOrderPromotionFilterDTO)
+        {
+            DirectSalesOrderPromotionFilter DirectSalesOrderPromotionFilter = new DirectSalesOrderPromotionFilter();
+            DirectSalesOrderPromotionFilter.Skip = 0;
+            DirectSalesOrderPromotionFilter.Take = 20;
+            DirectSalesOrderPromotionFilter.OrderBy = DirectSalesOrderPromotionOrder.Id;
+            DirectSalesOrderPromotionFilter.OrderType = OrderType.ASC;
+            DirectSalesOrderPromotionFilter.Selects = DirectSalesOrderPromotionSelect.ALL;
+            DirectSalesOrderPromotionFilter.Id = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.Id;
+            DirectSalesOrderPromotionFilter.DirectSalesOrderId = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.DirectSalesOrderId;
+            DirectSalesOrderPromotionFilter.ItemId = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.ItemId;
+            DirectSalesOrderPromotionFilter.UnitOfMeasureId = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.UnitOfMeasureId;
+            DirectSalesOrderPromotionFilter.Quantity = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.Quantity;
+            DirectSalesOrderPromotionFilter.PrimaryUnitOfMeasureId = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.PrimaryUnitOfMeasureId;
+            DirectSalesOrderPromotionFilter.RequestedQuantity = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.RequestedQuantity;
+            DirectSalesOrderPromotionFilter.Note = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.Note;
+
+            List<DirectSalesOrderPromotion> DirectSalesOrderPromotions = await DirectSalesOrderPromotionService.List(DirectSalesOrderPromotionFilter);
+            List<DirectSalesOrder_DirectSalesOrderPromotionDTO> DirectSalesOrder_DirectSalesOrderPromotionDTOs = DirectSalesOrderPromotions
+                .Select(x => new DirectSalesOrder_DirectSalesOrderPromotionDTO(x)).ToList();
+            return DirectSalesOrder_DirectSalesOrderPromotionDTOs;
+        }
+        [Route(DirectSalesOrderRoute.FilterListItem), HttpPost]
+        public async Task<List<DirectSalesOrder_ItemDTO>> FilterListItem([FromBody] DirectSalesOrder_ItemFilterDTO DirectSalesOrder_ItemFilterDTO)
+        {
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Skip = 0;
+            ItemFilter.Take = 20;
+            ItemFilter.OrderBy = ItemOrder.Id;
+            ItemFilter.OrderType = OrderType.ASC;
+            ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Id = DirectSalesOrder_ItemFilterDTO.Id;
+            ItemFilter.ProductId = DirectSalesOrder_ItemFilterDTO.ProductId;
+            ItemFilter.Code = DirectSalesOrder_ItemFilterDTO.Code;
+            ItemFilter.Name = DirectSalesOrder_ItemFilterDTO.Name;
+            ItemFilter.ScanCode = DirectSalesOrder_ItemFilterDTO.ScanCode;
+            ItemFilter.SalePrice = DirectSalesOrder_ItemFilterDTO.SalePrice;
+            ItemFilter.RetailPrice = DirectSalesOrder_ItemFilterDTO.RetailPrice;
+            ItemFilter.StatusId = DirectSalesOrder_ItemFilterDTO.StatusId;
+
+            List<Item> Items = await ItemService.List(ItemFilter);
+            List<DirectSalesOrder_ItemDTO> DirectSalesOrder_ItemDTOs = Items
+                .Select(x => new DirectSalesOrder_ItemDTO(x)).ToList();
+            return DirectSalesOrder_ItemDTOs;
         }
 
         [Route(DirectSalesOrderRoute.SingleListStore), HttpPost]
@@ -1193,7 +1332,305 @@ namespace DMS.Rpc.direct_sales_order
                 .Select(x => new DirectSalesOrder_AppUserDTO(x)).ToList();
             return DirectSalesOrder_AppUserDTOs;
         }
+        [Route(DirectSalesOrderRoute.SingleListDirectSalesOrderContent), HttpPost]
+        public async Task<List<DirectSalesOrder_DirectSalesOrderContentDTO>> SingleListDirectSalesOrderContent([FromBody] DirectSalesOrder_DirectSalesOrderContentFilterDTO DirectSalesOrder_DirectSalesOrderContentFilterDTO)
+        {
+            DirectSalesOrderContentFilter DirectSalesOrderContentFilter = new DirectSalesOrderContentFilter();
+            DirectSalesOrderContentFilter.Skip = 0;
+            DirectSalesOrderContentFilter.Take = 20;
+            DirectSalesOrderContentFilter.OrderBy = DirectSalesOrderContentOrder.Id;
+            DirectSalesOrderContentFilter.OrderType = OrderType.ASC;
+            DirectSalesOrderContentFilter.Selects = DirectSalesOrderContentSelect.ALL;
+            DirectSalesOrderContentFilter.Id = DirectSalesOrder_DirectSalesOrderContentFilterDTO.Id;
+            DirectSalesOrderContentFilter.DirectSalesOrderId = DirectSalesOrder_DirectSalesOrderContentFilterDTO.DirectSalesOrderId;
+            DirectSalesOrderContentFilter.ItemId = DirectSalesOrder_DirectSalesOrderContentFilterDTO.ItemId;
+            DirectSalesOrderContentFilter.UnitOfMeasureId = DirectSalesOrder_DirectSalesOrderContentFilterDTO.UnitOfMeasureId;
+            DirectSalesOrderContentFilter.Quantity = DirectSalesOrder_DirectSalesOrderContentFilterDTO.Quantity;
+            DirectSalesOrderContentFilter.PrimaryUnitOfMeasureId = DirectSalesOrder_DirectSalesOrderContentFilterDTO.PrimaryUnitOfMeasureId;
+            DirectSalesOrderContentFilter.RequestedQuantity = DirectSalesOrder_DirectSalesOrderContentFilterDTO.RequestedQuantity;
+            DirectSalesOrderContentFilter.Price = DirectSalesOrder_DirectSalesOrderContentFilterDTO.Price;
+            DirectSalesOrderContentFilter.DiscountPercentage = DirectSalesOrder_DirectSalesOrderContentFilterDTO.DiscountPercentage;
+            DirectSalesOrderContentFilter.DiscountAmount = DirectSalesOrder_DirectSalesOrderContentFilterDTO.DiscountAmount;
+            DirectSalesOrderContentFilter.GeneralDiscountPercentage = DirectSalesOrder_DirectSalesOrderContentFilterDTO.GeneralDiscountPercentage;
+            DirectSalesOrderContentFilter.GeneralDiscountAmount = DirectSalesOrder_DirectSalesOrderContentFilterDTO.GeneralDiscountAmount;
+            DirectSalesOrderContentFilter.Amount = DirectSalesOrder_DirectSalesOrderContentFilterDTO.Amount;
+            DirectSalesOrderContentFilter.TaxPercentage = DirectSalesOrder_DirectSalesOrderContentFilterDTO.TaxPercentage;
+            DirectSalesOrderContentFilter.TaxAmount = DirectSalesOrder_DirectSalesOrderContentFilterDTO.TaxAmount;
 
+            List<DirectSalesOrderContent> DirectSalesOrderContents = await DirectSalesOrderContentService.List(DirectSalesOrderContentFilter);
+            List<DirectSalesOrder_DirectSalesOrderContentDTO> DirectSalesOrder_DirectSalesOrderContentDTOs = DirectSalesOrderContents
+                .Select(x => new DirectSalesOrder_DirectSalesOrderContentDTO(x)).ToList();
+            return DirectSalesOrder_DirectSalesOrderContentDTOs;
+        }
+        [Route(DirectSalesOrderRoute.SingleListUnitOfMeasure), HttpPost]
+        public async Task<List<DirectSalesOrder_UnitOfMeasureDTO>> SingleListUnitOfMeasure([FromBody] DirectSalesOrder_UnitOfMeasureFilterDTO DirectSalesOrder_UnitOfMeasureFilterDTO)
+        {
+            UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter();
+            UnitOfMeasureFilter.Skip = 0;
+            UnitOfMeasureFilter.Take = 20;
+            UnitOfMeasureFilter.OrderBy = UnitOfMeasureOrder.Id;
+            UnitOfMeasureFilter.OrderType = OrderType.ASC;
+            UnitOfMeasureFilter.Selects = UnitOfMeasureSelect.ALL;
+            UnitOfMeasureFilter.Id = DirectSalesOrder_UnitOfMeasureFilterDTO.Id;
+            UnitOfMeasureFilter.Code = DirectSalesOrder_UnitOfMeasureFilterDTO.Code;
+            UnitOfMeasureFilter.Name = DirectSalesOrder_UnitOfMeasureFilterDTO.Name;
+            UnitOfMeasureFilter.Description = DirectSalesOrder_UnitOfMeasureFilterDTO.Description;
+            UnitOfMeasureFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
+            List<DirectSalesOrder_UnitOfMeasureDTO> DirectSalesOrder_UnitOfMeasureDTOs = UnitOfMeasures
+                .Select(x => new DirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
+            return DirectSalesOrder_UnitOfMeasureDTOs;
+        }
+        [Route(DirectSalesOrderRoute.SingleListDirectSalesOrderPromotion), HttpPost]
+        public async Task<List<DirectSalesOrder_DirectSalesOrderPromotionDTO>> SingleListDirectSalesOrderPromotion([FromBody] DirectSalesOrder_DirectSalesOrderPromotionFilterDTO DirectSalesOrder_DirectSalesOrderPromotionFilterDTO)
+        {
+            DirectSalesOrderPromotionFilter DirectSalesOrderPromotionFilter = new DirectSalesOrderPromotionFilter();
+            DirectSalesOrderPromotionFilter.Skip = 0;
+            DirectSalesOrderPromotionFilter.Take = 20;
+            DirectSalesOrderPromotionFilter.OrderBy = DirectSalesOrderPromotionOrder.Id;
+            DirectSalesOrderPromotionFilter.OrderType = OrderType.ASC;
+            DirectSalesOrderPromotionFilter.Selects = DirectSalesOrderPromotionSelect.ALL;
+            DirectSalesOrderPromotionFilter.Id = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.Id;
+            DirectSalesOrderPromotionFilter.DirectSalesOrderId = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.DirectSalesOrderId;
+            DirectSalesOrderPromotionFilter.ItemId = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.ItemId;
+            DirectSalesOrderPromotionFilter.UnitOfMeasureId = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.UnitOfMeasureId;
+            DirectSalesOrderPromotionFilter.Quantity = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.Quantity;
+            DirectSalesOrderPromotionFilter.PrimaryUnitOfMeasureId = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.PrimaryUnitOfMeasureId;
+            DirectSalesOrderPromotionFilter.RequestedQuantity = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.RequestedQuantity;
+            DirectSalesOrderPromotionFilter.Note = DirectSalesOrder_DirectSalesOrderPromotionFilterDTO.Note;
+
+            List<DirectSalesOrderPromotion> DirectSalesOrderPromotions = await DirectSalesOrderPromotionService.List(DirectSalesOrderPromotionFilter);
+            List<DirectSalesOrder_DirectSalesOrderPromotionDTO> DirectSalesOrder_DirectSalesOrderPromotionDTOs = DirectSalesOrderPromotions
+                .Select(x => new DirectSalesOrder_DirectSalesOrderPromotionDTO(x)).ToList();
+            return DirectSalesOrder_DirectSalesOrderPromotionDTOs;
+        }
+        [Route(DirectSalesOrderRoute.SingleListSupplier), HttpPost]
+        public async Task<List<DirectSalesOrder_SupplierDTO>> SingleListSupplier([FromBody] DirectSalesOrder_SupplierFilterDTO Product_SupplierFilterDTO)
+        {
+            SupplierFilter SupplierFilter = new SupplierFilter();
+            SupplierFilter.Skip = 0;
+            SupplierFilter.Take = 20;
+            SupplierFilter.OrderBy = SupplierOrder.Id;
+            SupplierFilter.OrderType = OrderType.ASC;
+            SupplierFilter.Selects = SupplierSelect.ALL;
+            SupplierFilter.Id = Product_SupplierFilterDTO.Id;
+            SupplierFilter.Code = Product_SupplierFilterDTO.Code;
+            SupplierFilter.Name = Product_SupplierFilterDTO.Name;
+            SupplierFilter.TaxCode = Product_SupplierFilterDTO.TaxCode;
+            SupplierFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
+            List<DirectSalesOrder_SupplierDTO> DirectSalesOrder_SupplierDTOs = Suppliers
+                .Select(x => new DirectSalesOrder_SupplierDTO(x)).ToList();
+            return DirectSalesOrder_SupplierDTOs;
+        }
+        [Route(DirectSalesOrderRoute.SingleListStoreGrouping), HttpPost]
+        public async Task<List<DirectSalesOrder_StoreGroupingDTO>> SingleListStoreGrouping([FromBody] DirectSalesOrder_StoreGroupingFilterDTO DirectSalesOrder_StoreGroupingFilterDTO)
+        {
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = 0;
+            StoreGroupingFilter.Take = 99999;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Code = DirectSalesOrder_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = DirectSalesOrder_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.Level = DirectSalesOrder_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.Path = DirectSalesOrder_StoreGroupingFilterDTO.Path;
+            StoreGroupingFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+            List<DirectSalesOrder_StoreGroupingDTO> DirectSalesOrder_StoreGroupingDTOs = StoreGroupings
+                .Select(x => new DirectSalesOrder_StoreGroupingDTO(x)).ToList();
+            return DirectSalesOrder_StoreGroupingDTOs;
+        }
+        [Route(DirectSalesOrderRoute.SingleListStoreType), HttpPost]
+        public async Task<List<DirectSalesOrder_StoreTypeDTO>> SingleListStoreType([FromBody] DirectSalesOrder_StoreTypeFilterDTO DirectSalesOrder_StoreTypeFilterDTO)
+        {
+            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
+            StoreTypeFilter.Skip = 0;
+            StoreTypeFilter.Take = 20;
+            StoreTypeFilter.OrderBy = StoreTypeOrder.Id;
+            StoreTypeFilter.OrderType = OrderType.ASC;
+            StoreTypeFilter.Selects = StoreTypeSelect.ALL;
+            StoreTypeFilter.Id = DirectSalesOrder_StoreTypeFilterDTO.Id;
+            StoreTypeFilter.Code = DirectSalesOrder_StoreTypeFilterDTO.Code;
+            StoreTypeFilter.Name = DirectSalesOrder_StoreTypeFilterDTO.Name;
+            StoreTypeFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
+            List<DirectSalesOrder_StoreTypeDTO> DirectSalesOrder_StoreTypeDTOs = StoreTypes
+                .Select(x => new DirectSalesOrder_StoreTypeDTO(x)).ToList();
+            return DirectSalesOrder_StoreTypeDTOs;
+        }
+        [Route(DirectSalesOrderRoute.SingleListItem), HttpPost]
+        public async Task<List<DirectSalesOrder_ItemDTO>> SingleListItem([FromBody] DirectSalesOrder_ItemFilterDTO DirectSalesOrder_ItemFilterDTO)
+        {
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Skip = 0;
+            ItemFilter.Take = 20;
+            ItemFilter.OrderBy = ItemOrder.Id;
+            ItemFilter.OrderType = OrderType.ASC;
+            ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Id = DirectSalesOrder_ItemFilterDTO.Id;
+            ItemFilter.ProductId = DirectSalesOrder_ItemFilterDTO.ProductId;
+            ItemFilter.Code = DirectSalesOrder_ItemFilterDTO.Code;
+            ItemFilter.Name = DirectSalesOrder_ItemFilterDTO.Name;
+            ItemFilter.ScanCode = DirectSalesOrder_ItemFilterDTO.ScanCode;
+            ItemFilter.SalePrice = DirectSalesOrder_ItemFilterDTO.SalePrice;
+            ItemFilter.RetailPrice = DirectSalesOrder_ItemFilterDTO.RetailPrice;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Item> Items = await ItemService.List(ItemFilter);
+            List<DirectSalesOrder_ItemDTO> DirectSalesOrder_ItemDTOs = Items
+                .Select(x => new DirectSalesOrder_ItemDTO(x)).ToList();
+            return DirectSalesOrder_ItemDTOs;
+        }
+
+        [Route(DirectSalesOrderRoute.SingleListProductGrouping), HttpPost]
+        public async Task<List<DirectSalesOrder_ProductGroupingDTO>> SingleListProductGrouping([FromBody] DirectSalesOrder_ProductGroupingFilterDTO DirectSalesOrder_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+
+            List<ProductGrouping> DirectSalesOrderGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<DirectSalesOrder_ProductGroupingDTO> DirectSalesOrder_ProductGroupingDTOs = DirectSalesOrderGroupings
+                .Select(x => new DirectSalesOrder_ProductGroupingDTO(x)).ToList();
+            return DirectSalesOrder_ProductGroupingDTOs;
+        }
+        [Route(DirectSalesOrderRoute.SingleListProductType), HttpPost]
+        public async Task<List<DirectSalesOrder_ProductTypeDTO>> SingleListProductType([FromBody] DirectSalesOrder_ProductTypeFilterDTO DirectSalesOrder_ProductTypeFilterDTO)
+        {
+            ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
+            ProductTypeFilter.Skip = 0;
+            ProductTypeFilter.Take = 20;
+            ProductTypeFilter.OrderBy = ProductTypeOrder.Id;
+            ProductTypeFilter.OrderType = OrderType.ASC;
+            ProductTypeFilter.Selects = ProductTypeSelect.ALL;
+            ProductTypeFilter.Id = DirectSalesOrder_ProductTypeFilterDTO.Id;
+            ProductTypeFilter.Code = DirectSalesOrder_ProductTypeFilterDTO.Code;
+            ProductTypeFilter.Name = DirectSalesOrder_ProductTypeFilterDTO.Name;
+            ProductTypeFilter.Description = DirectSalesOrder_ProductTypeFilterDTO.Description;
+            ProductTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
+            List<DirectSalesOrder_ProductTypeDTO> DirectSalesOrder_ProductTypeDTOs = ProductTypes
+                .Select(x => new DirectSalesOrder_ProductTypeDTO(x)).ToList();
+            return DirectSalesOrder_ProductTypeDTOs;
+        }
+
+        [Route(DirectSalesOrderRoute.CountStore), HttpPost]
+        public async Task<long> CountStore([FromBody] DirectSalesOrder_StoreFilterDTO DirectSalesOrder_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Id = DirectSalesOrder_StoreFilterDTO.Id;
+            StoreFilter.Code = DirectSalesOrder_StoreFilterDTO.Code;
+            StoreFilter.Name = DirectSalesOrder_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = DirectSalesOrder_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = DirectSalesOrder_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = DirectSalesOrder_StoreFilterDTO.StoreTypeId;
+            StoreFilter.ResellerId = DirectSalesOrder_StoreFilterDTO.ResellerId;
+            StoreFilter.Telephone = DirectSalesOrder_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = DirectSalesOrder_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = DirectSalesOrder_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = DirectSalesOrder_StoreFilterDTO.WardId;
+            StoreFilter.Address = DirectSalesOrder_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = DirectSalesOrder_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = DirectSalesOrder_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = DirectSalesOrder_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = DirectSalesOrder_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = DirectSalesOrder_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = DirectSalesOrder_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            return await StoreService.Count(StoreFilter);
+        }
+
+        [Route(DirectSalesOrderRoute.ListStore), HttpPost]
+        public async Task<List<DirectSalesOrder_StoreDTO>> ListStore([FromBody] DirectSalesOrder_StoreFilterDTO DirectSalesOrder_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = DirectSalesOrder_StoreFilterDTO.Skip;
+            StoreFilter.Take = DirectSalesOrder_StoreFilterDTO.Take;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = DirectSalesOrder_StoreFilterDTO.Id;
+            StoreFilter.Code = DirectSalesOrder_StoreFilterDTO.Code;
+            StoreFilter.Name = DirectSalesOrder_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = DirectSalesOrder_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = DirectSalesOrder_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = DirectSalesOrder_StoreFilterDTO.StoreTypeId;
+            StoreFilter.ResellerId = DirectSalesOrder_StoreFilterDTO.ResellerId;
+            StoreFilter.Telephone = DirectSalesOrder_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = DirectSalesOrder_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = DirectSalesOrder_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = DirectSalesOrder_StoreFilterDTO.WardId;
+            StoreFilter.Address = DirectSalesOrder_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = DirectSalesOrder_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = DirectSalesOrder_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = DirectSalesOrder_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = DirectSalesOrder_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = DirectSalesOrder_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = DirectSalesOrder_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<DirectSalesOrder_StoreDTO> DirectSalesOrder_StoreDTOs = Stores
+                .Select(x => new DirectSalesOrder_StoreDTO(x)).ToList();
+            return DirectSalesOrder_StoreDTOs;
+        }
+
+        [Route(DirectSalesOrderRoute.CountItem), HttpPost]
+        public async Task<long> CountItem([FromBody] DirectSalesOrder_ItemFilterDTO DirectSalesOrder_ItemFilterDTO)
+        {
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Id = DirectSalesOrder_ItemFilterDTO.Id;
+            ItemFilter.Code = DirectSalesOrder_ItemFilterDTO.Code;
+            ItemFilter.Name = DirectSalesOrder_ItemFilterDTO.Name;
+            ItemFilter.OtherName = DirectSalesOrder_ItemFilterDTO.OtherName;
+            ItemFilter.ProductGroupingId = DirectSalesOrder_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductId = DirectSalesOrder_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = DirectSalesOrder_ItemFilterDTO.ProductTypeId;
+            ItemFilter.RetailPrice = DirectSalesOrder_ItemFilterDTO.RetailPrice;
+            ItemFilter.SalePrice = DirectSalesOrder_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = DirectSalesOrder_ItemFilterDTO.ScanCode;
+            ItemFilter.StatusId = DirectSalesOrder_ItemFilterDTO.StatusId;
+            ItemFilter.SupplierId = DirectSalesOrder_ItemFilterDTO.SupplierId;
+            return await ItemService.Count(ItemFilter);
+        }
+
+        [Route(DirectSalesOrderRoute.ListItem), HttpPost]
+        public async Task<List<DirectSalesOrder_ItemDTO>> ListItem([FromBody] DirectSalesOrder_ItemFilterDTO DirectSalesOrder_ItemFilterDTO)
+        {
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Skip = DirectSalesOrder_ItemFilterDTO.Skip;
+            ItemFilter.Take = DirectSalesOrder_ItemFilterDTO.Take;
+            ItemFilter.OrderBy = ItemOrder.Id;
+            ItemFilter.OrderType = OrderType.ASC;
+            ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Id = DirectSalesOrder_ItemFilterDTO.Id;
+            ItemFilter.Code = DirectSalesOrder_ItemFilterDTO.Code;
+            ItemFilter.Name = DirectSalesOrder_ItemFilterDTO.Name;
+            ItemFilter.OtherName = DirectSalesOrder_ItemFilterDTO.OtherName;
+            ItemFilter.ProductGroupingId = DirectSalesOrder_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductId = DirectSalesOrder_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = DirectSalesOrder_ItemFilterDTO.ProductTypeId;
+            ItemFilter.RetailPrice = DirectSalesOrder_ItemFilterDTO.RetailPrice;
+            ItemFilter.SalePrice = DirectSalesOrder_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = DirectSalesOrder_ItemFilterDTO.ScanCode;
+            ItemFilter.StatusId = DirectSalesOrder_ItemFilterDTO.StatusId;
+            ItemFilter.SupplierId = DirectSalesOrder_ItemFilterDTO.SupplierId;
+
+            List<Item> Items = await ItemService.List(ItemFilter);
+            List<DirectSalesOrder_ItemDTO> DirectSalesOrder_ItemDTOs = Items
+                .Select(x => new DirectSalesOrder_ItemDTO(x)).ToList();
+            return DirectSalesOrder_ItemDTOs;
+        }
     }
 }
 
