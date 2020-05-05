@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.indirect_sales_order
 {
-    public class IndirectSalesOrder_SupplierDTO
+    public class IndirectSalesOrder_SupplierDTO : DataDTO
     {
         public long Id { get; set; }
 
