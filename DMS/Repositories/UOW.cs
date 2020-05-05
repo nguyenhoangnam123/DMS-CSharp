@@ -14,6 +14,9 @@ namespace DMS.Repositories
 
         IAppUserRepository AppUserRepository { get; }
         IBrandRepository BrandRepository { get; }
+        IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; }
+        IDirectSalesOrderRepository DirectSalesOrderRepository { get; }
+        IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; }
         IDistrictRepository DistrictRepository { get; }
         IEditedPriceStatusRepository EditedPriceStatusRepository { get; }
         IEventMessageRepository EventMessageRepository { get; }
@@ -63,6 +66,9 @@ namespace DMS.Repositories
 
         public IAppUserRepository AppUserRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
+        public IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; private set; }
+        public IDirectSalesOrderRepository DirectSalesOrderRepository { get; private set; }
+        public IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; private set; }
         public IDistrictRepository DistrictRepository { get; private set; }
         public IEditedPriceStatusRepository EditedPriceStatusRepository { get; private set; }
         public IEventMessageRepository EventMessageRepository { get; private set; }
@@ -110,6 +116,9 @@ namespace DMS.Repositories
 
             AppUserRepository = new AppUserRepository(DataContext);
             BrandRepository = new BrandRepository(DataContext);
+            DirectSalesOrderContentRepository = new DirectSalesOrderContentRepository(DataContext);
+            DirectSalesOrderRepository = new DirectSalesOrderRepository(DataContext);
+            DirectSalesOrderPromotionRepository = new DirectSalesOrderPromotionRepository(DataContext);
             DistrictRepository = new DistrictRepository(DataContext);
             EditedPriceStatusRepository = new EditedPriceStatusRepository(DataContext);
             EventMessageRepository = new EventMessageRepository(DataContext);
