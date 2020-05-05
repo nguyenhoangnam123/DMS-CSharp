@@ -34,25 +34,16 @@ namespace DMS.Rpc.direct_sales_order
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
         
-        
         public const string FilterListStore = Default + "/filter-list-store";
-        
         public const string FilterListEditedPriceStatus = Default + "/filter-list-edited-price-status";
-        
         public const string FilterListRequestState = Default + "/filter-list-request-state";
-        
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         
-
-        
         public const string SingleListStore = Default + "/single-list-store";
-        
         public const string SingleListEditedPriceStatus = Default + "/single-list-edited-price-status";
-        
         public const string SingleListRequestState = Default + "/single-list-request-state";
-        
         public const string SingleListAppUser = Default + "/single-list-app-user";
-        
+
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(DirectSalesOrderFilter.Id), FieldType.ID },

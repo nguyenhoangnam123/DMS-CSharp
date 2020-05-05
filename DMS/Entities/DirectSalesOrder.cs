@@ -30,8 +30,8 @@ namespace DMS.Entities
         public EditedPriceStatus EditedPriceStatus { get; set; }
         public RequestState RequestState { get; set; }
         public AppUser SaleEmployee { get; set; }
-        List<DirectSalesOrderContent> DirectSalesOrderContents { get; set; }
-        List<DirectSalesOrderPromotion> DirectSalesOrderPromotion { get; set; }
+        public List<DirectSalesOrderContent> DirectSalesOrderContents { get; set; }
+        public List<DirectSalesOrderPromotion> DirectSalesOrderPromotions { get; set; }
         public bool Equals(DirectSalesOrder other)
         {
             return other != null && Id == other.Id;

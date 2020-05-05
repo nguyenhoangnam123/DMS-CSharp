@@ -30,6 +30,8 @@ namespace DMS.Rpc.direct_sales_order
         public DirectSalesOrder_EditedPriceStatusDTO EditedPriceStatus { get; set; }
         public DirectSalesOrder_RequestStateDTO RequestState { get; set; }
         public DirectSalesOrder_AppUserDTO SaleEmployee { get; set; }
+        public List<DirectSalesOrder_DirectSalesOrderContentDTO> DirectSalesOrderContents { get; set; }
+        public List<DirectSalesOrder_DirectSalesOrderPromotionDTO> DirectSalesOrderPromotions { get; set; }
         public DirectSalesOrder_DirectSalesOrderDTO() {}
         public DirectSalesOrder_DirectSalesOrderDTO(DirectSalesOrder DirectSalesOrder)
         {
@@ -55,6 +57,8 @@ namespace DMS.Rpc.direct_sales_order
             this.EditedPriceStatus = DirectSalesOrder.EditedPriceStatus == null ? null : new DirectSalesOrder_EditedPriceStatusDTO(DirectSalesOrder.EditedPriceStatus);
             this.RequestState = DirectSalesOrder.RequestState == null ? null : new DirectSalesOrder_RequestStateDTO(DirectSalesOrder.RequestState);
             this.SaleEmployee = DirectSalesOrder.SaleEmployee == null ? null : new DirectSalesOrder_AppUserDTO(DirectSalesOrder.SaleEmployee);
+            this.DirectSalesOrderContents = DirectSalesOrder.DirectSalesOrderContents?.Select(x => new DirectSalesOrder_DirectSalesOrderContentDTO(x)).ToList();
+            this.DirectSalesOrderPromotions = DirectSalesOrder.DirectSalesOrderPromotions?.Select(x => new DirectSalesOrder_DirectSalesOrderPromotionDTO(x)).ToList();
             this.Errors = DirectSalesOrder.Errors;
         }
     }

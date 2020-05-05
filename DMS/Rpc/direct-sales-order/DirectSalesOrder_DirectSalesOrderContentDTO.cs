@@ -1,12 +1,13 @@
-using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using Common;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace DMS.Rpc.direct_sales_order_content
+namespace DMS.Rpc.direct_sales_order
 {
-    public class DirectSalesOrderContent_DirectSalesOrderContentDTO : DataDTO
+    public class DirectSalesOrder_DirectSalesOrderContentDTO : DataDTO
     {
         public long Id { get; set; }
         public long DirectSalesOrderId { get; set; }
@@ -23,12 +24,12 @@ namespace DMS.Rpc.direct_sales_order_content
         public decimal? TaxPercentage { get; set; }
         public long? TaxAmount { get; set; }
         public long Amount { get; set; }
-        public DirectSalesOrderContent_DirectSalesOrderDTO DirectSalesOrder { get; set; }
-        public DirectSalesOrderContent_ItemDTO Item { get; set; }
-        public DirectSalesOrderContent_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }
-        public DirectSalesOrderContent_UnitOfMeasureDTO UnitOfMeasure { get; set; }
-        public DirectSalesOrderContent_DirectSalesOrderContentDTO() {}
-        public DirectSalesOrderContent_DirectSalesOrderContentDTO(DirectSalesOrderContent DirectSalesOrderContent)
+        public DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder { get; set; }
+        public DirectSalesOrder_ItemDTO Item { get; set; }
+        public DirectSalesOrder_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }
+        public DirectSalesOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+        public DirectSalesOrder_DirectSalesOrderContentDTO() { }
+        public DirectSalesOrder_DirectSalesOrderContentDTO(DirectSalesOrderContent DirectSalesOrderContent)
         {
             this.Id = DirectSalesOrderContent.Id;
             this.DirectSalesOrderId = DirectSalesOrderContent.DirectSalesOrderId;
@@ -45,15 +46,15 @@ namespace DMS.Rpc.direct_sales_order_content
             this.TaxPercentage = DirectSalesOrderContent.TaxPercentage;
             this.TaxAmount = DirectSalesOrderContent.TaxAmount;
             this.Amount = DirectSalesOrderContent.Amount;
-            this.DirectSalesOrder = DirectSalesOrderContent.DirectSalesOrder == null ? null : new DirectSalesOrderContent_DirectSalesOrderDTO(DirectSalesOrderContent.DirectSalesOrder);
-            this.Item = DirectSalesOrderContent.Item == null ? null : new DirectSalesOrderContent_ItemDTO(DirectSalesOrderContent.Item);
-            this.PrimaryUnitOfMeasure = DirectSalesOrderContent.PrimaryUnitOfMeasure == null ? null : new DirectSalesOrderContent_UnitOfMeasureDTO(DirectSalesOrderContent.PrimaryUnitOfMeasure);
-            this.UnitOfMeasure = DirectSalesOrderContent.UnitOfMeasure == null ? null : new DirectSalesOrderContent_UnitOfMeasureDTO(DirectSalesOrderContent.UnitOfMeasure);
+            this.DirectSalesOrder = DirectSalesOrderContent.DirectSalesOrder == null ? null : new DirectSalesOrder_DirectSalesOrderDTO(DirectSalesOrderContent.DirectSalesOrder);
+            this.Item = DirectSalesOrderContent.Item == null ? null : new DirectSalesOrder_ItemDTO(DirectSalesOrderContent.Item);
+            this.PrimaryUnitOfMeasure = DirectSalesOrderContent.PrimaryUnitOfMeasure == null ? null : new DirectSalesOrder_UnitOfMeasureDTO(DirectSalesOrderContent.PrimaryUnitOfMeasure);
+            this.UnitOfMeasure = DirectSalesOrderContent.UnitOfMeasure == null ? null : new DirectSalesOrder_UnitOfMeasureDTO(DirectSalesOrderContent.UnitOfMeasure);
             this.Errors = DirectSalesOrderContent.Errors;
         }
     }
 
-    public class DirectSalesOrderContent_DirectSalesOrderContentFilterDTO : FilterDTO
+    public class DirectSalesOrder_DirectSalesOrderContentFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public IdFilter DirectSalesOrderId { get; set; }
