@@ -16,6 +16,7 @@ using DMS.Services.MRequestState;
 using DMS.Services.MStatus;
 using DMS.Enums;
 using DMS.Services.MStore;
+using DMS.Services.MERouteType;
 
 namespace DMS.Rpc.e_route
 {
@@ -35,11 +36,11 @@ namespace DMS.Rpc.e_route
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
         
-        
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListStore = Default + "/filter-list-store";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
+        public const string SingleListERouteType = Default + "/single-list-eroute-type";
         public const string SingleListRequestState = Default + "/single-list-request-state";
         public const string SingleListStore = Default + "/single-list-store";
         public const string SingleListStatus = Default + "/single-list-status";
@@ -61,6 +62,7 @@ namespace DMS.Rpc.e_route
     public class ERouteController : RpcController
     {
         private IAppUserService AppUserService;
+        private IERouteTypeService ERouteTypeService;
         private IRequestStateService RequestStateService;
         private IStatusService StatusService;
         private IERouteService ERouteService;
@@ -68,6 +70,7 @@ namespace DMS.Rpc.e_route
         private ICurrentContext CurrentContext;
         public ERouteController(
             IAppUserService AppUserService,
+            IERouteTypeService ERouteTypeService,
             IRequestStateService RequestStateService,
             IStatusService StatusService,
             IERouteService ERouteService,
@@ -76,6 +79,7 @@ namespace DMS.Rpc.e_route
         )
         {
             this.AppUserService = AppUserService;
+            this.ERouteTypeService = ERouteTypeService;
             this.RequestStateService = RequestStateService;
             this.StatusService = StatusService;
             this.ERouteService = ERouteService;
@@ -660,6 +664,7 @@ namespace DMS.Rpc.e_route
             ERoute.SaleEmployeeId = ERoute_ERouteDTO.SaleEmployeeId;
             ERoute.StartDate = ERoute_ERouteDTO.StartDate;
             ERoute.EndDate = ERoute_ERouteDTO.EndDate;
+            ERoute.ERouteTypeId = ERoute_ERouteDTO.ERouteTypeId;
             ERoute.RequestStateId = ERoute_ERouteDTO.RequestStateId;
             ERoute.StatusId = ERoute_ERouteDTO.StatusId;
             ERoute.CreatorId = ERoute_ERouteDTO.CreatorId;
@@ -680,6 +685,12 @@ namespace DMS.Rpc.e_route
                 Avatar = ERoute_ERouteDTO.Creator.Avatar,
                 Birthday = ERoute_ERouteDTO.Creator.Birthday,
                 ProvinceId = ERoute_ERouteDTO.Creator.ProvinceId,
+            };
+            ERoute.ERouteType = ERoute_ERouteDTO.ERouteType == null ? null : new ERouteType
+            {
+                Id = ERoute_ERouteDTO.ERouteType.Id,
+                Code = ERoute_ERouteDTO.ERouteType.Code,
+                Name = ERoute_ERouteDTO.ERouteType.Name,
             };
             ERoute.RequestState = ERoute_ERouteDTO.RequestState == null ? null : new RequestState
             {
@@ -852,7 +863,24 @@ namespace DMS.Rpc.e_route
                 .Select(x => new ERoute_AppUserDTO(x)).ToList();
             return ERoute_AppUserDTOs;
         }
+        [Route(ERouteRoute.SingleListERouteType), HttpPost]
+        public async Task<List<ERoute_ERouteTypeDTO>> SingleListERouteType([FromBody] ERoute_ERouteTypeFilterDTO ERoute_ERouteTypeFilterDTO)
+        {
+            ERouteTypeFilter ERouteTypeFilter = new ERouteTypeFilter();
+            ERouteTypeFilter.Skip = 0;
+            ERouteTypeFilter.Take = 20;
+            ERouteTypeFilter.OrderBy = ERouteTypeOrder.Id;
+            ERouteTypeFilter.OrderType = OrderType.ASC;
+            ERouteTypeFilter.Selects = ERouteTypeSelect.ALL;
+            ERouteTypeFilter.Id = ERoute_ERouteTypeFilterDTO.Id;
+            ERouteTypeFilter.Code = ERoute_ERouteTypeFilterDTO.Code;
+            ERouteTypeFilter.Name = ERoute_ERouteTypeFilterDTO.Name;
 
+            List<ERouteType> ERouteTypes = await ERouteTypeService.List(ERouteTypeFilter);
+            List<ERoute_ERouteTypeDTO> ERoute_ERouteTypeDTOs = ERouteTypes
+                .Select(x => new ERoute_ERouteTypeDTO(x)).ToList();
+            return ERoute_ERouteTypeDTOs;
+        }
         [Route(ERouteRoute.SingleListRequestState), HttpPost]
         public async Task<List<ERoute_RequestStateDTO>> SingleListRequestState([FromBody] ERoute_RequestStateFilterDTO ERoute_RequestStateFilterDTO)
         {

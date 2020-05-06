@@ -14,10 +14,12 @@ namespace DMS.Entities
         public long SaleEmployeeId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public long? ERouteTypeId { get; set; }
         public long RequestStateId { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
         public AppUser Creator { get; set; }
+        public ERouteType ERouteType { get; set; }
         public RequestState RequestState { get; set; }
         public AppUser SaleEmployee { get; set; }
         public Status Status { get; set; }
@@ -42,6 +44,7 @@ namespace DMS.Entities
         public IdFilter SaleEmployeeId { get; set; }
         public DateFilter StartDate { get; set; }
         public DateFilter EndDate { get; set; }
+        public IdFilter ERouteTypeId { get; set; }
         public IdFilter RequestStateId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter CreatorId { get; set; }
@@ -61,11 +64,12 @@ namespace DMS.Entities
         SaleEmployee = 3,
         StartDate = 4,
         EndDate = 5,
-        RequestState = 6,
-        Status = 7,
-        Creator = 11,
-        CreatedAt = 50,
-        UpdatedAt = 51,
+        ERouteType = 6,
+        RequestState = 7,
+        Status = 8,
+        Creator = 9,
+        CreatedAt = 10,
+        UpdatedAt = 11,
     }
 
     [Flags]
@@ -78,8 +82,9 @@ namespace DMS.Entities
         SaleEmployee = E._3,
         StartDate = E._4,
         EndDate = E._5,
-        RequestState = E._6,
-        Status = E._7,
-        Creator = E._11,
+        ERouteType = E._6,
+        RequestState = E._7,
+        Status = E._8,
+        Creator = E._9,
     }
 }

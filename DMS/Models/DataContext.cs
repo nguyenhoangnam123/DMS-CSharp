@@ -15,6 +15,7 @@ namespace DMS.Models
         public virtual DbSet<DistrictDAO> District { get; set; }
         public virtual DbSet<ERouteDAO> ERoute { get; set; }
         public virtual DbSet<ERouteContentDAO> ERouteContent { get; set; }
+        public virtual DbSet<ERouteTypeDAO> ERouteType { get; set; }
         public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
@@ -31,6 +32,8 @@ namespace DMS.Models
         public virtual DbSet<PermissionDAO> Permission { get; set; }
         public virtual DbSet<PermissionFieldMappingDAO> PermissionFieldMapping { get; set; }
         public virtual DbSet<PermissionPageMappingDAO> PermissionPageMapping { get; set; }
+        public virtual DbSet<PriceListDAO> PriceList { get; set; }
+        public virtual DbSet<PriceListItemMappingDAO> PriceListItemMapping { get; set; }
         public virtual DbSet<ProductDAO> Product { get; set; }
         public virtual DbSet<ProductGroupingDAO> ProductGrouping { get; set; }
         public virtual DbSet<ProductImageMappingDAO> ProductImageMapping { get; set; }
@@ -352,6 +355,11 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ERoute_AppUser1");
 
+                entity.HasOne(d => d.ERouteType)
+                    .WithMany(p => p.ERoutes)
+                    .HasForeignKey(d => d.ERouteTypeId)
+                    .HasConstraintName("FK_ERoute_ERouteType");
+
                 entity.HasOne(d => d.RequestState)
                     .WithMany(p => p.ERoutes)
                     .HasForeignKey(d => d.RequestStateId)
@@ -384,6 +392,19 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StoreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ERouteContent_Store");
+            });
+
+            modelBuilder.Entity<ERouteTypeDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<EditedPriceStatusDAO>(entity =>
@@ -797,6 +818,50 @@ namespace DMS.Models
                     .HasForeignKey(d => d.PermissionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PermissionAction_Permission");
+            });
+
+            modelBuilder.Entity<PriceListDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name).HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.PriceLists)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceList_Organization");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.PriceLists)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceList_Status");
+            });
+
+            modelBuilder.Entity<PriceListItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PriceListId, e.ItemId });
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.PriceListItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceListItemMapping_Item");
+
+                entity.HasOne(d => d.PriceList)
+                    .WithMany(p => p.PriceListItemMappings)
+                    .HasForeignKey(d => d.PriceListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceListItemMapping_PriceList");
             });
 
             modelBuilder.Entity<ProductDAO>(entity =>

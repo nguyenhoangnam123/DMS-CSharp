@@ -50,6 +50,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StartDate, filter.StartDate);
             if (filter.EndDate != null)
                 query = query.Where(q => q.EndDate, filter.EndDate);
+            if (filter.ERouteTypeId != null)
+                query = query.Where(q => q.ERouteTypeId, filter.ERouteTypeId);
             if (filter.RequestStateId != null)
                 query = query.Where(q => q.RequestStateId, filter.RequestStateId);
             if (filter.StatusId != null)
@@ -80,6 +82,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.StartDate, filter.StartDate);
                 if (filter.EndDate != null)
                     queryable = queryable.Where(q => q.EndDate, filter.EndDate);
+                if (filter.ERouteTypeId != null)
+                    queryable = queryable.Where(q => q.ERouteTypeId, filter.ERouteTypeId);
                 if (filter.RequestStateId != null)
                     queryable = queryable.Where(q => q.RequestStateId, filter.RequestStateId);
                 if (filter.StatusId != null)
@@ -116,6 +120,9 @@ namespace DMS.Repositories
                         case ERouteOrder.EndDate:
                             query = query.OrderBy(q => q.EndDate);
                             break;
+                        case ERouteOrder.ERouteType:
+                            query = query.OrderBy(q => q.ERouteTypeId);
+                            break;
                         case ERouteOrder.RequestState:
                             query = query.OrderBy(q => q.RequestStateId);
                             break;
@@ -148,6 +155,9 @@ namespace DMS.Repositories
                         case ERouteOrder.EndDate:
                             query = query.OrderByDescending(q => q.EndDate);
                             break;
+                        case ERouteOrder.ERouteType:
+                            query = query.OrderByDescending(q => q.ERouteTypeId);
+                            break;
                         case ERouteOrder.RequestState:
                             query = query.OrderByDescending(q => q.RequestStateId);
                             break;
@@ -174,6 +184,7 @@ namespace DMS.Repositories
                 SaleEmployeeId = filter.Selects.Contains(ERouteSelect.SaleEmployee) ? q.SaleEmployeeId : default(long),
                 StartDate = filter.Selects.Contains(ERouteSelect.StartDate) ? q.StartDate : default(DateTime),
                 EndDate = filter.Selects.Contains(ERouteSelect.EndDate) ? q.EndDate : default(DateTime?),
+                ERouteTypeId = filter.Selects.Contains(ERouteSelect.ERouteType) ? q.ERouteTypeId : default(long),
                 RequestStateId = filter.Selects.Contains(ERouteSelect.RequestState) ? q.RequestStateId : default(long),
                 StatusId = filter.Selects.Contains(ERouteSelect.Status) ? q.StatusId : default(long),
                 CreatorId = filter.Selects.Contains(ERouteSelect.Creator) ? q.CreatorId : default(long),
@@ -194,6 +205,12 @@ namespace DMS.Repositories
                     Avatar = q.Creator.Avatar,
                     Birthday = q.Creator.Birthday,
                     ProvinceId = q.Creator.ProvinceId,
+                } : null,
+                ERouteType = filter.Selects.Contains(ERouteSelect.ERouteType) && q.ERouteType != null ? new ERouteType
+                {
+                    Id = q.ERouteType.Id,
+                    Code = q.ERouteType.Code,
+                    Name = q.ERouteType.Name,
                 } : null,
                 RequestState = filter.Selects.Contains(ERouteSelect.RequestState) && q.RequestState != null ? new RequestState
                 {
@@ -261,6 +278,7 @@ namespace DMS.Repositories
                 SaleEmployeeId = x.SaleEmployeeId,
                 StartDate = x.StartDate,
                 EndDate = x.EndDate,
+                ERouteTypeId = x.ERouteTypeId,
                 RequestStateId = x.RequestStateId,
                 StatusId = x.StatusId,
                 CreatorId = x.CreatorId,
@@ -281,6 +299,12 @@ namespace DMS.Repositories
                     Avatar = x.Creator.Avatar,
                     Birthday = x.Creator.Birthday,
                     ProvinceId = x.Creator.ProvinceId,
+                },
+                ERouteType = x.ERouteType == null ? null : new ERouteType
+                {
+                    Id = x.ERouteType.Id,
+                    Code = x.ERouteType.Code,
+                    Name = x.ERouteType.Name,
                 },
                 RequestState = x.RequestState == null ? null : new RequestState
                 {
@@ -346,6 +370,7 @@ namespace DMS.Repositories
             ERouteDAO.SaleEmployeeId = ERoute.SaleEmployeeId;
             ERouteDAO.StartDate = ERoute.StartDate;
             ERouteDAO.EndDate = ERoute.EndDate;
+            ERouteDAO.ERouteTypeId = ERoute.ERouteTypeId;
             ERouteDAO.RequestStateId = ERoute.RequestStateId;
             ERouteDAO.StatusId = ERoute.StatusId;
             ERouteDAO.CreatorId = ERoute.CreatorId;
@@ -369,6 +394,7 @@ namespace DMS.Repositories
             ERouteDAO.SaleEmployeeId = ERoute.SaleEmployeeId;
             ERouteDAO.StartDate = ERoute.StartDate;
             ERouteDAO.EndDate = ERoute.EndDate;
+            ERouteDAO.ERouteTypeId = ERoute.ERouteTypeId;
             ERouteDAO.RequestStateId = ERoute.RequestStateId;
             ERouteDAO.StatusId = ERoute.StatusId;
             ERouteDAO.CreatorId = ERoute.CreatorId;
@@ -396,6 +422,7 @@ namespace DMS.Repositories
                 ERouteDAO.SaleEmployeeId = ERoute.SaleEmployeeId;
                 ERouteDAO.StartDate = ERoute.StartDate;
                 ERouteDAO.EndDate = ERoute.EndDate;
+                ERouteDAO.ERouteTypeId = ERoute.ERouteTypeId;
                 ERouteDAO.RequestStateId = ERoute.RequestStateId;
                 ERouteDAO.StatusId = ERoute.StatusId;
                 ERouteDAO.CreatorId = ERoute.CreatorId;

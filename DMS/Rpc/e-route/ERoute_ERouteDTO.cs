@@ -14,10 +14,12 @@ namespace DMS.Rpc.e_route
         public long SaleEmployeeId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public long ERouteTypeId { get; set; }
         public long RequestStateId { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
         public ERoute_AppUserDTO Creator { get; set; }
+        public ERoute_ERouteTypeDTO ERouteType { get; set; }
         public ERoute_RequestStateDTO RequestState { get; set; }
         public ERoute_AppUserDTO SaleEmployee { get; set; }
         public ERoute_StatusDTO Status { get; set; }
@@ -37,6 +39,7 @@ namespace DMS.Rpc.e_route
             this.StatusId = ERoute.StatusId;
             this.CreatorId = ERoute.CreatorId;
             this.Creator = ERoute.Creator == null ? null : new ERoute_AppUserDTO(ERoute.Creator);
+            this.ERouteType = ERoute.ERouteType == null ? null : new ERoute_ERouteTypeDTO(ERoute.ERouteType);
             this.RequestState = ERoute.RequestState == null ? null : new ERoute_RequestStateDTO(ERoute.RequestState);
             this.SaleEmployee = ERoute.SaleEmployee == null ? null : new ERoute_AppUserDTO(ERoute.SaleEmployee);
             this.Status = ERoute.Status == null ? null : new ERoute_StatusDTO(ERoute.Status);
@@ -55,6 +58,7 @@ namespace DMS.Rpc.e_route
         public IdFilter SaleEmployeeId { get; set; }
         public DateFilter StartDate { get; set; }
         public DateFilter EndDate { get; set; }
+        public IdFilter ERouteTypeId { get; set; }
         public IdFilter RequestStateId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter CreatorId { get; set; }

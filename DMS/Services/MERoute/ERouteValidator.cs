@@ -6,6 +6,7 @@ using Common;
 using DMS.Entities;
 using DMS;
 using DMS.Repositories;
+using DMS.Enums;
 
 namespace DMS.Services.MERoute
 {
@@ -23,6 +24,18 @@ namespace DMS.Services.MERoute
         public enum ErrorCode
         {
             IdNotExisted,
+            CodeEmpty,
+            CodeOverLength,
+            CodeExisted,
+            NameEmpty,
+            NameOverLength,
+            SaleEmployeeNotExisted,
+            ERouteTypeNotExisted,
+            StatusNotExisted,
+            StartDateEmpty,
+            EndDateEmpty,
+            StoreNotExisted,
+            ERouteInUsed
         }
 
         private IUOW UOW;
@@ -50,8 +63,139 @@ namespace DMS.Services.MERoute
             return count == 1;
         }
 
+        private async Task<bool> ValidateCode(ERoute ERoute)
+        {
+            if (string.IsNullOrWhiteSpace(ERoute.Code))
+            {
+                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Code), ErrorCode.CodeEmpty);
+            }
+            else if(ERoute.Code.Length > 255)
+            {
+                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Code), ErrorCode.CodeOverLength);
+            }
+            else
+            {
+                ERouteFilter ERouteFilter = new ERouteFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { NotEqual = ERoute.Id },
+                    Code = new StringFilter { Equal = ERoute.Code },
+                    Selects = ERouteSelect.Code
+                };
+
+                int count = await UOW.ERouteRepository.Count(ERouteFilter);
+                if (count != 0)
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Code), ErrorCode.CodeExisted);
+            }
+
+            return ERoute.IsValidated;
+        }
+
+        private async Task<bool> ValidateName(ERoute ERoute)
+        {
+            if (string.IsNullOrWhiteSpace(ERoute.Name))
+            {
+                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Name), ErrorCode.NameEmpty);
+            }
+            else if (ERoute.Name.Length > 255)
+            {
+                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Name), ErrorCode.NameOverLength);
+            }
+            return ERoute.IsValidated;
+        }
+
+        private async Task<bool> ValidateSaleEmployee(ERoute ERoute)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                Skip = 0,
+                Take = 1,
+                Selects = AppUserSelect.Id,
+                Id = new IdFilter { Equal = ERoute.SaleEmployeeId },
+                OrganizationId = new IdFilter()
+            };
+
+            int count = await UOW.AppUserRepository.Count(AppUserFilter);
+            if(count == 0)
+                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.SaleEmployee), ErrorCode.SaleEmployeeNotExisted);
+            return ERoute.IsValidated;
+        }
+
+        private async Task<bool> ValidateERouteType(ERoute ERoute)
+        {
+            if (ERoute.ERouteTypeId.HasValue)
+            {
+                if (ERouteTypeEnum.PERMANENT.Id != ERoute.ERouteTypeId && ERouteTypeEnum.INCURRED.Id != ERoute.ERouteTypeId)
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.ERouteType), ErrorCode.ERouteTypeNotExisted);
+            }
+            return ERoute.IsValidated;
+        }
+
+        private async Task<bool> ValidateStatusId(ERoute ERoute)
+        {
+            if (StatusEnum.ACTIVE.Id != ERoute.StatusId && StatusEnum.INACTIVE.Id != ERoute.StatusId)
+                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Status), ErrorCode.StatusNotExisted);
+            return ERoute.IsValidated;
+        }
+
+        private async Task<bool> ValidateStartDateAndEndDate(ERoute ERoute)
+        {
+            if (ERoute.ERouteTypeId.HasValue)
+            {
+                if(ERoute.ERouteTypeId == ERouteTypeEnum.PERMANENT.Id)
+                {
+                    if(ERoute.StartDate == default(DateTime))
+                        ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.StartDate), ErrorCode.StartDateEmpty);
+                }
+
+                if (ERoute.ERouteTypeId == ERouteTypeEnum.INCURRED.Id)
+                {
+                    if (ERoute.StartDate == default(DateTime))
+                        ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.StartDate), ErrorCode.StartDateEmpty);
+                    if(ERoute.EndDate == null || ERoute.EndDate == default(DateTime))
+                        ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.EndDate), ErrorCode.EndDateEmpty);
+                }
+            }
+
+            return ERoute.IsValidated;
+        }
+
+        private async Task<bool> ValidateStore(ERoute ERoute)
+        {
+            if(ERoute.ERouteContents != null)
+            {
+                var IdsStore = ERoute.ERouteContents.Select(x => x.StoreId).ToList();
+
+                StoreFilter StoreFilter = new StoreFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = StoreSelect.Id,
+                    Id = new IdFilter { In = IdsStore }
+                };
+
+                var IdsInDB = (await UOW.StoreRepository.List(StoreFilter)).Select(x => x.Id).ToList();
+                var listIdsNotExisted = IdsStore.Except(IdsInDB);
+                foreach (var ERouteContent in ERoute.ERouteContents)
+                {
+                    if(listIdsNotExisted.Contains(ERouteContent.StoreId))
+                        ERoute.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreNotExisted);
+                }
+            }
+
+            return ERoute.IsValidated;
+        }
+
         public async Task<bool>Create(ERoute ERoute)
         {
+            await ValidateCode(ERoute);
+            await ValidateName(ERoute);
+            await ValidateSaleEmployee(ERoute);
+            await ValidateERouteType(ERoute);
+            await ValidateStatusId(ERoute);
+            await ValidateStartDateAndEndDate(ERoute);
+            await ValidateStore(ERoute);
             return ERoute.IsValidated;
         }
 
@@ -59,6 +203,13 @@ namespace DMS.Services.MERoute
         {
             if (await ValidateId(ERoute))
             {
+                await ValidateCode(ERoute);
+                await ValidateName(ERoute);
+                await ValidateSaleEmployee(ERoute);
+                await ValidateERouteType(ERoute);
+                await ValidateStatusId(ERoute);
+                await ValidateStartDateAndEndDate(ERoute);
+                await ValidateStore(ERoute);
             }
             return ERoute.IsValidated;
         }
@@ -67,13 +218,19 @@ namespace DMS.Services.MERoute
         {
             if (await ValidateId(ERoute))
             {
+                if(ERoute.RequestStateId != RequestStateEnum.NEW.Id)
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.RequestState), ErrorCode.ERouteInUsed);
             }
             return ERoute.IsValidated;
         }
         
         public async Task<bool> BulkDelete(List<ERoute> ERoutes)
         {
-            return true;
+            foreach (ERoute ERoute in ERoutes)
+            {
+                await Delete(ERoute);
+            }
+            return ERoutes.All(st => st.IsValidated);
         }
         
         public async Task<bool> Import(List<ERoute> ERoutes)
