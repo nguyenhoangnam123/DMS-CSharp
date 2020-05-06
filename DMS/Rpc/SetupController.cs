@@ -443,13 +443,13 @@ namespace DMS.Rpc
                 });
             }
 
-            if (!list.Any(pt => pt.Id == WorkflowTypeEnum.ROUTER.Id))
+            if (!list.Any(pt => pt.Id == WorkflowTypeEnum.ROUTE.Id))
             {
                 DataContext.WorkflowType.Add(new WorkflowTypeDAO
                 {
-                    Id = WorkflowTypeEnum.ROUTER.Id,
-                    Code = WorkflowTypeEnum.ROUTER.Code,
-                    Name = WorkflowTypeEnum.ROUTER.Name,
+                    Id = WorkflowTypeEnum.ROUTE.Id,
+                    Code = WorkflowTypeEnum.ROUTE.Code,
+                    Name = WorkflowTypeEnum.ROUTE.Name,
                 });
             }
 
