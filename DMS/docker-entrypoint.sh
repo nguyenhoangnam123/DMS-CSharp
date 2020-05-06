@@ -7,7 +7,7 @@ fi
 CONSUL_PID=0
 term_handler () {
     if [ ${CONSUL_PID} -ne 0 ]; then
-        consul force-leave "${CONSUL_PID}"
+        consul force-leave ${NODE}
         kill "${CONSUL_PID}"
         wait "${CONSUL_PID}"
     fi
