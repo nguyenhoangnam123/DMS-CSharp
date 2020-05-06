@@ -9,6 +9,7 @@ namespace DMS.Models
         {
             AppUserRoleMappings = new HashSet<AppUserRoleMappingDAO>();
             DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
+            ERouteChangeRequests = new HashSet<ERouteChangeRequestDAO>();
             ERouteCreators = new HashSet<ERouteDAO>();
             ERouteSaleEmployees = new HashSet<ERouteDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
@@ -44,6 +45,7 @@ namespace DMS.Models
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
+        public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }
         public virtual ICollection<ERouteDAO> ERouteCreators { get; set; }
         public virtual ICollection<ERouteDAO> ERouteSaleEmployees { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }

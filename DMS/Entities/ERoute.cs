@@ -23,9 +23,10 @@ namespace DMS.Entities
         public RequestState RequestState { get; set; }
         public AppUser SaleEmployee { get; set; }
         public Status Status { get; set; }
+        public List<ERouteContent> ERouteContents { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public List<ERouteContent> ERouteContents { get; set; }
+
         public bool Equals(ERoute other)
         {
             return other != null && Id == other.Id;
@@ -67,9 +68,9 @@ namespace DMS.Entities
         ERouteType = 6,
         RequestState = 7,
         Status = 8,
-        Creator = 9,
-        CreatedAt = 10,
-        UpdatedAt = 11,
+        Creator = 12,
+        CreatedAt = 50,
+        UpdatedAt = 51,
     }
 
     [Flags]
@@ -85,6 +86,6 @@ namespace DMS.Entities
         ERouteType = E._6,
         RequestState = E._7,
         Status = E._8,
-        Creator = E._9,
+        Creator = E._12,
     }
 }

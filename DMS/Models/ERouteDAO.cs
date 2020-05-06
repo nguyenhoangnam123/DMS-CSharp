@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public ERouteDAO()
         {
+            ERouteChangeRequests = new HashSet<ERouteChangeRequestDAO>();
             ERouteContents = new HashSet<ERouteContentDAO>();
         }
 
@@ -29,6 +30,7 @@ namespace DMS.Models
         public virtual RequestStateDAO RequestState { get; set; }
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }
         public virtual ICollection<ERouteContentDAO> ERouteContents { get; set; }
     }
 }
