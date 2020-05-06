@@ -12,6 +12,7 @@ namespace DMS.Models
         public long Quantity { get; set; }
         public long PrimaryUnitOfMeasureId { get; set; }
         public long RequestedQuantity { get; set; }
+        public long PrimaryPrice { get; set; }
         public long SalePrice { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public long? DiscountAmount { get; set; }

@@ -47,6 +47,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.PrimaryUnitOfMeasureId, filter.PrimaryUnitOfMeasureId);
             if (filter.RequestedQuantity != null)
                 query = query.Where(q => q.RequestedQuantity, filter.RequestedQuantity);
+            if (filter.PrimaryPrice != null)
+                query = query.Where(q => q.PrimaryPrice, filter.PrimaryPrice);
             if (filter.SalePrice != null)
                 query = query.Where(q => q.SalePrice, filter.SalePrice);
             if (filter.DiscountPercentage != null)
@@ -89,6 +91,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.PrimaryUnitOfMeasureId, filter.PrimaryUnitOfMeasureId);
                 if (filter.RequestedQuantity != null)
                     queryable = queryable.Where(q => q.RequestedQuantity, filter.RequestedQuantity);
+                if (filter.PrimaryPrice != null)
+                    queryable = queryable.Where(q => q.PrimaryPrice, filter.PrimaryPrice);
                 if (filter.SalePrice != null)
                     queryable = queryable.Where(q => q.SalePrice, filter.SalePrice);
                 if (filter.DiscountPercentage != null)
@@ -137,6 +141,9 @@ namespace DMS.Repositories
                             break;
                         case IndirectSalesOrderContentOrder.RequestedQuantity:
                             query = query.OrderBy(q => q.RequestedQuantity);
+                            break;
+                        case IndirectSalesOrderContentOrder.PrimaryPrice:
+                            query = query.OrderBy(q => q.PrimaryPrice);
                             break;
                         case IndirectSalesOrderContentOrder.SalePrice:
                             query = query.OrderBy(q => q.SalePrice);
@@ -188,6 +195,9 @@ namespace DMS.Repositories
                         case IndirectSalesOrderContentOrder.RequestedQuantity:
                             query = query.OrderByDescending(q => q.RequestedQuantity);
                             break;
+                        case IndirectSalesOrderContentOrder.PrimaryPrice:
+                            query = query.OrderByDescending(q => q.PrimaryPrice);
+                            break;
                         case IndirectSalesOrderContentOrder.SalePrice:
                             query = query.OrderByDescending(q => q.SalePrice);
                             break;
@@ -230,6 +240,7 @@ namespace DMS.Repositories
                 Quantity = filter.Selects.Contains(IndirectSalesOrderContentSelect.Quantity) ? q.Quantity : default(long),
                 PrimaryUnitOfMeasureId = filter.Selects.Contains(IndirectSalesOrderContentSelect.PrimaryUnitOfMeasure) ? q.PrimaryUnitOfMeasureId : default(long),
                 RequestedQuantity = filter.Selects.Contains(IndirectSalesOrderContentSelect.RequestedQuantity) ? q.RequestedQuantity : default(long),
+                PrimaryPrice = filter.Selects.Contains(IndirectSalesOrderContentSelect.PrimaryPrice) ? q.PrimaryPrice : default(long),
                 SalePrice = filter.Selects.Contains(IndirectSalesOrderContentSelect.SalePrice) ? q.SalePrice : default(long),
                 DiscountPercentage = filter.Selects.Contains(IndirectSalesOrderContentSelect.DiscountPercentage) ? q.DiscountPercentage : default(decimal?),
                 DiscountAmount = filter.Selects.Contains(IndirectSalesOrderContentSelect.DiscountAmount) ? q.DiscountAmount : default(long?),
@@ -307,6 +318,7 @@ namespace DMS.Repositories
                 Quantity = x.Quantity,
                 PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
                 RequestedQuantity = x.RequestedQuantity,
+                PrimaryPrice = x.PrimaryPrice,
                 SalePrice = x.SalePrice,
                 DiscountPercentage = x.DiscountPercentage,
                 DiscountAmount = x.DiscountAmount,
@@ -368,6 +380,7 @@ namespace DMS.Repositories
             IndirectSalesOrderContentDAO.Quantity = IndirectSalesOrderContent.Quantity;
             IndirectSalesOrderContentDAO.PrimaryUnitOfMeasureId = IndirectSalesOrderContent.PrimaryUnitOfMeasureId;
             IndirectSalesOrderContentDAO.RequestedQuantity = IndirectSalesOrderContent.RequestedQuantity;
+            IndirectSalesOrderContentDAO.PrimaryPrice = IndirectSalesOrderContent.PrimaryPrice;
             IndirectSalesOrderContentDAO.SalePrice = IndirectSalesOrderContent.SalePrice;
             IndirectSalesOrderContentDAO.DiscountPercentage = IndirectSalesOrderContent.DiscountPercentage;
             IndirectSalesOrderContentDAO.DiscountAmount = IndirectSalesOrderContent.DiscountAmount;
@@ -395,6 +408,7 @@ namespace DMS.Repositories
             IndirectSalesOrderContentDAO.Quantity = IndirectSalesOrderContent.Quantity;
             IndirectSalesOrderContentDAO.PrimaryUnitOfMeasureId = IndirectSalesOrderContent.PrimaryUnitOfMeasureId;
             IndirectSalesOrderContentDAO.RequestedQuantity = IndirectSalesOrderContent.RequestedQuantity;
+            IndirectSalesOrderContentDAO.PrimaryPrice = IndirectSalesOrderContent.PrimaryPrice;
             IndirectSalesOrderContentDAO.SalePrice = IndirectSalesOrderContent.SalePrice;
             IndirectSalesOrderContentDAO.DiscountPercentage = IndirectSalesOrderContent.DiscountPercentage;
             IndirectSalesOrderContentDAO.DiscountAmount = IndirectSalesOrderContent.DiscountAmount;
@@ -427,6 +441,7 @@ namespace DMS.Repositories
                 IndirectSalesOrderContentDAO.Quantity = IndirectSalesOrderContent.Quantity;
                 IndirectSalesOrderContentDAO.PrimaryUnitOfMeasureId = IndirectSalesOrderContent.PrimaryUnitOfMeasureId;
                 IndirectSalesOrderContentDAO.RequestedQuantity = IndirectSalesOrderContent.RequestedQuantity;
+                IndirectSalesOrderContentDAO.PrimaryPrice = IndirectSalesOrderContent.PrimaryPrice;
                 IndirectSalesOrderContentDAO.SalePrice = IndirectSalesOrderContent.SalePrice;
                 IndirectSalesOrderContentDAO.DiscountPercentage = IndirectSalesOrderContent.DiscountPercentage;
                 IndirectSalesOrderContentDAO.DiscountAmount = IndirectSalesOrderContent.DiscountAmount;

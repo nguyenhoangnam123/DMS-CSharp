@@ -15,6 +15,7 @@ namespace DMS.Entities
         public long Quantity { get; set; }
         public long PrimaryUnitOfMeasureId { get; set; }
         public long RequestedQuantity { get; set; }
+        public long PrimaryPrice { get; set; }
         public long SalePrice { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public long? DiscountAmount { get; set; }
@@ -47,6 +48,7 @@ namespace DMS.Entities
         public LongFilter Quantity { get; set; }
         public IdFilter PrimaryUnitOfMeasureId { get; set; }
         public LongFilter RequestedQuantity { get; set; }
+        public LongFilter PrimaryPrice { get; set; }
         public LongFilter SalePrice { get; set; }
         public DecimalFilter DiscountPercentage { get; set; }
         public LongFilter DiscountAmount { get; set; }
@@ -70,14 +72,15 @@ namespace DMS.Entities
         Quantity = 4,
         PrimaryUnitOfMeasure = 5,
         RequestedQuantity = 6,
-        SalePrice = 7,
-        DiscountPercentage = 8,
-        DiscountAmount = 9,
-        GeneralDiscountPercentage = 10,
-        GeneralDiscountAmount = 11,
-        Amount = 12,
-        TaxPercentage = 13,
-        TaxAmount = 14,
+        PrimaryPrice = 7,
+        SalePrice = 8,
+        DiscountPercentage = 9,
+        DiscountAmount = 10,
+        GeneralDiscountPercentage = 11,
+        GeneralDiscountAmount = 12,
+        Amount = 13,
+        TaxPercentage = 14,
+        TaxAmount = 15,
     }
 
     [Flags]
@@ -91,13 +94,14 @@ namespace DMS.Entities
         Quantity = E._4,
         PrimaryUnitOfMeasure = E._5,
         RequestedQuantity = E._6,
-        SalePrice = E._7,
-        DiscountPercentage = E._8,
-        DiscountAmount = E._9,
-        GeneralDiscountPercentage = E._10,
-        GeneralDiscountAmount = E._11,
-        Amount = E._12,
-        TaxPercentage = E._13,
-        TaxAmount = E._14,
+        PrimaryPrice = E._7,
+        SalePrice = E._8,
+        DiscountPercentage = E._9,
+        DiscountAmount = E._10,
+        GeneralDiscountPercentage = E._11,
+        GeneralDiscountAmount = E._12,
+        Amount = E._13,
+        TaxPercentage = E._14,
+        TaxAmount = E._15,
     }
 }

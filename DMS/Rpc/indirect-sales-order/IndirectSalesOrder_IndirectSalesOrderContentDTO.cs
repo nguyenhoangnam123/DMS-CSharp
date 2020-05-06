@@ -15,6 +15,7 @@ namespace DMS.Rpc.indirect_sales_order
         public long Quantity { get; set; }
         public long PrimaryUnitOfMeasureId { get; set; }
         public long RequestedQuantity { get; set; }
+        public long PrimaryPrice { get; set; }
         public long SalePrice { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public long? DiscountAmount { get; set; }
@@ -36,6 +37,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.Quantity = IndirectSalesOrderContent.Quantity;
             this.PrimaryUnitOfMeasureId = IndirectSalesOrderContent.PrimaryUnitOfMeasureId;
             this.RequestedQuantity = IndirectSalesOrderContent.RequestedQuantity;
+            this.PrimaryPrice = IndirectSalesOrderContent.PrimaryPrice;
             this.SalePrice = IndirectSalesOrderContent.SalePrice;
             this.DiscountPercentage = IndirectSalesOrderContent.DiscountPercentage;
             this.DiscountAmount = IndirectSalesOrderContent.DiscountAmount;
@@ -66,7 +68,7 @@ namespace DMS.Rpc.indirect_sales_order
         public IdFilter PrimaryUnitOfMeasureId { get; set; }
         
         public LongFilter RequestedQuantity { get; set; }
-        
+        public LongFilter PrimaryPrice { get; set; }
         public LongFilter SalePrice { get; set; }
         
         public DecimalFilter DiscountPercentage { get; set; }

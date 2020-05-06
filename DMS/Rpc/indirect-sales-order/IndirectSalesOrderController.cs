@@ -1243,6 +1243,7 @@ namespace DMS.Rpc.indirect_sales_order
                     Quantity = x.Quantity,
                     PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
                     RequestedQuantity = x.RequestedQuantity,
+                    PrimaryPrice = x.PrimaryPrice,
                     SalePrice = x.SalePrice,
                     DiscountPercentage = x.DiscountPercentage,
                     DiscountAmount = x.DiscountAmount,
@@ -1423,6 +1424,7 @@ namespace DMS.Rpc.indirect_sales_order
             IndirectSalesOrderContentFilter.Quantity = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.Quantity;
             IndirectSalesOrderContentFilter.PrimaryUnitOfMeasureId = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.PrimaryUnitOfMeasureId;
             IndirectSalesOrderContentFilter.RequestedQuantity = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.RequestedQuantity;
+            IndirectSalesOrderContentFilter.PrimaryPrice = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.PrimaryPrice;
             IndirectSalesOrderContentFilter.SalePrice = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.SalePrice;
             IndirectSalesOrderContentFilter.DiscountPercentage = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.DiscountPercentage;
             IndirectSalesOrderContentFilter.DiscountAmount = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.DiscountAmount;
@@ -1586,6 +1588,7 @@ namespace DMS.Rpc.indirect_sales_order
             IndirectSalesOrderContentFilter.Quantity = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.Quantity;
             IndirectSalesOrderContentFilter.PrimaryUnitOfMeasureId = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.PrimaryUnitOfMeasureId;
             IndirectSalesOrderContentFilter.RequestedQuantity = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.RequestedQuantity;
+            IndirectSalesOrderContentFilter.PrimaryPrice = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.PrimaryPrice;
             IndirectSalesOrderContentFilter.SalePrice = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.SalePrice;
             IndirectSalesOrderContentFilter.DiscountPercentage = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.DiscountPercentage;
             IndirectSalesOrderContentFilter.DiscountAmount = IndirectSalesOrder_IndirectSalesOrderContentFilterDTO.DiscountAmount;

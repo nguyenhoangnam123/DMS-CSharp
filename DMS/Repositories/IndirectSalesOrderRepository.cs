@@ -474,6 +474,7 @@ namespace DMS.Repositories
                     Quantity = x.Quantity,
                     PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
                     RequestedQuantity = x.RequestedQuantity,
+                    PrimaryPrice = x.PrimaryPrice,
                     SalePrice = x.SalePrice,
                     DiscountPercentage = x.DiscountPercentage,
                     DiscountAmount = x.DiscountAmount,
@@ -657,6 +658,7 @@ namespace DMS.Repositories
                     IndirectSalesOrderContentDAO.Quantity = IndirectSalesOrderContent.Quantity;
                     IndirectSalesOrderContentDAO.PrimaryUnitOfMeasureId = IndirectSalesOrderContent.PrimaryUnitOfMeasureId;
                     IndirectSalesOrderContentDAO.RequestedQuantity = IndirectSalesOrderContent.RequestedQuantity;
+                    IndirectSalesOrderContentDAO.PrimaryPrice = IndirectSalesOrderContent.PrimaryPrice;
                     IndirectSalesOrderContentDAO.SalePrice = IndirectSalesOrderContent.SalePrice;
                     IndirectSalesOrderContentDAO.DiscountPercentage = IndirectSalesOrderContent.DiscountPercentage;
                     IndirectSalesOrderContentDAO.DiscountAmount = IndirectSalesOrderContent.DiscountAmount;

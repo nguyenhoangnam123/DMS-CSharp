@@ -284,7 +284,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 //tính tổng chiết khấu theo % chiết khấu chung
                 if (IndirectSalesOrder.GeneralDiscountPercentage.HasValue)
                 {
-                    IndirectSalesOrder.GeneralDiscountAmount = IndirectSalesOrder.SubTotal * IndirectSalesOrder.GeneralDiscountPercentage;
+                    IndirectSalesOrder.GeneralDiscountAmount = Convert.ToInt64(IndirectSalesOrder.SubTotal * IndirectSalesOrder.GeneralDiscountPercentage);
                 }
 
                 if (IndirectSalesOrder.GeneralDiscountAmount.HasValue && IndirectSalesOrder.GeneralDiscountAmount > 0)

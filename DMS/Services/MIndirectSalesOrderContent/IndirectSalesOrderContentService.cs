@@ -233,6 +233,8 @@ namespace DMS.Services.MIndirectSalesOrderContent
                         subFilter.PrimaryUnitOfMeasureId = Map(subFilter.PrimaryUnitOfMeasureId, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.RequestedQuantity))
                         subFilter.RequestedQuantity = Map(subFilter.RequestedQuantity, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.PrimaryPrice))
+                        subFilter.PrimaryPrice = Map(subFilter.PrimaryPrice, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.SalePrice))
                         subFilter.SalePrice = Map(subFilter.SalePrice, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.DiscountPercentage))

@@ -423,6 +423,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeliveryDate).HasColumnType("date");
 
+                entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(8, 2)");
+
                 entity.Property(e => e.Note).HasMaxLength(4000);
 
                 entity.Property(e => e.OrderDate).HasColumnType("date");
@@ -464,11 +466,11 @@ namespace DMS.Models
 
             modelBuilder.Entity<IndirectSalesOrderContentDAO>(entity =>
             {
-                entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
 
-                entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(8, 2)");
 
-                entity.Property(e => e.TaxPercentage).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.TaxPercentage).HasColumnType("decimal(8, 2)");
 
                 entity.HasOne(d => d.IndirectSalesOrder)
                     .WithMany(p => p.IndirectSalesOrderContents)

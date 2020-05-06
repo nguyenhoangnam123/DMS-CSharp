@@ -22,7 +22,7 @@ namespace DMS.Entities
         public long EditedPriceStatusId { get; set; }
         public string Note { get; set; }
         public long SubTotal { get; set; }
-        public long? GeneralDiscountPercentage { get; set; }
+        public decimal? GeneralDiscountPercentage { get; set; }
         public long? GeneralDiscountAmount { get; set; }
         public long TotalTaxAmount { get; set; }
         public long Total { get; set; }
