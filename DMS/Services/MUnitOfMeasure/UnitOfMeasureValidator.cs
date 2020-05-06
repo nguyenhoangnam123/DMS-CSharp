@@ -97,14 +97,14 @@ namespace DMS.Services.MUnitOfMeasure
             {
                 UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Name), ErrorCode.NameOverLength);
             }
-            return true;
+            return UnitOfMeasure.IsValidated;
         }
 
         public async Task<bool> ValidateStatus(UnitOfMeasure UnitOfMeasure)
         {
             if (StatusEnum.ACTIVE.Id != UnitOfMeasure.StatusId && StatusEnum.INACTIVE.Id != UnitOfMeasure.StatusId)
                 UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Status), ErrorCode.StatusNotExisted);
-            return true;
+            return UnitOfMeasure.IsValidated;
         }
 
         private async Task<bool> ValidateUnitOfMeasureInUsed(UnitOfMeasure UnitOfMeasure)

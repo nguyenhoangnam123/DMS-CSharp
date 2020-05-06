@@ -100,7 +100,7 @@ namespace DMS.Services.MStoreType
         {
             if (StatusEnum.ACTIVE.Id != StoreType.StatusId && StatusEnum.INACTIVE.Id != StoreType.StatusId)
                 StoreType.AddError(nameof(StoreTypeValidator), nameof(StoreType.Status), ErrorCode.StatusNotExisted);
-            return true;
+            return StoreType.IsValidated;
         }
 
         private async Task<bool> ValidateStoreTypeInUsed(StoreType StoreType)

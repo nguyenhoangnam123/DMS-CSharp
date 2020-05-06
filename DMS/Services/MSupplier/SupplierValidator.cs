@@ -191,7 +191,7 @@ namespace DMS.Services.MSupplier
         {
             if (StatusEnum.ACTIVE.Id != Supplier.StatusId && StatusEnum.INACTIVE.Id != Supplier.StatusId)
                 Supplier.AddError(nameof(SupplierValidator), nameof(Store.Status), ErrorCode.StatusNotExisted);
-            return true;
+            return Supplier.IsValidated;
         }
 
         public async Task<bool> Create(Supplier Supplier)

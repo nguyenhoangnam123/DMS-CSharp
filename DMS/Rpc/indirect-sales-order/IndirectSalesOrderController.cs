@@ -1820,7 +1820,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            StoreFilter.StatusId = IndirectSalesOrder_StoreFilterDTO.StatusId;
             return await StoreService.Count(StoreFilter);
         }
 
@@ -1851,7 +1851,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            StoreFilter.StatusId = IndirectSalesOrder_StoreFilterDTO.StatusId;
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<IndirectSalesOrder_StoreDTO> IndirectSalesOrder_StoreDTOs = Stores

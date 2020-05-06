@@ -113,7 +113,7 @@ namespace DMS.Services.MBrand
         {
             if (StatusEnum.ACTIVE.Id != Brand.StatusId && StatusEnum.INACTIVE.Id != Brand.StatusId)
                 Brand.AddError(nameof(BrandValidator), nameof(Brand.Status), ErrorCode.StatusNotExisted);
-            return true;
+            return Brand.IsValidated;
         }
 
         public async Task<bool> Create(Brand Brand)

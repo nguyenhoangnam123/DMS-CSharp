@@ -1260,7 +1260,7 @@ namespace DMS.Rpc.direct_sales_order
             StoreFilter.OwnerName = DirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = DirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = DirectSalesOrder_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<DirectSalesOrder_StoreDTO> DirectSalesOrder_StoreDTOs = Stores
@@ -1323,7 +1323,7 @@ namespace DMS.Rpc.direct_sales_order
             AppUserFilter.Department = DirectSalesOrder_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = DirectSalesOrder_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = DirectSalesOrder_AppUserFilterDTO.SexId;
-            AppUserFilter.StatusId = DirectSalesOrder_AppUserFilterDTO.StatusId;
+            AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             AppUserFilter.Birthday = DirectSalesOrder_AppUserFilterDTO.Birthday;
             AppUserFilter.ProvinceId = DirectSalesOrder_AppUserFilterDTO.ProvinceId;
 

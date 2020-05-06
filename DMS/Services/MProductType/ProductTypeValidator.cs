@@ -102,7 +102,7 @@ namespace DMS.Services.MProductType
         {
             if (StatusEnum.ACTIVE.Id != ProductType.StatusId && StatusEnum.INACTIVE.Id != ProductType.StatusId)
                 ProductType.AddError(nameof(ProductTypeValidator), nameof(ProductType.Status), ErrorCode.StatusNotExisted);
-            return true;
+            return ProductType.IsValidated;
         }
 
         private async Task<bool> ValidateProductTypeInUsed(ProductType ProductType)
