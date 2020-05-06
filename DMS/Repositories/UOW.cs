@@ -19,6 +19,8 @@ namespace DMS.Repositories
         IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; }
         IDistrictRepository DistrictRepository { get; }
         IEditedPriceStatusRepository EditedPriceStatusRepository { get; }
+        IERouteChangeRequestContentRepository ERouteChangeRequestContentRepository { get; }
+        IERouteChangeRequestRepository ERouteChangeRequestRepository { get; }
         IERouteContentRepository ERouteContentRepository { get; }
         IERouteRepository ERouteRepository { get; }
         IERouteTypeRepository ERouteTypeRepository { get; }
@@ -74,6 +76,8 @@ namespace DMS.Repositories
         public IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; private set; }
         public IDistrictRepository DistrictRepository { get; private set; }
         public IEditedPriceStatusRepository EditedPriceStatusRepository { get; private set; }
+        public IERouteChangeRequestContentRepository ERouteChangeRequestContentRepository { get; private set; }
+        public IERouteChangeRequestRepository ERouteChangeRequestRepository { get; private set; }
         public IERouteContentRepository ERouteContentRepository { get; private set; }
         public IERouteRepository ERouteRepository { get; private set; }
         public IERouteTypeRepository ERouteTypeRepository { get; private set; }
@@ -127,6 +131,8 @@ namespace DMS.Repositories
             DirectSalesOrderPromotionRepository = new DirectSalesOrderPromotionRepository(DataContext);
             DistrictRepository = new DistrictRepository(DataContext);
             EditedPriceStatusRepository = new EditedPriceStatusRepository(DataContext);
+            ERouteChangeRequestContentRepository = new ERouteChangeRequestContentRepository(DataContext);
+            ERouteChangeRequestRepository = new ERouteChangeRequestRepository(DataContext);
             ERouteContentRepository = new ERouteContentRepository(DataContext);
             ERouteRepository = new ERouteRepository(DataContext);
             ERouteTypeRepository = new ERouteTypeRepository(DataContext);

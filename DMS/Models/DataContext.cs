@@ -14,6 +14,8 @@ namespace DMS.Models
         public virtual DbSet<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotion { get; set; }
         public virtual DbSet<DistrictDAO> District { get; set; }
         public virtual DbSet<ERouteDAO> ERoute { get; set; }
+        public virtual DbSet<ERouteChangeRequestDAO> ERouteChangeRequest { get; set; }
+        public virtual DbSet<ERouteChangeRequestContentDAO> ERouteChangeRequestContent { get; set; }
         public virtual DbSet<ERouteContentDAO> ERouteContent { get; set; }
         public virtual DbSet<ERouteTypeDAO> ERouteType { get; set; }
         public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
@@ -34,6 +36,9 @@ namespace DMS.Models
         public virtual DbSet<PermissionPageMappingDAO> PermissionPageMapping { get; set; }
         public virtual DbSet<PriceListDAO> PriceList { get; set; }
         public virtual DbSet<PriceListItemMappingDAO> PriceListItemMapping { get; set; }
+        public virtual DbSet<PriceListStoreMappingDAO> PriceListStoreMapping { get; set; }
+        public virtual DbSet<PriceListStoreTypeMappingDAO> PriceListStoreTypeMapping { get; set; }
+        public virtual DbSet<PriceListTypeDAO> PriceListType { get; set; }
         public virtual DbSet<ProductDAO> Product { get; set; }
         public virtual DbSet<ProductGroupingDAO> ProductGrouping { get; set; }
         public virtual DbSet<ProductImageMappingDAO> ProductImageMapping { get; set; }
@@ -377,6 +382,56 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ERoute_Status");
+            });
+
+            modelBuilder.Entity<ERouteChangeRequestDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.ERouteChangeRequests)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERouteChangeRequest_AppUser");
+
+                entity.HasOne(d => d.ERoute)
+                    .WithMany(p => p.ERouteChangeRequests)
+                    .HasForeignKey(d => d.ERouteId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERouteChangeRequest_ERoute");
+
+                entity.HasOne(d => d.RequestState)
+                    .WithMany(p => p.ERouteChangeRequests)
+                    .HasForeignKey(d => d.RequestStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERouteChangeRequest_RequestState");
+            });
+
+            modelBuilder.Entity<ERouteChangeRequestContentDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.ERouteChangeRequest)
+                    .WithMany(p => p.ERouteChangeRequestContents)
+                    .HasForeignKey(d => d.ERouteChangeRequestId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERouteChangeRequestContent_ERouteChangeRequest");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.ERouteChangeRequestContents)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERouteChangeRequestContent_Store");
             });
 
             modelBuilder.Entity<ERouteContentDAO>(entity =>
@@ -864,6 +919,29 @@ namespace DMS.Models
                     .HasForeignKey(d => d.PriceListId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PriceListItemMapping_PriceList");
+            });
+
+            modelBuilder.Entity<PriceListStoreMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PriceListId, e.StoreId });
+            });
+
+            modelBuilder.Entity<PriceListStoreTypeMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PriceListId, e.StoreTypeId });
+            });
+
+            modelBuilder.Entity<PriceListTypeDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<ProductDAO>(entity =>

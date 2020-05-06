@@ -15,8 +15,7 @@ namespace DMS.Models
         public string Name { get; set; }
         public long StatusId { get; set; }
         public long OrganizationId { get; set; }
-        public bool UseAllStore { get; set; }
-        public long? StoreTypeId { get; set; }
+        public long PriceListTypeId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
