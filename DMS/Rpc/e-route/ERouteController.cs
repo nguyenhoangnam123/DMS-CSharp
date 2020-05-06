@@ -44,7 +44,10 @@ namespace DMS.Rpc.e_route
         public const string SingleListRequestState = Default + "/single-list-request-state";
         public const string SingleListStore = Default + "/single-list-store";
         public const string SingleListStatus = Default + "/single-list-status";
-        
+
+        public const string CountStore = Default + "/count-store";
+        public const string ListStore = Default + "/list-store";
+
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(ERouteFilter.Id), FieldType.ID },
@@ -953,6 +956,66 @@ namespace DMS.Rpc.e_route
             return ERoute_StatusDTOs;
         }
 
+        [Route(ERouteRoute.CountStore), HttpPost]
+        public async Task<long> CountStore([FromBody] ERoute_StoreFilterDTO ERoute_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Id = ERoute_StoreFilterDTO.Id;
+            StoreFilter.Code = ERoute_StoreFilterDTO.Code;
+            StoreFilter.Name = ERoute_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
+            StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
+            StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = ERoute_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = ERoute_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = ERoute_StoreFilterDTO.WardId;
+            StoreFilter.Address = ERoute_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = ERoute_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = ERoute_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = ERoute_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = ERoute_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = ERoute_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = ERoute_StoreFilterDTO.StatusId;
+            return await StoreService.Count(StoreFilter);
+        }
+
+        [Route(ERouteRoute.ListStore), HttpPost]
+        public async Task<List<ERoute_StoreDTO>> ListStore([FromBody] ERoute_StoreFilterDTO ERoute_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = ERoute_StoreFilterDTO.Skip;
+            StoreFilter.Take = ERoute_StoreFilterDTO.Take;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = ERoute_StoreFilterDTO.Id;
+            StoreFilter.Code = ERoute_StoreFilterDTO.Code;
+            StoreFilter.Name = ERoute_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
+            StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
+            StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = ERoute_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = ERoute_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = ERoute_StoreFilterDTO.WardId;
+            StoreFilter.Address = ERoute_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = ERoute_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = ERoute_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = ERoute_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = ERoute_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = ERoute_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = ERoute_StoreFilterDTO.StatusId;
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<ERoute_StoreDTO> ERoute_StoreDTOs = Stores
+                .Select(x => new ERoute_StoreDTO(x)).ToList();
+            return ERoute_StoreDTOs;
+        }
     }
 }
 
