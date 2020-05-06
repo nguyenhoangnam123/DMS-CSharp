@@ -16,6 +16,7 @@ using DMS.Services.MERoute;
 using DMS.Services.MRequestState;
 using DMS.Services.MERouteChangeRequestContent;
 using DMS.Services.MStore;
+using DMS.Enums;
 
 namespace DMS.Rpc.e_route_change_request
 {
@@ -35,29 +36,20 @@ namespace DMS.Rpc.e_route_change_request
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
         
-        
         public const string FilterListAppUser = Default + "/filter-list-app-user";
-        
         public const string FilterListERoute = Default + "/filter-list-e-route";
-        
         public const string FilterListRequestState = Default + "/filter-list-request-state";
-        
         public const string FilterListERouteChangeRequestContent = Default + "/filter-list-e-route-change-request-content";
-        
         public const string FilterListStore = Default + "/filter-list-store";
         
-
-        
         public const string SingleListAppUser = Default + "/single-list-app-user";
-        
         public const string SingleListERoute = Default + "/single-list-e-route";
-        
         public const string SingleListRequestState = Default + "/single-list-request-state";
-        
         public const string SingleListERouteChangeRequestContent = Default + "/single-list-e-route-change-request-content";
-        
         public const string SingleListStore = Default + "/single-list-store";
-        
+
+        public const string CountStore = Default + "/count-store";
+        public const string ListStore = Default + "/list-store";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(ERouteChangeRequestFilter.Id), FieldType.ID },
@@ -1154,7 +1146,7 @@ namespace DMS.Rpc.e_route_change_request
             AppUserFilter.Department = ERouteChangeRequest_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = ERouteChangeRequest_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = ERouteChangeRequest_AppUserFilterDTO.SexId;
-            AppUserFilter.StatusId = ERouteChangeRequest_AppUserFilterDTO.StatusId;
+            AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             AppUserFilter.Birthday = ERouteChangeRequest_AppUserFilterDTO.Birthday;
             AppUserFilter.ProvinceId = ERouteChangeRequest_AppUserFilterDTO.ProvinceId;
 
@@ -1180,7 +1172,7 @@ namespace DMS.Rpc.e_route_change_request
             ERouteFilter.EndDate = ERouteChangeRequest_ERouteFilterDTO.EndDate;
             ERouteFilter.ERouteTypeId = ERouteChangeRequest_ERouteFilterDTO.ERouteTypeId;
             ERouteFilter.RequestStateId = ERouteChangeRequest_ERouteFilterDTO.RequestStateId;
-            ERouteFilter.StatusId = ERouteChangeRequest_ERouteFilterDTO.StatusId;
+            ERouteFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ERouteFilter.CreatorId = ERouteChangeRequest_ERouteFilterDTO.CreatorId;
 
             List<ERoute> ERoutes = await ERouteService.List(ERouteFilter);
@@ -1255,7 +1247,7 @@ namespace DMS.Rpc.e_route_change_request
             StoreFilter.OwnerName = ERouteChangeRequest_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = ERouteChangeRequest_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = ERouteChangeRequest_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = ERouteChangeRequest_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<ERouteChangeRequest_StoreDTO> ERouteChangeRequest_StoreDTOs = Stores
@@ -1263,6 +1255,66 @@ namespace DMS.Rpc.e_route_change_request
             return ERouteChangeRequest_StoreDTOs;
         }
 
+        [Route(ERouteChangeRequestRoute.CountStore), HttpPost]
+        public async Task<long> CountStore([FromBody] ERouteChangeRequest_StoreFilterDTO ERouteChangeRequest_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Id = ERouteChangeRequest_StoreFilterDTO.Id;
+            StoreFilter.Code = ERouteChangeRequest_StoreFilterDTO.Code;
+            StoreFilter.Name = ERouteChangeRequest_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = ERouteChangeRequest_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = ERouteChangeRequest_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = ERouteChangeRequest_StoreFilterDTO.StoreTypeId;
+            StoreFilter.ResellerId = ERouteChangeRequest_StoreFilterDTO.ResellerId;
+            StoreFilter.Telephone = ERouteChangeRequest_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = ERouteChangeRequest_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = ERouteChangeRequest_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = ERouteChangeRequest_StoreFilterDTO.WardId;
+            StoreFilter.Address = ERouteChangeRequest_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = ERouteChangeRequest_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = ERouteChangeRequest_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = ERouteChangeRequest_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = ERouteChangeRequest_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = ERouteChangeRequest_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = ERouteChangeRequest_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = ERouteChangeRequest_StoreFilterDTO.StatusId;
+            return await StoreService.Count(StoreFilter);
+        }
+
+        [Route(ERouteChangeRequestRoute.ListStore), HttpPost]
+        public async Task<List<ERouteChangeRequest_StoreDTO>> ListStore([FromBody] ERouteChangeRequest_StoreFilterDTO ERouteChangeRequest_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = ERouteChangeRequest_StoreFilterDTO.Skip;
+            StoreFilter.Take = ERouteChangeRequest_StoreFilterDTO.Take;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = ERouteChangeRequest_StoreFilterDTO.Id;
+            StoreFilter.Code = ERouteChangeRequest_StoreFilterDTO.Code;
+            StoreFilter.Name = ERouteChangeRequest_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = ERouteChangeRequest_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = ERouteChangeRequest_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = ERouteChangeRequest_StoreFilterDTO.StoreTypeId;
+            StoreFilter.ResellerId = ERouteChangeRequest_StoreFilterDTO.ResellerId;
+            StoreFilter.Telephone = ERouteChangeRequest_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = ERouteChangeRequest_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = ERouteChangeRequest_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = ERouteChangeRequest_StoreFilterDTO.WardId;
+            StoreFilter.Address = ERouteChangeRequest_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = ERouteChangeRequest_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = ERouteChangeRequest_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = ERouteChangeRequest_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = ERouteChangeRequest_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = ERouteChangeRequest_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = ERouteChangeRequest_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = ERouteChangeRequest_StoreFilterDTO.StatusId;
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<ERouteChangeRequest_StoreDTO> ERouteChangeRequest_StoreDTOs = Stores
+                .Select(x => new ERouteChangeRequest_StoreDTO(x)).ToList();
+            return ERouteChangeRequest_StoreDTOs;
+        }
     }
 }
 
