@@ -7,5 +7,8 @@ namespace DMS.Models
     {
         public long PriceListId { get; set; }
         public long StoreId { get; set; }
+
+        public virtual PriceListDAO PriceList { get; set; }
+        public virtual StoreDAO Store { get; set; }
     }
 }
