@@ -18,7 +18,7 @@ namespace DMS.Entities
         public long SaleEmployeeId { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
-        public long IndirectSalesOrderStatusId { get; set; }
+        public long RequestStateId { get; set; }
         public long EditedPriceStatusId { get; set; }
         public string Note { get; set; }
         public long SubTotal { get; set; }
@@ -28,6 +28,7 @@ namespace DMS.Entities
         public long Total { get; set; }
         public Store BuyerStore { get; set; }
         public EditedPriceStatus EditedPriceStatus { get; set; }
+        public RequestState RequestState { get; set; }
         public AppUser SaleEmployee { get; set; }
         public Store SellerStore { get; set; }
         public List<IndirectSalesOrderContent> IndirectSalesOrderContents { get; set; }
@@ -55,7 +56,7 @@ namespace DMS.Entities
         public IdFilter SaleEmployeeId { get; set; }
         public DateFilter OrderDate { get; set; }
         public DateFilter DeliveryDate { get; set; }
-        public IdFilter IndirectSalesOrderStatusId { get; set; }
+        public IdFilter RequestStateId { get; set; }
         public IdFilter EditedPriceStatusId { get; set; }
         public StringFilter Note { get; set; }
         public LongFilter SubTotal { get; set; }
@@ -81,7 +82,7 @@ namespace DMS.Entities
         SaleEmployee = 7,
         OrderDate = 8,
         DeliveryDate = 9,
-        IndirectSalesOrderStatus = 10,
+        RequestState = 10,
         EditedPriceStatus = 11,
         Note = 12,
         SubTotal = 13,
@@ -105,7 +106,7 @@ namespace DMS.Entities
         SaleEmployee = E._7,
         OrderDate = E._8,
         DeliveryDate = E._9,
-        IndirectSalesOrderStatus = E._10,
+        RequestState = E._10,
         EditedPriceStatus = E._11,
         Note = E._12,
         SubTotal = E._13,

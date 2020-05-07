@@ -241,8 +241,8 @@ namespace DMS.Services.MIndirectSalesOrder
                         subFilter.OrderDate = Map(subFilter.OrderDate, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.DeliveryDate))
                         subFilter.DeliveryDate = Map(subFilter.DeliveryDate, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.IndirectSalesOrderStatusId))
-                        subFilter.IndirectSalesOrderStatusId = Map(subFilter.IndirectSalesOrderStatusId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.RequestStateId))
+                        subFilter.RequestStateId = Map(subFilter.RequestStateId, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Note))
                         subFilter.Note = Map(subFilter.Note, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.SubTotal))

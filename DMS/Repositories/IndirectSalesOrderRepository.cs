@@ -57,6 +57,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.EditedPriceStatusId, filter.EditedPriceStatusId);
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
+            if (filter.RequestStateId != null)
+                query = query.Where(q => q.RequestStateId, filter.RequestStateId);
             if (filter.SubTotal != null)
                 query = query.Where(q => q.SubTotal, filter.SubTotal);
             if (filter.GeneralDiscountPercentage != null)
@@ -103,6 +105,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.EditedPriceStatusId, filter.EditedPriceStatusId);
                 if (filter.Note != null)
                     queryable = queryable.Where(q => q.Note, filter.Note);
+                if (filter.RequestStateId != null)
+                    queryable = queryable.Where(q => q.RequestStateId, filter.RequestStateId);
                 if (filter.SubTotal != null)
                     queryable = queryable.Where(q => q.SubTotal, filter.SubTotal);
                 if (filter.GeneralDiscountPercentage != null)
@@ -161,6 +165,9 @@ namespace DMS.Repositories
                         case IndirectSalesOrderOrder.Note:
                             query = query.OrderBy(q => q.Note);
                             break;
+                        case IndirectSalesOrderOrder.RequestState:
+                            query = query.OrderBy(q => q.RequestStateId);
+                            break;
                         case IndirectSalesOrderOrder.SubTotal:
                             query = query.OrderBy(q => q.SubTotal);
                             break;
@@ -217,6 +224,9 @@ namespace DMS.Repositories
                         case IndirectSalesOrderOrder.Note:
                             query = query.OrderByDescending(q => q.Note);
                             break;
+                        case IndirectSalesOrderOrder.RequestState:
+                            query = query.OrderByDescending(q => q.RequestStateId);
+                            break;
                         case IndirectSalesOrderOrder.SubTotal:
                             query = query.OrderByDescending(q => q.SubTotal);
                             break;
@@ -255,6 +265,7 @@ namespace DMS.Repositories
                 DeliveryDate = filter.Selects.Contains(IndirectSalesOrderSelect.DeliveryDate) ? q.DeliveryDate : default(DateTime?),
                 EditedPriceStatusId = filter.Selects.Contains(IndirectSalesOrderSelect.EditedPriceStatus) ? q.EditedPriceStatusId : default(long),
                 Note = filter.Selects.Contains(IndirectSalesOrderSelect.Note) ? q.Note : default(string),
+                RequestStateId = filter.Selects.Contains(IndirectSalesOrderSelect.RequestState) ? q.RequestStateId : default(long),
                 SubTotal = filter.Selects.Contains(IndirectSalesOrderSelect.SubTotal) ? q.SubTotal : default(long),
                 GeneralDiscountPercentage = filter.Selects.Contains(IndirectSalesOrderSelect.GeneralDiscountPercentage) ? q.GeneralDiscountPercentage : default(long?),
                 GeneralDiscountAmount = filter.Selects.Contains(IndirectSalesOrderSelect.GeneralDiscountAmount) ? q.GeneralDiscountAmount : default(long?),
@@ -292,6 +303,12 @@ namespace DMS.Repositories
                     Id = q.EditedPriceStatus.Id,
                     Code = q.EditedPriceStatus.Code,
                     Name = q.EditedPriceStatus.Name,
+                } : null,
+                RequestState = filter.Selects.Contains(IndirectSalesOrderSelect.RequestState) && q.RequestState != null ? new RequestState
+                {
+                    Id = q.RequestState.Id,
+                    Code = q.RequestState.Code,
+                    Name = q.RequestState.Name,
                 } : null,
                 SaleEmployee = filter.Selects.Contains(IndirectSalesOrderSelect.SaleEmployee) && q.SaleEmployee != null ? new AppUser
                 {
@@ -376,6 +393,7 @@ namespace DMS.Repositories
                 DeliveryDate = x.DeliveryDate,
                 EditedPriceStatusId = x.EditedPriceStatusId,
                 Note = x.Note,
+                RequestStateId = x.RequestStateId,
                 SubTotal = x.SubTotal,
                 GeneralDiscountPercentage = x.GeneralDiscountPercentage,
                 GeneralDiscountAmount = x.GeneralDiscountAmount,
@@ -413,6 +431,12 @@ namespace DMS.Repositories
                     Id = x.EditedPriceStatus.Id,
                     Code = x.EditedPriceStatus.Code,
                     Name = x.EditedPriceStatus.Name,
+                },
+                RequestState = x.RequestState == null ? null : new RequestState
+                {
+                    Id = x.RequestState.Id,
+                    Code = x.RequestState.Code,
+                    Name = x.RequestState.Name,
                 },
                 SaleEmployee = x.SaleEmployee == null ? null : new AppUser
                 {
@@ -558,6 +582,7 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.DeliveryDate = IndirectSalesOrder.DeliveryDate;
             IndirectSalesOrderDAO.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
             IndirectSalesOrderDAO.Note = IndirectSalesOrder.Note;
+            IndirectSalesOrderDAO.RequestStateId = IndirectSalesOrder.RequestStateId;
             IndirectSalesOrderDAO.SubTotal = IndirectSalesOrder.SubTotal;
             IndirectSalesOrderDAO.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
             IndirectSalesOrderDAO.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
@@ -587,6 +612,7 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.DeliveryDate = IndirectSalesOrder.DeliveryDate;
             IndirectSalesOrderDAO.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
             IndirectSalesOrderDAO.Note = IndirectSalesOrder.Note;
+            IndirectSalesOrderDAO.RequestStateId = IndirectSalesOrder.RequestStateId;
             IndirectSalesOrderDAO.SubTotal = IndirectSalesOrder.SubTotal;
             IndirectSalesOrderDAO.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
             IndirectSalesOrderDAO.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
@@ -621,6 +647,7 @@ namespace DMS.Repositories
                 IndirectSalesOrderDAO.DeliveryDate = IndirectSalesOrder.DeliveryDate;
                 IndirectSalesOrderDAO.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
                 IndirectSalesOrderDAO.Note = IndirectSalesOrder.Note;
+                IndirectSalesOrderDAO.RequestStateId = IndirectSalesOrder.RequestStateId;
                 IndirectSalesOrderDAO.SubTotal = IndirectSalesOrder.SubTotal;
                 IndirectSalesOrderDAO.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
                 IndirectSalesOrderDAO.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;

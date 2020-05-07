@@ -18,7 +18,7 @@ namespace DMS.Rpc.indirect_sales_order
         public long SaleEmployeeId { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
-        public long IndirectSalesOrderStatusId { get; set; }
+        public long RequestStateId { get; set; }
         public long EditedPriceStatusId { get; set; }
         public string Note { get; set; }
         public long SubTotal { get; set; }
@@ -28,6 +28,7 @@ namespace DMS.Rpc.indirect_sales_order
         public long Total { get; set; }
         public IndirectSalesOrder_StoreDTO BuyerStore { get; set; }
         public IndirectSalesOrder_EditedPriceStatusDTO EditedPriceStatus { get; set; }
+        public IndirectSalesOrder_RequestStateDTO RequestState { get; set; }
         public IndirectSalesOrder_AppUserDTO SaleEmployee { get; set; }
         public IndirectSalesOrder_StoreDTO SellerStore { get; set; }
         public List<IndirectSalesOrder_IndirectSalesOrderContentDTO> IndirectSalesOrderContents { get; set; }
@@ -45,7 +46,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.SaleEmployeeId = IndirectSalesOrder.SaleEmployeeId;
             this.OrderDate = IndirectSalesOrder.OrderDate;
             this.DeliveryDate = IndirectSalesOrder.DeliveryDate;
-            this.IndirectSalesOrderStatusId = IndirectSalesOrder.IndirectSalesOrderStatusId;
+            this.RequestStateId = IndirectSalesOrder.RequestStateId;
             this.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
             this.Note = IndirectSalesOrder.Note;
             this.SubTotal = IndirectSalesOrder.SubTotal;
@@ -55,6 +56,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.Total = IndirectSalesOrder.Total;
             this.BuyerStore = IndirectSalesOrder.BuyerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.BuyerStore);
             this.EditedPriceStatus = IndirectSalesOrder.EditedPriceStatus == null ? null : new IndirectSalesOrder_EditedPriceStatusDTO(IndirectSalesOrder.EditedPriceStatus);
+            this.RequestState = IndirectSalesOrder.RequestState == null ? null : new IndirectSalesOrder_RequestStateDTO(IndirectSalesOrder.RequestState);
             this.SaleEmployee = IndirectSalesOrder.SaleEmployee == null ? null : new IndirectSalesOrder_AppUserDTO(IndirectSalesOrder.SaleEmployee);
             this.SellerStore = IndirectSalesOrder.SellerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.SellerStore);
             this.IndirectSalesOrderContents = IndirectSalesOrder.IndirectSalesOrderContents?.Select(x => new IndirectSalesOrder_IndirectSalesOrderContentDTO(x)).ToList();
@@ -75,7 +77,7 @@ namespace DMS.Rpc.indirect_sales_order
         public IdFilter SaleEmployeeId { get; set; }
         public DateFilter OrderDate { get; set; }
         public DateFilter DeliveryDate { get; set; }
-        public IdFilter IndirectSalesOrderStatusId { get; set; }
+        public IdFilter RequestStateId { get; set; }
         public IdFilter EditedPriceStatusId { get; set; }
         public StringFilter Note { get; set; }
         public LongFilter SubTotal { get; set; }

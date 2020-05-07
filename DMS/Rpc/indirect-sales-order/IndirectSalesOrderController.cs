@@ -80,7 +80,7 @@ namespace DMS.Rpc.indirect_sales_order
             { nameof(IndirectSalesOrderFilter.SaleEmployeeId), FieldType.ID },
             { nameof(IndirectSalesOrderFilter.OrderDate), FieldType.DATE },
             { nameof(IndirectSalesOrderFilter.DeliveryDate), FieldType.DATE },
-            { nameof(IndirectSalesOrderFilter.IndirectSalesOrderStatusId), FieldType.ID },
+            { nameof(IndirectSalesOrderFilter.RequestStateId), FieldType.ID },
             { nameof(IndirectSalesOrderFilter.EditedPriceStatusId), FieldType.ID },
             { nameof(IndirectSalesOrderFilter.Note), FieldType.STRING },
             { nameof(IndirectSalesOrderFilter.SubTotal), FieldType.LONG },
@@ -389,8 +389,8 @@ namespace DMS.Rpc.indirect_sales_order
                             Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.OrderDate)];
                         if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.DeliveryDate)))
                             Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.DeliveryDate)];
-                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.IndirectSalesOrderStatusId)))
-                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.IndirectSalesOrderStatusId)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.RequestStateId)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.RequestStateId)];
                         if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.EditedPriceStatusId)))
                             Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.EditedPriceStatusId)];
                         if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.Note)))
@@ -467,7 +467,7 @@ namespace DMS.Rpc.indirect_sales_order
                         IndirectSalesOrder.SaleEmployeeId,
                         IndirectSalesOrder.OrderDate,
                         IndirectSalesOrder.DeliveryDate,
-                        IndirectSalesOrder.IndirectSalesOrderStatusId,
+                        IndirectSalesOrder.RequestStateId,
                         IndirectSalesOrder.EditedPriceStatusId,
                         IndirectSalesOrder.Note,
                         IndirectSalesOrder.SubTotal,
@@ -1148,7 +1148,7 @@ namespace DMS.Rpc.indirect_sales_order
             IndirectSalesOrder.SaleEmployeeId = IndirectSalesOrder_IndirectSalesOrderDTO.SaleEmployeeId;
             IndirectSalesOrder.OrderDate = IndirectSalesOrder_IndirectSalesOrderDTO.OrderDate;
             IndirectSalesOrder.DeliveryDate = IndirectSalesOrder_IndirectSalesOrderDTO.DeliveryDate;
-            IndirectSalesOrder.IndirectSalesOrderStatusId = IndirectSalesOrder_IndirectSalesOrderDTO.IndirectSalesOrderStatusId;
+            IndirectSalesOrder.RequestStateId = IndirectSalesOrder_IndirectSalesOrderDTO.RequestStateId;
             IndirectSalesOrder.EditedPriceStatusId = IndirectSalesOrder_IndirectSalesOrderDTO.EditedPriceStatusId;
             IndirectSalesOrder.Note = IndirectSalesOrder_IndirectSalesOrderDTO.Note;
             IndirectSalesOrder.SubTotal = IndirectSalesOrder_IndirectSalesOrderDTO.SubTotal;
@@ -1330,7 +1330,7 @@ namespace DMS.Rpc.indirect_sales_order
             IndirectSalesOrderFilter.SaleEmployeeId = IndirectSalesOrder_IndirectSalesOrderFilterDTO.SaleEmployeeId;
             IndirectSalesOrderFilter.OrderDate = IndirectSalesOrder_IndirectSalesOrderFilterDTO.OrderDate;
             IndirectSalesOrderFilter.DeliveryDate = IndirectSalesOrder_IndirectSalesOrderFilterDTO.DeliveryDate;
-            IndirectSalesOrderFilter.IndirectSalesOrderStatusId = IndirectSalesOrder_IndirectSalesOrderFilterDTO.IndirectSalesOrderStatusId;
+            IndirectSalesOrderFilter.RequestStateId = IndirectSalesOrder_IndirectSalesOrderFilterDTO.RequestStateId;
             IndirectSalesOrderFilter.EditedPriceStatusId = IndirectSalesOrder_IndirectSalesOrderFilterDTO.EditedPriceStatusId;
             IndirectSalesOrderFilter.Note = IndirectSalesOrder_IndirectSalesOrderFilterDTO.Note;
             IndirectSalesOrderFilter.SubTotal = IndirectSalesOrder_IndirectSalesOrderFilterDTO.SubTotal;
