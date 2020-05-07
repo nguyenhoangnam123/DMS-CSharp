@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public StoreTypeDAO()
         {
+            PriceListStoreTypeMappings = new HashSet<PriceListStoreTypeMappingDAO>();
             Stores = new HashSet<StoreDAO>();
         }
 
@@ -19,6 +20,7 @@ namespace DMS.Models
         public DateTime? DeletedAt { get; set; }
 
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<PriceListStoreTypeMappingDAO> PriceListStoreTypeMappings { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
     }
 }

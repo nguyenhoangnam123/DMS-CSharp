@@ -8,6 +8,8 @@ namespace DMS.Models
         public PriceListDAO()
         {
             PriceListItemMappings = new HashSet<PriceListItemMappingDAO>();
+            PriceListStoreMappings = new HashSet<PriceListStoreMappingDAO>();
+            PriceListStoreTypeMappings = new HashSet<PriceListStoreTypeMappingDAO>();
         }
 
         public long Id { get; set; }
@@ -21,7 +23,10 @@ namespace DMS.Models
         public DateTime? DeletedAt { get; set; }
 
         public virtual OrganizationDAO Organization { get; set; }
+        public virtual PriceListTypeDAO PriceListType { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<PriceListItemMappingDAO> PriceListItemMappings { get; set; }
+        public virtual ICollection<PriceListStoreMappingDAO> PriceListStoreMappings { get; set; }
+        public virtual ICollection<PriceListStoreTypeMappingDAO> PriceListStoreTypeMappings { get; set; }
     }
 }

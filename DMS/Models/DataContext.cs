@@ -897,6 +897,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PriceList_Organization");
 
+                entity.HasOne(d => d.PriceListType)
+                    .WithMany(p => p.PriceLists)
+                    .HasForeignKey(d => d.PriceListTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceList_PriceListType");
+
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.PriceLists)
                     .HasForeignKey(d => d.StatusId)
@@ -924,11 +930,35 @@ namespace DMS.Models
             modelBuilder.Entity<PriceListStoreMappingDAO>(entity =>
             {
                 entity.HasKey(e => new { e.PriceListId, e.StoreId });
+
+                entity.HasOne(d => d.PriceList)
+                    .WithMany(p => p.PriceListStoreMappings)
+                    .HasForeignKey(d => d.PriceListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceListStoreMapping_PriceList");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.PriceListStoreMappings)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceListStoreMapping_Store");
             });
 
             modelBuilder.Entity<PriceListStoreTypeMappingDAO>(entity =>
             {
                 entity.HasKey(e => new { e.PriceListId, e.StoreTypeId });
+
+                entity.HasOne(d => d.PriceList)
+                    .WithMany(p => p.PriceListStoreTypeMappings)
+                    .HasForeignKey(d => d.PriceListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceListStoreTypeMapping_PriceList");
+
+                entity.HasOne(d => d.StoreType)
+                    .WithMany(p => p.PriceListStoreTypeMappings)
+                    .HasForeignKey(d => d.StoreTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceListStoreTypeMapping_StoreType");
             });
 
             modelBuilder.Entity<PriceListTypeDAO>(entity =>

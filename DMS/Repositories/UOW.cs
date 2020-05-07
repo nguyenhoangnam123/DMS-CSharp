@@ -35,6 +35,8 @@ namespace DMS.Repositories
         IMenuRepository MenuRepository { get; }
         IOrganizationRepository OrganizationRepository { get; }
         IPermissionRepository PermissionRepository { get; }
+        IPriceListRepository PriceListRepository { get; }
+        IPriceListTypeRepository PriceListTypeRepository { get; }
         IProductRepository ProductRepository { get; }
         IProductGroupingRepository ProductGroupingRepository { get; }
         IProductProductGroupingMappingRepository ProductProductGroupingMappingRepository { get; }
@@ -92,6 +94,8 @@ namespace DMS.Repositories
         public IMenuRepository MenuRepository { get; private set; }
         public IOrganizationRepository OrganizationRepository { get; private set; }
         public IPermissionRepository PermissionRepository { get; private set; }
+        public IPriceListRepository PriceListRepository { get; private set; }
+        public IPriceListTypeRepository PriceListTypeRepository { get; private set; }
         public IProductRepository ProductRepository { get; private set; }
         public IProductGroupingRepository ProductGroupingRepository { get; private set; }
         public IProductProductGroupingMappingRepository ProductProductGroupingMappingRepository { get; private set; }
@@ -147,6 +151,8 @@ namespace DMS.Repositories
             MenuRepository = new MenuRepository(DataContext);
             OrganizationRepository = new OrganizationRepository(DataContext);
             PermissionRepository = new PermissionRepository(DataContext);
+            PriceListRepository = new PriceListRepository(DataContext);
+            PriceListTypeRepository = new PriceListTypeRepository(DataContext);
             ProductRepository = new ProductRepository(DataContext);
             ProductGroupingRepository = new ProductGroupingRepository(DataContext);
             ProductProductGroupingMappingRepository = new ProductProductGroupingMappingRepository(DataContext);
