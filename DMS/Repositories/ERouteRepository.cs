@@ -358,6 +358,33 @@ namespace DMS.Repositories
                 Week2 = x.Week2,
                 Week3 = x.Week3,
                 Week4 = x.Week4,
+                Store = new Store
+                {
+                    Id = x.Store.Id,
+                    Code = x.Store.Code,
+                    Name = x.Store.Name,
+                    ParentStoreId = x.Store.ParentStoreId,
+                    OrganizationId = x.Store.OrganizationId,
+                    StoreTypeId = x.Store.StoreTypeId,
+                    StoreGroupingId = x.Store.StoreGroupingId,
+                    ResellerId = x.Store.ResellerId,
+                    Telephone = x.Store.Telephone,
+                    ProvinceId = x.Store.ProvinceId,
+                    DistrictId = x.Store.DistrictId,
+                    WardId = x.Store.WardId,
+                    Address = x.Store.Address,
+                    DeliveryAddress = x.Store.DeliveryAddress,
+                    Latitude = x.Store.Latitude,
+                    Longitude = x.Store.Longitude,
+                    DeliveryLatitude = x.Store.DeliveryLatitude,
+                    DeliveryLongitude = x.Store.DeliveryLongitude,
+                    OwnerName = x.Store.OwnerName,
+                    OwnerPhone = x.Store.OwnerPhone,
+                    OwnerEmail = x.Store.OwnerEmail,
+                    StatusId = x.Store.StatusId,
+                    WorkflowDefinitionId = x.Store.WorkflowDefinitionId,
+                    RequestStateId = x.Store.RequestStateId,
+                },
             }).ToListAsync();
             return ERoute;
         }
@@ -445,7 +472,33 @@ namespace DMS.Repositories
 
         private async Task SaveReference(ERoute ERoute)
         {
+            await DataContext.ERouteContent
+                .Where(x => x.ERouteId == ERoute.Id).DeleteFromQueryAsync();
+            if (ERoute.ERouteContents != null)
+            {
+                List<ERouteContentDAO> ERouteContentDAOs = new List<ERouteContentDAO>();
+                foreach (ERouteContent ERouteContent in ERoute.ERouteContents)
+                {
+                    ERouteContentDAO ERouteContentDAO = new ERouteContentDAO();
+                    ERouteContentDAO.Id = ERouteContent.Id;
+                    ERouteContentDAO.ERouteId = ERoute.Id;
+                    ERouteContentDAO.StoreId = ERouteContent.StoreId;
+                    ERouteContentDAO.OrderNumber = ERouteContent.OrderNumber;
+                    ERouteContentDAO.Monday = ERouteContent.Monday;
+                    ERouteContentDAO.Tuesday = ERouteContent.Tuesday;
+                    ERouteContentDAO.Wednesday = ERouteContent.Wednesday;
+                    ERouteContentDAO.Thursday = ERouteContent.Thursday;
+                    ERouteContentDAO.Friday = ERouteContent.Friday;
+                    ERouteContentDAO.Saturday = ERouteContent.Saturday;
+                    ERouteContentDAO.Sunday = ERouteContent.Sunday;
+                    ERouteContentDAO.Week1 = ERouteContent.Week1;
+                    ERouteContentDAO.Week2 = ERouteContent.Week2;
+                    ERouteContentDAO.Week3 = ERouteContent.Week3;
+                    ERouteContentDAO.Week4 = ERouteContent.Week4;
+                    ERouteContentDAOs.Add(ERouteContentDAO);
+                }
+                await DataContext.ERouteContent.BulkMergeAsync(ERouteContentDAOs);
+            }
         }
-        
     }
 }

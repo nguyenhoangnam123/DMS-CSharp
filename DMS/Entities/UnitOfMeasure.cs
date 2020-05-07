@@ -14,7 +14,6 @@ namespace DMS.Entities
         public string Description { get; set; }
         public long StatusId { get; set; }
         public Status Status { get; set; }
-
         public bool Equals(UnitOfMeasure other)
         {
             return other != null && Id == other.Id;

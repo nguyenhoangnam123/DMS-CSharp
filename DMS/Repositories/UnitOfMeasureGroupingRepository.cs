@@ -231,7 +231,7 @@ namespace DMS.Repositories
                         Name = x.UnitOfMeasure.Name,
                         Description = x.UnitOfMeasure.Description,
                         StatusId = x.UnitOfMeasure.StatusId,
-                    },
+                    }
                 }).ToListAsync();
 
             return UnitOfMeasureGrouping;

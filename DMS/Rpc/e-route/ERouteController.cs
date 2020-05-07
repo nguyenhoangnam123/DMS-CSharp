@@ -757,6 +757,33 @@ namespace DMS.Rpc.e_route
                 Week2 = x.Week2,
                 Week3 = x.Week3,
                 Week4 = x.Week4,
+                Store = new Store
+                {
+                    Id = x.Store.Id,
+                    Code = x.Store.Code,
+                    Name = x.Store.Name,
+                    ParentStoreId = x.Store.ParentStoreId,
+                    OrganizationId = x.Store.OrganizationId,
+                    StoreTypeId = x.Store.StoreTypeId,
+                    StoreGroupingId = x.Store.StoreGroupingId,
+                    ResellerId = x.Store.ResellerId,
+                    Telephone = x.Store.Telephone,
+                    ProvinceId = x.Store.ProvinceId,
+                    DistrictId = x.Store.DistrictId,
+                    WardId = x.Store.WardId,
+                    Address = x.Store.Address,
+                    DeliveryAddress = x.Store.DeliveryAddress,
+                    Latitude = x.Store.Latitude,
+                    Longitude = x.Store.Longitude,
+                    DeliveryLatitude = x.Store.DeliveryLatitude,
+                    DeliveryLongitude = x.Store.DeliveryLongitude,
+                    OwnerName = x.Store.OwnerName,
+                    OwnerPhone = x.Store.OwnerPhone,
+                    OwnerEmail = x.Store.OwnerEmail,
+                    StatusId = x.Store.StatusId,
+                    WorkflowDefinitionId = x.Store.WorkflowDefinitionId,
+                    RequestStateId = x.Store.RequestStateId,
+                },
             }).ToList();
             ERoute.BaseLanguage = CurrentContext.Language;
             return ERoute;

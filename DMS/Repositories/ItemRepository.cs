@@ -218,6 +218,14 @@ namespace DMS.Repositories
                         UpdatedTime = q.Product.Supplier.UpdatedAt,
                         WardId = q.Product.Supplier.WardId,
                     },
+                    TaxType = new TaxType
+                    {
+                        Id = q.Product.TaxType.Id,
+                        Code = q.Product.TaxType.Code,
+                        Name = q.Product.TaxType.Name,
+                        Percentage = q.Product.TaxType.Percentage,
+                        StatusId = q.Product.TaxType.StatusId,
+                    },
                     UnitOfMeasure = new UnitOfMeasure
                     {
                         Id = q.Product.UnitOfMeasure.Id,
