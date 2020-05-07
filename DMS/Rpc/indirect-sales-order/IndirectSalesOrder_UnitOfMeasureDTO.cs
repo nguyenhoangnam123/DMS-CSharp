@@ -18,8 +18,6 @@ namespace DMS.Rpc.indirect_sales_order
         public string Description { get; set; }
         
         public long StatusId { get; set; }
-        
-
         public IndirectSalesOrder_UnitOfMeasureDTO() {}
         public IndirectSalesOrder_UnitOfMeasureDTO(UnitOfMeasure UnitOfMeasure)
         {
@@ -50,7 +48,7 @@ namespace DMS.Rpc.indirect_sales_order
         public StringFilter Description { get; set; }
         
         public IdFilter StatusId { get; set; }
-        
+        public IdFilter UnitOfMeasureGroupingId { get; set; }
         public UnitOfMeasureOrder OrderBy { get; set; }
     }
 }

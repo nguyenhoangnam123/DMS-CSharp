@@ -232,6 +232,14 @@ namespace DMS.Repositories
                         Description = x.UnitOfMeasure.Description,
                         StatusId = x.UnitOfMeasure.StatusId,
                     },
+                    UnitOfMeasureGrouping = new UnitOfMeasureGrouping
+                    {
+                        Id = x.UnitOfMeasureGrouping.Id,
+                        Code = x.UnitOfMeasureGrouping.Code,
+                        Name = x.UnitOfMeasureGrouping.Name,
+                        StatusId = x.UnitOfMeasureGrouping.StatusId,
+                        Description = x.UnitOfMeasureGrouping.Description,
+                    }
                 }).ToListAsync();
 
             return UnitOfMeasureGrouping;

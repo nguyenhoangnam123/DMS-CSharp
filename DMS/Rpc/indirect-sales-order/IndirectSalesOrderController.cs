@@ -15,6 +15,7 @@ using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MSupplier;
 using DMS.Services.MUnitOfMeasure;
+using DMS.Services.MUnitOfMeasureGrouping;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
@@ -98,6 +99,7 @@ namespace DMS.Rpc.indirect_sales_order
         private IAppUserService AppUserService;
         private IIndirectSalesOrderContentService IndirectSalesOrderContentService;
         private IUnitOfMeasureService UnitOfMeasureService;
+        private IUnitOfMeasureGroupingService UnitOfMeasureGroupingService;
         private IIndirectSalesOrderPromotionService IndirectSalesOrderPromotionService;
         private IItemService ItemService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
@@ -114,6 +116,7 @@ namespace DMS.Rpc.indirect_sales_order
             IAppUserService AppUserService,
             IIndirectSalesOrderContentService IndirectSalesOrderContentService,
             IUnitOfMeasureService UnitOfMeasureService,
+            IUnitOfMeasureGroupingService UnitOfMeasureGroupingService,
             IIndirectSalesOrderPromotionService IndirectSalesOrderPromotionService,
             IItemService ItemService,
             IIndirectSalesOrderService IndirectSalesOrderService,
@@ -131,6 +134,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.AppUserService = AppUserService;
             this.IndirectSalesOrderContentService = IndirectSalesOrderContentService;
             this.UnitOfMeasureService = UnitOfMeasureService;
+            this.UnitOfMeasureGroupingService = UnitOfMeasureGroupingService;
             this.IndirectSalesOrderPromotionService = IndirectSalesOrderPromotionService;
             this.ItemService = ItemService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
@@ -1604,24 +1608,15 @@ namespace DMS.Rpc.indirect_sales_order
             return IndirectSalesOrder_IndirectSalesOrderContentDTOs;
         }
         [Route(IndirectSalesOrderRoute.SingleListUnitOfMeasure), HttpPost]
-        public async Task<List<IndirectSalesOrder_UnitOfMeasureDTO>> SingleListUnitOfMeasure([FromBody] IndirectSalesOrder_UnitOfMeasureFilterDTO IndirectSalesOrder_UnitOfMeasureFilterDTO)
+        public async Task<List<IndirectSalesOrder_UnitOfMeasureGroupingContentDTO>> SingleListUnitOfMeasure([FromBody] IndirectSalesOrder_UnitOfMeasureFilterDTO IndirectSalesOrder_UnitOfMeasureFilterDTO)
         {
-            UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter();
-            UnitOfMeasureFilter.Skip = 0;
-            UnitOfMeasureFilter.Take = 20;
-            UnitOfMeasureFilter.OrderBy = UnitOfMeasureOrder.Id;
-            UnitOfMeasureFilter.OrderType = OrderType.ASC;
-            UnitOfMeasureFilter.Selects = UnitOfMeasureSelect.ALL;
-            UnitOfMeasureFilter.Id = IndirectSalesOrder_UnitOfMeasureFilterDTO.Id;
-            UnitOfMeasureFilter.Code = IndirectSalesOrder_UnitOfMeasureFilterDTO.Code;
-            UnitOfMeasureFilter.Name = IndirectSalesOrder_UnitOfMeasureFilterDTO.Name;
-            UnitOfMeasureFilter.Description = IndirectSalesOrder_UnitOfMeasureFilterDTO.Description;
-            UnitOfMeasureFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-
-            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
-            List<IndirectSalesOrder_UnitOfMeasureDTO> IndirectSalesOrder_UnitOfMeasureDTOs = UnitOfMeasures
-                .Select(x => new IndirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
-            return IndirectSalesOrder_UnitOfMeasureDTOs;
+            var UOMG = await UnitOfMeasureGroupingService.Get(IndirectSalesOrder_UnitOfMeasureFilterDTO.UnitOfMeasureGroupingId.Equal ?? 0);
+            List<IndirectSalesOrder_UnitOfMeasureGroupingContentDTO> IndirectSalesOrder_UnitOfMeasureGroupingContentDTOs = new List<IndirectSalesOrder_UnitOfMeasureGroupingContentDTO>();
+            if (UOMG != null)
+            {
+                IndirectSalesOrder_UnitOfMeasureGroupingContentDTOs = UOMG.UnitOfMeasureGroupingContents.Select(x => new IndirectSalesOrder_UnitOfMeasureGroupingContentDTO(x)).ToList();
+            }
+            return IndirectSalesOrder_UnitOfMeasureGroupingContentDTOs;
         }
         [Route(IndirectSalesOrderRoute.SingleListIndirectSalesOrderPromotion), HttpPost]
         public async Task<List<IndirectSalesOrder_IndirectSalesOrderPromotionDTO>> SingleListIndirectSalesOrderPromotion([FromBody] IndirectSalesOrder_IndirectSalesOrderPromotionFilterDTO IndirectSalesOrder_IndirectSalesOrderPromotionFilterDTO)
