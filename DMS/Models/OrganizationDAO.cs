@@ -8,8 +8,9 @@ namespace DMS.Models
         public OrganizationDAO()
         {
             AppUsers = new HashSet<AppUserDAO>();
+            DirectPriceLists = new HashSet<DirectPriceListDAO>();
+            IndirectPriceLists = new HashSet<IndirectPriceListDAO>();
             InverseParent = new HashSet<OrganizationDAO>();
-            PriceLists = new HashSet<PriceListDAO>();
             Resellers = new HashSet<ResellerDAO>();
             Stores = new HashSet<StoreDAO>();
             Warehouses = new HashSet<WarehouseDAO>();
@@ -33,8 +34,9 @@ namespace DMS.Models
         public virtual OrganizationDAO Parent { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserDAO> AppUsers { get; set; }
+        public virtual ICollection<DirectPriceListDAO> DirectPriceLists { get; set; }
+        public virtual ICollection<IndirectPriceListDAO> IndirectPriceLists { get; set; }
         public virtual ICollection<OrganizationDAO> InverseParent { get; set; }
-        public virtual ICollection<PriceListDAO> PriceLists { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
         public virtual ICollection<WarehouseDAO> Warehouses { get; set; }

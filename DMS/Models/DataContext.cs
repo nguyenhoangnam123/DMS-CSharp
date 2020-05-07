@@ -9,6 +9,11 @@ namespace DMS.Models
         public virtual DbSet<AppUserDAO> AppUser { get; set; }
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
+        public virtual DbSet<DirectPriceListDAO> DirectPriceList { get; set; }
+        public virtual DbSet<DirectPriceListItemMappingDAO> DirectPriceListItemMapping { get; set; }
+        public virtual DbSet<DirectPriceListStoreMappingDAO> DirectPriceListStoreMapping { get; set; }
+        public virtual DbSet<DirectPriceListStoreTypeMappingDAO> DirectPriceListStoreTypeMapping { get; set; }
+        public virtual DbSet<DirectPriceListTypeDAO> DirectPriceListType { get; set; }
         public virtual DbSet<DirectSalesOrderDAO> DirectSalesOrder { get; set; }
         public virtual DbSet<DirectSalesOrderContentDAO> DirectSalesOrderContent { get; set; }
         public virtual DbSet<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotion { get; set; }
@@ -22,6 +27,11 @@ namespace DMS.Models
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
+        public virtual DbSet<IndirectPriceListDAO> IndirectPriceList { get; set; }
+        public virtual DbSet<IndirectPriceListItemMappingDAO> IndirectPriceListItemMapping { get; set; }
+        public virtual DbSet<IndirectPriceListStoreMappingDAO> IndirectPriceListStoreMapping { get; set; }
+        public virtual DbSet<IndirectPriceListStoreTypeMappingDAO> IndirectPriceListStoreTypeMapping { get; set; }
+        public virtual DbSet<IndirectPriceListTypeDAO> IndirectPriceListType { get; set; }
         public virtual DbSet<IndirectSalesOrderDAO> IndirectSalesOrder { get; set; }
         public virtual DbSet<IndirectSalesOrderContentDAO> IndirectSalesOrderContent { get; set; }
         public virtual DbSet<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotion { get; set; }
@@ -34,11 +44,6 @@ namespace DMS.Models
         public virtual DbSet<PermissionDAO> Permission { get; set; }
         public virtual DbSet<PermissionFieldMappingDAO> PermissionFieldMapping { get; set; }
         public virtual DbSet<PermissionPageMappingDAO> PermissionPageMapping { get; set; }
-        public virtual DbSet<PriceListDAO> PriceList { get; set; }
-        public virtual DbSet<PriceListItemMappingDAO> PriceListItemMapping { get; set; }
-        public virtual DbSet<PriceListStoreMappingDAO> PriceListStoreMapping { get; set; }
-        public virtual DbSet<PriceListStoreTypeMappingDAO> PriceListStoreTypeMapping { get; set; }
-        public virtual DbSet<PriceListTypeDAO> PriceListType { get; set; }
         public virtual DbSet<ProductDAO> Product { get; set; }
         public virtual DbSet<ProductGroupingDAO> ProductGrouping { get; set; }
         public virtual DbSet<ProductImageMappingDAO> ProductImageMapping { get; set; }
@@ -190,6 +195,106 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Brand_Status");
+            });
+
+            modelBuilder.Entity<DirectPriceListDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name).HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.DirectPriceListType)
+                    .WithMany(p => p.DirectPriceLists)
+                    .HasForeignKey(d => d.DirectPriceListTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectPriceList_DirectPriceListType");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.DirectPriceLists)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectPriceList_Organization");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.DirectPriceLists)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectPriceList_Status");
+            });
+
+            modelBuilder.Entity<DirectPriceListItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.DirectPriceListId, e.ItemId })
+                    .HasName("PK_PriceListItemMapping");
+
+                entity.HasOne(d => d.DirectPriceList)
+                    .WithMany(p => p.DirectPriceListItemMappings)
+                    .HasForeignKey(d => d.DirectPriceListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectPriceListItemMapping_DirectPriceList");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.DirectPriceListItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceListItemMapping_Item");
+            });
+
+            modelBuilder.Entity<DirectPriceListStoreMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.DirectPriceListId, e.StoreId })
+                    .HasName("PK_PriceListStoreMapping");
+
+                entity.HasOne(d => d.DirectPriceList)
+                    .WithMany(p => p.DirectPriceListStoreMappings)
+                    .HasForeignKey(d => d.DirectPriceListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectPriceListStoreMapping_DirectPriceList");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.DirectPriceListStoreMappings)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceListStoreMapping_Store");
+            });
+
+            modelBuilder.Entity<DirectPriceListStoreTypeMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.DirectPriceListId, e.StoreTypeId })
+                    .HasName("PK_PriceListStoreTypeMapping");
+
+                entity.HasOne(d => d.DirectPriceList)
+                    .WithMany(p => p.DirectPriceListStoreTypeMappings)
+                    .HasForeignKey(d => d.DirectPriceListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectPriceListStoreTypeMapping_DirectPriceList");
+
+                entity.HasOne(d => d.StoreType)
+                    .WithMany(p => p.DirectPriceListStoreTypeMappings)
+                    .HasForeignKey(d => d.StoreTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceListStoreTypeMapping_StoreType");
+            });
+
+            modelBuilder.Entity<DirectPriceListTypeDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<DirectSalesOrderDAO>(entity =>
@@ -526,6 +631,103 @@ namespace DMS.Models
                 entity.Property(e => e.Url)
                     .IsRequired()
                     .HasMaxLength(4000);
+            });
+
+            modelBuilder.Entity<IndirectPriceListDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name).HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.IndirectPriceListType)
+                    .WithMany(p => p.IndirectPriceLists)
+                    .HasForeignKey(d => d.IndirectPriceListTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectPriceList_IndirectPriceListType");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.IndirectPriceLists)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectPriceList_Organization");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.IndirectPriceLists)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectPriceList_Status");
+            });
+
+            modelBuilder.Entity<IndirectPriceListItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.IndirectPriceListId, e.ItemId });
+
+                entity.HasOne(d => d.IndirectPriceList)
+                    .WithMany(p => p.IndirectPriceListItemMappings)
+                    .HasForeignKey(d => d.IndirectPriceListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectPriceListItemMapping_IndirectPriceList");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.IndirectPriceListItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectPriceListItemMapping_Item");
+            });
+
+            modelBuilder.Entity<IndirectPriceListStoreMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.IndirectPriceListId, e.StoreId });
+
+                entity.HasOne(d => d.IndirectPriceList)
+                    .WithMany(p => p.IndirectPriceListStoreMappings)
+                    .HasForeignKey(d => d.IndirectPriceListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectPriceListStoreMapping_IndirectPriceList");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.IndirectPriceListStoreMappings)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectPriceListStoreMapping_Store");
+            });
+
+            modelBuilder.Entity<IndirectPriceListStoreTypeMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.IndirectPriceListId, e.StoreTypeId });
+
+                entity.HasOne(d => d.IndirectPriceList)
+                    .WithMany(p => p.IndirectPriceListStoreTypeMappings)
+                    .HasForeignKey(d => d.IndirectPriceListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectPriceListStoreTypeMapping_IndirectPriceList");
+
+                entity.HasOne(d => d.StoreType)
+                    .WithMany(p => p.IndirectPriceListStoreTypeMappings)
+                    .HasForeignKey(d => d.StoreTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectPriceListStoreTypeMapping_StoreType");
+            });
+
+            modelBuilder.Entity<IndirectPriceListTypeDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<IndirectSalesOrderDAO>(entity =>
@@ -875,103 +1077,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.PermissionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PermissionAction_Permission");
-            });
-
-            modelBuilder.Entity<PriceListDAO>(entity =>
-            {
-                entity.Property(e => e.Code)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Name).HasMaxLength(500);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Organization)
-                    .WithMany(p => p.PriceLists)
-                    .HasForeignKey(d => d.OrganizationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PriceList_Organization");
-
-                entity.HasOne(d => d.PriceListType)
-                    .WithMany(p => p.PriceLists)
-                    .HasForeignKey(d => d.PriceListTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PriceList_PriceListType");
-
-                entity.HasOne(d => d.Status)
-                    .WithMany(p => p.PriceLists)
-                    .HasForeignKey(d => d.StatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PriceList_Status");
-            });
-
-            modelBuilder.Entity<PriceListItemMappingDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.PriceListId, e.ItemId });
-
-                entity.HasOne(d => d.Item)
-                    .WithMany(p => p.PriceListItemMappings)
-                    .HasForeignKey(d => d.ItemId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PriceListItemMapping_Item");
-
-                entity.HasOne(d => d.PriceList)
-                    .WithMany(p => p.PriceListItemMappings)
-                    .HasForeignKey(d => d.PriceListId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PriceListItemMapping_PriceList");
-            });
-
-            modelBuilder.Entity<PriceListStoreMappingDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.PriceListId, e.StoreId });
-
-                entity.HasOne(d => d.PriceList)
-                    .WithMany(p => p.PriceListStoreMappings)
-                    .HasForeignKey(d => d.PriceListId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PriceListStoreMapping_PriceList");
-
-                entity.HasOne(d => d.Store)
-                    .WithMany(p => p.PriceListStoreMappings)
-                    .HasForeignKey(d => d.StoreId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PriceListStoreMapping_Store");
-            });
-
-            modelBuilder.Entity<PriceListStoreTypeMappingDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.PriceListId, e.StoreTypeId });
-
-                entity.HasOne(d => d.PriceList)
-                    .WithMany(p => p.PriceListStoreTypeMappings)
-                    .HasForeignKey(d => d.PriceListId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PriceListStoreTypeMapping_PriceList");
-
-                entity.HasOne(d => d.StoreType)
-                    .WithMany(p => p.PriceListStoreTypeMappings)
-                    .HasForeignKey(d => d.StoreTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PriceListStoreTypeMapping_StoreType");
-            });
-
-            modelBuilder.Entity<PriceListTypeDAO>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Code)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<ProductDAO>(entity =>
