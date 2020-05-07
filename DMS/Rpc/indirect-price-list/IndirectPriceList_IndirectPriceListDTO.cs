@@ -18,6 +18,7 @@ namespace DMS.Rpc.indirect_price_list
         public IndirectPriceList_OrganizationDTO Organization { get; set; }
         public IndirectPriceList_StatusDTO Status { get; set; }
         public List<IndirectPriceList_IndirectPriceListItemMappingDTO> IndirectPriceListItemMappings { get; set; }
+        public List<IndirectPriceList_IndirectPriceListStoreGroupingMappingDTO> IndirectPriceListStoreGroupingMappings { get; set; }
         public List<IndirectPriceList_IndirectPriceListStoreMappingDTO> IndirectPriceListStoreMappings { get; set; }
         public List<IndirectPriceList_IndirectPriceListStoreTypeMappingDTO> IndirectPriceListStoreTypeMappings { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -35,6 +36,7 @@ namespace DMS.Rpc.indirect_price_list
             this.Organization = IndirectPriceList.Organization == null ? null : new IndirectPriceList_OrganizationDTO(IndirectPriceList.Organization);
             this.Status = IndirectPriceList.Status == null ? null : new IndirectPriceList_StatusDTO(IndirectPriceList.Status);
             this.IndirectPriceListItemMappings = IndirectPriceList.IndirectPriceListItemMappings?.Select(x => new IndirectPriceList_IndirectPriceListItemMappingDTO(x)).ToList();
+            this.IndirectPriceListStoreGroupingMappings = IndirectPriceList.IndirectPriceListStoreGroupingMappings?.Select(x => new IndirectPriceList_IndirectPriceListStoreGroupingMappingDTO(x)).ToList();
             this.IndirectPriceListStoreMappings = IndirectPriceList.IndirectPriceListStoreMappings?.Select(x => new IndirectPriceList_IndirectPriceListStoreMappingDTO(x)).ToList();
             this.IndirectPriceListStoreTypeMappings = IndirectPriceList.IndirectPriceListStoreTypeMappings?.Select(x => new IndirectPriceList_IndirectPriceListStoreTypeMappingDTO(x)).ToList();
             this.CreatedAt = IndirectPriceList.CreatedAt;

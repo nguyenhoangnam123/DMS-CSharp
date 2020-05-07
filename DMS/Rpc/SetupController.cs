@@ -139,6 +139,8 @@ namespace DMS.Rpc
             InitRequestStateEnum();
             InitWorkflowStateEnum();
             InitWorkflowTypeEnum();
+            InitIndirectPriceListTypeEnum();
+            InitDirectPriceListTypeEnum();
             DataContext.SaveChanges();
             return Ok();
         }
@@ -460,6 +462,94 @@ namespace DMS.Rpc
                     Id = WorkflowTypeEnum.STORE.Id,
                     Code = WorkflowTypeEnum.STORE.Code,
                     Name = WorkflowTypeEnum.STORE.Name,
+                });
+            }
+        }
+
+        private void InitIndirectPriceListTypeEnum()
+        {
+            List<IndirectPriceListTypeDAO> list = DataContext.IndirectPriceListType.ToList();
+            if (!list.Any(pt => pt.Id == IndirectPriceListTypeEnum.ALLSTORE.Id))
+            {
+                DataContext.IndirectPriceListType.Add(new IndirectPriceListTypeDAO
+                {
+                    Id = IndirectPriceListTypeEnum.ALLSTORE.Id,
+                    Code = IndirectPriceListTypeEnum.ALLSTORE.Code,
+                    Name = IndirectPriceListTypeEnum.ALLSTORE.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == IndirectPriceListTypeEnum.DETAILS.Id))
+            {
+                DataContext.IndirectPriceListType.Add(new IndirectPriceListTypeDAO
+                {
+                    Id = IndirectPriceListTypeEnum.DETAILS.Id,
+                    Code = IndirectPriceListTypeEnum.DETAILS.Code,
+                    Name = IndirectPriceListTypeEnum.DETAILS.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == IndirectPriceListTypeEnum.STOREGROUPING.Id))
+            {
+                DataContext.IndirectPriceListType.Add(new IndirectPriceListTypeDAO
+                {
+                    Id = IndirectPriceListTypeEnum.STOREGROUPING.Id,
+                    Code = IndirectPriceListTypeEnum.STOREGROUPING.Code,
+                    Name = IndirectPriceListTypeEnum.STOREGROUPING.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == IndirectPriceListTypeEnum.STORETYPE.Id))
+            {
+                DataContext.IndirectPriceListType.Add(new IndirectPriceListTypeDAO
+                {
+                    Id = IndirectPriceListTypeEnum.STORETYPE.Id,
+                    Code = IndirectPriceListTypeEnum.STORETYPE.Code,
+                    Name = IndirectPriceListTypeEnum.STORETYPE.Name,
+                });
+            }
+        }
+
+        private void InitDirectPriceListTypeEnum()
+        {
+            List<DirectPriceListTypeDAO> list = DataContext.DirectPriceListType.ToList();
+            if (!list.Any(pt => pt.Id == DirectPriceListTypeEnum.ALLSTORE.Id))
+            {
+                DataContext.DirectPriceListType.Add(new DirectPriceListTypeDAO
+                {
+                    Id = DirectPriceListTypeEnum.ALLSTORE.Id,
+                    Code = DirectPriceListTypeEnum.ALLSTORE.Code,
+                    Name = DirectPriceListTypeEnum.ALLSTORE.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == DirectPriceListTypeEnum.DETAILS.Id))
+            {
+                DataContext.DirectPriceListType.Add(new DirectPriceListTypeDAO
+                {
+                    Id = DirectPriceListTypeEnum.DETAILS.Id,
+                    Code = DirectPriceListTypeEnum.DETAILS.Code,
+                    Name = DirectPriceListTypeEnum.DETAILS.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == DirectPriceListTypeEnum.STOREGROUPING.Id))
+            {
+                DataContext.DirectPriceListType.Add(new DirectPriceListTypeDAO
+                {
+                    Id = DirectPriceListTypeEnum.STOREGROUPING.Id,
+                    Code = DirectPriceListTypeEnum.STOREGROUPING.Code,
+                    Name = DirectPriceListTypeEnum.STOREGROUPING.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == DirectPriceListTypeEnum.STORETYPE.Id))
+            {
+                DataContext.DirectPriceListType.Add(new DirectPriceListTypeDAO
+                {
+                    Id = DirectPriceListTypeEnum.STORETYPE.Id,
+                    Code = DirectPriceListTypeEnum.STORETYPE.Code,
+                    Name = DirectPriceListTypeEnum.STORETYPE.Name,
                 });
             }
         }

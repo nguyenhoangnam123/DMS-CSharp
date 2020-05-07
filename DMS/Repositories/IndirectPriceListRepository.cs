@@ -254,6 +254,24 @@ namespace DMS.Repositories
                         StatusId = x.Item.StatusId,
                     },
                 }).ToListAsync();
+            IndirectPriceList.IndirectPriceListStoreGroupingMappings = await DataContext.IndirectPriceListStoreGroupingMapping.AsNoTracking()
+                .Where(x => x.IndirectPriceListId == IndirectPriceList.Id)
+                .Where(x => x.StoreGrouping.DeletedAt == null)
+                .Select(x => new IndirectPriceListStoreGroupingMapping
+                {
+                    IndirectPriceListId = x.IndirectPriceListId,
+                    StoreGroupingId = x.StoreGroupingId,
+                    StoreGrouping = new StoreGrouping
+                    {
+                        Id = x.StoreGrouping.Id,
+                        Code = x.StoreGrouping.Code,
+                        Name = x.StoreGrouping.Name,
+                        ParentId = x.StoreGrouping.ParentId,
+                        Path = x.StoreGrouping.Path,
+                        Level = x.StoreGrouping.Level,
+                        StatusId = x.StoreGrouping.StatusId,
+                    },
+                }).ToListAsync();
             IndirectPriceList.IndirectPriceListStoreMappings = await DataContext.IndirectPriceListStoreMapping.AsNoTracking()
                 .Where(x => x.IndirectPriceListId == IndirectPriceList.Id)
                 .Where(x => x.Store.DeletedAt == null)
@@ -394,6 +412,21 @@ namespace DMS.Repositories
                     IndirectPriceListItemMappingDAOs.Add(IndirectPriceListItemMappingDAO);
                 }
                 await DataContext.IndirectPriceListItemMapping.BulkMergeAsync(IndirectPriceListItemMappingDAOs);
+            }
+            await DataContext.IndirectPriceListStoreGroupingMapping
+                .Where(x => x.IndirectPriceListId == IndirectPriceList.Id)
+                .DeleteFromQueryAsync();
+            List<IndirectPriceListStoreGroupingMappingDAO> IndirectPriceListStoreGroupingMappingDAOs = new List<IndirectPriceListStoreGroupingMappingDAO>();
+            if (IndirectPriceList.IndirectPriceListStoreGroupingMappings != null)
+            {
+                foreach (IndirectPriceListStoreGroupingMapping IndirectPriceListStoreGroupingMapping in IndirectPriceList.IndirectPriceListStoreGroupingMappings)
+                {
+                    IndirectPriceListStoreGroupingMappingDAO IndirectPriceListStoreGroupingMappingDAO = new IndirectPriceListStoreGroupingMappingDAO();
+                    IndirectPriceListStoreGroupingMappingDAO.IndirectPriceListId = IndirectPriceList.Id;
+                    IndirectPriceListStoreGroupingMappingDAO.StoreGroupingId = IndirectPriceListStoreGroupingMapping.StoreGroupingId;
+                    IndirectPriceListStoreGroupingMappingDAOs.Add(IndirectPriceListStoreGroupingMappingDAO);
+                }
+                await DataContext.IndirectPriceListStoreGroupingMapping.BulkMergeAsync(IndirectPriceListStoreGroupingMappingDAOs);
             }
             await DataContext.IndirectPriceListStoreMapping
                 .Where(x => x.IndirectPriceListId == IndirectPriceList.Id)

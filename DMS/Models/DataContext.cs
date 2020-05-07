@@ -11,6 +11,7 @@ namespace DMS.Models
         public virtual DbSet<BrandDAO> Brand { get; set; }
         public virtual DbSet<DirectPriceListDAO> DirectPriceList { get; set; }
         public virtual DbSet<DirectPriceListItemMappingDAO> DirectPriceListItemMapping { get; set; }
+        public virtual DbSet<DirectPriceListStoreGroupingMappingDAO> DirectPriceListStoreGroupingMapping { get; set; }
         public virtual DbSet<DirectPriceListStoreMappingDAO> DirectPriceListStoreMapping { get; set; }
         public virtual DbSet<DirectPriceListStoreTypeMappingDAO> DirectPriceListStoreTypeMapping { get; set; }
         public virtual DbSet<DirectPriceListTypeDAO> DirectPriceListType { get; set; }
@@ -29,6 +30,7 @@ namespace DMS.Models
         public virtual DbSet<ImageDAO> Image { get; set; }
         public virtual DbSet<IndirectPriceListDAO> IndirectPriceList { get; set; }
         public virtual DbSet<IndirectPriceListItemMappingDAO> IndirectPriceListItemMapping { get; set; }
+        public virtual DbSet<IndirectPriceListStoreGroupingMappingDAO> IndirectPriceListStoreGroupingMapping { get; set; }
         public virtual DbSet<IndirectPriceListStoreMappingDAO> IndirectPriceListStoreMapping { get; set; }
         public virtual DbSet<IndirectPriceListStoreTypeMappingDAO> IndirectPriceListStoreTypeMapping { get; set; }
         public virtual DbSet<IndirectPriceListTypeDAO> IndirectPriceListType { get; set; }
@@ -246,6 +248,23 @@ namespace DMS.Models
                     .HasForeignKey(d => d.ItemId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PriceListItemMapping_Item");
+            });
+
+            modelBuilder.Entity<DirectPriceListStoreGroupingMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.DirectPriceListId, e.StoreGroupingId });
+
+                entity.HasOne(d => d.DirectPriceList)
+                    .WithMany(p => p.DirectPriceListStoreGroupingMappings)
+                    .HasForeignKey(d => d.DirectPriceListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectPriceListStoreGroupingMapping_DirectPriceList");
+
+                entity.HasOne(d => d.StoreGrouping)
+                    .WithMany(p => p.DirectPriceListStoreGroupingMappings)
+                    .HasForeignKey(d => d.StoreGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectPriceListStoreGroupingMapping_StoreGrouping");
             });
 
             modelBuilder.Entity<DirectPriceListStoreMappingDAO>(entity =>
@@ -681,6 +700,24 @@ namespace DMS.Models
                     .HasForeignKey(d => d.ItemId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectPriceListItemMapping_Item");
+            });
+
+            modelBuilder.Entity<IndirectPriceListStoreGroupingMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.IndirectPriceListId, e.StoreGroupingId })
+                    .HasName("PK_IndirectPriceListStoreGroupingId");
+
+                entity.HasOne(d => d.IndirectPriceList)
+                    .WithMany(p => p.IndirectPriceListStoreGroupingMappings)
+                    .HasForeignKey(d => d.IndirectPriceListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectPriceListStoreGroupingMapping_IndirectPriceList");
+
+                entity.HasOne(d => d.StoreGrouping)
+                    .WithMany(p => p.IndirectPriceListStoreGroupingMappings)
+                    .HasForeignKey(d => d.StoreGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectPriceListStoreGroupingMapping_StoreGrouping");
             });
 
             modelBuilder.Entity<IndirectPriceListStoreMappingDAO>(entity =>

@@ -15,6 +15,7 @@ using DMS.Services.MDirectPriceListType;
 using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
 using DMS.Services.MItem;
+using DMS.Services.MStoreGrouping;
 using DMS.Services.MStore;
 using DMS.Services.MStoreType;
 
@@ -45,6 +46,8 @@ namespace DMS.Rpc.direct_price_list
         
         public const string FilterListItem = Default + "/filter-list-item";
         
+        public const string FilterListStoreGrouping = Default + "/filter-list-store-grouping";
+        
         public const string FilterListStore = Default + "/filter-list-store";
         
         public const string FilterListStoreType = Default + "/filter-list-store-type";
@@ -59,12 +62,16 @@ namespace DMS.Rpc.direct_price_list
         
         public const string SingleListItem = Default + "/single-list-item";
         
+        public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
+        
         public const string SingleListStore = Default + "/single-list-store";
         
         public const string SingleListStoreType = Default + "/single-list-store-type";
         
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
+        public const string CountStoreGrouping = Default + "/count-store-grouping";
+        public const string ListStoreGrouping = Default + "/list-store-grouping";
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
         public const string CountStoreType = Default + "/count-store-type";
@@ -86,6 +93,7 @@ namespace DMS.Rpc.direct_price_list
         private IOrganizationService OrganizationService;
         private IStatusService StatusService;
         private IItemService ItemService;
+        private IStoreGroupingService StoreGroupingService;
         private IStoreService StoreService;
         private IStoreTypeService StoreTypeService;
         private IDirectPriceListService DirectPriceListService;
@@ -95,6 +103,7 @@ namespace DMS.Rpc.direct_price_list
             IOrganizationService OrganizationService,
             IStatusService StatusService,
             IItemService ItemService,
+            IStoreGroupingService StoreGroupingService,
             IStoreService StoreService,
             IStoreTypeService StoreTypeService,
             IDirectPriceListService DirectPriceListService,
@@ -105,6 +114,7 @@ namespace DMS.Rpc.direct_price_list
             this.OrganizationService = OrganizationService;
             this.StatusService = StatusService;
             this.ItemService = ItemService;
+            this.StoreGroupingService = StoreGroupingService;
             this.StoreService = StoreService;
             this.StoreTypeService = StoreTypeService;
             this.DirectPriceListService = DirectPriceListService;
@@ -499,6 +509,44 @@ namespace DMS.Rpc.direct_price_list
                 }
                 excel.GenerateWorksheet("Item", ItemHeaders, ItemData);
                 #endregion
+                #region StoreGrouping
+                var StoreGroupingFilter = new StoreGroupingFilter();
+                StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+                StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+                StoreGroupingFilter.OrderType = OrderType.ASC;
+                StoreGroupingFilter.Skip = 0;
+                StoreGroupingFilter.Take = int.MaxValue;
+                List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+
+                var StoreGroupingHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "Code",
+                        "Name",
+                        "ParentId",
+                        "Path",
+                        "Level",
+                        "StatusId",
+                    }
+                };
+                List<object[]> StoreGroupingData = new List<object[]>();
+                for (int i = 0; i < StoreGroupings.Count; i++)
+                {
+                    var StoreGrouping = StoreGroupings[i];
+                    StoreGroupingData.Add(new Object[]
+                    {
+                        StoreGrouping.Id,
+                        StoreGrouping.Code,
+                        StoreGrouping.Name,
+                        StoreGrouping.ParentId,
+                        StoreGrouping.Path,
+                        StoreGrouping.Level,
+                        StoreGrouping.StatusId,
+                    });
+                }
+                excel.GenerateWorksheet("StoreGrouping", StoreGroupingHeaders, StoreGroupingData);
+                #endregion
                 #region Store
                 var StoreFilter = new StoreFilter();
                 StoreFilter.Selects = StoreSelect.ALL;
@@ -777,6 +825,44 @@ namespace DMS.Rpc.direct_price_list
                 }
                 excel.GenerateWorksheet("Item", ItemHeaders, ItemData);
                 #endregion
+                #region StoreGrouping
+                var StoreGroupingFilter = new StoreGroupingFilter();
+                StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+                StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+                StoreGroupingFilter.OrderType = OrderType.ASC;
+                StoreGroupingFilter.Skip = 0;
+                StoreGroupingFilter.Take = int.MaxValue;
+                List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+
+                var StoreGroupingHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "Code",
+                        "Name",
+                        "ParentId",
+                        "Path",
+                        "Level",
+                        "StatusId",
+                    }
+                };
+                List<object[]> StoreGroupingData = new List<object[]>();
+                for (int i = 0; i < StoreGroupings.Count; i++)
+                {
+                    var StoreGrouping = StoreGroupings[i];
+                    StoreGroupingData.Add(new Object[]
+                    {
+                        StoreGrouping.Id,
+                        StoreGrouping.Code,
+                        StoreGrouping.Name,
+                        StoreGrouping.ParentId,
+                        StoreGrouping.Path,
+                        StoreGrouping.Level,
+                        StoreGrouping.StatusId,
+                    });
+                }
+                excel.GenerateWorksheet("StoreGrouping", StoreGroupingHeaders, StoreGroupingData);
+                #endregion
                 #region Store
                 var StoreFilter = new StoreFilter();
                 StoreFilter.Selects = StoreSelect.ALL;
@@ -955,6 +1041,21 @@ namespace DMS.Rpc.direct_price_list
                         StatusId = x.Item.StatusId,
                     },
                 }).ToList();
+            DirectPriceList.DirectPriceListStoreGroupingMappings = DirectPriceList_DirectPriceListDTO.DirectPriceListStoreGroupingMappings?
+                .Select(x => new DirectPriceListStoreGroupingMapping
+                {
+                    StoreGroupingId = x.StoreGroupingId,
+                    StoreGrouping = x.StoreGrouping == null ? null : new StoreGrouping
+                    {
+                        Id = x.StoreGrouping.Id,
+                        Code = x.StoreGrouping.Code,
+                        Name = x.StoreGrouping.Name,
+                        ParentId = x.StoreGrouping.ParentId,
+                        Path = x.StoreGrouping.Path,
+                        Level = x.StoreGrouping.Level,
+                        StatusId = x.StoreGrouping.StatusId,
+                    },
+                }).ToList();
             DirectPriceList.DirectPriceListStoreMappings = DirectPriceList_DirectPriceListDTO.DirectPriceListStoreMappings?
                 .Select(x => new DirectPriceListStoreMapping
                 {
@@ -1105,6 +1206,28 @@ namespace DMS.Rpc.direct_price_list
                 .Select(x => new DirectPriceList_ItemDTO(x)).ToList();
             return DirectPriceList_ItemDTOs;
         }
+        [Route(DirectPriceListRoute.FilterListStoreGrouping), HttpPost]
+        public async Task<List<DirectPriceList_StoreGroupingDTO>> FilterListStoreGrouping([FromBody] DirectPriceList_StoreGroupingFilterDTO DirectPriceList_StoreGroupingFilterDTO)
+        {
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = 0;
+            StoreGroupingFilter.Take = int.MaxValue;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Id = DirectPriceList_StoreGroupingFilterDTO.Id;
+            StoreGroupingFilter.Code = DirectPriceList_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = DirectPriceList_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.ParentId = DirectPriceList_StoreGroupingFilterDTO.ParentId;
+            StoreGroupingFilter.Path = DirectPriceList_StoreGroupingFilterDTO.Path;
+            StoreGroupingFilter.Level = DirectPriceList_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.StatusId = DirectPriceList_StoreGroupingFilterDTO.StatusId;
+
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+            List<DirectPriceList_StoreGroupingDTO> DirectPriceList_StoreGroupingDTOs = StoreGroupings
+                .Select(x => new DirectPriceList_StoreGroupingDTO(x)).ToList();
+            return DirectPriceList_StoreGroupingDTOs;
+        }
         [Route(DirectPriceListRoute.FilterListStore), HttpPost]
         public async Task<List<DirectPriceList_StoreDTO>> FilterListStore([FromBody] DirectPriceList_StoreFilterDTO DirectPriceList_StoreFilterDTO)
         {
@@ -1136,6 +1259,8 @@ namespace DMS.Rpc.direct_price_list
             StoreFilter.OwnerPhone = DirectPriceList_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectPriceList_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = DirectPriceList_StoreFilterDTO.StatusId;
+            StoreFilter.WorkflowDefinitionId = DirectPriceList_StoreFilterDTO.WorkflowDefinitionId;
+            StoreFilter.RequestStateId = DirectPriceList_StoreFilterDTO.RequestStateId;
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<DirectPriceList_StoreDTO> DirectPriceList_StoreDTOs = Stores
@@ -1244,6 +1369,28 @@ namespace DMS.Rpc.direct_price_list
                 .Select(x => new DirectPriceList_ItemDTO(x)).ToList();
             return DirectPriceList_ItemDTOs;
         }
+        [Route(DirectPriceListRoute.SingleListStoreGrouping), HttpPost]
+        public async Task<List<DirectPriceList_StoreGroupingDTO>> SingleListStoreGrouping([FromBody] DirectPriceList_StoreGroupingFilterDTO DirectPriceList_StoreGroupingFilterDTO)
+        {
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = 0;
+            StoreGroupingFilter.Take = int.MaxValue;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Id = DirectPriceList_StoreGroupingFilterDTO.Id;
+            StoreGroupingFilter.Code = DirectPriceList_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = DirectPriceList_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.ParentId = DirectPriceList_StoreGroupingFilterDTO.ParentId;
+            StoreGroupingFilter.Path = DirectPriceList_StoreGroupingFilterDTO.Path;
+            StoreGroupingFilter.Level = DirectPriceList_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.StatusId = DirectPriceList_StoreGroupingFilterDTO.StatusId;
+
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+            List<DirectPriceList_StoreGroupingDTO> DirectPriceList_StoreGroupingDTOs = StoreGroupings
+                .Select(x => new DirectPriceList_StoreGroupingDTO(x)).ToList();
+            return DirectPriceList_StoreGroupingDTOs;
+        }
         [Route(DirectPriceListRoute.SingleListStore), HttpPost]
         public async Task<List<DirectPriceList_StoreDTO>> SingleListStore([FromBody] DirectPriceList_StoreFilterDTO DirectPriceList_StoreFilterDTO)
         {
@@ -1275,6 +1422,8 @@ namespace DMS.Rpc.direct_price_list
             StoreFilter.OwnerPhone = DirectPriceList_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectPriceList_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = DirectPriceList_StoreFilterDTO.StatusId;
+            StoreFilter.WorkflowDefinitionId = DirectPriceList_StoreFilterDTO.WorkflowDefinitionId;
+            StoreFilter.RequestStateId = DirectPriceList_StoreFilterDTO.RequestStateId;
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<DirectPriceList_StoreDTO> DirectPriceList_StoreDTOs = Stores
@@ -1340,6 +1489,43 @@ namespace DMS.Rpc.direct_price_list
                 .Select(x => new DirectPriceList_ItemDTO(x)).ToList();
             return DirectPriceList_ItemDTOs;
         }
+        [Route(DirectPriceListRoute.CountStoreGrouping), HttpPost]
+        public async Task<long> CountStoreGrouping([FromBody] DirectPriceList_StoreGroupingFilterDTO DirectPriceList_StoreGroupingFilterDTO)
+        {
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Id = DirectPriceList_StoreGroupingFilterDTO.Id;
+            StoreGroupingFilter.Code = DirectPriceList_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = DirectPriceList_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.ParentId = DirectPriceList_StoreGroupingFilterDTO.ParentId;
+            StoreGroupingFilter.Path = DirectPriceList_StoreGroupingFilterDTO.Path;
+            StoreGroupingFilter.Level = DirectPriceList_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.StatusId = DirectPriceList_StoreGroupingFilterDTO.StatusId;
+
+            return await StoreGroupingService.Count(StoreGroupingFilter);
+        }
+
+        [Route(DirectPriceListRoute.ListStoreGrouping), HttpPost]
+        public async Task<List<DirectPriceList_StoreGroupingDTO>> ListStoreGrouping([FromBody] DirectPriceList_StoreGroupingFilterDTO DirectPriceList_StoreGroupingFilterDTO)
+        {
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = DirectPriceList_StoreGroupingFilterDTO.Skip;
+            StoreGroupingFilter.Take = DirectPriceList_StoreGroupingFilterDTO.Take;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Id = DirectPriceList_StoreGroupingFilterDTO.Id;
+            StoreGroupingFilter.Code = DirectPriceList_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = DirectPriceList_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.ParentId = DirectPriceList_StoreGroupingFilterDTO.ParentId;
+            StoreGroupingFilter.Path = DirectPriceList_StoreGroupingFilterDTO.Path;
+            StoreGroupingFilter.Level = DirectPriceList_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.StatusId = DirectPriceList_StoreGroupingFilterDTO.StatusId;
+
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+            List<DirectPriceList_StoreGroupingDTO> DirectPriceList_StoreGroupingDTOs = StoreGroupings
+                .Select(x => new DirectPriceList_StoreGroupingDTO(x)).ToList();
+            return DirectPriceList_StoreGroupingDTOs;
+        }
         [Route(DirectPriceListRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] DirectPriceList_StoreFilterDTO DirectPriceList_StoreFilterDTO)
         {
@@ -1366,6 +1552,8 @@ namespace DMS.Rpc.direct_price_list
             StoreFilter.OwnerPhone = DirectPriceList_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectPriceList_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = DirectPriceList_StoreFilterDTO.StatusId;
+            StoreFilter.WorkflowDefinitionId = DirectPriceList_StoreFilterDTO.WorkflowDefinitionId;
+            StoreFilter.RequestStateId = DirectPriceList_StoreFilterDTO.RequestStateId;
 
             return await StoreService.Count(StoreFilter);
         }
@@ -1401,6 +1589,8 @@ namespace DMS.Rpc.direct_price_list
             StoreFilter.OwnerPhone = DirectPriceList_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectPriceList_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = DirectPriceList_StoreFilterDTO.StatusId;
+            StoreFilter.WorkflowDefinitionId = DirectPriceList_StoreFilterDTO.WorkflowDefinitionId;
+            StoreFilter.RequestStateId = DirectPriceList_StoreFilterDTO.RequestStateId;
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<DirectPriceList_StoreDTO> DirectPriceList_StoreDTOs = Stores

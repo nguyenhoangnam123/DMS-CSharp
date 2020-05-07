@@ -8,6 +8,7 @@ namespace DMS.Models
         public DirectPriceListDAO()
         {
             DirectPriceListItemMappings = new HashSet<DirectPriceListItemMappingDAO>();
+            DirectPriceListStoreGroupingMappings = new HashSet<DirectPriceListStoreGroupingMappingDAO>();
             DirectPriceListStoreMappings = new HashSet<DirectPriceListStoreMappingDAO>();
             DirectPriceListStoreTypeMappings = new HashSet<DirectPriceListStoreTypeMappingDAO>();
         }
@@ -26,6 +27,7 @@ namespace DMS.Models
         public virtual OrganizationDAO Organization { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<DirectPriceListItemMappingDAO> DirectPriceListItemMappings { get; set; }
+        public virtual ICollection<DirectPriceListStoreGroupingMappingDAO> DirectPriceListStoreGroupingMappings { get; set; }
         public virtual ICollection<DirectPriceListStoreMappingDAO> DirectPriceListStoreMappings { get; set; }
         public virtual ICollection<DirectPriceListStoreTypeMappingDAO> DirectPriceListStoreTypeMappings { get; set; }
     }

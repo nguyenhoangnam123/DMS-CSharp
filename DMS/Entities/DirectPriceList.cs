@@ -18,6 +18,7 @@ namespace DMS.Entities
         public Organization Organization { get; set; }
         public Status Status { get; set; }
         public List<DirectPriceListItemMapping> DirectPriceListItemMappings { get; set; }
+        public List<DirectPriceListStoreGroupingMapping> DirectPriceListStoreGroupingMappings { get; set; }
         public List<DirectPriceListStoreMapping> DirectPriceListStoreMappings { get; set; }
         public List<DirectPriceListStoreTypeMapping> DirectPriceListStoreTypeMappings { get; set; }
         public DateTime CreatedAt { get; set; }

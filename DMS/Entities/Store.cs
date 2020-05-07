@@ -79,6 +79,8 @@ namespace DMS.Entities
         public StringFilter OwnerPhone { get; set; }
         public StringFilter OwnerEmail { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter WorkflowDefinitionId { get; set; }
+        public IdFilter RequestStateId { get; set; }
         public List<StoreFilter> OrFilter { get; set; }
         public StoreOrder OrderBy { get; set; }
         public StoreSelect Selects { get; set; }
