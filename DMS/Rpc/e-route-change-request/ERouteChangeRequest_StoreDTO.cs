@@ -56,6 +56,7 @@ namespace DMS.Rpc.e_route_change_request
         public long? WorkflowDefinitionId { get; set; }
         
         public long? RequestStateId { get; set; }
+        public ERouteChangeRequest_OrganizationDTO Organization { get; set; }
         public ERouteChangeRequest_StoreGroupingDTO StoreGrouping { get; set; }
         public ERouteChangeRequest_StoreTypeDTO StoreType { get; set; }
         public ERouteChangeRequest_StoreDTO() {}
@@ -109,6 +110,7 @@ namespace DMS.Rpc.e_route_change_request
             this.WorkflowDefinitionId = Store.WorkflowDefinitionId;
             
             this.RequestStateId = Store.RequestStateId;
+            this.Organization = Store.Organization == null ? null : new ERouteChangeRequest_OrganizationDTO(Store.Organization);
             this.StoreGrouping = Store.StoreGrouping == null ? null : new ERouteChangeRequest_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new ERouteChangeRequest_StoreTypeDTO(Store.StoreType);
             this.Errors = Store.Errors;
