@@ -30,6 +30,7 @@ namespace DMS.Repositories
         IImageRepository ImageRepository { get; }
         IIndirectPriceListRepository IndirectPriceListRepository { get; }
         IIndirectPriceListTypeRepository IndirectPriceListTypeRepository { get; }
+        IIndirectPriceListItemMappingItemMappingRepository IndirectPriceListItemMappingItemMappingRepository { get; }
         IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; }
         IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; }
         IIndirectSalesOrderPromotionRepository IndirectSalesOrderPromotionRepository { get; }
@@ -91,6 +92,7 @@ namespace DMS.Repositories
         public IImageRepository ImageRepository { get; private set; }
         public IIndirectPriceListRepository IndirectPriceListRepository { get; private set; }
         public IIndirectPriceListTypeRepository IndirectPriceListTypeRepository { get; private set; }
+        public IIndirectPriceListItemMappingItemMappingRepository IndirectPriceListItemMappingItemMappingRepository { get; private set; }
         public IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; private set; }
         public IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; private set; }
         public IIndirectSalesOrderPromotionRepository IndirectSalesOrderPromotionRepository { get; private set; }
@@ -150,6 +152,7 @@ namespace DMS.Repositories
             ImageRepository = new ImageRepository(DataContext);
             IndirectPriceListRepository = new IndirectPriceListRepository(DataContext);
             IndirectPriceListTypeRepository = new IndirectPriceListTypeRepository(DataContext);
+            IndirectPriceListItemMappingItemMappingRepository = new IndirectPriceListItemMappingItemMappingRepository(DataContext);
             IndirectSalesOrderContentRepository = new IndirectSalesOrderContentRepository(DataContext);
             IndirectSalesOrderRepository = new IndirectSalesOrderRepository(DataContext);
             IndirectSalesOrderPromotionRepository = new IndirectSalesOrderPromotionRepository(DataContext);

@@ -1348,6 +1348,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.FilterListStore), HttpPost]
         public async Task<List<IndirectSalesOrder_StoreDTO>> FilterListStore([FromBody] IndirectSalesOrder_StoreFilterDTO IndirectSalesOrder_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Skip = 0;
             StoreFilter.Take = 20;
@@ -1386,6 +1389,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.FilterListAppUser), HttpPost]
         public async Task<List<IndirectSalesOrder_AppUserDTO>> FilterListAppUser([FromBody] IndirectSalesOrder_AppUserFilterDTO IndirectSalesOrder_AppUserFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AppUserFilter AppUserFilter = new AppUserFilter();
             AppUserFilter.Skip = 0;
             AppUserFilter.Take = 20;
@@ -1415,6 +1421,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.FilterListIndirectSalesOrderContent), HttpPost]
         public async Task<List<IndirectSalesOrder_IndirectSalesOrderContentDTO>> FilterListIndirectSalesOrderContent([FromBody] IndirectSalesOrder_IndirectSalesOrderContentFilterDTO IndirectSalesOrder_IndirectSalesOrderContentFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             IndirectSalesOrderContentFilter IndirectSalesOrderContentFilter = new IndirectSalesOrderContentFilter();
             IndirectSalesOrderContentFilter.Skip = 0;
             IndirectSalesOrderContentFilter.Take = 20;
@@ -1446,6 +1455,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.FilterListUnitOfMeasure), HttpPost]
         public async Task<List<IndirectSalesOrder_UnitOfMeasureDTO>> FilterListUnitOfMeasure([FromBody] IndirectSalesOrder_UnitOfMeasureFilterDTO IndirectSalesOrder_UnitOfMeasureFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter();
             UnitOfMeasureFilter.Skip = 0;
             UnitOfMeasureFilter.Take = 20;
@@ -1466,6 +1478,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.FilterListIndirectSalesOrderPromotion), HttpPost]
         public async Task<List<IndirectSalesOrder_IndirectSalesOrderPromotionDTO>> FilterListIndirectSalesOrderPromotion([FromBody] IndirectSalesOrder_IndirectSalesOrderPromotionFilterDTO IndirectSalesOrder_IndirectSalesOrderPromotionFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             IndirectSalesOrderPromotionFilter IndirectSalesOrderPromotionFilter = new IndirectSalesOrderPromotionFilter();
             IndirectSalesOrderPromotionFilter.Skip = 0;
             IndirectSalesOrderPromotionFilter.Take = 20;
@@ -1489,6 +1504,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.FilterListItem), HttpPost]
         public async Task<List<IndirectSalesOrder_ItemDTO>> FilterListItem([FromBody] IndirectSalesOrder_ItemFilterDTO IndirectSalesOrder_ItemFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             ItemFilter ItemFilter = new ItemFilter();
             ItemFilter.Skip = 0;
             ItemFilter.Take = 20;
@@ -1513,6 +1531,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListStore), HttpPost]
         public async Task<List<IndirectSalesOrder_StoreDTO>> SingleListStore([FromBody] IndirectSalesOrder_StoreFilterDTO IndirectSalesOrder_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Skip = 0;
             StoreFilter.Take = 20;
@@ -1550,6 +1571,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListAppUser), HttpPost]
         public async Task<List<IndirectSalesOrder_AppUserDTO>> SingleListAppUser([FromBody] IndirectSalesOrder_AppUserFilterDTO IndirectSalesOrder_AppUserFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AppUserFilter AppUserFilter = new AppUserFilter();
             AppUserFilter.Skip = 0;
             AppUserFilter.Take = 20;
@@ -1579,6 +1603,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListIndirectSalesOrderContent), HttpPost]
         public async Task<List<IndirectSalesOrder_IndirectSalesOrderContentDTO>> SingleListIndirectSalesOrderContent([FromBody] IndirectSalesOrder_IndirectSalesOrderContentFilterDTO IndirectSalesOrder_IndirectSalesOrderContentFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             IndirectSalesOrderContentFilter IndirectSalesOrderContentFilter = new IndirectSalesOrderContentFilter();
             IndirectSalesOrderContentFilter.Skip = 0;
             IndirectSalesOrderContentFilter.Take = 20;
@@ -1610,6 +1637,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListUnitOfMeasure), HttpPost]
         public async Task<List<IndirectSalesOrder_UnitOfMeasureDTO>> SingleListUnitOfMeasure([FromBody] IndirectSalesOrder_UnitOfMeasureFilterDTO IndirectSalesOrder_UnitOfMeasureFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             var UOMG = await UnitOfMeasureGroupingService.Get(IndirectSalesOrder_UnitOfMeasureFilterDTO.UnitOfMeasureGroupingId.Equal ?? 0);
             List<IndirectSalesOrder_UnitOfMeasureDTO> IndirectSalesOrder_UnitOfMeasureDTOs = new List<IndirectSalesOrder_UnitOfMeasureDTO>();
             if (UOMG != null)
@@ -1621,6 +1651,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListIndirectSalesOrderPromotion), HttpPost]
         public async Task<List<IndirectSalesOrder_IndirectSalesOrderPromotionDTO>> SingleListIndirectSalesOrderPromotion([FromBody] IndirectSalesOrder_IndirectSalesOrderPromotionFilterDTO IndirectSalesOrder_IndirectSalesOrderPromotionFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             IndirectSalesOrderPromotionFilter IndirectSalesOrderPromotionFilter = new IndirectSalesOrderPromotionFilter();
             IndirectSalesOrderPromotionFilter.Skip = 0;
             IndirectSalesOrderPromotionFilter.Take = 20;
@@ -1644,6 +1677,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListSupplier), HttpPost]
         public async Task<List<IndirectSalesOrder_SupplierDTO>> SingleListSupplier([FromBody] IndirectSalesOrder_SupplierFilterDTO Product_SupplierFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             SupplierFilter SupplierFilter = new SupplierFilter();
             SupplierFilter.Skip = 0;
             SupplierFilter.Take = 20;
@@ -1664,6 +1700,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListStoreGrouping), HttpPost]
         public async Task<List<IndirectSalesOrder_StoreGroupingDTO>> SingleListStoreGrouping([FromBody] IndirectSalesOrder_StoreGroupingFilterDTO IndirectSalesOrder_StoreGroupingFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
             StoreGroupingFilter.Skip = 0;
             StoreGroupingFilter.Take = 99999;
@@ -1683,6 +1722,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListStoreType), HttpPost]
         public async Task<List<IndirectSalesOrder_StoreTypeDTO>> SingleListStoreType([FromBody] IndirectSalesOrder_StoreTypeFilterDTO IndirectSalesOrder_StoreTypeFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
             StoreTypeFilter.Skip = 0;
             StoreTypeFilter.Take = 20;
@@ -1702,6 +1744,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListItem), HttpPost]
         public async Task<List<IndirectSalesOrder_ItemDTO>> SingleListItem([FromBody] IndirectSalesOrder_ItemFilterDTO IndirectSalesOrder_ItemFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             ItemFilter ItemFilter = new ItemFilter();
             ItemFilter.Skip = 0;
             ItemFilter.Take = 20;
@@ -1726,6 +1771,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListProductGrouping), HttpPost]
         public async Task<List<IndirectSalesOrder_ProductGroupingDTO>> SingleListProductGrouping([FromBody] IndirectSalesOrder_ProductGroupingFilterDTO IndirectSalesOrder_ProductGroupingFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
             ProductGroupingFilter.Skip = 0;
             ProductGroupingFilter.Take = int.MaxValue;
@@ -1742,6 +1790,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListProductType), HttpPost]
         public async Task<List<IndirectSalesOrder_ProductTypeDTO>> SingleListProductType([FromBody] IndirectSalesOrder_ProductTypeFilterDTO IndirectSalesOrder_ProductTypeFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
             ProductTypeFilter.Skip = 0;
             ProductTypeFilter.Take = 20;
@@ -1763,6 +1814,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListEditedPriceStatus), HttpPost]
         public async Task<List<IndirectSalesOrder_EditedPriceStatusDTO>> SingleListEditedPriceStatus([FromBody] IndirectSalesOrder_EditedPriceStatusFilterDTO IndirectSalesOrder_EditedPriceStatusFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             EditedPriceStatusFilter EditedPriceStatusFilter = new EditedPriceStatusFilter();
             EditedPriceStatusFilter.Skip = 0;
             EditedPriceStatusFilter.Take = 20;
@@ -1781,6 +1835,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.SingleListRequestState), HttpPost]
         public async Task<List<IndirectSalesOrder_RequestStateDTO>> SingleListRequestState([FromBody] IndirectSalesOrder_RequestStateFilterDTO IndirectSalesOrder_RequestStateFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             RequestStateFilter RequestStateFilter = new RequestStateFilter();
             RequestStateFilter.Skip = 0;
             RequestStateFilter.Take = 20;
@@ -1799,6 +1856,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] IndirectSalesOrder_StoreFilterDTO IndirectSalesOrder_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Id = IndirectSalesOrder_StoreFilterDTO.Id;
             StoreFilter.Code = IndirectSalesOrder_StoreFilterDTO.Code;
@@ -1825,6 +1885,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.ListStore), HttpPost]
         public async Task<List<IndirectSalesOrder_StoreDTO>> ListStore([FromBody] IndirectSalesOrder_StoreFilterDTO IndirectSalesOrder_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Skip = IndirectSalesOrder_StoreFilterDTO.Skip;
             StoreFilter.Take = IndirectSalesOrder_StoreFilterDTO.Take;
@@ -1860,6 +1923,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.CountItem), HttpPost]
         public async Task<long> CountItem([FromBody] IndirectSalesOrder_ItemFilterDTO IndirectSalesOrder_ItemFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             ItemFilter ItemFilter = new ItemFilter();
             ItemFilter.Id = IndirectSalesOrder_ItemFilterDTO.Id;
             ItemFilter.Code = IndirectSalesOrder_ItemFilterDTO.Code;
@@ -1879,6 +1945,9 @@ namespace DMS.Rpc.indirect_sales_order
         [Route(IndirectSalesOrderRoute.ListItem), HttpPost]
         public async Task<List<IndirectSalesOrder_ItemDTO>> ListItem([FromBody] IndirectSalesOrder_ItemFilterDTO IndirectSalesOrder_ItemFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             ItemFilter ItemFilter = new ItemFilter();
             ItemFilter.Skip = IndirectSalesOrder_ItemFilterDTO.Skip;
             ItemFilter.Take = IndirectSalesOrder_ItemFilterDTO.Take;
@@ -1898,10 +1967,15 @@ namespace DMS.Rpc.indirect_sales_order
             ItemFilter.StatusId = IndirectSalesOrder_ItemFilterDTO.StatusId;
             ItemFilter.SupplierId = IndirectSalesOrder_ItemFilterDTO.SupplierId;
 
-            List<Item> Items = await ItemService.List(ItemFilter);
-            List<IndirectSalesOrder_ItemDTO> IndirectSalesOrder_ItemDTOs = Items
-                .Select(x => new IndirectSalesOrder_ItemDTO(x)).ToList();
-            return IndirectSalesOrder_ItemDTOs;
+            if(IndirectSalesOrder_ItemFilterDTO.StoreId.Equal.HasValue)
+            {
+                List<Item> Items = await IndirectSalesOrderService.ListItem(ItemFilter, IndirectSalesOrder_ItemFilterDTO.StoreId.Equal.Value);
+                List<IndirectSalesOrder_ItemDTO> IndirectSalesOrder_ItemDTOs = Items
+                    .Select(x => new IndirectSalesOrder_ItemDTO(x)).ToList();
+                return IndirectSalesOrder_ItemDTOs;
+            }
+
+            return new List<IndirectSalesOrder_ItemDTO>();
         }
     }
 }
