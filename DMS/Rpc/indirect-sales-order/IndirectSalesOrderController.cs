@@ -1608,15 +1608,15 @@ namespace DMS.Rpc.indirect_sales_order
             return IndirectSalesOrder_IndirectSalesOrderContentDTOs;
         }
         [Route(IndirectSalesOrderRoute.SingleListUnitOfMeasure), HttpPost]
-        public async Task<List<IndirectSalesOrder_UnitOfMeasureGroupingContentDTO>> SingleListUnitOfMeasure([FromBody] IndirectSalesOrder_UnitOfMeasureFilterDTO IndirectSalesOrder_UnitOfMeasureFilterDTO)
+        public async Task<List<IndirectSalesOrder_UnitOfMeasureDTO>> SingleListUnitOfMeasure([FromBody] IndirectSalesOrder_UnitOfMeasureFilterDTO IndirectSalesOrder_UnitOfMeasureFilterDTO)
         {
             var UOMG = await UnitOfMeasureGroupingService.Get(IndirectSalesOrder_UnitOfMeasureFilterDTO.UnitOfMeasureGroupingId.Equal ?? 0);
-            List<IndirectSalesOrder_UnitOfMeasureGroupingContentDTO> IndirectSalesOrder_UnitOfMeasureGroupingContentDTOs = new List<IndirectSalesOrder_UnitOfMeasureGroupingContentDTO>();
+            List<IndirectSalesOrder_UnitOfMeasureDTO> IndirectSalesOrder_UnitOfMeasureDTOs = new List<IndirectSalesOrder_UnitOfMeasureDTO>();
             if (UOMG != null)
             {
-                IndirectSalesOrder_UnitOfMeasureGroupingContentDTOs = UOMG.UnitOfMeasureGroupingContents.Select(x => new IndirectSalesOrder_UnitOfMeasureGroupingContentDTO(x)).ToList();
+                IndirectSalesOrder_UnitOfMeasureDTOs = UOMG.UnitOfMeasureGroupingContents.Select(x => new IndirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
             }
-            return IndirectSalesOrder_UnitOfMeasureGroupingContentDTOs;
+            return IndirectSalesOrder_UnitOfMeasureDTOs;
         }
         [Route(IndirectSalesOrderRoute.SingleListIndirectSalesOrderPromotion), HttpPost]
         public async Task<List<IndirectSalesOrder_IndirectSalesOrderPromotionDTO>> SingleListIndirectSalesOrderPromotion([FromBody] IndirectSalesOrder_IndirectSalesOrderPromotionFilterDTO IndirectSalesOrder_IndirectSalesOrderPromotionFilterDTO)

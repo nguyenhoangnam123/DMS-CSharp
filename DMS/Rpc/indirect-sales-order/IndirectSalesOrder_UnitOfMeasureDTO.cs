@@ -16,7 +16,7 @@ namespace DMS.Rpc.indirect_sales_order
         public string Name { get; set; }
         
         public string Description { get; set; }
-        
+        public long? Factor { get; set; }
         public long StatusId { get; set; }
         public IndirectSalesOrder_UnitOfMeasureDTO() {}
         public IndirectSalesOrder_UnitOfMeasureDTO(UnitOfMeasure UnitOfMeasure)
@@ -33,6 +33,21 @@ namespace DMS.Rpc.indirect_sales_order
             this.StatusId = UnitOfMeasure.StatusId;
             
             this.Errors = UnitOfMeasure.Errors;
+        }
+        public IndirectSalesOrder_UnitOfMeasureDTO(UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent)
+        {
+
+            this.Id = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? 0 : UnitOfMeasureGroupingContent.UnitOfMeasure.Id;
+
+            this.Code = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? string.Empty : UnitOfMeasureGroupingContent.UnitOfMeasure.Code;
+
+            this.Name = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? string.Empty : UnitOfMeasureGroupingContent.UnitOfMeasure.Name;
+
+            this.Description = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? string.Empty : UnitOfMeasureGroupingContent.UnitOfMeasure.Description;
+
+            this.StatusId = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? 0 : UnitOfMeasureGroupingContent.UnitOfMeasure.StatusId;
+
+            this.Factor = UnitOfMeasureGroupingContent.Factor;
         }
     }
 
