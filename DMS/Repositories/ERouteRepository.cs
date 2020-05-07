@@ -445,7 +445,33 @@ namespace DMS.Repositories
 
         private async Task SaveReference(ERoute ERoute)
         {
+            await DataContext.ERouteContent
+                .Where(x => x.ERouteId == ERoute.Id).DeleteFromQueryAsync();
+            if (ERoute.ERouteContents != null)
+            {
+                List<ERouteContentDAO> ERouteContentDAOs = new List<ERouteContentDAO>();
+                foreach (ERouteContent ERouteContent in ERoute.ERouteContents)
+                {
+                    ERouteContentDAO ERouteContentDAO = new ERouteContentDAO();
+                    ERouteContentDAO.Id = ERouteContent.Id;
+                    ERouteContentDAO.ERouteId = ERoute.Id;
+                    ERouteContentDAO.StoreId = ERouteContent.StoreId;
+                    ERouteContentDAO.OrderNumber = ERouteContent.OrderNumber;
+                    ERouteContentDAO.Monday = ERouteContent.Monday;
+                    ERouteContentDAO.Tuesday = ERouteContent.Tuesday;
+                    ERouteContentDAO.Wednesday = ERouteContent.Wednesday;
+                    ERouteContentDAO.Thursday = ERouteContent.Thursday;
+                    ERouteContentDAO.Friday = ERouteContent.Friday;
+                    ERouteContentDAO.Saturday = ERouteContent.Saturday;
+                    ERouteContentDAO.Sunday = ERouteContent.Sunday;
+                    ERouteContentDAO.Week1 = ERouteContent.Week1;
+                    ERouteContentDAO.Week2 = ERouteContent.Week2;
+                    ERouteContentDAO.Week3 = ERouteContent.Week3;
+                    ERouteContentDAO.Week4 = ERouteContent.Week4;
+                    ERouteContentDAOs.Add(ERouteContentDAO);
+                }
+                await DataContext.ERouteContent.BulkMergeAsync(ERouteContentDAOs);
+            }
         }
-        
     }
 }
