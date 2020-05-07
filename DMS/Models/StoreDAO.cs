@@ -7,13 +7,14 @@ namespace DMS.Models
     {
         public StoreDAO()
         {
+            DirectPriceListStoreMappings = new HashSet<DirectPriceListStoreMappingDAO>();
             DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
             ERouteChangeRequestContents = new HashSet<ERouteChangeRequestContentDAO>();
             ERouteContents = new HashSet<ERouteContentDAO>();
+            IndirectPriceListStoreMappings = new HashSet<IndirectPriceListStoreMappingDAO>();
             IndirectSalesOrderBuyerStores = new HashSet<IndirectSalesOrderDAO>();
             IndirectSalesOrderSellerStores = new HashSet<IndirectSalesOrderDAO>();
             InverseParentStore = new HashSet<StoreDAO>();
-            PriceListStoreMappings = new HashSet<PriceListStoreMappingDAO>();
             StoreImageMappings = new HashSet<StoreImageMappingDAO>();
         }
 
@@ -56,13 +57,14 @@ namespace DMS.Models
         public virtual StoreGroupingDAO StoreGrouping { get; set; }
         public virtual StoreTypeDAO StoreType { get; set; }
         public virtual WardDAO Ward { get; set; }
+        public virtual ICollection<DirectPriceListStoreMappingDAO> DirectPriceListStoreMappings { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
         public virtual ICollection<ERouteChangeRequestContentDAO> ERouteChangeRequestContents { get; set; }
         public virtual ICollection<ERouteContentDAO> ERouteContents { get; set; }
+        public virtual ICollection<IndirectPriceListStoreMappingDAO> IndirectPriceListStoreMappings { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrderBuyerStores { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrderSellerStores { get; set; }
         public virtual ICollection<StoreDAO> InverseParentStore { get; set; }
-        public virtual ICollection<PriceListStoreMappingDAO> PriceListStoreMappings { get; set; }
         public virtual ICollection<StoreImageMappingDAO> StoreImageMappings { get; set; }
     }
 }

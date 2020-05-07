@@ -7,12 +7,13 @@ namespace DMS.Models
     {
         public ItemDAO()
         {
+            DirectPriceListItemMappings = new HashSet<DirectPriceListItemMappingDAO>();
             DirectSalesOrderContents = new HashSet<DirectSalesOrderContentDAO>();
             DirectSalesOrderPromotions = new HashSet<DirectSalesOrderPromotionDAO>();
+            IndirectPriceListItemMappings = new HashSet<IndirectPriceListItemMappingDAO>();
             IndirectSalesOrderContents = new HashSet<IndirectSalesOrderContentDAO>();
             IndirectSalesOrderPromotions = new HashSet<IndirectSalesOrderPromotionDAO>();
             Inventories = new HashSet<InventoryDAO>();
-            PriceListItemMappings = new HashSet<PriceListItemMappingDAO>();
         }
 
         public long Id { get; set; }
@@ -29,11 +30,12 @@ namespace DMS.Models
 
         public virtual ProductDAO Product { get; set; }
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<DirectPriceListItemMappingDAO> DirectPriceListItemMappings { get; set; }
         public virtual ICollection<DirectSalesOrderContentDAO> DirectSalesOrderContents { get; set; }
         public virtual ICollection<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotions { get; set; }
+        public virtual ICollection<IndirectPriceListItemMappingDAO> IndirectPriceListItemMappings { get; set; }
         public virtual ICollection<IndirectSalesOrderContentDAO> IndirectSalesOrderContents { get; set; }
         public virtual ICollection<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotions { get; set; }
         public virtual ICollection<InventoryDAO> Inventories { get; set; }
-        public virtual ICollection<PriceListItemMappingDAO> PriceListItemMappings { get; set; }
     }
 }
