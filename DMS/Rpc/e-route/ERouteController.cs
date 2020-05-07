@@ -17,6 +17,9 @@ using DMS.Services.MStatus;
 using DMS.Enums;
 using DMS.Services.MStore;
 using DMS.Services.MERouteType;
+using DMS.Services.MOrganization;
+using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreType;
 
 namespace DMS.Rpc.e_route
 {
@@ -41,8 +44,11 @@ namespace DMS.Rpc.e_route
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListERouteType = Default + "/single-list-eroute-type";
+        public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListRequestState = Default + "/single-list-request-state";
         public const string SingleListStore = Default + "/single-list-store";
+        public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
+        public const string SingleListStoreType = Default + "/single-list-store-type";
         public const string SingleListStatus = Default + "/single-list-status";
 
         public const string CountStore = Default + "/count-store";
@@ -66,27 +72,36 @@ namespace DMS.Rpc.e_route
     {
         private IAppUserService AppUserService;
         private IERouteTypeService ERouteTypeService;
+        private IOrganizationService OrganizationService;
         private IRequestStateService RequestStateService;
         private IStatusService StatusService;
         private IERouteService ERouteService;
         private IStoreService StoreService;
+        private IStoreGroupingService StoreGroupingService;
+        private IStoreTypeService StoreTypeService;
         private ICurrentContext CurrentContext;
         public ERouteController(
             IAppUserService AppUserService,
             IERouteTypeService ERouteTypeService,
+            IOrganizationService OrganizationService,
             IRequestStateService RequestStateService,
             IStatusService StatusService,
             IERouteService ERouteService,
             IStoreService StoreService,
+            IStoreGroupingService StoreGroupingService,
+            IStoreTypeService StoreTypeService,
             ICurrentContext CurrentContext
         )
         {
             this.AppUserService = AppUserService;
             this.ERouteTypeService = ERouteTypeService;
+            this.OrganizationService = OrganizationService;
             this.RequestStateService = RequestStateService;
             this.StatusService = StatusService;
             this.ERouteService = ERouteService;
             this.StoreService = StoreService;
+            this.StoreGroupingService = StoreGroupingService;
+            this.StoreTypeService = StoreTypeService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -884,6 +899,31 @@ namespace DMS.Rpc.e_route
                 .Select(x => new ERoute_ERouteTypeDTO(x)).ToList();
             return ERoute_ERouteTypeDTOs;
         }
+        [Route(ERouteRoute.SingleListOrganization), HttpPost]
+        public async Task<List<ERoute_OrganizationDTO>> SingleListOrganization([FromBody] ERoute_OrganizationFilterDTO ERoute_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = 99999;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.Id = ERoute_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = ERoute_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = ERoute_OrganizationFilterDTO.Name;
+            OrganizationFilter.ParentId = ERoute_OrganizationFilterDTO.ParentId;
+            OrganizationFilter.Path = ERoute_OrganizationFilterDTO.Path;
+            OrganizationFilter.Level = ERoute_OrganizationFilterDTO.Level;
+            OrganizationFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            OrganizationFilter.Phone = ERoute_OrganizationFilterDTO.Phone;
+            OrganizationFilter.Address = ERoute_OrganizationFilterDTO.Address;
+            OrganizationFilter.Email = ERoute_OrganizationFilterDTO.Email;
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<ERoute_OrganizationDTO> ERoute_OrganizationDTOs = Organizations
+                .Select(x => new ERoute_OrganizationDTO(x)).ToList();
+            return ERoute_OrganizationDTOs;
+        }
         [Route(ERouteRoute.SingleListRequestState), HttpPost]
         public async Task<List<ERoute_RequestStateDTO>> SingleListRequestState([FromBody] ERoute_RequestStateFilterDTO ERoute_RequestStateFilterDTO)
         {
@@ -938,6 +978,44 @@ namespace DMS.Rpc.e_route
             List<ERoute_StoreDTO> ERoute_StoreDTOs = Stores
                 .Select(x => new ERoute_StoreDTO(x)).ToList();
             return ERoute_StoreDTOs;
+        }
+        [Route(ERouteRoute.SingleListStoreGrouping), HttpPost]
+        public async Task<List<ERoute_StoreGroupingDTO>> SingleListStoreGrouping([FromBody] ERoute_StoreGroupingFilterDTO ERoute_StoreGroupingFilterDTO)
+        {
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = 0;
+            StoreGroupingFilter.Take = 99999;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Code = ERoute_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = ERoute_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.Level = ERoute_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.Path = ERoute_StoreGroupingFilterDTO.Path;
+            StoreGroupingFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+            List<ERoute_StoreGroupingDTO> ERoute_StoreGroupingDTOs = StoreGroupings
+                .Select(x => new ERoute_StoreGroupingDTO(x)).ToList();
+            return ERoute_StoreGroupingDTOs;
+        }
+        [Route(ERouteRoute.SingleListStoreType), HttpPost]
+        public async Task<List<ERoute_StoreTypeDTO>> SingleListStoreType([FromBody] ERoute_StoreTypeFilterDTO ERoute_StoreTypeFilterDTO)
+        {
+            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
+            StoreTypeFilter.Skip = 0;
+            StoreTypeFilter.Take = 20;
+            StoreTypeFilter.OrderBy = StoreTypeOrder.Id;
+            StoreTypeFilter.OrderType = OrderType.ASC;
+            StoreTypeFilter.Selects = StoreTypeSelect.ALL;
+            StoreTypeFilter.Id = ERoute_StoreTypeFilterDTO.Id;
+            StoreTypeFilter.Code = ERoute_StoreTypeFilterDTO.Code;
+            StoreTypeFilter.Name = ERoute_StoreTypeFilterDTO.Name;
+            StoreTypeFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
+            List<ERoute_StoreTypeDTO> ERoute_StoreTypeDTOs = StoreTypes
+                .Select(x => new ERoute_StoreTypeDTO(x)).ToList();
+            return ERoute_StoreTypeDTOs;
         }
         [Route(ERouteRoute.SingleListStatus), HttpPost]
         public async Task<List<ERoute_StatusDTO>> SingleListStatus([FromBody] ERoute_StatusFilterDTO ERoute_StatusFilterDTO)

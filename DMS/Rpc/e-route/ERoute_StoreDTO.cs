@@ -53,9 +53,9 @@ namespace DMS.Rpc.e_route
         public long? WorkflowDefinitionId { get; set; }
 
         public long? RequestStateId { get; set; }
+        public ERoute_OrganizationDTO Organization { get; set; }
         public ERoute_StoreGroupingDTO StoreGrouping { get; set; }
         public ERoute_StoreTypeDTO StoreType { get; set; }
-
         public ERoute_StoreDTO() { }
         public ERoute_StoreDTO(Store Store)
         {
@@ -107,6 +107,7 @@ namespace DMS.Rpc.e_route
             this.WorkflowDefinitionId = Store.WorkflowDefinitionId;
 
             this.RequestStateId = Store.RequestStateId;
+            this.Organization = Store.Organization == null ? null : new ERoute_OrganizationDTO(Store.Organization);
             this.StoreGrouping = Store.StoreGrouping == null ? null : new ERoute_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new ERoute_StoreTypeDTO(Store.StoreType);
             this.Errors = Store.Errors;
