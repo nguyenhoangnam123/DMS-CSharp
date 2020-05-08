@@ -295,8 +295,6 @@ namespace DMS.Repositories
                     OwnerPhone = q.BuyerStore.OwnerPhone,
                     OwnerEmail = q.BuyerStore.OwnerEmail,
                     StatusId = q.BuyerStore.StatusId,
-                    WorkflowDefinitionId = q.BuyerStore.WorkflowDefinitionId,
-                    RequestStateId = q.BuyerStore.RequestStateId,
                 } : null,
                 EditedPriceStatus = filter.Selects.Contains(IndirectSalesOrderSelect.EditedPriceStatus) && q.EditedPriceStatus != null ? new EditedPriceStatus
                 {
@@ -352,8 +350,6 @@ namespace DMS.Repositories
                     OwnerPhone = q.SellerStore.OwnerPhone,
                     OwnerEmail = q.SellerStore.OwnerEmail,
                     StatusId = q.SellerStore.StatusId,
-                    WorkflowDefinitionId = q.SellerStore.WorkflowDefinitionId,
-                    RequestStateId = q.SellerStore.RequestStateId,
                 } : null,
             }).ToListAsync();
             return IndirectSalesOrders;
@@ -423,8 +419,6 @@ namespace DMS.Repositories
                     OwnerPhone = x.BuyerStore.OwnerPhone,
                     OwnerEmail = x.BuyerStore.OwnerEmail,
                     StatusId = x.BuyerStore.StatusId,
-                    WorkflowDefinitionId = x.BuyerStore.WorkflowDefinitionId,
-                    RequestStateId = x.BuyerStore.RequestStateId,
                 },
                 EditedPriceStatus = x.EditedPriceStatus == null ? null : new EditedPriceStatus
                 {
@@ -480,8 +474,6 @@ namespace DMS.Repositories
                     OwnerPhone = x.SellerStore.OwnerPhone,
                     OwnerEmail = x.SellerStore.OwnerEmail,
                     StatusId = x.SellerStore.StatusId,
-                    WorkflowDefinitionId = x.SellerStore.WorkflowDefinitionId,
-                    RequestStateId = x.SellerStore.RequestStateId,
                 },
             }).FirstOrDefaultAsync();
 

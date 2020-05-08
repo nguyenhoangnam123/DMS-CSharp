@@ -623,6 +623,7 @@ namespace DMS.Repositories
             DataContext.Store.Add(StoreDAO);
             await DataContext.SaveChangesAsync();
             Store.Id = StoreDAO.Id;
+            Store.RowId = StoreDAO.RowId;
             await SaveReference(Store);
             return true;
         }

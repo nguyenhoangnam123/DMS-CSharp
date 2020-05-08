@@ -7,13 +7,13 @@ namespace DMS.Models
     {
         public WorkflowStateDAO()
         {
-            RequestWorkflows = new HashSet<RequestWorkflowDAO>();
+            RequestWorkflowStepMappings = new HashSet<RequestWorkflowStepMappingDAO>();
         }
 
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<RequestWorkflowDAO> RequestWorkflows { get; set; }
+        public virtual ICollection<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappings { get; set; }
     }
 }

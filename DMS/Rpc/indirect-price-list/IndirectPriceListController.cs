@@ -615,8 +615,6 @@ namespace DMS.Rpc.indirect_price_list
                         Store.OwnerPhone,
                         Store.OwnerEmail,
                         Store.StatusId,
-                        Store.WorkflowDefinitionId,
-                        Store.RequestStateId,
                     });
                 }
                 excel.GenerateWorksheet("Store", StoreHeaders, StoreData);
@@ -931,8 +929,6 @@ namespace DMS.Rpc.indirect_price_list
                         Store.OwnerPhone,
                         Store.OwnerEmail,
                         Store.StatusId,
-                        Store.WorkflowDefinitionId,
-                        Store.RequestStateId,
                     });
                 }
                 excel.GenerateWorksheet("Store", StoreHeaders, StoreData);
@@ -1088,8 +1084,6 @@ namespace DMS.Rpc.indirect_price_list
                         OwnerPhone = x.Store.OwnerPhone,
                         OwnerEmail = x.Store.OwnerEmail,
                         StatusId = x.Store.StatusId,
-                        WorkflowDefinitionId = x.Store.WorkflowDefinitionId,
-                        RequestStateId = x.Store.RequestStateId,
                     },
                 }).ToList();
             IndirectPriceList.IndirectPriceListStoreTypeMappings = IndirectPriceList_IndirectPriceListDTO.IndirectPriceListStoreTypeMappings?

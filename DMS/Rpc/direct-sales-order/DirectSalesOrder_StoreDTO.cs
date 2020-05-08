@@ -82,9 +82,6 @@ namespace DMS.Rpc.direct_sales_order
             
             this.StatusId = Store.StatusId;
             
-            this.WorkflowDefinitionId = Store.WorkflowDefinitionId;
-            
-            this.RequestStateId = Store.RequestStateId;
             this.StoreGrouping = Store.StoreGrouping == null ? null : new DirectSalesOrder_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new DirectSalesOrder_StoreTypeDTO(Store.StoreType);
             this.Errors = Store.Errors;

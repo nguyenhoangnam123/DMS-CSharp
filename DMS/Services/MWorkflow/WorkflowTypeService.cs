@@ -9,7 +9,7 @@ using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
 
-namespace DMS.Services.MWorkflowType
+namespace DMS.Services.MWorkflow
 {
     public interface IWorkflowTypeService :  IServiceScoped
     {
@@ -23,19 +23,16 @@ namespace DMS.Services.MWorkflowType
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IWorkflowTypeValidator WorkflowTypeValidator;
 
         public WorkflowTypeService(
             IUOW UOW,
             ILogging Logging,
-            ICurrentContext CurrentContext,
-            IWorkflowTypeValidator WorkflowTypeValidator
+            ICurrentContext CurrentContext
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.WorkflowTypeValidator = WorkflowTypeValidator;
         }
         public async Task<int> Count(WorkflowTypeFilter WorkflowTypeFilter)
         {

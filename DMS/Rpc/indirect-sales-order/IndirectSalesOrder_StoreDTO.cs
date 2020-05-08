@@ -55,9 +55,6 @@ namespace DMS.Rpc.indirect_sales_order
         
         public long StatusId { get; set; }
         
-        public long? WorkflowDefinitionId { get; set; }
-        
-        public long? RequestStateId { get; set; }
         public IndirectSalesOrder_StoreGroupingDTO StoreGrouping { get; set; }
         public IndirectSalesOrder_StoreTypeDTO StoreType { get; set; }
         public IndirectSalesOrder_StoreDTO() {}
@@ -108,9 +105,6 @@ namespace DMS.Rpc.indirect_sales_order
             
             this.StatusId = Store.StatusId;
             
-            this.WorkflowDefinitionId = Store.WorkflowDefinitionId;
-            
-            this.RequestStateId = Store.RequestStateId;
             this.StoreGrouping = Store.StoreGrouping == null ? null : new IndirectSalesOrder_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new IndirectSalesOrder_StoreTypeDTO(Store.StoreType);
             this.Errors = Store.Errors;
@@ -165,10 +159,6 @@ namespace DMS.Rpc.indirect_sales_order
         public IdFilter StoreStatusId { get; set; }
         
         public IdFilter StatusId { get; set; }
-        
-        public IdFilter WorkflowDefinitionId { get; set; }
-        
-        public IdFilter RequestStateId { get; set; }
         
         public StoreOrder OrderBy { get; set; }
     }

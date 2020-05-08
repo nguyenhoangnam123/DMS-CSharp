@@ -47,7 +47,9 @@ namespace DMS.Repositories
         IProductTypeRepository ProductTypeRepository { get; }
         IProvinceRepository ProvinceRepository { get; }
         IRequestStateRepository RequestStateRepository { get; }
-        IRequestWorkflowRepository RequestWorkflowRepository { get; }
+        IRequestWorkflowDefinitionMappingRepository RequestWorkflowDefinitionMappingRepository { get; }
+        IRequestWorkflowParameterMappingRepository RequestWorkflowParameterMappingRepository { get; }
+        IRequestWorkflowStepMappingRepository RequestWorkflowStepMappingRepository { get; }
         IResellerRepository ResellerRepository { get; }
         IResellerStatusRepository ResellerStatusRepository { get; }
         IResellerTypeRepository ResellerTypeRepository { get; }
@@ -110,7 +112,9 @@ namespace DMS.Repositories
         public IProductTypeRepository ProductTypeRepository { get; private set; }
         public IProvinceRepository ProvinceRepository { get; private set; }
         public IRequestStateRepository RequestStateRepository { get; private set; }
-        public IRequestWorkflowRepository RequestWorkflowRepository { get; private set; }
+        public IRequestWorkflowDefinitionMappingRepository RequestWorkflowDefinitionMappingRepository { get; private set; }
+        public IRequestWorkflowParameterMappingRepository RequestWorkflowParameterMappingRepository { get; private set; }
+        public IRequestWorkflowStepMappingRepository RequestWorkflowStepMappingRepository { get; private set; }
         public IResellerRepository ResellerRepository { get; private set; }
         public IResellerStatusRepository ResellerStatusRepository { get; private set; }
         public IResellerTypeRepository ResellerTypeRepository { get; private set; }
@@ -171,7 +175,9 @@ namespace DMS.Repositories
             ProductTypeRepository = new ProductTypeRepository(DataContext);
             ProvinceRepository = new ProvinceRepository(DataContext);
             RequestStateRepository = new RequestStateRepository(DataContext);
-            RequestWorkflowRepository = new RequestWorkflowRepository(DataContext);
+            RequestWorkflowDefinitionMappingRepository = new RequestWorkflowDefinitionMappingRepository(DataContext);
+            RequestWorkflowParameterMappingRepository = new RequestWorkflowParameterMappingRepository(DataContext);
+            RequestWorkflowStepMappingRepository = new RequestWorkflowStepMappingRepository(DataContext);
             ResellerRepository = new ResellerRepository(DataContext);
             ResellerStatusRepository = new ResellerStatusRepository(DataContext);
             ResellerTypeRepository = new ResellerTypeRepository(DataContext);

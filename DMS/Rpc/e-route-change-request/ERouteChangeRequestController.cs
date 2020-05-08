@@ -587,8 +587,6 @@ namespace DMS.Rpc.e_route_change_request
                         Store.OwnerPhone,
                         Store.OwnerEmail,
                         Store.StatusId,
-                        Store.WorkflowDefinitionId,
-                        Store.RequestStateId,
                     });
                 }
                 excel.GenerateWorksheet("Store", StoreHeaders, StoreData);
@@ -869,8 +867,6 @@ namespace DMS.Rpc.e_route_change_request
                         Store.OwnerPhone,
                         Store.OwnerEmail,
                         Store.StatusId,
-                        Store.WorkflowDefinitionId,
-                        Store.RequestStateId,
                     });
                 }
                 excel.GenerateWorksheet("Store", StoreHeaders, StoreData);
@@ -983,8 +979,6 @@ namespace DMS.Rpc.e_route_change_request
                         OwnerPhone = x.Store.OwnerPhone,
                         OwnerEmail = x.Store.OwnerEmail,
                         StatusId = x.Store.StatusId,
-                        WorkflowDefinitionId = x.Store.WorkflowDefinitionId,
-                        RequestStateId = x.Store.RequestStateId,
                     },
                 }).ToList();
             ERouteChangeRequest.BaseLanguage = CurrentContext.Language;

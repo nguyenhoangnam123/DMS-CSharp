@@ -382,8 +382,6 @@ namespace DMS.Repositories
                     OwnerPhone = x.Store.OwnerPhone,
                     OwnerEmail = x.Store.OwnerEmail,
                     StatusId = x.Store.StatusId,
-                    WorkflowDefinitionId = x.Store.WorkflowDefinitionId,
-                    RequestStateId = x.Store.RequestStateId,
                 },
             }).ToListAsync();
             return ERoute;

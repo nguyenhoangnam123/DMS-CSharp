@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
-    public partial class RequestWorkflowDAO
+    public partial class RequestWorkflowStepMappingDAO
     {
-        public long Id { get; set; }
         public Guid RequestId { get; set; }
         public long WorkflowStepId { get; set; }
         public long WorkflowStateId { get; set; }

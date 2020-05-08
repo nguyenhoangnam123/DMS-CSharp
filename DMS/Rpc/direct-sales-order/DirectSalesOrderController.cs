@@ -555,8 +555,6 @@ namespace DMS.Rpc.direct_sales_order
                         Store.OwnerPhone,
                         Store.OwnerEmail,
                         Store.StatusId,
-                        Store.WorkflowDefinitionId,
-                        Store.RequestStateId,
                     });
                 }
                 excel.GenerateWorksheet("Store", StoreHeaders, StoreData);
@@ -783,8 +781,6 @@ namespace DMS.Rpc.direct_sales_order
                         Store.OwnerPhone,
                         Store.OwnerEmail,
                         Store.StatusId,
-                        Store.WorkflowDefinitionId,
-                        Store.RequestStateId,
                     });
                 }
                 excel.GenerateWorksheet("Store", StoreHeaders, StoreData);
@@ -971,8 +967,6 @@ namespace DMS.Rpc.direct_sales_order
                 OwnerPhone = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.OwnerPhone,
                 OwnerEmail = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.OwnerEmail,
                 StatusId = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.StatusId,
-                WorkflowDefinitionId = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.WorkflowDefinitionId,
-                RequestStateId = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.RequestStateId,
             };
             DirectSalesOrder.EditedPriceStatus = DirectSalesOrder_DirectSalesOrderDTO.EditedPriceStatus == null ? null : new EditedPriceStatus
             {

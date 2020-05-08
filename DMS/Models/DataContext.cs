@@ -53,8 +53,9 @@ namespace DMS.Models
         public virtual DbSet<ProductTypeDAO> ProductType { get; set; }
         public virtual DbSet<ProvinceDAO> Province { get; set; }
         public virtual DbSet<RequestStateDAO> RequestState { get; set; }
-        public virtual DbSet<RequestWorkflowDAO> RequestWorkflow { get; set; }
+        public virtual DbSet<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMapping { get; set; }
         public virtual DbSet<RequestWorkflowParameterMappingDAO> RequestWorkflowParameterMapping { get; set; }
+        public virtual DbSet<RequestWorkflowStepMappingDAO> RequestWorkflowStepMapping { get; set; }
         public virtual DbSet<ResellerDAO> Reseller { get; set; }
         public virtual DbSet<ResellerStatusDAO> ResellerStatus { get; set; }
         public virtual DbSet<ResellerTypeDAO> ResellerType { get; set; }
@@ -1329,7 +1330,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<RequestStateDAO>(entity =>
             {
-                entity.ToTable("RequestState", "MDM");
+                entity.ToTable("RequestState", "WF");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -1342,41 +1343,34 @@ namespace DMS.Models
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<RequestWorkflowDAO>(entity =>
+            modelBuilder.Entity<RequestWorkflowDefinitionMappingDAO>(entity =>
             {
-                entity.ToTable("RequestWorkflow", "MDM");
+                entity.HasKey(e => e.RequestId);
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.ToTable("RequestWorkflowDefinitionMapping", "WF");
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.RequestId).ValueGeneratedNever();
 
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.AppUser)
-                    .WithMany(p => p.RequestWorkflows)
-                    .HasForeignKey(d => d.AppUserId)
-                    .HasConstraintName("FK_StoreWorkflow_AppUser");
-
-                entity.HasOne(d => d.WorkflowState)
-                    .WithMany(p => p.RequestWorkflows)
-                    .HasForeignKey(d => d.WorkflowStateId)
+                entity.HasOne(d => d.RequestState)
+                    .WithMany(p => p.RequestWorkflowDefinitionMappings)
+                    .HasForeignKey(d => d.RequestStateId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreWorkflow_WorkflowState");
+                    .HasConstraintName("FK_RequestWorkflowDefinitionMapping_RequestState");
 
-                entity.HasOne(d => d.WorkflowStep)
-                    .WithMany(p => p.RequestWorkflows)
-                    .HasForeignKey(d => d.WorkflowStepId)
+                entity.HasOne(d => d.WorkflowDefinition)
+                    .WithMany(p => p.RequestWorkflowDefinitionMappings)
+                    .HasForeignKey(d => d.WorkflowDefinitionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreWorkflow_WorkflowStep");
+                    .HasConstraintName("FK_RequestWorkflowDefinitionMapping_WorkflowDefinition");
             });
 
             modelBuilder.Entity<RequestWorkflowParameterMappingDAO>(entity =>
             {
                 entity.HasKey(e => new { e.WorkflowParameterId, e.RequestId });
 
-                entity.ToTable("RequestWorkflowParameterMapping", "MDM");
+                entity.ToTable("RequestWorkflowParameterMapping", "WF");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Value).HasMaxLength(500);
 
@@ -1385,6 +1379,36 @@ namespace DMS.Models
                     .HasForeignKey(d => d.WorkflowParameterId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreWorkflowParameterMapping_WorkflowParameter");
+            });
+
+            modelBuilder.Entity<RequestWorkflowStepMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.RequestId, e.WorkflowStepId });
+
+                entity.ToTable("RequestWorkflowStepMapping", "WF");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.RequestWorkflowStepMappings)
+                    .HasForeignKey(d => d.AppUserId)
+                    .HasConstraintName("FK_StoreWorkflow_AppUser");
+
+                entity.HasOne(d => d.WorkflowState)
+                    .WithMany(p => p.RequestWorkflowStepMappings)
+                    .HasForeignKey(d => d.WorkflowStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreWorkflow_WorkflowState");
+
+                entity.HasOne(d => d.WorkflowStep)
+                    .WithMany(p => p.RequestWorkflowStepMappings)
+                    .HasForeignKey(d => d.WorkflowStepId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreWorkflow_WorkflowStep");
             });
 
             modelBuilder.Entity<ResellerDAO>(entity =>
@@ -1597,11 +1621,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.ProvinceId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_Province");
-
-                entity.HasOne(d => d.RequestState)
-                    .WithMany(p => p.Stores)
-                    .HasForeignKey(d => d.RequestStateId)
-                    .HasConstraintName("FK_Store_RequestState");
 
                 entity.HasOne(d => d.Reseller)
                     .WithMany(p => p.Stores)
@@ -1998,7 +2017,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowDefinitionDAO>(entity =>
             {
-                entity.ToTable("WorkflowDefinition", "MDM");
+                entity.ToTable("WorkflowDefinition", "WF");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -2023,7 +2042,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowDirectionDAO>(entity =>
             {
-                entity.ToTable("WorkflowDirection", "MDM");
+                entity.ToTable("WorkflowDirection", "WF");
 
                 entity.Property(e => e.BodyMailForCreator)
                     .IsRequired()
@@ -2062,7 +2081,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowParameterDAO>(entity =>
             {
-                entity.ToTable("WorkflowParameter", "MDM");
+                entity.ToTable("WorkflowParameter", "WF");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -2077,7 +2096,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowStateDAO>(entity =>
             {
-                entity.ToTable("WorkflowState", "MDM");
+                entity.ToTable("WorkflowState", "WF");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -2092,11 +2111,15 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowStepDAO>(entity =>
             {
-                entity.ToTable("WorkflowStep", "MDM");
+                entity.ToTable("WorkflowStep", "WF");
+
+                entity.Property(e => e.BodyMailForReject).HasMaxLength(4000);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
+
+                entity.Property(e => e.SubjectMailForReject).HasMaxLength(4000);
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.WorkflowSteps)
@@ -2113,7 +2136,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowTypeDAO>(entity =>
             {
-                entity.ToTable("WorkflowType", "MDM");
+                entity.ToTable("WorkflowType", "WF");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
