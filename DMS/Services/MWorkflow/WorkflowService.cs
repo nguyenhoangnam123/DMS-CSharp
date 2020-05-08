@@ -14,11 +14,11 @@ namespace DMS.Services.MWorkflow
     public interface IWorkflowService : IServiceScoped
     {
         Task<bool> Start(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters);
-        Task<bool> Approce(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters);
+        Task<bool> Approve(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters);
         Task<bool> Reject(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters);
-        Task<bool> End(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters);
+        Task<GenericEnum> End(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters);
     }
-    public class WorkflowService
+    public class WorkflowService : IWorkflowService
     {
         private IUOW UOW;
         private ICurrentContext CurrentContext;
