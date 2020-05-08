@@ -476,6 +476,7 @@ namespace DMS.Repositories
                 OwnerPhone = x.OwnerPhone,
                 OwnerEmail = x.OwnerEmail,
                 StatusId = x.StatusId,
+                RowId = x.RowId,
                 District = x.District == null ? null : new District
                 {
                     Id = x.District.Id,

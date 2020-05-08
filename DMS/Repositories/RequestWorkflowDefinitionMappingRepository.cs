@@ -33,6 +33,12 @@ namespace DMS.Repositories
                     RequestId = q.RequestId,
                     RequestStateId = q.RequestStateId,
                     WorkflowDefinitionId = q.WorkflowDefinitionId,
+                    RequestState = new RequestState
+                    {
+                        Id = q.RequestState.Id,
+                        Code = q.RequestState.Code,
+                        Name = q.RequestState.Name,
+                    },
                 }).FirstOrDefaultAsync();
             return RequestWorkflowDefinitionMapping;
         }

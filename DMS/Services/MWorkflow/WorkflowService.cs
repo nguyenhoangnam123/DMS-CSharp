@@ -13,10 +13,15 @@ namespace DMS.Services.MWorkflow
 {
     public interface IWorkflowService : IServiceScoped
     {
-        Task<bool> Start(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters);
-        Task<bool> Approve(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters);
-        Task<bool> Reject(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters);
-        Task<GenericEnum> End(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters);
+        Task<RequestState> GetRequestState(Guid RequestId);
+        Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowState(Guid RequestId);
+        Task<bool> Init(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
+        Task<bool> IsInitialized(Guid RequestId);
+        Task<bool> IsStarted(Guid RequestId);
+        Task<bool> Start(Guid RequestId, Dictionary<string, string> Parameters);
+        Task<bool> Approve(Guid RequestId, Dictionary<string, string> Parameters);
+        Task<bool> Reject(Guid RequestId, Dictionary<string, string> Parameters);
+        Task<GenericEnum> End(Guid RequestId, Dictionary<string, string> Parameters);
     }
     public class WorkflowService : IWorkflowService
     {
@@ -33,17 +38,82 @@ namespace DMS.Services.MWorkflow
             this.CurrentContext = CurrentContext;
         }
 
-        public async Task<long> IsStarted(Guid RequestId)
+        public async Task<RequestState> GetRequestState(Guid RequestId)
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             if (RequestWorkflowDefinitionMapping == null)
-                return 0;
-            else
-                return RequestWorkflowDefinitionMapping.WorkflowDefinitionId;
+                return null;
+            return RequestWorkflowDefinitionMapping.RequestState;
         }
-        public async Task<bool> Start(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters)
+
+        public async Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowState(Guid RequestId)
         {
-            WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinitionId);
+            List<RequestWorkflowStepMapping> RequestWorkflowStepMappings = await UOW.RequestWorkflowStepMappingRepository.List(RequestId);
+            return RequestWorkflowStepMappings;
+        }
+
+        public async Task<bool> IsInitialized(Guid RequestId)
+        {
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
+            if (RequestWorkflowDefinitionMapping == null)
+                return false;
+            else
+                return true;
+        }
+        public async Task<bool> IsStarted(Guid RequestId)
+        {
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
+            if (RequestWorkflowDefinitionMapping == null)
+                return false;
+            if (RequestWorkflowDefinitionMapping.RequestStateId == RequestStateEnum.APPROVING.Id)
+                return true;
+            return false;
+        }
+        public async Task<bool> Init(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
+        {
+            List<WorkflowDefinition> WorkflowDefinitions = await UOW.WorkflowDefinitionRepository.List(new WorkflowDefinitionFilter
+            {
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                WorkflowTypeId = new IdFilter { Equal = WorkflowTypeId },
+                Selects = WorkflowDefinitionSelect.Id,
+            });
+            WorkflowDefinition WorkflowDefinition = WorkflowDefinitions.FirstOrDefault();
+            if (WorkflowDefinition == null)
+                return false;
+
+            // khởi tạo workflow
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = new RequestWorkflowDefinitionMapping
+            {
+                RequestId = RequestId,
+                WorkflowDefinitionId = WorkflowDefinition.Id,
+                RequestStateId = RequestStateEnum.NEW.Id,
+                CreatorId = CurrentContext.UserId,
+            };
+            await UOW.RequestWorkflowDefinitionMappingRepository.Update(RequestWorkflowDefinitionMapping);
+
+            // khởi tạo trạng thái cho tất cả các nút
+            List<RequestWorkflowStepMapping> RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
+            foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+            {
+                RequestWorkflowStepMapping RequestWorkflowStepMapping = new RequestWorkflowStepMapping();
+                RequestWorkflowStepMappings.Add(RequestWorkflowStepMapping);
+                RequestWorkflowStepMapping.RequestId = RequestId;
+                RequestWorkflowStepMapping.WorkflowStepId = WorkflowStep.Id;
+                RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.NEW.Id;
+                RequestWorkflowStepMapping.CreatedAt = StaticParams.DateTimeNow;
+                RequestWorkflowStepMapping.UpdatedAt = null;
+                RequestWorkflowStepMapping.AppUserId = null;
+            }
+            await UOW.RequestWorkflowStepMappingRepository.BulkMerge(RequestId, RequestWorkflowStepMappings);
+
+            await UpdateParameters(RequestId, WorkflowDefinition, Parameters);
+            return true;
+        }
+
+        public async Task<bool> Start(Guid RequestId, Dictionary<string, string> Parameters)
+        {
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
+            WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(RequestWorkflowDefinitionMapping.WorkflowDefinitionId);
 
             if (WorkflowDefinition == null)
             {
@@ -52,10 +122,10 @@ namespace DMS.Services.MWorkflow
             else
             {
                 // khởi tạo workflow
-                RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = new RequestWorkflowDefinitionMapping
+                RequestWorkflowDefinitionMapping = new RequestWorkflowDefinitionMapping
                 {
                     RequestId = RequestId,
-                    WorkflowDefinitionId = WorkflowDefinitionId,
+                    WorkflowDefinitionId = WorkflowDefinition.Id,
                     RequestStateId = RequestStateEnum.APPROVING.Id,
                     CreatorId = CurrentContext.UserId,
                 };
@@ -91,31 +161,15 @@ namespace DMS.Services.MWorkflow
                 }
                 await UOW.RequestWorkflowStepMappingRepository.BulkMerge(RequestId, RequestWorkflowStepMappings);
 
-                // khởi tạo các parameter cho workflow
-                List<RequestWorkflowParameterMapping> RequestWorkflowParameterMappings = new List<RequestWorkflowParameterMapping>();
-                foreach (WorkflowParameter WorkflowParameter in WorkflowDefinition.WorkflowParameters)
-                {
-                    RequestWorkflowParameterMapping RequestWorkflowParameterMapping = new RequestWorkflowParameterMapping();
-                    RequestWorkflowParameterMappings.Add(RequestWorkflowParameterMapping);
-                    RequestWorkflowParameterMapping.RequestId = RequestId;
-                    RequestWorkflowParameterMapping.WorkflowParameterId = WorkflowParameter.Id;
-                    RequestWorkflowParameterMapping.Value = null;
-                    foreach (var pair in Parameters)
-                    {
-                        if (WorkflowParameter.Name == pair.Key)
-                        {
-                            RequestWorkflowParameterMapping.Value = pair.Value;
-                        }
-                    }
-                }
-                await UOW.RequestWorkflowParameterMappingRepository.BulkMerge(RequestId, RequestWorkflowParameterMappings);
+                await UpdateParameters(RequestId, WorkflowDefinition, Parameters);
             }
             return true;
         }
 
-        public async Task<bool> Approve(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters)
+        public async Task<bool> Approve(Guid RequestId, Dictionary<string, string> Parameters)
         {
-            WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinitionId);
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
+            WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(RequestWorkflowDefinitionMapping.WorkflowDefinitionId);
             // tìm điểm bắt đầu
             // tìm điểm nhảy tiếp theo
             // chuyển trạng thái điểm nhảy
@@ -213,10 +267,10 @@ namespace DMS.Services.MWorkflow
             return false;
         }
 
-        public async Task<bool> Reject(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters)
+        public async Task<bool> Reject(Guid RequestId, Dictionary<string, string> Parameters)
         {
-            WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinitionId);
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
+            WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(RequestWorkflowDefinitionMapping.WorkflowDefinitionId);
             List<RequestWorkflowStepMapping> RequestWorkflowStepMappings = await UOW.RequestWorkflowStepMappingRepository.List(RequestId);
             if (WorkflowDefinition != null && RequestWorkflowStepMappings.Count > 0)
             {
@@ -254,7 +308,7 @@ namespace DMS.Services.MWorkflow
             return true;
         }
 
-        public async Task<GenericEnum> End(Guid RequestId, long WorkflowDefinitionId, Dictionary<string, string> Parameters)
+        public async Task<GenericEnum> End(Guid RequestId, Dictionary<string, string> Parameters)
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             if (RequestWorkflowDefinitionMapping == null)
@@ -279,7 +333,7 @@ namespace DMS.Services.MWorkflow
             RequestWorkflowDefinitionMapping = new RequestWorkflowDefinitionMapping
             {
                 RequestId = RequestId,
-                WorkflowDefinitionId = WorkflowDefinitionId,
+                WorkflowDefinitionId = RequestWorkflowDefinitionMapping.WorkflowDefinitionId,
                 RequestStateId = RequestState.Id,
             };
             await UOW.RequestWorkflowDefinitionMappingRepository.Update(RequestWorkflowDefinitionMapping);
@@ -293,5 +347,29 @@ namespace DMS.Services.MWorkflow
             var result = template(Parameters);
             return result;
         }
+
+        private async Task UpdateParameters(Guid RequestId, WorkflowDefinition WorkflowDefinition, Dictionary<string, string> Parameters)
+        {
+            // khởi tạo các parameter cho workflow
+            List<RequestWorkflowParameterMapping> RequestWorkflowParameterMappings = new List<RequestWorkflowParameterMapping>();
+            foreach (WorkflowParameter WorkflowParameter in WorkflowDefinition.WorkflowParameters)
+            {
+                RequestWorkflowParameterMapping RequestWorkflowParameterMapping = new RequestWorkflowParameterMapping();
+                RequestWorkflowParameterMappings.Add(RequestWorkflowParameterMapping);
+                RequestWorkflowParameterMapping.RequestId = RequestId;
+                RequestWorkflowParameterMapping.WorkflowParameterId = WorkflowParameter.Id;
+                RequestWorkflowParameterMapping.Value = null;
+                foreach (var pair in Parameters)
+                {
+                    if (WorkflowParameter.Name == pair.Key)
+                    {
+                        RequestWorkflowParameterMapping.Value = pair.Value;
+                    }
+                }
+            }
+            await UOW.RequestWorkflowParameterMappingRepository.BulkMerge(RequestId, RequestWorkflowParameterMappings);
+        }
+
+       
     }
 }

@@ -35,6 +35,21 @@ namespace DMS.Repositories
                     UpdatedAt = r.UpdatedAt,
                     WorkflowStateId = r.WorkflowStateId,
                     WorkflowStepId = r.WorkflowStepId,
+                    AppUser = new AppUser
+                    {
+                        Id = r.AppUser.Id,
+                        Username = r.AppUser.Username,
+                        DisplayName = r.AppUser.DisplayName,
+                    },
+                    WorkflowStep = new WorkflowStep
+                    {
+                        Id = r.WorkflowStep.Id,
+                        Name = r.WorkflowStep.Name,
+                        Role = new Role
+                        {
+                            Name = r.WorkflowStep.Role.Name,
+                        },
+                    }
                 }).ToListAsync();
             return RequestWorkflowStepMappings;
         }

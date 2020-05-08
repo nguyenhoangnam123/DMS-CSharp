@@ -38,7 +38,14 @@ namespace DMS.Services.MStore
         private IStoreValidator StoreValidator;
         private IWorkflowService WorkflowService;
         private IImageService ImageService;
-
+        private List<string> ParameterKeys = new List<string>
+        {
+            nameof(Store.Id),
+            nameof(Store.Code),
+            nameof(Store.Name),
+            nameof(Store.OwnerName),
+            "Username",
+        };
         public StoreService(
             IUOW UOW,
             ILogging Logging,
@@ -95,6 +102,16 @@ namespace DMS.Services.MStore
             Store Store = await UOW.StoreRepository.Get(Id);
             if (Store == null)
                 return null;
+            Store.RequestState = await WorkflowService.GetRequestState(Store.RowId);
+            if (Store.RequestState == null)
+            {
+                Store.RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
+            }
+            else
+            {
+                Store.RequestStateId = Store.RequestState.Id;
+                Store.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowState(Store.RowId);
+            }
             return Store;
         }
 
@@ -108,6 +125,7 @@ namespace DMS.Services.MStore
                 Store.Id = 0;
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
+                await WorkflowService.Init(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(Store, new { }, nameof(StoreService));
@@ -289,14 +307,52 @@ namespace DMS.Services.MStore
         {
             if (Store.Id == 0)
                 Store = await Create(Store);
-            
+            bool Initialized = await WorkflowService.IsInitialized(Store.RowId);
+            if (Initialized == false)
+                return Store;
+            Dictionary<string, string> Parameters = MapParameters(Store);
+            bool Started = await WorkflowService.IsStarted(Store.RowId);
+            if (Started == false)
+            {
+                await WorkflowService.Approve(Store.RowId, Parameters);
+            }
+            else
+            {
+                await WorkflowService.Start(Store.RowId, Parameters);
+                await WorkflowService.Approve(Store.RowId, Parameters);
+            }
 
-            return Store;
+            return await Get(Store.Id);
         }
 
-        public Task<Store> Reject(Store Store)
+        public async Task<Store> Reject(Store Store)
         {
-            throw new NotImplementedException();
+            bool Initialized = await WorkflowService.IsInitialized(Store.RowId);
+            if (Initialized == false)
+                return Store;
+            Dictionary<string, string> Parameters = MapParameters(Store);
+            bool Started = await WorkflowService.IsStarted(Store.RowId);
+            if (Started == false)
+            {
+                await WorkflowService.Reject(Store.RowId, Parameters);
+            }
+            else
+            {
+                await WorkflowService.Start(Store.RowId, Parameters);
+                await WorkflowService.Reject(Store.RowId, Parameters);
+            }
+            return await Get(Store.Id);
+        }
+
+        private Dictionary<string, string> MapParameters(Store Store)
+        {
+            Dictionary<string, string> Parameters = new Dictionary<string, string>();
+            Parameters.Add(nameof(Store.Id), Store.Id.ToString());
+            Parameters.Add(nameof(Store.Code), Store.Code);
+            Parameters.Add(nameof(Store.Name), Store.Name);
+            Parameters.Add(nameof(Store.OwnerName), Store.OwnerName);
+            Parameters.Add("Username", CurrentContext.UserName);
+            return Parameters;
         }
     }
 }
