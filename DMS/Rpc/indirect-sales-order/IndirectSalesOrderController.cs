@@ -1967,7 +1967,7 @@ namespace DMS.Rpc.indirect_sales_order
             ItemFilter.StatusId = IndirectSalesOrder_ItemFilterDTO.StatusId;
             ItemFilter.SupplierId = IndirectSalesOrder_ItemFilterDTO.SupplierId;
 
-            if(IndirectSalesOrder_ItemFilterDTO.StoreId.Equal.HasValue)
+            if(IndirectSalesOrder_ItemFilterDTO.StoreId != null && IndirectSalesOrder_ItemFilterDTO.StoreId.Equal.HasValue)
             {
                 List<Item> Items = await IndirectSalesOrderService.ListItem(ItemFilter, IndirectSalesOrder_ItemFilterDTO.StoreId.Equal.Value);
                 List<IndirectSalesOrder_ItemDTO> IndirectSalesOrder_ItemDTOs = Items

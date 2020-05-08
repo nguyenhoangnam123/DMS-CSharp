@@ -1626,7 +1626,7 @@ namespace DMS.Rpc.direct_sales_order
             ItemFilter.StatusId = DirectSalesOrder_ItemFilterDTO.StatusId;
             ItemFilter.SupplierId = DirectSalesOrder_ItemFilterDTO.SupplierId;
 
-            if (DirectSalesOrder_ItemFilterDTO.StoreId.Equal.HasValue)
+            if (DirectSalesOrder_ItemFilterDTO.StoreId != null && DirectSalesOrder_ItemFilterDTO.StoreId.Equal.HasValue)
             {
                 List<Item> Items = await DirectSalesOrderService.ListItem(ItemFilter, DirectSalesOrder_ItemFilterDTO.StoreId.Equal.Value);
                 List<DirectSalesOrder_ItemDTO> DirectSalesOrder_ItemDTOs = Items
