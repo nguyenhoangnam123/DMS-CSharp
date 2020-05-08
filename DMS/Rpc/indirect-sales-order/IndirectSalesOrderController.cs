@@ -1966,8 +1966,13 @@ namespace DMS.Rpc.indirect_sales_order
                     .Select(x => new IndirectSalesOrder_ItemDTO(x)).ToList();
                 return IndirectSalesOrder_ItemDTOs;
             }
-
-            return new List<IndirectSalesOrder_ItemDTO>();
+            else
+            {
+                List<Item> Items = await ItemService.List(ItemFilter);
+                List<IndirectSalesOrder_ItemDTO> IndirectSalesOrder_ItemDTOs = Items
+                    .Select(x => new IndirectSalesOrder_ItemDTO(x)).ToList();
+                return IndirectSalesOrder_ItemDTOs;
+            }
         }
     }
 }
