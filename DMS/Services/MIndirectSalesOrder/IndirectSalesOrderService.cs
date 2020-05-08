@@ -351,7 +351,8 @@ namespace DMS.Services.MIndirectSalesOrder
                 Take = int.MaxValue,
                 Selects = IndirectPriceListItemMappingSelect.ALL,
                 IndirectPriceListTypeId = new IdFilter { Equal = Enums.IndirectPriceListTypeEnum.ALLSTORE.Id },
-                OrganizationId = new IdFilter { In = OrganizationIds }
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             };
             var IndirectPriceListItemMappingAllStore = await UOW.IndirectPriceListItemMappingItemMappingRepository.List(IndirectPriceListItemMappingFilter);
 
@@ -363,7 +364,8 @@ namespace DMS.Services.MIndirectSalesOrder
                 Selects = IndirectPriceListItemMappingSelect.ALL,
                 IndirectPriceListTypeId = new IdFilter { Equal = Enums.IndirectPriceListTypeEnum.STOREGROUPING.Id },
                 StoreGroupingId = new IdFilter { Equal = Store.StoreGroupingId },
-                OrganizationId = new IdFilter { In = OrganizationIds }
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             };
             var IndirectPriceListItemMappingStoreGrouping = await UOW.IndirectPriceListItemMappingItemMappingRepository.List(IndirectPriceListItemMappingFilter);
 
@@ -375,7 +377,8 @@ namespace DMS.Services.MIndirectSalesOrder
                 Selects = IndirectPriceListItemMappingSelect.ALL,
                 IndirectPriceListTypeId = new IdFilter { Equal = Enums.IndirectPriceListTypeEnum.STORETYPE.Id },
                 StoreGroupingId = new IdFilter { Equal = Store.StoreTypeId },
-                OrganizationId = new IdFilter { In = OrganizationIds }
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             };
             var IndirectPriceListItemMappingStoreType = await UOW.IndirectPriceListItemMappingItemMappingRepository.List(IndirectPriceListItemMappingFilter);
 
@@ -387,7 +390,8 @@ namespace DMS.Services.MIndirectSalesOrder
                 Selects = IndirectPriceListItemMappingSelect.ALL,
                 IndirectPriceListTypeId = new IdFilter { Equal = Enums.IndirectPriceListTypeEnum.DETAILS.Id },
                 StoreId = new IdFilter { Equal = StoreId },
-                OrganizationId = new IdFilter { In = OrganizationIds }
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             };
             var IndirectPriceListItemMappingStoreDetail = await UOW.IndirectPriceListItemMappingItemMappingRepository.List(IndirectPriceListItemMappingFilter);
 

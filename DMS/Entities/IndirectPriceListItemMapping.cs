@@ -33,6 +33,7 @@ namespace DMS.Entities
         public IdFilter StoreGroupingId { get; set; }
         public IdFilter StoreTypeId { get; set; }
         public IdFilter ItemId { get; set; }
+        public IdFilter StatusId { get; set; }
         public LongFilter Price { get; set; }
         public List<IndirectPriceListItemMappingFilter> OrFilter { get; set; }
         public IndirectPriceListItemMappingOrder OrderBy {get; set;}

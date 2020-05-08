@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Helpers;
 
 namespace DMS.Repositories
 {
@@ -41,20 +42,24 @@ namespace DMS.Repositories
             {
                 if (filter.StoreGroupingId.Equal.HasValue)
                 {
-                    query = from q in query
-                            join sg in DataContext.IndirectPriceListStoreGroupingMapping on q.IndirectPriceListId equals sg.IndirectPriceListId
-                            where sg.StoreGroupingId == filter.StoreGroupingId.Equal.Value
-                            select q;
+                    StoreGroupingDAO StoreGroupingDAO = DataContext.StoreGrouping.Where(x => x.Id == filter.StoreGroupingId.Equal.Value).FirstOrDefault();
+                    if (StoreGroupingDAO != null && StoreGroupingDAO.StatusId == Enums.StatusEnum.ACTIVE.Id)
+                        query = from q in query
+                                join sg in DataContext.IndirectPriceListStoreGroupingMapping on q.IndirectPriceListId equals sg.IndirectPriceListId
+                                where sg.StoreGroupingId == StoreGroupingDAO.Id
+                                select q;
                 }
             }
             if (filter.StoreTypeId != null)
             {
                 if (filter.StoreTypeId.Equal.HasValue)
                 {
-                    query = from q in query
-                            join st in DataContext.IndirectPriceListStoreTypeMapping on q.IndirectPriceListId equals st.IndirectPriceListId
-                            where st.StoreTypeId == filter.StoreTypeId.Equal.Value
-                            select q;
+                    StoreTypeDAO StoreTypeDAO = DataContext.StoreType.Where(x => x.Id == filter.StoreTypeId.Equal.Value).FirstOrDefault();
+                    if(StoreTypeDAO != null && StoreTypeDAO.StatusId == Enums.StatusEnum.ACTIVE.Id)
+                        query = from q in query
+                                join st in DataContext.IndirectPriceListStoreTypeMapping on q.IndirectPriceListId equals st.IndirectPriceListId
+                                where st.StoreTypeId == StoreTypeDAO.Id
+                                select q;
                 }
             }
                 
@@ -62,10 +67,12 @@ namespace DMS.Repositories
             {
                 if (filter.StoreId.Equal.HasValue)
                 {
-                    query = from q in query
-                            join s in DataContext.IndirectPriceListStoreMapping on q.IndirectPriceListId equals s.IndirectPriceListId
-                            where s.StoreId == filter.StoreId.Equal.Value
-                            select q;
+                    StoreDAO StoreDAO = DataContext.Store.Where(x => x.Id == filter.StoreId.Equal.Value).FirstOrDefault();
+                    if (StoreDAO != null && StoreDAO.StatusId == Enums.StatusEnum.ACTIVE.Id)
+                        query = from q in query
+                                join s in DataContext.IndirectPriceListStoreMapping on q.IndirectPriceListId equals s.IndirectPriceListId
+                                where s.StoreId == StoreDAO.Id
+                                select q;
                 }
             }
 
@@ -73,6 +80,13 @@ namespace DMS.Repositories
             {
                 query = query.Where(q => q.IndirectPriceList.OrganizationId, filter.OrganizationId);
             }
+
+            if (filter.StatusId != null)
+                query = query.Where(q => q.IndirectPriceList.StatusId, filter.StatusId);
+
+            query = query.Where(q => q.IndirectPriceList.StartDate <= StaticParams.DateTimeNow);
+            query = query.Where(q => q.IndirectPriceList.EndDate.HasValue == false || (q.IndirectPriceList.EndDate.HasValue && q.IndirectPriceList.EndDate >= StaticParams.DateTimeNow));
+
             return query;
         }
 
