@@ -289,10 +289,8 @@ namespace DMS.Services.MStore
         {
             if (Store.Id == 0)
                 Store = await Create(Store);
-            if (Store.RequestStateId == RequestStateEnum.NEW.Id)
-            {
-              
-            }    
+            
+
             return Store;
         }
 

@@ -12,7 +12,6 @@ namespace DMS.Models
             ERoutes = new HashSet<ERouteDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
             RequestWorkflowDefinitionMappings = new HashSet<RequestWorkflowDefinitionMappingDAO>();
-            Stores = new HashSet<StoreDAO>();
         }
 
         public long Id { get; set; }
@@ -24,6 +23,5 @@ namespace DMS.Models
         public virtual ICollection<ERouteDAO> ERoutes { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
         public virtual ICollection<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMappings { get; set; }
-        public virtual ICollection<StoreDAO> Stores { get; set; }
     }
 }

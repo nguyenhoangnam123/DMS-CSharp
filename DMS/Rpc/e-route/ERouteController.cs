@@ -781,8 +781,6 @@ namespace DMS.Rpc.e_route
                     OwnerPhone = x.Store.OwnerPhone,
                     OwnerEmail = x.Store.OwnerEmail,
                     StatusId = x.Store.StatusId,
-                    WorkflowDefinitionId = x.Store.WorkflowDefinitionId,
-                    RequestStateId = x.Store.RequestStateId,
                 },
             }).ToList();
             ERoute.BaseLanguage = CurrentContext.Language;

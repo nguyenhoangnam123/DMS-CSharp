@@ -1622,11 +1622,6 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_Province");
 
-                entity.HasOne(d => d.RequestState)
-                    .WithMany(p => p.Stores)
-                    .HasForeignKey(d => d.RequestStateId)
-                    .HasConstraintName("FK_Store_RequestState");
-
                 entity.HasOne(d => d.Reseller)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.ResellerId)

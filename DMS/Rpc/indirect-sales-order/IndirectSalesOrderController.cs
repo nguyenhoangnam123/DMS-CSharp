@@ -551,8 +551,6 @@ namespace DMS.Rpc.indirect_sales_order
                         Store.OwnerPhone,
                         Store.OwnerEmail,
                         Store.StatusId,
-                        Store.WorkflowDefinitionId,
-                        Store.RequestStateId,
                     });
                 }
                 excel.GenerateWorksheet("Store", StoreHeaders, StoreData);
@@ -888,8 +886,6 @@ namespace DMS.Rpc.indirect_sales_order
                         Store.OwnerPhone,
                         Store.OwnerEmail,
                         Store.StatusId,
-                        Store.WorkflowDefinitionId,
-                        Store.RequestStateId,
                     });
                 }
                 excel.GenerateWorksheet("Store", StoreHeaders, StoreData);
@@ -1184,8 +1180,6 @@ namespace DMS.Rpc.indirect_sales_order
                 OwnerPhone = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.OwnerPhone,
                 OwnerEmail = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.OwnerEmail,
                 StatusId = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.StatusId,
-                WorkflowDefinitionId = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.WorkflowDefinitionId,
-                RequestStateId = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.RequestStateId,
             };
             IndirectSalesOrder.EditedPriceStatus = IndirectSalesOrder_IndirectSalesOrderDTO.EditedPriceStatus == null ? null : new EditedPriceStatus
             {
@@ -1235,8 +1229,6 @@ namespace DMS.Rpc.indirect_sales_order
                 OwnerPhone = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.OwnerPhone,
                 OwnerEmail = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.OwnerEmail,
                 StatusId = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.StatusId,
-                WorkflowDefinitionId = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.WorkflowDefinitionId,
-                RequestStateId = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.RequestStateId,
             };
             IndirectSalesOrder.IndirectSalesOrderContents = IndirectSalesOrder_IndirectSalesOrderDTO.IndirectSalesOrderContents?
                 .Select(x => new IndirectSalesOrderContent

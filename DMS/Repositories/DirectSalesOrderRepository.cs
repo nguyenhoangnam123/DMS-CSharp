@@ -295,8 +295,6 @@ namespace DMS.Repositories
                     OwnerPhone = q.BuyerStore.OwnerPhone,
                     OwnerEmail = q.BuyerStore.OwnerEmail,
                     StatusId = q.BuyerStore.StatusId,
-                    WorkflowDefinitionId = q.BuyerStore.WorkflowDefinitionId,
-                    RequestStateId = q.BuyerStore.RequestStateId,
                 } : null,
                 EditedPriceStatus = filter.Selects.Contains(DirectSalesOrderSelect.EditedPriceStatus) && q.EditedPriceStatus != null ? new EditedPriceStatus
                 {
@@ -396,8 +394,6 @@ namespace DMS.Repositories
                     OwnerPhone = x.BuyerStore.OwnerPhone,
                     OwnerEmail = x.BuyerStore.OwnerEmail,
                     StatusId = x.BuyerStore.StatusId,
-                    WorkflowDefinitionId = x.BuyerStore.WorkflowDefinitionId,
-                    RequestStateId = x.BuyerStore.RequestStateId,
                 },
                 EditedPriceStatus = x.EditedPriceStatus == null ? null : new EditedPriceStatus
                 {

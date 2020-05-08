@@ -106,10 +106,6 @@ namespace DMS.Rpc.indirect_price_list
             
             this.StatusId = Store.StatusId;
             
-            this.WorkflowDefinitionId = Store.WorkflowDefinitionId;
-            
-            this.RequestStateId = Store.RequestStateId;
-            
             this.Errors = Store.Errors;
         }
     }

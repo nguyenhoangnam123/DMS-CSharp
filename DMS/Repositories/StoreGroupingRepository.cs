@@ -465,7 +465,6 @@ namespace DMS.Repositories
                         StoreDAO.OwnerPhone = Store.OwnerPhone;
                         StoreDAO.OwnerEmail = Store.OwnerEmail;
                         StoreDAO.StatusId = Store.StatusId;
-                        StoreDAO.RequestStateId = Enums.RequestStateEnum.NEW.Id;
                         StoreDAOs.Add(StoreDAO);
                         StoreDAO.CreatedAt = StaticParams.DateTimeNow;
                         StoreDAO.UpdatedAt = StaticParams.DateTimeNow;

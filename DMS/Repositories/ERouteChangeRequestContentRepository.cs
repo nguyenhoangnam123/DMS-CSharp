@@ -230,8 +230,6 @@ namespace DMS.Repositories
                     OwnerPhone = q.Store.OwnerPhone,
                     OwnerEmail = q.Store.OwnerEmail,
                     StatusId = q.Store.StatusId,
-                    WorkflowDefinitionId = q.Store.WorkflowDefinitionId,
-                    RequestStateId = q.Store.RequestStateId,
                 } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
@@ -309,8 +307,6 @@ namespace DMS.Repositories
                     OwnerPhone = x.Store.OwnerPhone,
                     OwnerEmail = x.Store.OwnerEmail,
                     StatusId = x.Store.StatusId,
-                    WorkflowDefinitionId = x.Store.WorkflowDefinitionId,
-                    RequestStateId = x.Store.RequestStateId,
                 },
             }).FirstOrDefaultAsync();
 

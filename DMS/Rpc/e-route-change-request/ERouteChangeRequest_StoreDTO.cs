@@ -107,9 +107,6 @@ namespace DMS.Rpc.e_route_change_request
             
             this.StatusId = Store.StatusId;
             
-            this.WorkflowDefinitionId = Store.WorkflowDefinitionId;
-            
-            this.RequestStateId = Store.RequestStateId;
             this.Organization = Store.Organization == null ? null : new ERouteChangeRequest_OrganizationDTO(Store.Organization);
             this.StoreGrouping = Store.StoreGrouping == null ? null : new ERouteChangeRequest_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new ERouteChangeRequest_StoreTypeDTO(Store.StoreType);

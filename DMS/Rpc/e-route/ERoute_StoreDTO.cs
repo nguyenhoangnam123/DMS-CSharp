@@ -104,9 +104,6 @@ namespace DMS.Rpc.e_route
 
             this.StatusId = Store.StatusId;
 
-            this.WorkflowDefinitionId = Store.WorkflowDefinitionId;
-
-            this.RequestStateId = Store.RequestStateId;
             this.Organization = Store.Organization == null ? null : new ERoute_OrganizationDTO(Store.Organization);
             this.StoreGrouping = Store.StoreGrouping == null ? null : new ERoute_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new ERoute_StoreTypeDTO(Store.StoreType);
