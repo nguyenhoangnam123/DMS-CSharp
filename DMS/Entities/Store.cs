@@ -42,7 +42,7 @@ namespace DMS.Entities
         public StoreType StoreType { get; set; }
         public Ward Ward { get; set; }
         public List<StoreImageMapping> StoreImageMappings { get; set; }
-        public List<RequestWorkflow> StoreWorkflows { get; set; }
+        public List<RequestWorkflowStepMapping> StoreWorkflows { get; set; }
         public List<RequestWorkflowParameterMapping> StoreWorkflowParameterMappings { get; set; }
 
         public bool Equals(Store other)

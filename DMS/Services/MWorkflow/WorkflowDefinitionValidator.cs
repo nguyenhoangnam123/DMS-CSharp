@@ -7,7 +7,7 @@ using DMS.Entities;
 using DMS;
 using DMS.Repositories;
 
-namespace DMS.Services.MWorkflowDefinition
+namespace DMS.Services.MWorkflow
 {
     public interface IWorkflowDefinitionValidator : IServiceScoped
     {

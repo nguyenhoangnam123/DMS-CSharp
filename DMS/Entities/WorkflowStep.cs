@@ -12,6 +12,8 @@ namespace DMS.Entities
         public long WorkflowDefinitionId { get; set; }
         public string Name { get; set; }
         public long RoleId { get; set; }
+        public string SubjectMailForReject { get; set; }
+        public string BodyMailForReject { get; set; }
         public Role Role { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }
 

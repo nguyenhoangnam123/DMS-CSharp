@@ -14,7 +14,7 @@ namespace DMS.Models
             ERouteSaleEmployees = new HashSet<ERouteDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
             InventoryHistories = new HashSet<InventoryHistoryDAO>();
-            RequestWorkflows = new HashSet<RequestWorkflowDAO>();
+            RequestWorkflowStepMappings = new HashSet<RequestWorkflowStepMappingDAO>();
             Resellers = new HashSet<ResellerDAO>();
             Suppliers = new HashSet<SupplierDAO>();
         }
@@ -50,7 +50,7 @@ namespace DMS.Models
         public virtual ICollection<ERouteDAO> ERouteSaleEmployees { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
         public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
-        public virtual ICollection<RequestWorkflowDAO> RequestWorkflows { get; set; }
+        public virtual ICollection<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappings { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
     }

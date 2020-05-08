@@ -6,9 +6,8 @@ using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class RequestWorkflow : DataEntity,  IEquatable<RequestWorkflow>
+    public class RequestWorkflowStepMapping : DataEntity, IEquatable<RequestWorkflowStepMapping>
     {
-        public long Id { get; set; }
         public Guid RequestId { get; set; }
         public long WorkflowStepId { get; set; }
         public long WorkflowStateId { get; set; }
@@ -19,34 +18,32 @@ namespace DMS.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public bool Equals(RequestWorkflow other)
+        public bool Equals(RequestWorkflowStepMapping other)
         {
-            return other != null && Id == other.Id;
+            return other != null && RequestId == other.RequestId && WorkflowStepId == other.WorkflowStepId;
         }
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            return RequestId.GetHashCode() ^ WorkflowStepId.GetHashCode();
         }
     }
 
-    public class RequestWorkflowFilter : FilterEntity
+    public class RequestWorkflowStepMappingFilter : FilterEntity
     {
-        public IdFilter Id { get; set; }
         public GuidFilter RequestId { get; set; }
         public IdFilter WorkflowStepId { get; set; }
         public IdFilter WorkflowStateId { get; set; }
         public IdFilter AppUserId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
-        public List<RequestWorkflowFilter> OrFilter { get; set; }
-        public RequestWorkflowOrder OrderBy {get; set;}
-        public RequestWorkflowSelect Selects {get; set;}
+        public List<RequestWorkflowStepMappingFilter> OrFilter { get; set; }
+        public RequestWorkflowOrder OrderBy { get; set; }
+        public RequestWorkflowSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
     public enum RequestWorkflowOrder
     {
-        Id = 0,
         WorkflowStep = 2,
         WorkflowState = 3,
         RequestId = 4,
@@ -56,10 +53,9 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum RequestWorkflowSelect:long
+    public enum RequestWorkflowSelect : long
     {
         ALL = E.ALL,
-        Id = E._0,
         WorkflowStep = E._2,
         WorkflowState = E._3,
         RequestId = E._4,

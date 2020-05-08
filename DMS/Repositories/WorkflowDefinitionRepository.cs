@@ -206,13 +206,17 @@ namespace DMS.Repositories
                         Name = x.FromStep.Name,
                         RoleId = x.FromStep.RoleId,
                         WorkflowDefinitionId = x.FromStep.WorkflowDefinitionId,
+                        SubjectMailForReject = x.FromStep.SubjectMailForReject,
+                        BodyMailForReject = x.FromStep.BodyMailForReject,
                     },
                     ToStep = new WorkflowStep
                     {
-                        Id = x.FromStep.Id,
-                        Name = x.FromStep.Name,
-                        RoleId = x.FromStep.RoleId,
-                        WorkflowDefinitionId = x.FromStep.WorkflowDefinitionId,
+                        Id = x.ToStep.Id,
+                        Name = x.ToStep.Name,
+                        RoleId = x.ToStep.RoleId,
+                        WorkflowDefinitionId = x.ToStep.WorkflowDefinitionId,
+                        SubjectMailForReject = x.ToStep.SubjectMailForReject,
+                        BodyMailForReject = x.ToStep.BodyMailForReject,
                     },
                     
                 }).ToListAsync();
