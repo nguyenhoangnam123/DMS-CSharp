@@ -16,6 +16,7 @@ namespace DMS.Repositories
         IBrandRepository BrandRepository { get; }
         IDirectPriceListRepository DirectPriceListRepository { get; }
         IDirectPriceListTypeRepository DirectPriceListTypeRepository { get; }
+        IDirectPriceListItemMappingItemMappingRepository DirectPriceListItemMappingItemMappingRepository { get; }
         IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; }
         IDirectSalesOrderRepository DirectSalesOrderRepository { get; }
         IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; }
@@ -78,6 +79,7 @@ namespace DMS.Repositories
         public IBrandRepository BrandRepository { get; private set; }
         public IDirectPriceListRepository DirectPriceListRepository { get; private set; }
         public IDirectPriceListTypeRepository DirectPriceListTypeRepository { get; private set; }
+        public IDirectPriceListItemMappingItemMappingRepository DirectPriceListItemMappingItemMappingRepository { get; private set; }
         public IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; private set; }
         public IDirectSalesOrderRepository DirectSalesOrderRepository { get; private set; }
         public IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; private set; }
@@ -138,6 +140,7 @@ namespace DMS.Repositories
             BrandRepository = new BrandRepository(DataContext);
             DirectPriceListRepository = new DirectPriceListRepository(DataContext);
             DirectPriceListTypeRepository = new DirectPriceListTypeRepository(DataContext);
+            DirectPriceListItemMappingItemMappingRepository = new DirectPriceListItemMappingItemMappingRepository(DataContext);
             DirectSalesOrderContentRepository = new DirectSalesOrderContentRepository(DataContext);
             DirectSalesOrderRepository = new DirectSalesOrderRepository(DataContext);
             DirectSalesOrderPromotionRepository = new DirectSalesOrderPromotionRepository(DataContext);

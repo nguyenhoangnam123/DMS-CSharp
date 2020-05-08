@@ -51,6 +51,7 @@ namespace DMS.Rpc.direct_sales_order
         public IdFilter ProductTypeId { get; set; }
         public IdFilter SupplierId { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter StoreId { get; set; }
         public ItemOrder OrderBy { get; set; }
     }
 }

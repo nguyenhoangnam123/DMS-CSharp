@@ -1626,10 +1626,15 @@ namespace DMS.Rpc.direct_sales_order
             ItemFilter.StatusId = DirectSalesOrder_ItemFilterDTO.StatusId;
             ItemFilter.SupplierId = DirectSalesOrder_ItemFilterDTO.SupplierId;
 
-            List<Item> Items = await ItemService.List(ItemFilter);
-            List<DirectSalesOrder_ItemDTO> DirectSalesOrder_ItemDTOs = Items
-                .Select(x => new DirectSalesOrder_ItemDTO(x)).ToList();
-            return DirectSalesOrder_ItemDTOs;
+            if (DirectSalesOrder_ItemFilterDTO.StoreId.Equal.HasValue)
+            {
+                List<Item> Items = await DirectSalesOrderService.ListItem(ItemFilter, DirectSalesOrder_ItemFilterDTO.StoreId.Equal.Value);
+                List<DirectSalesOrder_ItemDTO> DirectSalesOrder_ItemDTOs = Items
+                    .Select(x => new DirectSalesOrder_ItemDTO(x)).ToList();
+                return DirectSalesOrder_ItemDTOs;
+            }
+
+            return new List<DirectSalesOrder_ItemDTO>();
         }
     }
 }

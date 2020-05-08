@@ -15,6 +15,7 @@ namespace DMS.Services.MDirectSalesOrder
     {
         Task<int> Count(DirectSalesOrderFilter DirectSalesOrderFilter);
         Task<List<DirectSalesOrder>> List(DirectSalesOrderFilter DirectSalesOrderFilter);
+        Task<List<Item>> ListItem(ItemFilter ItemFilter, long StoreId);
         Task<DirectSalesOrder> Get(long Id);
         Task<DirectSalesOrder> Create(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Update(DirectSalesOrder DirectSalesOrder);
@@ -76,6 +77,25 @@ namespace DMS.Services.MDirectSalesOrder
                     throw new MessageException(ex.InnerException);
             }
         }
+
+        public async Task<List<Item>> ListItem(ItemFilter ItemFilter, long StoreId)
+        {
+            try
+            {
+                List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
+                await ApplyPrice(Items, StoreId);
+                return Items;
+            }
+            catch (Exception ex)
+            {
+                await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+        }
+
         public async Task<DirectSalesOrder> Get(long Id)
         {
             DirectSalesOrder DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(Id);
@@ -321,6 +341,98 @@ namespace DMS.Services.MDirectSalesOrder
             }
             
             return DirectSalesOrder;
+        }
+
+        private async Task<List<Item>> ApplyPrice(List<Item> Items, long StoreId)
+        {
+            var CurrrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            var OrganizationIds = CurrrentUser.Organization.Path.Split('.').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => long.Parse(x)).OrderByDescending(x => x).ToList();
+            var Store = await UOW.StoreRepository.Get(StoreId);
+            var ItemIds = Items.Select(x => x.Id).ToList();
+            Dictionary<long, long> result = new Dictionary<long, long>();
+            DirectPriceListItemMappingFilter DirectPriceListItemMappingFilter = new DirectPriceListItemMappingFilter
+            {
+                ItemId = new IdFilter { In = ItemIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = DirectPriceListItemMappingSelect.ALL,
+                DirectPriceListTypeId = new IdFilter { Equal = Enums.DirectPriceListTypeEnum.ALLSTORE.Id },
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+            };
+            var DirectPriceListItemMappingAllStore = await UOW.DirectPriceListItemMappingItemMappingRepository.List(DirectPriceListItemMappingFilter);
+
+            DirectPriceListItemMappingFilter = new DirectPriceListItemMappingFilter
+            {
+                ItemId = new IdFilter { In = ItemIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = DirectPriceListItemMappingSelect.ALL,
+                DirectPriceListTypeId = new IdFilter { Equal = Enums.DirectPriceListTypeEnum.STOREGROUPING.Id },
+                StoreGroupingId = new IdFilter { Equal = Store.StoreGroupingId },
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+            };
+            var DirectPriceListItemMappingStoreGrouping = await UOW.DirectPriceListItemMappingItemMappingRepository.List(DirectPriceListItemMappingFilter);
+
+            DirectPriceListItemMappingFilter = new DirectPriceListItemMappingFilter
+            {
+                ItemId = new IdFilter { In = ItemIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = DirectPriceListItemMappingSelect.ALL,
+                DirectPriceListTypeId = new IdFilter { Equal = Enums.DirectPriceListTypeEnum.STORETYPE.Id },
+                StoreGroupingId = new IdFilter { Equal = Store.StoreTypeId },
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+            };
+            var DirectPriceListItemMappingStoreType = await UOW.DirectPriceListItemMappingItemMappingRepository.List(DirectPriceListItemMappingFilter);
+
+            DirectPriceListItemMappingFilter = new DirectPriceListItemMappingFilter
+            {
+                ItemId = new IdFilter { In = ItemIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = DirectPriceListItemMappingSelect.ALL,
+                DirectPriceListTypeId = new IdFilter { Equal = Enums.DirectPriceListTypeEnum.DETAILS.Id },
+                StoreId = new IdFilter { Equal = StoreId },
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+            };
+            var DirectPriceListItemMappingStoreDetail = await UOW.DirectPriceListItemMappingItemMappingRepository.List(DirectPriceListItemMappingFilter);
+
+            List<DirectPriceListItemMapping> DirectPriceListItemMappings = new List<DirectPriceListItemMapping>();
+            DirectPriceListItemMappings.AddRange(DirectPriceListItemMappingAllStore);
+            DirectPriceListItemMappings.AddRange(DirectPriceListItemMappingStoreGrouping);
+            DirectPriceListItemMappings.AddRange(DirectPriceListItemMappingStoreType);
+            DirectPriceListItemMappings.AddRange(DirectPriceListItemMappingStoreDetail);
+            foreach (var ItemId in ItemIds)
+            {
+                result.Add(ItemId, long.MaxValue);
+            }
+
+            foreach (var ItemId in ItemIds)
+            {
+                foreach (var OrganizationId in OrganizationIds)
+                {
+                    long targetPrice = long.MaxValue;
+                    targetPrice = DirectPriceListItemMappings.Where(x => x.ItemId == ItemId && x.DirectPriceList.OrganizationId == OrganizationId).Select(x => x.Price).DefaultIfEmpty(long.MaxValue).Min();
+                    if (targetPrice < long.MaxValue)
+                    {
+                        result[ItemId] = targetPrice;
+                        break;
+                    }
+                }
+            }
+
+            foreach (var ItemId in ItemIds)
+            {
+                if (result[ItemId] == long.MaxValue)
+                {
+                    result[ItemId] = Convert.ToInt64(Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice).FirstOrDefault());
+                }
+            }
+            return Items;
         }
     }
 }
