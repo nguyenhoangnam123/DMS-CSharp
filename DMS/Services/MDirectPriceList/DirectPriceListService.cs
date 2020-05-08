@@ -225,6 +225,10 @@ namespace DMS.Services.MDirectPriceList
                         subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
                         subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.StartDate))
+                        subFilter.StartDate = Map(subFilter.StartDate, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.EndDate))
+                        subFilter.EndDate = Map(subFilter.EndDate, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
                         subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))

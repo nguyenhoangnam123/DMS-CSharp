@@ -209,7 +209,11 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
                 entity.Property(e => e.Name).HasMaxLength(500);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -662,7 +666,11 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
                 entity.Property(e => e.Name).HasMaxLength(500);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 

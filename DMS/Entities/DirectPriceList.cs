@@ -11,6 +11,8 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
         public long OrganizationId { get; set; }
         public long DirectPriceListTypeId { get; set; }
@@ -39,6 +41,8 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public DateFilter StartDate { get; set; }
+        public DateFilter EndDate { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter OrganizationId { get; set; }
         public IdFilter DirectPriceListTypeId { get; set; }
@@ -55,9 +59,11 @@ namespace DMS.Entities
         Id = 0,
         Code = 1,
         Name = 2,
-        Status = 3,
-        Organization = 4,
-        DirectPriceListType = 5,
+        StartDate = 3,
+        EndDate = 4,
+        Status = 5,
+        Organization = 6,
+        DirectPriceListType = 7,
         CreatedAt = 50,
         UpdatedAt = 51,
     }
@@ -69,8 +75,10 @@ namespace DMS.Entities
         Id = E._0,
         Code = E._1,
         Name = E._2,
-        Status = E._3,
-        Organization = E._4,
-        DirectPriceListType = E._5,
+        StartDate = E._3,
+        EndDate = E._4,
+        Status = E._5,
+        Organization = E._6,
+        DirectPriceListType = E._7,
     }
 }

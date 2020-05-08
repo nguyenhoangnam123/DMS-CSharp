@@ -44,6 +44,10 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
+            if (filter.StartDate != null)
+                query = query.Where(q => q.StartDate, filter.StartDate);
+            if (filter.EndDate != null)
+                query = query.Where(q => q.EndDate, filter.EndDate);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.OrganizationId != null)
@@ -68,6 +72,10 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Code, filter.Code);
                 if (filter.Name != null)
                     queryable = queryable.Where(q => q.Name, filter.Name);
+                if (filter.StartDate != null)
+                    queryable = queryable.Where(q => q.StartDate, filter.StartDate);
+                if (filter.EndDate != null)
+                    queryable = queryable.Where(q => q.EndDate, filter.EndDate);
                 if (filter.StatusId != null)
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
                 if (filter.OrganizationId != null)
@@ -95,6 +103,12 @@ namespace DMS.Repositories
                         case DirectPriceListOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
+                        case DirectPriceListOrder.StartDate:
+                            query = query.OrderBy(q => q.StartDate);
+                            break;
+                        case DirectPriceListOrder.EndDate:
+                            query = query.OrderBy(q => q.EndDate);
+                            break;
                         case DirectPriceListOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
                             break;
@@ -117,6 +131,12 @@ namespace DMS.Repositories
                             break;
                         case DirectPriceListOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
+                            break;
+                        case DirectPriceListOrder.StartDate:
+                            query = query.OrderByDescending(q => q.StartDate);
+                            break;
+                        case DirectPriceListOrder.EndDate:
+                            query = query.OrderByDescending(q => q.EndDate);
                             break;
                         case DirectPriceListOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
@@ -141,6 +161,8 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(DirectPriceListSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(DirectPriceListSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(DirectPriceListSelect.Name) ? q.Name : default(string),
+                StartDate = filter.Selects.Contains(DirectPriceListSelect.StartDate) ? q.StartDate : default(DateTime),
+                EndDate = filter.Selects.Contains(DirectPriceListSelect.EndDate) ? q.EndDate : default(DateTime?),
                 StatusId = filter.Selects.Contains(DirectPriceListSelect.Status) ? q.StatusId : default(long),
                 OrganizationId = filter.Selects.Contains(DirectPriceListSelect.Organization) ? q.OrganizationId : default(long),
                 DirectPriceListTypeId = filter.Selects.Contains(DirectPriceListSelect.DirectPriceListType) ? q.DirectPriceListTypeId : default(long),
@@ -202,6 +224,8 @@ namespace DMS.Repositories
                 Id = x.Id,
                 Code = x.Code,
                 Name = x.Name,
+                StartDate = x.StartDate,
+                EndDate = x.EndDate,
                 StatusId = x.StatusId,
                 OrganizationId = x.OrganizationId,
                 DirectPriceListTypeId = x.DirectPriceListTypeId,
@@ -331,6 +355,8 @@ namespace DMS.Repositories
             DirectPriceListDAO.Id = DirectPriceList.Id;
             DirectPriceListDAO.Code = DirectPriceList.Code;
             DirectPriceListDAO.Name = DirectPriceList.Name;
+            DirectPriceListDAO.StartDate = DirectPriceList.StartDate;
+            DirectPriceListDAO.EndDate = DirectPriceList.EndDate;
             DirectPriceListDAO.StatusId = DirectPriceList.StatusId;
             DirectPriceListDAO.OrganizationId = DirectPriceList.OrganizationId;
             DirectPriceListDAO.DirectPriceListTypeId = DirectPriceList.DirectPriceListTypeId;
@@ -351,6 +377,8 @@ namespace DMS.Repositories
             DirectPriceListDAO.Id = DirectPriceList.Id;
             DirectPriceListDAO.Code = DirectPriceList.Code;
             DirectPriceListDAO.Name = DirectPriceList.Name;
+            DirectPriceListDAO.StartDate = DirectPriceList.StartDate;
+            DirectPriceListDAO.EndDate = DirectPriceList.EndDate;
             DirectPriceListDAO.StatusId = DirectPriceList.StatusId;
             DirectPriceListDAO.OrganizationId = DirectPriceList.OrganizationId;
             DirectPriceListDAO.DirectPriceListTypeId = DirectPriceList.DirectPriceListTypeId;
@@ -375,6 +403,8 @@ namespace DMS.Repositories
                 DirectPriceListDAO.Id = DirectPriceList.Id;
                 DirectPriceListDAO.Code = DirectPriceList.Code;
                 DirectPriceListDAO.Name = DirectPriceList.Name;
+                DirectPriceListDAO.StartDate = DirectPriceList.StartDate;
+                DirectPriceListDAO.EndDate = DirectPriceList.EndDate;
                 DirectPriceListDAO.StatusId = DirectPriceList.StatusId;
                 DirectPriceListDAO.OrganizationId = DirectPriceList.OrganizationId;
                 DirectPriceListDAO.DirectPriceListTypeId = DirectPriceList.DirectPriceListTypeId;

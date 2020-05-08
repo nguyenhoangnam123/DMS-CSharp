@@ -81,6 +81,8 @@ namespace DMS.Rpc.indirect_price_list
             { nameof(IndirectPriceListFilter.Id), FieldType.ID },
             { nameof(IndirectPriceListFilter.Code), FieldType.STRING },
             { nameof(IndirectPriceListFilter.Name), FieldType.STRING },
+            { nameof(IndirectPriceListFilter.StartDate), FieldType.DATE },
+            { nameof(IndirectPriceListFilter.EndDate), FieldType.DATE },
             { nameof(IndirectPriceListFilter.StatusId), FieldType.ID },
             { nameof(IndirectPriceListFilter.OrganizationId), FieldType.ID },
             { nameof(IndirectPriceListFilter.IndirectPriceListTypeId), FieldType.ID },
@@ -996,6 +998,8 @@ namespace DMS.Rpc.indirect_price_list
             IndirectPriceList.Id = IndirectPriceList_IndirectPriceListDTO.Id;
             IndirectPriceList.Code = IndirectPriceList_IndirectPriceListDTO.Code;
             IndirectPriceList.Name = IndirectPriceList_IndirectPriceListDTO.Name;
+            IndirectPriceList.StartDate = IndirectPriceList_IndirectPriceListDTO.StartDate;
+            IndirectPriceList.EndDate = IndirectPriceList_IndirectPriceListDTO.EndDate;
             IndirectPriceList.StatusId = IndirectPriceList_IndirectPriceListDTO.StatusId;
             IndirectPriceList.OrganizationId = IndirectPriceList_IndirectPriceListDTO.OrganizationId;
             IndirectPriceList.IndirectPriceListTypeId = IndirectPriceList_IndirectPriceListDTO.IndirectPriceListTypeId;
@@ -1116,6 +1120,8 @@ namespace DMS.Rpc.indirect_price_list
             IndirectPriceListFilter.Id = IndirectPriceList_IndirectPriceListFilterDTO.Id;
             IndirectPriceListFilter.Code = IndirectPriceList_IndirectPriceListFilterDTO.Code;
             IndirectPriceListFilter.Name = IndirectPriceList_IndirectPriceListFilterDTO.Name;
+            IndirectPriceListFilter.StartDate = IndirectPriceList_IndirectPriceListFilterDTO.StartDate;
+            IndirectPriceListFilter.EndDate = IndirectPriceList_IndirectPriceListFilterDTO.EndDate;
             IndirectPriceListFilter.StatusId = IndirectPriceList_IndirectPriceListFilterDTO.StatusId;
             IndirectPriceListFilter.OrganizationId = IndirectPriceList_IndirectPriceListFilterDTO.OrganizationId;
             IndirectPriceListFilter.IndirectPriceListTypeId = IndirectPriceList_IndirectPriceListFilterDTO.IndirectPriceListTypeId;

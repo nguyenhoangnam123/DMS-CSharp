@@ -11,6 +11,8 @@ namespace DMS.Rpc.indirect_price_list
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
         public long OrganizationId { get; set; }
         public long IndirectPriceListTypeId { get; set; }
@@ -29,6 +31,8 @@ namespace DMS.Rpc.indirect_price_list
             this.Id = IndirectPriceList.Id;
             this.Code = IndirectPriceList.Code;
             this.Name = IndirectPriceList.Name;
+            this.StartDate = IndirectPriceList.StartDate;
+            this.EndDate = IndirectPriceList.EndDate;
             this.StatusId = IndirectPriceList.StatusId;
             this.OrganizationId = IndirectPriceList.OrganizationId;
             this.IndirectPriceListTypeId = IndirectPriceList.IndirectPriceListTypeId;
@@ -50,6 +54,8 @@ namespace DMS.Rpc.indirect_price_list
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public DateFilter StartDate { get; set; }
+        public DateFilter EndDate { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter OrganizationId { get; set; }
         public IdFilter IndirectPriceListTypeId { get; set; }
