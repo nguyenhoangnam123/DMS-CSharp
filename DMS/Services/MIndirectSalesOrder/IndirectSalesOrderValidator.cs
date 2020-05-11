@@ -112,28 +112,6 @@ namespace DMS.Services.MIndirectSalesOrder
             return IndirectSalesOrder.IsValidated;
         }
 
-        private async Task<bool> ValidateEditedPrice(IndirectSalesOrder IndirectSalesOrder)
-        {
-            if (EditedPriceStatusEnum.ACTIVE.Id != IndirectSalesOrder.EditedPriceStatusId && EditedPriceStatusEnum.INACTIVE.Id != IndirectSalesOrder.EditedPriceStatusId)
-                IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.EditedPriceStatus), ErrorCode.EditedPriceStatusNotExisted);
-
-            var oldData = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
-
-            if(IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
-            {
-                if(IndirectSalesOrder.IndirectSalesOrderContents != null)
-                {
-                    foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
-                    {
-                        var oldDataContent = oldData.IndirectSalesOrderContents.Where(x => x.Id == IndirectSalesOrderContent.Id).FirstOrDefault();
-                        if (IndirectSalesOrderContent.Amount > 1.1* oldDataContent.Amount || IndirectSalesOrderContent.Amount < 0.9 * oldDataContent.Amount)
-                            IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Amount), ErrorCode.PriceOutOfRange);
-                    }
-                }
-            }
-            return IndirectSalesOrder.IsValidated;
-        }
-
         private async Task<bool> ValidateUOM(IndirectSalesOrder IndirectSalesOrder)
         {
             if(IndirectSalesOrder.IndirectSalesOrderContents != null)
@@ -305,7 +283,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 await ValidateStore(IndirectSalesOrder);
                 await ValidateEmployee(IndirectSalesOrder);
                 await ValidateOrderDate(IndirectSalesOrder);
-                await ValidateEditedPrice(IndirectSalesOrder);
                 await ValidateUOM(IndirectSalesOrder);
                 await ValidateQuantity(IndirectSalesOrder);
                 await ValidateItem(IndirectSalesOrder);
