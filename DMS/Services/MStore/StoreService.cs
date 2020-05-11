@@ -38,14 +38,6 @@ namespace DMS.Services.MStore
         private IStoreValidator StoreValidator;
         private IWorkflowService WorkflowService;
         private IImageService ImageService;
-        private List<string> ParameterKeys = new List<string>
-        {
-            nameof(Store.Id),
-            nameof(Store.Code),
-            nameof(Store.Name),
-            nameof(Store.OwnerName),
-            "Username",
-        };
         public StoreService(
             IUOW UOW,
             ILogging Logging,

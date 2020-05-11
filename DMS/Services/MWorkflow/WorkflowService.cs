@@ -348,7 +348,7 @@ namespace DMS.Services.MWorkflow
             return result;
         }
 
-        private async Task UpdateParameters(Guid RequestId, WorkflowDefinition WorkflowDefinition, Dictionary<string, string> Parameters)
+        public async Task UpdateParameters(Guid RequestId, WorkflowDefinition WorkflowDefinition, Dictionary<string, string> Parameters)
         {
             // khởi tạo các parameter cho workflow
             List<RequestWorkflowParameterMapping> RequestWorkflowParameterMappings = new List<RequestWorkflowParameterMapping>();
