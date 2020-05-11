@@ -207,12 +207,14 @@ namespace DMS.Rpc.e_route
             ERouteFilter ERouteFilter = new ERouteFilter();
             ERouteFilter = ERouteService.ToFilter(ERouteFilter);
             ERouteFilter.Id = new IdFilter { In = Ids };
-            ERouteFilter.Selects = ERouteSelect.Id;
+            ERouteFilter.Selects = ERouteSelect.Id | ERouteSelect.RequestState;
             ERouteFilter.Skip = 0;
             ERouteFilter.Take = int.MaxValue;
 
             List<ERoute> ERoutes = await ERouteService.List(ERouteFilter);
             ERoutes = await ERouteService.BulkDelete(ERoutes);
+            if (ERoutes.Any(x => !x.IsValidated))
+                return BadRequest(ERoutes);
             return true;
         }
         
