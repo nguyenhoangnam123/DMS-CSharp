@@ -56,7 +56,7 @@ namespace DMS.Services.MERouteChangeRequest
         }
         private async Task<bool> ValidateERoute(ERouteChangeRequest ERouteChangeRequest)
         {
-            ERoute ERoute = await UOW.ERouteRepository.Get(ERouteChangeRequest.Id);
+            ERoute ERoute = await UOW.ERouteRepository.Get(ERouteChangeRequest.ERouteId);
             if(ERoute == null)
                 ERouteChangeRequest.AddError(nameof(ERouteChangeRequestValidator), nameof(ERouteChangeRequest.ERoute), ErrorCode.ERouteNotExisted);
             else
