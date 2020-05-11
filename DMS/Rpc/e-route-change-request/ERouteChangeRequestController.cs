@@ -1000,6 +1000,13 @@ namespace DMS.Rpc.e_route_change_request
             ERouteChangeRequestFilter.OrderType = ERouteChangeRequest_ERouteChangeRequestFilterDTO.OrderType;
 
             ERouteChangeRequestFilter.Id = ERouteChangeRequest_ERouteChangeRequestFilterDTO.Id;
+            ERouteChangeRequestFilter.Code = ERouteChangeRequest_ERouteChangeRequestFilterDTO.Code;
+            ERouteChangeRequestFilter.Name = ERouteChangeRequest_ERouteChangeRequestFilterDTO.Name;
+            ERouteChangeRequestFilter.ERouteTypeId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.ERouteTypeId;
+            ERouteChangeRequestFilter.StartDate = ERouteChangeRequest_ERouteChangeRequestFilterDTO.StartDate;
+            ERouteChangeRequestFilter.EndDate = ERouteChangeRequest_ERouteChangeRequestFilterDTO.EndDate;
+            ERouteChangeRequestFilter.SaleEmployeeId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.SaleEmployeeId;
+            ERouteChangeRequestFilter.EndDate = ERouteChangeRequest_ERouteChangeRequestFilterDTO.EndDate;
             ERouteChangeRequestFilter.ERouteId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.ERouteId;
             ERouteChangeRequestFilter.CreatorId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.CreatorId;
             ERouteChangeRequestFilter.RequestStateId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.RequestStateId;
