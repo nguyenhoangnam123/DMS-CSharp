@@ -135,7 +135,7 @@ namespace DMS.Services.MWorkflow
                     CreatorId = CurrentContext.UserId,
                 };
                 await UOW.RequestWorkflowDefinitionMappingRepository.Update(RequestWorkflowDefinitionMapping);
-                List<RequestWorkflowStepMapping> RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
+                List<RequestWorkflowStepMapping> RequestWorkflowStepMappings = await UOW.RequestWorkflowStepMappingRepository.List(RequestId);
                 List<WorkflowStep> Starts = new List<WorkflowStep>();
                 // tìm điểm bắt đầu của workflow
                 // nút không có ai trỏ đến là nút bắt đầu
@@ -146,21 +146,7 @@ namespace DMS.Services.MWorkflow
                         CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
                     {
                         Starts.Add(WorkflowStep);
-                    }
-                }
-                // khởi tạo trạng thái cho tất cả các nút
-                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
-                {
-                    RequestWorkflowStepMapping RequestWorkflowStepMapping = new RequestWorkflowStepMapping();
-                    RequestWorkflowStepMappings.Add(RequestWorkflowStepMapping);
-                    RequestWorkflowStepMapping.RequestId = RequestId;
-                    RequestWorkflowStepMapping.WorkflowStepId = WorkflowStep.Id;
-                    RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.NEW.Id;
-                    RequestWorkflowStepMapping.CreatedAt = StaticParams.DateTimeNow;
-                    RequestWorkflowStepMapping.UpdatedAt = null;
-                    RequestWorkflowStepMapping.AppUserId = null;
-                    if (Starts.Any(s => s.Id == WorkflowStep.Id))
-                    {
+                        RequestWorkflowStepMapping RequestWorkflowStepMapping = RequestWorkflowStepMappings.Where(r => r.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
                         RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
                     }
                 }
@@ -287,9 +273,12 @@ namespace DMS.Services.MWorkflow
                         var StartRequestStep = RequestWorkflowStepMappings
                             .Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
                             .Where(x => x.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
+                        if (StartRequestStep == null)
+                            continue;
                         StartRequestStep.WorkflowStateId = WorkflowStateEnum.REJECTED.Id;
                         StartRequestStep.UpdatedAt = StaticParams.DateTimeNow;
                         StartRequestStep.AppUserId = CurrentContext.UserId;
+                        await UOW.RequestWorkflowStepMappingRepository.BulkMerge(RequestId, RequestWorkflowStepMappings);
                         AppUserFilter AppUserFilter = new AppUserFilter
                         {
                             Id = new IdFilter { Equal = RequestWorkflowDefinitionMapping.CreatorId },
@@ -306,11 +295,12 @@ namespace DMS.Services.MWorkflow
                             Body = CreateMailContent(WorkflowStep.BodyMailForReject, Parameters),
                         };
                         await MailService.Send(MailForReject);
+                        return true;
                     }
                 }
             }
 
-            return true;
+            return false;
         }
 
         public async Task<GenericEnum> End(Guid RequestId, Dictionary<string, string> Parameters)

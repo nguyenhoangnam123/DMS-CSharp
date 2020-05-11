@@ -228,7 +228,7 @@ namespace DMS.Repositories
                 Phone = filter.Selects.Contains(AppUserSelect.Phone) ? q.Phone : default(string),
                 StatusId = filter.Selects.Contains(AppUserSelect.Status) ? q.StatusId : default(long),
                 SexId = filter.Selects.Contains(AppUserSelect.Sex) ? q.SexId : default(long),
-                Birthday = filter.Selects.Contains(AppUserSelect.Birthday) ? q.Birthday : default(DateTime),
+                Birthday = filter.Selects.Contains(AppUserSelect.Birthday) ? q.Birthday : default(DateTime?),
                 Position = filter.Selects.Contains(AppUserSelect.Position) ? q.Position : default(string),
                 Department = filter.Selects.Contains(AppUserSelect.Department) ? q.Department : default(string),
                 OrganizationId = filter.Selects.Contains(AppUserSelect.Organization) ? q.OrganizationId : default(long),

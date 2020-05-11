@@ -312,7 +312,7 @@ namespace DMS.Services.MStore
             }
             
             bool Started = await WorkflowService.IsStarted(Store.RowId);
-            if (Started == false)
+            if (Started)
             {
                 await WorkflowService.Approve(Store.RowId, Parameters);
             }
@@ -321,17 +321,19 @@ namespace DMS.Services.MStore
                 await WorkflowService.Start(Store.RowId, Parameters);
                 await WorkflowService.Approve(Store.RowId, Parameters);
             }
+            await WorkflowService.End(Store.RowId, Parameters);
             return await Get(Store.Id);
         }
 
         public async Task<Store> Reject(Store Store)
         {
+            Store = await UOW.StoreRepository.Get(Store.Id);
             bool Initialized = await WorkflowService.IsInitialized(Store.RowId);
             if (Initialized == false)
                 return Store;
             Dictionary<string, string> Parameters = MapParameters(Store);
             bool Started = await WorkflowService.IsStarted(Store.RowId);
-            if (Started == false)
+            if (Started)
             {
                 await WorkflowService.Reject(Store.RowId, Parameters);
             }
@@ -340,6 +342,7 @@ namespace DMS.Services.MStore
                 await WorkflowService.Start(Store.RowId, Parameters);
                 await WorkflowService.Reject(Store.RowId, Parameters);
             }
+            await WorkflowService.End(Store.RowId, Parameters);
             return await Get(Store.Id);
         }
 

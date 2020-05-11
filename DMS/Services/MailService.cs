@@ -29,8 +29,11 @@ namespace DMS.Services
             restRequest.Method = Method.POST;
             restRequest.AddCookie("Token", CurrentContext.Token);
             restRequest.AddCookie("X-Language", CurrentContext.Language);
-            restRequest.AddHeader("Content-Type", "multipart/form-data");
-            Mail.Attachments.ForEach(x => restRequest.AddFile("Files", x.Content, x.FileName, x.ContentType));
+            if (Mail.Attachments != null)
+            {
+                restRequest.AddHeader("Content-Type", "multipart/form-data");
+                Mail.Attachments.ForEach(x => restRequest.AddFile("Files", x.Content, x.FileName, x.ContentType));
+            }
             Mail.Recipients.ForEach(x => restRequest.AddParameter("Recipients", x));
             restRequest.AddParameter("Subject", Mail.Subject);
             restRequest.AddParameter("Content", Mail.Body);
