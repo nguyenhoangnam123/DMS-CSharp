@@ -58,6 +58,17 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.CreatorId != null)
                 query = query.Where(q => q.CreatorId, filter.CreatorId);
+            if(filter.StoreId != null)
+            {
+                if (filter.StoreId.Equal.HasValue)
+                {
+                    query = from q in query
+                            join ec in DataContext.ERouteContent on q.Id equals ec.ERouteId
+                            where ec.StoreId == filter.StoreId.Equal
+                            select q;
+                    query = query.Distinct();
+                }
+            }
             query = OrFilter(query, filter);
             return query;
         }
@@ -192,19 +203,10 @@ namespace DMS.Repositories
                 {
                     Id = q.Creator.Id,
                     Username = q.Creator.Username,
-                    Password = q.Creator.Password,
                     DisplayName = q.Creator.DisplayName,
                     Address = q.Creator.Address,
                     Email = q.Creator.Email,
                     Phone = q.Creator.Phone,
-                    Position = q.Creator.Position,
-                    Department = q.Creator.Department,
-                    OrganizationId = q.Creator.OrganizationId,
-                    SexId = q.Creator.SexId,
-                    StatusId = q.Creator.StatusId,
-                    Avatar = q.Creator.Avatar,
-                    Birthday = q.Creator.Birthday,
-                    ProvinceId = q.Creator.ProvinceId,
                 } : null,
                 ERouteType = filter.Selects.Contains(ERouteSelect.ERouteType) && q.ERouteType != null ? new ERouteType
                 {
@@ -222,19 +224,10 @@ namespace DMS.Repositories
                 {
                     Id = q.SaleEmployee.Id,
                     Username = q.SaleEmployee.Username,
-                    Password = q.SaleEmployee.Password,
                     DisplayName = q.SaleEmployee.DisplayName,
                     Address = q.SaleEmployee.Address,
                     Email = q.SaleEmployee.Email,
                     Phone = q.SaleEmployee.Phone,
-                    Position = q.SaleEmployee.Position,
-                    Department = q.SaleEmployee.Department,
-                    OrganizationId = q.SaleEmployee.OrganizationId,
-                    SexId = q.SaleEmployee.SexId,
-                    StatusId = q.SaleEmployee.StatusId,
-                    Avatar = q.SaleEmployee.Avatar,
-                    Birthday = q.SaleEmployee.Birthday,
-                    ProvinceId = q.SaleEmployee.ProvinceId,
                 } : null,
                 Status = filter.Selects.Contains(ERouteSelect.Status) && q.Status != null ? new Status
                 {
@@ -286,19 +279,10 @@ namespace DMS.Repositories
                 {
                     Id = x.Creator.Id,
                     Username = x.Creator.Username,
-                    Password = x.Creator.Password,
                     DisplayName = x.Creator.DisplayName,
                     Address = x.Creator.Address,
                     Email = x.Creator.Email,
                     Phone = x.Creator.Phone,
-                    Position = x.Creator.Position,
-                    Department = x.Creator.Department,
-                    OrganizationId = x.Creator.OrganizationId,
-                    SexId = x.Creator.SexId,
-                    StatusId = x.Creator.StatusId,
-                    Avatar = x.Creator.Avatar,
-                    Birthday = x.Creator.Birthday,
-                    ProvinceId = x.Creator.ProvinceId,
                 },
                 ERouteType = x.ERouteType == null ? null : new ERouteType
                 {
@@ -316,19 +300,10 @@ namespace DMS.Repositories
                 {
                     Id = x.SaleEmployee.Id,
                     Username = x.SaleEmployee.Username,
-                    Password = x.SaleEmployee.Password,
                     DisplayName = x.SaleEmployee.DisplayName,
                     Address = x.SaleEmployee.Address,
                     Email = x.SaleEmployee.Email,
                     Phone = x.SaleEmployee.Phone,
-                    Position = x.SaleEmployee.Position,
-                    Department = x.SaleEmployee.Department,
-                    OrganizationId = x.SaleEmployee.OrganizationId,
-                    SexId = x.SaleEmployee.SexId,
-                    StatusId = x.SaleEmployee.StatusId,
-                    Avatar = x.SaleEmployee.Avatar,
-                    Birthday = x.SaleEmployee.Birthday,
-                    ProvinceId = x.SaleEmployee.ProvinceId,
                 },
                 Status = x.Status == null ? null : new Status
                 {

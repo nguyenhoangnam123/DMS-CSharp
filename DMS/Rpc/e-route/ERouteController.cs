@@ -805,6 +805,7 @@ namespace DMS.Rpc.e_route
             ERouteFilter.RequestStateId = ERoute_ERouteFilterDTO.RequestStateId;
             ERouteFilter.StatusId = ERoute_ERouteFilterDTO.StatusId;
             ERouteFilter.CreatorId = ERoute_ERouteFilterDTO.CreatorId;
+            ERouteFilter.StoreId = ERoute_ERouteFilterDTO.StoreId;
             ERouteFilter.CreatedAt = ERoute_ERouteFilterDTO.CreatedAt;
             ERouteFilter.UpdatedAt = ERoute_ERouteFilterDTO.UpdatedAt;
             return ERouteFilter;
