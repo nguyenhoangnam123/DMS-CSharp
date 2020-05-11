@@ -202,7 +202,7 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            Store = await StoreService.Update(Store);
+            Store = await StoreService.Approve(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
                 return Store_StoreDTO;
@@ -220,7 +220,7 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            Store = await StoreService.Update(Store);
+            Store = await StoreService.Reject(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
                 return Store_StoreDTO;

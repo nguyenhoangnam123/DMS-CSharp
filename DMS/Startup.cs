@@ -22,6 +22,7 @@ using Winton.Extensions.Configuration.Consul;
 using Z.EntityFramework.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using DMS.Rpc;
+using Microsoft.AspNetCore.Http;
 
 namespace DMS
 {
@@ -116,6 +117,7 @@ namespace DMS
                 };
             });
 
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IAuthorizationHandler, PermissionHandler>();
             services.AddAuthorization(options =>
             {

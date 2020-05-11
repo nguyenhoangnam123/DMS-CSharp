@@ -1,6 +1,7 @@
 using Common;
 using DMS.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc
 {
+    [Authorize]
+    [Authorize(Policy ="Permission")]
     public class RpcController : ControllerBase
     {
     }
@@ -26,12 +29,12 @@ namespace DMS.Rpc
     {
         private ICurrentContext CurrentContext;
         private DataContext DataContext;
-        public PermissionHandler(ICurrentContext CurrentContext, IConfiguration Configuration)
+        private readonly IHttpContextAccessor httpContextAccessor;
+        public PermissionHandler(ICurrentContext CurrentContext, DataContext DataContext, IHttpContextAccessor httpContextAccessor)
         {
             this.CurrentContext = CurrentContext;
-            var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
-            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DataContext"));
-            DataContext = new DataContext(optionsBuilder.Options);
+            this.DataContext = DataContext;
+            this.httpContextAccessor = httpContextAccessor;
         }
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
@@ -43,9 +46,8 @@ namespace DMS.Rpc
             }
             long UserId = long.TryParse(context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value, out long u) ? u : 0;
             string UserName = context.User.FindFirst(c => c.Type == ClaimTypes.Name).Value;
-            var mvcContext = context.Resource as AuthorizationFilterContext;
-            var HttpContext = mvcContext.HttpContext;
-            string url = HttpContext.Request.Path.Value;
+            var HttpContext = httpContextAccessor.HttpContext;
+            string url = HttpContext.Request.Path.Value.ToLower().Substring(1);
             string TimeZone = HttpContext.Request.Headers["X-TimeZone"];
             string Language = HttpContext.Request.Headers["X-Language"];
             CurrentContext.UserId = UserId;

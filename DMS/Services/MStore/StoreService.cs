@@ -117,7 +117,7 @@ namespace DMS.Services.MStore
                 Store.Id = 0;
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
-                await WorkflowService.Init(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
+                await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(Store, new { }, nameof(StoreService));
@@ -299,10 +299,18 @@ namespace DMS.Services.MStore
         {
             if (Store.Id == 0)
                 Store = await Create(Store);
-            bool Initialized = await WorkflowService.IsInitialized(Store.RowId);
-            if (Initialized == false)
-                return Store;
+            else
+                Store = await Update(Store);
             Dictionary<string, string> Parameters = MapParameters(Store);
+            bool Initialized = await WorkflowService.IsInitialized(Store.RowId);
+            
+            if (Initialized == false)
+            {
+                Initialized = await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
+                if (Initialized == false)
+                    return Store;
+            }
+            
             bool Started = await WorkflowService.IsStarted(Store.RowId);
             if (Started == false)
             {
@@ -313,7 +321,6 @@ namespace DMS.Services.MStore
                 await WorkflowService.Start(Store.RowId, Parameters);
                 await WorkflowService.Approve(Store.RowId, Parameters);
             }
-
             return await Get(Store.Id);
         }
 

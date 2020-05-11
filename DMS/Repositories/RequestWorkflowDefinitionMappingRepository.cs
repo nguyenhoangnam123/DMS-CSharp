@@ -14,7 +14,7 @@ namespace DMS.Repositories
         Task<List<RequestWorkflowDefinitionMapping>> List(RequestWorkflowDefinitionMappingFilter filter);
         Task<RequestWorkflowDefinitionMapping> Get(Guid RequestId);
         Task<RequestWorkflowDefinitionMapping> Update(RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping);
-
+        Task<bool> Delete(Guid RequestId);
     }
     public class RequestWorkflowDefinitionMappingRepository : IRequestWorkflowDefinitionMappingRepository
     {
@@ -82,6 +82,14 @@ namespace DMS.Repositories
                 WorkflowDefinitionId = q.WorkflowDefinitionId,
             }).ToListAsync();
             return result;
+        }
+
+        public async Task<bool> Delete(Guid RequestId)
+        {
+            await DataContext.RequestWorkflowStepMapping.Where(r => r.RequestId == RequestId).DeleteFromQueryAsync();
+            await DataContext.RequestWorkflowParameterMapping.Where(r => r.RequestId == RequestId).DeleteFromQueryAsync();
+            await DataContext.RequestWorkflowDefinitionMapping.Where(r => r.RequestId == RequestId).DeleteFromQueryAsync();
+            return true;
         }
     }
 }
