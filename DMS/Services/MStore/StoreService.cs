@@ -302,47 +302,19 @@ namespace DMS.Services.MStore
             else
                 Store = await Update(Store);
             Dictionary<string, string> Parameters = MapParameters(Store);
-            bool Initialized = await WorkflowService.IsInitialized(Store.RowId);
-            
-            if (Initialized == false)
-            {
-                Initialized = await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
-                if (Initialized == false)
-                    return Store;
-            }
-            
-            bool Started = await WorkflowService.IsStarted(Store.RowId);
-            if (Started)
-            {
-                await WorkflowService.Approve(Store.RowId, Parameters);
-            }
-            else
-            {
-                await WorkflowService.Start(Store.RowId, Parameters);
-                await WorkflowService.Approve(Store.RowId, Parameters);
-            }
-            await WorkflowService.End(Store.RowId, Parameters);
+            bool Approved = await WorkflowService.Approve(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
+            if (Approved == false)
+                return null;
             return await Get(Store.Id);
         }
 
         public async Task<Store> Reject(Store Store)
         {
             Store = await UOW.StoreRepository.Get(Store.Id);
-            bool Initialized = await WorkflowService.IsInitialized(Store.RowId);
-            if (Initialized == false)
-                return Store;
             Dictionary<string, string> Parameters = MapParameters(Store);
-            bool Started = await WorkflowService.IsStarted(Store.RowId);
-            if (Started)
-            {
-                await WorkflowService.Reject(Store.RowId, Parameters);
-            }
-            else
-            {
-                await WorkflowService.Start(Store.RowId, Parameters);
-                await WorkflowService.Reject(Store.RowId, Parameters);
-            }
-            await WorkflowService.End(Store.RowId, Parameters);
+            bool Rejected = await WorkflowService.Approve(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
+            if (Rejected == false)
+                return null;
             return await Get(Store.Id);
         }
 
