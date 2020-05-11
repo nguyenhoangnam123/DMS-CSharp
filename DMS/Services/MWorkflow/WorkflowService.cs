@@ -15,7 +15,7 @@ namespace DMS.Services.MWorkflow
     {
         Task<RequestState> GetRequestState(Guid RequestId);
         Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowState(Guid RequestId);
-        Task<bool> Init(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
+        Task<bool> Initialize(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
         Task<bool> IsInitialized(Guid RequestId);
         Task<bool> IsStarted(Guid RequestId);
         Task<bool> Start(Guid RequestId, Dictionary<string, string> Parameters);
@@ -58,7 +58,11 @@ namespace DMS.Services.MWorkflow
             if (RequestWorkflowDefinitionMapping == null)
                 return false;
             else
+            {
+                if (RequestWorkflowDefinitionMapping.RequestStateId == RequestStateEnum.REJECTED.Id)
+                    return false;
                 return true;
+            }
         }
         public async Task<bool> IsStarted(Guid RequestId)
         {
@@ -69,7 +73,7 @@ namespace DMS.Services.MWorkflow
                 return true;
             return false;
         }
-        public async Task<bool> Init(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
+        public async Task<bool> Initialize(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
         {
             List<WorkflowDefinition> WorkflowDefinitions = await UOW.WorkflowDefinitionRepository.List(new WorkflowDefinitionFilter
             {
@@ -80,7 +84,8 @@ namespace DMS.Services.MWorkflow
             WorkflowDefinition WorkflowDefinition = WorkflowDefinitions.FirstOrDefault();
             if (WorkflowDefinition == null)
                 return false;
-
+            WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
+            await UOW.RequestWorkflowDefinitionMappingRepository.Delete(RequestId);
             // khởi tạo workflow
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = new RequestWorkflowDefinitionMapping
             {
@@ -370,6 +375,6 @@ namespace DMS.Services.MWorkflow
             await UOW.RequestWorkflowParameterMappingRepository.BulkMerge(RequestId, RequestWorkflowParameterMappings);
         }
 
-       
+
     }
 }

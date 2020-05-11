@@ -18,35 +18,70 @@ namespace Common
                 switch (Type)
                 {
                     case FieldType.ID:
-                        Ids = value.Split(";").Select(v => long.TryParse(v, out long l) ? l : 0).ToList();
+                        if (string.IsNullOrWhiteSpace(value))
+                            Ids = new List<long>();
+                        else
+                            Ids = value.Split(";").Select(v => long.TryParse(v, out long l) ? l : 0).ToList();
                         break;
                     case FieldType.LONG:
-                        tmp = value.Split(";").ToList();
-                        if (tmp.Count > 0)
-                            StartLong = long.TryParse(tmp[0], out long l0) ? l0 : 0;
-                        if (tmp.Count > 1)
-                            EndLong = long.TryParse(tmp[1], out long l1) ? l1 : 0;
+                        if (string.IsNullOrWhiteSpace(value))
+                        {
+                            StartLong = long.MinValue;
+                            EndLong = long.MaxValue;
+                        }
+                        else
+                        {
+                            tmp = value.Split(";").ToList();
+                            if (tmp.Count > 0)
+                                StartLong = long.TryParse(tmp[0], out long l0) ? l0 : long.MinValue;
+                            if (tmp.Count > 1)
+                                EndLong = long.TryParse(tmp[1], out long l1) ? l1 : long.MaxValue;
+                        } 
                         break;
                     case FieldType.DECIMAL:
-                        tmp = value.Split(";").ToList();
-                        if (tmp.Count > 0)
-                            StartDecimal = decimal.TryParse(tmp[0], out decimal db0) ? db0 : 0;
-                        if (tmp.Count > 1)
-                            EndDecimal = decimal.TryParse(tmp[1], out decimal db1) ? db1 : 0;
+                        if (string.IsNullOrWhiteSpace(value))
+                        {
+                            StartDecimal = decimal.MinValue;
+                            EndDecimal = decimal.MaxValue;
+                        }
+                        else
+                        {
+                            tmp = value.Split(";").ToList();
+                            if (tmp.Count > 0)
+                                StartDecimal = decimal.TryParse(tmp[0], out decimal db0) ? db0 : decimal.MinValue;
+                            if (tmp.Count > 1)
+                                EndDecimal = decimal.TryParse(tmp[1], out decimal db1) ? db1 : decimal.MaxValue;
+                        }
                         break;
                     case FieldType.DATE:
-                        tmp = value.Split(";").ToList();
-                        if (tmp.Count > 0)
-                            StartDate = DateTime.TryParse(tmp[0], out DateTime d0) ? d0 : DateTime.MinValue;
-                        if (tmp.Count > 1)
-                            EndDate = DateTime.TryParse(tmp[1], out DateTime d1) ? d1 : DateTime.MinValue;
+                        if (string.IsNullOrWhiteSpace(value))
+                        {
+                            StartDate = DateTime.MinValue;
+                            EndDate = DateTime.MaxValue;
+                        }
+                        else
+                        {
+                            tmp = value.Split(";").ToList();
+                            if (tmp.Count > 0)
+                                StartDate = DateTime.TryParse(tmp[0], out DateTime d0) ? d0 : DateTime.MinValue;
+                            if (tmp.Count > 1)
+                                EndDate = DateTime.TryParse(tmp[1], out DateTime d1) ? d1 : DateTime.MaxValue;
+                        }
                         break;
                     case FieldType.STRING:
-                        tmp = value.Split(";").ToList();
-                        if (tmp.Count > 0)
-                            PrefixString = tmp[0];
-                        if (tmp.Count > 1)
-                            SuffixString = tmp[0];
+                        if (string.IsNullOrWhiteSpace(value))
+                        {
+                            PrefixString = string.Empty;
+                            SuffixString = string.Empty;
+                        }
+                        else
+                        {
+                            tmp = value.Split(";").ToList();
+                            if (tmp.Count > 0)
+                                PrefixString = tmp[0];
+                            if (tmp.Count > 1)
+                                SuffixString = tmp[1];
+                        }
                         break;
                 }
             }
@@ -70,7 +105,7 @@ namespace Common
         public FilterPermissionDefinition(string name, string type)
         {
             this.Name = name;
-            switch(type)
+            switch (type)
             {
                 case nameof(FieldType.ID):
                     this.Type = FieldType.ID;

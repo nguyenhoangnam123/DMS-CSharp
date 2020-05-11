@@ -188,7 +188,15 @@ namespace DMS.Repositories
 
             if (WorkflowDefinition == null)
                 return null;
-
+            WorkflowDefinition.WorkflowSteps = await DataContext.WorkflowStep
+                .Where(x => x.WorkflowDefinitionId == Id).Select(x => new WorkflowStep
+                {
+                    BodyMailForReject = x.BodyMailForReject,
+                    Id = x.Id,
+                    Name = x.Name,
+                    RoleId = x.RoleId,
+                    SubjectMailForReject = x.SubjectMailForReject,
+                }).ToListAsync();
             WorkflowDefinition.WorkflowDirections = await DataContext.WorkflowDirection
                 .Where(x => x.WorkflowDefinitionId == Id).Select(x => new WorkflowDirection
                 {
@@ -218,7 +226,7 @@ namespace DMS.Repositories
                         SubjectMailForReject = x.ToStep.SubjectMailForReject,
                         BodyMailForReject = x.ToStep.BodyMailForReject,
                     },
-                    
+
                 }).ToListAsync();
 
             WorkflowDefinition.WorkflowParameters = await DataContext.WorkflowParameter
