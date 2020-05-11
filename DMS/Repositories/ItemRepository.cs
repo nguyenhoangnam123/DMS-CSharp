@@ -303,7 +303,7 @@ namespace DMS.Repositories
                     RetailPrice = x.Product.RetailPrice,
                     TaxTypeId = x.Product.TaxTypeId,
                     StatusId = x.Product.StatusId,
-                    ProductType = x.Product.ProductType == null? null: new ProductType
+                    ProductType = x.Product.ProductType == null ? null : new ProductType
                     {
                         Id = x.Product.ProductType.Id,
                         Code = x.Product.ProductType.Code,
@@ -312,13 +312,21 @@ namespace DMS.Repositories
                         StatusId = x.Product.ProductType.StatusId,
                         UpdatedTime = x.Product.ProductType.UpdatedAt,
                     },
+                    TaxType = x.Product.TaxType == null ? null : new TaxType
+                    {
+                        Id = x.Product.TaxType.Id,
+                        Code = x.Product.TaxType.Code,
+                        StatusId = x.Product.TaxType.StatusId,
+                        Name = x.Product.TaxType.Name,
+                        Percentage = x.Product.TaxType.Percentage,
+                    },
                     UnitOfMeasure = x.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
                     {
                         Id = x.Product.UnitOfMeasure.Id,
-                        Code = x.Product.UnitOfMeasure.Code,    
+                        Code = x.Product.UnitOfMeasure.Code,
                         Name = x.Product.UnitOfMeasure.Name,
                         Description = x.Product.UnitOfMeasure.Description,
-                        StatusId = x.Product.UnitOfMeasure.StatusId,    
+                        StatusId = x.Product.UnitOfMeasure.StatusId,
                     },
                     UnitOfMeasureGrouping = x.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
                     {
@@ -328,7 +336,8 @@ namespace DMS.Repositories
                         Description = x.Product.UnitOfMeasureGrouping.Description,
                         StatusId = x.Product.UnitOfMeasureGrouping.StatusId,
                         UnitOfMeasureId = x.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
-                    }
+                    },
+
                 },
             }).FirstOrDefaultAsync();
 

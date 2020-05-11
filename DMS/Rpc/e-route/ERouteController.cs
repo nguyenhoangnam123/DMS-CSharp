@@ -207,12 +207,14 @@ namespace DMS.Rpc.e_route
             ERouteFilter ERouteFilter = new ERouteFilter();
             ERouteFilter = ERouteService.ToFilter(ERouteFilter);
             ERouteFilter.Id = new IdFilter { In = Ids };
-            ERouteFilter.Selects = ERouteSelect.Id;
+            ERouteFilter.Selects = ERouteSelect.Id | ERouteSelect.RequestState;
             ERouteFilter.Skip = 0;
             ERouteFilter.Take = int.MaxValue;
 
             List<ERoute> ERoutes = await ERouteService.List(ERouteFilter);
             ERoutes = await ERouteService.BulkDelete(ERoutes);
+            if (ERoutes.Any(x => !x.IsValidated))
+                return BadRequest(ERoutes.Where(x => !x.IsValidated));
             return true;
         }
         
@@ -805,6 +807,7 @@ namespace DMS.Rpc.e_route
             ERouteFilter.RequestStateId = ERoute_ERouteFilterDTO.RequestStateId;
             ERouteFilter.StatusId = ERoute_ERouteFilterDTO.StatusId;
             ERouteFilter.CreatorId = ERoute_ERouteFilterDTO.CreatorId;
+            ERouteFilter.StoreId = ERoute_ERouteFilterDTO.StoreId;
             ERouteFilter.CreatedAt = ERoute_ERouteFilterDTO.CreatedAt;
             ERouteFilter.UpdatedAt = ERoute_ERouteFilterDTO.UpdatedAt;
             return ERouteFilter;

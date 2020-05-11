@@ -37,7 +37,7 @@ namespace DMS.Rpc.warehouse
         
         public decimal? RetailPrice { get; set; }
         
-        public long? TaxTypeId { get; set; }
+        public long TaxTypeId { get; set; }
         
         public long StatusId { get; set; }
         

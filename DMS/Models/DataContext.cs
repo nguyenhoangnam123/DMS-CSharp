@@ -841,9 +841,9 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrderContent_IndirectSalesOrder");
 
-                entity.HasOne(d => d.IndirectSalesOrderNavigation)
+                entity.HasOne(d => d.Item)
                     .WithMany(p => p.IndirectSalesOrderContents)
-                    .HasForeignKey(d => d.IndirectSalesOrderId)
+                    .HasForeignKey(d => d.ItemId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrderContent_Item");
 
@@ -1188,6 +1188,7 @@ namespace DMS.Models
                 entity.HasOne(d => d.TaxType)
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.TaxTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_TaxType");
 
                 entity.HasOne(d => d.UnitOfMeasureGrouping)

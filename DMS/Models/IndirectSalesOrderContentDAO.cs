@@ -23,7 +23,7 @@ namespace DMS.Models
         public long? TaxAmount { get; set; }
 
         public virtual IndirectSalesOrderDAO IndirectSalesOrder { get; set; }
-        public virtual ItemDAO IndirectSalesOrderNavigation { get; set; }
+        public virtual ItemDAO Item { get; set; }
         public virtual UnitOfMeasureDAO PrimaryUnitOfMeasure { get; set; }
         public virtual UnitOfMeasureDAO UnitOfMeasure { get; set; }
     }

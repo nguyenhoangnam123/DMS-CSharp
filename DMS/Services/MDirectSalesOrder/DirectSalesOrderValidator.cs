@@ -105,20 +105,27 @@ namespace DMS.Services.MDirectSalesOrder
             if (EditedPriceStatusEnum.ACTIVE.Id != DirectSalesOrder.EditedPriceStatusId && EditedPriceStatusEnum.INACTIVE.Id != DirectSalesOrder.EditedPriceStatusId)
                 DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.EditedPriceStatus), ErrorCode.EditedPriceStatusNotExisted);
 
-            var oldData = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-
-            if (DirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
+            else
             {
-                if (DirectSalesOrder.DirectSalesOrderContents != null)
+                var oldData = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+
+                if (DirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
                 {
-                    foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
+                    if (DirectSalesOrder.DirectSalesOrderContents != null)
                     {
-                        var oldDataContent = oldData.DirectSalesOrderContents.Where(x => x.Id == DirectSalesOrderContent.Id).FirstOrDefault();
-                        if (DirectSalesOrderContent.Amount > 1.1 * oldDataContent.Amount || DirectSalesOrderContent.Amount < 0.9 * oldDataContent.Amount)
-                            DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Amount), ErrorCode.PriceOutOfRange);
+                        foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
+                        {
+                            var oldDataContent = oldData.DirectSalesOrderContents.Where(x => x.Id == DirectSalesOrderContent.Id).FirstOrDefault();
+                            if(oldDataContent != null)
+                            {
+                                if (DirectSalesOrderContent.Amount > 1.1 * oldDataContent.Amount || DirectSalesOrderContent.Amount < 0.9 * oldDataContent.Amount)
+                                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Amount), ErrorCode.PriceOutOfRange);
+                            }
+                        }
                     }
                 }
             }
+            
             return DirectSalesOrder.IsValidated;
         }
 
@@ -145,24 +152,6 @@ namespace DMS.Services.MDirectSalesOrder
                         DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
                 }
 
-                //validate đơn vị lưu kho sản phẩm bán
-                Ids = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.PrimaryUnitOfMeasureId).ToList();
-                UnitOfMeasureFilter = new UnitOfMeasureFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Id = new IdFilter { In = Ids },
-                    Selects = UnitOfMeasureSelect.Id
-                };
-
-                listIdsInDB = (await UOW.UnitOfMeasureRepository.List(UnitOfMeasureFilter)).Select(x => x.Id);
-                listIdsNotExisted = Ids.Except(listIdsInDB);
-
-                foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
-                {
-                    if (listIdsNotExisted.Contains(DirectSalesOrderContent.PrimaryUnitOfMeasureId))
-                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.PrimaryUnitOfMeasure), ErrorCode.PrimaryUnitOfMeasureNotExisted);
-                }
             }
 
             if (DirectSalesOrder.DirectSalesOrderPromotions != null)
@@ -186,24 +175,6 @@ namespace DMS.Services.MDirectSalesOrder
                         DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
                 }
 
-                //validate đơn vị lưu kho sản phẩm khuyến mãi
-                Ids = DirectSalesOrder.DirectSalesOrderPromotions.Select(x => x.PrimaryUnitOfMeasureId).ToList();
-                UnitOfMeasureFilter = new UnitOfMeasureFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Id = new IdFilter { In = Ids },
-                    Selects = UnitOfMeasureSelect.Id
-                };
-
-                listIdsInDB = (await UOW.UnitOfMeasureRepository.List(UnitOfMeasureFilter)).Select(x => x.Id);
-                listIdsNotExisted = Ids.Except(listIdsInDB);
-
-                foreach (var DirectSalesOrderPromotion in DirectSalesOrder.DirectSalesOrderPromotions)
-                {
-                    if (listIdsNotExisted.Contains(DirectSalesOrderPromotion.PrimaryUnitOfMeasureId))
-                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.PrimaryUnitOfMeasure), ErrorCode.PrimaryUnitOfMeasureNotExisted);
-                }
             }
 
             return DirectSalesOrder.IsValidated;

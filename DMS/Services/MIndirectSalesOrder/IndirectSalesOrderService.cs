@@ -291,6 +291,7 @@ namespace DMS.Services.MIndirectSalesOrder
 
                     var UOMG = await UOW.UnitOfMeasureGroupingRepository.Get(item.Product.UnitOfMeasureGroupingId.Value);
                     var UOMGC = UOMG.UnitOfMeasureGroupingContents.Where(x => x.UnitOfMeasureId == IndirectSalesOrderContent.UnitOfMeasureId).FirstOrDefault();
+                    IndirectSalesOrderContent.TaxPercentage = item.Product.TaxType.Percentage;
                     IndirectSalesOrderContent.RequestedQuantity = IndirectSalesOrderContent.Quantity * UOMGC.Factor.Value;
 
                     //giá tiền từng line = số lượng yc*đơn giá*(100-%chiết khấu)
@@ -303,7 +304,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 //tính tổng chiết khấu theo % chiết khấu chung
                 if (IndirectSalesOrder.GeneralDiscountPercentage.HasValue)
                 {
-                    IndirectSalesOrder.GeneralDiscountAmount = Convert.ToInt64(IndirectSalesOrder.SubTotal * IndirectSalesOrder.GeneralDiscountPercentage);
+                    IndirectSalesOrder.GeneralDiscountAmount = Convert.ToInt64(IndirectSalesOrder.SubTotal * IndirectSalesOrder.GeneralDiscountPercentage / 100);
                 }
 
                 if (IndirectSalesOrder.GeneralDiscountAmount.HasValue && IndirectSalesOrder.GeneralDiscountAmount > 0)
@@ -313,7 +314,7 @@ namespace DMS.Services.MIndirectSalesOrder
                         //phân bổ chiết khấu chung = tổng chiết khấu chung * (tổng từng line/tổng trc chiết khấu)
                         IndirectSalesOrderContent.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount * (IndirectSalesOrderContent.Amount / IndirectSalesOrder.SubTotal);
                         //thuê từng line = (tổng từng line - chiết khấu phân bổ) * % thuế
-                        IndirectSalesOrderContent.TaxAmount = Convert.ToInt64((IndirectSalesOrderContent.Amount - IndirectSalesOrderContent.GeneralDiscountAmount) * IndirectSalesOrderContent.TaxPercentage);
+                        IndirectSalesOrderContent.TaxAmount = Convert.ToInt64((IndirectSalesOrderContent.Amount - IndirectSalesOrderContent.GeneralDiscountAmount) * IndirectSalesOrderContent.TaxPercentage / 100);
                     }
                 }
                 IndirectSalesOrder.TotalTaxAmount = IndirectSalesOrder.IndirectSalesOrderContents.Sum(x => x.TaxAmount.Value);
