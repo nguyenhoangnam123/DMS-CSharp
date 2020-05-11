@@ -38,7 +38,8 @@ namespace DMS.Services.MProduct
             StatusNotExisted,
             VariationGroupingExisted,
             VariationCodeExisted,
-            VariationNameExisted
+            VariationNameExisted,
+            TaxTypeEmpty
         }
 
         private IUOW UOW;
@@ -158,17 +159,24 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateTaxType(Product Product)
         {
-            TaxTypeFilter TaxTypeFilter = new TaxTypeFilter
+            if(Product.TaxTypeId == 0)
             {
-                Skip = 0,
-                Take = 10,
-                Selects = TaxTypeSelect.Id,
-                Id = new IdFilter { Equal = Product.TaxTypeId }
-            };
+                Product.AddError(nameof(ProductValidator), nameof(Product.TaxType), ErrorCode.TaxTypeEmpty);
+            }
+            else
+            {
+                TaxTypeFilter TaxTypeFilter = new TaxTypeFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Selects = TaxTypeSelect.Id,
+                    Id = new IdFilter { Equal = Product.TaxTypeId }
+                };
 
-            int count = await UOW.TaxTypeRepository.Count(TaxTypeFilter);
-            if(count == 0)
-                Product.AddError(nameof(ProductValidator), nameof(Product.TaxType), ErrorCode.TaxTypeIdNotExisted);
+                int count = await UOW.TaxTypeRepository.Count(TaxTypeFilter);
+                if (count == 0)
+                    Product.AddError(nameof(ProductValidator), nameof(Product.TaxType), ErrorCode.TaxTypeIdNotExisted);
+            }
             return Product.IsValidated;
         }
 

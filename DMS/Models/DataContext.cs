@@ -1188,6 +1188,7 @@ namespace DMS.Models
                 entity.HasOne(d => d.TaxType)
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.TaxTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_TaxType");
 
                 entity.HasOne(d => d.UnitOfMeasureGrouping)

@@ -22,7 +22,7 @@ namespace DMS.Rpc.product_grouping
         public long? UnitOfMeasureGroupingId { get; set; }
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
-        public long? TaxTypeId { get; set; }
+        public long TaxTypeId { get; set; }
         public long StatusId { get; set; }
         public string OtherName { get; set; }
         public string TechnicalName { get; set; }
