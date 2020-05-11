@@ -105,20 +105,27 @@ namespace DMS.Services.MDirectSalesOrder
             if (EditedPriceStatusEnum.ACTIVE.Id != DirectSalesOrder.EditedPriceStatusId && EditedPriceStatusEnum.INACTIVE.Id != DirectSalesOrder.EditedPriceStatusId)
                 DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.EditedPriceStatus), ErrorCode.EditedPriceStatusNotExisted);
 
-            var oldData = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-
-            if (DirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
+            else
             {
-                if (DirectSalesOrder.DirectSalesOrderContents != null)
+                var oldData = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+
+                if (DirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
                 {
-                    foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
+                    if (DirectSalesOrder.DirectSalesOrderContents != null)
                     {
-                        var oldDataContent = oldData.DirectSalesOrderContents.Where(x => x.Id == DirectSalesOrderContent.Id).FirstOrDefault();
-                        if (DirectSalesOrderContent.Amount > 1.1 * oldDataContent.Amount || DirectSalesOrderContent.Amount < 0.9 * oldDataContent.Amount)
-                            DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Amount), ErrorCode.PriceOutOfRange);
+                        foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
+                        {
+                            var oldDataContent = oldData.DirectSalesOrderContents.Where(x => x.Id == DirectSalesOrderContent.Id).FirstOrDefault();
+                            if(oldDataContent != null)
+                            {
+                                if (DirectSalesOrderContent.Amount > 1.1 * oldDataContent.Amount || DirectSalesOrderContent.Amount < 0.9 * oldDataContent.Amount)
+                                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Amount), ErrorCode.PriceOutOfRange);
+                            }
+                        }
                     }
                 }
             }
+            
             return DirectSalesOrder.IsValidated;
         }
 

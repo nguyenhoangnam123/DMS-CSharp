@@ -214,7 +214,7 @@ namespace DMS.Rpc.e_route
             List<ERoute> ERoutes = await ERouteService.List(ERouteFilter);
             ERoutes = await ERouteService.BulkDelete(ERoutes);
             if (ERoutes.Any(x => !x.IsValidated))
-                return BadRequest(ERoutes);
+                return BadRequest(ERoutes.Where(x => !x.IsValidated));
             return true;
         }
         
