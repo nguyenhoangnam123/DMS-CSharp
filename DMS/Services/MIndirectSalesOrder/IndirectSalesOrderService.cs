@@ -303,7 +303,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 //tính tổng chiết khấu theo % chiết khấu chung
                 if (IndirectSalesOrder.GeneralDiscountPercentage.HasValue)
                 {
-                    IndirectSalesOrder.GeneralDiscountAmount = Convert.ToInt64(IndirectSalesOrder.SubTotal * IndirectSalesOrder.GeneralDiscountPercentage);
+                    IndirectSalesOrder.GeneralDiscountAmount = Convert.ToInt64(IndirectSalesOrder.SubTotal * IndirectSalesOrder.GeneralDiscountPercentage / 100);
                 }
 
                 if (IndirectSalesOrder.GeneralDiscountAmount.HasValue && IndirectSalesOrder.GeneralDiscountAmount > 0)

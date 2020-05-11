@@ -312,19 +312,10 @@ namespace DMS.Repositories
                 {
                     Id = q.SaleEmployee.Id,
                     Username = q.SaleEmployee.Username,
-                    Password = q.SaleEmployee.Password,
                     DisplayName = q.SaleEmployee.DisplayName,
                     Address = q.SaleEmployee.Address,
                     Email = q.SaleEmployee.Email,
                     Phone = q.SaleEmployee.Phone,
-                    Position = q.SaleEmployee.Position,
-                    Department = q.SaleEmployee.Department,
-                    OrganizationId = q.SaleEmployee.OrganizationId,
-                    SexId = q.SaleEmployee.SexId,
-                    StatusId = q.SaleEmployee.StatusId,
-                    Avatar = q.SaleEmployee.Avatar,
-                    Birthday = q.SaleEmployee.Birthday,
-                    ProvinceId = q.SaleEmployee.ProvinceId,
                 } : null,
             }).ToListAsync();
             return DirectSalesOrders;
@@ -411,19 +402,10 @@ namespace DMS.Repositories
                 {
                     Id = x.SaleEmployee.Id,
                     Username = x.SaleEmployee.Username,
-                    Password = x.SaleEmployee.Password,
                     DisplayName = x.SaleEmployee.DisplayName,
                     Address = x.SaleEmployee.Address,
                     Email = x.SaleEmployee.Email,
                     Phone = x.SaleEmployee.Phone,
-                    Position = x.SaleEmployee.Position,
-                    Department = x.SaleEmployee.Department,
-                    OrganizationId = x.SaleEmployee.OrganizationId,
-                    SexId = x.SaleEmployee.SexId,
-                    StatusId = x.SaleEmployee.StatusId,
-                    Avatar = x.SaleEmployee.Avatar,
-                    Birthday = x.SaleEmployee.Birthday,
-                    ProvinceId = x.SaleEmployee.ProvinceId,
                 },
             }).FirstOrDefaultAsync();
 
