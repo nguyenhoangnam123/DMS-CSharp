@@ -496,8 +496,17 @@ namespace DMS.Repositories
                             Id = x.Item.Product.Id,
                             Code = x.Item.Product.Code,
                             Name = x.Item.Product.Name,
+                            TaxTypeId = x.Item.Product.TaxTypeId,
                             UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
                             UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
+                            TaxType = new TaxType
+                            {
+                                Id = x.Item.Product.TaxType.Id,
+                                Code = x.Item.Product.TaxType.Code,
+                                Name = x.Item.Product.TaxType.Name,
+                                StatusId = x.Item.Product.TaxType.StatusId,
+                                Percentage = x.Item.Product.TaxType.Percentage,
+                            },
                             UnitOfMeasure = new UnitOfMeasure
                             {
                                 Id = x.Item.Product.UnitOfMeasure.Id,
