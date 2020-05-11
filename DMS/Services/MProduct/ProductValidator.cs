@@ -31,6 +31,7 @@ namespace DMS.Services.MProduct
             ProductTypeNotExisted,
             SupplierNotExisted,
             BrandNotExisted,
+            TaxTypeIdNotExisted,
             UnitOfMeasureNotExisted,
             UnitOfMeasureEmpty,
             UnitOfMeasureGroupingNotExisted,
@@ -152,6 +153,22 @@ namespace DMS.Services.MProduct
             int count = await UOW.BrandRepository.Count(BrandFilter);
             if (count == 0)
                 Product.AddError(nameof(ProductValidator), nameof(Product.Brand), ErrorCode.BrandNotExisted);
+            return Product.IsValidated;
+        }
+
+        private async Task<bool> ValidateTaxType(Product Product)
+        {
+            TaxTypeFilter TaxTypeFilter = new TaxTypeFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Selects = TaxTypeSelect.Id,
+                Id = new IdFilter { Equal = Product.TaxTypeId }
+            };
+
+            int count = await UOW.TaxTypeRepository.Count(TaxTypeFilter);
+            if(count == 0)
+                Product.AddError(nameof(ProductValidator), nameof(Product.TaxType), ErrorCode.TaxTypeIdNotExisted);
             return Product.IsValidated;
         }
 
@@ -281,6 +298,7 @@ namespace DMS.Services.MProduct
             await ValidateProductType(Product);
             await ValidateSupplier(Product);
             await ValidateBrand(Product);
+            await ValidateTaxType(Product);
             await ValidateUnitOfMeasure(Product);
             await ValidateUnitOfMeasureGrouping(Product);
             await ValidateStatusId(Product);
@@ -298,6 +316,7 @@ namespace DMS.Services.MProduct
                 await ValidateProductType(Product);
                 await ValidateSupplier(Product);
                 await ValidateBrand(Product);
+                await ValidateTaxType(Product);
                 await ValidateUnitOfMeasure(Product);
                 await ValidateUnitOfMeasureGrouping(Product);
                 await ValidateStatusId(Product);
