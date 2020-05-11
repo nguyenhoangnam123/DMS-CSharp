@@ -20,6 +20,7 @@ using DMS.Enums;
 using DMS.Services.MStoreType;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MOrganization;
+using DMS.Services.MERouteType;
 
 namespace DMS.Rpc.e_route_change_request
 {
@@ -45,6 +46,7 @@ namespace DMS.Rpc.e_route_change_request
         
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListERoute = Default + "/single-list-e-route";
+        public const string SingleListERouteType = Default + "/single-list-eroute-type";
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListRequestState = Default + "/single-list-request-state";
         public const string SingleListERouteChangeRequestContent = Default + "/single-list-e-route-change-request-content";
@@ -67,6 +69,7 @@ namespace DMS.Rpc.e_route_change_request
     {
         private IAppUserService AppUserService;
         private IERouteService ERouteService;
+        private IERouteTypeService ERouteTypeService;
         private IOrganizationService OrganizationService;
         private IRequestStateService RequestStateService;
         private IERouteChangeRequestContentService ERouteChangeRequestContentService;
@@ -78,6 +81,7 @@ namespace DMS.Rpc.e_route_change_request
         public ERouteChangeRequestController(
             IAppUserService AppUserService,
             IERouteService ERouteService,
+            IERouteTypeService ERouteTypeService,
             IOrganizationService OrganizationService,
             IRequestStateService RequestStateService,
             IERouteChangeRequestContentService ERouteChangeRequestContentService,
@@ -90,6 +94,7 @@ namespace DMS.Rpc.e_route_change_request
         {
             this.AppUserService = AppUserService;
             this.ERouteService = ERouteService;
+            this.ERouteTypeService = ERouteTypeService;
             this.RequestStateService = RequestStateService;
             this.ERouteChangeRequestContentService = ERouteChangeRequestContentService;
             this.StoreService = StoreService;
@@ -995,6 +1000,13 @@ namespace DMS.Rpc.e_route_change_request
             ERouteChangeRequestFilter.OrderType = ERouteChangeRequest_ERouteChangeRequestFilterDTO.OrderType;
 
             ERouteChangeRequestFilter.Id = ERouteChangeRequest_ERouteChangeRequestFilterDTO.Id;
+            ERouteChangeRequestFilter.Code = ERouteChangeRequest_ERouteChangeRequestFilterDTO.Code;
+            ERouteChangeRequestFilter.Name = ERouteChangeRequest_ERouteChangeRequestFilterDTO.Name;
+            ERouteChangeRequestFilter.ERouteTypeId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.ERouteTypeId;
+            ERouteChangeRequestFilter.StartDate = ERouteChangeRequest_ERouteChangeRequestFilterDTO.StartDate;
+            ERouteChangeRequestFilter.EndDate = ERouteChangeRequest_ERouteChangeRequestFilterDTO.EndDate;
+            ERouteChangeRequestFilter.SaleEmployeeId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.SaleEmployeeId;
+            ERouteChangeRequestFilter.EndDate = ERouteChangeRequest_ERouteChangeRequestFilterDTO.EndDate;
             ERouteChangeRequestFilter.ERouteId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.ERouteId;
             ERouteChangeRequestFilter.CreatorId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.CreatorId;
             ERouteChangeRequestFilter.RequestStateId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.RequestStateId;
@@ -1148,6 +1160,24 @@ namespace DMS.Rpc.e_route_change_request
             List<ERouteChangeRequest_ERouteDTO> ERouteChangeRequest_ERouteDTOs = ERoutes
                 .Select(x => new ERouteChangeRequest_ERouteDTO(x)).ToList();
             return ERouteChangeRequest_ERouteDTOs;
+        }
+        [Route(ERouteChangeRequestRoute.SingleListERouteType), HttpPost]
+        public async Task<List<ERouteChangeRequest_ERouteTypeDTO>> SingleListERouteType([FromBody] ERouteChangeRequest_ERouteTypeFilterDTO ERouteChangeRequest_ERouteTypeFilterDTO)
+        {
+            ERouteTypeFilter ERouteTypeFilter = new ERouteTypeFilter();
+            ERouteTypeFilter.Skip = 0;
+            ERouteTypeFilter.Take = 20;
+            ERouteTypeFilter.OrderBy = ERouteTypeOrder.Id;
+            ERouteTypeFilter.OrderType = OrderType.ASC;
+            ERouteTypeFilter.Selects = ERouteTypeSelect.ALL;
+            ERouteTypeFilter.Id = ERouteChangeRequest_ERouteTypeFilterDTO.Id;
+            ERouteTypeFilter.Code = ERouteChangeRequest_ERouteTypeFilterDTO.Code;
+            ERouteTypeFilter.Name = ERouteChangeRequest_ERouteTypeFilterDTO.Name;
+
+            List<ERouteType> ERouteTypes = await ERouteTypeService.List(ERouteTypeFilter);
+            List<ERouteChangeRequest_ERouteTypeDTO> ERouteChangeRequest_ERouteTypeDTOs = ERouteTypes
+                .Select(x => new ERouteChangeRequest_ERouteTypeDTO(x)).ToList();
+            return ERouteChangeRequest_ERouteTypeDTOs;
         }
         [Route(ERouteChangeRequestRoute.SingleListOrganization), HttpPost]
         public async Task<List<ERouteChangeRequest_OrganizationDTO>> SingleListOrganization([FromBody] ERouteChangeRequest_OrganizationFilterDTO ERouteChangeRequest_OrganizationFilterDTO)

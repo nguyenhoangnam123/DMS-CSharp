@@ -110,6 +110,8 @@ namespace DMS.Services.MERouteChangeRequest
                     Week3 = x.Week3,
                     Week4 = x.Week4,
                 }).ToList();
+                ERouteChangeRequest.CreatorId = CurrentContext.UserId;
+                ERouteChangeRequest.RequestStateId = Enums.RequestStateEnum.NEW.Id;
                 await UOW.Begin();
                 await UOW.ERouteChangeRequestRepository.Create(ERouteChangeRequest);
                 await UOW.Commit();

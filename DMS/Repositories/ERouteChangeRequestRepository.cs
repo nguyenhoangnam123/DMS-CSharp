@@ -46,6 +46,21 @@ namespace DMS.Repositories
                 query = query.Where(q => q.CreatorId, filter.CreatorId);
             if (filter.RequestStateId != null)
                 query = query.Where(q => q.RequestStateId, filter.RequestStateId);
+            if (filter.Code != null)
+                query = query.Where(q => q.ERoute.Code, filter.Code);
+            if (filter.Name != null)
+                query = query.Where(q => q.ERoute.Name, filter.Name);
+            if (filter.ERouteTypeId != null)
+                query = query.Where(q => q.ERoute.ERouteTypeId, filter.ERouteTypeId);
+            if (filter.SaleEmployeeId != null)
+                query = query.Where(q => q.ERoute.SaleEmployeeId, filter.SaleEmployeeId);
+            if (filter.StartDate != null)
+                query = query.Where(q => q.ERoute.StartDate, filter.StartDate);
+            if (filter.EndDate != null)
+                query = query.Where(q => q.ERoute.EndDate, filter.EndDate);
+            if (filter.StatusId != null)
+                query = query.Where(q => q.ERoute.StatusId, filter.StatusId);
+
             query = OrFilter(query, filter);
             return query;
         }

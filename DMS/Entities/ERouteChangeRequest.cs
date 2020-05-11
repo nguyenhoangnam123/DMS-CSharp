@@ -32,9 +32,16 @@ namespace DMS.Entities
     public class ERouteChangeRequestFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
+        public StringFilter Code { get; set; }
+        public StringFilter Name { get; set; }
+        public IdFilter SaleEmployeeId { get; set; }
+        public DateFilter StartDate { get; set; }
+        public DateFilter EndDate { get; set; }
+        public IdFilter ERouteTypeId { get; set; }
         public IdFilter ERouteId { get; set; }
         public IdFilter CreatorId { get; set; }
         public IdFilter RequestStateId { get; set; }
+        public IdFilter StatusId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<ERouteChangeRequestFilter> OrFilter { get; set; }
