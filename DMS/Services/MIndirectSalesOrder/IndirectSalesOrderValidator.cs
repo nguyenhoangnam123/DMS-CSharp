@@ -134,25 +134,6 @@ namespace DMS.Services.MIndirectSalesOrder
                     if (listIdsNotExisted.Contains(IndirectSalesOrderContent.UnitOfMeasureId))
                         IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
                 }
-
-                //validate đơn vị lưu kho sản phẩm bán
-                Ids = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.PrimaryUnitOfMeasureId).ToList();
-                UnitOfMeasureFilter = new UnitOfMeasureFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Id = new IdFilter { In = Ids },
-                    Selects = UnitOfMeasureSelect.Id
-                };
-
-                listIdsInDB = (await UOW.UnitOfMeasureRepository.List(UnitOfMeasureFilter)).Select(x => x.Id);
-                listIdsNotExisted = Ids.Except(listIdsInDB);
-
-                foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
-                {
-                    if (listIdsNotExisted.Contains(IndirectSalesOrderContent.PrimaryUnitOfMeasureId))
-                        IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.PrimaryUnitOfMeasure), ErrorCode.PrimaryUnitOfMeasureNotExisted);
-                }
             }
             
             if(IndirectSalesOrder.IndirectSalesOrderPromotions != null)
@@ -174,25 +155,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 {
                     if (listIdsNotExisted.Contains(IndirectSalesOrderPromotion.UnitOfMeasureId))
                         IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderPromotion.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
-                }
-
-                //validate đơn vị lưu kho sản phẩm khuyến mãi
-                Ids = IndirectSalesOrder.IndirectSalesOrderPromotions.Select(x => x.PrimaryUnitOfMeasureId).ToList();
-                UnitOfMeasureFilter = new UnitOfMeasureFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Id = new IdFilter { In = Ids },
-                    Selects = UnitOfMeasureSelect.Id
-                };
-
-                listIdsInDB = (await UOW.UnitOfMeasureRepository.List(UnitOfMeasureFilter)).Select(x => x.Id);
-                listIdsNotExisted = Ids.Except(listIdsInDB);
-
-                foreach (var IndirectSalesOrderPromotion in IndirectSalesOrder.IndirectSalesOrderPromotions)
-                {
-                    if (listIdsNotExisted.Contains(IndirectSalesOrderPromotion.PrimaryUnitOfMeasureId))
-                        IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderPromotion.PrimaryUnitOfMeasure), ErrorCode.PrimaryUnitOfMeasureNotExisted);
                 }
             }
 
