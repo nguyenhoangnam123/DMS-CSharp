@@ -481,6 +481,17 @@ namespace DMS.Repositories
                     Amount = x.Amount,
                     TaxPercentage = x.TaxPercentage,
                     TaxAmount = x.TaxAmount,
+                    Item = new Item
+                    {
+                        Id = x.Item.Id,
+                        Code = x.Item.Code,
+                        Name = x.Item.Name,
+                        ProductId = x.Item.ProductId,
+                        RetailPrice = x.Item.RetailPrice,
+                        SalePrice = x.Item.SalePrice,
+                        ScanCode = x.Item.ScanCode,
+                        StatusId = x.Item.StatusId,
+                    },
                     PrimaryUnitOfMeasure = new UnitOfMeasure
                     {
                         Id = x.PrimaryUnitOfMeasure.Id,

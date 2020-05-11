@@ -291,6 +291,7 @@ namespace DMS.Services.MIndirectSalesOrder
 
                     var UOMG = await UOW.UnitOfMeasureGroupingRepository.Get(item.Product.UnitOfMeasureGroupingId.Value);
                     var UOMGC = UOMG.UnitOfMeasureGroupingContents.Where(x => x.UnitOfMeasureId == IndirectSalesOrderContent.UnitOfMeasureId).FirstOrDefault();
+                    IndirectSalesOrderContent.TaxPercentage = item.Product.TaxType.Percentage;
                     IndirectSalesOrderContent.RequestedQuantity = IndirectSalesOrderContent.Quantity * UOMGC.Factor.Value;
 
                     //giá tiền từng line = số lượng yc*đơn giá*(100-%chiết khấu)
