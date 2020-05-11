@@ -25,6 +25,7 @@ namespace DMS.Services.MERoute
         {
             IdNotExisted,
             CodeEmpty,
+            CodeHasSpecialCharacter,
             CodeOverLength,
             CodeExisted,
             NameEmpty,
@@ -75,6 +76,12 @@ namespace DMS.Services.MERoute
             }
             else
             {
+                var Code = ERoute.Code;
+                if (ERoute.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(ERoute.Code))
+                {
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Code), ErrorCode.CodeHasSpecialCharacter);
+                }
+
                 ERouteFilter ERouteFilter = new ERouteFilter
                 {
                     Skip = 0,
