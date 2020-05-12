@@ -94,6 +94,7 @@ namespace DMS.Rpc.e_route_change_request
             this.AppUserService = AppUserService;
             this.ERouteService = ERouteService;
             this.ERouteTypeService = ERouteTypeService;
+            this.OrganizationService = OrganizationService;
             this.RequestStateService = RequestStateService;
             this.ERouteChangeRequestContentService = ERouteChangeRequestContentService;
             this.StoreService = StoreService;
