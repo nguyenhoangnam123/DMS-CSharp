@@ -1009,6 +1009,7 @@ namespace DMS.Rpc.e_route_change_request
             ERouteChangeRequestFilter.EndDate = ERouteChangeRequest_ERouteChangeRequestFilterDTO.EndDate;
             ERouteChangeRequestFilter.ERouteId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.ERouteId;
             ERouteChangeRequestFilter.CreatorId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.CreatorId;
+            ERouteChangeRequestFilter.StoreId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.StoreId;
             ERouteChangeRequestFilter.RequestStateId = ERouteChangeRequest_ERouteChangeRequestFilterDTO.RequestStateId;
             ERouteChangeRequestFilter.CreatedAt = ERouteChangeRequest_ERouteChangeRequestFilterDTO.CreatedAt;
             ERouteChangeRequestFilter.UpdatedAt = ERouteChangeRequest_ERouteChangeRequestFilterDTO.UpdatedAt;

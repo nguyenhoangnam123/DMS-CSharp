@@ -48,6 +48,7 @@ namespace DMS.Rpc.e_route_change_request
         public IdFilter CreatorId { get; set; }
         public IdFilter RequestStateId { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter StoreId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public ERouteChangeRequestOrder OrderBy { get; set; }

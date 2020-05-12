@@ -42,6 +42,7 @@ namespace DMS.Entities
         public IdFilter CreatorId { get; set; }
         public IdFilter RequestStateId { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter StoreId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<ERouteChangeRequestFilter> OrFilter { get; set; }

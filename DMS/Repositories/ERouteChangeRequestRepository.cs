@@ -60,7 +60,17 @@ namespace DMS.Repositories
                 query = query.Where(q => q.ERoute.EndDate, filter.EndDate);
             if (filter.StatusId != null)
                 query = query.Where(q => q.ERoute.StatusId, filter.StatusId);
-
+            if (filter.StoreId != null)
+            {
+                if (filter.StoreId.Equal.HasValue)
+                {
+                    query = from q in query
+                            join ecrc in DataContext.ERouteChangeRequestContent on q.Id equals ecrc.ERouteChangeRequestId
+                            where ecrc.StoreId == filter.StoreId.Equal
+                            select q;
+                    query = query.Distinct();
+                }
+            }
             query = OrFilter(query, filter);
             return query;
         }
