@@ -31,11 +31,11 @@ namespace DMS.Rpc.unit_of_measure_grouping
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
+
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(UnitOfMeasureGroupingFilter.Id), FieldType.ID },
             { nameof(UnitOfMeasureGroupingFilter.Code), FieldType.STRING },
             { nameof(UnitOfMeasureGroupingFilter.Name), FieldType.STRING },
             { nameof(UnitOfMeasureGroupingFilter.Description), FieldType.STRING },

@@ -33,7 +33,6 @@ namespace DMS.Rpc.reseller_type
         public const string SingleListStatus = Default + "/single-list-status";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(ResellerTypeFilter.Id), FieldType.ID },
             { nameof(ResellerTypeFilter.Code), FieldType.STRING },
             { nameof(ResellerTypeFilter.Name), FieldType.STRING },
             { nameof(ResellerTypeFilter.StatusId), FieldType.ID },

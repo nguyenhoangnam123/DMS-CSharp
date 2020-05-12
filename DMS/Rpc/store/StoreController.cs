@@ -55,7 +55,6 @@ namespace DMS.Rpc.store
         public const string CountReseller = Default + "/count-reseller";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(StoreFilter.Id), FieldType.ID },
             { nameof(StoreFilter.Code), FieldType.STRING },
             { nameof(StoreFilter.Name), FieldType.STRING },
             { nameof(StoreFilter.ParentStoreId), FieldType.ID },

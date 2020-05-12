@@ -46,7 +46,6 @@ namespace DMS.Rpc.product
         public const string BulkDelete = Default + "/bulk-delete";
         public const string SaveImage = Default + "/save-image";
 
-
         public const string SingleListBrand = Default + "/single-list-brand";
         public const string SingleListProductType = Default + "/single-list-product-type";
         public const string SingleListStatus = Default + "/single-list-status";
@@ -58,6 +57,7 @@ namespace DMS.Rpc.product
         public const string SingleListImage = Default + "/single-list-image";
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
         public const string SingleListVariationGrouping = Default + "/single-list-variation-grouping";
+
         public const string CountProductGrouping = Default + "/count-product-grouping";
         public const string ListProductGrouping = Default + "/list-product-grouping";
         public const string ListItem = Default + "/list-item";
@@ -66,7 +66,6 @@ namespace DMS.Rpc.product
         public const string CountInventory = Default + "/count-inventory";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(ProductFilter.Id), FieldType.ID },
             { nameof(ProductFilter.Code), FieldType.STRING },
             { nameof(ProductFilter.SupplierCode), FieldType.STRING },
             { nameof(ProductFilter.Name), FieldType.STRING },

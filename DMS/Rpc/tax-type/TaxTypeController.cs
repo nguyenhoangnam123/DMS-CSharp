@@ -29,7 +29,6 @@ namespace DMS.Rpc.tax_type
         public const string SingleListStatus = Default + "/single-list-status";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(TaxTypeFilter.Id), FieldType.ID },
             { nameof(TaxTypeFilter.Code), FieldType.STRING },
             { nameof(TaxTypeFilter.Name), FieldType.STRING },
             { nameof(TaxTypeFilter.Percentage), FieldType.DECIMAL },

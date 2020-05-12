@@ -37,7 +37,6 @@ namespace DMS.Rpc.organization
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(OrganizationFilter.Id), FieldType.ID },
             { nameof(OrganizationFilter.Code), FieldType.STRING },
             { nameof(OrganizationFilter.Name), FieldType.STRING },
             { nameof(OrganizationFilter.ParentId), FieldType.ID },

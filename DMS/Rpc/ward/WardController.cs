@@ -27,7 +27,6 @@ namespace DMS.Rpc.ward
         public const string SingleListStatus = Default + "/single-list-status";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(WardFilter.Id), FieldType.ID },
             { nameof(WardFilter.Name), FieldType.STRING },
             { nameof(WardFilter.Priority), FieldType.LONG },
             { nameof(WardFilter.DistrictId), FieldType.ID },

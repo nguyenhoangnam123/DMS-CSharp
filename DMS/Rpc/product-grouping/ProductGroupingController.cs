@@ -28,13 +28,14 @@ namespace DMS.Rpc.product_grouping
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
+
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
         public const string SingleListProduct = Default + "/single-list-product";
+
         public const string CountProduct = Default + "/count-product";
         public const string ListProduct = Default + "/list-product";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(ProductGroupingFilter.Id), FieldType.ID },
             { nameof(ProductGroupingFilter.Code), FieldType.STRING },
             { nameof(ProductGroupingFilter.Name), FieldType.STRING },
             { nameof(ProductGroupingFilter.ParentId), FieldType.ID },

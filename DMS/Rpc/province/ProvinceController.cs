@@ -27,7 +27,6 @@ namespace DMS.Rpc.province
         public const string SingleListStatus = Default + "/single-list-status";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(ProvinceFilter.Id), FieldType.ID },
             { nameof(ProvinceFilter.Name), FieldType.STRING },
             { nameof(ProvinceFilter.Priority), FieldType.LONG },
             { nameof(ProvinceFilter.StatusId), FieldType.ID },
