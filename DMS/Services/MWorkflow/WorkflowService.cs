@@ -48,7 +48,7 @@ namespace DMS.Services.MWorkflow
             return RequestWorkflowStepMappings;
         }
 
-        private async Task<bool> IsInternalInitialized(Guid RequestId)
+        private async Task<bool> IsInitializedStep(Guid RequestId)
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             if (RequestWorkflowDefinitionMapping == null)
@@ -60,7 +60,7 @@ namespace DMS.Services.MWorkflow
                 return true;
             }
         }
-        private async Task<bool> IsInternalStarted(Guid RequestId)
+        private async Task<bool> IsStartedStep(Guid RequestId)
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             if (RequestWorkflowDefinitionMapping == null)
@@ -69,7 +69,7 @@ namespace DMS.Services.MWorkflow
                 return true;
             return false;
         }
-        private async Task<bool> InternalInitialize(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
+        public async Task<bool> Initialize(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
         {
             List<WorkflowDefinition> WorkflowDefinitions = await UOW.WorkflowDefinitionRepository.List(new WorkflowDefinitionFilter
             {
@@ -111,7 +111,7 @@ namespace DMS.Services.MWorkflow
             return true;
         }
 
-        private async Task<bool> InternalStart(Guid RequestId, Dictionary<string, string> Parameters)
+        private async Task<bool> StartStep(Guid RequestId, Dictionary<string, string> Parameters)
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(RequestWorkflowDefinitionMapping.WorkflowDefinitionId);
@@ -153,7 +153,7 @@ namespace DMS.Services.MWorkflow
             return true;
         }
 
-        private async Task<bool> InternalApprove(Guid RequestId, Dictionary<string, string> Parameters)
+        private async Task<bool> ApproveStep(Guid RequestId, Dictionary<string, string> Parameters)
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(RequestWorkflowDefinitionMapping.WorkflowDefinitionId);
@@ -254,7 +254,7 @@ namespace DMS.Services.MWorkflow
             return false;
         }
 
-        private async Task<bool> InternalReject(Guid RequestId, Dictionary<string, string> Parameters)
+        private async Task<bool> RejectStep(Guid RequestId, Dictionary<string, string> Parameters)
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(RequestWorkflowDefinitionMapping.WorkflowDefinitionId);
@@ -299,7 +299,7 @@ namespace DMS.Services.MWorkflow
             return false;
         }
 
-        private async Task<GenericEnum> InternalEnd(Guid RequestId, Dictionary<string, string> Parameters)
+        private async Task<GenericEnum> EndStep(Guid RequestId, Dictionary<string, string> Parameters)
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             if (RequestWorkflowDefinitionMapping == null)
@@ -363,52 +363,47 @@ namespace DMS.Services.MWorkflow
 
         public async Task<bool> Approve(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
         {
-            bool Initialized = await IsInternalInitialized(RequestId);
+            bool Initialized = await IsInitializedStep(RequestId);
 
             if (Initialized == false)
             {
-                Initialized = await InternalInitialize(RequestId, WorkflowTypeId, Parameters);
+                Initialized = await Initialize(RequestId, WorkflowTypeId, Parameters);
                 if (Initialized == false)
                     return false;
             }
 
-            bool Started = await IsInternalStarted(RequestId);
+            bool Started = await IsStartedStep(RequestId);
             if (Started)
             {
-                await InternalApprove(RequestId, Parameters);
+                await ApproveStep(RequestId, Parameters);
             }
             else
             {
-                await InternalStart(RequestId, Parameters);
-                await InternalApprove(RequestId, Parameters);
+                await StartStep(RequestId, Parameters);
+                await ApproveStep(RequestId, Parameters);
             }
-            await InternalEnd(RequestId, Parameters);
+            await EndStep(RequestId, Parameters);
             return true;
         }
 
         public async Task<bool> Reject(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
         {
-            bool Initialized = await IsInternalInitialized(RequestId);
+            bool Initialized = await IsInitializedStep(RequestId);
             if (Initialized == false)
                 return false;
-            bool Started = await IsInternalStarted(RequestId);
+            bool Started = await IsStartedStep(RequestId);
             if (Started)
             {
-                await InternalReject(RequestId, Parameters);
+                await RejectStep(RequestId, Parameters);
             }
             else
             {
-                await InternalStart(RequestId, Parameters);
-                await InternalReject(RequestId, Parameters);
+                await StartStep(RequestId, Parameters);
+                await RejectStep(RequestId, Parameters);
             }
-            await InternalEnd(RequestId, Parameters);
+            await EndStep(RequestId, Parameters);
             return true;
         }
 
-        public async Task<bool> Initialize(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
-        {
-            return await InternalInitialize(RequestId, WorkflowTypeId, Parameters);
-
-        }
     }
 }

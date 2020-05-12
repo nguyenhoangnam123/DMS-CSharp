@@ -312,7 +312,7 @@ namespace DMS.Services.MStore
         {
             Store = await UOW.StoreRepository.Get(Store.Id);
             Dictionary<string, string> Parameters = MapParameters(Store);
-            bool Rejected = await WorkflowService.Approve(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
+            bool Rejected = await WorkflowService.Reject(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
             if (Rejected == false)
                 return null;
             return await Get(Store.Id);
