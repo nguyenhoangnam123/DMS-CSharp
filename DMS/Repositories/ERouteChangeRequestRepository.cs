@@ -167,6 +167,38 @@ namespace DMS.Repositories
                     RequestStateId = q.ERoute.RequestStateId,
                     StatusId = q.ERoute.StatusId,
                     CreatorId = q.ERoute.CreatorId,
+                    Creator = q.ERoute.Creator == null ? null : new AppUser
+                    {
+                        Id = q.ERoute.Creator.Id,
+                        Username = q.ERoute.Creator.Username,
+                        DisplayName = q.ERoute.Creator.DisplayName,
+                        Birthday = q.ERoute.Creator.Birthday,
+                    },
+                    ERouteType = q.ERoute.ERouteType == null ? null : new ERouteType
+                    {
+                        Id = q.ERoute.ERouteType.Id,
+                        Code = q.ERoute.ERouteType.Code,
+                        Name = q.ERoute.ERouteType.Name,
+                    },
+                    RequestState = q.ERoute.RequestState == null ? null : new RequestState
+                    {
+                        Id = q.ERoute.RequestState.Id,
+                        Code = q.ERoute.RequestState.Code,
+                        Name = q.ERoute.RequestState.Name,
+                    },
+                    SaleEmployee = q.ERoute.SaleEmployee == null ? null : new AppUser
+                    {
+                        Id = q.ERoute.SaleEmployee.Id,
+                        Username = q.ERoute.SaleEmployee.Username,
+                        DisplayName = q.ERoute.SaleEmployee.DisplayName,
+                        Birthday = q.ERoute.SaleEmployee.Birthday,
+                    },
+                    Status = q.ERoute.Status == null ? null : new Status
+                    {
+                        Id = q.ERoute.Status.Id,
+                        Code = q.ERoute.Status.Code,
+                        Name = q.ERoute.Status.Name,
+                    },
                 } : null,
                 RequestState = filter.Selects.Contains(ERouteChangeRequestSelect.RequestState) && q.RequestState != null ? new RequestState
                 {
@@ -238,6 +270,39 @@ namespace DMS.Repositories
                     RequestStateId = x.ERoute.RequestStateId,
                     StatusId = x.ERoute.StatusId,
                     CreatorId = x.ERoute.CreatorId,
+                    Creator = x.ERoute.Creator == null ? null : new AppUser
+                    {
+                        Id = x.ERoute.Creator.Id,
+                        Username = x.ERoute.Creator.Username,
+                        DisplayName = x.ERoute.Creator.DisplayName,
+                        Birthday = x.ERoute.Creator.Birthday,
+                    },
+                    ERouteType = x.ERoute.ERouteType == null ? null : new ERouteType
+                    {
+                        Id = x.ERoute.ERouteType.Id,
+                        Code = x.ERoute.ERouteType.Code,
+                        Name = x.ERoute.ERouteType.Name,
+                    },
+                    RequestState = x.ERoute.RequestState == null ? null : new RequestState
+                    {
+                        Id = x.ERoute.RequestState.Id,
+                        Code = x.ERoute.RequestState.Code,
+                        Name = x.ERoute.RequestState.Name,
+                    },
+                    SaleEmployee = x.ERoute.SaleEmployee == null ? null : new AppUser
+                    {
+                        Id = x.ERoute.SaleEmployee.Id,
+                        Username = x.ERoute.SaleEmployee.Username,
+                        DisplayName = x.ERoute.SaleEmployee.DisplayName,
+                        Birthday = x.ERoute.SaleEmployee.Birthday,
+                    },
+                    Status = x.ERoute.Status == null ? null : new Status
+                    {
+                        Id = x.ERoute.Status.Id,
+                        Code = x.ERoute.Status.Code,
+                        Name = x.ERoute.Status.Name,
+                    },
+                    
                 },
                 RequestState = x.RequestState == null ? null : new RequestState
                 {
