@@ -24,7 +24,6 @@ namespace DMS.Rpc.menu
 
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(MenuFilter.Id), FieldType.ID },
             { nameof(MenuFilter.Code), FieldType.STRING },
             { nameof(MenuFilter.Name), FieldType.STRING },
             { nameof(MenuFilter.Path), FieldType.STRING },

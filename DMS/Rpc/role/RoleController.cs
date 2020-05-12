@@ -36,11 +36,11 @@ namespace DMS.Rpc.role
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListMenu = Default + "/single-list-menu";
+
         public const string CountAppUser = Default + "/count-app-user";
         public const string ListAppUser = Default + "/list-app-user";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(RoleFilter.Id), FieldType.ID },
             { nameof(RoleFilter.Code), FieldType.STRING },
             { nameof(RoleFilter.Name), FieldType.STRING },
             { nameof(RoleFilter.StatusId), FieldType.ID },

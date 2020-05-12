@@ -32,7 +32,6 @@ namespace DMS.Rpc.unit_of_measure
         public const string SingleListStatus = Default + "/single-list-status";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(UnitOfMeasureFilter.Id), FieldType.ID },
             { nameof(UnitOfMeasureFilter.Code), FieldType.STRING },
             { nameof(UnitOfMeasureFilter.Name), FieldType.STRING },
             { nameof(UnitOfMeasureFilter.Description), FieldType.STRING },

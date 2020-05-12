@@ -37,6 +37,7 @@ namespace DMS.Rpc.reseller
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
+
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListResellerStatus = Default + "/single-list-reseller-status";
@@ -47,7 +48,6 @@ namespace DMS.Rpc.reseller
         public const string ListStore = Default + "/list-store";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(ResellerFilter.Id), FieldType.ID },
             { nameof(ResellerFilter.Code), FieldType.STRING },
             { nameof(ResellerFilter.Name), FieldType.STRING },
             { nameof(ResellerFilter.Phone), FieldType.STRING },

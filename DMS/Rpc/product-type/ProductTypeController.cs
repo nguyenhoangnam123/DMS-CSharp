@@ -29,7 +29,6 @@ namespace DMS.Rpc.product_type
         public const string SingleListStatus = Default + "/single-list-status";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(ProductTypeFilter.Id), FieldType.ID },
             { nameof(ProductTypeFilter.Code), FieldType.STRING },
             { nameof(ProductTypeFilter.Name), FieldType.STRING },
             { nameof(ProductTypeFilter.Description), FieldType.STRING },

@@ -56,7 +56,6 @@ namespace DMS.Rpc.e_route
 
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(ERouteFilter.Id), FieldType.ID },
             { nameof(ERouteFilter.Code), FieldType.STRING },
             { nameof(ERouteFilter.Name), FieldType.STRING },
             { nameof(ERouteFilter.SaleEmployeeId), FieldType.ID },

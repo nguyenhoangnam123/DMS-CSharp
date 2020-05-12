@@ -33,7 +33,6 @@ namespace DMS.Rpc.brand
         public const string SingleListStatus = Default + "/single-list-status";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(BrandFilter.Id), FieldType.ID },
             { nameof(BrandFilter.Code), FieldType.STRING },
             { nameof(BrandFilter.Name), FieldType.STRING },
             { nameof(BrandFilter.Description), FieldType.STRING },

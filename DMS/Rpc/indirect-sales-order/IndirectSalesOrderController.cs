@@ -71,7 +71,6 @@ namespace DMS.Rpc.indirect_sales_order
         public const string ListItem = Default + "/list-item";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(IndirectSalesOrderFilter.Id), FieldType.ID },
             { nameof(IndirectSalesOrderFilter.Code), FieldType.STRING },
             { nameof(IndirectSalesOrderFilter.BuyerStoreId), FieldType.ID },
             { nameof(IndirectSalesOrderFilter.PhoneNumber), FieldType.STRING },

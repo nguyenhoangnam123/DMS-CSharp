@@ -41,7 +41,6 @@ namespace DMS.Rpc.supplier
         public const string SingleListWard = Default + "/single-list-ward";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(SupplierFilter.Id), FieldType.ID },
             { nameof(SupplierFilter.Code), FieldType.STRING },
             { nameof(SupplierFilter.Name), FieldType.STRING },
             { nameof(SupplierFilter.TaxCode), FieldType.STRING },

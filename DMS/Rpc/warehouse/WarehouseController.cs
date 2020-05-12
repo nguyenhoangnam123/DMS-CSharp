@@ -41,6 +41,7 @@ namespace DMS.Rpc.warehouse
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
+
         public const string SingleListDistrict = Default + "/single-list-district";
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListProvince = Default + "/single-list-province";
@@ -51,7 +52,6 @@ namespace DMS.Rpc.warehouse
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(WarehouseFilter.Id), FieldType.ID },
             { nameof(WarehouseFilter.Code), FieldType.STRING },
             { nameof(WarehouseFilter.Name), FieldType.STRING },
             { nameof(WarehouseFilter.Address), FieldType.STRING },

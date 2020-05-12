@@ -37,37 +37,22 @@ namespace DMS.Rpc.indirect_price_list
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
         
-        
         public const string FilterListIndirectPriceListType = Default + "/filter-list-indirect-price-list-type";
-        
         public const string FilterListOrganization = Default + "/filter-list-organization";
-        
         public const string FilterListStatus = Default + "/filter-list-status";
-        
         public const string FilterListItem = Default + "/filter-list-item";
-        
         public const string FilterListStoreGrouping = Default + "/filter-list-store-grouping";
-        
         public const string FilterListStore = Default + "/filter-list-store";
-        
         public const string FilterListStoreType = Default + "/filter-list-store-type";
         
-
-        
         public const string SingleListIndirectPriceListType = Default + "/single-list-indirect-price-list-type";
-        
         public const string SingleListOrganization = Default + "/single-list-organization";
-        
         public const string SingleListStatus = Default + "/single-list-status";
-        
         public const string SingleListItem = Default + "/single-list-item";
-        
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
-        
         public const string SingleListStore = Default + "/single-list-store";
-        
         public const string SingleListStoreType = Default + "/single-list-store-type";
-        
+
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
         public const string CountStoreGrouping = Default + "/count-store-grouping";
@@ -78,7 +63,6 @@ namespace DMS.Rpc.indirect_price_list
         public const string ListStoreType = Default + "/list-store-type";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(IndirectPriceListFilter.Id), FieldType.ID },
             { nameof(IndirectPriceListFilter.Code), FieldType.STRING },
             { nameof(IndirectPriceListFilter.Name), FieldType.STRING },
             { nameof(IndirectPriceListFilter.StartDate), FieldType.DATE },

@@ -58,7 +58,6 @@ namespace DMS.Rpc.e_route_change_request
         public const string ListStore = Default + "/list-store";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(ERouteChangeRequestFilter.Id), FieldType.ID },
             { nameof(ERouteChangeRequestFilter.ERouteId), FieldType.ID },
             { nameof(ERouteChangeRequestFilter.CreatorId), FieldType.ID },
             { nameof(ERouteChangeRequestFilter.RequestStateId), FieldType.ID },
