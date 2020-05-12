@@ -81,6 +81,21 @@ namespace DMS.Services.MWorkflow
             if (WorkflowDefinition == null)
                 return false;
             WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
+            if (WorkflowDefinition.WorkflowSteps == null)
+            {
+                bool ShouldInit = false;
+                foreach(WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                {
+                    if (!WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id))
+                    {
+                        if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
+                            ShouldInit = true;
+                    }    
+                }
+                if (ShouldInit == false)
+                    return false;
+            }
+
             await UOW.RequestWorkflowDefinitionMappingRepository.Delete(RequestId);
             // khởi tạo workflow
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = new RequestWorkflowDefinitionMapping
