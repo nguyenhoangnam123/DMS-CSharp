@@ -34,6 +34,7 @@ namespace DMS.Repositories
             if (filter == null)
                 return query.Where(q => false);
             query = query.Where(q => q.DeletedAt == null);
+            query = query.Where(q => q.Product.DeletedAt == null);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.ProductId != null)
@@ -178,6 +179,7 @@ namespace DMS.Repositories
                 ScanCode = filter.Selects.Contains(ItemSelect.ScanCode) ? q.ScanCode : default(string),
                 SalePrice = filter.Selects.Contains(ItemSelect.SalePrice) ? q.SalePrice : default(decimal?),
                 RetailPrice = filter.Selects.Contains(ItemSelect.RetailPrice) ? q.RetailPrice : default(decimal?),
+                StatusId = filter.Selects.Contains(ItemSelect.Status) ? q.StatusId : default(long),
                 Product = filter.Selects.Contains(ItemSelect.Product) && q.Product != null ? new Product
                 {
                     Id = q.Product.Id,
@@ -258,6 +260,12 @@ namespace DMS.Repositories
                         },
                     }).ToList() : null,
                 } : null,
+                Status = filter.Selects.Contains(ItemSelect.Status) && q.Status == null ? null : new Status
+                {
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
+                }
             }).ToListAsync();
             return Items;
         }

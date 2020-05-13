@@ -20,7 +20,7 @@ namespace DMS.Entities
         public long StatusId { get; set; }
         public bool HasInventory { get; set; }
         public Product Product { get; set; }
-
+        public Status Status { get; set; }
         public bool Equals(Item other)
         {
             return other != null && Id == other.Id;
@@ -73,5 +73,6 @@ namespace DMS.Entities
         ScanCode = E._4,
         SalePrice = E._5,
         RetailPrice = E._6,
+        Status = E._7
     }
 }
