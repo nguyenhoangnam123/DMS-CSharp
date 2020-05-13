@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
+using DMS.Enums;
+using DMS.Services.MWorkflow;
 
 namespace DMS.Services.MIndirectSalesOrder
 {
@@ -20,6 +22,8 @@ namespace DMS.Services.MIndirectSalesOrder
         Task<IndirectSalesOrder> Create(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Update(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Delete(IndirectSalesOrder IndirectSalesOrder);
+        Task<IndirectSalesOrder> Approve(IndirectSalesOrder IndirectSalesOrder);
+        Task<IndirectSalesOrder> Reject(IndirectSalesOrder IndirectSalesOrder);
         Task<List<IndirectSalesOrder>> BulkDelete(List<IndirectSalesOrder> IndirectSalesOrders);
         Task<List<IndirectSalesOrder>> Import(List<IndirectSalesOrder> IndirectSalesOrders);
         IndirectSalesOrderFilter ToFilter(IndirectSalesOrderFilter IndirectSalesOrderFilter);
@@ -31,18 +35,21 @@ namespace DMS.Services.MIndirectSalesOrder
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IIndirectSalesOrderValidator IndirectSalesOrderValidator;
+        private IWorkflowService WorkflowService;
 
         public IndirectSalesOrderService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IIndirectSalesOrderValidator IndirectSalesOrderValidator
+            IIndirectSalesOrderValidator IndirectSalesOrderValidator,
+            IWorkflowService WorkflowService
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.IndirectSalesOrderValidator = IndirectSalesOrderValidator;
+            this.WorkflowService = WorkflowService;
         }
         public async Task<int> Count(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
@@ -100,6 +107,16 @@ namespace DMS.Services.MIndirectSalesOrder
             IndirectSalesOrder IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(Id);
             if (IndirectSalesOrder == null)
                 return null;
+            IndirectSalesOrder.RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);
+            if (IndirectSalesOrder.RequestState == null)
+            {
+                IndirectSalesOrder.RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
+            }
+            else
+            {
+                IndirectSalesOrder.RequestStateId = IndirectSalesOrder.RequestState.Id;
+                IndirectSalesOrder.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowState(IndirectSalesOrder.RowId);
+            }
             return IndirectSalesOrder;
         }
        
@@ -112,10 +129,12 @@ namespace DMS.Services.MIndirectSalesOrder
             {
                 await Calculator(IndirectSalesOrder);
                 await UOW.Begin();
+                IndirectSalesOrder.RowId = Guid.NewGuid();
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 await UOW.IndirectSalesOrderRepository.Create(IndirectSalesOrder);
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);
+                await WorkflowService.Initialize(IndirectSalesOrder.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(IndirectSalesOrder));
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(IndirectSalesOrder, new { }, nameof(IndirectSalesOrderService));
@@ -428,6 +447,38 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
             return Items;
+        }
+
+        public async Task<IndirectSalesOrder> Approve(IndirectSalesOrder IndirectSalesOrder)
+        {
+            if (IndirectSalesOrder.Id == 0)
+                IndirectSalesOrder = await Create(IndirectSalesOrder);
+            else
+                IndirectSalesOrder = await Update(IndirectSalesOrder);
+            Dictionary<string, string> Parameters = MapParameters(IndirectSalesOrder);
+            bool Approved = await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.ORDER.Id, Parameters);
+            if (Approved == false)
+                return null;
+            return await Get(IndirectSalesOrder.Id);
+        }
+
+        public async Task<IndirectSalesOrder> Reject(IndirectSalesOrder IndirectSalesOrder)
+        {
+            IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
+            Dictionary<string, string> Parameters = MapParameters(IndirectSalesOrder);
+            bool Rejected = await WorkflowService.Reject(IndirectSalesOrder.RowId, WorkflowTypeEnum.ORDER.Id, Parameters);
+            if (Rejected == false)
+                return null;
+            return await Get(IndirectSalesOrder.Id);
+        }
+
+        private Dictionary<string, string> MapParameters(IndirectSalesOrder IndirectSalesOrder)
+        {
+            Dictionary<string, string> Parameters = new Dictionary<string, string>();
+            Parameters.Add(nameof(IndirectSalesOrder.Id), IndirectSalesOrder.Id.ToString());
+            Parameters.Add(nameof(IndirectSalesOrder.Code), IndirectSalesOrder.Code);
+            Parameters.Add("Username", CurrentContext.UserName);
+            return Parameters;
         }
     }
 }

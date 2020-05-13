@@ -31,9 +31,10 @@ namespace DMS.Entities
         public RequestState RequestState { get; set; }
         public AppUser SaleEmployee { get; set; }
         public Store SellerStore { get; set; }
+        public Guid RowId { get; set; }
         public List<IndirectSalesOrderContent> IndirectSalesOrderContents { get; set; }
         public List<IndirectSalesOrderPromotion> IndirectSalesOrderPromotions { get; set; }
-
+        public List<RequestWorkflowStepMapping> RequestWorkflowStepMappings { get; set; }
         public bool Equals(IndirectSalesOrder other)
         {
             return other != null && Id == other.Id;

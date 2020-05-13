@@ -38,6 +38,8 @@ namespace DMS.Rpc.indirect_sales_order
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
+        public const string Approve = Default + "/approve";
+        public const string Reject = Default + "/reject";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-tempate";
@@ -214,6 +216,42 @@ namespace DMS.Rpc.indirect_sales_order
 
             IndirectSalesOrder IndirectSalesOrder = ConvertDTOToEntity(IndirectSalesOrder_IndirectSalesOrderDTO);
             IndirectSalesOrder = await IndirectSalesOrderService.Update(IndirectSalesOrder);
+            IndirectSalesOrder_IndirectSalesOrderDTO = new IndirectSalesOrder_IndirectSalesOrderDTO(IndirectSalesOrder);
+            if (IndirectSalesOrder.IsValidated)
+                return IndirectSalesOrder_IndirectSalesOrderDTO;
+            else
+                return BadRequest(IndirectSalesOrder_IndirectSalesOrderDTO);
+        }
+
+        [Route(IndirectSalesOrderRoute.Approve), HttpPost]
+        public async Task<ActionResult<IndirectSalesOrder_IndirectSalesOrderDTO>> Approve([FromBody] IndirectSalesOrder_IndirectSalesOrderDTO IndirectSalesOrder_IndirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(IndirectSalesOrder_IndirectSalesOrderDTO.Id))
+                return Forbid();
+
+            IndirectSalesOrder IndirectSalesOrder = ConvertDTOToEntity(IndirectSalesOrder_IndirectSalesOrderDTO);
+            IndirectSalesOrder = await IndirectSalesOrderService.Approve(IndirectSalesOrder);
+            IndirectSalesOrder_IndirectSalesOrderDTO = new IndirectSalesOrder_IndirectSalesOrderDTO(IndirectSalesOrder);
+            if (IndirectSalesOrder.IsValidated)
+                return IndirectSalesOrder_IndirectSalesOrderDTO;
+            else
+                return BadRequest(IndirectSalesOrder_IndirectSalesOrderDTO);
+        }
+
+        [Route(IndirectSalesOrderRoute.Reject), HttpPost]
+        public async Task<ActionResult<IndirectSalesOrder_IndirectSalesOrderDTO>> Reject([FromBody] IndirectSalesOrder_IndirectSalesOrderDTO IndirectSalesOrder_IndirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(IndirectSalesOrder_IndirectSalesOrderDTO.Id))
+                return Forbid();
+
+            IndirectSalesOrder IndirectSalesOrder = ConvertDTOToEntity(IndirectSalesOrder_IndirectSalesOrderDTO);
+            IndirectSalesOrder = await IndirectSalesOrderService.Reject(IndirectSalesOrder);
             IndirectSalesOrder_IndirectSalesOrderDTO = new IndirectSalesOrder_IndirectSalesOrderDTO(IndirectSalesOrder);
             if (IndirectSalesOrder.IsValidated)
                 return IndirectSalesOrder_IndirectSalesOrderDTO;

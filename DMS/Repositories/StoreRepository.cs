@@ -619,6 +619,7 @@ namespace DMS.Repositories
             StoreDAO.OwnerPhone = Store.OwnerPhone;
             StoreDAO.OwnerEmail = Store.OwnerEmail;
             StoreDAO.StatusId = Store.StatusId;
+            StoreDAO.RowId = Store.RowId;
             StoreDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.Store.Add(StoreDAO);

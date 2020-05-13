@@ -115,6 +115,7 @@ namespace DMS.Services.MStore
             try
             {
                 Store.Id = 0;
+                Store.RowId = Guid.NewGuid();
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
                 await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
