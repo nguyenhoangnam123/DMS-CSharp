@@ -1285,6 +1285,7 @@ namespace DMS.Rpc.indirect_sales_order
                     Amount = x.Amount,
                     TaxPercentage = x.TaxPercentage,
                     TaxAmount = x.TaxAmount,
+                    Factor = x.Factor,
                     PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
                     {
                         Id = x.PrimaryUnitOfMeasure.Id,
@@ -1312,6 +1313,7 @@ namespace DMS.Rpc.indirect_sales_order
                     PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
                     RequestedQuantity = x.RequestedQuantity,
                     Note = x.Note,
+                    Factor = x.Factor,
                     Item = x.Item == null ? null : new Item
                     {
                         Id = x.Item.Id,

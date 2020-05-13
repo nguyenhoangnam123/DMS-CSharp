@@ -23,6 +23,7 @@ namespace DMS.Rpc.direct_sales_order
         public long? GeneralDiscountAmount { get; set; }
         public decimal? TaxPercentage { get; set; }
         public long? TaxAmount { get; set; }
+        public long? Factor { get; set; }
         public long Amount { get; set; }
         public DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder { get; set; }
         public DirectSalesOrder_ItemDTO Item { get; set; }
@@ -46,6 +47,7 @@ namespace DMS.Rpc.direct_sales_order
             this.TaxPercentage = DirectSalesOrderContent.TaxPercentage;
             this.TaxAmount = DirectSalesOrderContent.TaxAmount;
             this.Amount = DirectSalesOrderContent.Amount;
+            this.Factor = DirectSalesOrderContent.Factor;
             this.DirectSalesOrder = DirectSalesOrderContent.DirectSalesOrder == null ? null : new DirectSalesOrder_DirectSalesOrderDTO(DirectSalesOrderContent.DirectSalesOrder);
             this.Item = DirectSalesOrderContent.Item == null ? null : new DirectSalesOrder_ItemDTO(DirectSalesOrderContent.Item);
             this.PrimaryUnitOfMeasure = DirectSalesOrderContent.PrimaryUnitOfMeasure == null ? null : new DirectSalesOrder_UnitOfMeasureDTO(DirectSalesOrderContent.PrimaryUnitOfMeasure);

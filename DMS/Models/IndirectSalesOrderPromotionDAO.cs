@@ -13,6 +13,7 @@ namespace DMS.Models
         public long PrimaryUnitOfMeasureId { get; set; }
         public long RequestedQuantity { get; set; }
         public string Note { get; set; }
+        public long? Factor { get; set; }
 
         public virtual IndirectSalesOrderDAO IndirectSalesOrder { get; set; }
         public virtual ItemDAO Item { get; set; }

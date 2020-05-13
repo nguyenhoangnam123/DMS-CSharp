@@ -161,6 +161,7 @@ namespace DMS.Repositories
                 PrimaryUnitOfMeasureId = filter.Selects.Contains(IndirectSalesOrderPromotionSelect.PrimaryUnitOfMeasure) ? q.PrimaryUnitOfMeasureId : default(long),
                 RequestedQuantity = filter.Selects.Contains(IndirectSalesOrderPromotionSelect.RequestedQuantity) ? q.RequestedQuantity : default(long),
                 Note = filter.Selects.Contains(IndirectSalesOrderPromotionSelect.Note) ? q.Note : default(string),
+                Factor = filter.Selects.Contains(IndirectSalesOrderPromotionSelect.Factor) ? q.Factor : default(long?),
                 IndirectSalesOrder = filter.Selects.Contains(IndirectSalesOrderPromotionSelect.IndirectSalesOrder) && q.IndirectSalesOrder != null ? new IndirectSalesOrder
                 {
                     Id = q.IndirectSalesOrder.Id,
@@ -242,6 +243,7 @@ namespace DMS.Repositories
                 PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
                 RequestedQuantity = x.RequestedQuantity,
                 Note = x.Note,
+                Factor = x.Factor,
                 IndirectSalesOrder = x.IndirectSalesOrder == null ? null : new IndirectSalesOrder
                 {
                     Id = x.IndirectSalesOrder.Id,
@@ -307,6 +309,7 @@ namespace DMS.Repositories
             IndirectSalesOrderPromotionDAO.PrimaryUnitOfMeasureId = IndirectSalesOrderPromotion.PrimaryUnitOfMeasureId;
             IndirectSalesOrderPromotionDAO.RequestedQuantity = IndirectSalesOrderPromotion.RequestedQuantity;
             IndirectSalesOrderPromotionDAO.Note = IndirectSalesOrderPromotion.Note;
+            IndirectSalesOrderPromotionDAO.Factor = IndirectSalesOrderPromotion.Factor;
             DataContext.IndirectSalesOrderPromotion.Add(IndirectSalesOrderPromotionDAO);
             await DataContext.SaveChangesAsync();
             IndirectSalesOrderPromotion.Id = IndirectSalesOrderPromotionDAO.Id;
@@ -327,6 +330,7 @@ namespace DMS.Repositories
             IndirectSalesOrderPromotionDAO.PrimaryUnitOfMeasureId = IndirectSalesOrderPromotion.PrimaryUnitOfMeasureId;
             IndirectSalesOrderPromotionDAO.RequestedQuantity = IndirectSalesOrderPromotion.RequestedQuantity;
             IndirectSalesOrderPromotionDAO.Note = IndirectSalesOrderPromotion.Note;
+            IndirectSalesOrderPromotionDAO.Factor = IndirectSalesOrderPromotion.Factor;
             await DataContext.SaveChangesAsync();
             await SaveReference(IndirectSalesOrderPromotion);
             return true;
@@ -352,6 +356,7 @@ namespace DMS.Repositories
                 IndirectSalesOrderPromotionDAO.PrimaryUnitOfMeasureId = IndirectSalesOrderPromotion.PrimaryUnitOfMeasureId;
                 IndirectSalesOrderPromotionDAO.RequestedQuantity = IndirectSalesOrderPromotion.RequestedQuantity;
                 IndirectSalesOrderPromotionDAO.Note = IndirectSalesOrderPromotion.Note;
+                IndirectSalesOrderPromotionDAO.Factor = IndirectSalesOrderPromotion.Factor;
                 IndirectSalesOrderPromotionDAOs.Add(IndirectSalesOrderPromotionDAO);
             }
             await DataContext.BulkMergeAsync(IndirectSalesOrderPromotionDAOs);

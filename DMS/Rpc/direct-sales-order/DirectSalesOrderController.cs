@@ -1015,6 +1015,7 @@ namespace DMS.Rpc.direct_sales_order
                 TaxAmount = x.TaxAmount,
                 TaxPercentage = x.TaxPercentage,
                 UnitOfMeasureId = x.UnitOfMeasureId,
+                Factor = x.Factor,
             }).ToList();
             DirectSalesOrder.DirectSalesOrderPromotions = DirectSalesOrder_DirectSalesOrderDTO.DirectSalesOrderPromotions?.Select(x => new DirectSalesOrderPromotion
             {
@@ -1025,7 +1026,8 @@ namespace DMS.Rpc.direct_sales_order
                 Quantity = x.Quantity,
                 RequestedQuantity = x.RequestedQuantity,
                 UnitOfMeasureId = x.UnitOfMeasureId,
-                Note = x.Note
+                Note = x.Note,
+                Factor = x.Factor
             }).ToList();
             return DirectSalesOrder;
         }

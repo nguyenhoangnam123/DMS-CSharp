@@ -482,6 +482,7 @@ namespace DMS.Repositories
                     Amount = x.Amount,
                     TaxPercentage = x.TaxPercentage,
                     TaxAmount = x.TaxAmount,
+                    Factor = x.Factor,
                     Item = new Item
                     {
                         Id = x.Item.Id,
@@ -556,6 +557,7 @@ namespace DMS.Repositories
                     PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
                     RequestedQuantity = x.RequestedQuantity,
                     Note = x.Note,
+                    Factor = x.Factor,
                     Item = new Item
                     {
                         Id = x.Item.Id,
@@ -715,6 +717,7 @@ namespace DMS.Repositories
                     IndirectSalesOrderContentDAO.Amount = IndirectSalesOrderContent.Amount;
                     IndirectSalesOrderContentDAO.TaxPercentage = IndirectSalesOrderContent.TaxPercentage;
                     IndirectSalesOrderContentDAO.TaxAmount = IndirectSalesOrderContent.TaxAmount;
+                    IndirectSalesOrderContentDAO.Factor = IndirectSalesOrderContent.Factor;
                     IndirectSalesOrderContentDAOs.Add(IndirectSalesOrderContentDAO);
                 }
                 await DataContext.IndirectSalesOrderContent.BulkMergeAsync(IndirectSalesOrderContentDAOs);
@@ -736,6 +739,7 @@ namespace DMS.Repositories
                     IndirectSalesOrderPromotionDAO.PrimaryUnitOfMeasureId = IndirectSalesOrderPromotion.PrimaryUnitOfMeasureId;
                     IndirectSalesOrderPromotionDAO.RequestedQuantity = IndirectSalesOrderPromotion.RequestedQuantity;
                     IndirectSalesOrderPromotionDAO.Note = IndirectSalesOrderPromotion.Note;
+                    IndirectSalesOrderPromotionDAO.Factor = IndirectSalesOrderPromotion.Factor;
                     IndirectSalesOrderPromotionDAOs.Add(IndirectSalesOrderPromotionDAO);
                 }
                 await DataContext.IndirectSalesOrderPromotion.BulkMergeAsync(IndirectSalesOrderPromotionDAOs);

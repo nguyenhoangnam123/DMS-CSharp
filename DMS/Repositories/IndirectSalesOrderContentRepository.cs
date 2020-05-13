@@ -249,6 +249,7 @@ namespace DMS.Repositories
                 Amount = filter.Selects.Contains(IndirectSalesOrderContentSelect.Amount) ? q.Amount : default(long),
                 TaxPercentage = filter.Selects.Contains(IndirectSalesOrderContentSelect.TaxPercentage) ? q.TaxPercentage : default(decimal?),
                 TaxAmount = filter.Selects.Contains(IndirectSalesOrderContentSelect.TaxAmount) ? q.TaxAmount : default(long?),
+                Factor = filter.Selects.Contains(IndirectSalesOrderContentSelect.Factor) ? q.Factor : default(long?),
                 IndirectSalesOrder = filter.Selects.Contains(IndirectSalesOrderContentSelect.IndirectSalesOrder) && q.IndirectSalesOrder != null ? new IndirectSalesOrder
                 {
                     Id = q.IndirectSalesOrder.Id,
@@ -327,6 +328,7 @@ namespace DMS.Repositories
                 Amount = x.Amount,
                 TaxPercentage = x.TaxPercentage,
                 TaxAmount = x.TaxAmount,
+                Factor = x.Factor,
                 IndirectSalesOrder = x.IndirectSalesOrder == null ? null : new IndirectSalesOrder
                 {
                     Id = x.IndirectSalesOrder.Id,
@@ -389,6 +391,7 @@ namespace DMS.Repositories
             IndirectSalesOrderContentDAO.Amount = IndirectSalesOrderContent.Amount;
             IndirectSalesOrderContentDAO.TaxPercentage = IndirectSalesOrderContent.TaxPercentage;
             IndirectSalesOrderContentDAO.TaxAmount = IndirectSalesOrderContent.TaxAmount;
+            IndirectSalesOrderContentDAO.Factor = IndirectSalesOrderContent.Factor;
             DataContext.IndirectSalesOrderContent.Add(IndirectSalesOrderContentDAO);
             await DataContext.SaveChangesAsync();
             IndirectSalesOrderContent.Id = IndirectSalesOrderContentDAO.Id;
@@ -417,6 +420,7 @@ namespace DMS.Repositories
             IndirectSalesOrderContentDAO.Amount = IndirectSalesOrderContent.Amount;
             IndirectSalesOrderContentDAO.TaxPercentage = IndirectSalesOrderContent.TaxPercentage;
             IndirectSalesOrderContentDAO.TaxAmount = IndirectSalesOrderContent.TaxAmount;
+            IndirectSalesOrderContentDAO.Factor = IndirectSalesOrderContent.Factor;
             await DataContext.SaveChangesAsync();
             await SaveReference(IndirectSalesOrderContent);
             return true;
@@ -450,6 +454,7 @@ namespace DMS.Repositories
                 IndirectSalesOrderContentDAO.Amount = IndirectSalesOrderContent.Amount;
                 IndirectSalesOrderContentDAO.TaxPercentage = IndirectSalesOrderContent.TaxPercentage;
                 IndirectSalesOrderContentDAO.TaxAmount = IndirectSalesOrderContent.TaxAmount;
+                IndirectSalesOrderContentDAO.Factor = IndirectSalesOrderContent.Factor;
                 IndirectSalesOrderContentDAOs.Add(IndirectSalesOrderContentDAO);
             }
             await DataContext.BulkMergeAsync(IndirectSalesOrderContentDAOs);

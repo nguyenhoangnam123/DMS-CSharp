@@ -23,11 +23,12 @@ namespace DMS.Entities
         public decimal? TaxPercentage { get; set; }
         public long? TaxAmount { get; set; }
         public long Amount { get; set; }
+        public long? Factor { get; set; }
         public DirectSalesOrder DirectSalesOrder { get; set; }
         public Item Item { get; set; }
         public UnitOfMeasure PrimaryUnitOfMeasure { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
-
+        
         public bool Equals(DirectSalesOrderContent other)
         {
             return other != null && Id == other.Id;
@@ -78,6 +79,7 @@ namespace DMS.Entities
         TaxPercentage = 12,
         TaxAmount = 13,
         Amount = 14,
+        Factor = 15,
     }
 
     [Flags]
@@ -99,5 +101,6 @@ namespace DMS.Entities
         TaxPercentage = E._12,
         TaxAmount = E._13,
         Amount = E._14,
+        Factor = E._15
     }
 }

@@ -102,35 +102,71 @@ namespace DMS.Models
             {
                 entity.ToTable("AppUser", "MDM");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id)
+                    .HasComment("Id")
+                    .ValueGeneratedNever();
 
-                entity.Property(e => e.Address).HasMaxLength(500);
+                entity.Property(e => e.Address)
+                    .HasMaxLength(500)
+                    .HasComment("Địa chỉ nhà");
 
-                entity.Property(e => e.Birthday).HasColumnType("datetime");
+                entity.Property(e => e.Avatar).HasComment("Ảnh đại diện");
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.Birthday)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày sinh");
 
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày tạo");
 
-                entity.Property(e => e.Department).HasMaxLength(500);
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày xoá");
 
-                entity.Property(e => e.DisplayName).HasMaxLength(500);
+                entity.Property(e => e.Department)
+                    .HasMaxLength(500)
+                    .HasComment("Phòng ban");
 
-                entity.Property(e => e.Email).HasMaxLength(500);
+                entity.Property(e => e.DisplayName)
+                    .HasMaxLength(500)
+                    .HasComment("Tên hiển thị");
+
+                entity.Property(e => e.Email)
+                    .HasMaxLength(500)
+                    .HasComment("Địa chỉ email");
+
+                entity.Property(e => e.OrganizationId).HasComment("Đơn vị công tác");
 
                 entity.Property(e => e.Password)
                     .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(500)
+                    .HasComment("Mật khẩu");
 
-                entity.Property(e => e.Phone).HasMaxLength(500);
+                entity.Property(e => e.Phone)
+                    .HasMaxLength(500)
+                    .HasComment("Số điện thoại liên hệ");
 
-                entity.Property(e => e.Position).HasMaxLength(500);
+                entity.Property(e => e.Position)
+                    .HasMaxLength(500)
+                    .HasComment("Vị trí công tác");
 
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                entity.Property(e => e.ProvinceId).HasComment("Tỉnh thành");
+
+                entity.Property(e => e.RowId).HasComment("Trường để đồng bộ");
+
+                entity.Property(e => e.SexId).HasComment("Giới tính");
+
+                entity.Property(e => e.StatusId).HasComment("Trạng thái");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày cập nhật");
 
                 entity.Property(e => e.Username)
                     .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(500)
+                    .HasComment("Tên đăng nhập");
 
                 entity.HasOne(d => d.Organization)
                     .WithMany(p => p.AppUsers)
@@ -161,6 +197,10 @@ namespace DMS.Models
 
                 entity.ToTable("AppUserRoleMapping", "MDM");
 
+                entity.Property(e => e.AppUserId).HasComment("Id nhân viên");
+
+                entity.Property(e => e.RoleId).HasComment("Id nhóm quyền");
+
                 entity.HasOne(d => d.AppUser)
                     .WithMany(p => p.AppUserRoleMappings)
                     .HasForeignKey(d => d.AppUserId)
@@ -178,21 +218,35 @@ namespace DMS.Models
             {
                 entity.ToTable("Brand", "MDM");
 
+                entity.Property(e => e.Id).HasComment("Id");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(500)
+                    .HasComment("Mã nhãn hiệu");
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày tạo");
 
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày xoá");
 
-                entity.Property(e => e.Description).HasMaxLength(2000);
+                entity.Property(e => e.Description)
+                    .HasMaxLength(2000)
+                    .HasComment("Mô tả");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(500)
+                    .HasComment("Tên nhãn nhiệu");
 
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                entity.Property(e => e.StatusId).HasComment("Trạng thái hoạt động");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày cập nhật");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Brands)
@@ -437,21 +491,40 @@ namespace DMS.Models
             {
                 entity.ToTable("District", "MDM");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id)
+                    .HasComment("Id")
+                    .ValueGeneratedNever();
 
-                entity.Property(e => e.Code).HasMaxLength(500);
+                entity.Property(e => e.Code)
+                    .HasMaxLength(500)
+                    .HasComment("Mã quận huyện");
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày tạo");
 
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày xoá");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(500)
+                    .HasComment("Tên quận huyện");
 
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Priority).HasComment("Thứ tự ưu tiên");
 
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                entity.Property(e => e.ProvinceId).HasComment("Tỉnh phụ thuộc");
+
+                entity.Property(e => e.RowId).HasComment("Trường để đồng bộ");
+
+                entity.Property(e => e.StatusId)
+                    .HasDefaultValueSql("((1))")
+                    .HasComment("Trạng thái hoạt động");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày cập nhật");
 
                 entity.HasOne(d => d.Province)
                     .WithMany(p => p.Districts)
@@ -639,21 +712,31 @@ namespace DMS.Models
             {
                 entity.ToTable("Image", "MDM");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id)
+                    .HasComment("Id")
+                    .ValueGeneratedNever();
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày tạo");
 
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày xoá");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(4000);
+                    .HasMaxLength(4000)
+                    .HasComment("Tên");
 
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày cập nhật");
 
                 entity.Property(e => e.Url)
                     .IsRequired()
-                    .HasMaxLength(4000);
+                    .HasMaxLength(4000)
+                    .HasComment("Đường dẫn Url");
             });
 
             modelBuilder.Entity<IndirectPriceListDAO>(entity =>
@@ -777,23 +860,56 @@ namespace DMS.Models
 
             modelBuilder.Entity<IndirectSalesOrderDAO>(entity =>
             {
+                entity.Property(e => e.Id).HasComment("Id");
+
+                entity.Property(e => e.BuyerStoreId).HasComment("Cửa hàng mua");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(50)
+                    .HasComment("Mã đơn hàng");
 
-                entity.Property(e => e.DeliveryAddress).HasMaxLength(4000);
+                entity.Property(e => e.DeliveryAddress)
+                    .HasMaxLength(4000)
+                    .HasComment("Địa chỉ giao hàng");
 
-                entity.Property(e => e.DeliveryDate).HasColumnType("date");
+                entity.Property(e => e.DeliveryDate)
+                    .HasColumnType("date")
+                    .HasComment("Ngày giao hàng");
 
-                entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(8, 2)");
+                entity.Property(e => e.EditedPriceStatusId).HasComment("Sửa giá");
 
-                entity.Property(e => e.Note).HasMaxLength(4000);
+                entity.Property(e => e.GeneralDiscountAmount).HasComment("Số tiền chiết khấu tổng");
 
-                entity.Property(e => e.OrderDate).HasColumnType("date");
+                entity.Property(e => e.GeneralDiscountPercentage)
+                    .HasColumnType("decimal(8, 2)")
+                    .HasComment("% chiết khấu tổng");
 
-                entity.Property(e => e.PhoneNumber).HasMaxLength(50);
+                entity.Property(e => e.Note)
+                    .HasMaxLength(4000)
+                    .HasComment("Ghi chú");
+
+                entity.Property(e => e.OrderDate)
+                    .HasColumnType("date")
+                    .HasComment("Ngày đặt hàng");
+
+                entity.Property(e => e.PhoneNumber)
+                    .HasMaxLength(50)
+                    .HasComment("Số điện thoại");
+
+                entity.Property(e => e.RowId).HasComment("Id global cho phê duyệt");
+
+                entity.Property(e => e.SaleEmployeeId).HasComment("Nhân viên kinh doanh");
+
+                entity.Property(e => e.SellerStoreId).HasComment("Cửa hàng bán");
 
                 entity.Property(e => e.StoreAddress).HasMaxLength(4000);
+
+                entity.Property(e => e.SubTotal).HasComment("Tổng tiền trước thuế");
+
+                entity.Property(e => e.Total).HasComment("Tổng tiền sau thuế");
+
+                entity.Property(e => e.TotalTaxAmount).HasComment("Tổng thuế");
 
                 entity.HasOne(d => d.BuyerStore)
                     .WithMany(p => p.IndirectSalesOrderBuyerStores)
@@ -828,11 +944,43 @@ namespace DMS.Models
 
             modelBuilder.Entity<IndirectSalesOrderContentDAO>(entity =>
             {
-                entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
+                entity.Property(e => e.Id).HasComment("Id");
 
-                entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(8, 2)");
+                entity.Property(e => e.Amount).HasComment("Tổng số tiền từng dòng trước chiết khấu tổng");
 
-                entity.Property(e => e.TaxPercentage).HasColumnType("decimal(8, 2)");
+                entity.Property(e => e.DiscountAmount).HasComment("Số tiền chiết khấu theo dòng");
+
+                entity.Property(e => e.DiscountPercentage)
+                    .HasColumnType("decimal(8, 2)")
+                    .HasComment("% chiết khấu theo dòng");
+
+                entity.Property(e => e.GeneralDiscountAmount).HasComment("Số tiền sau chiết khấu từng dòng");
+
+                entity.Property(e => e.GeneralDiscountPercentage)
+                    .HasColumnType("decimal(8, 2)")
+                    .HasComment("% chiết khấu tổng ");
+
+                entity.Property(e => e.IndirectSalesOrderId).HasComment("FK của đơn hàng gián tiếp");
+
+                entity.Property(e => e.ItemId).HasComment("Sản phẩm");
+
+                entity.Property(e => e.PrimaryPrice).HasComment("Giá theo đơn vị lưu kho");
+
+                entity.Property(e => e.PrimaryUnitOfMeasureId).HasComment("Đơn vị lưu kho");
+
+                entity.Property(e => e.Quantity).HasComment("Số lượng xuất hàng");
+
+                entity.Property(e => e.RequestedQuantity).HasComment("Số lượng xuất hàng theo đơn vị lưu kho");
+
+                entity.Property(e => e.SalePrice).HasComment("Giá bán theo đơn vị xuất hàng");
+
+                entity.Property(e => e.TaxAmount).HasComment("Số tiền thuế sau tất cả các loại chiết khấu");
+
+                entity.Property(e => e.TaxPercentage)
+                    .HasColumnType("decimal(8, 2)")
+                    .HasComment("% thuế lấy theo sản phẩm");
+
+                entity.Property(e => e.UnitOfMeasureId).HasComment("Đơn vị để xuất hàng");
 
                 entity.HasOne(d => d.IndirectSalesOrder)
                     .WithMany(p => p.IndirectSalesOrderContents)
@@ -861,7 +1009,23 @@ namespace DMS.Models
 
             modelBuilder.Entity<IndirectSalesOrderPromotionDAO>(entity =>
             {
-                entity.Property(e => e.Note).HasMaxLength(4000);
+                entity.Property(e => e.Id).HasComment("Primary Key");
+
+                entity.Property(e => e.IndirectSalesOrderId).HasComment("Id đơn hàng gián tiếp");
+
+                entity.Property(e => e.ItemId).HasComment("Sản phẩm khuyến mãi");
+
+                entity.Property(e => e.Note)
+                    .HasMaxLength(4000)
+                    .HasComment("Ghi chú");
+
+                entity.Property(e => e.PrimaryUnitOfMeasureId).HasComment("Đơn vị lưu kho");
+
+                entity.Property(e => e.Quantity).HasComment("Số lượng bán");
+
+                entity.Property(e => e.RequestedQuantity).HasComment("Số lượng yêu cầu xuất kho");
+
+                entity.Property(e => e.UnitOfMeasureId).HasComment("Đơn vị xuất kho");
 
                 entity.HasOne(d => d.IndirectSalesOrder)
                     .WithMany(p => p.IndirectSalesOrderPromotions)

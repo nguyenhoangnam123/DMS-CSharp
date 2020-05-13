@@ -129,6 +129,7 @@ namespace DMS.Services.MIndirectSalesOrder
             {
                 await Calculator(IndirectSalesOrder);
                 await UOW.Begin();
+                IndirectSalesOrder.RequestStateId = Enums.RequestStateEnum.NEW.Id;
                 IndirectSalesOrder.RowId = Guid.NewGuid();
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 await UOW.IndirectSalesOrderRepository.Create(IndirectSalesOrder);

@@ -24,6 +24,7 @@ namespace DMS.Entities
         public long Amount { get; set; }
         public decimal? TaxPercentage { get; set; }
         public long? TaxAmount { get; set; }
+        public long? Factor { get; set; }
         public Item Item { get; set; }
         public IndirectSalesOrder IndirectSalesOrder { get; set; }
         public UnitOfMeasure PrimaryUnitOfMeasure { get; set; }
@@ -103,5 +104,6 @@ namespace DMS.Entities
         Amount = E._13,
         TaxPercentage = E._14,
         TaxAmount = E._15,
+        Factor = E._16
     }
 }

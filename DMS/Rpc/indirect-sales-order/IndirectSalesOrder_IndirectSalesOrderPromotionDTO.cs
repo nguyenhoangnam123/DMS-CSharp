@@ -16,6 +16,7 @@ namespace DMS.Rpc.indirect_sales_order
         public long PrimaryUnitOfMeasureId { get; set; }
         public long RequestedQuantity { get; set; }
         public string Note { get; set; }
+        public long? Factor { get; set; }
         public IndirectSalesOrder_ItemDTO Item { get; set; }   
         public IndirectSalesOrder_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }   
         public IndirectSalesOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }   
@@ -31,6 +32,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.PrimaryUnitOfMeasureId = IndirectSalesOrderPromotion.PrimaryUnitOfMeasureId;
             this.RequestedQuantity = IndirectSalesOrderPromotion.RequestedQuantity;
             this.Note = IndirectSalesOrderPromotion.Note;
+            this.Factor = IndirectSalesOrderPromotion.Factor;
             this.Item = IndirectSalesOrderPromotion.Item == null ? null : new IndirectSalesOrder_ItemDTO(IndirectSalesOrderPromotion.Item);
             this.PrimaryUnitOfMeasure = IndirectSalesOrderPromotion.PrimaryUnitOfMeasure == null ? null : new IndirectSalesOrder_UnitOfMeasureDTO(IndirectSalesOrderPromotion.PrimaryUnitOfMeasure);
             this.UnitOfMeasure = IndirectSalesOrderPromotion.UnitOfMeasure == null ? null : new IndirectSalesOrder_UnitOfMeasureDTO(IndirectSalesOrderPromotion.UnitOfMeasure);

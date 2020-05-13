@@ -433,6 +433,7 @@ namespace DMS.Repositories
                     Amount = x.Amount,
                     TaxPercentage = x.TaxPercentage,
                     TaxAmount = x.TaxAmount,
+                    Factor = x.Factor,
                     Item = new Item
                     {
                         Id = x.Item.Id,
@@ -507,6 +508,7 @@ namespace DMS.Repositories
                     PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
                     RequestedQuantity = x.RequestedQuantity,
                     Note = x.Note,
+                    Factor = x.Factor,
                     Item = new Item
                     {
                         Id = x.Item.Id,

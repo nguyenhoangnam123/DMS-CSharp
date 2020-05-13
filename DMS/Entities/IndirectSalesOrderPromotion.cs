@@ -16,6 +16,7 @@ namespace DMS.Entities
         public long PrimaryUnitOfMeasureId { get; set; }
         public long RequestedQuantity { get; set; }
         public string Note { get; set; }
+        public long? Factor { get; set; }
         public IndirectSalesOrder IndirectSalesOrder { get; set; }
         public Item Item { get; set; }
         public UnitOfMeasure PrimaryUnitOfMeasure { get; set; }
@@ -71,5 +72,6 @@ namespace DMS.Entities
         PrimaryUnitOfMeasure = E._5,
         RequestedQuantity = E._6,
         Note = E._7,
+        Factor = E._8
     }
 }

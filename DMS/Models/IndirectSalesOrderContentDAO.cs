@@ -21,6 +21,7 @@ namespace DMS.Models
         public long Amount { get; set; }
         public decimal? TaxPercentage { get; set; }
         public long? TaxAmount { get; set; }
+        public long? Factor { get; set; }
 
         public virtual IndirectSalesOrderDAO IndirectSalesOrder { get; set; }
         public virtual ItemDAO Item { get; set; }
