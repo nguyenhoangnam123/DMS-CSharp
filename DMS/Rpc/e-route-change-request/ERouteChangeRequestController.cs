@@ -32,7 +32,7 @@ namespace DMS.Rpc.e_route_change_request
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
-        public const string GetEroute = Default + "/get-eroute";
+        public const string GetDraft = Default + "/get-draft";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
@@ -143,14 +143,65 @@ namespace DMS.Rpc.e_route_change_request
             ERouteChangeRequest ERouteChangeRequest = await ERouteChangeRequestService.Get(ERouteChangeRequest_ERouteChangeRequestDTO.Id);
             return new ERouteChangeRequest_ERouteChangeRequestDTO(ERouteChangeRequest);
         }
-        [Route(ERouteChangeRequestRoute.GetEroute), HttpPost]
-        public async Task<ActionResult<ERouteChangeRequest_ERouteDTO>> GetEroute([FromBody]ERouteChangeRequest_ERouteDTO ERouteChangeRequest_ERouteDTO)
+        [Route(ERouteChangeRequestRoute.GetDraft), HttpPost]
+        public async Task<ActionResult<ERouteChangeRequest_ERouteChangeRequestDTO>> GetDraft([FromBody]ERouteChangeRequest_ERouteChangeRequestDTO ERouteChangeRequest_ERouteChangeRequestDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            ERoute ERoute = await ERouteService.Get(ERouteChangeRequest_ERouteDTO.Id);
-            return new ERouteChangeRequest_ERouteDTO(ERoute);
+            ERoute ERoute = await ERouteService.Get(ERouteChangeRequest_ERouteChangeRequestDTO.ERouteId);
+            if (ERoute == null) 
+                return null;
+            ERouteChangeRequest_ERouteChangeRequestDTO = new ERouteChangeRequest_ERouteChangeRequestDTO
+            {
+                ERouteId = ERoute.Id,
+                CreatorId = CurrentContext.UserId,
+                RequestStateId = Enums.RequestStateEnum.NEW.Id,
+                ERoute = new ERouteChangeRequest_ERouteDTO(ERoute),
+                ERouteChangeRequestContents = ERoute.ERouteContents?.Select(x => new ERouteChangeRequest_ERouteChangeRequestContentDTO
+                {
+                    Id = x.Id,
+                    StoreId = x.StoreId,
+                    OrderNumber = x.OrderNumber,
+                    Monday = x.Monday,
+                    Tuesday = x.Tuesday,
+                    Wednesday = x.Wednesday,
+                    Thursday = x.Thursday,
+                    Friday = x.Friday,
+                    Saturday = x.Saturday,
+                    Sunday = x.Sunday,
+                    Week1 = x.Week1,
+                    Week2 = x.Week2,
+                    Week3 = x.Week3,
+                    Week4 = x.Week4,
+                    Store = x.Store == null ? null : new ERouteChangeRequest_StoreDTO
+                    {
+                        Id = x.Store.Id,
+                        Code = x.Store.Code,
+                        Name = x.Store.Name,
+                        ParentStoreId = x.Store.ParentStoreId,
+                        OrganizationId = x.Store.OrganizationId,
+                        StoreTypeId = x.Store.StoreTypeId,
+                        StoreGroupingId = x.Store.StoreGroupingId,
+                        ResellerId = x.Store.ResellerId,
+                        Telephone = x.Store.Telephone,
+                        ProvinceId = x.Store.ProvinceId,
+                        DistrictId = x.Store.DistrictId,
+                        WardId = x.Store.WardId,
+                        Address = x.Store.Address,
+                        DeliveryAddress = x.Store.DeliveryAddress,
+                        Latitude = x.Store.Latitude,
+                        Longitude = x.Store.Longitude,
+                        DeliveryLatitude = x.Store.DeliveryLatitude,
+                        DeliveryLongitude = x.Store.DeliveryLongitude,
+                        OwnerName = x.Store.OwnerName,
+                        OwnerPhone = x.Store.OwnerPhone,
+                        OwnerEmail = x.Store.OwnerEmail,
+                        StatusId = x.Store.StatusId,
+                    },
+                }).ToList()
+            };
+            return ERouteChangeRequest_ERouteChangeRequestDTO;
         }
 
         [Route(ERouteChangeRequestRoute.Create), HttpPost]
