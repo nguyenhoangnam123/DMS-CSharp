@@ -149,9 +149,6 @@ namespace DMS.Rpc.e_route_change_request
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(ERouteChangeRequest_ERouteDTO.Id))
-                return Forbid();
-
             ERoute ERoute = await ERouteService.Get(ERouteChangeRequest_ERouteDTO.Id);
             return new ERouteChangeRequest_ERouteDTO(ERoute);
         }
