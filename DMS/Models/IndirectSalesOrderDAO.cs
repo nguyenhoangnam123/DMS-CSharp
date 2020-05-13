@@ -29,6 +29,7 @@ namespace DMS.Models
         public long? GeneralDiscountAmount { get; set; }
         public long TotalTaxAmount { get; set; }
         public long Total { get; set; }
+        public Guid RowId { get; set; }
 
         public virtual StoreDAO BuyerStore { get; set; }
         public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }

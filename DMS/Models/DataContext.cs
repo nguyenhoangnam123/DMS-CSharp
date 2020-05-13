@@ -51,6 +51,7 @@ namespace DMS.Models
         public virtual DbSet<ProductImageMappingDAO> ProductImageMapping { get; set; }
         public virtual DbSet<ProductProductGroupingMappingDAO> ProductProductGroupingMapping { get; set; }
         public virtual DbSet<ProductTypeDAO> ProductType { get; set; }
+        public virtual DbSet<PromotionDAO> Promotion { get; set; }
         public virtual DbSet<ProvinceDAO> Province { get; set; }
         public virtual DbSet<RequestStateDAO> RequestState { get; set; }
         public virtual DbSet<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMapping { get; set; }
@@ -542,8 +543,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<ERouteChangeRequestContentDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -1298,6 +1297,29 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProductType_Status");
+            });
+
+            modelBuilder.Entity<PromotionDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Scope).HasMaxLength(500);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<ProvinceDAO>(entity =>

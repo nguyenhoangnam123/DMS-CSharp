@@ -386,6 +386,7 @@ namespace DMS.Repositories
                 GeneralDiscountAmount = x.GeneralDiscountAmount,
                 TotalTaxAmount = x.TotalTaxAmount,
                 Total = x.Total,
+                RowId = x.RowId,
                 BuyerStore = x.BuyerStore == null ? null : new Store
                 {
                     Id = x.BuyerStore.Id,
@@ -607,6 +608,7 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
             IndirectSalesOrderDAO.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
             IndirectSalesOrderDAO.Total = IndirectSalesOrder.Total;
+            IndirectSalesOrderDAO.RowId = IndirectSalesOrder.RowId;
             DataContext.IndirectSalesOrder.Add(IndirectSalesOrderDAO);
             await DataContext.SaveChangesAsync();
             IndirectSalesOrder.Id = IndirectSalesOrderDAO.Id;
