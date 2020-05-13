@@ -1341,7 +1341,7 @@ namespace DMS.Rpc.e_route_change_request
             StoreFilter.OwnerName = ERouteChangeRequest_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = ERouteChangeRequest_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = ERouteChangeRequest_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = ERouteChangeRequest_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             return await StoreService.Count(StoreFilter);
         }
 
@@ -1372,7 +1372,7 @@ namespace DMS.Rpc.e_route_change_request
             StoreFilter.OwnerName = ERouteChangeRequest_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = ERouteChangeRequest_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = ERouteChangeRequest_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = ERouteChangeRequest_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<ERouteChangeRequest_StoreDTO> ERouteChangeRequest_StoreDTOs = Stores

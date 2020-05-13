@@ -18,6 +18,7 @@ using DMS.Services.MItem;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStore;
 using DMS.Services.MStoreType;
+using DMS.Enums;
 
 namespace DMS.Rpc.direct_price_list
 {
@@ -1445,7 +1446,7 @@ namespace DMS.Rpc.direct_price_list
             ItemFilter.ScanCode = DirectPriceList_ItemFilterDTO.ScanCode;
             ItemFilter.SalePrice = DirectPriceList_ItemFilterDTO.SalePrice;
             ItemFilter.RetailPrice = DirectPriceList_ItemFilterDTO.RetailPrice;
-            ItemFilter.StatusId = DirectPriceList_ItemFilterDTO.StatusId;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             return await ItemService.Count(ItemFilter);
         }
@@ -1466,7 +1467,7 @@ namespace DMS.Rpc.direct_price_list
             ItemFilter.ScanCode = DirectPriceList_ItemFilterDTO.ScanCode;
             ItemFilter.SalePrice = DirectPriceList_ItemFilterDTO.SalePrice;
             ItemFilter.RetailPrice = DirectPriceList_ItemFilterDTO.RetailPrice;
-            ItemFilter.StatusId = DirectPriceList_ItemFilterDTO.StatusId;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<DirectPriceList_ItemDTO> DirectPriceList_ItemDTOs = Items
@@ -1483,7 +1484,7 @@ namespace DMS.Rpc.direct_price_list
             StoreGroupingFilter.ParentId = DirectPriceList_StoreGroupingFilterDTO.ParentId;
             StoreGroupingFilter.Path = DirectPriceList_StoreGroupingFilterDTO.Path;
             StoreGroupingFilter.Level = DirectPriceList_StoreGroupingFilterDTO.Level;
-            StoreGroupingFilter.StatusId = DirectPriceList_StoreGroupingFilterDTO.StatusId;
+            StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             return await StoreGroupingService.Count(StoreGroupingFilter);
         }
@@ -1503,7 +1504,7 @@ namespace DMS.Rpc.direct_price_list
             StoreGroupingFilter.ParentId = DirectPriceList_StoreGroupingFilterDTO.ParentId;
             StoreGroupingFilter.Path = DirectPriceList_StoreGroupingFilterDTO.Path;
             StoreGroupingFilter.Level = DirectPriceList_StoreGroupingFilterDTO.Level;
-            StoreGroupingFilter.StatusId = DirectPriceList_StoreGroupingFilterDTO.StatusId;
+            StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<DirectPriceList_StoreGroupingDTO> DirectPriceList_StoreGroupingDTOs = StoreGroupings
@@ -1535,7 +1536,7 @@ namespace DMS.Rpc.direct_price_list
             StoreFilter.OwnerName = DirectPriceList_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = DirectPriceList_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectPriceList_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = DirectPriceList_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             StoreFilter.WorkflowDefinitionId = DirectPriceList_StoreFilterDTO.WorkflowDefinitionId;
             StoreFilter.RequestStateId = DirectPriceList_StoreFilterDTO.RequestStateId;
 
@@ -1572,7 +1573,7 @@ namespace DMS.Rpc.direct_price_list
             StoreFilter.OwnerName = DirectPriceList_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = DirectPriceList_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectPriceList_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = DirectPriceList_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             StoreFilter.WorkflowDefinitionId = DirectPriceList_StoreFilterDTO.WorkflowDefinitionId;
             StoreFilter.RequestStateId = DirectPriceList_StoreFilterDTO.RequestStateId;
 
@@ -1588,7 +1589,7 @@ namespace DMS.Rpc.direct_price_list
             StoreTypeFilter.Id = DirectPriceList_StoreTypeFilterDTO.Id;
             StoreTypeFilter.Code = DirectPriceList_StoreTypeFilterDTO.Code;
             StoreTypeFilter.Name = DirectPriceList_StoreTypeFilterDTO.Name;
-            StoreTypeFilter.StatusId = DirectPriceList_StoreTypeFilterDTO.StatusId;
+            StoreTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             return await StoreTypeService.Count(StoreTypeFilter);
         }
@@ -1605,7 +1606,7 @@ namespace DMS.Rpc.direct_price_list
             StoreTypeFilter.Id = DirectPriceList_StoreTypeFilterDTO.Id;
             StoreTypeFilter.Code = DirectPriceList_StoreTypeFilterDTO.Code;
             StoreTypeFilter.Name = DirectPriceList_StoreTypeFilterDTO.Name;
-            StoreTypeFilter.StatusId = DirectPriceList_StoreTypeFilterDTO.StatusId;
+            StoreTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
             List<DirectPriceList_StoreTypeDTO> DirectPriceList_StoreTypeDTOs = StoreTypes

@@ -1592,7 +1592,7 @@ namespace DMS.Rpc.direct_sales_order
             ItemFilter.RetailPrice = DirectSalesOrder_ItemFilterDTO.RetailPrice;
             ItemFilter.SalePrice = DirectSalesOrder_ItemFilterDTO.SalePrice;
             ItemFilter.ScanCode = DirectSalesOrder_ItemFilterDTO.ScanCode;
-            ItemFilter.StatusId = DirectSalesOrder_ItemFilterDTO.StatusId;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = DirectSalesOrder_ItemFilterDTO.SupplierId;
             return await ItemService.Count(ItemFilter);
         }
@@ -1616,7 +1616,7 @@ namespace DMS.Rpc.direct_sales_order
             ItemFilter.RetailPrice = DirectSalesOrder_ItemFilterDTO.RetailPrice;
             ItemFilter.SalePrice = DirectSalesOrder_ItemFilterDTO.SalePrice;
             ItemFilter.ScanCode = DirectSalesOrder_ItemFilterDTO.ScanCode;
-            ItemFilter.StatusId = DirectSalesOrder_ItemFilterDTO.StatusId;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = DirectSalesOrder_ItemFilterDTO.SupplierId;
 
             if (DirectSalesOrder_ItemFilterDTO.StoreId != null && DirectSalesOrder_ItemFilterDTO.StoreId.Equal.HasValue)

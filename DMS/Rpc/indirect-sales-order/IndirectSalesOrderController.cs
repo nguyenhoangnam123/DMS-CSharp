@@ -1907,7 +1907,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = IndirectSalesOrder_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             return await StoreService.Count(StoreFilter);
         }
 
@@ -1941,7 +1941,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = IndirectSalesOrder_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<IndirectSalesOrder_StoreDTO> IndirectSalesOrder_StoreDTOs = Stores
@@ -1966,7 +1966,7 @@ namespace DMS.Rpc.indirect_sales_order
             ItemFilter.RetailPrice = IndirectSalesOrder_ItemFilterDTO.RetailPrice;
             ItemFilter.SalePrice = IndirectSalesOrder_ItemFilterDTO.SalePrice;
             ItemFilter.ScanCode = IndirectSalesOrder_ItemFilterDTO.ScanCode;
-            ItemFilter.StatusId = IndirectSalesOrder_ItemFilterDTO.StatusId;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = IndirectSalesOrder_ItemFilterDTO.SupplierId;
             return await ItemService.Count(ItemFilter);
         }
@@ -1993,7 +1993,7 @@ namespace DMS.Rpc.indirect_sales_order
             ItemFilter.RetailPrice = IndirectSalesOrder_ItemFilterDTO.RetailPrice;
             ItemFilter.SalePrice = IndirectSalesOrder_ItemFilterDTO.SalePrice;
             ItemFilter.ScanCode = IndirectSalesOrder_ItemFilterDTO.ScanCode;
-            ItemFilter.StatusId = IndirectSalesOrder_ItemFilterDTO.StatusId;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = IndirectSalesOrder_ItemFilterDTO.SupplierId;
 
             if(IndirectSalesOrder_ItemFilterDTO.StoreId != null && IndirectSalesOrder_ItemFilterDTO.StoreId.Equal.HasValue)
