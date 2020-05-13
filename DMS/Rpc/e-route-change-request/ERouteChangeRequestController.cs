@@ -32,6 +32,7 @@ namespace DMS.Rpc.e_route_change_request
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string GetEroute = Default + "/get-eroute";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
@@ -141,6 +142,18 @@ namespace DMS.Rpc.e_route_change_request
 
             ERouteChangeRequest ERouteChangeRequest = await ERouteChangeRequestService.Get(ERouteChangeRequest_ERouteChangeRequestDTO.Id);
             return new ERouteChangeRequest_ERouteChangeRequestDTO(ERouteChangeRequest);
+        }
+        [Route(ERouteChangeRequestRoute.GetEroute), HttpPost]
+        public async Task<ActionResult<ERouteChangeRequest_ERouteDTO>> GetEroute([FromBody]ERouteChangeRequest_ERouteDTO ERouteChangeRequest_ERouteDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(ERouteChangeRequest_ERouteDTO.Id))
+                return Forbid();
+
+            ERoute ERoute = await ERouteService.Get(ERouteChangeRequest_ERouteDTO.Id);
+            return new ERouteChangeRequest_ERouteDTO(ERoute);
         }
 
         [Route(ERouteChangeRequestRoute.Create), HttpPost]
