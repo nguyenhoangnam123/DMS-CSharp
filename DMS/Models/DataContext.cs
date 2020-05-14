@@ -6,6 +6,7 @@ namespace DMS.Models
 {
     public partial class DataContext : DbContext
     {
+        public virtual DbSet<AlbumDAO> Album { get; set; }
         public virtual DbSet<AppUserDAO> AppUser { get; set; }
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
@@ -28,6 +29,7 @@ namespace DMS.Models
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
+        public virtual DbSet<ImageStoreCheckingMappingDAO> ImageStoreCheckingMapping { get; set; }
         public virtual DbSet<IndirectPriceListDAO> IndirectPriceList { get; set; }
         public virtual DbSet<IndirectPriceListItemMappingDAO> IndirectPriceListItemMapping { get; set; }
         public virtual DbSet<IndirectPriceListStoreGroupingMappingDAO> IndirectPriceListStoreGroupingMapping { get; set; }
@@ -99,6 +101,19 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AlbumDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<AppUserDAO>(entity =>
             {
                 entity.ToTable("AppUser", "MDM");
@@ -738,6 +753,13 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(4000)
                     .HasComment("Đường dẫn Url");
+            });
+
+            modelBuilder.Entity<ImageStoreCheckingMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ImageId, e.StoreCheckingId });
+
+                entity.Property(e => e.ShootingAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<IndirectPriceListDAO>(entity =>
