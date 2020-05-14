@@ -18,6 +18,7 @@ namespace DMS.Services.MProduct
         Task<List<Product>> List(ProductFilter ProductFilter);
         Task<Product> Get(long Id);
         Task<Product> Create(Product Product);
+        Task<List<Product>> AddNewProduct(List<Product> Products);
         Task<Product> Update(Product Product);
         Task<Product> Delete(Product Product);
         Task<List<Product>> BulkDelete(List<Product> Products);
@@ -129,6 +130,31 @@ namespace DMS.Services.MProduct
 
                 await Logging.CreateAuditLog(Product, new { }, nameof(ProductService));
                 return await UOW.ProductRepository.Get(Product.Id);
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(ProductService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+        }
+
+        public async Task<List<Product>> AddNewProduct(List<Product> Products)
+        {
+            if (!await ProductValidator.AddNewProduct(Products))
+                return Products;
+
+            try
+            {
+                Products.ForEach(x => x.IsNew = true);
+                await UOW.Begin();
+                await UOW.ProductRepository.BulkMerge(Products);
+                await UOW.Commit();
+                await Logging.CreateAuditLog(new { }, Products, nameof(ProductService));
+                return Products;
             }
             catch (Exception ex)
             {
