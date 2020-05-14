@@ -30,6 +30,7 @@ namespace DMS.Models
         public long TotalTaxAmount { get; set; }
         public long Total { get; set; }
         public Guid RowId { get; set; }
+        public long? StoreCheckingId { get; set; }
 
         public virtual StoreDAO BuyerStore { get; set; }
         public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }

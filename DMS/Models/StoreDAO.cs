@@ -11,6 +11,7 @@ namespace DMS.Models
             DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
             ERouteChangeRequestContents = new HashSet<ERouteChangeRequestContentDAO>();
             ERouteContents = new HashSet<ERouteContentDAO>();
+            ImageStoreCheckingMappings = new HashSet<ImageStoreCheckingMappingDAO>();
             IndirectPriceListStoreMappings = new HashSet<IndirectPriceListStoreMappingDAO>();
             IndirectSalesOrderBuyerStores = new HashSet<IndirectSalesOrderDAO>();
             IndirectSalesOrderSellerStores = new HashSet<IndirectSalesOrderDAO>();
@@ -39,6 +40,8 @@ namespace DMS.Models
         public string OwnerName { get; set; }
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
+        public string TaxCode { get; set; }
+        public string LegalEntity { get; set; }
         public long StatusId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -58,6 +61,7 @@ namespace DMS.Models
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
         public virtual ICollection<ERouteChangeRequestContentDAO> ERouteChangeRequestContents { get; set; }
         public virtual ICollection<ERouteContentDAO> ERouteContents { get; set; }
+        public virtual ICollection<ImageStoreCheckingMappingDAO> ImageStoreCheckingMappings { get; set; }
         public virtual ICollection<IndirectPriceListStoreMappingDAO> IndirectPriceListStoreMappings { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrderBuyerStores { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrderSellerStores { get; set; }

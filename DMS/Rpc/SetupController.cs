@@ -118,6 +118,7 @@ namespace DMS.Rpc
                     else
                     {
                         field.IsDeleted = false;
+                        field.Type = pair.Value.ToString();
                     }
                 }
             }

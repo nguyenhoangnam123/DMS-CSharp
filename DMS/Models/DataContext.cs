@@ -6,6 +6,7 @@ namespace DMS.Models
 {
     public partial class DataContext : DbContext
     {
+        public virtual DbSet<AlbumDAO> Album { get; set; }
         public virtual DbSet<AppUserDAO> AppUser { get; set; }
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
@@ -28,6 +29,7 @@ namespace DMS.Models
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
+        public virtual DbSet<ImageStoreCheckingMappingDAO> ImageStoreCheckingMapping { get; set; }
         public virtual DbSet<IndirectPriceListDAO> IndirectPriceList { get; set; }
         public virtual DbSet<IndirectPriceListItemMappingDAO> IndirectPriceListItemMapping { get; set; }
         public virtual DbSet<IndirectPriceListStoreGroupingMappingDAO> IndirectPriceListStoreGroupingMapping { get; set; }
@@ -40,6 +42,7 @@ namespace DMS.Models
         public virtual DbSet<InventoryDAO> Inventory { get; set; }
         public virtual DbSet<InventoryHistoryDAO> InventoryHistory { get; set; }
         public virtual DbSet<ItemDAO> Item { get; set; }
+        public virtual DbSet<ItemImageMappingDAO> ItemImageMapping { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
         public virtual DbSet<PageDAO> Page { get; set; }
@@ -64,6 +67,7 @@ namespace DMS.Models
         public virtual DbSet<SexDAO> Sex { get; set; }
         public virtual DbSet<StatusDAO> Status { get; set; }
         public virtual DbSet<StoreDAO> Store { get; set; }
+        public virtual DbSet<StoreCheckingDAO> StoreChecking { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
@@ -98,6 +102,19 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AlbumDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<AppUserDAO>(entity =>
             {
                 entity.ToTable("AppUser", "MDM");
@@ -739,6 +756,43 @@ namespace DMS.Models
                     .HasComment("Đường dẫn Url");
             });
 
+            modelBuilder.Entity<ImageStoreCheckingMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ImageId, e.StoreCheckingId });
+
+                entity.Property(e => e.ShootingAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Album)
+                    .WithMany(p => p.ImageStoreCheckingMappings)
+                    .HasForeignKey(d => d.AlbumId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ImageStoreCheckingMapping_Album");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.ImageStoreCheckingMappings)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ImageStoreCheckingMapping_AppUser");
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.ImageStoreCheckingMappings)
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ImageStoreCheckingMapping_Image");
+
+                entity.HasOne(d => d.StoreChecking)
+                    .WithMany(p => p.ImageStoreCheckingMappings)
+                    .HasForeignKey(d => d.StoreCheckingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ImageStoreCheckingMapping_StoreChecking");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.ImageStoreCheckingMappings)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ImageStoreCheckingMapping_Store");
+            });
+
             modelBuilder.Entity<IndirectPriceListDAO>(entity =>
             {
                 entity.Property(e => e.Code)
@@ -1133,6 +1187,25 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Item_Status");
+            });
+
+            modelBuilder.Entity<ItemImageMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ItemId, e.ImageId });
+
+                entity.ToTable("ItemImageMapping", "MDM");
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.ItemImageMappings)
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemImageMapping_Image");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.ItemImageMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemImageMapping_Item");
             });
 
             modelBuilder.Entity<MenuDAO>(entity =>
@@ -1766,6 +1839,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.LegalEntity).HasMaxLength(500);
+
                 entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Name).HasMaxLength(500);
@@ -1781,6 +1856,10 @@ namespace DMS.Models
                     .HasMaxLength(500);
 
                 entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.TaxCode)
+                    .IsRequired()
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.Telephone).HasMaxLength(500);
 
@@ -1836,6 +1915,19 @@ namespace DMS.Models
                     .HasForeignKey(d => d.WardId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_Ward");
+            });
+
+            modelBuilder.Entity<StoreCheckingDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CheckInAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CheckOutAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Longtitude).HasColumnType("decimal(18, 4)");
             });
 
             modelBuilder.Entity<StoreGroupingDAO>(entity =>

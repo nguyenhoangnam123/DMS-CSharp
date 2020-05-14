@@ -12,6 +12,7 @@ namespace DMS.Repositories
         Task Commit();
         Task Rollback();
 
+        IAlbumRepository AlbumRepository { get; }
         IAppUserRepository AppUserRepository { get; }
         IBrandRepository BrandRepository { get; }
         IDirectPriceListRepository DirectPriceListRepository { get; }
@@ -57,6 +58,7 @@ namespace DMS.Repositories
         ISexRepository SexRepository { get; }
         IStatusRepository StatusRepository { get; }
         IStoreRepository StoreRepository { get; }
+        IStoreCheckingRepository StoreCheckingRepository { get; }
         IStoreGroupingRepository StoreGroupingRepository { get; }
         IStoreTypeRepository StoreTypeRepository { get; }
         ISupplierRepository SupplierRepository { get; }
@@ -77,6 +79,7 @@ namespace DMS.Repositories
     {
         private DataContext DataContext;
 
+        public IAlbumRepository AlbumRepository { get; private set; }
         public IAppUserRepository AppUserRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
         public IDirectPriceListRepository DirectPriceListRepository { get; private set; }
@@ -122,6 +125,7 @@ namespace DMS.Repositories
         public ISexRepository SexRepository { get; private set; }
         public IStatusRepository StatusRepository { get; private set; }
         public IStoreRepository StoreRepository { get; private set; }
+        public IStoreCheckingRepository StoreCheckingRepository { get; private set; }
         public IStoreGroupingRepository StoreGroupingRepository { get; private set; }
         public IStoreTypeRepository StoreTypeRepository { get; private set; }
         public ISupplierRepository SupplierRepository { get; private set; }
@@ -140,6 +144,7 @@ namespace DMS.Repositories
         {
             this.DataContext = DataContext;
 
+            AlbumRepository = new AlbumRepository(DataContext);
             AppUserRepository = new AppUserRepository(DataContext);
             BrandRepository = new BrandRepository(DataContext);
             DirectPriceListRepository = new DirectPriceListRepository(DataContext);
@@ -185,6 +190,7 @@ namespace DMS.Repositories
             SexRepository = new SexRepository(DataContext);
             StatusRepository = new StatusRepository(DataContext);
             StoreRepository = new StoreRepository(DataContext);
+            StoreCheckingRepository = new StoreCheckingRepository(DataContext);
             StoreGroupingRepository = new StoreGroupingRepository(DataContext);
             StoreTypeRepository = new StoreTypeRepository(DataContext);
             SupplierRepository = new SupplierRepository(DataContext);
