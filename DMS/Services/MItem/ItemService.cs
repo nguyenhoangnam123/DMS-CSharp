@@ -20,6 +20,7 @@ namespace DMS.Services.MItem
         Task<Item> Create(Item Item);
         Task<Item> Update(Item Item);
         Task<Item> Delete(Item Item);
+        Task<bool> CanDelete(Item Item);
         Task<Image> SaveImage(Image Image);
         Task<List<Item>> BulkDelete(List<Item> Items);
         ItemFilter ToFilter(ItemFilter ItemFilter);
@@ -155,6 +156,13 @@ namespace DMS.Services.MItem
                 else
                     throw new MessageException(ex.InnerException);
             }
+        }
+
+        public async Task<bool> CanDelete(Item Item)
+        {
+            if (!await ItemValidator.Delete(Item))
+                return false;
+            return true;
         }
 
         public async Task<Item> Delete(Item Item)

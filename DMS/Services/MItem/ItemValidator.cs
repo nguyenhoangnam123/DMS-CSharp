@@ -27,6 +27,7 @@ namespace DMS.Services.MItem
             CodeOverLength,
             ScanCodeEmpty,
             ScanCodeOverLength,
+            ItemHasOrder
         }
 
         private IUOW UOW;
@@ -107,6 +108,39 @@ namespace DMS.Services.MItem
         {
             if (await ValidateId(Item))
             {
+                IndirectSalesOrderContentFilter IndirectSalesOrderContentFilter = new IndirectSalesOrderContentFilter()
+                {
+                    ItemId = new IdFilter { Equal = Item.Id }
+                };
+
+                int count = await UOW.IndirectSalesOrderContentRepository.Count(IndirectSalesOrderContentFilter);
+                if(count != 0)
+                    Item.AddError(nameof(ItemValidator), nameof(Item.Id), ErrorCode.ItemHasOrder);
+
+                IndirectSalesOrderPromotionFilter IndirectSalesOrderPromotionFilter = new IndirectSalesOrderPromotionFilter
+                {
+                    ItemId = new IdFilter { Equal = Item.Id }
+                };
+                count = await UOW.IndirectSalesOrderPromotionRepository.Count(IndirectSalesOrderPromotionFilter);
+                if (count != 0)
+                    Item.AddError(nameof(ItemValidator), nameof(Item.Id), ErrorCode.ItemHasOrder);
+
+                DirectSalesOrderContentFilter DirectSalesOrderContentFilter = new DirectSalesOrderContentFilter()
+                {
+                    ItemId = new IdFilter { Equal = Item.Id }
+                };
+
+                count = await UOW.DirectSalesOrderContentRepository.Count(DirectSalesOrderContentFilter);
+                if (count != 0)
+                    Item.AddError(nameof(ItemValidator), nameof(Item.Id), ErrorCode.ItemHasOrder);
+
+                DirectSalesOrderPromotionFilter DirectSalesOrderPromotionFilter = new DirectSalesOrderPromotionFilter
+                {
+                    ItemId = new IdFilter { Equal = Item.Id }
+                };
+                count = await UOW.DirectSalesOrderPromotionRepository.Count(DirectSalesOrderPromotionFilter);
+                if (count != 0)
+                    Item.AddError(nameof(ItemValidator), nameof(Item.Id), ErrorCode.ItemHasOrder);
             }
             return Item.IsValidated;
         }
