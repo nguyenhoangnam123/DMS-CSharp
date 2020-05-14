@@ -1240,7 +1240,10 @@ namespace DMS.Rpc.product
         private ProductFilter ConvertFilterDTOToFilterEntity(Product_ProductFilterDTO Product_ProductFilterDTO)
         {
             ProductFilter ProductFilter = new ProductFilter();
-            ProductFilter.Selects = ProductSelect.ALL;
+            ProductFilter.Selects = ProductSelect.Code | ProductSelect.Name 
+                | ProductSelect.Id | ProductSelect.ProductProductGroupingMapping 
+                | ProductSelect.ProductType | ProductSelect.Supplier
+                | ProductSelect.Status;
             ProductFilter.Skip = Product_ProductFilterDTO.Skip;
             ProductFilter.Take = Product_ProductFilterDTO.Take;
             ProductFilter.OrderBy = Product_ProductFilterDTO.OrderBy;
