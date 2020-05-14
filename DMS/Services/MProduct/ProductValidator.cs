@@ -11,6 +11,7 @@ namespace DMS.Services.MProduct
     public interface IProductValidator : IServiceScoped
     {
         Task<bool> Create(Product Product);
+        Task<bool> AddNewProduct(List<Product> Products);
         Task<bool> Update(Product Product);
         Task<bool> Delete(Product Product);
         Task<bool> BulkDelete(List<Product> Products);
@@ -313,6 +314,15 @@ namespace DMS.Services.MProduct
             await ValidateItem(Product);
             await ValidateVariation(Product);
             return Product.IsValidated;
+        }
+
+        public async Task<bool> AddNewProduct(List<Product> Products)
+        {
+            foreach (Product Product in Products)
+            {
+                await ValidateId(Product);
+            }
+            return Products.All(st => st.IsValidated);
         }
 
         public async Task<bool> Update(Product Product)

@@ -40,11 +40,13 @@ namespace DMS.Rpc.product
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
+        public const string DeleteItem = Default + "/delete-item";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
         public const string SaveImage = Default + "/save-image";
+        public const string SaveItemImage = Default + "/save-item-image";
 
         public const string SingleListBrand = Default + "/single-list-brand";
         public const string SingleListProductType = Default + "/single-list-product-type";
@@ -238,6 +240,22 @@ namespace DMS.Rpc.product
                 return Product_ProductDTO;
             else
                 return BadRequest(Product_ProductDTO);
+        }
+
+        [Route(ProductRoute.DeleteItem), HttpPost]
+        public async Task<ActionResult<bool>> DeleteItem([FromBody] Product_ItemDTO Product_ItemDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Product_ItemDTO.Id))
+                return Forbid();
+
+            Item Item = await ItemService.Get(Product_ItemDTO.Id);
+            if (Item == null)
+                return false;
+
+            return await ItemService.CanDelete(Item);
         }
 
         [Route(ProductRoute.Import), HttpPost]
@@ -1090,6 +1108,31 @@ namespace DMS.Rpc.product
             return Ok(product_ImageDTO);
         }
 
+        [HttpPost]
+        [Route(ProductRoute.SaveItemImage)]
+        public async Task<ActionResult<Product_ImageDTO>> SaveItemImage(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            MemoryStream memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            Image Image = new Image
+            {
+                Name = file.FileName,
+                Content = memoryStream.ToArray()
+            };
+            Image = await ItemService.SaveImage(Image);
+            if (Image == null)
+                return BadRequest();
+            Product_ImageDTO product_ImageDTO = new Product_ImageDTO
+            {
+                Id = Image.Id,
+                Name = Image.Name,
+                Url = Image.Url,
+            };
+            return Ok(product_ImageDTO);
+        }
+
         private async Task<bool> HasPermission(long Id)
         {
             ProductFilter ProductFilter = new ProductFilter();
@@ -1194,6 +1237,11 @@ namespace DMS.Rpc.product
                     RetailPrice = x.RetailPrice,
                     CanDelete = x.CanDelete,
                     StatusId = x.StatusId,
+                    ItemImageMappings = x.ItemImageMappings?.Select(x => new ItemImageMapping
+                    {
+                        ItemId = x.ItemId,
+                        ImageId = x.ImageId,
+                    }).ToList()
                 }).ToList();
             Product.ProductImageMappings = Product_ProductDTO.ProductImageMappings?
                 .Select(x => new ProductImageMapping
@@ -1240,7 +1288,10 @@ namespace DMS.Rpc.product
         private ProductFilter ConvertFilterDTOToFilterEntity(Product_ProductFilterDTO Product_ProductFilterDTO)
         {
             ProductFilter ProductFilter = new ProductFilter();
-            ProductFilter.Selects = ProductSelect.ALL;
+            ProductFilter.Selects = ProductSelect.Code | ProductSelect.Name 
+                | ProductSelect.Id | ProductSelect.ProductProductGroupingMapping 
+                | ProductSelect.ProductType | ProductSelect.Supplier
+                | ProductSelect.Status;
             ProductFilter.Skip = Product_ProductFilterDTO.Skip;
             ProductFilter.Take = Product_ProductFilterDTO.Take;
             ProductFilter.OrderBy = Product_ProductFilterDTO.OrderBy;
@@ -1476,7 +1527,9 @@ namespace DMS.Rpc.product
             ItemFilter.Take = Product_ItemFilterDTO.Take;
             ItemFilter.OrderBy = ItemOrder.Id;
             ItemFilter.OrderType = OrderType.ASC;
-            ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name 
+                | ItemSelect.Product | ItemSelect.RetailPrice 
+                | ItemSelect.SalePrice | ItemSelect.ScanCode;
             ItemFilter.Id = Product_ItemFilterDTO.Id;
             ItemFilter.Code = Product_ItemFilterDTO.Code;
             ItemFilter.Name = Product_ItemFilterDTO.Name;

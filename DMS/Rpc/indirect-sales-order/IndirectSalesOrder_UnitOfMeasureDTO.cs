@@ -55,7 +55,7 @@ namespace DMS.Rpc.indirect_sales_order
     {
         
         public IdFilter Id { get; set; }
-        
+        public IdFilter ProductId { get; set; }
         public StringFilter Code { get; set; }
         
         public StringFilter Name { get; set; }

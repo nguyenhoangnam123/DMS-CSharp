@@ -7,6 +7,7 @@ using DMS.Services.MIndirectSalesOrder;
 using DMS.Services.MIndirectSalesOrderContent;
 using DMS.Services.MIndirectSalesOrderPromotion;
 using DMS.Services.MItem;
+using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
 using DMS.Services.MRequestState;
@@ -106,6 +107,7 @@ namespace DMS.Rpc.indirect_sales_order
         private IIndirectSalesOrderService IndirectSalesOrderService;
         private IProductGroupingService ProductGroupingService;
         private IProductTypeService ProductTypeService;
+        private IProductService ProductService;
         private IRequestStateService RequestStateService;
         private ISupplierService SupplierService;
         private IStoreGroupingService StoreGroupingService;
@@ -123,6 +125,7 @@ namespace DMS.Rpc.indirect_sales_order
             IIndirectSalesOrderService IndirectSalesOrderService,
             IProductGroupingService ProductGroupingService,
             IProductTypeService ProductTypeService,
+            IProductService ProductService,
             IRequestStateService RequestStateService,
             ISupplierService SupplierService,
             IStoreGroupingService StoreGroupingService,
@@ -141,6 +144,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.IndirectSalesOrderService = IndirectSalesOrderService;
             this.ProductGroupingService = ProductGroupingService;
             this.ProductTypeService = ProductTypeService;
+            this.ProductService = ProductService;
             this.RequestStateService = RequestStateService;
             this.SupplierService = SupplierService;
             this.StoreGroupingService = StoreGroupingService;
@@ -1216,6 +1220,8 @@ namespace DMS.Rpc.indirect_sales_order
                 OwnerName = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.OwnerName,
                 OwnerPhone = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.OwnerPhone,
                 OwnerEmail = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.OwnerEmail,
+                TaxCode = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.TaxCode,
+                LegalEntity = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.LegalEntity,
                 StatusId = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.StatusId,
             };
             IndirectSalesOrder.EditedPriceStatus = IndirectSalesOrder_IndirectSalesOrderDTO.EditedPriceStatus == null ? null : new EditedPriceStatus
@@ -1265,6 +1271,8 @@ namespace DMS.Rpc.indirect_sales_order
                 OwnerName = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.OwnerName,
                 OwnerPhone = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.OwnerPhone,
                 OwnerEmail = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.OwnerEmail,
+                TaxCode = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.TaxCode,
+                LegalEntity = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.LegalEntity,
                 StatusId = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStore.StatusId,
             };
             IndirectSalesOrder.IndirectSalesOrderContents = IndirectSalesOrder_IndirectSalesOrderDTO.IndirectSalesOrderContents?
@@ -1671,12 +1679,22 @@ namespace DMS.Rpc.indirect_sales_order
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            var UOMG = await UnitOfMeasureGroupingService.Get(IndirectSalesOrder_UnitOfMeasureFilterDTO.UnitOfMeasureGroupingId.Equal ?? 0);
+            var Product = await ProductService.Get(IndirectSalesOrder_UnitOfMeasureFilterDTO.ProductId.Equal ?? 0);
+
             List<IndirectSalesOrder_UnitOfMeasureDTO> IndirectSalesOrder_UnitOfMeasureDTOs = new List<IndirectSalesOrder_UnitOfMeasureDTO>();
-            if (UOMG != null)
+            if (Product.UnitOfMeasureGrouping != null && Product.UnitOfMeasureGrouping.StatusId == Enums.StatusEnum.ACTIVE.Id)
             {
-                IndirectSalesOrder_UnitOfMeasureDTOs = UOMG.UnitOfMeasureGroupingContents.Select(x => new IndirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
+                IndirectSalesOrder_UnitOfMeasureDTOs = Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(x => new IndirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
             }
+            IndirectSalesOrder_UnitOfMeasureDTOs.Add(new IndirectSalesOrder_UnitOfMeasureDTO
+            {
+                Id = Product.UnitOfMeasure.Id,
+                Code = Product.UnitOfMeasure.Code,
+                Name = Product.UnitOfMeasure.Name,
+                Description = Product.UnitOfMeasure.Description,
+                StatusId = Product.UnitOfMeasure.StatusId,
+                Factor = 1
+            });
             return IndirectSalesOrder_UnitOfMeasureDTOs;
         }
         [Route(IndirectSalesOrderRoute.SingleListIndirectSalesOrderPromotion), HttpPost]

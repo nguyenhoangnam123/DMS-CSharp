@@ -50,6 +50,8 @@ namespace DMS.Rpc.direct_price_list
         public string OwnerPhone { get; set; }
         
         public string OwnerEmail { get; set; }
+        public string TaxCode { get; set; }
+        public string LegalEntity { get; set; }
         
         public long StatusId { get; set; }
         
@@ -103,6 +105,8 @@ namespace DMS.Rpc.direct_price_list
             this.OwnerPhone = Store.OwnerPhone;
             
             this.OwnerEmail = Store.OwnerEmail;
+            this.TaxCode = Store.TaxCode;
+            this.LegalEntity = Store.LegalEntity;
             
             this.StatusId = Store.StatusId;
             

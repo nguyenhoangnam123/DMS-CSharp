@@ -356,6 +356,8 @@ namespace DMS.Repositories
                     OwnerName = x.Store.OwnerName,
                     OwnerPhone = x.Store.OwnerPhone,
                     OwnerEmail = x.Store.OwnerEmail,
+                    TaxCode = x.Store.TaxCode,
+                    LegalEntity = x.Store.LegalEntity,
                     StatusId = x.Store.StatusId,
                 },
             }).ToListAsync();

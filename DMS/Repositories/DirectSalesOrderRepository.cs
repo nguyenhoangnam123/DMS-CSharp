@@ -294,6 +294,8 @@ namespace DMS.Repositories
                     OwnerName = q.BuyerStore.OwnerName,
                     OwnerPhone = q.BuyerStore.OwnerPhone,
                     OwnerEmail = q.BuyerStore.OwnerEmail,
+                    TaxCode = q.BuyerStore.TaxCode,
+                    LegalEntity = q.BuyerStore.LegalEntity,
                     StatusId = q.BuyerStore.StatusId,
                 } : null,
                 EditedPriceStatus = filter.Selects.Contains(DirectSalesOrderSelect.EditedPriceStatus) && q.EditedPriceStatus != null ? new EditedPriceStatus
@@ -384,6 +386,8 @@ namespace DMS.Repositories
                     OwnerName = x.BuyerStore.OwnerName,
                     OwnerPhone = x.BuyerStore.OwnerPhone,
                     OwnerEmail = x.BuyerStore.OwnerEmail,
+                    TaxCode = x.BuyerStore.TaxCode,
+                    LegalEntity = x.BuyerStore.LegalEntity,
                     StatusId = x.BuyerStore.StatusId,
                 },
                 EditedPriceStatus = x.EditedPriceStatus == null ? null : new EditedPriceStatus
@@ -512,13 +516,47 @@ namespace DMS.Repositories
                     Item = new Item
                     {
                         Id = x.Item.Id,
-                        ProductId = x.Item.ProductId,
                         Code = x.Item.Code,
                         Name = x.Item.Name,
-                        ScanCode = x.Item.ScanCode,
-                        SalePrice = x.Item.SalePrice,
+                        ProductId = x.Item.ProductId,
                         RetailPrice = x.Item.RetailPrice,
+                        SalePrice = x.Item.SalePrice,
+                        ScanCode = x.Item.ScanCode,
                         StatusId = x.Item.StatusId,
+                        Product = new Product
+                        {
+                            Id = x.Item.Product.Id,
+                            Code = x.Item.Product.Code,
+                            Name = x.Item.Product.Name,
+                            TaxTypeId = x.Item.Product.TaxTypeId,
+                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
+                            UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
+                            TaxType = new TaxType
+                            {
+                                Id = x.Item.Product.TaxType.Id,
+                                Code = x.Item.Product.TaxType.Code,
+                                Name = x.Item.Product.TaxType.Name,
+                                StatusId = x.Item.Product.TaxType.StatusId,
+                                Percentage = x.Item.Product.TaxType.Percentage,
+                            },
+                            UnitOfMeasure = new UnitOfMeasure
+                            {
+                                Id = x.Item.Product.UnitOfMeasure.Id,
+                                Code = x.Item.Product.UnitOfMeasure.Code,
+                                Name = x.Item.Product.UnitOfMeasure.Name,
+                                Description = x.Item.Product.UnitOfMeasure.Description,
+                                StatusId = x.Item.Product.UnitOfMeasure.StatusId,
+                            },
+                            UnitOfMeasureGrouping = new UnitOfMeasureGrouping
+                            {
+                                Id = x.Item.Product.UnitOfMeasureGrouping.Id,
+                                Code = x.Item.Product.UnitOfMeasureGrouping.Code,
+                                Name = x.Item.Product.UnitOfMeasureGrouping.Name,
+                                Description = x.Item.Product.UnitOfMeasureGrouping.Description,
+                                StatusId = x.Item.Product.UnitOfMeasureGrouping.StatusId,
+                                UnitOfMeasureId = x.Item.Product.UnitOfMeasureGrouping.UnitOfMeasureId
+                            }
+                        }
                     },
                     PrimaryUnitOfMeasure = new UnitOfMeasure
                     {

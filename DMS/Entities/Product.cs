@@ -27,6 +27,7 @@ namespace DMS.Entities
         public string OtherName { get; set; }
         public string TechnicalName { get; set; }
         public string Note { get; set; }
+        public bool IsNew { get; set; }
         public Brand Brand { get; set; }
         public ProductType ProductType { get; set; }
         public Status Status { get; set; }
@@ -71,7 +72,7 @@ namespace DMS.Entities
         public StringFilter TechnicalName { get; set; }
         public StringFilter Note { get; set; }
         public IdFilter ProductGroupingId { get; set; }
-
+        public bool? IsNew { get; set; }
         public string Search { get; set; }
 
         public List<ProductFilter> OrFilter { get; set; }
@@ -100,6 +101,7 @@ namespace DMS.Entities
         OtherName = 15,
         TechnicalName = 16,
         Note = 17,
+        IsNew = 18,
     }
 
     [Flags]
@@ -125,6 +127,7 @@ namespace DMS.Entities
         TechnicalName = E._16,
         Note = E._17,
         ERPCode = E._18,
-        ProductProductGroupingMapping = E._19
+        ProductProductGroupingMapping = E._19,
+        IsNew = E._20
     }
 }

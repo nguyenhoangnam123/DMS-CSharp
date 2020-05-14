@@ -26,6 +26,7 @@ namespace DMS.Rpc.product
         public string OtherName { get; set; }
         public string TechnicalName { get; set; }
         public string Note { get; set; }
+        public bool IsNew { get; set; }
         public Product_BrandDTO Brand { get; set; }
         public Product_ProductTypeDTO ProductType { get; set; }
         public Product_StatusDTO Status { get; set; }
@@ -59,6 +60,7 @@ namespace DMS.Rpc.product
             this.OtherName = Product.OtherName;
             this.TechnicalName = Product.TechnicalName;
             this.Note = Product.Note;
+            this.IsNew = Product.IsNew;
             this.Brand = Product.Brand == null ? null : new Product_BrandDTO(Product.Brand);
             this.ProductType = Product.ProductType == null ? null : new Product_ProductTypeDTO(Product.ProductType);
             this.Status = Product.Status == null ? null : new Product_StatusDTO(Product.Status);
@@ -95,7 +97,7 @@ namespace DMS.Rpc.product
         public StringFilter TechnicalName { get; set; }
         public StringFilter Note { get; set; }
         public IdFilter ProductGroupingId { get; set; }
-
+        public bool? IsNew { get; set; }
         public string Search { get; set; }
         public ProductOrder OrderBy { get; set; }
     }

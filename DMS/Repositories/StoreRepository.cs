@@ -315,6 +315,8 @@ namespace DMS.Repositories
                 OwnerName = filter.Selects.Contains(StoreSelect.OwnerName) ? q.OwnerName : default(string),
                 OwnerPhone = filter.Selects.Contains(StoreSelect.OwnerPhone) ? q.OwnerPhone : default(string),
                 OwnerEmail = filter.Selects.Contains(StoreSelect.OwnerEmail) ? q.OwnerEmail : default(string),
+                TaxCode = filter.Selects.Contains(StoreSelect.TaxCode) ? q.TaxCode : default(string),
+                LegalEntity = filter.Selects.Contains(StoreSelect.LegalEntity) ? q.LegalEntity : default(string),
                 StatusId = filter.Selects.Contains(StoreSelect.Status) ? q.StatusId : default(long),
                 District = filter.Selects.Contains(StoreSelect.District) && q.District != null ? new District
                 {
@@ -360,6 +362,8 @@ namespace DMS.Repositories
                     OwnerName = q.ParentStore.OwnerName,
                     OwnerPhone = q.ParentStore.OwnerPhone,
                     OwnerEmail = q.ParentStore.OwnerEmail,
+                    TaxCode = q.ParentStore.TaxCode,
+                    LegalEntity = q.ParentStore.LegalEntity,
                     StatusId = q.ParentStore.StatusId,
                 } : null,
                 Reseller = filter.Selects.Contains(StoreSelect.Reseller) && q.Reseller != null ? new Reseller
@@ -475,6 +479,8 @@ namespace DMS.Repositories
                 OwnerName = x.OwnerName,
                 OwnerPhone = x.OwnerPhone,
                 OwnerEmail = x.OwnerEmail,
+                TaxCode = x.TaxCode,
+                LegalEntity = x.LegalEntity,
                 StatusId = x.StatusId,
                 RowId = x.RowId,
                 District = x.District == null ? null : new District
@@ -518,6 +524,8 @@ namespace DMS.Repositories
                     OwnerName = x.ParentStore.OwnerName,
                     OwnerPhone = x.ParentStore.OwnerPhone,
                     OwnerEmail = x.ParentStore.OwnerEmail,
+                    TaxCode = x.ParentStore.TaxCode,
+                    LegalEntity = x.ParentStore.LegalEntity,
                     StatusId = x.ParentStore.StatusId,
                 },
                 Province = x.Province == null ? null : new Province
@@ -618,6 +626,8 @@ namespace DMS.Repositories
             StoreDAO.OwnerName = Store.OwnerName;
             StoreDAO.OwnerPhone = Store.OwnerPhone;
             StoreDAO.OwnerEmail = Store.OwnerEmail;
+            StoreDAO.TaxCode = Store.TaxCode;
+            StoreDAO.LegalEntity = Store.LegalEntity;
             StoreDAO.StatusId = Store.StatusId;
             StoreDAO.RowId = Store.RowId;
             StoreDAO.CreatedAt = StaticParams.DateTimeNow;
@@ -656,6 +666,8 @@ namespace DMS.Repositories
             StoreDAO.OwnerName = Store.OwnerName;
             StoreDAO.OwnerPhone = Store.OwnerPhone;
             StoreDAO.OwnerEmail = Store.OwnerEmail;
+            StoreDAO.TaxCode = Store.TaxCode;
+            StoreDAO.LegalEntity = Store.LegalEntity;
             StoreDAO.StatusId = Store.StatusId;
             StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
@@ -697,6 +709,8 @@ namespace DMS.Repositories
                 StoreDAO.OwnerName = Store.OwnerName;
                 StoreDAO.OwnerPhone = Store.OwnerPhone;
                 StoreDAO.OwnerEmail = Store.OwnerEmail;
+                StoreDAO.TaxCode = Store.TaxCode;
+                StoreDAO.LegalEntity = Store.LegalEntity;
                 StoreDAO.StatusId = Store.StatusId;
                 StoreDAO.CreatedAt = StaticParams.DateTimeNow;
                 StoreDAO.UpdatedAt = StaticParams.DateTimeNow;

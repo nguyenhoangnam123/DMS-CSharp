@@ -28,6 +28,8 @@ namespace DMS.Rpc.reseller
         public string OwnerName { get; set; }
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
+        public string TaxCode { get; set; }
+        public string LegalEntity { get; set; }
         public long StatusId { get; set; }
         public Reseller_StoreDTO ParentStore { get; set; }
         public Reseller_StoreDTO() { }
@@ -52,6 +54,8 @@ namespace DMS.Rpc.reseller
             this.OwnerName = Store.OwnerName;
             this.OwnerPhone = Store.OwnerPhone;
             this.OwnerEmail = Store.OwnerEmail;
+            this.TaxCode = Store.TaxCode;
+            this.LegalEntity = Store.LegalEntity;
             this.StatusId = Store.StatusId;
             this.ParentStore = Store.ParentStore == null ? null : new Reseller_StoreDTO(Store.ParentStore);
             this.Errors = Store.Errors;

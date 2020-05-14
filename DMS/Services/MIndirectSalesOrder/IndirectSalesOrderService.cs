@@ -340,6 +340,14 @@ namespace DMS.Services.MIndirectSalesOrder
                 IndirectSalesOrder.TotalTaxAmount = IndirectSalesOrder.IndirectSalesOrderContents.Sum(x => x.TaxAmount.Value);
                 IndirectSalesOrder.Total = IndirectSalesOrder.SubTotal - IndirectSalesOrder.GeneralDiscountAmount ?? 0 + IndirectSalesOrder.TotalTaxAmount;
             }
+            else
+            {
+                IndirectSalesOrder.SubTotal = 0;
+                IndirectSalesOrder.GeneralDiscountPercentage = null;
+                IndirectSalesOrder.GeneralDiscountAmount = null;
+                IndirectSalesOrder.TotalTaxAmount = 0;
+                IndirectSalesOrder.Total = 0;
+            }
 
             //sản phẩm khuyến mãi
             if (IndirectSalesOrder.IndirectSalesOrderPromotions != null)

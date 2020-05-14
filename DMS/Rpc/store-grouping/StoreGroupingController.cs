@@ -277,6 +277,8 @@ namespace DMS.Rpc.store_grouping
                     OwnerName = x.OwnerName,
                     OwnerPhone = x.OwnerPhone,
                     OwnerEmail = x.OwnerEmail,
+                    TaxCode = x.TaxCode,
+                    LegalEntity = x.LegalEntity,
                     StatusId = x.StatusId,
                     StoreGroupingId = x.StoreGroupingId,
                     District = new District

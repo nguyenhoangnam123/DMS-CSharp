@@ -133,6 +133,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.TechnicalName, filter.TechnicalName);
                 if (filter.Note != null)
                     queryable = queryable.Where(q => q.Note, filter.Note);
+                if (filter.IsNew != null)
+                    queryable = queryable.Where(q => q.IsNew.Equals(filter.IsNew));
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -287,6 +289,7 @@ namespace DMS.Repositories
                 OtherName = filter.Selects.Contains(ProductSelect.OtherName) ? q.OtherName : default(string),
                 TechnicalName = filter.Selects.Contains(ProductSelect.TechnicalName) ? q.TechnicalName : default(string),
                 Note = filter.Selects.Contains(ProductSelect.Note) ? q.Note : default(string),
+                IsNew = filter.Selects.Contains(ProductSelect.IsNew) ? q.IsNew : default(bool),
                 Brand = filter.Selects.Contains(ProductSelect.Brand) && q.Brand != null ? new Brand
                 {
                     Id = q.Brand.Id,
@@ -419,6 +422,7 @@ namespace DMS.Repositories
                     RetailPrice = x.RetailPrice,
                     TaxTypeId = x.TaxTypeId,
                     StatusId = x.StatusId,
+                    IsNew = x.IsNew,
                     Brand = x.Brand == null ? null : new Brand
                     {
                         Id = x.Brand.Id,
@@ -580,6 +584,7 @@ namespace DMS.Repositories
             ProductDAO.RetailPrice = Product.RetailPrice;
             ProductDAO.TaxTypeId = Product.TaxTypeId;
             ProductDAO.StatusId = Product.StatusId;
+            ProductDAO.IsNew = Product.IsNew;
             ProductDAO.CreatedAt = StaticParams.DateTimeNow;
             ProductDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.Product.Add(ProductDAO);
@@ -612,6 +617,7 @@ namespace DMS.Repositories
             ProductDAO.RetailPrice = Product.RetailPrice;
             ProductDAO.TaxTypeId = Product.TaxTypeId;
             ProductDAO.StatusId = Product.StatusId;
+            ProductDAO.IsNew = Product.IsNew;
             ProductDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(Product);
@@ -649,6 +655,7 @@ namespace DMS.Repositories
                 ProductDAO.StatusId = Product.StatusId;
                 ProductDAO.OtherName = Product.OtherName;
                 ProductDAO.TechnicalName = Product.TechnicalName;
+                ProductDAO.IsNew = Product.IsNew;
 
                 ProductDAO.CreatedAt = DateTime.Now;
                 ProductDAO.UpdatedAt = DateTime.Now;
@@ -806,6 +813,27 @@ namespace DMS.Repositories
                     ProductImageMappingDAOs.Add(ProductImageMappingDAO);
                 }
                 await DataContext.ProductImageMapping.BulkMergeAsync(ProductImageMappingDAOs);
+            }
+            var ItemIds = ItemDAOs.Select(x => x.Id).ToList();
+            await DataContext.ItemImageMapping
+                .Where(x => ItemIds.Contains(x.ItemId))
+                .DeleteFromQueryAsync();
+            List<ItemImageMappingDAO> ItemImageMappingDAOs = new List<ItemImageMappingDAO>();
+            if(Product.Items != null)
+            {
+                foreach (var Item in Product.Items)
+                {
+                    foreach (ItemImageMapping ItemImageMapping in Item.ItemImageMappings)
+                    {
+                        ItemImageMappingDAO ItemImageMappingDAO = new ItemImageMappingDAO()
+                        {
+                            ItemId = Item.Id,
+                            ImageId = ItemImageMapping.ImageId
+                        };
+                        ItemImageMappingDAOs.Add(ItemImageMappingDAO);
+                    }
+                }
+                await DataContext.ItemImageMapping.BulkMergeAsync(ItemImageMappingDAOs);
             }
             await DataContext.ProductProductGroupingMapping
                 .Where(x => x.ProductId == Product.Id)
