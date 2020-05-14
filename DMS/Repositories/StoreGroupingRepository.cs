@@ -191,6 +191,8 @@ namespace DMS.Repositories
                     OwnerName = s.OwnerName,
                     OwnerPhone = s.OwnerPhone,
                     OwnerEmail = s.OwnerEmail,
+                    TaxCode = s.TaxCode,
+                    LegalEntity = s.LegalEntity,
                     StatusId = s.StatusId,
                 }).ToList(),
             }).ToListAsync();
@@ -270,6 +272,8 @@ namespace DMS.Repositories
                     OwnerName = x.OwnerName,
                     OwnerPhone = x.OwnerPhone,
                     OwnerEmail = x.OwnerEmail,
+                    TaxCode = x.TaxCode,
+                    LegalEntity = x.LegalEntity,
                     StatusId = x.StatusId,
                     District = new District
                     {
@@ -315,6 +319,8 @@ namespace DMS.Repositories
                         OwnerName = x.ParentStore.OwnerName,
                         OwnerPhone = x.ParentStore.OwnerPhone,
                         OwnerEmail = x.ParentStore.OwnerEmail,
+                        TaxCode = x.ParentStore.TaxCode,
+                        LegalEntity = x.ParentStore.LegalEntity,
                         StatusId = x.ParentStore.StatusId,
                     },
                     Province = new Province
@@ -464,6 +470,8 @@ namespace DMS.Repositories
                         StoreDAO.OwnerName = Store.OwnerName;
                         StoreDAO.OwnerPhone = Store.OwnerPhone;
                         StoreDAO.OwnerEmail = Store.OwnerEmail;
+                        StoreDAO.TaxCode = Store.TaxCode;
+                        StoreDAO.LegalEntity = Store.LegalEntity;
                         StoreDAO.StatusId = Store.StatusId;
                         StoreDAOs.Add(StoreDAO);
                         StoreDAO.CreatedAt = StaticParams.DateTimeNow;
@@ -493,6 +501,8 @@ namespace DMS.Repositories
                         StoreDAO.OwnerName = Store.OwnerName;
                         StoreDAO.OwnerPhone = Store.OwnerPhone;
                         StoreDAO.OwnerEmail = Store.OwnerEmail;
+                        StoreDAO.TaxCode = Store.TaxCode;
+                        StoreDAO.LegalEntity = Store.LegalEntity;
                         StoreDAO.StatusId = Store.StatusId;
                         StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
                         StoreDAO.DeletedAt = null;

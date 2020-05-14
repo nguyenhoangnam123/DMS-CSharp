@@ -64,6 +64,7 @@ namespace DMS.Models
         public virtual DbSet<SexDAO> Sex { get; set; }
         public virtual DbSet<StatusDAO> Status { get; set; }
         public virtual DbSet<StoreDAO> Store { get; set; }
+        public virtual DbSet<StoreCheckingDAO> StoreChecking { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
@@ -1766,6 +1767,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.LegalEntity).HasMaxLength(500);
+
                 entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Name).HasMaxLength(500);
@@ -1781,6 +1784,10 @@ namespace DMS.Models
                     .HasMaxLength(500);
 
                 entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.TaxCode)
+                    .IsRequired()
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.Telephone).HasMaxLength(500);
 
@@ -1836,6 +1843,19 @@ namespace DMS.Models
                     .HasForeignKey(d => d.WardId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_Ward");
+            });
+
+            modelBuilder.Entity<StoreCheckingDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CheckInAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CheckOutAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Longtitude).HasColumnType("decimal(18, 4)");
             });
 
             modelBuilder.Entity<StoreGroupingDAO>(entity =>

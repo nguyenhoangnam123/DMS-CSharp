@@ -29,6 +29,8 @@ namespace DMS.Rpc.direct_sales_order
         public string OwnerName { get; set; }
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
+        public string TaxCode { get; set; }
+        public string LegalEntity { get; set; }
         public long StatusId { get; set; }
         public long? WorkflowDefinitionId { get; set; }
         public long? RequestStateId { get; set; }
@@ -79,6 +81,8 @@ namespace DMS.Rpc.direct_sales_order
             this.OwnerPhone = Store.OwnerPhone;
             
             this.OwnerEmail = Store.OwnerEmail;
+            this.TaxCode = Store.TaxCode;
+            this.LegalEntity = Store.LegalEntity;
             
             this.StatusId = Store.StatusId;
             

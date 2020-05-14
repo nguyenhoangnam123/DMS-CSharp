@@ -1068,6 +1068,8 @@ namespace DMS.Rpc.direct_price_list
                         OwnerName = x.Store.OwnerName,
                         OwnerPhone = x.Store.OwnerPhone,
                         OwnerEmail = x.Store.OwnerEmail,
+                        TaxCode = x.Store.TaxCode,
+                        LegalEntity = x.Store.LegalEntity,
                         StatusId = x.Store.StatusId,
                     },
                 }).ToList();

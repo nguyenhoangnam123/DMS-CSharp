@@ -217,6 +217,7 @@ namespace DMS.Repositories
                         RetailPrice = x.Product.RetailPrice,
                         TaxTypeId = x.Product.TaxTypeId,
                         StatusId = x.Product.StatusId,
+                        IsNew = x.Product.IsNew,
                         Brand = x.Product.Brand == null ? null : new Brand
                         {
                             Id = x.Product.Brand.Id,

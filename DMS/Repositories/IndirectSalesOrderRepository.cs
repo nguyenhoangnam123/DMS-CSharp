@@ -294,6 +294,8 @@ namespace DMS.Repositories
                     OwnerName = q.BuyerStore.OwnerName,
                     OwnerPhone = q.BuyerStore.OwnerPhone,
                     OwnerEmail = q.BuyerStore.OwnerEmail,
+                    TaxCode = q.BuyerStore.TaxCode,
+                    LegalEntity = q.BuyerStore.LegalEntity,
                     StatusId = q.BuyerStore.StatusId,
                 } : null,
                 EditedPriceStatus = filter.Selects.Contains(IndirectSalesOrderSelect.EditedPriceStatus) && q.EditedPriceStatus != null ? new EditedPriceStatus
@@ -340,6 +342,8 @@ namespace DMS.Repositories
                     OwnerName = q.SellerStore.OwnerName,
                     OwnerPhone = q.SellerStore.OwnerPhone,
                     OwnerEmail = q.SellerStore.OwnerEmail,
+                    TaxCode = q.SellerStore.TaxCode,
+                    LegalEntity = q.SellerStore.LegalEntity,
                     StatusId = q.SellerStore.StatusId,
                 } : null,
             }).ToListAsync();
@@ -410,6 +414,8 @@ namespace DMS.Repositories
                     OwnerName = x.BuyerStore.OwnerName,
                     OwnerPhone = x.BuyerStore.OwnerPhone,
                     OwnerEmail = x.BuyerStore.OwnerEmail,
+                    TaxCode = x.BuyerStore.TaxCode,
+                    LegalEntity = x.BuyerStore.LegalEntity,
                     StatusId = x.BuyerStore.StatusId,
                 },
                 EditedPriceStatus = x.EditedPriceStatus == null ? null : new EditedPriceStatus
@@ -456,6 +462,8 @@ namespace DMS.Repositories
                     OwnerName = x.SellerStore.OwnerName,
                     OwnerPhone = x.SellerStore.OwnerPhone,
                     OwnerEmail = x.SellerStore.OwnerEmail,
+                    TaxCode = x.SellerStore.TaxCode,
+                    LegalEntity = x.SellerStore.LegalEntity,
                     StatusId = x.SellerStore.StatusId,
                 },
             }).FirstOrDefaultAsync();

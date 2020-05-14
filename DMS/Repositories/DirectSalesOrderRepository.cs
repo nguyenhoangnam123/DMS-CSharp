@@ -294,6 +294,8 @@ namespace DMS.Repositories
                     OwnerName = q.BuyerStore.OwnerName,
                     OwnerPhone = q.BuyerStore.OwnerPhone,
                     OwnerEmail = q.BuyerStore.OwnerEmail,
+                    TaxCode = q.BuyerStore.TaxCode,
+                    LegalEntity = q.BuyerStore.LegalEntity,
                     StatusId = q.BuyerStore.StatusId,
                 } : null,
                 EditedPriceStatus = filter.Selects.Contains(DirectSalesOrderSelect.EditedPriceStatus) && q.EditedPriceStatus != null ? new EditedPriceStatus
@@ -384,6 +386,8 @@ namespace DMS.Repositories
                     OwnerName = x.BuyerStore.OwnerName,
                     OwnerPhone = x.BuyerStore.OwnerPhone,
                     OwnerEmail = x.BuyerStore.OwnerEmail,
+                    TaxCode = x.BuyerStore.TaxCode,
+                    LegalEntity = x.BuyerStore.LegalEntity,
                     StatusId = x.BuyerStore.StatusId,
                 },
                 EditedPriceStatus = x.EditedPriceStatus == null ? null : new EditedPriceStatus

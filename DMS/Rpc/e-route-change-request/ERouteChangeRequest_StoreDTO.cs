@@ -50,6 +50,8 @@ namespace DMS.Rpc.e_route_change_request
         public string OwnerPhone { get; set; }
         
         public string OwnerEmail { get; set; }
+        public string TaxCode { get; set; }
+        public string LegalEntity { get; set; }
         
         public long StatusId { get; set; }
         
@@ -104,6 +106,8 @@ namespace DMS.Rpc.e_route_change_request
             this.OwnerPhone = Store.OwnerPhone;
             
             this.OwnerEmail = Store.OwnerEmail;
+            this.TaxCode = Store.TaxCode;
+            this.LegalEntity = Store.LegalEntity;
             
             this.StatusId = Store.StatusId;
             

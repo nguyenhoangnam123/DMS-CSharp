@@ -50,6 +50,8 @@ namespace DMS.Rpc.indirect_sales_order
         public string OwnerPhone { get; set; }
         
         public string OwnerEmail { get; set; }
+        public string TaxCode { get; set; }
+        public string LegalEntity { get; set; }
         
         public long StoreStatusId { get; set; }
         
@@ -102,6 +104,8 @@ namespace DMS.Rpc.indirect_sales_order
             this.OwnerPhone = Store.OwnerPhone;
             
             this.OwnerEmail = Store.OwnerEmail;
+            this.TaxCode = Store.TaxCode;
+            this.LegalEntity = Store.LegalEntity;
             
             this.StatusId = Store.StatusId;
             

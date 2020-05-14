@@ -965,6 +965,8 @@ namespace DMS.Rpc.direct_sales_order
                 OwnerName = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.OwnerName,
                 OwnerPhone = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.OwnerPhone,
                 OwnerEmail = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.OwnerEmail,
+                TaxCode = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.TaxCode,
+                LegalEntity = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.LegalEntity,
                 StatusId = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.StatusId,
             };
             DirectSalesOrder.EditedPriceStatus = DirectSalesOrder_DirectSalesOrderDTO.EditedPriceStatus == null ? null : new EditedPriceStatus

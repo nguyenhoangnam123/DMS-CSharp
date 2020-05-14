@@ -29,6 +29,8 @@ namespace DMS.Entities
         public string OwnerName { get; set; }
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
+        public string TaxCode { get; set; }
+        public string LegalEntity { get; set; }
         public long StatusId { get; set; }
         public Guid RowId { get; set; }
         public long? RequestStateId { get; set; }
@@ -140,6 +142,8 @@ namespace DMS.Entities
         OwnerPhone = E._19,
         OwnerEmail = E._20,
         Status = E._21,
-        StoreImageMappings = E._23
+        StoreImageMappings = E._23,
+        TaxCode = E._24,
+        LegalEntity = E._25
     }
 }

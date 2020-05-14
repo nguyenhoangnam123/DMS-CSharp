@@ -23,6 +23,8 @@ namespace DMS.Rpc.organization
         public string OwnerName { get; set; }
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
+        public string TaxCode { get; set; }
+        public string LegalEntity { get; set; }
         public long StatusId { get; set; }
         public Organization_DistrictDTO District { get; set; }
         public Organization_StoreDTO ParentStore { get; set; }
@@ -53,6 +55,8 @@ namespace DMS.Rpc.organization
             this.OwnerName = Store.OwnerName;
             this.OwnerPhone = Store.OwnerPhone;
             this.OwnerEmail = Store.OwnerEmail;
+            this.TaxCode = Store.TaxCode;
+            this.LegalEntity = Store.LegalEntity;
             this.StatusId = Store.StatusId;
             this.District = Store.District == null ? null : new Organization_DistrictDTO(Store.District);
             this.ParentStore = Store.ParentStore == null ? null : new Organization_StoreDTO(Store.ParentStore);

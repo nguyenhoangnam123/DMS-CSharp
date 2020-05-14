@@ -835,6 +835,8 @@ namespace DMS.Rpc.store
             Store.OwnerName = Store_StoreDTO.OwnerName;
             Store.OwnerPhone = Store_StoreDTO.OwnerPhone;
             Store.OwnerEmail = Store_StoreDTO.OwnerEmail;
+            Store.TaxCode = Store_StoreDTO.TaxCode;
+            Store.LegalEntity = Store_StoreDTO.LegalEntity;
             Store.StatusId = Store_StoreDTO.StatusId;
             Store.District = Store_StoreDTO.District == null ? null : new District
             {

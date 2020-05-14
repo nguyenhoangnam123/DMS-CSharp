@@ -26,6 +26,8 @@ namespace DMS.Rpc.store_grouping
         public string OwnerName { get; set; }
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
+        public string TaxCode { get; set; }
+        public string LegalEntity { get; set; }
         public long StatusId { get; set; }
         public long StoreStatusId { get; set; }
         public StoreGrouping_DistrictDTO District { get; set; }
@@ -59,6 +61,8 @@ namespace DMS.Rpc.store_grouping
             this.OwnerName = Store.OwnerName;
             this.OwnerPhone = Store.OwnerPhone;
             this.OwnerEmail = Store.OwnerEmail;
+            this.TaxCode = Store.TaxCode;
+            this.LegalEntity = Store.LegalEntity;
             this.StatusId = Store.StatusId;
             this.District = Store.District == null ? null : new StoreGrouping_DistrictDTO(Store.District);
             this.Organization = Store.Organization == null ? null : new StoreGrouping_OrganizationDTO(Store.Organization);

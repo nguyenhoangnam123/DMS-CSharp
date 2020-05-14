@@ -229,6 +229,8 @@ namespace DMS.Repositories
                     OwnerName = q.Store.OwnerName,
                     OwnerPhone = q.Store.OwnerPhone,
                     OwnerEmail = q.Store.OwnerEmail,
+                    TaxCode = q.Store.TaxCode,
+                    LegalEntity = q.Store.LegalEntity,
                     StatusId = q.Store.StatusId,
                 } : null,
             }).ToListAsync();
@@ -307,6 +309,8 @@ namespace DMS.Repositories
                     OwnerName = x.Store.OwnerName,
                     OwnerPhone = x.Store.OwnerPhone,
                     OwnerEmail = x.Store.OwnerEmail,
+                    TaxCode = x.Store.TaxCode,
+                    LegalEntity = x.Store.LegalEntity,
                     StatusId = x.Store.StatusId,
                 },
             }).FirstOrDefaultAsync();
