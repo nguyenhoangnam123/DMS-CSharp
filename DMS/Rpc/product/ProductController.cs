@@ -1527,9 +1527,7 @@ namespace DMS.Rpc.product
             ItemFilter.Take = Product_ItemFilterDTO.Take;
             ItemFilter.OrderBy = ItemOrder.Id;
             ItemFilter.OrderType = OrderType.ASC;
-            ItemFilter.Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name 
-                | ItemSelect.Product | ItemSelect.RetailPrice 
-                | ItemSelect.SalePrice | ItemSelect.ScanCode;
+            ItemFilter.Selects = ItemSelect.ALL;
             ItemFilter.Id = Product_ItemFilterDTO.Id;
             ItemFilter.Code = Product_ItemFilterDTO.Code;
             ItemFilter.Name = Product_ItemFilterDTO.Name;
