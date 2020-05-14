@@ -5,6 +5,11 @@ namespace DMS.Models
 {
     public partial class StoreCheckingDAO
     {
+        public StoreCheckingDAO()
+        {
+            ImageStoreCheckingMappings = new HashSet<ImageStoreCheckingMappingDAO>();
+        }
+
         public long Id { get; set; }
         public long StoreId { get; set; }
         public long AppUserId { get; set; }
@@ -14,5 +19,7 @@ namespace DMS.Models
         public DateTime? CheckOutAt { get; set; }
         public long? CountIndirectSalesOrder { get; set; }
         public long? CountImage { get; set; }
+
+        public virtual ICollection<ImageStoreCheckingMappingDAO> ImageStoreCheckingMappings { get; set; }
     }
 }

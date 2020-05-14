@@ -7,6 +7,8 @@ namespace DMS.Models
     {
         public ImageDAO()
         {
+            ImageStoreCheckingMappings = new HashSet<ImageStoreCheckingMappingDAO>();
+            ItemImageMappings = new HashSet<ItemImageMappingDAO>();
             ProductImageMappings = new HashSet<ProductImageMappingDAO>();
             StoreImageMappings = new HashSet<StoreImageMappingDAO>();
         }
@@ -18,6 +20,8 @@ namespace DMS.Models
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        public virtual ICollection<ImageStoreCheckingMappingDAO> ImageStoreCheckingMappings { get; set; }
+        public virtual ICollection<ItemImageMappingDAO> ItemImageMappings { get; set; }
         public virtual ICollection<ProductImageMappingDAO> ProductImageMappings { get; set; }
         public virtual ICollection<StoreImageMappingDAO> StoreImageMappings { get; set; }
     }

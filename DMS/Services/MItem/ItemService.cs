@@ -1,6 +1,7 @@
 using Common;
 using DMS.Entities;
 using DMS.Repositories;
+using DMS.Services.MImage;
 using Helpers;
 using OfficeOpenXml;
 using System;
@@ -19,6 +20,7 @@ namespace DMS.Services.MItem
         Task<Item> Create(Item Item);
         Task<Item> Update(Item Item);
         Task<Item> Delete(Item Item);
+        Task<Image> SaveImage(Image Image);
         Task<List<Item>> BulkDelete(List<Item> Items);
         ItemFilter ToFilter(ItemFilter ItemFilter);
     }
@@ -28,18 +30,21 @@ namespace DMS.Services.MItem
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
+        private IImageService ImageService;
         private IItemValidator ItemValidator;
 
         public ItemService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
+            IImageService ImageService,
             IItemValidator ItemValidator
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
+            this.ImageService = ImageService;
             this.ItemValidator = ItemValidator;
         }
         public async Task<int> Count(ItemFilter ItemFilter)
@@ -230,5 +235,12 @@ namespace DMS.Services.MItem
             return filter;
         }
 
+        public async Task<Image> SaveImage(Image Image)
+        {
+            FileInfo fileInfo = new FileInfo(Image.Name);
+            string path = $"/item/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            Image = await ImageService.Create(Image, path);
+            return Image;
+        }
     }
 }

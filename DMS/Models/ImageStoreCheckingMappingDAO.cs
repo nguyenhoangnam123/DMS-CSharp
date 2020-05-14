@@ -11,5 +11,8 @@ namespace DMS.Models
         public long StoreId { get; set; }
         public long AppUserId { get; set; }
         public DateTime ShootingAt { get; set; }
+
+        public virtual ImageDAO Image { get; set; }
+        public virtual StoreCheckingDAO StoreChecking { get; set; }
     }
 }

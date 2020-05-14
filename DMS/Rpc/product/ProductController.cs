@@ -45,6 +45,7 @@ namespace DMS.Rpc.product
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
         public const string SaveImage = Default + "/save-image";
+        public const string SaveItemImage = Default + "/save-item-image";
 
         public const string SingleListBrand = Default + "/single-list-brand";
         public const string SingleListProductType = Default + "/single-list-product-type";
@@ -1090,6 +1091,31 @@ namespace DMS.Rpc.product
             return Ok(product_ImageDTO);
         }
 
+        [HttpPost]
+        [Route(ProductRoute.SaveItemImage)]
+        public async Task<ActionResult<Product_ImageDTO>> SaveItemImage(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            MemoryStream memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            Image Image = new Image
+            {
+                Name = file.FileName,
+                Content = memoryStream.ToArray()
+            };
+            Image = await ItemService.SaveImage(Image);
+            if (Image == null)
+                return BadRequest();
+            Product_ImageDTO product_ImageDTO = new Product_ImageDTO
+            {
+                Id = Image.Id,
+                Name = Image.Name,
+                Url = Image.Url,
+            };
+            return Ok(product_ImageDTO);
+        }
+
         private async Task<bool> HasPermission(long Id)
         {
             ProductFilter ProductFilter = new ProductFilter();
@@ -1194,6 +1220,11 @@ namespace DMS.Rpc.product
                     RetailPrice = x.RetailPrice,
                     CanDelete = x.CanDelete,
                     StatusId = x.StatusId,
+                    ItemImageMappings = x.ItemImageMappings?.Select(x => new ItemImageMapping
+                    {
+                        ItemId = x.ItemId,
+                        ImageId = x.ImageId,
+                    }).ToList()
                 }).ToList();
             Product.ProductImageMappings = Product_ProductDTO.ProductImageMappings?
                 .Select(x => new ProductImageMapping
@@ -1479,7 +1510,9 @@ namespace DMS.Rpc.product
             ItemFilter.Take = Product_ItemFilterDTO.Take;
             ItemFilter.OrderBy = ItemOrder.Id;
             ItemFilter.OrderType = OrderType.ASC;
-            ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name 
+                | ItemSelect.Product | ItemSelect.RetailPrice 
+                | ItemSelect.SalePrice | ItemSelect.ScanCode;
             ItemFilter.Id = Product_ItemFilterDTO.Id;
             ItemFilter.Code = Product_ItemFilterDTO.Code;
             ItemFilter.Name = Product_ItemFilterDTO.Name;

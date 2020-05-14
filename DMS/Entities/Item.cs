@@ -21,6 +21,7 @@ namespace DMS.Entities
         public bool HasInventory { get; set; }
         public Product Product { get; set; }
         public Status Status { get; set; }
+        public List<ItemImageMapping> ItemImageMappings { get; set; }
         public bool Equals(Item other)
         {
             return other != null && Id == other.Id;

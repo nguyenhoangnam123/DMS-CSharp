@@ -188,84 +188,27 @@ namespace DMS.Repositories
                     Name = q.Product.Name,
                     Description = q.Product.Description,
                     ScanCode = q.Product.ScanCode,
-                    ProductTypeId = q.Product.ProductTypeId,
-                    SupplierId = q.Product.SupplierId,
-                    BrandId = q.Product.BrandId,
-                    UnitOfMeasureId = q.Product.UnitOfMeasureId,
-                    UnitOfMeasureGroupingId = q.Product.UnitOfMeasureGroupingId,
                     SalePrice = q.Product.SalePrice,
                     RetailPrice = q.Product.RetailPrice,
-                    TaxTypeId = q.Product.TaxTypeId,
-                    StatusId = q.Product.StatusId,
-                    ProductType = new ProductType
-                    {
-                        Id = q.Product.ProductType.Id,
-                        Code = q.Product.ProductType.Code,
-                        Name = q.Product.ProductType.Name,
-                        Description = q.Product.ProductType.Description,
-                        StatusId = q.Product.ProductType.StatusId,
-                        UpdatedTime = q.Product.ProductType.UpdatedAt,
-                    },
-                    Supplier = new Supplier
-                    {
-                        Id = q.Product.Supplier.Id,
-                        Code = q.Product.Supplier.Code,
-                        Name = q.Product.Supplier.Name,
-                        Address = q.Product.Supplier.Address,
-                        Description = q.Product.Supplier.Description,
-                        DistrictId = q.Product.Supplier.DistrictId,
-                        Email = q.Product.Supplier.Email,
-                        OwnerName = q.Product.Supplier.OwnerName,
-                        PersonInChargeId = q.Product.Supplier.PersonInChargeId,
-                        Phone = q.Product.Supplier.Phone,
-                        ProvinceId = q.Product.Supplier.ProvinceId,
-                        StatusId = q.Product.Supplier.StatusId,
-                        TaxCode = q.Product.Supplier.TaxCode,
-                        UpdatedTime = q.Product.Supplier.UpdatedAt,
-                        WardId = q.Product.Supplier.WardId,
-                    },
-                    TaxType = new TaxType
-                    {
-                        Id = q.Product.TaxType.Id,
-                        Code = q.Product.TaxType.Code,
-                        Name = q.Product.TaxType.Name,
-                        Percentage = q.Product.TaxType.Percentage,
-                        StatusId = q.Product.TaxType.StatusId,
-                    },
-                    UnitOfMeasure = new UnitOfMeasure
-                    {
-                        Id = q.Product.UnitOfMeasure.Id,
-                        Code = q.Product.UnitOfMeasure.Code,
-                        Name = q.Product.UnitOfMeasure.Name,
-                    },
-                    UnitOfMeasureGrouping = new UnitOfMeasureGrouping
-                    {
-                        Id = q.Product.UnitOfMeasureGrouping.Id,
-                        Code = q.Product.UnitOfMeasureGrouping.Code,
-                        Name = q.Product.UnitOfMeasureGrouping.Name
-                    },
-                    ProductProductGroupingMappings = q.Product.ProductProductGroupingMappings != null ?
-                    q.Product.ProductProductGroupingMappings.Select(p => new ProductProductGroupingMapping
-                    {
-                        ProductId = p.ProductId,
-                        ProductGroupingId = p.ProductGroupingId,
-                        ProductGrouping = new ProductGrouping
-                        {
-                            Id = p.ProductGrouping.Id,
-                            Code = p.ProductGrouping.Code,
-                            Name = p.ProductGrouping.Name,
-                            ParentId = p.ProductGrouping.ParentId,
-                            Path = p.ProductGrouping.Path,
-                            Description = p.ProductGrouping.Description,
-                        },
-                    }).ToList() : null,
                 } : null,
                 Status = filter.Selects.Contains(ItemSelect.Status) && q.Status == null ? null : new Status
                 {
                     Id = q.Status.Id,
                     Code = q.Status.Code,
                     Name = q.Status.Name,
-                }
+                },
+                ItemImageMappings = q.ItemImageMappings.Skip(0).Take(1)
+                .Select(x => new ItemImageMapping
+                {
+                    ItemId = x.ItemId,
+                    ImageId = x.ImageId,
+                    Image = new Image
+                    {
+                        Id = x.Image.Id,
+                        Name = x.Image.Name,
+                        Url = x.Image.Url,
+                    },
+                }).ToList()
             }).ToListAsync();
             return Items;
         }
@@ -355,7 +298,19 @@ namespace DMS.Repositories
 
             if (Item == null)
                 return null;
-
+            Item.ItemImageMappings = await DataContext.ItemImageMapping
+                .Where(x => x.ItemId == Item.Id)
+                .Select(x => new ItemImageMapping
+                {
+                    ItemId = x.ItemId,
+                    ImageId = x.ImageId,
+                    Image = new Image
+                    {
+                        Id = x.Image.Id,
+                        Name = x.Image.Name,
+                        Url = x.Image.Url,
+                    },
+                }).ToListAsync();
             return Item;
         }
         public async Task<bool> Create(Item Item)
@@ -433,6 +388,23 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Item Item)
         {
+            await DataContext.ItemImageMapping
+                .Where(x => x.ItemId == Item.Id)
+                .DeleteFromQueryAsync();
+            List<ItemImageMappingDAO> ItemImageMappingDAOs = new List<ItemImageMappingDAO>();
+            if (Item.ItemImageMappings != null)
+            {
+                foreach (ItemImageMapping ItemImageMapping in Item.ItemImageMappings)
+                {
+                    ItemImageMappingDAO ItemImageMappingDAO = new ItemImageMappingDAO()
+                    {
+                        ItemId = Item.Id,
+                        ImageId = ItemImageMapping.ImageId,
+                    };
+                    ItemImageMappingDAOs.Add(ItemImageMappingDAO);
+                }
+                await DataContext.ItemImageMapping.BulkMergeAsync(ItemImageMappingDAOs);
+            }
         }
 
     }

@@ -1,5 +1,7 @@
 using Common;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.product
 {
@@ -15,7 +17,7 @@ namespace DMS.Rpc.product
         public bool CanDelete { get; set; }
         public bool HasInventory { get; set; }
         public long StatusId { get; set; }
-
+        public List<Product_ItemImageMappingDTO> ItemImageMappings { get; set; }
         public Product_ItemDTO() { }
         public Product_ItemDTO(Item Item)
         {
@@ -29,6 +31,7 @@ namespace DMS.Rpc.product
             this.CanDelete = Item.CanDelete;
             this.HasInventory = Item.HasInventory;
             this.StatusId = Item.StatusId;
+            this.ItemImageMappings = Item.ItemImageMappings?.Select(x => new Product_ItemImageMappingDTO(x)).ToList();
             this.Errors = Item.Errors;
         }
     }

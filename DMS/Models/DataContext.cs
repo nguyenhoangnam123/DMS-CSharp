@@ -42,6 +42,7 @@ namespace DMS.Models
         public virtual DbSet<InventoryDAO> Inventory { get; set; }
         public virtual DbSet<InventoryHistoryDAO> InventoryHistory { get; set; }
         public virtual DbSet<ItemDAO> Item { get; set; }
+        public virtual DbSet<ItemImageMappingDAO> ItemImageMapping { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
         public virtual DbSet<PageDAO> Page { get; set; }
@@ -760,6 +761,18 @@ namespace DMS.Models
                 entity.HasKey(e => new { e.ImageId, e.StoreCheckingId });
 
                 entity.Property(e => e.ShootingAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.ImageStoreCheckingMappings)
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ImageStoreCheckingMapping_Image");
+
+                entity.HasOne(d => d.StoreChecking)
+                    .WithMany(p => p.ImageStoreCheckingMappings)
+                    .HasForeignKey(d => d.StoreCheckingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ImageStoreCheckingMapping_StoreChecking");
             });
 
             modelBuilder.Entity<IndirectPriceListDAO>(entity =>
@@ -1156,6 +1169,25 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Item_Status");
+            });
+
+            modelBuilder.Entity<ItemImageMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ItemId, e.ImageId });
+
+                entity.ToTable("ItemImageMapping", "MDM");
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.ItemImageMappings)
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemImageMapping_Image");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.ItemImageMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemImageMapping_Item");
             });
 
             modelBuilder.Entity<MenuDAO>(entity =>

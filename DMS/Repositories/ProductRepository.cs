@@ -814,6 +814,27 @@ namespace DMS.Repositories
                 }
                 await DataContext.ProductImageMapping.BulkMergeAsync(ProductImageMappingDAOs);
             }
+            var ItemIds = ItemDAOs.Select(x => x.Id).ToList();
+            await DataContext.ItemImageMapping
+                .Where(x => ItemIds.Contains(x.ItemId))
+                .DeleteFromQueryAsync();
+            List<ItemImageMappingDAO> ItemImageMappingDAOs = new List<ItemImageMappingDAO>();
+            if(Product.Items != null)
+            {
+                foreach (var Item in Product.Items)
+                {
+                    foreach (ItemImageMapping ItemImageMapping in Item.ItemImageMappings)
+                    {
+                        ItemImageMappingDAO ItemImageMappingDAO = new ItemImageMappingDAO()
+                        {
+                            ItemId = Item.Id,
+                            ImageId = ItemImageMapping.ImageId
+                        };
+                        ItemImageMappingDAOs.Add(ItemImageMappingDAO);
+                    }
+                }
+                await DataContext.ItemImageMapping.BulkMergeAsync(ItemImageMappingDAOs);
+            }
             await DataContext.ProductProductGroupingMapping
                 .Where(x => x.ProductId == Product.Id)
                 .DeleteFromQueryAsync();
