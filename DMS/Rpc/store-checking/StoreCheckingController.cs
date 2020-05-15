@@ -15,6 +15,10 @@ using DMS.Services.MAlbum;
 using DMS.Services.MAppUser;
 using DMS.Services.MImage;
 using DMS.Services.MStore;
+using DMS.Enums;
+using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreType;
+using DMS.Services.MERoute;
 
 namespace DMS.Rpc.store_checking
 {
@@ -36,8 +40,15 @@ namespace DMS.Rpc.store_checking
 
         public const string SingleListAlbum = Default + "/single-list-album";
         public const string SingleListAppUser = Default + "/single-list-app-user";
+        public const string SingleListEroute = Default + "/single-list-e-route";
         public const string SingleListImage = Default + "/single-list-image";
         public const string SingleListStore = Default + "/single-list-store";
+        public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
+        public const string SingleListStoreType = Default + "/single-list-store-type";
+        public const string SingleListStoreCheckingStatus = Default + "/single-list-store-checking-status";
+
+        public const string ListStore = Default + "/list-store";
+        public const string CountStore = Default + "/count-store";
         
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
@@ -54,24 +65,33 @@ namespace DMS.Rpc.store_checking
     {
         private IAlbumService AlbumService;
         private IAppUserService AppUserService;
+        private IERouteService ERouteService;
         private IImageService ImageService;
         private IStoreService StoreService;
+        private IStoreGroupingService StoreGroupingService;
         private IStoreCheckingService StoreCheckingService;
+        private IStoreTypeService StoreTypeService;
         private ICurrentContext CurrentContext;
         public StoreCheckingController(
             IAlbumService AlbumService,
             IAppUserService AppUserService,
+            IERouteService ERouteService,
             IImageService ImageService,
             IStoreService StoreService,
+            IStoreGroupingService StoreGroupingService,
             IStoreCheckingService StoreCheckingService,
+            IStoreTypeService StoreTypeService,
             ICurrentContext CurrentContext
         )
         {
             this.AlbumService = AlbumService;
             this.AppUserService = AppUserService;
+            this.ERouteService = ERouteService;
             this.ImageService = ImageService;
             this.StoreService = StoreService;
+            this.StoreGroupingService = StoreGroupingService;
             this.StoreCheckingService = StoreCheckingService;
+            this.StoreTypeService = StoreTypeService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -414,7 +434,24 @@ namespace DMS.Rpc.store_checking
                 .Select(x => new StoreChecking_AppUserDTO(x)).ToList();
             return StoreChecking_AppUserDTOs;
         }
-       
+
+        [Route(StoreCheckingRoute.SingleListEroute), HttpPost]
+        public async Task<List<StoreChecking_ERouteDTO>> SingleListEroute(StoreChecking_ERouteFilterDTO StoreChecking_ERouteFilterDTO)
+        {
+            ERouteFilter ERouteFilter = new ERouteFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                Selects = ERouteSelect.Id | ERouteSelect.Name | ERouteSelect.Code
+            };
+
+            List<ERoute> ERoutes = await ERouteService.List(ERouteFilter);
+            List<StoreChecking_ERouteDTO> StoreChecking_ERouteDTOs = ERoutes
+                .Select(x => new StoreChecking_ERouteDTO(x)).ToList();
+            return StoreChecking_ERouteDTOs;
+        }
+
         [Route(StoreCheckingRoute.SingleListStore), HttpPost]
         public async Task<List<StoreChecking_StoreDTO>> SingleListStore([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
         {
@@ -449,6 +486,134 @@ namespace DMS.Rpc.store_checking
             StoreFilter.OwnerPhone = StoreChecking_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = StoreChecking_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = StoreChecking_StoreFilterDTO.StatusId;
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<StoreChecking_StoreDTO> StoreChecking_StoreDTOs = Stores
+                .Select(x => new StoreChecking_StoreDTO(x)).ToList();
+            return StoreChecking_StoreDTOs;
+        }
+
+        [Route(StoreCheckingRoute.SingleListStoreGrouping), HttpPost]
+        public async Task<List<StoreChecking_StoreGroupingDTO>> SingleListStoreGrouping([FromBody] StoreChecking_StoreGroupingFilterDTO StoreChecking_StoreGroupingFilterDTO)
+        {
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = 0;
+            StoreGroupingFilter.Take = 99999;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Code = StoreChecking_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = StoreChecking_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.Level = StoreChecking_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.Path = StoreChecking_StoreGroupingFilterDTO.Path;
+            StoreGroupingFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+            List<StoreChecking_StoreGroupingDTO> StoreChecking_StoreGroupingDTOs = StoreGroupings
+                .Select(x => new StoreChecking_StoreGroupingDTO(x)).ToList();
+            return StoreChecking_StoreGroupingDTOs;
+        }
+        [Route(StoreCheckingRoute.SingleListStoreType), HttpPost]
+        public async Task<List<StoreChecking_StoreTypeDTO>> SingleListStoreType([FromBody] StoreChecking_StoreTypeFilterDTO StoreChecking_StoreTypeFilterDTO)
+        {
+            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
+            StoreTypeFilter.Skip = 0;
+            StoreTypeFilter.Take = 20;
+            StoreTypeFilter.OrderBy = StoreTypeOrder.Id;
+            StoreTypeFilter.OrderType = OrderType.ASC;
+            StoreTypeFilter.Selects = StoreTypeSelect.ALL;
+            StoreTypeFilter.Id = StoreChecking_StoreTypeFilterDTO.Id;
+            StoreTypeFilter.Code = StoreChecking_StoreTypeFilterDTO.Code;
+            StoreTypeFilter.Name = StoreChecking_StoreTypeFilterDTO.Name;
+            StoreTypeFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
+            List<StoreChecking_StoreTypeDTO> StoreChecking_StoreTypeDTOs = StoreTypes
+                .Select(x => new StoreChecking_StoreTypeDTO(x)).ToList();
+            return StoreChecking_StoreTypeDTOs;
+        }
+
+        [Route(StoreCheckingRoute.SingleListStoreCheckingStatus), HttpPost]
+        public async Task<List<StoreChecking_StoreCheckingStatusDTO>> SingleListStoreCheckingStatus(StoreChecking_StoreCheckingStatusFilterDTO StoreChecking_StoreCheckingStatusDTO)
+        {
+            List<StoreChecking_StoreCheckingStatusDTO> StoreChecking_StoreCheckingStatusDTOs = new List<StoreChecking_StoreCheckingStatusDTO>();
+            StoreChecking_StoreCheckingStatusDTO CheckedIn = new StoreChecking_StoreCheckingStatusDTO
+            {
+                Id = StoreCheckingStatusEnum.CHECKEDIN.Id,
+                Name = StoreCheckingStatusEnum.CHECKEDIN.Name,
+                Code = StoreCheckingStatusEnum.CHECKEDIN.Code,
+            };
+
+            StoreChecking_StoreCheckingStatusDTO NotChecked = new StoreChecking_StoreCheckingStatusDTO
+            {
+                Id = StoreCheckingStatusEnum.NOTCHECKED.Id,
+                Name = StoreCheckingStatusEnum.NOTCHECKED.Name,
+                Code = StoreCheckingStatusEnum.NOTCHECKED.Code,
+            };
+            StoreChecking_StoreCheckingStatusDTOs.Add(CheckedIn);
+            StoreChecking_StoreCheckingStatusDTOs.Add(NotChecked);
+            return StoreChecking_StoreCheckingStatusDTOs;
+        }
+
+        [Route(StoreCheckingRoute.CountStore), HttpPost]
+        public async Task<long> CountStore([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Id = StoreChecking_StoreFilterDTO.Id;
+            StoreFilter.Code = StoreChecking_StoreFilterDTO.Code;
+            StoreFilter.Name = StoreChecking_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = StoreChecking_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = StoreChecking_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = StoreChecking_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = StoreChecking_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.Telephone = StoreChecking_StoreFilterDTO.Telephone;
+            StoreFilter.ResellerId = StoreChecking_StoreFilterDTO.ResellerId;
+            StoreFilter.ProvinceId = StoreChecking_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = StoreChecking_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = StoreChecking_StoreFilterDTO.WardId;
+            StoreFilter.Address = StoreChecking_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = StoreChecking_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = StoreChecking_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = StoreChecking_StoreFilterDTO.Longitude;
+            StoreFilter.DeliveryLatitude = StoreChecking_StoreFilterDTO.DeliveryLatitude;
+            StoreFilter.DeliveryLongitude = StoreChecking_StoreFilterDTO.DeliveryLongitude;
+            StoreFilter.OwnerName = StoreChecking_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = StoreChecking_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = StoreChecking_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            return await StoreService.Count(StoreFilter);
+        }
+
+        [Route(StoreCheckingRoute.ListStore), HttpPost]
+        public async Task<List<StoreChecking_StoreDTO>> ListStore([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = StoreChecking_StoreFilterDTO.Skip;
+            StoreFilter.Take = StoreChecking_StoreFilterDTO.Take;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = StoreChecking_StoreFilterDTO.Id;
+            StoreFilter.Code = StoreChecking_StoreFilterDTO.Code;
+            StoreFilter.Name = StoreChecking_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = StoreChecking_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = StoreChecking_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = StoreChecking_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = StoreChecking_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.Telephone = StoreChecking_StoreFilterDTO.Telephone;
+            StoreFilter.ResellerId = StoreChecking_StoreFilterDTO.ResellerId;
+            StoreFilter.ProvinceId = StoreChecking_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = StoreChecking_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = StoreChecking_StoreFilterDTO.WardId;
+            StoreFilter.Address = StoreChecking_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = StoreChecking_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = StoreChecking_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = StoreChecking_StoreFilterDTO.Longitude;
+            StoreFilter.DeliveryLatitude = StoreChecking_StoreFilterDTO.DeliveryLatitude;
+            StoreFilter.DeliveryLongitude = StoreChecking_StoreFilterDTO.DeliveryLongitude;
+            StoreFilter.OwnerName = StoreChecking_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = StoreChecking_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = StoreChecking_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<StoreChecking_StoreDTO> StoreChecking_StoreDTOs = Stores
