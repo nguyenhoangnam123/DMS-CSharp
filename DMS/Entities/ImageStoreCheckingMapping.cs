@@ -12,10 +12,10 @@ namespace DMS.Entities
         public long StoreCheckingId { get; set; }
         public long AlbumId { get; set; }
         public long StoreId { get; set; }
-        public long AppUserId { get; set; }
+        public long SaleEmployeeId { get; set; }
         public DateTime ShootingAt { get; set; }
         public Album Album { get; set; }
-        public AppUser AppUser { get; set; }
+        public AppUser SaleEmployee { get; set; }
         public Image Image { get; set; }
         public Store Store { get; set; }
         public StoreChecking StoreChecking { get; set; }
@@ -36,7 +36,7 @@ namespace DMS.Entities
         public IdFilter StoreCheckingId { get; set; }
         public IdFilter AlbumId { get; set; }
         public IdFilter StoreId { get; set; }
-        public IdFilter AppUserId { get; set; }
+        public IdFilter SaleEmployeeId { get; set; }
         public DateFilter ShootingAt { get; set; }
         public List<ImageStoreCheckingMappingFilter> OrFilter { get; set; }
         public ImageStoreCheckingMappingOrder OrderBy {get; set;}
@@ -50,7 +50,7 @@ namespace DMS.Entities
         StoreChecking = 1,
         Album = 2,
         Store = 3,
-        AppUser = 4,
+        SaleEmployee = 4,
         ShootingAt = 5,
     }
 
@@ -62,7 +62,7 @@ namespace DMS.Entities
         StoreChecking = E._1,
         Album = E._2,
         Store = E._3,
-        AppUser = E._4,
+        SaleEmployee = E._4,
         ShootingAt = E._5,
     }
 }

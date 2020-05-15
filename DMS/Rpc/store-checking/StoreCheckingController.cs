@@ -193,7 +193,7 @@ namespace DMS.Rpc.store_checking
             StoreChecking StoreChecking = new StoreChecking();
             StoreChecking.Id = StoreChecking_StoreCheckingDTO.Id;
             StoreChecking.StoreId = StoreChecking_StoreCheckingDTO.StoreId;
-            StoreChecking.AppUserId = StoreChecking_StoreCheckingDTO.AppUserId;
+            StoreChecking.SaleEmployeeId = StoreChecking_StoreCheckingDTO.SaleEmployeeId;
             StoreChecking.Longtitude = StoreChecking_StoreCheckingDTO.Longtitude;
             StoreChecking.Latitude = StoreChecking_StoreCheckingDTO.Latitude;
             StoreChecking.CheckInAt = StoreChecking_StoreCheckingDTO.CheckInAt;
@@ -206,30 +206,30 @@ namespace DMS.Rpc.store_checking
                     ImageId = x.ImageId,
                     AlbumId = x.AlbumId,
                     StoreId = x.StoreId,
-                    AppUserId = x.AppUserId,
+                    SaleEmployeeId = x.SaleEmployeeId,
                     ShootingAt = x.ShootingAt,
                     Album = x.Album == null ? null : new Album
                     {
                         Id = x.Album.Id,
                         Name = x.Album.Name,
                     },
-                    AppUser = x.AppUser == null ? null : new AppUser
+                    SaleEmployee = x.SaleEmployee == null ? null : new AppUser
                     {
-                        Id = x.AppUser.Id,
-                        Username = x.AppUser.Username,
-                        Password = x.AppUser.Password,
-                        DisplayName = x.AppUser.DisplayName,
-                        Address = x.AppUser.Address,
-                        Email = x.AppUser.Email,
-                        Phone = x.AppUser.Phone,
-                        Position = x.AppUser.Position,
-                        Department = x.AppUser.Department,
-                        OrganizationId = x.AppUser.OrganizationId,
-                        SexId = x.AppUser.SexId,
-                        StatusId = x.AppUser.StatusId,
-                        Avatar = x.AppUser.Avatar,
-                        Birthday = x.AppUser.Birthday,
-                        ProvinceId = x.AppUser.ProvinceId,
+                        Id = x.SaleEmployee.Id,
+                        Username = x.SaleEmployee.Username,
+                        Password = x.SaleEmployee.Password,
+                        DisplayName = x.SaleEmployee.DisplayName,
+                        Address = x.SaleEmployee.Address,
+                        Email = x.SaleEmployee.Email,
+                        Phone = x.SaleEmployee.Phone,
+                        Position = x.SaleEmployee.Position,
+                        Department = x.SaleEmployee.Department,
+                        OrganizationId = x.SaleEmployee.OrganizationId,
+                        SexId = x.SaleEmployee.SexId,
+                        StatusId = x.SaleEmployee.StatusId,
+                        Avatar = x.SaleEmployee.Avatar,
+                        Birthday = x.SaleEmployee.Birthday,
+                        ProvinceId = x.SaleEmployee.ProvinceId,
                     },
                     Image = x.Image == null ? null : new Image
                     {
@@ -278,7 +278,7 @@ namespace DMS.Rpc.store_checking
 
             StoreCheckingFilter.Id = StoreChecking_StoreCheckingFilterDTO.Id;
             StoreCheckingFilter.StoreId = StoreChecking_StoreCheckingFilterDTO.StoreId;
-            StoreCheckingFilter.AppUserId = StoreChecking_StoreCheckingFilterDTO.AppUserId;
+            StoreCheckingFilter.SaleEmployeeId = StoreChecking_StoreCheckingFilterDTO.SaleEmployeeId;
             StoreCheckingFilter.Longtitude = StoreChecking_StoreCheckingFilterDTO.Longtitude;
             StoreCheckingFilter.Latitude = StoreChecking_StoreCheckingFilterDTO.Latitude;
             StoreCheckingFilter.CheckInAt = StoreChecking_StoreCheckingFilterDTO.CheckInAt;

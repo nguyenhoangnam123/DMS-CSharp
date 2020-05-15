@@ -768,17 +768,17 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ImageStoreCheckingMapping_Album");
 
-                entity.HasOne(d => d.AppUser)
-                    .WithMany(p => p.ImageStoreCheckingMappings)
-                    .HasForeignKey(d => d.AppUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ImageStoreCheckingMapping_AppUser");
-
                 entity.HasOne(d => d.Image)
                     .WithMany(p => p.ImageStoreCheckingMappings)
                     .HasForeignKey(d => d.ImageId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ImageStoreCheckingMapping_Image");
+
+                entity.HasOne(d => d.SaleEmployee)
+                    .WithMany(p => p.ImageStoreCheckingMappings)
+                    .HasForeignKey(d => d.SaleEmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ImageStoreCheckingMapping_AppUser");
 
                 entity.HasOne(d => d.StoreChecking)
                     .WithMany(p => p.ImageStoreCheckingMappings)
@@ -1928,6 +1928,18 @@ namespace DMS.Models
                 entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Longtitude).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.SaleEmployee)
+                    .WithMany(p => p.StoreCheckings)
+                    .HasForeignKey(d => d.SaleEmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreChecking_AppUser");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.StoreCheckings)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreChecking_Store");
             });
 
             modelBuilder.Entity<StoreGroupingDAO>(entity =>

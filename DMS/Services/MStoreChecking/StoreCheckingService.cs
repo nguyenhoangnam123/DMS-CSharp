@@ -88,6 +88,7 @@ namespace DMS.Services.MStoreChecking
 
             try
             {
+                StoreChecking.CheckInAt = StaticParams.DateTimeNow;
                 await UOW.Begin();
                 await UOW.StoreCheckingRepository.Create(StoreChecking);
                 await UOW.Commit();
@@ -113,7 +114,7 @@ namespace DMS.Services.MStoreChecking
             try
             {
                 var oldData = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
-
+                StoreChecking.CheckOutAt = StaticParams.DateTimeNow;
                 await UOW.Begin();
                 await UOW.StoreCheckingRepository.Update(StoreChecking);
                 await UOW.Commit();
@@ -133,7 +134,6 @@ namespace DMS.Services.MStoreChecking
             }
         }
 
-        
         public StoreCheckingFilter ToFilter(StoreCheckingFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<StoreCheckingFilter>();
@@ -149,8 +149,8 @@ namespace DMS.Services.MStoreChecking
                         subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.StoreId))
                         subFilter.StoreId = Map(subFilter.StoreId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
-                        subFilter.AppUserId = Map(subFilter.AppUserId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleEmployeeId))
+                        subFilter.SaleEmployeeId = Map(subFilter.SaleEmployeeId, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Longtitude))
                         subFilter.Longtitude = Map(subFilter.Longtitude, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Latitude))

@@ -23,6 +23,8 @@ namespace DMS.Services.MStoreChecking
         public enum ErrorCode
         {
             IdNotExisted,
+            StoreNotExisted,
+            DistanceOutOfRange
         }
 
         private IUOW UOW;
@@ -50,8 +52,30 @@ namespace DMS.Services.MStoreChecking
             return count == 1;
         }
 
+        public async Task<bool> ValidateGPS(StoreChecking StoreChecking)
+        {
+            var Store = await UOW.StoreRepository.Get(StoreChecking.StoreId);
+            if(Store == null)
+            {
+                StoreChecking.AddError(nameof(StoreCheckingValidator), nameof(StoreChecking.Store), ErrorCode.StoreNotExisted);
+            }
+            else
+            {
+                var Distance = Math.Sqrt(Math.Pow(Convert.ToDouble(Store.Longitude - StoreChecking.Longtitude), 2)
+                           + Math.Pow(Convert.ToDouble(Store.Latitude - StoreChecking.Latitude), 2));
+
+                if(Distance > 100)
+                {
+                    StoreChecking.AddError(nameof(StoreCheckingValidator), nameof(StoreChecking.Store), ErrorCode.DistanceOutOfRange);
+                }
+            }
+
+            return StoreChecking.IsValidated;
+        }
+
         public async Task<bool>Create(StoreChecking StoreChecking)
         {
+            await ValidateGPS(StoreChecking);
             return StoreChecking.IsValidated;
         }
 

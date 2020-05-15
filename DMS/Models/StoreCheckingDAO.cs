@@ -12,7 +12,7 @@ namespace DMS.Models
 
         public long Id { get; set; }
         public long StoreId { get; set; }
-        public long AppUserId { get; set; }
+        public long SaleEmployeeId { get; set; }
         public decimal? Longtitude { get; set; }
         public decimal? Latitude { get; set; }
         public DateTime? CheckInAt { get; set; }
@@ -20,6 +20,8 @@ namespace DMS.Models
         public long? CountIndirectSalesOrder { get; set; }
         public long? CountImage { get; set; }
 
+        public virtual AppUserDAO SaleEmployee { get; set; }
+        public virtual StoreDAO Store { get; set; }
         public virtual ICollection<ImageStoreCheckingMappingDAO> ImageStoreCheckingMappings { get; set; }
     }
 }
