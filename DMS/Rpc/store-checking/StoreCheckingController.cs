@@ -33,6 +33,7 @@ namespace DMS.Rpc.store_checking
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListImage = Default + "/filter-list-image";
         public const string FilterListStore = Default + "/filter-list-store";
+
         public const string SingleListAlbum = Default + "/single-list-album";
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListImage = Default + "/single-list-image";

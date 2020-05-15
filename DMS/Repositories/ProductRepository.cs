@@ -86,6 +86,8 @@ namespace DMS.Repositories
             }
             if (!string.IsNullOrWhiteSpace(filter.Search))
                 query = query.Where(q => q.Code.Contains(filter.Search) || q.Name.Contains(filter.Search));
+            if (filter.IsNew != null)
+                query = query.Where(q => q.IsNew.Equals(filter.IsNew));
             query = OrFilter(query, filter);
             return query;
         }
@@ -366,20 +368,24 @@ namespace DMS.Repositories
                         Description = p.ProductGrouping.Description,
                     },
                 }).ToList() : null,
-
-                ProductImageMappings = q.ProductImageMappings.Skip(0).Take(1)
-                .Select(x => new ProductImageMapping
-                {
-                    ProductId = x.ProductId,
-                    ImageId = x.ImageId,
-                    Image = new Image
-                    {
-                        Id = x.Image.Id,
-                        Name = x.Image.Name,
-                        Url = x.Image.Url,
-                    },
-                }).ToList()
             }).ToListAsync();
+
+            var Ids = Products.Select(x => x.Id).ToList();
+            var ProductImageMappings = DataContext.ProductImageMapping.Where(x => Ids.Contains(x.ProductId)).ToList();
+            foreach (var Product in Products)
+            {
+                Product.ProductImageMappings = new List<ProductImageMapping>();
+                var ProductImageMappingDAO = ProductImageMappings.Where(x => x.ProductId == Product.Id).FirstOrDefault();
+                if(ProductImageMappingDAO != null)
+                {
+                    ProductImageMapping ProductImageMapping = new ProductImageMapping
+                    {
+                        ImageId = ProductImageMappingDAO.ImageId,
+                        ProductId = ProductImageMappingDAO.ProductId,
+                    };
+                    Product.ProductImageMappings.Add(ProductImageMapping);
+                }
+            }
             return Products;
         }
 

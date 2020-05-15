@@ -266,19 +266,23 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 },
-                ItemImageMappings = q.ItemImageMappings.Skip(0).Take(1)
-                .Select(x => new ItemImageMapping
-                {
-                    ItemId = x.ItemId,
-                    ImageId = x.ImageId,
-                    Image = new Image
-                    {
-                        Id = x.Image.Id,
-                        Name = x.Image.Name,
-                        Url = x.Image.Url,
-                    },
-                }).ToList()
             }).ToListAsync();
+            var Ids = Items.Select(x => x.Id).ToList();
+            var ItemImageMappings = DataContext.ItemImageMapping.Where(x => Ids.Contains(x.ItemId)).ToList();
+            foreach (var Item in Items)
+            {
+                Item.ItemImageMappings = new List<ItemImageMapping>();
+                var ItemImageMappingDAO = ItemImageMappings.Where(x => x.ItemId == Item.Id).FirstOrDefault();
+                if (ItemImageMappingDAO != null)
+                {
+                    ItemImageMapping ItemImageMapping = new ItemImageMapping
+                    {
+                        ImageId = ItemImageMappingDAO.ImageId,
+                        ItemId = ItemImageMappingDAO.ItemId,
+                    };
+                    Item.ItemImageMappings.Add(ItemImageMapping);
+                }
+            }
             return Items;
         }
 
