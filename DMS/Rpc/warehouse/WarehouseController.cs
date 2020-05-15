@@ -37,7 +37,7 @@ namespace DMS.Rpc.warehouse
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
+        public const string ImportInventory = Default + "/import-inventory";
         public const string ExportInventory = Default + "/export-inventory";
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
@@ -220,11 +220,15 @@ namespace DMS.Rpc.warehouse
             return true;
         }
         
-        [Route(WarehouseRoute.Import), HttpPost]
-        public async Task<ActionResult<List<Warehouse_WarehouseDTO>>> Import(IFormFile file)
+        [Route(WarehouseRoute.ImportInventory), HttpPost]
+        public async Task<ActionResult<List<Warehouse_InventoryDTO>>> ImportInventory([FromBody] Warehouse_InventoryDTO Warehouse_InventoryDTO, IFormFile file)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            Warehouse Warehouse = await WarehouseService.Get(Warehouse_InventoryDTO.WarehouseId);
+            if (Warehouse == null)
+                return BadRequest(Warehouse_InventoryDTO);
+
             ItemFilter ItemFilter = new ItemFilter
             {
                 Skip = 0,
@@ -232,19 +236,13 @@ namespace DMS.Rpc.warehouse
                 Selects = ItemSelect.ALL
             };
             List<Item> Items = await ItemService.List(ItemFilter);
-            WarehouseFilter WarehouseFilter = new WarehouseFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = WarehouseSelect.ALL
-            };
-            List<Warehouse> Warehouses = await WarehouseService.List(WarehouseFilter);
-            Warehouses.ForEach(w => w.Inventories = new List<Inventory>());
+
+            Warehouse.Inventories = new List<Inventory>();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
                 if (worksheet == null)
-                    return Ok(Warehouses);
+                    return Ok(Warehouse);
                 int StartColumn = 1;
                 int StartRow = 1;
 
@@ -269,21 +267,16 @@ namespace DMS.Rpc.warehouse
                     Inventory Inventory = new Inventory();
                     Inventory.SaleStock = string.IsNullOrEmpty(SaleStockValue) ? 0 : long.Parse(SaleStockValue);
                     Inventory.AccountingStock = string.IsNullOrEmpty(AccountingStockValue) ? 0 : long.Parse(AccountingStockValue);
-                    Inventory.Item = Items.Where(x => x.Code == ItemCodeValue).FirstOrDefault();
-                    Inventory.ItemId = Inventory.Item.Id;
-                    
-                    Warehouse Warehouse = Warehouses.Where(x => x.Code == ItemCodeValue).FirstOrDefault();
-                    if (Warehouse == null) continue;
-                    Inventory.Warehouse = Warehouse;
-                    Inventory.WarehouseId = Inventory.Warehouse.Id;
+                    Inventory.ItemId = Inventory.Item == null ? 0 : Inventory.Item.Id;
+                    Inventory.WarehouseId = Warehouse.Id;
 
                     Warehouse.Inventories.Add(Inventory);
                 }
             }
-            Warehouses = await WarehouseService.Import(Warehouses);
-            List<Warehouse_WarehouseDTO> Warehouse_WarehouseDTOs = Warehouses
-                 .Select(c => new Warehouse_WarehouseDTO(c)).ToList();
-            return Warehouse_WarehouseDTOs;
+            Warehouse = await WarehouseService.Update(Warehouse);
+            List<Warehouse_InventoryDTO> Warehouse_InventoryDTOs = Warehouse.Inventories
+                 .Select(c => new Warehouse_InventoryDTO(c)).ToList();
+            return Warehouse_InventoryDTOs;
         }
         
         [Route(WarehouseRoute.ExportInventory), HttpPost]
