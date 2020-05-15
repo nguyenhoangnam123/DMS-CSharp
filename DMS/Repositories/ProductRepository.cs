@@ -372,7 +372,7 @@ namespace DMS.Repositories
             }).ToListAsync();
 
             var Ids = Products.Select(x => x.Id).ToList();
-            var ProductImageMappings = DataContext.ProductImageMapping.Where(x => Ids.Contains(x.ProductId)).ToList();
+            var ProductImageMappings = DataContext.ProductImageMapping.Include(x => x.Image).Where(x => Ids.Contains(x.ProductId)).ToList();
             foreach (var Product in Products)
             {
                 Product.ProductImageMappings = new List<ProductImageMapping>();

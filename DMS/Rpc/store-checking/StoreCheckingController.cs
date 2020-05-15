@@ -557,12 +557,14 @@ namespace DMS.Rpc.store_checking
         [Route(StoreCheckingRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
         {
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Id = StoreChecking_StoreFilterDTO.Id;
             StoreFilter.Code = StoreChecking_StoreFilterDTO.Code;
             StoreFilter.Name = StoreChecking_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = StoreChecking_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = StoreChecking_StoreFilterDTO.OrganizationId;
+            StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreFilter.StoreTypeId = StoreChecking_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = StoreChecking_StoreFilterDTO.StoreGroupingId;
             StoreFilter.Telephone = StoreChecking_StoreFilterDTO.Telephone;
@@ -586,6 +588,8 @@ namespace DMS.Rpc.store_checking
         [Route(StoreCheckingRoute.ListStore), HttpPost]
         public async Task<List<StoreChecking_StoreDTO>> ListStore([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
         {
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Skip = StoreChecking_StoreFilterDTO.Skip;
             StoreFilter.Take = StoreChecking_StoreFilterDTO.Take;
@@ -596,7 +600,7 @@ namespace DMS.Rpc.store_checking
             StoreFilter.Code = StoreChecking_StoreFilterDTO.Code;
             StoreFilter.Name = StoreChecking_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = StoreChecking_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = StoreChecking_StoreFilterDTO.OrganizationId;
+            StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreFilter.StoreTypeId = StoreChecking_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = StoreChecking_StoreFilterDTO.StoreGroupingId;
             StoreFilter.Telephone = StoreChecking_StoreFilterDTO.Telephone;
