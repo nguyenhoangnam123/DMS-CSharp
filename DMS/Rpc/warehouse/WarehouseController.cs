@@ -310,8 +310,8 @@ namespace DMS.Rpc.warehouse
                 AccountingStock = Warehouse_InventoryFilterDTO.AccountingStock,
 
                 Selects = InventorySelect.ALL,
-                Skip = Warehouse_InventoryFilterDTO.Skip,
-                Take = Warehouse_InventoryFilterDTO.Take,
+                Skip = 0,
+                Take = int.MaxValue,
                 OrderBy = Warehouse_InventoryFilterDTO.OrderBy,
                 OrderType = Warehouse_InventoryFilterDTO.OrderType,
             };
