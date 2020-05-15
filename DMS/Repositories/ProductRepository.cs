@@ -17,6 +17,7 @@ namespace DMS.Repositories
         Task<Product> Get(long Id);
         Task<bool> Create(Product Product);
         Task<bool> Update(Product Product);
+        Task<bool> BulkMergeNewProduct(List<Product> Products);
         Task<bool> Delete(Product Product);
         Task<bool> BulkMerge(List<Product> Products);
         Task<bool> BulkDelete(List<Product> Products);
@@ -621,6 +622,17 @@ namespace DMS.Repositories
             ProductDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(Product);
+            return true;
+        }
+
+        public async Task<bool> BulkMergeNewProduct(List<Product> Products)
+        {
+            var ProductIds = Products.Select(x => x.Id).ToList();
+            await DataContext.Product.Where(x => ProductIds.Contains(x.Id)).UpdateFromQueryAsync(x => new ProductDAO
+            {
+                IsNew = x.IsNew
+            });
+            
             return true;
         }
 

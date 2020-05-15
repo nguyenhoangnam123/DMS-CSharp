@@ -28,10 +28,10 @@ namespace DMS.Rpc.product
         public const string Delete = Default + "/delete";
         public const string BulkDelete = Default + "/bulk-delete";
 
-        public const string SingleListProductType = Default + "/single-list-product-type";
-        public const string SingleListStatus = Default + "/single-list-status";
-        public const string SingleListSupplier = Default + "/single-list-supplier";
-        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
+        public const string FilterListProductType = Default + "/filter-list-product-type";
+        public const string FilterListStatus = Default + "/filter-list-status";
+        public const string FilterListSupplier = Default + "/filter-list-supplier";
+        public const string FilterListProductGrouping = Default + "/filter-list-product-grouping";
 
         public const string CountProduct = Default + "/count-product";
         public const string ListProduct = Default + "/list-product";
@@ -136,7 +136,7 @@ namespace DMS.Rpc.product
 
             List<Product> Products = await ProductService.List(ProductFilter);
 
-            Products = await ProductService.AddNewProduct(Products);
+            Products = await ProductService.BulkMergeNewProduct(Products);
             if (Products.Any(x => !x.IsValidated))
                 return BadRequest(Products.Where(x => !x.IsValidated));
             List<Product_ProductDTO> Product_ProductDTOs = Products
@@ -163,7 +163,7 @@ namespace DMS.Rpc.product
         }
 
         [Route(NewProductRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
+        public async Task<ActionResult<List<Product_ProductDTO>>> BulkDelete([FromBody] List<long> Ids)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -175,8 +175,13 @@ namespace DMS.Rpc.product
             ProductFilter.Take = int.MaxValue;
 
             List<Product> Products = await ProductService.List(ProductFilter);
-            Products = await ProductService.BulkDelete(Products);
-            return true;
+
+            Products = await ProductService.BulkDeleteNewProduct(Products);
+            if (Products.Any(x => !x.IsValidated))
+                return BadRequest(Products.Where(x => !x.IsValidated));
+            List<Product_ProductDTO> Product_ProductDTOs = Products
+                .Select(c => new Product_ProductDTO(c)).ToList();
+            return Product_ProductDTOs;
         }
 
         private async Task<bool> HasPermission(long Id)
@@ -359,8 +364,8 @@ namespace DMS.Rpc.product
             return ProductFilter;
         }
 
-        [Route(NewProductRoute.SingleListProductType), HttpPost]
-        public async Task<List<Product_ProductTypeDTO>> SingleListProductType([FromBody] Product_ProductTypeFilterDTO Product_ProductTypeFilterDTO)
+        [Route(NewProductRoute.FilterListProductType), HttpPost]
+        public async Task<List<Product_ProductTypeDTO>> FilterListProductType([FromBody] Product_ProductTypeFilterDTO Product_ProductTypeFilterDTO)
         {
             ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
             ProductTypeFilter.Skip = 0;
@@ -372,15 +377,15 @@ namespace DMS.Rpc.product
             ProductTypeFilter.Code = Product_ProductTypeFilterDTO.Code;
             ProductTypeFilter.Name = Product_ProductTypeFilterDTO.Name;
             ProductTypeFilter.Description = Product_ProductTypeFilterDTO.Description;
-            ProductTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            ProductTypeFilter.StatusId = Product_ProductTypeFilterDTO.StatusId;
 
             List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
             List<Product_ProductTypeDTO> Product_ProductTypeDTOs = ProductTypes
                 .Select(x => new Product_ProductTypeDTO(x)).ToList();
             return Product_ProductTypeDTOs;
         }
-        [Route(NewProductRoute.SingleListStatus), HttpPost]
-        public async Task<List<Product_StatusDTO>> SingleListStatus([FromBody] Product_StatusFilterDTO Product_StatusFilterDTO)
+        [Route(NewProductRoute.FilterListStatus), HttpPost]
+        public async Task<List<Product_StatusDTO>> FilterListStatus([FromBody] Product_StatusFilterDTO Product_StatusFilterDTO)
         {
             StatusFilter StatusFilter = new StatusFilter();
             StatusFilter.Skip = 0;
@@ -394,8 +399,8 @@ namespace DMS.Rpc.product
                 .Select(x => new Product_StatusDTO(x)).ToList();
             return Product_StatusDTOs;
         }
-        [Route(NewProductRoute.SingleListSupplier), HttpPost]
-        public async Task<List<Product_SupplierDTO>> SingleListSupplier([FromBody] Product_SupplierFilterDTO Product_SupplierFilterDTO)
+        [Route(NewProductRoute.FilterListSupplier), HttpPost]
+        public async Task<List<Product_SupplierDTO>> FilterListSupplier([FromBody] Product_SupplierFilterDTO Product_SupplierFilterDTO)
         {
             SupplierFilter SupplierFilter = new SupplierFilter();
             SupplierFilter.Skip = 0;
@@ -407,15 +412,15 @@ namespace DMS.Rpc.product
             SupplierFilter.Code = Product_SupplierFilterDTO.Code;
             SupplierFilter.Name = Product_SupplierFilterDTO.Name;
             SupplierFilter.TaxCode = Product_SupplierFilterDTO.TaxCode;
-            SupplierFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            SupplierFilter.StatusId = Product_SupplierFilterDTO.StatusId;
 
             List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
             List<Product_SupplierDTO> Product_SupplierDTOs = Suppliers
                 .Select(x => new Product_SupplierDTO(x)).ToList();
             return Product_SupplierDTOs;
         }
-        [Route(NewProductRoute.SingleListProductGrouping), HttpPost]
-        public async Task<List<Product_ProductGroupingDTO>> SingleListProductGrouping([FromBody] Product_ProductGroupingFilterDTO Product_ProductGroupingFilterDTO)
+        [Route(NewProductRoute.FilterListProductGrouping), HttpPost]
+        public async Task<List<Product_ProductGroupingDTO>> FilterListProductGrouping([FromBody] Product_ProductGroupingFilterDTO Product_ProductGroupingFilterDTO)
         {
             ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
             ProductGroupingFilter.Skip = 0;
