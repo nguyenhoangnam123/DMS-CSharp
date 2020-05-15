@@ -154,12 +154,13 @@ namespace DMS.Rpc.product
                 return Forbid();
 
             Product Product = ConvertDTOToEntity(Product_ProductDTO);
-            Product = await ProductService.Delete(Product);
-            Product_ProductDTO = new Product_ProductDTO(Product);
-            if (Product.IsValidated)
-                return Product_ProductDTO;
-            else
-                return BadRequest(Product_ProductDTO);
+            List<Product> Products = new List<Product> { Product };
+            Products = await ProductService.BulkDeleteNewProduct(Products);
+            if (Products.Any(x => !x.IsValidated))
+                return BadRequest(Products.Where(x => !x.IsValidated));
+            List<Product_ProductDTO> Product_ProductDTOs = Products
+                .Select(c => new Product_ProductDTO(c)).ToList();
+            return Product_ProductDTOs.FirstOrDefault();
         }
 
         [Route(NewProductRoute.BulkDelete), HttpPost]
