@@ -279,6 +279,12 @@ namespace DMS.Repositories
                     {
                         ImageId = ItemImageMappingDAO.ImageId,
                         ItemId = ItemImageMappingDAO.ItemId,
+                        Image = new Image
+                        {
+                            Id = ItemImageMappingDAO.Image.Id,
+                            Name = ItemImageMappingDAO.Image.Name,
+                            Url = ItemImageMappingDAO.Image.Url
+                        }
                     };
                     Item.ItemImageMappings.Add(ItemImageMapping);
                 }

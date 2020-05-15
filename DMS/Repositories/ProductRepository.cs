@@ -383,6 +383,12 @@ namespace DMS.Repositories
                     {
                         ImageId = ProductImageMappingDAO.ImageId,
                         ProductId = ProductImageMappingDAO.ProductId,
+                        Image = new Image
+                        {
+                            Id = ProductImageMappingDAO.Image.Id,
+                            Name = ProductImageMappingDAO.Image.Name,
+                            Url = ProductImageMappingDAO.Image.Url
+                        }
                     };
                     Product.ProductImageMappings.Add(ProductImageMapping);
                 }
