@@ -17,7 +17,8 @@ namespace DMS.Repositories
         Task<Product> Get(long Id);
         Task<bool> Create(Product Product);
         Task<bool> Update(Product Product);
-        Task<bool> BulkMergeNewProduct(List<Product> Products);
+        Task<bool> BulkInsertNewProduct(List<Product> Products);
+        Task<bool> BulkDeleteNewProduct(List<Product> Products);
         Task<bool> Delete(Product Product);
         Task<bool> BulkMerge(List<Product> Products);
         Task<bool> BulkDelete(List<Product> Products);
@@ -631,12 +632,12 @@ namespace DMS.Repositories
             return true;
         }
 
-        public async Task<bool> BulkMergeNewProduct(List<Product> Products)
+        public async Task<bool> BulkInsertNewProduct(List<Product> Products)
         {
             var ProductIds = Products.Select(x => x.Id).ToList();
             await DataContext.Product.Where(x => ProductIds.Contains(x.Id)).UpdateFromQueryAsync(x => new ProductDAO
             {
-                IsNew = x.IsNew
+                IsNew = true
             });
             
             return true;
@@ -647,6 +648,17 @@ namespace DMS.Repositories
             await DataContext.ProductProductGroupingMapping.Where(x => x.ProductId == Product.Id).DeleteFromQueryAsync();
             await DataContext.Item.Where(x => x.ProductId == Product.Id).UpdateFromQueryAsync(x => new ItemDAO { DeletedAt = StaticParams.DateTimeNow });
             await DataContext.Product.Where(x => x.Id == Product.Id).UpdateFromQueryAsync(x => new ProductDAO { DeletedAt = StaticParams.DateTimeNow });
+            return true;
+        }
+
+        public async Task<bool> BulkDeleteNewProduct(List<Product> Products)
+        {
+            var ProductIds = Products.Select(x => x.Id).ToList();
+            await DataContext.Product.Where(x => ProductIds.Contains(x.Id)).UpdateFromQueryAsync(x => new ProductDAO
+            {
+                IsNew = false
+            });
+
             return true;
         }
 

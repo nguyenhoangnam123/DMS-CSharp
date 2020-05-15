@@ -136,7 +136,7 @@ namespace DMS.Rpc.product
 
             List<Product> Products = await ProductService.List(ProductFilter);
 
-            Products = await ProductService.BulkMergeNewProduct(Products);
+            Products = await ProductService.BulkInsertNewProduct(Products);
             if (Products.Any(x => !x.IsValidated))
                 return BadRequest(Products.Where(x => !x.IsValidated));
             List<Product_ProductDTO> Product_ProductDTOs = Products

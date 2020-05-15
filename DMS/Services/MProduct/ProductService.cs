@@ -18,7 +18,7 @@ namespace DMS.Services.MProduct
         Task<List<Product>> List(ProductFilter ProductFilter);
         Task<Product> Get(long Id);
         Task<Product> Create(Product Product);
-        Task<List<Product>> BulkMergeNewProduct(List<Product> Products);
+        Task<List<Product>> BulkInsertNewProduct(List<Product> Products);
         Task<Product> Update(Product Product);
         Task<Product> Delete(Product Product);
         Task<List<Product>> BulkDeleteNewProduct(List<Product> Products);
@@ -143,7 +143,7 @@ namespace DMS.Services.MProduct
             }
         }
 
-        public async Task<List<Product>> BulkMergeNewProduct(List<Product> Products)
+        public async Task<List<Product>> BulkInsertNewProduct(List<Product> Products)
         {
             if (!await ProductValidator.BulkMergeNewProduct(Products))
                 return Products;
@@ -152,7 +152,7 @@ namespace DMS.Services.MProduct
             {
                 Products.ForEach(x => x.IsNew = true);
                 await UOW.Begin();
-                await UOW.ProductRepository.BulkMergeNewProduct(Products);
+                await UOW.ProductRepository.BulkInsertNewProduct(Products);
                 await UOW.Commit();
                 await Logging.CreateAuditLog(new { }, Products, nameof(ProductService));
                 return Products;
@@ -177,7 +177,7 @@ namespace DMS.Services.MProduct
             {
                 Products.ForEach(x => x.IsNew = false);
                 await UOW.Begin();
-                await UOW.ProductRepository.BulkMergeNewProduct(Products);
+                await UOW.ProductRepository.BulkDeleteNewProduct(Products);
                 await UOW.Commit();
                 await Logging.CreateAuditLog(new { }, Products, nameof(ProductService));
                 return Products;
