@@ -40,7 +40,8 @@ namespace DMS.Services.MProduct
             VariationGroupingExisted,
             VariationCodeExisted,
             VariationNameExisted,
-            TaxTypeEmpty
+            TaxTypeEmpty,
+            ItemInUsed
         }
 
         private IUOW UOW;
@@ -249,6 +250,9 @@ namespace DMS.Services.MProduct
                     {
                         Product.AddError(nameof(ProductValidator), nameof(item) + item.Name, ErrorCode.NameExisted);
                     }
+
+                    if(!item.CanDelete)
+                        Product.AddError(nameof(ProductValidator), nameof(item) + item.Name, ErrorCode.ItemInUsed);
                 }
             }
 

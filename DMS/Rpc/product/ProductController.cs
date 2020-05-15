@@ -40,7 +40,6 @@ namespace DMS.Rpc.product
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
-        public const string DeleteItem = Default + "/delete-item";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-template";
@@ -240,22 +239,6 @@ namespace DMS.Rpc.product
                 return Product_ProductDTO;
             else
                 return BadRequest(Product_ProductDTO);
-        }
-
-        [Route(ProductRoute.DeleteItem), HttpPost]
-        public async Task<ActionResult<bool>> DeleteItem([FromBody] Product_ItemDTO Product_ItemDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (!await HasPermission(Product_ItemDTO.Id))
-                return Forbid();
-
-            Item Item = await ItemService.Get(Product_ItemDTO.Id);
-            if (Item == null)
-                return false;
-
-            return await ItemService.CanDelete(Item);
         }
 
         [Route(ProductRoute.Import), HttpPost]

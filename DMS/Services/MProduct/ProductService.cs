@@ -94,13 +94,10 @@ namespace DMS.Services.MProduct
             {
                 Product.Items.ForEach(x => x.CanDelete = true);
 
-                //foreach (var Item in Product.Items)
-                //{
-                //    if (abc)
-                //    {
-                //        Item.CanDelete = false;
-                //    }
-                //}
+                foreach (var Item in Product.Items)
+                {
+                    Item.CanDelete = await CanDelete(Item);
+                }
             }
             return Product;
         }
@@ -451,6 +448,44 @@ namespace DMS.Services.MProduct
             string path = $"/product/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
             Image = await ImageService.Create(Image, path);
             return Image;
+        }
+
+        private async Task<bool> CanDelete(Item Item)
+        {
+            IndirectSalesOrderContentFilter IndirectSalesOrderContentFilter = new IndirectSalesOrderContentFilter()
+            {
+                ItemId = new IdFilter { Equal = Item.Id }
+            };
+
+            int count = await UOW.IndirectSalesOrderContentRepository.Count(IndirectSalesOrderContentFilter);
+            if (count != 0)
+                return false;
+
+            IndirectSalesOrderPromotionFilter IndirectSalesOrderPromotionFilter = new IndirectSalesOrderPromotionFilter
+            {
+                ItemId = new IdFilter { Equal = Item.Id }
+            };
+            count = await UOW.IndirectSalesOrderPromotionRepository.Count(IndirectSalesOrderPromotionFilter);
+            if (count != 0)
+                return false;
+
+            DirectSalesOrderContentFilter DirectSalesOrderContentFilter = new DirectSalesOrderContentFilter()
+            {
+                ItemId = new IdFilter { Equal = Item.Id }
+            };
+
+            count = await UOW.DirectSalesOrderContentRepository.Count(DirectSalesOrderContentFilter);
+            if (count != 0)
+                return false;
+
+            DirectSalesOrderPromotionFilter DirectSalesOrderPromotionFilter = new DirectSalesOrderPromotionFilter
+            {
+                ItemId = new IdFilter { Equal = Item.Id }
+            };
+            count = await UOW.DirectSalesOrderPromotionRepository.Count(DirectSalesOrderPromotionFilter);
+            if (count != 0)
+                return false;
+            return true;
         }
     }
 }
