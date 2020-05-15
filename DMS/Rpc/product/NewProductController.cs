@@ -33,6 +33,8 @@ namespace DMS.Rpc.product
         public const string SingleListSupplier = Default + "/single-list-supplier";
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
 
+        public const string CountProduct = Default + "/count-product";
+        public const string ListProduct = Default + "/list-product";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(ProductFilter.Code), FieldType.STRING },
@@ -427,6 +429,67 @@ namespace DMS.Rpc.product
             List<Product_ProductGroupingDTO> Product_ProductGroupingDTOs = ProductGroupings
                 .Select(x => new Product_ProductGroupingDTO(x)).ToList();
             return Product_ProductGroupingDTOs;
+        }
+
+        [Route(NewProductRoute.CountProduct), HttpPost]
+        public async Task<long> CountProduct([FromBody] Product_ProductFilterDTO Product_ProductFilterDTO)
+        {
+            ProductFilter ProductFilter = new ProductFilter();
+            ProductFilter.Id = Product_ProductFilterDTO.Id;
+            ProductFilter.Code = Product_ProductFilterDTO.Code;
+            ProductFilter.SupplierCode = Product_ProductFilterDTO.SupplierCode;
+            ProductFilter.Name = Product_ProductFilterDTO.Name;
+            ProductFilter.Description = Product_ProductFilterDTO.Description;
+            ProductFilter.ScanCode = Product_ProductFilterDTO.ScanCode;
+            ProductFilter.ProductTypeId = Product_ProductFilterDTO.ProductTypeId;
+            ProductFilter.SupplierId = Product_ProductFilterDTO.SupplierId;
+            ProductFilter.BrandId = Product_ProductFilterDTO.BrandId;
+            ProductFilter.UnitOfMeasureId = Product_ProductFilterDTO.UnitOfMeasureId;
+            ProductFilter.UnitOfMeasureGroupingId = Product_ProductFilterDTO.UnitOfMeasureGroupingId;
+            ProductFilter.SalePrice = Product_ProductFilterDTO.SalePrice;
+            ProductFilter.RetailPrice = Product_ProductFilterDTO.RetailPrice;
+            ProductFilter.TaxTypeId = Product_ProductFilterDTO.TaxTypeId;
+            ProductFilter.StatusId = Product_ProductFilterDTO.StatusId;
+            ProductFilter.OtherName = Product_ProductFilterDTO.OtherName;
+            ProductFilter.TechnicalName = Product_ProductFilterDTO.TechnicalName;
+            ProductFilter.Note = Product_ProductFilterDTO.Note;
+            ProductFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            return await ProductService.Count(ProductFilter);
+        }
+
+        [Route(NewProductRoute.ListProduct), HttpPost]
+        public async Task<List<Product_ProductDTO>> ListProduct([FromBody] Product_ProductFilterDTO Product_ProductFilterDTO)
+        {
+            ProductFilter ProductFilter = new ProductFilter();
+            ProductFilter.Skip = Product_ProductFilterDTO.Skip;
+            ProductFilter.Take = Product_ProductFilterDTO.Take;
+            ProductFilter.OrderBy = ProductOrder.Id;
+            ProductFilter.OrderType = OrderType.ASC;
+            ProductFilter.Selects = ProductSelect.ALL;
+            ProductFilter.Id = Product_ProductFilterDTO.Id;
+            ProductFilter.Code = Product_ProductFilterDTO.Code;
+            ProductFilter.SupplierCode = Product_ProductFilterDTO.SupplierCode;
+            ProductFilter.Name = Product_ProductFilterDTO.Name;
+            ProductFilter.Description = Product_ProductFilterDTO.Description;
+            ProductFilter.ScanCode = Product_ProductFilterDTO.ScanCode;
+            ProductFilter.ProductTypeId = Product_ProductFilterDTO.ProductTypeId;
+            ProductFilter.SupplierId = Product_ProductFilterDTO.SupplierId;
+            ProductFilter.BrandId = Product_ProductFilterDTO.BrandId;
+            ProductFilter.UnitOfMeasureId = Product_ProductFilterDTO.UnitOfMeasureId;
+            ProductFilter.UnitOfMeasureGroupingId = Product_ProductFilterDTO.UnitOfMeasureGroupingId;
+            ProductFilter.SalePrice = Product_ProductFilterDTO.SalePrice;
+            ProductFilter.RetailPrice = Product_ProductFilterDTO.RetailPrice;
+            ProductFilter.TaxTypeId = Product_ProductFilterDTO.TaxTypeId;
+            ProductFilter.StatusId = Product_ProductFilterDTO.StatusId;
+            ProductFilter.OtherName = Product_ProductFilterDTO.OtherName;
+            ProductFilter.TechnicalName = Product_ProductFilterDTO.TechnicalName;
+            ProductFilter.Note = Product_ProductFilterDTO.Note;
+            ProductFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Product> Products = await ProductService.List(ProductFilter);
+            List<Product_ProductDTO> Product_ProductDTOs = Products
+                .Select(x => new Product_ProductDTO(x)).ToList();
+            return Product_ProductDTOs;
         }
     }
 }
