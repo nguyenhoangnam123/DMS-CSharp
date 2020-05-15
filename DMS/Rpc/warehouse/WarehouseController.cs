@@ -447,7 +447,7 @@ namespace DMS.Rpc.warehouse
                 excel.GenerateWorksheet("Warehouse", WarehouseHeader, data);
                 excel.Save();
             }
-            return File(memoryStream.ToArray(), "application/octet-stream", "Temmplate Inventory.xlsx");
+            return File(memoryStream.ToArray(), "application/octet-stream", "Temmplate_Inventory.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)
