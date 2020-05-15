@@ -267,12 +267,14 @@ namespace DMS.Rpc.e_route_change_request
             ERouteChangeRequestFilter ERouteChangeRequestFilter = new ERouteChangeRequestFilter();
             ERouteChangeRequestFilter = ERouteChangeRequestService.ToFilter(ERouteChangeRequestFilter);
             ERouteChangeRequestFilter.Id = new IdFilter { In = Ids };
-            ERouteChangeRequestFilter.Selects = ERouteChangeRequestSelect.Id;
+            ERouteChangeRequestFilter.Selects = ERouteChangeRequestSelect.Id | ERouteChangeRequestSelect.RequestState;
             ERouteChangeRequestFilter.Skip = 0;
             ERouteChangeRequestFilter.Take = int.MaxValue;
 
             List<ERouteChangeRequest> ERouteChangeRequests = await ERouteChangeRequestService.List(ERouteChangeRequestFilter);
             ERouteChangeRequests = await ERouteChangeRequestService.BulkDelete(ERouteChangeRequests);
+            if (ERouteChangeRequests.Any(x => !x.IsValidated))
+                return BadRequest(ERouteChangeRequests.Where(x => !x.IsValidated));
             return true;
         }
         

@@ -408,6 +408,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(ERoute ERoute)
         {
+            await DataContext.ERouteContent.Where(x => x.ERouteId == ERoute.Id).DeleteFromQueryAsync();
             await DataContext.ERoute.Where(x => x.Id == ERoute.Id).UpdateFromQueryAsync(x => new ERouteDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
@@ -439,6 +440,7 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<ERoute> ERoutes)
         {
             List<long> Ids = ERoutes.Select(x => x.Id).ToList();
+            await DataContext.ERouteContent.Where(x => Ids.Contains(x.ERouteId)).DeleteFromQueryAsync();
             await DataContext.ERoute
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new ERouteDAO { DeletedAt = StaticParams.DateTimeNow });
