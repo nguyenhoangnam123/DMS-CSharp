@@ -9,12 +9,12 @@ namespace DMS.Models
         public long StoreCheckingId { get; set; }
         public long AlbumId { get; set; }
         public long StoreId { get; set; }
-        public long AppUserId { get; set; }
+        public long SaleEmployeeId { get; set; }
         public DateTime ShootingAt { get; set; }
 
         public virtual AlbumDAO Album { get; set; }
-        public virtual AppUserDAO AppUser { get; set; }
         public virtual ImageDAO Image { get; set; }
+        public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StoreDAO Store { get; set; }
         public virtual StoreCheckingDAO StoreChecking { get; set; }
     }

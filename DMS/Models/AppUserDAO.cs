@@ -17,6 +17,7 @@ namespace DMS.Models
             InventoryHistories = new HashSet<InventoryHistoryDAO>();
             RequestWorkflowStepMappings = new HashSet<RequestWorkflowStepMappingDAO>();
             Resellers = new HashSet<ResellerDAO>();
+            StoreCheckings = new HashSet<StoreCheckingDAO>();
             Suppliers = new HashSet<SupplierDAO>();
         }
 
@@ -54,6 +55,7 @@ namespace DMS.Models
         public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
         public virtual ICollection<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappings { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
+        public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
     }
 }
