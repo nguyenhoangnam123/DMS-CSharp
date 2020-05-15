@@ -91,25 +91,6 @@ namespace DMS.Services.MERouteChangeRequest
 
             try
             {
-                ERoute ERoute = await UOW.ERouteRepository.Get(ERouteChangeRequest.ERouteId);
-                ERouteChangeRequest.ERouteChangeRequestContents = ERoute.ERouteContents.Select(x => new ERouteChangeRequestContent
-                {
-                    Id = x.Id,
-                    ERouteChangeRequestId = ERouteChangeRequest.Id,
-                    StoreId = x.StoreId,
-                    OrderNumber = x.OrderNumber,
-                    Monday = x.Monday,
-                    Tuesday = x.Tuesday,
-                    Wednesday = x.Wednesday,
-                    Thursday = x.Thursday,
-                    Friday = x.Friday,
-                    Saturday = x.Saturday,
-                    Sunday = x.Sunday,
-                    Week1 = x.Week1,
-                    Week2 = x.Week2,
-                    Week3 = x.Week3,
-                    Week4 = x.Week4,
-                }).ToList();
                 ERouteChangeRequest.CreatorId = CurrentContext.UserId;
                 ERouteChangeRequest.RequestStateId = Enums.RequestStateEnum.NEW.Id;
                 await UOW.Begin();
