@@ -38,7 +38,7 @@ namespace DMS.Rpc.warehouse
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
+        public const string ExportInventory = Default + "/export-inventory";
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
 
@@ -286,8 +286,8 @@ namespace DMS.Rpc.warehouse
             return Warehouse_WarehouseDTOs;
         }
         
-        [Route(WarehouseRoute.Export), HttpPost]
-        public async Task<FileResult> Export([FromBody] Warehouse_InventoryFilterDTO Warehouse_InventoryFilterDTO)
+        [Route(WarehouseRoute.ExportInventory), HttpPost]
+        public async Task<FileResult> ExportInventory([FromBody] Warehouse_InventoryFilterDTO Warehouse_InventoryFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -296,15 +296,16 @@ namespace DMS.Rpc.warehouse
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = WarehouseSelect.ALL
+                Id = Warehouse_InventoryFilterDTO.Id,
+                Selects = WarehouseSelect.Id
             };
-            List<Warehouse> Warehouses = await WarehouseService.List(WarehouseFilter);
+            Warehouse Warehouses = (await WarehouseService.List(WarehouseFilter)).FirstOrDefault();
 
             var InventoryFilter = new InventoryFilter
             {
                 Id = Warehouse_InventoryFilterDTO.Id,
                 ItemId = Warehouse_InventoryFilterDTO.ItemId,
-                WarehouseId = Warehouse_InventoryFilterDTO.WarehouseId,
+                WarehouseId = new IdFilter { Equal = Warehouses .Id },
                 SaleStock = Warehouse_InventoryFilterDTO.SaleStock,
                 AccountingStock = Warehouse_InventoryFilterDTO.AccountingStock,
 
@@ -348,24 +349,6 @@ namespace DMS.Rpc.warehouse
                     });
                 }
                 excel.GenerateWorksheet("Inventory", InventoryHeaders, data);
-
-                data.Clear();
-                var WarehouseHeader = new List<string[]>()
-                {
-                    new string[] {
-                        "Mã",
-                        "Tên",
-                    }
-                };
-                foreach (var Warehouse in Warehouses)
-                {
-                    data.Add(new object[]
-                    {
-                        Warehouse.Code,
-                        Warehouse.Name
-                    });
-                }
-                excel.GenerateWorksheet("Warehouse", WarehouseHeader, data);
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", "Inventory.xlsx");
