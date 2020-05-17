@@ -17,6 +17,8 @@ namespace DMS.Entities
         public DateTime? CheckOutAt { get; set; }
         public long? CountIndirectSalesOrder { get; set; }
         public long? CountImage { get; set; }
+        public Store Store { get; set; }
+        public AppUser SaleEmployee { get; set; }
         public List<ImageStoreCheckingMapping> ImageStoreCheckingMappings { get; set; }
 
         public bool Equals(StoreChecking other)
@@ -50,7 +52,7 @@ namespace DMS.Entities
     {
         Id = 0,
         Store = 1,
-        AppUser = 2,
+        SaleEmployee = 2,
         Longtitude = 3,
         Latitude = 4,
         CheckInAt = 5,

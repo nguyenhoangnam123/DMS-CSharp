@@ -66,7 +66,6 @@ namespace DMS.Services.MStore
                 Skip = 0,
                 Take = 10,
                 Id = new IdFilter { Equal = Store.Id },
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                 Selects = StoreSelect.Id
             };
 

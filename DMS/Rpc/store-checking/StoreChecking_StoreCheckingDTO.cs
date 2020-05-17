@@ -10,26 +10,30 @@ namespace DMS.Rpc.store_checking
     {
         public long Id { get; set; }
         public long StoreId { get; set; }
-        public long AppUserId { get; set; }
+        public long SaleEmployeeId { get; set; }
         public decimal? Longtitude { get; set; }
         public decimal? Latitude { get; set; }
         public DateTime? CheckInAt { get; set; }
         public DateTime? CheckOutAt { get; set; }
         public long? CountIndirectSalesOrder { get; set; }
         public long? CountImage { get; set; }
+        public StoreChecking_AppUserDTO SaleEmployee { get; set; }
+        public StoreChecking_StoreDTO Store { get; set; }
         public List<StoreChecking_ImageStoreCheckingMappingDTO> ImageStoreCheckingMappings { get; set; }
         public StoreChecking_StoreCheckingDTO() {}
         public StoreChecking_StoreCheckingDTO(StoreChecking StoreChecking)
         {
             this.Id = StoreChecking.Id;
             this.StoreId = StoreChecking.StoreId;
-            this.AppUserId = StoreChecking.SaleEmployeeId;
+            this.SaleEmployeeId = StoreChecking.SaleEmployeeId;
             this.Longtitude = StoreChecking.Longtitude;
             this.Latitude = StoreChecking.Latitude;
             this.CheckInAt = StoreChecking.CheckInAt;
             this.CheckOutAt = StoreChecking.CheckOutAt;
             this.CountIndirectSalesOrder = StoreChecking.CountIndirectSalesOrder;
             this.CountImage = StoreChecking.CountImage;
+            this.SaleEmployee = StoreChecking.SaleEmployee == null ? null : new StoreChecking_AppUserDTO(StoreChecking.SaleEmployee);
+            this.Store = StoreChecking.Store == null ? null : new StoreChecking_StoreDTO(StoreChecking.Store);
             this.ImageStoreCheckingMappings = StoreChecking.ImageStoreCheckingMappings?.Select(x => new StoreChecking_ImageStoreCheckingMappingDTO(x)).ToList();
             this.Errors = StoreChecking.Errors;
         }
@@ -39,7 +43,7 @@ namespace DMS.Rpc.store_checking
     {
         public IdFilter Id { get; set; }
         public IdFilter StoreId { get; set; }
-        public IdFilter AppUserId { get; set; }
+        public IdFilter SaleEmployeeId { get; set; }
         public DecimalFilter Longtitude { get; set; }
         public DecimalFilter Latitude { get; set; }
         public DateFilter CheckInAt { get; set; }
