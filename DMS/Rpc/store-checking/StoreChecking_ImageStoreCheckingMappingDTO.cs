@@ -26,7 +26,7 @@ namespace DMS.Rpc.store_checking
             this.StoreCheckingId = ImageStoreCheckingMapping.StoreCheckingId;
             this.AlbumId = ImageStoreCheckingMapping.AlbumId;
             this.StoreId = ImageStoreCheckingMapping.StoreId;
-            this.AppUserId = ImageStoreCheckingMapping.AppUserId;
+            this.AppUserId = ImageStoreCheckingMapping.SaleEmployeeId;
             this.ShootingAt = ImageStoreCheckingMapping.ShootingAt;
             this.Album = ImageStoreCheckingMapping.Album == null ? null : new StoreChecking_AlbumDTO(ImageStoreCheckingMapping.Album);
             this.AppUser = ImageStoreCheckingMapping.AppUser == null ? null : new StoreChecking_AppUserDTO(ImageStoreCheckingMapping.AppUser);

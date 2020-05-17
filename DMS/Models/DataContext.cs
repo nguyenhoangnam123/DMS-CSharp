@@ -535,9 +535,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.RowId).HasComment("Trường để đồng bộ");
 
-                entity.Property(e => e.StatusId)
-                    .HasDefaultValueSql("((1))")
-                    .HasComment("Trạng thái hoạt động");
+                entity.Property(e => e.StatusId).HasComment("Trạng thái hoạt động");
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("datetime")
@@ -1251,8 +1249,6 @@ namespace DMS.Models
 
                 entity.Property(e => e.Phone).HasMaxLength(50);
 
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Parent)
@@ -1297,8 +1293,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
-
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 
                 entity.HasOne(d => d.Menu)
                     .WithMany(p => p.Permissions)
@@ -1390,8 +1384,6 @@ namespace DMS.Models
                 entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.ScanCode).HasMaxLength(500);
-
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.SupplierCode).HasMaxLength(500);
 
@@ -1576,8 +1568,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
-
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -1780,8 +1770,6 @@ namespace DMS.Models
 
                 entity.Property(e => e.Name).HasMaxLength(500);
 
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
-
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Roles)
                     .HasForeignKey(d => d.StatusId)
@@ -1854,8 +1842,6 @@ namespace DMS.Models
                 entity.Property(e => e.OwnerPhone)
                     .IsRequired()
                     .HasMaxLength(500);
-
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.TaxCode)
                     .IsRequired()
@@ -2095,8 +2081,6 @@ namespace DMS.Models
 
                 entity.Property(e => e.Percentage).HasColumnType("decimal(18, 4)");
 
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Status)
@@ -2240,8 +2224,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
-
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 

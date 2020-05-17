@@ -34,8 +34,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.StoreId != null)
                 query = query.Where(q => q.StoreId, filter.StoreId);
-            if (filter.AppUserId != null)
-                query = query.Where(q => q.AppUserId, filter.AppUserId);
+            if (filter.SaleEmployeeId != null)
+                query = query.Where(q => q.SaleEmployeeId, filter.SaleEmployeeId);
             if (filter.Longtitude != null)
                 query = query.Where(q => q.Longtitude, filter.Longtitude);
             if (filter.Latitude != null)
@@ -64,8 +64,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, filter.Id);
                 if (filter.StoreId != null)
                     queryable = queryable.Where(q => q.StoreId, filter.StoreId);
-                if (filter.AppUserId != null)
-                    queryable = queryable.Where(q => q.AppUserId, filter.AppUserId);
+                if (filter.SaleEmployeeId != null)
+                    queryable = queryable.Where(q => q.SaleEmployeeId, filter.SaleEmployeeId);
                 if (filter.Longtitude != null)
                     queryable = queryable.Where(q => q.Longtitude, filter.Longtitude);
                 if (filter.Latitude != null)
@@ -97,7 +97,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.StoreId);
                             break;
                         case StoreCheckingOrder.AppUser:
-                            query = query.OrderBy(q => q.AppUserId);
+                            query = query.OrderBy(q => q.SaleEmployeeId);
                             break;
                         case StoreCheckingOrder.Longtitude:
                             query = query.OrderBy(q => q.Longtitude);
@@ -129,7 +129,7 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.StoreId);
                             break;
                         case StoreCheckingOrder.AppUser:
-                            query = query.OrderByDescending(q => q.AppUserId);
+                            query = query.OrderByDescending(q => q.SaleEmployeeId);
                             break;
                         case StoreCheckingOrder.Longtitude:
                             query = query.OrderByDescending(q => q.Longtitude);
@@ -162,7 +162,7 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(StoreCheckingSelect.Id) ? q.Id : default(long),
                 StoreId = filter.Selects.Contains(StoreCheckingSelect.Store) ? q.StoreId : default(long),
-                AppUserId = filter.Selects.Contains(StoreCheckingSelect.AppUser) ? q.AppUserId : default(long),
+                SaleEmployeeId = filter.Selects.Contains(StoreCheckingSelect.SaleEmployee) ? q.SaleEmployeeId : default(long),
                 Longtitude = filter.Selects.Contains(StoreCheckingSelect.Longtitude) ? q.Longtitude : default(decimal?),
                 Latitude = filter.Selects.Contains(StoreCheckingSelect.Latitude) ? q.Latitude : default(decimal?),
                 CheckInAt = filter.Selects.Contains(StoreCheckingSelect.CheckInAt) ? q.CheckInAt : default(DateTime?),
@@ -197,7 +197,7 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 StoreId = x.StoreId,
-                AppUserId = x.AppUserId,
+                SaleEmployeeId = x.SaleEmployeeId,
                 Longtitude = x.Longtitude,
                 Latitude = x.Latitude,
                 CheckInAt = x.CheckInAt,
@@ -217,7 +217,7 @@ namespace DMS.Repositories
                     StoreCheckingId = x.StoreCheckingId,
                     AlbumId = x.AlbumId,
                     StoreId = x.StoreId,
-                    AppUserId = x.AppUserId,
+                    SaleEmployeeId = x.SaleEmployeeId,
                     ShootingAt = x.ShootingAt,
                     Album = new Album
                     {
@@ -226,11 +226,11 @@ namespace DMS.Repositories
                     },
                     AppUser = new AppUser
                     {
-                        Id = x.AppUser.Id,
-                        Username = x.AppUser.Username,
-                        DisplayName = x.AppUser.DisplayName,
-                        Email = x.AppUser.Email,
-                        Phone = x.AppUser.Phone,
+                        Id = x.SaleEmployee.Id,
+                        Username = x.SaleEmployee.Username,
+                        DisplayName = x.SaleEmployee.DisplayName,
+                        Email = x.SaleEmployee.Email,
+                        Phone = x.SaleEmployee.Phone,
                     },
                     Image = new Image
                     {
@@ -256,7 +256,7 @@ namespace DMS.Repositories
             StoreCheckingDAO StoreCheckingDAO = new StoreCheckingDAO();
             StoreCheckingDAO.Id = StoreChecking.Id;
             StoreCheckingDAO.StoreId = StoreChecking.StoreId;
-            StoreCheckingDAO.AppUserId = StoreChecking.AppUserId;
+            StoreCheckingDAO.SaleEmployeeId = StoreChecking.SaleEmployeeId;
             StoreCheckingDAO.Longtitude = StoreChecking.Longtitude;
             StoreCheckingDAO.Latitude = StoreChecking.Latitude;
             StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
@@ -277,7 +277,7 @@ namespace DMS.Repositories
                 return false;
             StoreCheckingDAO.Id = StoreChecking.Id;
             StoreCheckingDAO.StoreId = StoreChecking.StoreId;
-            StoreCheckingDAO.AppUserId = StoreChecking.AppUserId;
+            StoreCheckingDAO.SaleEmployeeId = StoreChecking.SaleEmployeeId;
             StoreCheckingDAO.Longtitude = StoreChecking.Longtitude;
             StoreCheckingDAO.Latitude = StoreChecking.Latitude;
             StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
@@ -297,7 +297,7 @@ namespace DMS.Repositories
                 StoreCheckingDAO StoreCheckingDAO = new StoreCheckingDAO();
                 StoreCheckingDAO.Id = StoreChecking.Id;
                 StoreCheckingDAO.StoreId = StoreChecking.StoreId;
-                StoreCheckingDAO.AppUserId = StoreChecking.AppUserId;
+                StoreCheckingDAO.SaleEmployeeId = StoreChecking.SaleEmployeeId;
                 StoreCheckingDAO.Longtitude = StoreChecking.Longtitude;
                 StoreCheckingDAO.Latitude = StoreChecking.Latitude;
                 StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
@@ -333,7 +333,7 @@ namespace DMS.Repositories
                     ImageStoreCheckingMappingDAO.StoreCheckingId = StoreChecking.Id;
                     ImageStoreCheckingMappingDAO.AlbumId = ImageStoreCheckingMapping.AlbumId;
                     ImageStoreCheckingMappingDAO.StoreId = ImageStoreCheckingMapping.StoreId;
-                    ImageStoreCheckingMappingDAO.AppUserId = ImageStoreCheckingMapping.AppUserId;
+                    ImageStoreCheckingMappingDAO.SaleEmployeeId = ImageStoreCheckingMapping.SaleEmployeeId;
                     ImageStoreCheckingMappingDAO.ShootingAt = ImageStoreCheckingMapping.ShootingAt;
                     ImageStoreCheckingMappingDAOs.Add(ImageStoreCheckingMappingDAO);
                 }

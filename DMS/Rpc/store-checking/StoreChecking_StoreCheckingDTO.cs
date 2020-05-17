@@ -23,7 +23,7 @@ namespace DMS.Rpc.store_checking
         {
             this.Id = StoreChecking.Id;
             this.StoreId = StoreChecking.StoreId;
-            this.AppUserId = StoreChecking.AppUserId;
+            this.AppUserId = StoreChecking.SaleEmployeeId;
             this.Longtitude = StoreChecking.Longtitude;
             this.Latitude = StoreChecking.Latitude;
             this.CheckInAt = StoreChecking.CheckInAt;

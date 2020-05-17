@@ -12,7 +12,7 @@ namespace DMS.Entities
         public long StoreCheckingId { get; set; }
         public long AlbumId { get; set; }
         public long StoreId { get; set; }
-        public long AppUserId { get; set; }
+        public long SaleEmployeeId { get; set; }
         public DateTime ShootingAt { get; set; }
         public Album Album { get; set; }
         public AppUser AppUser { get; set; }

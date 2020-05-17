@@ -149,8 +149,8 @@ namespace DMS.Services.MStoreChecking
                         subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.StoreId))
                         subFilter.StoreId = Map(subFilter.StoreId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
-                        subFilter.AppUserId = Map(subFilter.AppUserId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleEmployeeId))
+                        subFilter.SaleEmployeeId = Map(subFilter.SaleEmployeeId, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Longtitude))
                         subFilter.Longtitude = Map(subFilter.Longtitude, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Latitude))

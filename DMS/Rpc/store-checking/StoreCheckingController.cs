@@ -193,7 +193,7 @@ namespace DMS.Rpc.store_checking
             StoreChecking StoreChecking = new StoreChecking();
             StoreChecking.Id = StoreChecking_StoreCheckingDTO.Id;
             StoreChecking.StoreId = StoreChecking_StoreCheckingDTO.StoreId;
-            StoreChecking.AppUserId = StoreChecking_StoreCheckingDTO.AppUserId;
+            StoreChecking.SaleEmployeeId = StoreChecking_StoreCheckingDTO.AppUserId;
             StoreChecking.Longtitude = StoreChecking_StoreCheckingDTO.Longtitude;
             StoreChecking.Latitude = StoreChecking_StoreCheckingDTO.Latitude;
             StoreChecking.CheckInAt = StoreChecking_StoreCheckingDTO.CheckInAt;
@@ -206,7 +206,7 @@ namespace DMS.Rpc.store_checking
                     ImageId = x.ImageId,
                     AlbumId = x.AlbumId,
                     StoreId = x.StoreId,
-                    AppUserId = x.AppUserId,
+                    SaleEmployeeId = x.AppUserId,
                     ShootingAt = x.ShootingAt,
                     Album = x.Album == null ? null : new Album
                     {
@@ -278,7 +278,7 @@ namespace DMS.Rpc.store_checking
 
             StoreCheckingFilter.Id = StoreChecking_StoreCheckingFilterDTO.Id;
             StoreCheckingFilter.StoreId = StoreChecking_StoreCheckingFilterDTO.StoreId;
-            StoreCheckingFilter.AppUserId = StoreChecking_StoreCheckingFilterDTO.AppUserId;
+            StoreCheckingFilter.SaleEmployeeId = StoreChecking_StoreCheckingFilterDTO.AppUserId;
             StoreCheckingFilter.Longtitude = StoreChecking_StoreCheckingFilterDTO.Longtitude;
             StoreCheckingFilter.Latitude = StoreChecking_StoreCheckingFilterDTO.Latitude;
             StoreCheckingFilter.CheckInAt = StoreChecking_StoreCheckingFilterDTO.CheckInAt;

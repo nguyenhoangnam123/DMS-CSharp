@@ -10,7 +10,7 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public long StoreId { get; set; }
-        public long AppUserId { get; set; }
+        public long SaleEmployeeId { get; set; }
         public decimal? Longtitude { get; set; }
         public decimal? Latitude { get; set; }
         public DateTime? CheckInAt { get; set; }
@@ -33,7 +33,7 @@ namespace DMS.Entities
     {
         public IdFilter Id { get; set; }
         public IdFilter StoreId { get; set; }
-        public IdFilter AppUserId { get; set; }
+        public IdFilter SaleEmployeeId { get; set; }
         public DecimalFilter Longtitude { get; set; }
         public DecimalFilter Latitude { get; set; }
         public DateFilter CheckInAt { get; set; }
@@ -65,7 +65,7 @@ namespace DMS.Entities
         ALL = E.ALL,
         Id = E._0,
         Store = E._1,
-        AppUser = E._2,
+        SaleEmployee = E._2,
         Longtitude = E._3,
         Latitude = E._4,
         CheckInAt = E._5,
