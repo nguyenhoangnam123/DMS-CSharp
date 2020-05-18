@@ -24,15 +24,6 @@ namespace DMS.Entities
         }
     }
 
-    public class NotificationUtils
-    {
-        public long Id { get; set; }
-        public string Content { get; set; }
-        public long AppUserId { get; set; }
-        public bool Unread { get; set; }
-        public DateTime Time { get; set; }
-    }
-
     public class NotificationFilter : FilterEntity
     {
         public IdFilter Id { get; set; }

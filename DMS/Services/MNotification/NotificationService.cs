@@ -93,9 +93,33 @@ namespace DMS.Services.MNotification
 
             try
             {
+                
                 await UOW.Begin();
                 await UOW.NotificationRepository.Create(Notification);
                 await UOW.Commit();
+
+                if (Notification.OrganizationId.HasValue)
+                {
+                    AppUserFilter AppUserFilter = new AppUserFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        OrganizationId = new IdFilter { Equal = Notification.OrganizationId.Value },
+                        Selects = AppUserSelect.Id
+                    };
+
+                    var AppUserIds = await UOW.AppUserRepository.List(AppUserFilter);
+
+                    List<NotificationUtils> NotificationUtilss = AppUserIds.Select(x => new NotificationUtils
+                    {
+                        Content = Notification.Content,
+                        Time = StaticParams.DateTimeNow,
+                        Unread = false,
+                        AppUserId = x.Id
+                    }).ToList();
+
+                    await SendNotification(NotificationUtilss);
+                }
 
                 await Logging.CreateAuditLog(Notification, new { }, nameof(NotificationService));
                 return await UOW.NotificationRepository.Get(Notification.Id);
@@ -234,6 +258,39 @@ namespace DMS.Services.MNotification
             return filter;
         }
 
+        private async Task<List<NotificationUtils>> SendNotification(List<NotificationUtils> NotificationUtilss)
+        {
+            RestClient restClient = new RestClient($"http://localhost:{Modules.Utils}");
+            RestRequest restRequest = new RestRequest("/rpc/utils/notification/bulk-create");
+            restRequest.RequestFormat = DataFormat.Json;
+            restRequest.Method = Method.POST;
+            restRequest.AddCookie("Token", CurrentContext.Token);
+            restRequest.AddCookie("X-Language", CurrentContext.Language);
+            restRequest.AddHeader("Content-Type", "multipart/form-data");
+            restRequest.AddBody(NotificationUtilss);
+            try
+            {
+                var response = restClient.Execute<List<NotificationUtils>>(restRequest);
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return NotificationUtilss;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+            return null;
+        }
+
+        public class NotificationUtils
+        {
+            public long Id { get; set; }
+            public string Content { get; set; }
+            public long AppUserId { get; set; }
+            public bool Unread { get; set; }
+            public DateTime Time { get; set; }
+        }
     }
 
 }
