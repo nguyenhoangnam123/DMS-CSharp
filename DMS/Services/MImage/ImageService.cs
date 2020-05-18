@@ -15,6 +15,7 @@ namespace DMS.Services.MImage
 {
     public interface IImageService : IServiceScoped
     {
+        Task<List<Image>> List(ImageFilter ImageFilter);
         Task<Image> Get(long Id);
         Task<Image> Create(Image Image, string path);
         Task<Image> Delete(Image Image);

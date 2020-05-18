@@ -39,6 +39,26 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.Url != null)
                 query = query.Where(q => q.Url, filter.Url);
+            if(filter.AlbumId != null)
+            {
+                if (filter.AlbumId.Equal.HasValue)
+                {
+                    query = from q in query
+                            join iscm in DataContext.ImageStoreCheckingMapping on q.Id equals iscm.ImageId
+                            where iscm.AlbumId == filter.AlbumId.Equal.Value
+                            select q;
+                }
+            }
+            if (filter.StoreCheckingId != null)
+            {
+                if (filter.StoreCheckingId.Equal.HasValue)
+                {
+                    query = from q in query
+                            join iscm in DataContext.ImageStoreCheckingMapping on q.Id equals iscm.ImageId
+                            where iscm.StoreCheckingId == filter.StoreCheckingId.Equal.Value
+                            select q;
+                }
+            }
             query = OrFilter(query, filter);
             return query;
         }
