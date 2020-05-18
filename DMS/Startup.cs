@@ -39,7 +39,7 @@ namespace DMS
             if (env.EnvironmentName == "Production")
             {
                 builder.AddConsul(
-                $"{env.ApplicationName}/appsettings.json",
+                $"{env.ApplicationName}/appsettings.Production.json",
                 options =>
                 {
                     options.ConsulConfigurationOptions =
