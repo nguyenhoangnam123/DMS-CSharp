@@ -190,8 +190,8 @@ namespace DMS.Rpc.store_checking
                 return BadRequest(StoreChecking_StoreCheckingDTO);
         }
 
-        [Route(StoreCheckingRoute.CreateIndirectSalesOrderCreate), HttpPost]
-        public async Task<ActionResult<StoreChecking_IndirectSalesOrderDTO>> CreateIndirectSalesOrderCreate([FromBody] StoreChecking_IndirectSalesOrderDTO StoreChecking_IndirectSalesOrderDTO)
+        [Route(StoreCheckingRoute.CreateIndirectSalesOrder), HttpPost]
+        public async Task<ActionResult<StoreChecking_IndirectSalesOrderDTO>> CreateIndirectSalesOrder([FromBody] StoreChecking_IndirectSalesOrderDTO StoreChecking_IndirectSalesOrderDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
