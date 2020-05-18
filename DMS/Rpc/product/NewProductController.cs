@@ -448,6 +448,7 @@ namespace DMS.Rpc.product
             ProductFilter.Description = Product_ProductFilterDTO.Description;
             ProductFilter.ScanCode = Product_ProductFilterDTO.ScanCode;
             ProductFilter.ProductTypeId = Product_ProductFilterDTO.ProductTypeId;
+            ProductFilter.ProductGroupingId = Product_ProductFilterDTO.ProductGroupingId;
             ProductFilter.SupplierId = Product_ProductFilterDTO.SupplierId;
             ProductFilter.BrandId = Product_ProductFilterDTO.BrandId;
             ProductFilter.UnitOfMeasureId = Product_ProductFilterDTO.UnitOfMeasureId;
@@ -480,6 +481,7 @@ namespace DMS.Rpc.product
             ProductFilter.Description = Product_ProductFilterDTO.Description;
             ProductFilter.ScanCode = Product_ProductFilterDTO.ScanCode;
             ProductFilter.ProductTypeId = Product_ProductFilterDTO.ProductTypeId;
+            ProductFilter.ProductGroupingId = Product_ProductFilterDTO.ProductGroupingId;
             ProductFilter.SupplierId = Product_ProductFilterDTO.SupplierId;
             ProductFilter.BrandId = Product_ProductFilterDTO.BrandId;
             ProductFilter.UnitOfMeasureId = Product_ProductFilterDTO.UnitOfMeasureId;
