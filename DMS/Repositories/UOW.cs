@@ -40,6 +40,7 @@ namespace DMS.Repositories
         IInventoryRepository InventoryRepository { get; }
         IInventoryHistoryRepository InventoryHistoryRepository { get; }
         IMenuRepository MenuRepository { get; }
+        INotificationRepository NotificationRepository { get; }
         IOrganizationRepository OrganizationRepository { get; }
         IPermissionRepository PermissionRepository { get; }
         IProductRepository ProductRepository { get; }
@@ -107,6 +108,7 @@ namespace DMS.Repositories
         public IInventoryRepository InventoryRepository { get; private set; }
         public IInventoryHistoryRepository InventoryHistoryRepository { get; private set; }
         public IMenuRepository MenuRepository { get; private set; }
+        public INotificationRepository NotificationRepository { get; private set; }
         public IOrganizationRepository OrganizationRepository { get; private set; }
         public IPermissionRepository PermissionRepository { get; private set; }
         public IProductRepository ProductRepository { get; private set; }
@@ -172,6 +174,7 @@ namespace DMS.Repositories
             InventoryRepository = new InventoryRepository(DataContext);
             InventoryHistoryRepository = new InventoryHistoryRepository(DataContext);
             MenuRepository = new MenuRepository(DataContext);
+            NotificationRepository = new NotificationRepository(DataContext);
             OrganizationRepository = new OrganizationRepository(DataContext);
             PermissionRepository = new PermissionRepository(DataContext);
             ProductRepository = new ProductRepository(DataContext);

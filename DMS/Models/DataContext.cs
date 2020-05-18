@@ -44,6 +44,7 @@ namespace DMS.Models
         public virtual DbSet<ItemDAO> Item { get; set; }
         public virtual DbSet<ItemImageMappingDAO> ItemImageMapping { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
+        public virtual DbSet<NotificationDAO> Notification { get; set; }
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
         public virtual DbSet<PageDAO> Page { get; set; }
         public virtual DbSet<PermissionDAO> Permission { get; set; }
@@ -1219,6 +1220,20 @@ namespace DMS.Models
                     .HasMaxLength(3000);
 
                 entity.Property(e => e.Path).HasMaxLength(3000);
+            });
+
+            modelBuilder.Entity<NotificationDAO>(entity =>
+            {
+                entity.Property(e => e.Content).HasMaxLength(4000);
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.Notifications)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .HasConstraintName("FK_Notification_Organization");
             });
 
             modelBuilder.Entity<OrganizationDAO>(entity =>

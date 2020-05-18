@@ -11,6 +11,7 @@ namespace DMS.Models
             DirectPriceLists = new HashSet<DirectPriceListDAO>();
             IndirectPriceLists = new HashSet<IndirectPriceListDAO>();
             InverseParent = new HashSet<OrganizationDAO>();
+            Notifications = new HashSet<NotificationDAO>();
             Resellers = new HashSet<ResellerDAO>();
             Stores = new HashSet<StoreDAO>();
             Warehouses = new HashSet<WarehouseDAO>();
@@ -37,6 +38,7 @@ namespace DMS.Models
         public virtual ICollection<DirectPriceListDAO> DirectPriceLists { get; set; }
         public virtual ICollection<IndirectPriceListDAO> IndirectPriceLists { get; set; }
         public virtual ICollection<OrganizationDAO> InverseParent { get; set; }
+        public virtual ICollection<NotificationDAO> Notifications { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
         public virtual ICollection<WarehouseDAO> Warehouses { get; set; }
