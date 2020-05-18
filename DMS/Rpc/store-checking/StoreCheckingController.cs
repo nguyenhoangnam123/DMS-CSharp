@@ -19,6 +19,10 @@ using DMS.Enums;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MERoute;
+using DMS.Services.MTaxType;
+using DMS.Services.MProduct;
+using DMS.Services.MItem;
+using DMS.Services.MIndirectSalesOrder;
 
 namespace DMS.Rpc.store_checking
 {
@@ -32,21 +36,25 @@ namespace DMS.Rpc.store_checking
         public const string Get = Default + "/get";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
+        public const string CreateIndirectSalesOrder = Default + "/create-indirect-sales-order";
         
-        public const string FilterListAlbum = Default + "/filter-list-album";
         public const string FilterListAppUser = Default + "/filter-list-app-user";
-        public const string FilterListImage = Default + "/filter-list-image";
         public const string FilterListStore = Default + "/filter-list-store";
 
         public const string SingleListAlbum = Default + "/single-list-album";
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListEroute = Default + "/single-list-e-route";
-        public const string SingleListImage = Default + "/single-list-image";
         public const string SingleListStore = Default + "/single-list-store";
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
         public const string SingleListStoreType = Default + "/single-list-store-type";
         public const string SingleListStoreCheckingStatus = Default + "/single-list-store-checking-status";
+        public const string SingleListTaxType = Default + "/single-list-tax-type";
+        public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
 
+        public const string CountImage = Default + "/count-image";
+        public const string ListImage = Default + "/list-image";
+        public const string CountItem = Default + "/count-item";
+        public const string ListItem = Default + "/list-item";
         public const string ListStore = Default + "/list-store";
         public const string CountStore = Default + "/count-store";
         
@@ -66,32 +74,44 @@ namespace DMS.Rpc.store_checking
         private IAlbumService AlbumService;
         private IAppUserService AppUserService;
         private IERouteService ERouteService;
+        private IIndirectSalesOrderService IndirectSalesOrderService;
         private IImageService ImageService;
+        private IItemService ItemService;
+        private IProductService ProductService;
         private IStoreService StoreService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreCheckingService StoreCheckingService;
         private IStoreTypeService StoreTypeService;
+        private ITaxTypeService TaxTypeService;
         private ICurrentContext CurrentContext;
         public StoreCheckingController(
             IAlbumService AlbumService,
             IAppUserService AppUserService,
             IERouteService ERouteService,
+            IIndirectSalesOrderService IndirectSalesOrderService,
+            IItemService ItemService,
             IImageService ImageService,
+            IProductService ProductService,
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreCheckingService StoreCheckingService,
             IStoreTypeService StoreTypeService,
+            ITaxTypeService TaxTypeService,
             ICurrentContext CurrentContext
         )
         {
             this.AlbumService = AlbumService;
             this.AppUserService = AppUserService;
             this.ERouteService = ERouteService;
+            this.IndirectSalesOrderService = IndirectSalesOrderService;
+            this.ItemService = ItemService;
             this.ImageService = ImageService;
+            this.ProductService = ProductService;
             this.StoreService = StoreService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreCheckingService = StoreCheckingService;
             this.StoreTypeService = StoreTypeService;
+            this.TaxTypeService = TaxTypeService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -168,6 +188,197 @@ namespace DMS.Rpc.store_checking
                 return StoreChecking_StoreCheckingDTO;
             else
                 return BadRequest(StoreChecking_StoreCheckingDTO);
+        }
+
+        [Route(StoreCheckingRoute.CreateIndirectSalesOrder), HttpPost]
+        public async Task<ActionResult<StoreChecking_IndirectSalesOrderDTO>> CreateIndirectSalesOrder([FromBody] StoreChecking_IndirectSalesOrderDTO StoreChecking_IndirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(StoreChecking_IndirectSalesOrderDTO.Id))
+                return Forbid();
+
+            IndirectSalesOrder IndirectSalesOrder = new IndirectSalesOrder();
+            IndirectSalesOrder.Id = StoreChecking_IndirectSalesOrderDTO.Id;
+            IndirectSalesOrder.Code = StoreChecking_IndirectSalesOrderDTO.Code;
+            IndirectSalesOrder.BuyerStoreId = StoreChecking_IndirectSalesOrderDTO.BuyerStoreId;
+            IndirectSalesOrder.PhoneNumber = StoreChecking_IndirectSalesOrderDTO.PhoneNumber;
+            IndirectSalesOrder.StoreAddress = StoreChecking_IndirectSalesOrderDTO.StoreAddress;
+            IndirectSalesOrder.DeliveryAddress = StoreChecking_IndirectSalesOrderDTO.DeliveryAddress;
+            IndirectSalesOrder.SellerStoreId = StoreChecking_IndirectSalesOrderDTO.SellerStoreId;
+            IndirectSalesOrder.SaleEmployeeId = StoreChecking_IndirectSalesOrderDTO.SaleEmployeeId;
+            IndirectSalesOrder.OrderDate = StoreChecking_IndirectSalesOrderDTO.OrderDate;
+            IndirectSalesOrder.DeliveryDate = StoreChecking_IndirectSalesOrderDTO.DeliveryDate;
+            IndirectSalesOrder.RequestStateId = StoreChecking_IndirectSalesOrderDTO.RequestStateId;
+            IndirectSalesOrder.EditedPriceStatusId = StoreChecking_IndirectSalesOrderDTO.EditedPriceStatusId;
+            IndirectSalesOrder.Note = StoreChecking_IndirectSalesOrderDTO.Note;
+            IndirectSalesOrder.SubTotal = StoreChecking_IndirectSalesOrderDTO.SubTotal;
+            IndirectSalesOrder.GeneralDiscountPercentage = StoreChecking_IndirectSalesOrderDTO.GeneralDiscountPercentage;
+            IndirectSalesOrder.GeneralDiscountAmount = StoreChecking_IndirectSalesOrderDTO.GeneralDiscountAmount;
+            IndirectSalesOrder.TotalTaxAmount = StoreChecking_IndirectSalesOrderDTO.TotalTaxAmount;
+            IndirectSalesOrder.Total = StoreChecking_IndirectSalesOrderDTO.Total;
+            IndirectSalesOrder.BuyerStore = StoreChecking_IndirectSalesOrderDTO.BuyerStore == null ? null : new Store
+            {
+                Id = StoreChecking_IndirectSalesOrderDTO.BuyerStore.Id,
+                Code = StoreChecking_IndirectSalesOrderDTO.BuyerStore.Code,
+                Name = StoreChecking_IndirectSalesOrderDTO.BuyerStore.Name,
+                ParentStoreId = StoreChecking_IndirectSalesOrderDTO.BuyerStore.ParentStoreId,
+                OrganizationId = StoreChecking_IndirectSalesOrderDTO.BuyerStore.OrganizationId,
+                StoreTypeId = StoreChecking_IndirectSalesOrderDTO.BuyerStore.StoreTypeId,
+                StoreGroupingId = StoreChecking_IndirectSalesOrderDTO.BuyerStore.StoreGroupingId,
+                ResellerId = StoreChecking_IndirectSalesOrderDTO.BuyerStore.ResellerId,
+                Telephone = StoreChecking_IndirectSalesOrderDTO.BuyerStore.Telephone,
+                ProvinceId = StoreChecking_IndirectSalesOrderDTO.BuyerStore.ProvinceId,
+                DistrictId = StoreChecking_IndirectSalesOrderDTO.BuyerStore.DistrictId,
+                WardId = StoreChecking_IndirectSalesOrderDTO.BuyerStore.WardId,
+                Address = StoreChecking_IndirectSalesOrderDTO.BuyerStore.Address,
+                DeliveryAddress = StoreChecking_IndirectSalesOrderDTO.BuyerStore.DeliveryAddress,
+                Latitude = StoreChecking_IndirectSalesOrderDTO.BuyerStore.Latitude,
+                Longitude = StoreChecking_IndirectSalesOrderDTO.BuyerStore.Longitude,
+                DeliveryLatitude = StoreChecking_IndirectSalesOrderDTO.BuyerStore.DeliveryLatitude,
+                DeliveryLongitude = StoreChecking_IndirectSalesOrderDTO.BuyerStore.DeliveryLongitude,
+                OwnerName = StoreChecking_IndirectSalesOrderDTO.BuyerStore.OwnerName,
+                OwnerPhone = StoreChecking_IndirectSalesOrderDTO.BuyerStore.OwnerPhone,
+                OwnerEmail = StoreChecking_IndirectSalesOrderDTO.BuyerStore.OwnerEmail,
+                TaxCode = StoreChecking_IndirectSalesOrderDTO.BuyerStore.TaxCode,
+                LegalEntity = StoreChecking_IndirectSalesOrderDTO.BuyerStore.LegalEntity,
+                StatusId = StoreChecking_IndirectSalesOrderDTO.BuyerStore.StatusId,
+            };
+            IndirectSalesOrder.EditedPriceStatus = StoreChecking_IndirectSalesOrderDTO.EditedPriceStatus == null ? null : new EditedPriceStatus
+            {
+                Id = StoreChecking_IndirectSalesOrderDTO.EditedPriceStatus.Id,
+                Code = StoreChecking_IndirectSalesOrderDTO.EditedPriceStatus.Code,
+                Name = StoreChecking_IndirectSalesOrderDTO.EditedPriceStatus.Name,
+            };
+            IndirectSalesOrder.SaleEmployee = StoreChecking_IndirectSalesOrderDTO.SaleEmployee == null ? null : new AppUser
+            {
+                Id = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Id,
+                Username = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Username,
+                Password = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Password,
+                DisplayName = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.DisplayName,
+                Address = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Address,
+                Email = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Email,
+                Phone = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Phone,
+                Position = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Position,
+                Department = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Department,
+                OrganizationId = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.OrganizationId,
+                SexId = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.SexId,
+                StatusId = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.StatusId,
+                Avatar = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Avatar,
+                Birthday = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Birthday,
+                ProvinceId = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.ProvinceId,
+            };
+            IndirectSalesOrder.SellerStore = StoreChecking_IndirectSalesOrderDTO.SellerStore == null ? null : new Store
+            {
+                Id = StoreChecking_IndirectSalesOrderDTO.SellerStore.Id,
+                Code = StoreChecking_IndirectSalesOrderDTO.SellerStore.Code,
+                Name = StoreChecking_IndirectSalesOrderDTO.SellerStore.Name,
+                ParentStoreId = StoreChecking_IndirectSalesOrderDTO.SellerStore.ParentStoreId,
+                OrganizationId = StoreChecking_IndirectSalesOrderDTO.SellerStore.OrganizationId,
+                StoreTypeId = StoreChecking_IndirectSalesOrderDTO.SellerStore.StoreTypeId,
+                StoreGroupingId = StoreChecking_IndirectSalesOrderDTO.SellerStore.StoreGroupingId,
+                ResellerId = StoreChecking_IndirectSalesOrderDTO.SellerStore.ResellerId,
+                Telephone = StoreChecking_IndirectSalesOrderDTO.SellerStore.Telephone,
+                ProvinceId = StoreChecking_IndirectSalesOrderDTO.SellerStore.ProvinceId,
+                DistrictId = StoreChecking_IndirectSalesOrderDTO.SellerStore.DistrictId,
+                WardId = StoreChecking_IndirectSalesOrderDTO.SellerStore.WardId,
+                Address = StoreChecking_IndirectSalesOrderDTO.SellerStore.Address,
+                DeliveryAddress = StoreChecking_IndirectSalesOrderDTO.SellerStore.DeliveryAddress,
+                Latitude = StoreChecking_IndirectSalesOrderDTO.SellerStore.Latitude,
+                Longitude = StoreChecking_IndirectSalesOrderDTO.SellerStore.Longitude,
+                DeliveryLatitude = StoreChecking_IndirectSalesOrderDTO.SellerStore.DeliveryLatitude,
+                DeliveryLongitude = StoreChecking_IndirectSalesOrderDTO.SellerStore.DeliveryLongitude,
+                OwnerName = StoreChecking_IndirectSalesOrderDTO.SellerStore.OwnerName,
+                OwnerPhone = StoreChecking_IndirectSalesOrderDTO.SellerStore.OwnerPhone,
+                OwnerEmail = StoreChecking_IndirectSalesOrderDTO.SellerStore.OwnerEmail,
+                TaxCode = StoreChecking_IndirectSalesOrderDTO.SellerStore.TaxCode,
+                LegalEntity = StoreChecking_IndirectSalesOrderDTO.SellerStore.LegalEntity,
+                StatusId = StoreChecking_IndirectSalesOrderDTO.SellerStore.StatusId,
+            };
+            IndirectSalesOrder.IndirectSalesOrderContents = StoreChecking_IndirectSalesOrderDTO.IndirectSalesOrderContents?
+                .Select(x => new IndirectSalesOrderContent
+                {
+                    Id = x.Id,
+                    ItemId = x.ItemId,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    Quantity = x.Quantity,
+                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
+                    RequestedQuantity = x.RequestedQuantity,
+                    PrimaryPrice = x.PrimaryPrice,
+                    SalePrice = x.SalePrice,
+                    DiscountPercentage = x.DiscountPercentage,
+                    DiscountAmount = x.DiscountAmount,
+                    GeneralDiscountPercentage = x.GeneralDiscountPercentage,
+                    GeneralDiscountAmount = x.GeneralDiscountAmount,
+                    Amount = x.Amount,
+                    TaxPercentage = x.TaxPercentage,
+                    TaxAmount = x.TaxAmount,
+                    Factor = x.Factor,
+                    PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.PrimaryUnitOfMeasure.Id,
+                        Code = x.PrimaryUnitOfMeasure.Code,
+                        Name = x.PrimaryUnitOfMeasure.Name,
+                        Description = x.PrimaryUnitOfMeasure.Description,
+                        StatusId = x.PrimaryUnitOfMeasure.StatusId,
+                    },
+                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.UnitOfMeasure.Id,
+                        Code = x.UnitOfMeasure.Code,
+                        Name = x.UnitOfMeasure.Name,
+                        Description = x.UnitOfMeasure.Description,
+                        StatusId = x.UnitOfMeasure.StatusId,
+                    },
+                }).ToList();
+            IndirectSalesOrder.IndirectSalesOrderPromotions = StoreChecking_IndirectSalesOrderDTO.IndirectSalesOrderPromotions?
+                .Select(x => new IndirectSalesOrderPromotion
+                {
+                    Id = x.Id,
+                    ItemId = x.ItemId,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    Quantity = x.Quantity,
+                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
+                    RequestedQuantity = x.RequestedQuantity,
+                    Note = x.Note,
+                    Factor = x.Factor,
+                    Item = x.Item == null ? null : new Item
+                    {
+                        Id = x.Item.Id,
+                        ProductId = x.Item.ProductId,
+                        Code = x.Item.Code,
+                        Name = x.Item.Name,
+                        ScanCode = x.Item.ScanCode,
+                        SalePrice = x.Item.SalePrice,
+                        RetailPrice = x.Item.RetailPrice,
+                        StatusId = x.Item.StatusId,
+                    },
+                    PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.PrimaryUnitOfMeasure.Id,
+                        Code = x.PrimaryUnitOfMeasure.Code,
+                        Name = x.PrimaryUnitOfMeasure.Name,
+                        Description = x.PrimaryUnitOfMeasure.Description,
+                        StatusId = x.PrimaryUnitOfMeasure.StatusId,
+                    },
+                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.UnitOfMeasure.Id,
+                        Code = x.UnitOfMeasure.Code,
+                        Name = x.UnitOfMeasure.Name,
+                        Description = x.UnitOfMeasure.Description,
+                        StatusId = x.UnitOfMeasure.StatusId,
+                    },
+                }).ToList();
+            IndirectSalesOrder.BaseLanguage = CurrentContext.Language;
+            IndirectSalesOrder.StoreCheckingId = StoreChecking_IndirectSalesOrderDTO.StoreCheckingId;
+            IndirectSalesOrder = await IndirectSalesOrderService.Create(IndirectSalesOrder);
+            StoreChecking_IndirectSalesOrderDTO = new StoreChecking_IndirectSalesOrderDTO(IndirectSalesOrder);
+            if (IndirectSalesOrder.IsValidated)
+                return StoreChecking_IndirectSalesOrderDTO;
+            else
+                return BadRequest(StoreChecking_IndirectSalesOrderDTO);
         }
 
         private async Task<bool> HasPermission(long Id)
@@ -288,26 +499,6 @@ namespace DMS.Rpc.store_checking
             return StoreCheckingFilter;
         }
 
-        [Route(StoreCheckingRoute.FilterListAlbum), HttpPost]
-        public async Task<List<StoreChecking_AlbumDTO>> FilterListAlbum([FromBody] StoreChecking_AlbumFilterDTO StoreChecking_AlbumFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            AlbumFilter AlbumFilter = new AlbumFilter();
-            AlbumFilter.Skip = 0;
-            AlbumFilter.Take = 20;
-            AlbumFilter.OrderBy = AlbumOrder.Id;
-            AlbumFilter.OrderType = OrderType.ASC;
-            AlbumFilter.Selects = AlbumSelect.ALL;
-            AlbumFilter.Id = StoreChecking_AlbumFilterDTO.Id;
-            AlbumFilter.Name = StoreChecking_AlbumFilterDTO.Name;
-
-            List<Album> Albums = await AlbumService.List(AlbumFilter);
-            List<StoreChecking_AlbumDTO> StoreChecking_AlbumDTOs = Albums
-                .Select(x => new StoreChecking_AlbumDTO(x)).ToList();
-            return StoreChecking_AlbumDTOs;
-        }
         [Route(StoreCheckingRoute.FilterListAppUser), HttpPost]
         public async Task<List<StoreChecking_AppUserDTO>> FilterListAppUser([FromBody] StoreChecking_AppUserFilterDTO StoreChecking_AppUserFilterDTO)
         {
@@ -554,6 +745,51 @@ namespace DMS.Rpc.store_checking
             return StoreChecking_StoreCheckingStatusDTOs;
         }
 
+        [Route(StoreCheckingRoute.SingleListTaxType), HttpPost]
+        public async Task<List<StoreChecking_TaxTypeDTO>> SingleListTaxType([FromBody] StoreChecking_TaxTypeFilterDTO StoreChecking_TaxTypeFilterDTO)
+        {
+            TaxTypeFilter TaxTypeFilter = new TaxTypeFilter();
+            TaxTypeFilter.Skip = 0;
+            TaxTypeFilter.Take = 20;
+            TaxTypeFilter.OrderBy = TaxTypeOrder.Id;
+            TaxTypeFilter.OrderType = OrderType.ASC;
+            TaxTypeFilter.Selects = TaxTypeSelect.ALL;
+            TaxTypeFilter.Id = StoreChecking_TaxTypeFilterDTO.Id;
+            TaxTypeFilter.Code = StoreChecking_TaxTypeFilterDTO.Code;
+            TaxTypeFilter.Name = StoreChecking_TaxTypeFilterDTO.Name;
+            TaxTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<TaxType> TaxTypes = await TaxTypeService.List(TaxTypeFilter);
+            List<StoreChecking_TaxTypeDTO> StoreChecking_TaxTypeDTOs = TaxTypes
+                .Select(x => new StoreChecking_TaxTypeDTO(x)).ToList();
+            return StoreChecking_TaxTypeDTOs;
+        }
+
+        [Route(StoreCheckingRoute.SingleListUnitOfMeasure), HttpPost]
+        public async Task<List<StoreChecking_UnitOfMeasureDTO>> SingleListUnitOfMeasure([FromBody] StoreChecking_UnitOfMeasureFilterDTO StoreChecking_UnitOfMeasureFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            var Product = await ProductService.Get(StoreChecking_UnitOfMeasureFilterDTO.ProductId.Equal ?? 0);
+
+            List<StoreChecking_UnitOfMeasureDTO> StoreChecking_UnitOfMeasureDTOs = new List<StoreChecking_UnitOfMeasureDTO>();
+            if (Product.UnitOfMeasureGrouping != null && Product.UnitOfMeasureGrouping.StatusId == Enums.StatusEnum.ACTIVE.Id)
+            {
+                StoreChecking_UnitOfMeasureDTOs = Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(x => new StoreChecking_UnitOfMeasureDTO(x)).ToList();
+            }
+            StoreChecking_UnitOfMeasureDTOs.Add(new StoreChecking_UnitOfMeasureDTO
+            {
+                Id = Product.UnitOfMeasure.Id,
+                Code = Product.UnitOfMeasure.Code,
+                Name = Product.UnitOfMeasure.Name,
+                Description = Product.UnitOfMeasure.Description,
+                StatusId = Product.UnitOfMeasure.StatusId,
+                Factor = 1
+            });
+            return StoreChecking_UnitOfMeasureDTOs;
+        }
+
         [Route(StoreCheckingRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
         {
@@ -623,6 +859,92 @@ namespace DMS.Rpc.store_checking
             List<StoreChecking_StoreDTO> StoreChecking_StoreDTOs = Stores
                 .Select(x => new StoreChecking_StoreDTO(x)).ToList();
             return StoreChecking_StoreDTOs;
+        }
+
+        [Route(StoreCheckingRoute.CountItem), HttpPost]
+        public async Task<long> CountItem([FromBody] StoreChecking_ItemFilterDTO StoreChecking_ItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Id = StoreChecking_ItemFilterDTO.Id;
+            ItemFilter.Code = StoreChecking_ItemFilterDTO.Code;
+            ItemFilter.Name = StoreChecking_ItemFilterDTO.Name;
+            ItemFilter.OtherName = StoreChecking_ItemFilterDTO.OtherName;
+            ItemFilter.ProductGroupingId = StoreChecking_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductId = StoreChecking_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = StoreChecking_ItemFilterDTO.ProductTypeId;
+            ItemFilter.RetailPrice = StoreChecking_ItemFilterDTO.RetailPrice;
+            ItemFilter.SalePrice = StoreChecking_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = StoreChecking_ItemFilterDTO.ScanCode;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            ItemFilter.SupplierId = StoreChecking_ItemFilterDTO.SupplierId;
+            return await ItemService.Count(ItemFilter);
+        }
+
+        [Route(StoreCheckingRoute.ListItem), HttpPost]
+        public async Task<List<StoreChecking_ItemDTO>> ListItem([FromBody] StoreChecking_ItemFilterDTO StoreChecking_ItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Skip = StoreChecking_ItemFilterDTO.Skip;
+            ItemFilter.Take = StoreChecking_ItemFilterDTO.Take;
+            ItemFilter.OrderBy = ItemOrder.Id;
+            ItemFilter.OrderType = OrderType.ASC;
+            ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Id = StoreChecking_ItemFilterDTO.Id;
+            ItemFilter.Code = StoreChecking_ItemFilterDTO.Code;
+            ItemFilter.Name = StoreChecking_ItemFilterDTO.Name;
+            ItemFilter.OtherName = StoreChecking_ItemFilterDTO.OtherName;
+            ItemFilter.ProductGroupingId = StoreChecking_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductId = StoreChecking_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = StoreChecking_ItemFilterDTO.ProductTypeId;
+            ItemFilter.RetailPrice = StoreChecking_ItemFilterDTO.RetailPrice;
+            ItemFilter.SalePrice = StoreChecking_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = StoreChecking_ItemFilterDTO.ScanCode;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            ItemFilter.SupplierId = StoreChecking_ItemFilterDTO.SupplierId;
+
+            if (StoreChecking_ItemFilterDTO.StoreId != null && StoreChecking_ItemFilterDTO.StoreId.Equal.HasValue)
+            {
+                List<Item> Items = await IndirectSalesOrderService.ListItem(ItemFilter, StoreChecking_ItemFilterDTO.StoreId.Equal.Value);
+                List<StoreChecking_ItemDTO> StoreChecking_ItemDTOs = Items
+                    .Select(x => new StoreChecking_ItemDTO(x)).ToList();
+                return StoreChecking_ItemDTOs;
+            }
+            else
+            {
+                List<Item> Items = await ItemService.List(ItemFilter);
+                List<StoreChecking_ItemDTO> StoreChecking_ItemDTOs = Items
+                    .Select(x => new StoreChecking_ItemDTO(x)).ToList();
+                return StoreChecking_ItemDTOs;
+            }
+        }
+
+        [Route(StoreCheckingRoute.ListImage), HttpPost]
+        public async Task<List<StoreChecking_ImageDTO>> ListImage([FromBody] StoreChecking_ImageFilterDTO StoreChecking_ImageFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ImageFilter ImageFilter = new ImageFilter
+            {
+                Skip = StoreChecking_ImageFilterDTO.Skip,
+                Take = StoreChecking_ImageFilterDTO.Take,
+                OrderBy = ImageOrder.Id,
+                OrderType = OrderType.ASC,
+                Selects = ImageSelect.ALL,
+                AlbumId = StoreChecking_ImageFilterDTO.AlbumId,
+                StoreCheckingId = StoreChecking_ImageFilterDTO.StoreCheckingId,
+            };
+
+            List<Image> Images = await ImageService.List(ImageFilter);
+            List<StoreChecking_ImageDTO> StoreChecking_ImageDTOs = Images
+                .Select(x => new StoreChecking_ImageDTO(x)).ToList();
+            return StoreChecking_ImageDTOs;
         }
     }
 }

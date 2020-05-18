@@ -13,6 +13,7 @@ namespace DMS.Entities
         public string Url { get; set; }
         public byte[] Content { get; set; }
 
+        public List<ImageStoreCheckingMapping> ImageStoreCheckingMapping { get; set; }
         public bool Equals(Image other)
         {
             return other != null && Id == other.Id;
@@ -28,6 +29,8 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public StringFilter Name { get; set; }
         public StringFilter Url { get; set; }
+        public IdFilter StoreCheckingId { get; set; }
+        public IdFilter AlbumId { get; set; }
         public List<ImageFilter> OrFilter { get; set; }
         public ImageOrder OrderBy { get; set; }
         public ImageSelect Selects { get; set; }
