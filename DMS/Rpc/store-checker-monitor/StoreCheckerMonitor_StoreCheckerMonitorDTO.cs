@@ -10,7 +10,7 @@ namespace DMS.Rpc.store_checker_monitor
 {
     public class StoreCheckerMonitor_StoreCheckerMonitorDTO : DataDTO
     {
-        public long EmployeeId { get; set; }
+        public long SaleEmployeeId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
         public string OrganizationName { get; set; }

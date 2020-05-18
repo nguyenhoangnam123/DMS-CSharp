@@ -84,7 +84,7 @@ namespace DMS.Rpc.store_checker_monitor
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End
                         select new StoreCheckerMonitor_StoreCheckerMonitorDTO
                         {
-                            EmployeeId = ap.Id,
+                            SaleEmployeeId = ap.Id,
                             Username = ap.Username,
                             DisplayName = ap.DisplayName,
                             OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
@@ -93,7 +93,7 @@ namespace DMS.Rpc.store_checker_monitor
                 .Skip(StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Skip)
                 .Take(StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Take)
                 .ToListAsync();
-            List<long> AppUserIds = StoreCheckerMonitor_StoreCheckerMonitorDTOs.Select(s => s.EmployeeId).ToList();
+            List<long> AppUserIds = StoreCheckerMonitor_StoreCheckerMonitorDTOs.Select(s => s.SaleEmployeeId).ToList();
             List<ERouteContent> ERouteContents = await (from ec in DataContext.ERouteContent
                                                         join e in DataContext.ERoute on ec.ERouteId equals e.Id
                                                         where AppUserIds.Contains(e.SaleEmployeeId) &&
@@ -201,24 +201,23 @@ namespace DMS.Rpc.store_checker_monitor
                         }
                         if (PlanDay && PlanWeek)
                             StoreCheckerMonitor_StoreCheckingDTO.Plan.Add(ERouteContent.StoreId);
-                        List<StoreCheckingDAO> Checked = StoreCheckingDAOs
-                            .Where(s =>
-                                s.SaleEmployeeId == ERouteContent.ERoute.SaleEmployeeId &&
-                                s.CheckOutAt.Value == i
-                            ).ToList();
-                        foreach (StoreCheckingDAO s in Checked)
-                        {
-                            if (s.StoreId == ERouteContent.StoreId)
-                                StoreCheckerMonitor_StoreCheckingDTO.Internal.Add(s.StoreId);
-                            else
-                                StoreCheckerMonitor_StoreCheckingDTO.External.Add(s.StoreId);
-                            if (s.CountImage > 0)
-                                StoreCheckerMonitor_StoreCheckingDTO.Image.Add(s.StoreId);
-                            if (s.CountIndirectSalesOrder > 0)
-                                StoreCheckerMonitor_StoreCheckingDTO.SalesOrder.Add(s.StoreId);
-                        }
                     }
-
+                    List<StoreCheckingDAO> Checked = StoreCheckingDAOs
+                           .Where(s =>
+                               s.SaleEmployeeId == StoreCheckerMonitor_StoreCheckerMonitorDTO.SaleEmployeeId &&
+                               s.CheckOutAt.Value == i
+                           ).ToList();
+                    foreach (StoreCheckingDAO s in Checked)
+                    {
+                        if (StoreCheckerMonitor_StoreCheckingDTO.Plan.Contains(s.StoreId))
+                            StoreCheckerMonitor_StoreCheckingDTO.Internal.Add(s.StoreId);
+                        else
+                            StoreCheckerMonitor_StoreCheckingDTO.External.Add(s.StoreId);
+                        if (s.CountImage > 0)
+                            StoreCheckerMonitor_StoreCheckingDTO.Image.Add(s.StoreId);
+                        if (s.CountIndirectSalesOrder > 0)
+                            StoreCheckerMonitor_StoreCheckingDTO.SalesOrder.Add(s.StoreId);
+                    }
                 }
             }
             return null;
