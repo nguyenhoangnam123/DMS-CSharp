@@ -12,6 +12,10 @@
             {
               "destination_name": "utils-backend",
               "local_bind_port": 10100
+            },
+            {
+              "destination_name": "rabbitmq",
+              "local_bind_port": 5672
             }
           ]
         }
