@@ -245,8 +245,6 @@ namespace DMS.Rpc.notification
                             Error += Notification.Errors[nameof(Notification.Title)];
                         if (Notification.Errors.ContainsKey(nameof(Notification.Content)))
                             Error += Notification.Errors[nameof(Notification.Content)];
-                        if (Notification.Errors.ContainsKey(nameof(Notification.OrganizationId)))
-                            Error += Notification.Errors[nameof(Notification.OrganizationId)];
                         Errors.Add(Error);
                     }
                 }
@@ -276,7 +274,6 @@ namespace DMS.Rpc.notification
                         "Id",
                         "Title",
                         "Content",
-                        "OrganizationId",
                         "AppUserId",
                         "StatusId",
                     }
@@ -290,56 +287,11 @@ namespace DMS.Rpc.notification
                         Notification.Id,
                         Notification.Title,
                         Notification.Content,
-                        Notification.OrganizationId,
                     });
                 }
                 excel.GenerateWorksheet("Notification", NotificationHeaders, NotificationData);
                 #endregion
                 
-                #region Organization
-                var OrganizationFilter = new OrganizationFilter();
-                OrganizationFilter.Selects = OrganizationSelect.ALL;
-                OrganizationFilter.OrderBy = OrganizationOrder.Id;
-                OrganizationFilter.OrderType = OrderType.ASC;
-                OrganizationFilter.Skip = 0;
-                OrganizationFilter.Take = int.MaxValue;
-                List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-
-                var OrganizationHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                        "ParentId",
-                        "Path",
-                        "Level",
-                        "StatusId",
-                        "Phone",
-                        "Email",
-                        "Address",
-                    }
-                };
-                List<object[]> OrganizationData = new List<object[]>();
-                for (int i = 0; i < Organizations.Count; i++)
-                {
-                    var Organization = Organizations[i];
-                    OrganizationData.Add(new Object[]
-                    {
-                        Organization.Id,
-                        Organization.Code,
-                        Organization.Name,
-                        Organization.ParentId,
-                        Organization.Path,
-                        Organization.Level,
-                        Organization.StatusId,
-                        Organization.Phone,
-                        Organization.Email,
-                        Organization.Address,
-                    });
-                }
-                excel.GenerateWorksheet("Organization", OrganizationHeaders, OrganizationData);
-                #endregion
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", "Notification.xlsx");
@@ -527,20 +479,11 @@ namespace DMS.Rpc.notification
             Notification.Id = Notification_NotificationDTO.Id;
             Notification.Title = Notification_NotificationDTO.Title;
             Notification.Content = Notification_NotificationDTO.Content;
-            Notification.OrganizationId = Notification_NotificationDTO.OrganizationId;
-            Notification.Organization = Notification_NotificationDTO.Organization == null ? null : new Organization
+            Notification.NotificationOrganizationMappings = Notification_NotificationDTO.NotificationOrganizationMappingDTOs?.Select(x => new NotificationOrganizationMapping
             {
-                Id = Notification_NotificationDTO.Organization.Id,
-                Code = Notification_NotificationDTO.Organization.Code,
-                Name = Notification_NotificationDTO.Organization.Name,
-                ParentId = Notification_NotificationDTO.Organization.ParentId,
-                Path = Notification_NotificationDTO.Organization.Path,
-                Level = Notification_NotificationDTO.Organization.Level,
-                StatusId = Notification_NotificationDTO.Organization.StatusId,
-                Phone = Notification_NotificationDTO.Organization.Phone,
-                Email = Notification_NotificationDTO.Organization.Email,
-                Address = Notification_NotificationDTO.Organization.Address,
-            };
+                NotificationId = x.NotificationId,
+                OrganizationId = x.OrganizationId,
+            }).ToList();
             Notification.BaseLanguage = CurrentContext.Language;
             return Notification;
         }
