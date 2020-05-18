@@ -11,16 +11,14 @@ namespace DMS.Rpc.notification
         public long Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        public long? OrganizationId { get; set; }
-        public Notification_OrganizationDTO Organization { get; set; }
+        public List<Notification_NotificationOrganizationMappingDTO> NotificationOrganizationMappingDTOs { get; set; }
         public Notification_NotificationDTO() {}
         public Notification_NotificationDTO(Notification Notification)
         {
             this.Id = Notification.Id;
             this.Title = Notification.Title;
             this.Content = Notification.Content;
-            this.OrganizationId = Notification.OrganizationId;
-            this.Organization = Notification.Organization == null ? null : new Notification_OrganizationDTO(Notification.Organization);
+            this.NotificationOrganizationMappingDTOs = Notification.NotificationOrganizationMappings?.Select(x => new Notification_NotificationOrganizationMappingDTO(x)).ToList();
             this.Errors = Notification.Errors;
         }
     }
