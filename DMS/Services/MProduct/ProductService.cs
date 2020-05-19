@@ -123,7 +123,7 @@ namespace DMS.Services.MProduct
 
             try
             {
-                if (Product.Items == null || !Product.Items.Any())
+                if(Product.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
                 {
                     Product.Items = new List<Item>();
                     Product.Items.Add(new Item

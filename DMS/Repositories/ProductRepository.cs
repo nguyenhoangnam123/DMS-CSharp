@@ -657,7 +657,6 @@ namespace DMS.Repositories
             ProductDAO.TaxTypeId = Product.TaxTypeId;
             ProductDAO.StatusId = Product.StatusId;
             ProductDAO.IsNew = Product.IsNew;
-            ProductDAO.UsedVariationId = Product.UsedVariationId;
             ProductDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(Product);
@@ -859,6 +858,11 @@ namespace DMS.Repositories
                     }
                 }
                 await DataContext.Item.BulkMergeAsync(ItemDAOs);
+                foreach(ItemDAO ItemDAO in ItemDAOs)
+                {
+                    Item Item = Product.Items.Where(i => i.Code == ItemDAO.Code).FirstOrDefault();
+                    Item.Id = ItemDAO.Id;
+                }    
             }
             await DataContext.ProductImageMapping
                 .Where(x => x.ProductId == Product.Id)
