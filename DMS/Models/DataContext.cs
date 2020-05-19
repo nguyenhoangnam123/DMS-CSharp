@@ -77,6 +77,7 @@ namespace DMS.Models
         public virtual DbSet<UnitOfMeasureDAO> UnitOfMeasure { get; set; }
         public virtual DbSet<UnitOfMeasureGroupingDAO> UnitOfMeasureGrouping { get; set; }
         public virtual DbSet<UnitOfMeasureGroupingContentDAO> UnitOfMeasureGroupingContent { get; set; }
+        public virtual DbSet<UsedVariationDAO> UsedVariation { get; set; }
         public virtual DbSet<VariationDAO> Variation { get; set; }
         public virtual DbSet<VariationGroupingDAO> VariationGrouping { get; set; }
         public virtual DbSet<WardDAO> Ward { get; set; }
@@ -1444,6 +1445,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.UnitOfMeasureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Item_UnitOfMeasure");
+
+                entity.HasOne(d => d.UsedVariation)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.UsedVariationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_UsedVariation");
             });
 
             modelBuilder.Entity<ProductGroupingDAO>(entity =>
@@ -2180,6 +2187,19 @@ namespace DMS.Models
                     .HasForeignKey(d => d.UnitOfMeasureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UnitOfMeasureGroupingContent_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<UsedVariationDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<VariationDAO>(entity =>

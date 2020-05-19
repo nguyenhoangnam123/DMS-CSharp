@@ -27,7 +27,7 @@ namespace DMS.Rpc.product
         public string TechnicalName { get; set; }
         public string Note { get; set; }
         public bool IsNew { get; set; }
-        public bool UsedVariation { get; set; }
+        public long UsedVariationId { get; set; }
         public long VariationCounter { get; set; }
         public Product_BrandDTO Brand { get; set; }
         public Product_ProductTypeDTO ProductType { get; set; }
@@ -36,6 +36,7 @@ namespace DMS.Rpc.product
         public Product_TaxTypeDTO TaxType { get; set; }
         public Product_UnitOfMeasureDTO UnitOfMeasure { get; set; }
         public Product_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping { get; set; }
+        public Product_UsedVariationDTO UsedVariation { get; set; }
         public List<Product_ItemDTO> Items { get; set; }
         public List<Product_ProductImageMappingDTO> ProductImageMappings { get; set; }
         public List<Product_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
@@ -63,7 +64,7 @@ namespace DMS.Rpc.product
             this.TechnicalName = Product.TechnicalName;
             this.Note = Product.Note;
             this.IsNew = Product.IsNew;
-            this.UsedVariation = Product.UsedVariation;
+            this.UsedVariationId = Product.UsedVariationId;
             this.VariationCounter = Product.VariationCounter;
             this.Brand = Product.Brand == null ? null : new Product_BrandDTO(Product.Brand);
             this.ProductType = Product.ProductType == null ? null : new Product_ProductTypeDTO(Product.ProductType);
@@ -72,6 +73,7 @@ namespace DMS.Rpc.product
             this.TaxType = Product.TaxType == null ? null : new Product_TaxTypeDTO(Product.TaxType);
             this.UnitOfMeasure = Product.UnitOfMeasure == null ? null : new Product_UnitOfMeasureDTO(Product.UnitOfMeasure);
             this.UnitOfMeasureGrouping = Product.UnitOfMeasureGrouping == null ? null : new Product_UnitOfMeasureGroupingDTO(Product.UnitOfMeasureGrouping);
+            this.UsedVariation = Product.UsedVariation == null ? null : new Product_UsedVariationDTO(Product.UsedVariation);
             this.Items = Product.Items?.Select(x => new Product_ItemDTO(x)).ToList();
             this.ProductImageMappings = Product.ProductImageMappings?.Select(x => new Product_ProductImageMappingDTO(x)).ToList();
             this.ProductProductGroupingMappings = Product.ProductProductGroupingMappings?.Select(x => new Product_ProductProductGroupingMappingDTO(x)).ToList();
@@ -101,6 +103,7 @@ namespace DMS.Rpc.product
         public StringFilter TechnicalName { get; set; }
         public StringFilter Note { get; set; }
         public IdFilter ProductGroupingId { get; set; }
+        public IdFilter UsedVariationId { get; set; }
         public bool? IsNew { get; set; }
         public string Search { get; set; }
         public ProductOrder OrderBy { get; set; }

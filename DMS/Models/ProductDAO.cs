@@ -33,7 +33,7 @@ namespace DMS.Models
         public string TechnicalName { get; set; }
         public string Note { get; set; }
         public bool IsNew { get; set; }
-        public bool UsedVariation { get; set; }
+        public long UsedVariationId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
@@ -45,6 +45,7 @@ namespace DMS.Models
         public virtual TaxTypeDAO TaxType { get; set; }
         public virtual UnitOfMeasureDAO UnitOfMeasure { get; set; }
         public virtual UnitOfMeasureGroupingDAO UnitOfMeasureGrouping { get; set; }
+        public virtual UsedVariationDAO UsedVariation { get; set; }
         public virtual ICollection<ItemDAO> Items { get; set; }
         public virtual ICollection<ProductImageMappingDAO> ProductImageMappings { get; set; }
         public virtual ICollection<ProductProductGroupingMappingDAO> ProductProductGroupingMappings { get; set; }

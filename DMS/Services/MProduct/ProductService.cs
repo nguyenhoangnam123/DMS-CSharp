@@ -451,6 +451,8 @@ namespace DMS.Services.MProduct
                         subFilter.TechnicalName = Map(subFilter.TechnicalName, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Note))
                         subFilter.Note = Map(subFilter.Note, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.UsedVariationId))
+                        subFilter.UsedVariationId = Map(subFilter.UsedVariationId, FilterPermissionDefinition);
                 }
             }
             return filter;

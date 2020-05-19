@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using Microsoft.AspNetCore.Hosting;
 using DMS.Services.MInventory;
+using DMS.Services.MUsedVariation;
 
 namespace DMS.Rpc.product
 {
@@ -58,6 +59,7 @@ namespace DMS.Rpc.product
         public const string SingleListImage = Default + "/single-list-image";
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
         public const string SingleListVariationGrouping = Default + "/single-list-variation-grouping";
+        public const string SingleListUsedVariation = Default + "/single-list-used-variation";
 
         public const string CountProductGrouping = Default + "/count-product-grouping";
         public const string ListProductGrouping = Default + "/list-product-grouping";
@@ -81,6 +83,7 @@ namespace DMS.Rpc.product
             { nameof(ProductFilter.RetailPrice), FieldType.DECIMAL },
             { nameof(ProductFilter.TaxTypeId), FieldType.ID },
             { nameof(ProductFilter.StatusId), FieldType.ID },
+            { nameof(ProductFilter.UsedVariationId), FieldType.ID },
         };
     }
 
@@ -101,6 +104,7 @@ namespace DMS.Rpc.product
         private IProductGroupingService ProductGroupingService;
         private IVariationGroupingService VariationGroupingService;
         private IProductService ProductService;
+        private IUsedVariationService UsedVariationService;
         private ICurrentContext CurrentContext;
         public ProductController(
             IWebHostEnvironment env,
@@ -117,6 +121,7 @@ namespace DMS.Rpc.product
             IProductGroupingService ProductGroupingService,
             IVariationGroupingService VariationGroupingService,
             IProductService ProductService,
+            IUsedVariationService UsedVariationService,
             ICurrentContext CurrentContext
         )
         {
@@ -134,6 +139,7 @@ namespace DMS.Rpc.product
             this.ProductGroupingService = ProductGroupingService;
             this.VariationGroupingService = VariationGroupingService;
             this.ProductService = ProductService;
+            this.UsedVariationService = UsedVariationService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -1156,7 +1162,7 @@ namespace DMS.Rpc.product
             Product.OtherName = Product_ProductDTO.OtherName;
             Product.TechnicalName = Product_ProductDTO.TechnicalName;
             Product.Note = Product_ProductDTO.Note;
-            Product.UsedVariation = Product_ProductDTO.UsedVariation;
+            Product.UsedVariationId = Product_ProductDTO.UsedVariationId;
             Product.Brand = Product_ProductDTO.Brand == null ? null : new Brand
             {
                 Id = Product_ProductDTO.Brand.Id,
@@ -1209,6 +1215,12 @@ namespace DMS.Rpc.product
                 Name = Product_ProductDTO.UnitOfMeasureGrouping.Name,
                 UnitOfMeasureId = Product_ProductDTO.UnitOfMeasureGrouping.UnitOfMeasureId,
                 StatusId = Product_ProductDTO.UnitOfMeasureGrouping.StatusId,
+            };
+            Product.UsedVariation = Product_ProductDTO.UsedVariation == null ? null : new UsedVariation
+            {
+                Id = Product_ProductDTO.UsedVariation.Id,
+                Code = Product_ProductDTO.UsedVariation.Code,
+                Name = Product_ProductDTO.UsedVariation.Name,
             };
             Product.Items = Product_ProductDTO.Items?
                 .Select(x => new Item
@@ -1301,6 +1313,7 @@ namespace DMS.Rpc.product
             ProductFilter.Note = Product_ProductFilterDTO.Note;
             ProductFilter.Search = Product_ProductFilterDTO.Search;
             ProductFilter.ProductGroupingId = Product_ProductFilterDTO.ProductGroupingId;
+            ProductFilter.UsedVariationId = Product_ProductFilterDTO.UsedVariationId;
             return ProductFilter;
         }
 
@@ -1453,6 +1466,22 @@ namespace DMS.Rpc.product
             List<Product_ProductGroupingDTO> Product_ProductGroupingDTOs = ProductGroupings
                 .Select(x => new Product_ProductGroupingDTO(x)).ToList();
             return Product_ProductGroupingDTOs;
+        }
+
+        [Route(ProductRoute.SingleListUsedVariation), HttpPost]
+        public async Task<List<Product_UsedVariationDTO>> SingleListUsedVariation([FromBody] Product_UsedVariationFilterDTO Product_UsedVariationFilterDTO)
+        {
+            UsedVariationFilter UsedVariationFilter = new UsedVariationFilter();
+            UsedVariationFilter.Skip = 0;
+            UsedVariationFilter.Take = 20;
+            UsedVariationFilter.OrderBy = UsedVariationOrder.Id;
+            UsedVariationFilter.OrderType = OrderType.ASC;
+            UsedVariationFilter.Selects = UsedVariationSelect.ALL;
+
+            List<UsedVariation> UsedVariationes = await UsedVariationService.List(UsedVariationFilter);
+            List<Product_UsedVariationDTO> Product_UsedVariationDTOs = UsedVariationes
+                .Select(x => new Product_UsedVariationDTO(x)).ToList();
+            return Product_UsedVariationDTOs;
         }
 
         [Route(ProductRoute.CountProductGrouping), HttpPost]

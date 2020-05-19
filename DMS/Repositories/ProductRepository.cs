@@ -72,6 +72,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.TechnicalName, filter.TechnicalName);
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
+            if (filter.UsedVariationId != null)
+                query = query.Where(q => q.UsedVariationId, filter.UsedVariationId);
             if (filter.ProductGroupingId != null)
             {
                 if (filter.ProductGroupingId.Equal.HasValue)
@@ -139,6 +141,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Note, filter.Note);
                 if (filter.IsNew != null)
                     queryable = queryable.Where(q => q.IsNew.Equals(filter.IsNew));
+                if (filter.UsedVariationId != null)
+                    queryable = queryable.Where(q => q.UsedVariationId, filter.UsedVariationId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -205,6 +209,9 @@ namespace DMS.Repositories
                         case ProductOrder.Note:
                             query = query.OrderBy(q => q.Note);
                             break;
+                        case ProductOrder.UsedVariation:
+                            query = query.OrderBy(q => q.UsedVariationId);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -264,6 +271,9 @@ namespace DMS.Repositories
                         case ProductOrder.Note:
                             query = query.OrderByDescending(q => q.Note);
                             break;
+                        case ProductOrder.UsedVariation:
+                            query = query.OrderByDescending(q => q.UsedVariationId);
+                            break;
                     }
                     break;
             }
@@ -294,7 +304,7 @@ namespace DMS.Repositories
                 TechnicalName = filter.Selects.Contains(ProductSelect.TechnicalName) ? q.TechnicalName : default(string),
                 Note = filter.Selects.Contains(ProductSelect.Note) ? q.Note : default(string),
                 IsNew = filter.Selects.Contains(ProductSelect.IsNew) ? q.IsNew : default(bool),
-                UsedVariation = filter.Selects.Contains(ProductSelect.UsedVariation) ? q.UsedVariation : default(bool),
+                UsedVariationId = filter.Selects.Contains(ProductSelect.UsedVariation) ? q.UsedVariationId : default(long),
                 Brand = filter.Selects.Contains(ProductSelect.Brand) && q.Brand != null ? new Brand
                 {
                     Id = q.Brand.Id,
@@ -354,6 +364,12 @@ namespace DMS.Repositories
                         UnitOfMeasureId = x.UnitOfMeasureId,
                         Factor = x.Factor
                     }).ToList()
+                } : null,
+                UsedVariation = filter.Selects.Contains(ProductSelect.UsedVariation) && q.UsedVariation != null ? new UsedVariation
+                {
+                    Id = q.UsedVariation.Id,
+                    Code = q.UsedVariation.Code,
+                    Name = q.UsedVariation.Name,
                 } : null,
                 ProductProductGroupingMappings = filter.Selects.Contains(ProductSelect.ProductProductGroupingMapping) && q.ProductProductGroupingMappings != null ?
                 q.ProductProductGroupingMappings.Select(p => new ProductProductGroupingMapping
@@ -438,7 +454,7 @@ namespace DMS.Repositories
                     TaxTypeId = x.TaxTypeId,
                     StatusId = x.StatusId,
                     IsNew = x.IsNew,
-                    UsedVariation = x.UsedVariation,
+                    UsedVariationId = x.UsedVariationId,
                     Brand = x.Brand == null ? null : new Brand
                     {
                         Id = x.Brand.Id,
@@ -493,6 +509,12 @@ namespace DMS.Repositories
                         StatusId = x.UnitOfMeasureGrouping.StatusId,
 
                     },
+                    UsedVariation = x.UsedVariation == null ? null : new UsedVariation
+                    {
+                        Id = x.UsedVariation.Id,
+                        Code = x.UsedVariation.Code,
+                        Name = x.UsedVariation.Name,
+                    }
                 }).FirstOrDefaultAsync();
 
             if (Product == null)
@@ -601,7 +623,7 @@ namespace DMS.Repositories
             ProductDAO.TaxTypeId = Product.TaxTypeId;
             ProductDAO.StatusId = Product.StatusId;
             ProductDAO.IsNew = Product.IsNew;
-            ProductDAO.UsedVariation = Product.UsedVariation;
+            ProductDAO.UsedVariationId = Product.UsedVariationId;
             ProductDAO.CreatedAt = StaticParams.DateTimeNow;
             ProductDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.Product.Add(ProductDAO);
@@ -635,6 +657,7 @@ namespace DMS.Repositories
             ProductDAO.TaxTypeId = Product.TaxTypeId;
             ProductDAO.StatusId = Product.StatusId;
             ProductDAO.IsNew = Product.IsNew;
+            ProductDAO.UsedVariationId = Product.UsedVariationId;
             ProductDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(Product);
@@ -695,6 +718,7 @@ namespace DMS.Repositories
                 ProductDAO.OtherName = Product.OtherName;
                 ProductDAO.TechnicalName = Product.TechnicalName;
                 ProductDAO.IsNew = Product.IsNew;
+                ProductDAO.UsedVariationId = Product.UsedVariationId;
 
                 ProductDAO.CreatedAt = DateTime.Now;
                 ProductDAO.UpdatedAt = DateTime.Now;

@@ -28,13 +28,14 @@ namespace DMS.Entities
         public string TechnicalName { get; set; }
         public string Note { get; set; }
         public bool IsNew { get; set; }
-        public bool UsedVariation { get; set; }
+        public long UsedVariationId { get; set; }
         public long VariationCounter { get; set; }
         public Brand Brand { get; set; }
         public ProductType ProductType { get; set; }
         public Status Status { get; set; }
         public Supplier Supplier { get; set; }
         public TaxType TaxType { get; set; }
+        public UsedVariation UsedVariation { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
         public UnitOfMeasureGrouping UnitOfMeasureGrouping { get; set; }
         public List<Item> Items { get; set; }
@@ -74,6 +75,7 @@ namespace DMS.Entities
         public StringFilter TechnicalName { get; set; }
         public StringFilter Note { get; set; }
         public IdFilter ProductGroupingId { get; set; }
+        public IdFilter UsedVariationId { get; set; }
         public bool? IsNew { get; set; }
         public string Search { get; set; }
 
@@ -104,6 +106,7 @@ namespace DMS.Entities
         TechnicalName = 16,
         Note = 17,
         IsNew = 18,
+        UsedVariation = 19,
     }
 
     [Flags]
