@@ -32,7 +32,8 @@ namespace DMS.Services.MSupplier
             DistrictNotExisted,
             WardNotExisted,
             PersonInChargeNotExisted,
-            SupplierInUsed
+            SupplierInUsed,
+            NameOverLength
         }
 
         private IUOW UOW;
@@ -96,18 +97,24 @@ namespace DMS.Services.MSupplier
             {
                 Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameEmpty);
             }
-            SupplierFilter SupplierFilter = new SupplierFilter
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { NotEqual = Supplier.Id },
-                Name = new StringFilter { Equal = Supplier.Name },
-                Selects = SupplierSelect.Name
-            };
+                if(Supplier.Name.Length > 255)
+                    Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameOverLength);
+                SupplierFilter SupplierFilter = new SupplierFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { NotEqual = Supplier.Id },
+                    Name = new StringFilter { Equal = Supplier.Name },
+                    Selects = SupplierSelect.Name
+                };
 
-            int count = await UOW.SupplierRepository.Count(SupplierFilter);
-            if (count != 0)
-                Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameExisted);
+                int count = await UOW.SupplierRepository.Count(SupplierFilter);
+                if (count != 0)
+                    Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameExisted);
+            }
+            
             return Supplier.IsValidated;
         }
 
