@@ -69,24 +69,6 @@ namespace DMS.Services.MNotification
             return Notification.IsValidated;
         }
 
-        public async Task<bool> ValidateOrganization(Notification Notification)
-        {
-            if (Notification.OrganizationId.HasValue)
-            {
-                OrganizationFilter OrganizationFilter = new OrganizationFilter
-                {
-                    Skip = 0,
-                    Take = 1,
-                    Id = new IdFilter { Equal = Notification.OrganizationId }
-                };
-
-                int count = await UOW.OrganizationRepository.Count(OrganizationFilter);
-                if(count == 0)
-                    Notification.AddError(nameof(NotificationValidator), nameof(Notification.Organization), ErrorCode.OrganizationIdNotExisted);
-            }
-            return Notification.IsValidated;
-        }
-
         public async Task<bool>Create(Notification Notification)
         {
             return Notification.IsValidated;
