@@ -192,17 +192,20 @@ namespace DMS.Rpc.product
                 return Forbid();
 
             Product Product = ConvertDTOToEntity(Product_ProductDTO);
-            Item Item = new Item
+            if (Product_ProductDTO.Items == null || !Product_ProductDTO.Items.Any())
             {
-                Code = Product.Code,
-                Name = Product.Name,
-                RetailPrice = Product.RetailPrice,
-                SalePrice = Product.SalePrice,
-                ScanCode = Product.ScanCode
-            };
-            Product.Items = new List<Item>();
-            Product.Items.Add(Item);
-
+                Item Item = new Item
+                {
+                    Code = Product.Code,
+                    Name = Product.Name,
+                    RetailPrice = Product.RetailPrice,
+                    SalePrice = Product.SalePrice,
+                    ScanCode = Product.ScanCode
+                };
+                Product.Items = new List<Item>();
+                Product.Items.Add(Item);
+            }
+            
             Product = await ProductService.Create(Product);
             Product_ProductDTO = new Product_ProductDTO(Product);
             if (Product.IsValidated)
