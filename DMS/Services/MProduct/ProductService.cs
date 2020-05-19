@@ -85,7 +85,7 @@ namespace DMS.Services.MProduct
                 List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
                 foreach (Product Product in Products)
                 {
-                    Product.VariationCounter = Items.Select(i => i.ProductId == Product.Id).Count();
+                    Product.VariationCounter = Items.Where(i => i.ProductId == Product.Id).Count();
                 }
                 return Products;
             }
