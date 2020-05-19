@@ -67,6 +67,7 @@ namespace DMS.Repositories
         IUnitOfMeasureRepository UnitOfMeasureRepository { get; }
         IUnitOfMeasureGroupingContentRepository UnitOfMeasureGroupingContentRepository { get; }
         IUnitOfMeasureGroupingRepository UnitOfMeasureGroupingRepository { get; }
+        IUsedVariationRepository UsedVariationRepository { get; }
         IVariationRepository VariationRepository { get; }
         IVariationGroupingRepository VariationGroupingRepository { get; }
         IWardRepository WardRepository { get; }
@@ -135,6 +136,7 @@ namespace DMS.Repositories
         public IUnitOfMeasureRepository UnitOfMeasureRepository { get; private set; }
         public IUnitOfMeasureGroupingContentRepository UnitOfMeasureGroupingContentRepository { get; private set; }
         public IUnitOfMeasureGroupingRepository UnitOfMeasureGroupingRepository { get; private set; }
+        public IUsedVariationRepository UsedVariationRepository { get; private set; }
         public IVariationRepository VariationRepository { get; private set; }
         public IVariationGroupingRepository VariationGroupingRepository { get; private set; }
         public IWardRepository WardRepository { get; private set; }
@@ -201,6 +203,7 @@ namespace DMS.Repositories
             UnitOfMeasureRepository = new UnitOfMeasureRepository(DataContext);
             UnitOfMeasureGroupingContentRepository = new UnitOfMeasureGroupingContentRepository(DataContext);
             UnitOfMeasureGroupingRepository = new UnitOfMeasureGroupingRepository(DataContext);
+            UsedVariationRepository = new UsedVariationRepository(DataContext);
             VariationRepository = new VariationRepository(DataContext);
             VariationGroupingRepository = new VariationGroupingRepository(DataContext);
             WardRepository = new WardRepository(DataContext);
