@@ -28,6 +28,8 @@ namespace DMS.Entities
         public string TechnicalName { get; set; }
         public string Note { get; set; }
         public bool IsNew { get; set; }
+        public bool UsedVariation { get; set; }
+        public long VariationCounter { get; set; }
         public Brand Brand { get; set; }
         public ProductType ProductType { get; set; }
         public Status Status { get; set; }
@@ -128,6 +130,7 @@ namespace DMS.Entities
         Note = E._17,
         ERPCode = E._18,
         ProductProductGroupingMapping = E._19,
-        IsNew = E._20
+        IsNew = E._20,
+        UsedVariation = E._21,
     }
 }

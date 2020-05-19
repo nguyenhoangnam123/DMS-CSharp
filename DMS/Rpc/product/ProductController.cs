@@ -1156,6 +1156,7 @@ namespace DMS.Rpc.product
             Product.OtherName = Product_ProductDTO.OtherName;
             Product.TechnicalName = Product_ProductDTO.TechnicalName;
             Product.Note = Product_ProductDTO.Note;
+            Product.UsedVariation = Product_ProductDTO.UsedVariation;
             Product.Brand = Product_ProductDTO.Brand == null ? null : new Brand
             {
                 Id = Product_ProductDTO.Brand.Id,

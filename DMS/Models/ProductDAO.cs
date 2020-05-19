@@ -33,6 +33,7 @@ namespace DMS.Models
         public string TechnicalName { get; set; }
         public string Note { get; set; }
         public bool IsNew { get; set; }
+        public bool UsedVariation { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }

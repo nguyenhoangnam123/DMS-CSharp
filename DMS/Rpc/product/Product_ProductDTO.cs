@@ -27,6 +27,8 @@ namespace DMS.Rpc.product
         public string TechnicalName { get; set; }
         public string Note { get; set; }
         public bool IsNew { get; set; }
+        public bool UsedVariation { get; set; }
+        public long VariationCounter { get; set; }
         public Product_BrandDTO Brand { get; set; }
         public Product_ProductTypeDTO ProductType { get; set; }
         public Product_StatusDTO Status { get; set; }
@@ -61,6 +63,8 @@ namespace DMS.Rpc.product
             this.TechnicalName = Product.TechnicalName;
             this.Note = Product.Note;
             this.IsNew = Product.IsNew;
+            this.UsedVariation = Product.UsedVariation;
+            this.VariationCounter = Product.VariationCounter;
             this.Brand = Product.Brand == null ? null : new Product_BrandDTO(Product.Brand);
             this.ProductType = Product.ProductType == null ? null : new Product_ProductTypeDTO(Product.ProductType);
             this.Status = Product.Status == null ? null : new Product_StatusDTO(Product.Status);

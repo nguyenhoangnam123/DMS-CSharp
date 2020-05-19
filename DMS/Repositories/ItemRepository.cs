@@ -173,7 +173,7 @@ namespace DMS.Repositories
             List<Item> Items = await query.Select(q => new Item()
             {
                 Id = filter.Selects.Contains(ItemSelect.Id) ? q.Id : default(long),
-                ProductId = filter.Selects.Contains(ItemSelect.Product) ? q.ProductId : default(long),
+                ProductId = filter.Selects.Contains(ItemSelect.ProductId) ? q.ProductId : default(long),
                 Code = filter.Selects.Contains(ItemSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(ItemSelect.Name) ? q.Name : default(string),
                 ScanCode = filter.Selects.Contains(ItemSelect.ScanCode) ? q.ScanCode : default(string),

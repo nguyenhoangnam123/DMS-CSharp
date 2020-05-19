@@ -74,6 +74,7 @@ namespace DMS.Entities
         ScanCode = E._4,
         SalePrice = E._5,
         RetailPrice = E._6,
-        Status = E._7
+        Status = E._7,
+        ProductId = E._8,
     }
 }

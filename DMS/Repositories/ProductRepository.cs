@@ -294,6 +294,7 @@ namespace DMS.Repositories
                 TechnicalName = filter.Selects.Contains(ProductSelect.TechnicalName) ? q.TechnicalName : default(string),
                 Note = filter.Selects.Contains(ProductSelect.Note) ? q.Note : default(string),
                 IsNew = filter.Selects.Contains(ProductSelect.IsNew) ? q.IsNew : default(bool),
+                UsedVariation = filter.Selects.Contains(ProductSelect.UsedVariation) ? q.UsedVariation : default(bool),
                 Brand = filter.Selects.Contains(ProductSelect.Brand) && q.Brand != null ? new Brand
                 {
                     Id = q.Brand.Id,
@@ -437,6 +438,7 @@ namespace DMS.Repositories
                     TaxTypeId = x.TaxTypeId,
                     StatusId = x.StatusId,
                     IsNew = x.IsNew,
+                    UsedVariation = x.UsedVariation,
                     Brand = x.Brand == null ? null : new Brand
                     {
                         Id = x.Brand.Id,
@@ -599,6 +601,7 @@ namespace DMS.Repositories
             ProductDAO.TaxTypeId = Product.TaxTypeId;
             ProductDAO.StatusId = Product.StatusId;
             ProductDAO.IsNew = Product.IsNew;
+            ProductDAO.UsedVariation = Product.UsedVariation;
             ProductDAO.CreatedAt = StaticParams.DateTimeNow;
             ProductDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.Product.Add(ProductDAO);

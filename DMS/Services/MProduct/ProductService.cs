@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Repositories;
 using DMS.Services.MImage;
 using Helpers;
@@ -74,6 +75,18 @@ namespace DMS.Services.MProduct
             try
             {
                 List<Product> Products = await UOW.ProductRepository.List(ProductFilter);
+                List<long> ProductIds = Products.Select(p => p.Id).ToList();
+                ItemFilter ItemFilter = new ItemFilter
+                {
+                    ProductId = new IdFilter { In = ProductIds },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    Selects = ItemSelect.Id | ItemSelect.ProductId,
+                };
+                List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
+                foreach (Product Product in Products)
+                {
+                    Product.VariationCounter = Items.Select(i => i.ProductId == Product.Id).Count();
+                }
                 return Products;
             }
             catch (Exception ex)
@@ -90,8 +103,9 @@ namespace DMS.Services.MProduct
             Product Product = await UOW.ProductRepository.Get(Id);
             if (Product == null)
                 return null;
-            if(Product.Items != null && Product.Items.Any())
+            if (Product.Items != null && Product.Items.Any())
             {
+                Product.VariationCounter = Product.Items.Count;
                 Product.Items.ForEach(x => x.CanDelete = true);
 
                 foreach (var Item in Product.Items)
@@ -109,7 +123,7 @@ namespace DMS.Services.MProduct
 
             try
             {
-                if(Product.Items == null || !Product.Items.Any())
+                if (Product.Items == null || !Product.Items.Any())
                 {
                     Product.Items = new List<Item>();
                     Product.Items.Add(new Item
