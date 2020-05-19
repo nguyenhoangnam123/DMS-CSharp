@@ -1277,7 +1277,7 @@ namespace DMS.Rpc.product
             ProductFilter.Selects = ProductSelect.Code | ProductSelect.Name 
                 | ProductSelect.Id | ProductSelect.ProductProductGroupingMapping 
                 | ProductSelect.ProductType | ProductSelect.Supplier
-                | ProductSelect.Status;
+                | ProductSelect.Status | ProductSelect.UsedVariation;
             ProductFilter.Skip = Product_ProductFilterDTO.Skip;
             ProductFilter.Take = Product_ProductFilterDTO.Take;
             ProductFilter.OrderBy = Product_ProductFilterDTO.OrderBy;
