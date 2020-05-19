@@ -9,7 +9,7 @@ namespace DMS.Rpc.store_checker_monitor
     public class StoreCheckerMonitor_StoreCheckingDTO : DataDTO
     {
         public DateTime Date { get; set; }
-        public long PlanCounter => Plan.Count;
+        public long PlanCounter { get { return Plan.Count; } }
         public long InternalCounter => Internal.Count;
         public long ExternalCounter => External.Count;
         public long ImageCounter => Image.Count;

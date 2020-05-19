@@ -119,8 +119,34 @@ namespace DMS.Rpc.store_checker_monitor
                                                                 SaleEmployeeId = e.SaleEmployeeId,
                                                             }
                                                         }).ToListAsync();
-            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue).ToListAsync();
+            List<StoreCheckingDAO> StoreCheckingDAOs = new List<StoreCheckingDAO>();
+            var StoreCheckingQuery = DataContext.StoreChecking
+                .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue);
+            // khong check
+            if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Checking.Equal == 0)
+            { 
+            }    
+            else
+            {
+                if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Image.Equal == 0)
+                {
+                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.CountImage == 0);
+                }
+                else
+                {
+                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.CountImage > 0);
+                }
+
+                if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SalesOrder.Equal == 0)
+                {
+                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.CountIndirectSalesOrder == 0);
+                }
+                else
+                {
+                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.CountIndirectSalesOrder > 0);
+                }
+                StoreCheckingDAOs = await StoreCheckingQuery.ToListAsync();
+            }    
 
             // khởi tạo khung dữ liệu
             foreach (StoreCheckerMonitor_StoreCheckerMonitorDTO StoreCheckerMonitor_StoreCheckerMonitorDTO in StoreCheckerMonitor_StoreCheckerMonitorDTOs)
@@ -220,7 +246,7 @@ namespace DMS.Rpc.store_checker_monitor
                     }
                 }
             }
-            return null;
+            return StoreCheckerMonitor_StoreCheckerMonitorDTOs;
         }
 
         public class EnumList
