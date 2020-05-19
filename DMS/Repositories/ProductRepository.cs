@@ -551,6 +551,7 @@ namespace DMS.Repositories
                     SalePrice = x.SalePrice,
                     RetailPrice = x.RetailPrice,
                     StatusId = x.StatusId,
+                    ItemImageMappings = new List<ItemImageMapping>()
                 }).ToListAsync();
             Product.ProductImageMappings = await DataContext.ProductImageMapping
                 .Where(x => x.ProductId == Product.Id)
@@ -598,6 +599,24 @@ namespace DMS.Repositories
                         VariationGroupingId = v.VariationGroupingId,
                     }).ToList(),
                 }).ToListAsync();
+
+            var ItemIds = Product.Items.Select(x => x.Id).ToList();
+            List<ItemImageMapping> ItemImageMappings = await DataContext.ItemImageMapping.Where(x => ItemIds.Contains(x.ItemId)).Select(x => new ItemImageMapping 
+            {
+                ImageId = x.ImageId,
+                ItemId = x.ItemId,
+                Image = new Image
+                {
+                    Id = x.Image.Id,
+                    Url = x.Image.Url,
+                    Name = x.Image.Name,
+                }
+            }).ToListAsync();
+
+            foreach (var item in Product.Items)
+            {
+                item.ItemImageMappings = ItemImageMappings.Where(x => x.ItemId == item.Id).ToList();
+            }
 
             return Product;
         }
