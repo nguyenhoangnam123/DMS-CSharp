@@ -479,11 +479,7 @@ namespace DMS.Rpc.notification
             Notification.Id = Notification_NotificationDTO.Id;
             Notification.Title = Notification_NotificationDTO.Title;
             Notification.Content = Notification_NotificationDTO.Content;
-            Notification.NotificationOrganizationMappings = Notification_NotificationDTO.NotificationOrganizationMappingDTOs?.Select(x => new NotificationOrganizationMapping
-            {
-                NotificationId = x.NotificationId,
-                OrganizationId = x.OrganizationId,
-            }).ToList();
+            Notification.OrganizationId = Notification_NotificationDTO.OrganizationId;
             Notification.BaseLanguage = CurrentContext.Language;
             return Notification;
         }

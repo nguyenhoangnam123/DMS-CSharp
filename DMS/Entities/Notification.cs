@@ -11,8 +11,8 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        public List<NotificationOrganizationMapping> NotificationOrganizationMappings { get; set; }
-
+        public long? OrganizationId { get; set; }
+        public Organization Organization { get; set; }
         public bool Equals(Notification other)
         {
             return other != null && Id == other.Id;
@@ -40,6 +40,7 @@ namespace DMS.Entities
         Id = 0,
         Title = 1,
         Content = 2,
+        Organization = 3,
     }
 
     [Flags]
@@ -49,5 +50,6 @@ namespace DMS.Entities
         Id = E._0,
         Title = E._1,
         Content = E._2,
+        Organization = E._3,
     }
 }

@@ -45,7 +45,6 @@ namespace DMS.Models
         public virtual DbSet<ItemImageMappingDAO> ItemImageMapping { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<NotificationDAO> Notification { get; set; }
-        public virtual DbSet<NotificationOrganizationMappingDAO> NotificationOrganizationMapping { get; set; }
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
         public virtual DbSet<PageDAO> Page { get; set; }
         public virtual DbSet<PermissionDAO> Permission { get; set; }
@@ -1230,23 +1229,11 @@ namespace DMS.Models
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasMaxLength(500);
-            });
-
-            modelBuilder.Entity<NotificationOrganizationMappingDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.NotificationId, e.OrganizationId });
-
-                entity.HasOne(d => d.Notification)
-                    .WithMany(p => p.NotificationOrganizationMappings)
-                    .HasForeignKey(d => d.NotificationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_NotificationOrganizationMapping_Notification");
 
                 entity.HasOne(d => d.Organization)
-                    .WithMany(p => p.NotificationOrganizationMappings)
+                    .WithMany(p => p.Notifications)
                     .HasForeignKey(d => d.OrganizationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_NotificationOrganizationMapping_Organization");
+                    .HasConstraintName("FK_Notification_Organization");
             });
 
             modelBuilder.Entity<OrganizationDAO>(entity =>

@@ -98,18 +98,17 @@ namespace DMS.Services.MNotification
                 await UOW.NotificationRepository.Create(Notification);
                 await UOW.Commit();
 
-                if (Notification.NotificationOrganizationMappings != null && Notification.NotificationOrganizationMappings.Any())
+                if (Notification.OrganizationId.HasValue)
                 {
-                    var OrganizationIds = Notification.NotificationOrganizationMappings.Select(x => x.OrganizationId).ToList();
                     AppUserFilter AppUserFilter = new AppUserFilter
                     {
                         Skip = 0,
                         Take = int.MaxValue,
-                        OrganizationId = new IdFilter { In = OrganizationIds },
+                        OrganizationId = new IdFilter { Equal = Notification.OrganizationId.Value },
                         Selects = AppUserSelect.Id
                     };
 
-                    var AppUserIds = (await UOW.AppUserRepository.List(AppUserFilter)).Distinct();
+                    var AppUserIds = (await UOW.AppUserRepository.List(AppUserFilter));
 
                     List<NotificationUtils> NotificationUtilss = AppUserIds.Select(x => new NotificationUtils
                     {

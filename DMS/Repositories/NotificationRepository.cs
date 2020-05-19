@@ -40,15 +40,7 @@ namespace DMS.Repositories
             if (filter.Content != null)
                 query = query.Where(q => q.Content, filter.Content);
             if (filter.OrganizationId != null)
-            {
-                if (filter.OrganizationId.Equal.HasValue)
-                {
-                    query = from q in query
-                            join o in DataContext.NotificationOrganizationMapping on q.Id equals o.NotificationId
-                            where o.OrganizationId == filter.OrganizationId.Equal.Value
-                            select q;
-                }
-            }
+                query = query.Where(q => q.OrganizationId, filter.OrganizationId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -67,6 +59,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Title, filter.Title);
                 if (filter.Content != null)
                     queryable = queryable.Where(q => q.Content, filter.Content);
+                if (filter.OrganizationId != null)
+                    query = query.Where(q => q.OrganizationId, filter.OrganizationId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -88,6 +82,9 @@ namespace DMS.Repositories
                         case NotificationOrder.Content:
                             query = query.OrderBy(q => q.Content);
                             break;
+                        case NotificationOrder.Organization:
+                            query = query.OrderBy(q => q.OrganizationId);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -101,6 +98,9 @@ namespace DMS.Repositories
                             break;
                         case NotificationOrder.Content:
                             query = query.OrderByDescending(q => q.Content);
+                            break;
+                        case NotificationOrder.Organization:
+                            query = query.OrderByDescending(q => q.OrganizationId);
                             break;
                     }
                     break;
@@ -116,6 +116,16 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(NotificationSelect.Id) ? q.Id : default(long),
                 Title = filter.Selects.Contains(NotificationSelect.Title) ? q.Title : default(string),
                 Content = filter.Selects.Contains(NotificationSelect.Content) ? q.Content : default(string),
+                OrganizationId = filter.Selects.Contains(NotificationSelect.Organization) ? q.OrganizationId : default(long?),
+                Organization = filter.Selects.Contains(NotificationSelect.Organization) && q.Organization != null ? new Organization
+                {
+                    Id = q.Organization.Id,
+                    Code = q.Organization.Code,
+                    Name = q.Organization.Name,
+                    Address = q.Organization.Address,
+                    Email = q.Organization.Email,
+                    Phone = q.Organization.Phone,
+                } : null
             }).ToListAsync();
             return Notifications;
         }
@@ -145,22 +155,19 @@ namespace DMS.Repositories
                 Id = x.Id,
                 Title = x.Title,
                 Content = x.Content,
+                OrganizationId = x.OrganizationId,
+                Organization = new Organization{
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    Address = x.Organization.Address,
+                    Email = x.Organization.Email,
+                    Phone = x.Organization.Phone,
+                }
             }).FirstOrDefaultAsync();
 
             if (Notification == null)
                 return null;
-            Notification.NotificationOrganizationMappings = await DataContext.NotificationOrganizationMapping
-                .Where(x => x.NotificationId == Id).Select(x => new NotificationOrganizationMapping
-                {
-                    NotificationId = x.NotificationId,
-                    OrganizationId = x.OrganizationId,
-                    Organization = new Organization
-                    {
-                        Id = x.Organization.Id,
-                        Code = x.Organization.Code,
-                        Name = x.Organization.Name,
-                    }
-                }).ToListAsync();
             return Notification;
         }
         public async Task<bool> Create(Notification Notification)
@@ -169,6 +176,7 @@ namespace DMS.Repositories
             NotificationDAO.Id = Notification.Id;
             NotificationDAO.Title = Notification.Title;
             NotificationDAO.Content = Notification.Content;
+            NotificationDAO.OrganizationId = Notification.OrganizationId;
             DataContext.Notification.Add(NotificationDAO);
             await DataContext.SaveChangesAsync();
             Notification.Id = NotificationDAO.Id;
@@ -184,6 +192,7 @@ namespace DMS.Repositories
             NotificationDAO.Id = Notification.Id;
             NotificationDAO.Title = Notification.Title;
             NotificationDAO.Content = Notification.Content;
+            NotificationDAO.OrganizationId = Notification.OrganizationId;
             await DataContext.SaveChangesAsync();
             await SaveReference(Notification);
             return true;
@@ -204,6 +213,7 @@ namespace DMS.Repositories
                 NotificationDAO.Id = Notification.Id;
                 NotificationDAO.Title = Notification.Title;
                 NotificationDAO.Content = Notification.Content;
+                NotificationDAO.OrganizationId = Notification.OrganizationId;
                 NotificationDAOs.Add(NotificationDAO);
             }
             await DataContext.BulkMergeAsync(NotificationDAOs);
