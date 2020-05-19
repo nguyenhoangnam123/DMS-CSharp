@@ -161,7 +161,7 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateTaxType(Product Product)
         {
-            if(Product.TaxTypeId == 0)
+            if (Product.TaxTypeId == 0)
             {
                 Product.AddError(nameof(ProductValidator), nameof(Product.TaxType), ErrorCode.TaxTypeEmpty);
             }
@@ -223,20 +223,20 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateItem(Product Product)
         {
-            if(Product.Items != null && Product.Items.Any())
+            if (Product.Items != null)
             {
                 foreach (var item in Product.Items)
                 {
                     ItemFilter ItemFilter = new ItemFilter
                     {
-                        Id = new IdFilter { NotEqual = item.Id},
+                        Id = new IdFilter { NotEqual = item.Id },
                         Code = new StringFilter { Equal = item.Code }
                     };
 
                     int count = await UOW.ItemRepository.Count(ItemFilter);
-                    if(count > 0)
+                    if (count > 0)
                     {
-                        Product.AddError(nameof(ProductValidator), nameof(item) + item.Code, ErrorCode.CodeExisted);
+                        item.AddError(nameof(ProductValidator), nameof(Item), ErrorCode.CodeExisted);
                     }
 
                     ItemFilter = new ItemFilter
@@ -248,15 +248,59 @@ namespace DMS.Services.MProduct
                     count = await UOW.ItemRepository.Count(ItemFilter);
                     if (count > 0)
                     {
-                        Product.AddError(nameof(ProductValidator), nameof(item) + item.Name, ErrorCode.NameExisted);
+                        item.AddError(nameof(ProductValidator), nameof(Item), ErrorCode.NameExisted);
                     }
 
-                    if(!item.CanDelete)
-                        Product.AddError(nameof(ProductValidator), nameof(item) + item.Name, ErrorCode.ItemInUsed);
+                    if (await CanDelete(item))
+                    {
+
+                    }
+                    else
+                    {
+                        item.AddError(nameof(ProductValidator), nameof(Item), ErrorCode.ItemInUsed);
+                    }
                 }
             }
 
             return Product.IsValidated;
+        }
+
+        private async Task<bool> CanDelete(Item Item)
+        {
+            IndirectSalesOrderContentFilter IndirectSalesOrderContentFilter = new IndirectSalesOrderContentFilter()
+            {
+                ItemId = new IdFilter { Equal = Item.Id }
+            };
+
+            int count = await UOW.IndirectSalesOrderContentRepository.Count(IndirectSalesOrderContentFilter);
+            if (count != 0)
+                return false;
+
+            IndirectSalesOrderPromotionFilter IndirectSalesOrderPromotionFilter = new IndirectSalesOrderPromotionFilter
+            {
+                ItemId = new IdFilter { Equal = Item.Id }
+            };
+            count = await UOW.IndirectSalesOrderPromotionRepository.Count(IndirectSalesOrderPromotionFilter);
+            if (count != 0)
+                return false;
+
+            DirectSalesOrderContentFilter DirectSalesOrderContentFilter = new DirectSalesOrderContentFilter()
+            {
+                ItemId = new IdFilter { Equal = Item.Id }
+            };
+
+            count = await UOW.DirectSalesOrderContentRepository.Count(DirectSalesOrderContentFilter);
+            if (count != 0)
+                return false;
+
+            DirectSalesOrderPromotionFilter DirectSalesOrderPromotionFilter = new DirectSalesOrderPromotionFilter
+            {
+                ItemId = new IdFilter { Equal = Item.Id }
+            };
+            count = await UOW.DirectSalesOrderPromotionRepository.Count(DirectSalesOrderPromotionFilter);
+            if (count != 0)
+                return false;
+            return true;
         }
 
         private async Task<bool> ValidateVariation(Product Product)
@@ -272,10 +316,10 @@ namespace DMS.Services.MProduct
                     };
 
                     int count = await UOW.VariationGroupingRepository.Count(VariationGroupingFilter);
-                    if(count > 0)
+                    if (count > 0)
                         Product.AddError(nameof(ProductValidator), nameof(VariationGrouping) + VariationGrouping.Name, ErrorCode.VariationGroupingExisted);
 
-                    if(VariationGrouping.Variations != null && VariationGrouping.Variations.Any())
+                    if (VariationGrouping.Variations != null && VariationGrouping.Variations.Any())
                     {
                         foreach (var Variation in VariationGrouping.Variations)
                         {
@@ -297,7 +341,7 @@ namespace DMS.Services.MProduct
                             if (count > 0)
                                 Product.AddError(nameof(ProductValidator), nameof(Variation) + Variation.Name, ErrorCode.VariationNameExisted);
                         }
-                        
+
                     }
                 }
             }

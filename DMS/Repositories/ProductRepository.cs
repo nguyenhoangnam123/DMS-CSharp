@@ -377,7 +377,7 @@ namespace DMS.Repositories
             {
                 Product.ProductImageMappings = new List<ProductImageMapping>();
                 var ProductImageMappingDAO = ProductImageMappings.Where(x => x.ProductId == Product.Id).FirstOrDefault();
-                if(ProductImageMappingDAO != null)
+                if (ProductImageMappingDAO != null)
                 {
                     ProductImageMapping ProductImageMapping = new ProductImageMapping
                     {
@@ -645,7 +645,7 @@ namespace DMS.Repositories
             {
                 IsNew = true
             });
-            
+
             return true;
         }
 
@@ -855,19 +855,20 @@ namespace DMS.Repositories
                 .Where(x => ItemIds.Contains(x.ItemId))
                 .DeleteFromQueryAsync();
             List<ItemImageMappingDAO> ItemImageMappingDAOs = new List<ItemImageMappingDAO>();
-            if(Product.Items != null)
+            if (Product.Items != null)
             {
                 foreach (var Item in Product.Items)
                 {
-                    foreach (ItemImageMapping ItemImageMapping in Item.ItemImageMappings)
-                    {
-                        ItemImageMappingDAO ItemImageMappingDAO = new ItemImageMappingDAO()
+                    if (Item.ItemImageMappings != null)
+                        foreach (ItemImageMapping ItemImageMapping in Item.ItemImageMappings)
                         {
-                            ItemId = Item.Id,
-                            ImageId = ItemImageMapping.ImageId
-                        };
-                        ItemImageMappingDAOs.Add(ItemImageMappingDAO);
-                    }
+                            ItemImageMappingDAO ItemImageMappingDAO = new ItemImageMappingDAO()
+                            {
+                                ItemId = Item.Id,
+                                ImageId = ItemImageMapping.ImageId
+                            };
+                            ItemImageMappingDAOs.Add(ItemImageMappingDAO);
+                        }
                 }
                 await DataContext.ItemImageMapping.BulkMergeAsync(ItemImageMappingDAOs);
             }
