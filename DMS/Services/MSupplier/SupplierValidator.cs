@@ -31,7 +31,8 @@ namespace DMS.Services.MSupplier
             ProvinceNotExisted,
             DistrictNotExisted,
             WardNotExisted,
-            PersonInChargeNotExisted
+            PersonInChargeNotExisted,
+            SupplierInUsed
         }
 
         private IUOW UOW;
@@ -194,6 +195,20 @@ namespace DMS.Services.MSupplier
             return Supplier.IsValidated;
         }
 
+        private async Task<bool> ValidateSuppilerInUsed(Supplier Supplier)
+        {
+            ProductFilter ProductFilter = new ProductFilter
+            {
+                SupplierId = new IdFilter { Equal = Supplier.Id },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+            };
+            int count = await UOW.ProductRepository.Count(ProductFilter);
+            if (count > 0)
+                Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Id), ErrorCode.SupplierInUsed);
+
+            return Supplier.IsValidated;
+        }
+
         public async Task<bool> Create(Supplier Supplier)
         {
             await ValidateCode(Supplier);
@@ -225,6 +240,7 @@ namespace DMS.Services.MSupplier
         {
             if (await ValidateId(Supplier))
             {
+                await ValidateSuppilerInUsed(Supplier);
             }
             return Supplier.IsValidated;
         }

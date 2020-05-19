@@ -28,7 +28,8 @@ namespace DMS.Services.MUnitOfMeasureGrouping
             NameOverLength,
             StatusNotExisted,
             UnitOfMeasureEmpty,
-            UnitOfMeasureNotExisted
+            UnitOfMeasureNotExisted,
+            UnitOfMeasureGroupingInUsed
         }
 
         private IUOW UOW;
@@ -127,6 +128,20 @@ namespace DMS.Services.MUnitOfMeasureGrouping
             return count != 0;
         }
 
+        private async Task<bool> ValidateUnitOfMeasureGroupingInUsed(UnitOfMeasureGrouping UnitOfMeasureGrouping)
+        {
+            ProductFilter ProductFilter = new ProductFilter
+            {
+                UnitOfMeasureGroupingId = new IdFilter { Equal = UnitOfMeasureGrouping.Id },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+            };
+            int count = await UOW.ProductRepository.Count(ProductFilter);
+            if (count > 0)
+                UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.Id), ErrorCode.UnitOfMeasureGroupingInUsed);
+
+            return UnitOfMeasureGrouping.IsValidated;
+        }
+
         public async Task<bool> Create(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
             await ValidateCode(UnitOfMeasureGrouping);
@@ -152,6 +167,7 @@ namespace DMS.Services.MUnitOfMeasureGrouping
         {
             if (await ValidateId(UnitOfMeasureGrouping))
             {
+                await ValidateUnitOfMeasureGroupingInUsed(UnitOfMeasureGrouping);
             }
             return UnitOfMeasureGrouping.IsValidated;
         }

@@ -230,25 +230,27 @@ namespace DMS.Services.MProduct
                     ItemFilter ItemFilter = new ItemFilter
                     {
                         Id = new IdFilter { NotEqual = item.Id },
-                        Code = new StringFilter { Equal = item.Code }
+                        Code = new StringFilter { Equal = item.Code },
+                        ProductId = new IdFilter { Equal = Product.Id }
                     };
 
                     int count = await UOW.ItemRepository.Count(ItemFilter);
                     if (count > 0)
                     {
-                        item.AddError(nameof(ProductValidator), nameof(Item), ErrorCode.CodeExisted);
+                        item.AddError(nameof(ProductValidator), nameof(Item.Code), ErrorCode.CodeExisted);
                     }
 
                     ItemFilter = new ItemFilter
                     {
                         Id = new IdFilter { NotEqual = item.Id },
-                        Name = new StringFilter { Equal = item.Name }
+                        Name = new StringFilter { Equal = item.Name },
+                        ProductId = new IdFilter { Equal = Product.Id }
                     };
 
                     count = await UOW.ItemRepository.Count(ItemFilter);
                     if (count > 0)
                     {
-                        item.AddError(nameof(ProductValidator), nameof(Item), ErrorCode.NameExisted);
+                        item.AddError(nameof(ProductValidator), nameof(Item.Name), ErrorCode.NameExisted);
                     }
 
                     if (await CanDelete(item))
@@ -257,7 +259,7 @@ namespace DMS.Services.MProduct
                     }
                     else
                     {
-                        item.AddError(nameof(ProductValidator), nameof(Item), ErrorCode.ItemInUsed);
+                        item.AddError(nameof(ProductValidator), nameof(Item.Id), ErrorCode.ItemInUsed);
                     }
                 }
             }

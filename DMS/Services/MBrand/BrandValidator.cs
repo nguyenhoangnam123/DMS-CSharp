@@ -28,7 +28,8 @@ namespace DMS.Services.MBrand
             NameEmpty,
             NameOverLength,
             DescriptionOverLength,
-            StatusNotExisted
+            StatusNotExisted,
+            BrandInUsed
         }
 
         private IUOW UOW;
@@ -116,6 +117,20 @@ namespace DMS.Services.MBrand
             return Brand.IsValidated;
         }
 
+        private async Task<bool> ValidateBrandInUsed(Brand Brand)
+        {
+            ProductFilter ProductFilter = new ProductFilter
+            {
+                BrandId = new IdFilter { Equal = Brand.Id },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+            };
+            int count = await UOW.ProductRepository.Count(ProductFilter);
+            if (count > 0)
+                Brand.AddError(nameof(BrandValidator), nameof(Brand.Id), ErrorCode.BrandInUsed);
+
+            return Brand.IsValidated;
+        }
+
         public async Task<bool> Create(Brand Brand)
         {
             await ValidateCode(Brand);
@@ -141,6 +156,7 @@ namespace DMS.Services.MBrand
         {
             if (await ValidateId(Brand))
             {
+                await ValidateBrandInUsed(Brand);
             }
             return Brand.IsValidated;
         }

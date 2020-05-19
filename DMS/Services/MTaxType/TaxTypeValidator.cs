@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace DMS.Services.MTaxType
         public enum ErrorCode
         {
             IdNotExisted,
+            TaxTypeInUsed
         }
 
         private IUOW UOW;
@@ -47,6 +49,20 @@ namespace DMS.Services.MTaxType
             return count == 1;
         }
 
+        private async Task<bool> ValidateTaxTypeInUsed(TaxType TaxType)
+        {
+            ProductFilter ProductFilter = new ProductFilter
+            {
+                TaxTypeId = new IdFilter { Equal = TaxType.Id },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+            };
+            int count = await UOW.ProductRepository.Count(ProductFilter);
+            if (count > 0)
+                TaxType.AddError(nameof(TaxTypeValidator), nameof(TaxType.Id), ErrorCode.TaxTypeInUsed);
+
+            return TaxType.IsValidated;
+        }
+
         public async Task<bool> Create(TaxType TaxType)
         {
             return TaxType.IsValidated;
@@ -64,6 +80,7 @@ namespace DMS.Services.MTaxType
         {
             if (await ValidateId(TaxType))
             {
+                await ValidateTaxTypeInUsed(TaxType);
             }
             return TaxType.IsValidated;
         }
