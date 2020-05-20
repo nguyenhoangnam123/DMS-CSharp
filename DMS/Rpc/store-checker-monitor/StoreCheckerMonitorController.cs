@@ -111,40 +111,40 @@ namespace DMS.Rpc.store_checker_monitor
         [Route(StoreCheckerMonitorRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] StoreCheckerMonitor_StoreCheckerMonitorFilterDTO StoreCheckerMonitor_StoreCheckerMonitorFilterDTO)
         {
-            DateTime Start = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.GreaterEqual.HasValue ?
-               StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.GreaterEqual.Value :
-               StaticParams.DateTimeNow;
-            DateTime End = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.LessEqual.HasValue ?
-                StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.LessEqual.Value :
-                StaticParams.DateTimeNow;
+            DateTime Start = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn?.GreaterEqual == null ?
+                   StaticParams.DateTimeNow :
+                   StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.GreaterEqual.Value;
+
+            DateTime End = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn?.LessEqual == null ?
+                    StaticParams.DateTimeNow :
+                    StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.LessEqual.Value;
+
             OrganizationDAO OrganizationDAO = null;
-            if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.OrganizationId.Equal.HasValue)
+            long? SaleEmployeeId = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SaleEmployeeId?.Equal;
+            long? Image = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Image?.Equal;
+            long? SalesOrder = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SalesOrder?.Equal;
+            if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.OrganizationId?.Equal != null)
             {
                 OrganizationDAO = DataContext.Organization.Where(o => o.Id == StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.OrganizationId.Equal.Value).FirstOrDefault();
-            }    
+            }
             var query = from ap in DataContext.AppUser
                         join o in DataContext.Organization on ap.OrganizationId equals o.Id
                         join sc in DataContext.StoreChecking on ap.Id equals sc.SaleEmployeeId
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
+                        (OrganizationDAO != null && o.Path.StartsWith(OrganizationDAO.Path)) &&
+                        (SaleEmployeeId != null && ap.Id == SaleEmployeeId.Value) &&
                         (
-                            OrganizationDAO != null &&  o.Path.StartsWith(OrganizationDAO.Path)
-                        ) &&
-                        (
-                            StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SaleEmployeeId.Equal.HasValue && 
-                            ap.Id == StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SaleEmployeeId.Equal.Value
-                        ) &&
-                        (
-                            StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Image.Equal.HasValue && 
+                            Image != null &&
                             (
-                                (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Image.Equal == 0 && sc.ImageCounter == 0) ||
-                                (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Image.Equal == 1 && sc.ImageCounter > 0)
+                                (Image.Value == 0 && sc.ImageCounter == 0) ||
+                                (Image.Value == 1 && sc.ImageCounter > 0)
                             )
                         ) &&
                         (
-                            StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SalesOrder.Equal.HasValue &&
+                            SalesOrder != null &&
                             (
-                                (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SalesOrder.Equal == 0 && sc.IndirectSalesOrderCounter == 0) ||
-                                (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SalesOrder.Equal == 1 && sc.IndirectSalesOrderCounter > 0)
+                                (SalesOrder.Value == 0 && sc.IndirectSalesOrderCounter == 0) ||
+                                (SalesOrder.Value == 1 && sc.IndirectSalesOrderCounter > 0)
                             )
                         )
                         select ap.Id;
@@ -154,12 +154,14 @@ namespace DMS.Rpc.store_checker_monitor
         [Route(StoreCheckerMonitorRoute.List), HttpPost]
         public async Task<List<StoreCheckerMonitor_StoreCheckerMonitorDTO>> List([FromBody] StoreCheckerMonitor_StoreCheckerMonitorFilterDTO StoreCheckerMonitor_StoreCheckerMonitorFilterDTO)
         {
-            DateTime Start = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.GreaterEqual.HasValue ?
-               StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.GreaterEqual.Value :
-               StaticParams.DateTimeNow;
-            DateTime End = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.LessEqual.HasValue ?
-                StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.LessEqual.Value :
-                StaticParams.DateTimeNow;
+            DateTime Start = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn?.GreaterEqual == null ?
+                    StaticParams.DateTimeNow :
+                    StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.GreaterEqual.Value;
+
+            DateTime End = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn?.LessEqual == null ?
+                    StaticParams.DateTimeNow :
+                    StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.LessEqual.Value;
+
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
@@ -208,28 +210,27 @@ namespace DMS.Rpc.store_checker_monitor
             var StoreCheckingQuery = DataContext.StoreChecking
                 .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue);
             // khong check
-            if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Checking.Equal == 0)
+            if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Checking?.Equal == null || StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Checking?.Equal.Value == 1)
             {
-            }
-            else
-            {
-                if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Image.Equal == 0)
-                {
-                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.ImageCounter == 0);
-                }
-                else
-                {
-                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.ImageCounter > 0);
-                }
+                if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Image?.Equal != null)
+                    if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Image.Equal == 0)
+                    {
+                        StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.ImageCounter == 0);
+                    }
+                    else
+                    {
+                        StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.ImageCounter > 0);
+                    }
 
-                if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SalesOrder.Equal == 0)
-                {
-                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.IndirectSalesOrderCounter == 0);
-                }
-                else
-                {
-                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.IndirectSalesOrderCounter > 0);
-                }
+                if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SalesOrder?.Equal != null)
+                    if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SalesOrder.Equal == 0)
+                    {
+                        StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.IndirectSalesOrderCounter == 0);
+                    }
+                    else
+                    {
+                        StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.IndirectSalesOrderCounter > 0);
+                    }
                 StoreCheckingDAOs = await StoreCheckingQuery.ToListAsync();
             }
 
