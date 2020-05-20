@@ -17,7 +17,7 @@ trap term_handler TERM
 
 PROJECT_NAME="DMS"
 
-dotnet ${PROJECT_NAME}.dll --urls http://localhost:80 --environment Development &
+dotnet ${PROJECT_NAME}.dll --urls http://localhost:80 --environment Production &
 consul agent -config-dir /consul/config -node ${NODE} &
 CONSUL_PID="$!"
 sleep 10
