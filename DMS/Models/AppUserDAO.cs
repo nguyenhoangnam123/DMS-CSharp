@@ -8,6 +8,7 @@ namespace DMS.Models
         public AppUserDAO()
         {
             AppUserRoleMappings = new HashSet<AppUserRoleMappingDAO>();
+            Banners = new HashSet<BannerDAO>();
             DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
             ERouteChangeRequests = new HashSet<ERouteChangeRequestDAO>();
             ERouteCreators = new HashSet<ERouteDAO>();
@@ -46,6 +47,7 @@ namespace DMS.Models
         public virtual SexDAO Sex { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
+        public virtual ICollection<BannerDAO> Banners { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
         public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }
         public virtual ICollection<ERouteDAO> ERouteCreators { get; set; }

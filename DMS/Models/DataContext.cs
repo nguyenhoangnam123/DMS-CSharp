@@ -9,6 +9,7 @@ namespace DMS.Models
         public virtual DbSet<AlbumDAO> Album { get; set; }
         public virtual DbSet<AppUserDAO> AppUser { get; set; }
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
+        public virtual DbSet<BannerDAO> Banner { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
         public virtual DbSet<DirectPriceListDAO> DirectPriceList { get; set; }
         public virtual DbSet<DirectPriceListItemMappingDAO> DirectPriceListItemMapping { get; set; }
@@ -73,6 +74,11 @@ namespace DMS.Models
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
+        public virtual DbSet<SurveyDAO> Survey { get; set; }
+        public virtual DbSet<SurveyOptionDAO> SurveyOption { get; set; }
+        public virtual DbSet<SurveyOptionTypeDAO> SurveyOptionType { get; set; }
+        public virtual DbSet<SurveyQuestionDAO> SurveyQuestion { get; set; }
+        public virtual DbSet<SurveyQuestionTypeDAO> SurveyQuestionType { get; set; }
         public virtual DbSet<TaxTypeDAO> TaxType { get; set; }
         public virtual DbSet<UnitOfMeasureDAO> UnitOfMeasure { get; set; }
         public virtual DbSet<UnitOfMeasureGroupingDAO> UnitOfMeasureGrouping { get; set; }
@@ -231,6 +237,42 @@ namespace DMS.Models
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AppUserRoleMapping_Role");
+            });
+
+            modelBuilder.Entity<BannerDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Content).HasMaxLength(4000);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.Banners)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Banner_AppUser");
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.Banners)
+                    .HasForeignKey(d => d.ImageId)
+                    .HasConstraintName("FK_Banner_Image");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Banners)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Banner_Status");
             });
 
             modelBuilder.Entity<BrandDAO>(entity =>
@@ -2083,6 +2125,103 @@ namespace DMS.Models
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.WardId)
                     .HasConstraintName("FK_Supplier_Ward");
+            });
+
+            modelBuilder.Entity<SurveyDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.EndAt).HasColumnType("datetime");
+
+                entity.Property(e => e.StartAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<SurveyOptionDAO>(entity =>
+            {
+                entity.Property(e => e.Content)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.SurveyOptionType)
+                    .WithMany(p => p.SurveyOptions)
+                    .HasForeignKey(d => d.SurveyOptionTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyOption_SurveyOptionType");
+
+                entity.HasOne(d => d.SurveyQuestion)
+                    .WithMany(p => p.SurveyOptions)
+                    .HasForeignKey(d => d.SurveyQuestionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyOption_SurveyQuestion");
+            });
+
+            modelBuilder.Entity<SurveyOptionTypeDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<SurveyQuestionDAO>(entity =>
+            {
+                entity.Property(e => e.Content)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Survey)
+                    .WithMany(p => p.SurveyQuestions)
+                    .HasForeignKey(d => d.SurveyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyQuestion_Survey");
+
+                entity.HasOne(d => d.SurveyQuestionType)
+                    .WithMany(p => p.SurveyQuestions)
+                    .HasForeignKey(d => d.SurveyQuestionTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyQuestion_SurveyQuestionType");
+            });
+
+            modelBuilder.Entity<SurveyQuestionTypeDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
             });
 
             modelBuilder.Entity<TaxTypeDAO>(entity =>

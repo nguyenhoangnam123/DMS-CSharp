@@ -14,6 +14,7 @@ namespace DMS.Repositories
 
         IAlbumRepository AlbumRepository { get; }
         IAppUserRepository AppUserRepository { get; }
+        IBannerRepository BannerRepository { get; }
         IBrandRepository BrandRepository { get; }
         IDirectPriceListRepository DirectPriceListRepository { get; }
         IDirectPriceListTypeRepository DirectPriceListTypeRepository { get; }
@@ -86,6 +87,7 @@ namespace DMS.Repositories
 
         public IAlbumRepository AlbumRepository { get; private set; }
         public IAppUserRepository AppUserRepository { get; private set; }
+        public IBannerRepository BannerRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
         public IDirectPriceListRepository DirectPriceListRepository { get; private set; }
         public IDirectPriceListTypeRepository DirectPriceListTypeRepository { get; private set; }
@@ -157,6 +159,7 @@ namespace DMS.Repositories
             AlbumRepository = new AlbumRepository(DataContext);
             AppUserRepository = new AppUserRepository(DataContext);
             BrandRepository = new BrandRepository(DataContext);
+            BannerRepository = new BannerRepository(DataContext);
             DirectPriceListRepository = new DirectPriceListRepository(DataContext);
             DirectPriceListTypeRepository = new DirectPriceListTypeRepository(DataContext);
             DirectPriceListItemMappingItemMappingRepository = new DirectPriceListItemMappingItemMappingRepository(DataContext);
