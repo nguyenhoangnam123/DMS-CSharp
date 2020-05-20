@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
+using DMS.Enums;
 
 namespace DMS.Services.MSurvey
 {
-    public interface ISurveyService :  IServiceScoped
+    public interface ISurveyService : IServiceScoped
     {
         Task<int> Count(SurveyFilter SurveyFilter);
         Task<List<Survey>> List(SurveyFilter SurveyFilter);
@@ -20,7 +21,7 @@ namespace DMS.Services.MSurvey
         Task<Survey> Update(Survey Survey);
         Task<Survey> Delete(Survey Survey);
         SurveyFilter ToFilter(SurveyFilter SurveyFilter);
-        Task<Survey> CreateResult(Survey Survey);
+        Task<Survey> SaveResult(Survey Survey);
     }
 
     public class SurveyService : BaseService, ISurveyService
@@ -82,7 +83,7 @@ namespace DMS.Services.MSurvey
                 return null;
             return Survey;
         }
-       
+
         public async Task<Survey> Create(Survey Survey)
         {
             if (!await SurveyValidator.Create(Survey))
@@ -159,7 +160,7 @@ namespace DMS.Services.MSurvey
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public SurveyFilter ToFilter(SurveyFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<SurveyFilter>();
@@ -188,9 +189,26 @@ namespace DMS.Services.MSurvey
             return filter;
         }
 
-        public Task<Survey> CreateResult(Survey Survey)
+        public async Task<Survey> SaveResult(Survey Survey)
         {
-            throw new NotImplementedException();
+            List<SurveyResultSingle> SurveyResultSingles = new List<SurveyResultSingle>();
+            List<SurveyResultCell> SurveyResultCells = new List<SurveyResultCell>();
+            foreach (SurveyQuestion surveyQuestion in Survey.SurveyQuestions)
+            {
+                if (surveyQuestion.SurveyResultSingles != null && 
+                    (surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id ||
+                    surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id) )
+                {
+                    surveyQuestion.SurveyResultSingles.ForEach(s => s.AppUserId = CurrentContext.UserId);
+                }
+
+                if (surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id ||
+                    surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
+                {
+                    surveyQuestion.SurveyResultCells.ForEach(s => s.AppUserId = CurrentContext.UserId);
+                }
+            }
+            return Survey;
         }
     }
 }
