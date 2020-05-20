@@ -15,7 +15,9 @@ namespace DMS.Entities
         public bool IsMandatory { get; set; }
         public SurveyQuestionType SurveyQuestionType { get; set; }
         public List<SurveyOption> SurveyOptions { get; set; }
-
+        public List<SurveyResultCell> SurveyResultCells { get; set; }
+        public List<SurveyResultSingle> SurveyResultSingles { get; set; }
+        
         public bool Equals(SurveyQuestion other)
         {
             return other != null && Id == other.Id;

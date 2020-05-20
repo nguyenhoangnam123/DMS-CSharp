@@ -20,6 +20,7 @@ namespace DMS.Services.MSurvey
         Task<Survey> Update(Survey Survey);
         Task<Survey> Delete(Survey Survey);
         SurveyFilter ToFilter(SurveyFilter SurveyFilter);
+        Task<Survey> CreateResult(Survey Survey);
     }
 
     public class SurveyService : BaseService, ISurveyService
@@ -185,6 +186,11 @@ namespace DMS.Services.MSurvey
                 }
             }
             return filter;
+        }
+
+        public Task<Survey> CreateResult(Survey Survey)
+        {
+            throw new NotImplementedException();
         }
     }
 }
