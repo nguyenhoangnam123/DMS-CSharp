@@ -143,19 +143,17 @@ namespace DMS
             {
                 endpoints.MapControllers();
             });
-            if (env.IsDevelopment())
+            app.UseSwagger(c =>
             {
-                app.UseSwagger(c =>
-                {
-                    c.RouteTemplate = "rpc/dms/swagger/{documentname}/swagger.json";
-                });
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/rpc/dms/swagger/v1/swagger.json", "dms API");
-                    c.RoutePrefix = "rpc/dms/swagger";
-                });
-                app.UseDeveloperExceptionPage();
-            }
+                c.RouteTemplate = "rpc/dms/swagger/{documentname}/swagger.json";
+            });
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/rpc/dms/swagger/v1/swagger.json", "dms API");
+                c.RoutePrefix = "rpc/dms/swagger";
+            });
+            app.UseDeveloperExceptionPage();
+
         }
     }
 }
