@@ -142,6 +142,8 @@ namespace DMS.Rpc
             InitWorkflowTypeEnum();
             InitIndirectPriceListTypeEnum();
             InitDirectPriceListTypeEnum();
+            InitSurveyQuestionTypeEnum();
+            InitSurveyOptionTypeEnum();
             DataContext.SaveChanges();
             return Ok();
         }
@@ -551,6 +553,84 @@ namespace DMS.Rpc
                     Id = DirectPriceListTypeEnum.STORETYPE.Id,
                     Code = DirectPriceListTypeEnum.STORETYPE.Code,
                     Name = DirectPriceListTypeEnum.STORETYPE.Name,
+                });
+            }
+        }
+
+        private void InitSurveyQuestionTypeEnum()
+        {
+            List<SurveyQuestionTypeDAO> list = DataContext.SurveyQuestionType.ToList();
+            if (!list.Any(pt => pt.Id == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id))
+            {
+                DataContext.SurveyQuestionType.Add(new SurveyQuestionTypeDAO
+                {
+                    Id = SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id,
+                    Code = SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Code,
+                    Name = SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id))
+            {
+                DataContext.SurveyQuestionType.Add(new SurveyQuestionTypeDAO
+                {
+                    Id = SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id,
+                    Code = SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Code,
+                    Name = SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id))
+            {
+                DataContext.SurveyQuestionType.Add(new SurveyQuestionTypeDAO
+                {
+                    Id = SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id,
+                    Code = SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Code,
+                    Name = SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id))
+            {
+                DataContext.SurveyQuestionType.Add(new SurveyQuestionTypeDAO
+                {
+                    Id = SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id,
+                    Code = SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Code,
+                    Name = SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Name,
+                });
+            }
+        }
+
+        private void InitSurveyOptionTypeEnum()
+        {
+            List<SurveyOptionTypeDAO> list = DataContext.SurveyOptionType.ToList();
+            if (!list.Any(pt => pt.Id == SurveyOptionTypeEnum.COLUMN.Id))
+            {
+                DataContext.SurveyOptionType.Add(new SurveyOptionTypeDAO
+                {
+                    Id = SurveyOptionTypeEnum.COLUMN.Id,
+                    Code = SurveyOptionTypeEnum.COLUMN.Code,
+                    Name = SurveyOptionTypeEnum.COLUMN.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == SurveyOptionTypeEnum.ROW.Id))
+            {
+                DataContext.SurveyOptionType.Add(new SurveyOptionTypeDAO
+                {
+                    Id = SurveyOptionTypeEnum.ROW.Id,
+                    Code = SurveyOptionTypeEnum.ROW.Code,
+                    Name = SurveyOptionTypeEnum.ROW.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == SurveyOptionTypeEnum.SINGLE.Id))
+            {
+                DataContext.SurveyOptionType.Add(new SurveyOptionTypeDAO
+                {
+                    Id = SurveyOptionTypeEnum.SINGLE.Id,
+                    Code = SurveyOptionTypeEnum.SINGLE.Code,
+                    Name = SurveyOptionTypeEnum.SINGLE.Name,
                 });
             }
         }
