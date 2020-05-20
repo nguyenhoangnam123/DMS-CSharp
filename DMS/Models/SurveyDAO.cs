@@ -16,10 +16,13 @@ namespace DMS.Models
         public DateTime StartAt { get; set; }
         public DateTime EndAt { get; set; }
         public long StatusId { get; set; }
+        public long CreatorId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        public virtual AppUserDAO Creator { get; set; }
+        public virtual StatusDAO Status { get; set; }
         public virtual ICollection<SurveyQuestionDAO> SurveyQuestions { get; set; }
     }
 }

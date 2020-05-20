@@ -20,6 +20,7 @@ namespace DMS.Models
             Resellers = new HashSet<ResellerDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
             Suppliers = new HashSet<SupplierDAO>();
+            Surveys = new HashSet<SurveyDAO>();
         }
 
         public long Id { get; set; }
@@ -59,5 +60,6 @@ namespace DMS.Models
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
+        public virtual ICollection<SurveyDAO> Surveys { get; set; }
     }
 }

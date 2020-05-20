@@ -89,6 +89,7 @@ namespace DMS.Services.MSurvey
 
             try
             {
+                Survey.CreatorId = CurrentContext.UserId;
                 await UOW.Begin();
                 await UOW.SurveyRepository.Create(Survey);
                 await UOW.Commit();

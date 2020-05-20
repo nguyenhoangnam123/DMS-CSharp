@@ -2146,6 +2146,18 @@ namespace DMS.Models
                     .HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.Surveys)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Survey_AppUser");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Surveys)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Survey_Status");
             });
 
             modelBuilder.Entity<SurveyOptionDAO>(entity =>

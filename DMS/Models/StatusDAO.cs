@@ -26,6 +26,7 @@ namespace DMS.Models
             StoreTypes = new HashSet<StoreTypeDAO>();
             Stores = new HashSet<StoreDAO>();
             Suppliers = new HashSet<SupplierDAO>();
+            Surveys = new HashSet<SurveyDAO>();
             TaxTypes = new HashSet<TaxTypeDAO>();
             UnitOfMeasureGroupings = new HashSet<UnitOfMeasureGroupingDAO>();
             UnitOfMeasures = new HashSet<UnitOfMeasureDAO>();
@@ -56,6 +57,7 @@ namespace DMS.Models
         public virtual ICollection<StoreTypeDAO> StoreTypes { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
+        public virtual ICollection<SurveyDAO> Surveys { get; set; }
         public virtual ICollection<TaxTypeDAO> TaxTypes { get; set; }
         public virtual ICollection<UnitOfMeasureGroupingDAO> UnitOfMeasureGroupings { get; set; }
         public virtual ICollection<UnitOfMeasureDAO> UnitOfMeasures { get; set; }

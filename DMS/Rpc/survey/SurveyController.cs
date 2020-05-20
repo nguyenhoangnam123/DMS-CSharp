@@ -11,6 +11,9 @@ using System.IO;
 using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MSurvey;
+using DMS.Enums;
+using DMS.Services.MAppUser;
+using DMS.Services.MStatus;
 
 namespace DMS.Rpc.survey
 {
@@ -25,9 +28,14 @@ namespace DMS.Rpc.survey
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
-        
+
+        public const string FilterListAppUser = Default + "/filter-list-app-user";
+        public const string FilterListStatus = Default + "/filter-list-status";
         public const string FilterListSurveyOptionType = Default + "/filter-list-survey-option-type";
         public const string FilterListSurveyQuestionType = Default + "/filter-list-survey-question-type";
+
+        public const string SingleListAppUser = Default + "/single-list-app-user";
+        public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListSurveyOptionType = Default + "/single-list-survey-option-type";
         public const string SingleListSurveyQuestionType = Default + "/single-list-survey-question-type";
         
@@ -45,17 +53,23 @@ namespace DMS.Rpc.survey
         private ISurveyQuestionTypeService SurveyQuestionTypeService;
         private ISurveyOptionTypeService SurveyOptionTypeService;
         private ISurveyService SurveyService;
+        private IAppUserService AppUserService;
+        private IStatusService StatusService;
         private ICurrentContext CurrentContext;
         public SurveyController(
             ISurveyQuestionTypeService SurveyQuestionTypeService,
             ISurveyOptionTypeService SurveyOptionTypeService,
             ISurveyService SurveyService,
+            IAppUserService AppUserService,
+            IStatusService StatusService,
             ICurrentContext CurrentContext
         )
         {
             this.SurveyOptionTypeService = SurveyOptionTypeService;
             this.SurveyQuestionTypeService = SurveyQuestionTypeService;
             this.SurveyService = SurveyService;
+            this.AppUserService = AppUserService;
+            this.StatusService = StatusService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -218,7 +232,47 @@ namespace DMS.Rpc.survey
             return SurveyFilter;
         }
 
-       
+        [Route(SurveyRoute.FilterListAppUser), HttpPost]
+        public async Task<List<Survey_AppUserDTO>> FilterListAppUser([FromBody] Survey_AppUserFilterDTO Survey_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName;
+            AppUserFilter.Id = Survey_AppUserFilterDTO.Id;
+            AppUserFilter.Username = Survey_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = Survey_AppUserFilterDTO.DisplayName;
+            AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<Survey_AppUserDTO> Survey_AppUserDTOs = AppUsers
+                .Select(x => new Survey_AppUserDTO(x)).ToList();
+            return Survey_AppUserDTOs;
+        }
+        [Route(SurveyRoute.FilterListStatus), HttpPost]
+        public async Task<List<Survey_StatusDTO>> FilterListStatus([FromBody] Survey_StatusFilterDTO Survey_StatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = int.MaxValue;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<Survey_StatusDTO> Survey_StatusDTOs = Statuses
+                .Select(x => new Survey_StatusDTO(x)).ToList();
+            return Survey_StatusDTOs;
+        }
         [Route(SurveyRoute.FilterListSurveyQuestionType), HttpPost]
         public async Task<List<Survey_SurveyQuestionTypeDTO>> FilterListSurveyQuestionType([FromBody] Survey_SurveyQuestionTypeFilterDTO Survey_SurveyQuestionTypeFilterDTO)
         {
@@ -237,6 +291,25 @@ namespace DMS.Rpc.survey
             List<Survey_SurveyQuestionTypeDTO> Survey_SurveyQuestionTypeDTOs = SurveyQuestionTypes
                 .Select(x => new Survey_SurveyQuestionTypeDTO(x)).ToList();
             return Survey_SurveyQuestionTypeDTOs;
+        }
+        [Route(SurveyRoute.FilterListSurveyOptionType), HttpPost]
+        public async Task<List<Survey_SurveyOptionTypeDTO>> FilterListSurveyOptionType([FromBody] Survey_SurveyOptionTypeFilterDTO Survey_SurveyOptionTypeFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            SurveyOptionTypeFilter SurveyOptionTypeFilter = new SurveyOptionTypeFilter();
+            SurveyOptionTypeFilter.Skip = 0;
+            SurveyOptionTypeFilter.Take = int.MaxValue;
+            SurveyOptionTypeFilter.Take = 20;
+            SurveyOptionTypeFilter.OrderBy = SurveyOptionTypeOrder.Id;
+            SurveyOptionTypeFilter.OrderType = OrderType.ASC;
+            SurveyOptionTypeFilter.Selects = SurveyOptionTypeSelect.ALL;
+
+            List<SurveyOptionType> SurveyOptionTypes = await SurveyOptionTypeService.List(SurveyOptionTypeFilter);
+            List<Survey_SurveyOptionTypeDTO> Survey_SurveyOptionTypeDTOs = SurveyOptionTypes
+                .Select(x => new Survey_SurveyOptionTypeDTO(x)).ToList();
+            return Survey_SurveyOptionTypeDTOs;
         }
 
         [Route(SurveyRoute.SingleListSurveyQuestionType), HttpPost]
@@ -258,28 +331,47 @@ namespace DMS.Rpc.survey
                 .Select(x => new Survey_SurveyQuestionTypeDTO(x)).ToList();
             return Survey_SurveyQuestionTypeDTOs;
         }
-
-
-        [Route(SurveyRoute.FilterListSurveyOptionType), HttpPost]
-        public async Task<List<Survey_SurveyOptionTypeDTO>> FilterListSurveyOptionType([FromBody] Survey_SurveyOptionTypeFilterDTO Survey_SurveyOptionTypeFilterDTO)
+        [Route(SurveyRoute.SingleListAppUser), HttpPost]
+        public async Task<List<Survey_AppUserDTO>> SingleListAppUser([FromBody] Survey_AppUserFilterDTO Survey_AppUserFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            SurveyOptionTypeFilter SurveyOptionTypeFilter = new SurveyOptionTypeFilter();
-            SurveyOptionTypeFilter.Skip = 0;
-            SurveyOptionTypeFilter.Take = int.MaxValue;
-            SurveyOptionTypeFilter.Take = 20;
-            SurveyOptionTypeFilter.OrderBy = SurveyOptionTypeOrder.Id;
-            SurveyOptionTypeFilter.OrderType = OrderType.ASC;
-            SurveyOptionTypeFilter.Selects = SurveyOptionTypeSelect.ALL;
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName;
+            AppUserFilter.Id = Survey_AppUserFilterDTO.Id;
+            AppUserFilter.Username = Survey_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = Survey_AppUserFilterDTO.DisplayName;
+            AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
-            List<SurveyOptionType> SurveyOptionTypes = await SurveyOptionTypeService.List(SurveyOptionTypeFilter);
-            List<Survey_SurveyOptionTypeDTO> Survey_SurveyOptionTypeDTOs = SurveyOptionTypes
-                .Select(x => new Survey_SurveyOptionTypeDTO(x)).ToList();
-            return Survey_SurveyOptionTypeDTOs;
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<Survey_AppUserDTO> Survey_AppUserDTOs = AppUsers
+                .Select(x => new Survey_AppUserDTO(x)).ToList();
+            return Survey_AppUserDTOs;
         }
+        [Route(SurveyRoute.SingleListStatus), HttpPost]
+        public async Task<List<Survey_StatusDTO>> SingleListStatus([FromBody] Survey_StatusFilterDTO Survey_StatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
 
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = int.MaxValue;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<Survey_StatusDTO> Survey_StatusDTOs = Statuses
+                .Select(x => new Survey_StatusDTO(x)).ToList();
+            return Survey_StatusDTOs;
+        }
         [Route(SurveyRoute.SingleListSurveyOptionType), HttpPost]
         public async Task<List<Survey_SurveyOptionTypeDTO>> SingleListSurveyOptionType([FromBody] Survey_SurveyOptionTypeFilterDTO Survey_SurveyOptionTypeFilterDTO)
         {

@@ -14,6 +14,9 @@ namespace DMS.Entities
         public DateTime StartAt { get; set; }
         public DateTime EndAt { get; set; }
         public long StatusId { get; set; }
+        public long CreatorId { get; set; }
+        public AppUser Creator { get; set; }
+        public Status Status { get; set; }
         public List<SurveyQuestion> SurveyQuestions { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -36,6 +39,7 @@ namespace DMS.Entities
         public DateFilter StartAt { get; set; }
         public DateFilter EndAt { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter CreatorId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<SurveyFilter> OrFilter { get; set; }
@@ -52,6 +56,7 @@ namespace DMS.Entities
         StartAt = 3,
         EndAt = 4,
         Status = 5,
+        Creator = 6,
         CreatedAt = 50,
         UpdatedAt = 51,
     }
@@ -66,5 +71,6 @@ namespace DMS.Entities
         StartAt = E._3,
         EndAt = E._4,
         Status = E._5,
+        Creator = E._6,
     }
 }

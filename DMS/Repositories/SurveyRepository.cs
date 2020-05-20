@@ -50,6 +50,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.EndAt, filter.EndAt);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
+            if (filter.CreatorId != null)
+                query = query.Where(q => q.CreatorId, filter.CreatorId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -74,6 +76,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.EndAt, filter.EndAt);
                 if (filter.StatusId != null)
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (filter.CreatorId != null)
+                    queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -104,6 +108,9 @@ namespace DMS.Repositories
                         case SurveyOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
                             break;
+                        case SurveyOrder.Creator:
+                            query = query.OrderBy(q => q.CreatorId);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -127,6 +134,9 @@ namespace DMS.Repositories
                         case SurveyOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
                             break;
+                        case SurveyOrder.Creator:
+                            query = query.OrderByDescending(q => q.CreatorId);
+                            break;
                     }
                     break;
             }
@@ -144,6 +154,31 @@ namespace DMS.Repositories
                 StartAt = filter.Selects.Contains(SurveySelect.StartAt) ? q.StartAt : default(DateTime),
                 EndAt = filter.Selects.Contains(SurveySelect.EndAt) ? q.EndAt : default(DateTime),
                 StatusId = filter.Selects.Contains(SurveySelect.Status) ? q.StatusId : default(long),
+                CreatorId = filter.Selects.Contains(SurveySelect.Creator) ? q.CreatorId : default(long),
+                Creator = filter.Selects.Contains(SurveySelect.Creator) && q.Creator != null ? new AppUser
+                {
+                    Id = q.Creator.Id,
+                    Username = q.Creator.Username,
+                    Password = q.Creator.Password,
+                    DisplayName = q.Creator.DisplayName,
+                    Address = q.Creator.Address,
+                    Email = q.Creator.Email,
+                    Phone = q.Creator.Phone,
+                    Position = q.Creator.Position,
+                    Department = q.Creator.Department,
+                    OrganizationId = q.Creator.OrganizationId,
+                    SexId = q.Creator.SexId,
+                    StatusId = q.Creator.StatusId,
+                    Avatar = q.Creator.Avatar,
+                    Birthday = q.Creator.Birthday,
+                    ProvinceId = q.Creator.ProvinceId,
+                } : null,
+                Status = filter.Selects.Contains(SurveySelect.Status) && q.Status != null ? new Status
+                {
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
+                } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
             }).ToListAsync();
@@ -180,6 +215,19 @@ namespace DMS.Repositories
                 StartAt = x.StartAt,
                 EndAt = x.EndAt,
                 StatusId = x.StatusId,
+                CreatorId = x.CreatorId,
+                Creator = x.Creator == null ? null : new AppUser
+                {
+                    Id = x.Creator.Id,
+                    Username = x.Creator.Username,
+                    DisplayName = x.Creator.DisplayName,
+                },
+                Status = x.Status == null ? null : new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
+                },
             }).FirstOrDefaultAsync();
 
             if (Survey == null)
@@ -231,6 +279,7 @@ namespace DMS.Repositories
             SurveyDAO.StartAt = Survey.StartAt;
             SurveyDAO.EndAt = Survey.EndAt;
             SurveyDAO.StatusId = Survey.StatusId;
+            SurveyDAO.CreatorId = Survey.CreatorId;
             SurveyDAO.CreatedAt = StaticParams.DateTimeNow;
             SurveyDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.Survey.Add(SurveyDAO);
