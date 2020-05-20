@@ -17,10 +17,11 @@ trap term_handler TERM
 
 PROJECT_NAME="DMS"
 
-dotnet ${PROJECT_NAME}.dll --urls http://localhost:80 --environment Production &
 consul agent -config-dir /consul/config -node ${NODE} &
 CONSUL_PID="$!"
-sleep 10
+sleep 5
+dotnet ${PROJECT_NAME}.dll --urls http://localhost:80 --environment Production &
+sleep 5
 consul connect envoy -sidecar-for dms-backend &
 wait "${CONSUL_PID}"
 
