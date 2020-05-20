@@ -279,7 +279,7 @@ namespace DMS.Repositories
                     {
                         ImageId = ItemImageMappingDAO.ImageId,
                         ItemId = ItemImageMappingDAO.ItemId,
-                        Image = new Image
+                        Image = ItemImageMappingDAO.Image == null ? null : new Image
                         {
                             Id = ItemImageMappingDAO.Image.Id,
                             Name = ItemImageMappingDAO.Image.Name,

@@ -79,8 +79,10 @@ namespace DMS.Services.MProduct
                 ItemFilter ItemFilter = new ItemFilter
                 {
                     ProductId = new IdFilter { In = ProductIds },
-                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    StatusId = null,
                     Selects = ItemSelect.Id | ItemSelect.ProductId,
+                    Skip = 0,
+                    Take = int.MaxValue,
                 };
                 List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
                 foreach (Product Product in Products)
@@ -123,7 +125,7 @@ namespace DMS.Services.MProduct
 
             try
             {
-                if(Product.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
+                if (Product.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
                 {
                     Product.Items = new List<Item>();
                     Product.Items.Add(new Item
