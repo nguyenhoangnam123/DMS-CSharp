@@ -54,7 +54,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<SurveyDAO> OrFilter(IQueryable<SurveyDAO> query, SurveyFilter filter)
+        private IQueryable<SurveyDAO> OrFilter(IQueryable<SurveyDAO> query, SurveyFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -77,7 +77,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<SurveyDAO> DynamicOrder(IQueryable<SurveyDAO> query, SurveyFilter filter)
         {
@@ -186,7 +186,6 @@ namespace DMS.Repositories
                 return null;
             Survey.SurveyQuestions = await DataContext.SurveyQuestion.AsNoTracking()
                 .Where(x => x.SurveyId == Survey.Id)
-                .Where(x => x.DeletedAt == null)
                 .Select(x => new SurveyQuestion
                 {
                     Id = x.Id,
@@ -201,7 +200,26 @@ namespace DMS.Repositories
                         Name = x.SurveyQuestionType.Name,
                     },
                 }).ToListAsync();
-
+            List<long> questionIds = Survey.SurveyQuestions.Select(sq => sq.Id).ToList();
+            List<SurveyOption> SurveyOptions = await DataContext.SurveyOption.AsNoTracking()
+                .Where(x => questionIds.Contains(x.SurveyQuestionId))
+                 .Select(x => new SurveyOption
+                 {
+                     Id = x.Id,
+                     SurveyQuestionId = x.SurveyQuestionId,
+                     Content = x.Content,
+                     SurveyOptionTypeId = x.SurveyOptionTypeId,
+                     SurveyOptionType = new SurveyOptionType
+                     {
+                         Id = x.SurveyOptionType.Id,
+                         Code = x.SurveyOptionType.Code,
+                         Name = x.SurveyOptionType.Name,
+                     },
+                 }).ToListAsync();
+            foreach (SurveyQuestion surveyQuestion in Survey.SurveyQuestions)
+            {
+                surveyQuestion.SurveyOptions = SurveyOptions.Where(so => so.SurveyQuestionId == surveyQuestion.Id).ToList();
+            }
             return Survey;
         }
         public async Task<bool> Create(Survey Survey)
@@ -244,7 +262,7 @@ namespace DMS.Repositories
             await DataContext.Survey.Where(x => x.Id == Survey.Id).UpdateFromQueryAsync(x => new SurveyDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Survey> Surveys)
         {
             List<SurveyDAO> SurveyDAOs = new List<SurveyDAO>();
@@ -276,42 +294,46 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Survey Survey)
         {
-            List<SurveyQuestionDAO> SurveyQuestionDAOs = await DataContext.SurveyQuestion
-                .Where(x => x.SurveyId == Survey.Id).ToListAsync();
-            SurveyQuestionDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
+            await DataContext.SurveyOption.Where(x => x.SurveyQuestionId == Survey.Id).DeleteFromQueryAsync();
+            await DataContext.SurveyQuestion.Where(x => x.SurveyId == Survey.Id).DeleteFromQueryAsync();
             if (Survey.SurveyQuestions != null)
             {
+                List<SurveyQuestionDAO> SurveyQuestionDAOs = new List<SurveyQuestionDAO>();
                 foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
                 {
-                    SurveyQuestionDAO SurveyQuestionDAO = SurveyQuestionDAOs
-                        .Where(x => x.Id == SurveyQuestion.Id && x.Id != 0).FirstOrDefault();
-                    if (SurveyQuestionDAO == null)
+                    SurveyQuestionDAO SurveyQuestionDAO = new SurveyQuestionDAO
                     {
-                        SurveyQuestionDAO = new SurveyQuestionDAO();
-                        SurveyQuestionDAO.Id = SurveyQuestion.Id;
-                        SurveyQuestionDAO.SurveyId = Survey.Id;
-                        SurveyQuestionDAO.Content = SurveyQuestion.Content;
-                        SurveyQuestionDAO.SurveyQuestionTypeId = SurveyQuestion.SurveyQuestionTypeId;
-                        SurveyQuestionDAO.IsMandatory = SurveyQuestion.IsMandatory;
-                        SurveyQuestionDAOs.Add(SurveyQuestionDAO);
-                        SurveyQuestionDAO.CreatedAt = StaticParams.DateTimeNow;
-                        SurveyQuestionDAO.UpdatedAt = StaticParams.DateTimeNow;
-                        SurveyQuestionDAO.DeletedAt = null;
-                    }
-                    else
-                    {
-                        SurveyQuestionDAO.Id = SurveyQuestion.Id;
-                        SurveyQuestionDAO.SurveyId = Survey.Id;
-                        SurveyQuestionDAO.Content = SurveyQuestion.Content;
-                        SurveyQuestionDAO.SurveyQuestionTypeId = SurveyQuestion.SurveyQuestionTypeId;
-                        SurveyQuestionDAO.IsMandatory = SurveyQuestion.IsMandatory;
-                        SurveyQuestionDAO.UpdatedAt = StaticParams.DateTimeNow;
-                        SurveyQuestionDAO.DeletedAt = null;
-                    }
+                        Id = SurveyQuestion.Id,
+                        SurveyId = Survey.Id,
+                        Content = SurveyQuestion.Content,
+                        SurveyQuestionTypeId = SurveyQuestion.SurveyQuestionTypeId,
+                        IsMandatory = SurveyQuestion.IsMandatory,
+                    };
+                    SurveyQuestionDAOs.Add(SurveyQuestionDAO);
                 }
                 await DataContext.SurveyQuestion.BulkMergeAsync(SurveyQuestionDAOs);
+                foreach (SurveyQuestionDAO SurveyQuestionDAO in SurveyQuestionDAOs)
+                {
+                    SurveyQuestion SurveyQuestion = Survey.SurveyQuestions.Where(sq => sq.Content == SurveyQuestionDAO.Content).FirstOrDefault();
+                    SurveyQuestion.Id = SurveyQuestionDAO.Id;
+                }
+
+                List<SurveyOptionDAO> SurveyOptionDAOs = new List<SurveyOptionDAO>();
+                foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
+                {
+                    foreach (SurveyOption SurveyOption in SurveyQuestion.SurveyOptions)
+                    {
+                        SurveyOptionDAO SurveyOptionDAO = new SurveyOptionDAO
+                        {
+                            Content = SurveyOption.Content,
+                            SurveyOptionTypeId = SurveyOption.SurveyOptionTypeId,
+                            SurveyQuestionId = SurveyQuestion.Id,
+                        };
+                        SurveyOptionDAOs.Add(SurveyOptionDAO);
+                    }
+                }
+                await DataContext.SurveyOption.BulkMergeAsync(SurveyOptionDAOs);
             }
         }
-        
     }
 }

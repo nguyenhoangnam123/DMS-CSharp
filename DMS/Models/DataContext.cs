@@ -9,6 +9,7 @@ namespace DMS.Models
         public virtual DbSet<AlbumDAO> Album { get; set; }
         public virtual DbSet<AppUserDAO> AppUser { get; set; }
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
+        public virtual DbSet<BannerDAO> Banner { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
         public virtual DbSet<DirectPriceListDAO> DirectPriceList { get; set; }
         public virtual DbSet<DirectPriceListItemMappingDAO> DirectPriceListItemMapping { get; set; }
@@ -236,6 +237,42 @@ namespace DMS.Models
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AppUserRoleMapping_Role");
+            });
+
+            modelBuilder.Entity<BannerDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Content).HasMaxLength(4000);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.Banners)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Banner_AppUser");
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.Banners)
+                    .HasForeignKey(d => d.ImageId)
+                    .HasConstraintName("FK_Banner_Image");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Banners)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Banner_Status");
             });
 
             modelBuilder.Entity<BrandDAO>(entity =>
@@ -2117,12 +2154,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
                 entity.HasOne(d => d.SurveyOptionType)
                     .WithMany(p => p.SurveyOptions)
                     .HasForeignKey(d => d.SurveyOptionTypeId)
@@ -2154,12 +2185,6 @@ namespace DMS.Models
                 entity.Property(e => e.Content)
                     .IsRequired()
                     .HasMaxLength(500);
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Survey)
                     .WithMany(p => p.SurveyQuestions)

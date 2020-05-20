@@ -19,8 +19,6 @@ namespace DMS.Services.MSurvey
         Task<Survey> Create(Survey Survey);
         Task<Survey> Update(Survey Survey);
         Task<Survey> Delete(Survey Survey);
-        Task<List<Survey>> BulkDelete(List<Survey> Surveys);
-        Task<List<Survey>> Import(List<Survey> Surveys);
         SurveyFilter ToFilter(SurveyFilter SurveyFilter);
     }
 
@@ -159,54 +157,6 @@ namespace DMS.Services.MSurvey
                     throw new MessageException(ex.InnerException);
             }
         }
-
-        public async Task<List<Survey>> BulkDelete(List<Survey> Surveys)
-        {
-            if (!await SurveyValidator.BulkDelete(Surveys))
-                return Surveys;
-
-            try
-            {
-                await UOW.Begin();
-                await UOW.SurveyRepository.BulkDelete(Surveys);
-                await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, Surveys, nameof(SurveyService));
-                return Surveys;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
-                if (ex.InnerException == null)
-                    throw new MessageException(ex);
-                else
-                    throw new MessageException(ex.InnerException);
-            }
-        }
-        
-        public async Task<List<Survey>> Import(List<Survey> Surveys)
-        {
-            if (!await SurveyValidator.Import(Surveys))
-                return Surveys;
-            try
-            {
-                await UOW.Begin();
-                await UOW.SurveyRepository.BulkMerge(Surveys);
-                await UOW.Commit();
-
-                await Logging.CreateAuditLog(Surveys, new { }, nameof(SurveyService));
-                return Surveys;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
-                if (ex.InnerException == null)
-                    throw new MessageException(ex);
-                else
-                    throw new MessageException(ex.InnerException);
-            }
-        }     
         
         public SurveyFilter ToFilter(SurveyFilter filter)
         {

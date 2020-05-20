@@ -13,9 +13,6 @@ namespace DMS.Entities
         public long SurveyOptionTypeId { get; set; }
         public string Content { get; set; }
         public SurveyOptionType SurveyOptionType { get; set; }
-        public SurveyQuestion SurveyQuestion { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
 
         public bool Equals(SurveyOption other)
         {

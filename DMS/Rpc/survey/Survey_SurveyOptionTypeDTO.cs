@@ -6,7 +6,7 @@ using DMS.Entities;
 
 namespace DMS.Rpc.survey
 {
-    public class Survey_SurveyQuestionTypeDTO : DataDTO
+    public class Survey_SurveyOptionTypeDTO : DataDTO
     {
         
         public long Id { get; set; }
@@ -14,22 +14,23 @@ namespace DMS.Rpc.survey
         public string Code { get; set; }
         
         public string Name { get; set; }
+        
 
-        public Survey_SurveyQuestionTypeDTO() {}
-        public Survey_SurveyQuestionTypeDTO(SurveyQuestionType SurveyQuestionType)
+        public Survey_SurveyOptionTypeDTO() {}
+        public Survey_SurveyOptionTypeDTO(SurveyOptionType SurveyOptionType)
         {
             
-            this.Id = SurveyQuestionType.Id;
+            this.Id = SurveyOptionType.Id;
             
-            this.Code = SurveyQuestionType.Code;
+            this.Code = SurveyOptionType.Code;
             
-            this.Name = SurveyQuestionType.Name;
+            this.Name = SurveyOptionType.Name;
             
-            this.Errors = SurveyQuestionType.Errors;
+            this.Errors = SurveyOptionType.Errors;
         }
     }
 
-    public class Survey_SurveyQuestionTypeFilterDTO : FilterDTO
+    public class Survey_SurveyOptionTypeFilterDTO : FilterDTO
     {
         
         public IdFilter Id { get; set; }
@@ -38,6 +39,6 @@ namespace DMS.Rpc.survey
         
         public StringFilter Name { get; set; }
         
-        public SurveyQuestionTypeOrder OrderBy { get; set; }
+        public SurveyOptionTypeOrder OrderBy { get; set; }
     }
 }

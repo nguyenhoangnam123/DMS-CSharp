@@ -13,10 +13,8 @@ namespace DMS.Entities
         public string Content { get; set; }
         public long SurveyQuestionTypeId { get; set; }
         public bool IsMandatory { get; set; }
-        public Survey Survey { get; set; }
         public SurveyQuestionType SurveyQuestionType { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public List<SurveyOption> SurveyOptions { get; set; }
 
         public bool Equals(SurveyQuestion other)
         {

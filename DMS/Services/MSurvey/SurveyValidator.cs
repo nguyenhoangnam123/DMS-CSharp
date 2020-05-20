@@ -14,8 +14,6 @@ namespace DMS.Services.MSurvey
         Task<bool> Create(Survey Survey);
         Task<bool> Update(Survey Survey);
         Task<bool> Delete(Survey Survey);
-        Task<bool> BulkDelete(List<Survey> Surveys);
-        Task<bool> Import(List<Survey> Surveys);
     }
 
     public class SurveyValidator : ISurveyValidator
@@ -50,7 +48,7 @@ namespace DMS.Services.MSurvey
             return count == 1;
         }
 
-        public async Task<bool>Create(Survey Survey)
+        public async Task<bool> Create(Survey Survey)
         {
             return Survey.IsValidated;
         }
@@ -69,16 +67,6 @@ namespace DMS.Services.MSurvey
             {
             }
             return Survey.IsValidated;
-        }
-        
-        public async Task<bool> BulkDelete(List<Survey> Surveys)
-        {
-            return true;
-        }
-        
-        public async Task<bool> Import(List<Survey> Surveys)
-        {
-            return true;
         }
     }
 }

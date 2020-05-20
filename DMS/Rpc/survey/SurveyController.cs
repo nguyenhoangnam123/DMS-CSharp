@@ -26,9 +26,9 @@ namespace DMS.Rpc.survey
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
         
-        public const string FilterListSurveyQuestion = Default + "/filter-list-survey-question";
+        public const string FilterListSurveyOptionType = Default + "/filter-list-survey-option-type";
         public const string FilterListSurveyQuestionType = Default + "/filter-list-survey-question-type";
-        public const string SingleListSurveyQuestion = Default + "/single-list-survey-question";
+        public const string SingleListSurveyOptionType = Default + "/single-list-survey-option-type";
         public const string SingleListSurveyQuestionType = Default + "/single-list-survey-question-type";
         
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
@@ -43,14 +43,17 @@ namespace DMS.Rpc.survey
     public class SurveyController : RpcController
     {
         private ISurveyQuestionTypeService SurveyQuestionTypeService;
+        private ISurveyOptionTypeService SurveyOptionTypeService;
         private ISurveyService SurveyService;
         private ICurrentContext CurrentContext;
         public SurveyController(
             ISurveyQuestionTypeService SurveyQuestionTypeService,
+            ISurveyOptionTypeService SurveyOptionTypeService,
             ISurveyService SurveyService,
             ICurrentContext CurrentContext
         )
         {
+            this.SurveyOptionTypeService = SurveyOptionTypeService;
             this.SurveyQuestionTypeService = SurveyQuestionTypeService;
             this.SurveyService = SurveyService;
             this.CurrentContext = CurrentContext;
@@ -254,6 +257,47 @@ namespace DMS.Rpc.survey
             List<Survey_SurveyQuestionTypeDTO> Survey_SurveyQuestionTypeDTOs = SurveyQuestionTypes
                 .Select(x => new Survey_SurveyQuestionTypeDTO(x)).ToList();
             return Survey_SurveyQuestionTypeDTOs;
+        }
+
+
+        [Route(SurveyRoute.FilterListSurveyOptionType), HttpPost]
+        public async Task<List<Survey_SurveyOptionTypeDTO>> FilterListSurveyOptionType([FromBody] Survey_SurveyOptionTypeFilterDTO Survey_SurveyOptionTypeFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            SurveyOptionTypeFilter SurveyOptionTypeFilter = new SurveyOptionTypeFilter();
+            SurveyOptionTypeFilter.Skip = 0;
+            SurveyOptionTypeFilter.Take = int.MaxValue;
+            SurveyOptionTypeFilter.Take = 20;
+            SurveyOptionTypeFilter.OrderBy = SurveyOptionTypeOrder.Id;
+            SurveyOptionTypeFilter.OrderType = OrderType.ASC;
+            SurveyOptionTypeFilter.Selects = SurveyOptionTypeSelect.ALL;
+
+            List<SurveyOptionType> SurveyOptionTypes = await SurveyOptionTypeService.List(SurveyOptionTypeFilter);
+            List<Survey_SurveyOptionTypeDTO> Survey_SurveyOptionTypeDTOs = SurveyOptionTypes
+                .Select(x => new Survey_SurveyOptionTypeDTO(x)).ToList();
+            return Survey_SurveyOptionTypeDTOs;
+        }
+
+        [Route(SurveyRoute.SingleListSurveyOptionType), HttpPost]
+        public async Task<List<Survey_SurveyOptionTypeDTO>> SingleListSurveyOptionType([FromBody] Survey_SurveyOptionTypeFilterDTO Survey_SurveyOptionTypeFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            SurveyOptionTypeFilter SurveyOptionTypeFilter = new SurveyOptionTypeFilter();
+            SurveyOptionTypeFilter.Skip = 0;
+            SurveyOptionTypeFilter.Take = int.MaxValue;
+            SurveyOptionTypeFilter.Take = 20;
+            SurveyOptionTypeFilter.OrderBy = SurveyOptionTypeOrder.Id;
+            SurveyOptionTypeFilter.OrderType = OrderType.ASC;
+            SurveyOptionTypeFilter.Selects = SurveyOptionTypeSelect.ALL;
+
+            List<SurveyOptionType> SurveyOptionTypes = await SurveyOptionTypeService.List(SurveyOptionTypeFilter);
+            List<Survey_SurveyOptionTypeDTO> Survey_SurveyOptionTypeDTOs = SurveyOptionTypes
+                .Select(x => new Survey_SurveyOptionTypeDTO(x)).ToList();
+            return Survey_SurveyOptionTypeDTOs;
         }
 
     }
