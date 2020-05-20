@@ -11,7 +11,6 @@ using System.IO;
 using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MDirectPriceList;
-using DMS.Services.MDirectPriceListType;
 using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
 using DMS.Services.MItem;

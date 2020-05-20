@@ -15,9 +15,6 @@ namespace DMS.Models
         public string Content { get; set; }
         public long SurveyQuestionTypeId { get; set; }
         public bool IsMandatory { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
-        public DateTime? DeletedAt { get; set; }
 
         public virtual SurveyDAO Survey { get; set; }
         public virtual SurveyQuestionTypeDAO SurveyQuestionType { get; set; }

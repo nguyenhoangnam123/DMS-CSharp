@@ -2154,12 +2154,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
                 entity.HasOne(d => d.SurveyOptionType)
                     .WithMany(p => p.SurveyOptions)
                     .HasForeignKey(d => d.SurveyOptionTypeId)
@@ -2191,12 +2185,6 @@ namespace DMS.Models
                 entity.Property(e => e.Content)
                     .IsRequired()
                     .HasMaxLength(500);
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Survey)
                     .WithMany(p => p.SurveyQuestions)
