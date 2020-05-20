@@ -1,6 +1,10 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Models;
+using DMS.Repositories;
+using DMS.Services.MAppUser;
+using DMS.Services.MOrganization;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,17 +30,59 @@ namespace DMS.Rpc.store_checker_monitor
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListChecking = Default + "/filter-list-checking";
         public const string FilterListImage = Default + "/filter-list-image";
-        public const string FilterListmageSalesOrder = Default + "/filter-list-sales-order";
+        public const string FilterListSalesOrder = Default + "/filter-list-sales-order";
     }
 
     public class StoreCheckerMonitorController : RpcController
     {
         private DataContext DataContext;
-        public StoreCheckerMonitorController(DataContext DataContext)
+        private IOrganizationService OrganizationService;
+        private IAppUserService AppUserService;
+        public StoreCheckerMonitorController(DataContext DataContext, IOrganizationService OrganizationService, IAppUserService AppUserService)
         {
             this.DataContext = DataContext;
+            this.OrganizationService = OrganizationService;
+            this.AppUserService = AppUserService;
         }
 
+        [Route(StoreCheckerMonitorRoute.FilterListAppUser), HttpPost]
+        public async Task<List<StoreCheckerMonitor_AppUserDTO>> FilterListAppUser([FromBody] StoreCheckerMonitor_AppUserFilterDTO StoreCheckerMonitor_AppUserFilterDTO)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName;
+            AppUserFilter.Id = StoreCheckerMonitor_AppUserFilterDTO.Id;
+            AppUserFilter.Username = StoreCheckerMonitor_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = StoreCheckerMonitor_AppUserFilterDTO.DisplayName;
+            AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<StoreCheckerMonitor_AppUserDTO> StoreCheckerMonitor_AppUserDTOs = AppUsers
+                .Select(x => new StoreCheckerMonitor_AppUserDTO(x)).ToList();
+            return StoreCheckerMonitor_AppUserDTOs;
+        }
+
+        [Route(StoreCheckerMonitorRoute.FilterListOrganization), HttpPost]
+        public async Task<List<StoreCheckerMonitor_OrganizationDTO>> FilterListOrganization([FromBody] StoreCheckerMonitor_OrganizationFilterDTO StoreCheckerMonitor_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = int.MaxValue;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<StoreCheckerMonitor_OrganizationDTO> StoreCheckerMonitor_OrganizationDTOs = Organizations
+                .Select(x => new StoreCheckerMonitor_OrganizationDTO(x)).ToList();
+            return StoreCheckerMonitor_OrganizationDTOs;
+        }
+
+        [Route(StoreCheckerMonitorRoute.FilterListChecking), HttpPost]
         public List<EnumList> FilterListChecking()
         {
             List<EnumList> EnumList = new List<EnumList>();
@@ -44,6 +90,7 @@ namespace DMS.Rpc.store_checker_monitor
             EnumList.Add(new EnumList { Id = 1, Name = "Đã viếng thăm" });
             return EnumList;
         }
+        [Route(StoreCheckerMonitorRoute.FilterListImage), HttpPost]
         public List<EnumList> FilterListImage()
         {
             List<EnumList> EnumList = new List<EnumList>();
@@ -52,7 +99,8 @@ namespace DMS.Rpc.store_checker_monitor
             return EnumList;
         }
 
-        public List<EnumList> FilterListmageSalesOrder()
+        [Route(StoreCheckerMonitorRoute.FilterListSalesOrder), HttpPost]
+        public List<EnumList> FilterListSalesOrder()
         {
             List<EnumList> EnumList = new List<EnumList>();
             EnumList.Add(new EnumList { Id = 0, Name = "Không có đơn hàng" });
@@ -60,14 +108,50 @@ namespace DMS.Rpc.store_checker_monitor
             return EnumList;
         }
 
+        [Route(StoreCheckerMonitorRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] StoreCheckerMonitor_StoreCheckerMonitorFilterDTO StoreCheckerMonitor_StoreCheckerMonitorFilterDTO)
         {
+            DateTime Start = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.GreaterEqual.HasValue ?
+               StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.GreaterEqual.Value :
+               StaticParams.DateTimeNow;
+            DateTime End = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.LessEqual.HasValue ?
+                StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.LessEqual.Value :
+                StaticParams.DateTimeNow;
+            OrganizationDAO OrganizationDAO = null;
+            if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.OrganizationId.Equal.HasValue)
+            {
+                OrganizationDAO = DataContext.Organization.Where(o => o.Id == StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.OrganizationId.Equal.Value).FirstOrDefault();
+            }    
             var query = from ap in DataContext.AppUser
+                        join o in DataContext.Organization on ap.OrganizationId equals o.Id
                         join sc in DataContext.StoreChecking on ap.Id equals sc.SaleEmployeeId
-                        where sc.CheckOutAt.HasValue
+                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
+                        (
+                            OrganizationDAO != null &&  o.Path.StartsWith(OrganizationDAO.Path)
+                        ) &&
+                        (
+                            StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SaleEmployeeId.Equal.HasValue && 
+                            ap.Id == StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SaleEmployeeId.Equal.Value
+                        ) &&
+                        (
+                            StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Image.Equal.HasValue && 
+                            (
+                                (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Image.Equal == 0 && sc.ImageCounter == 0) ||
+                                (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Image.Equal == 1 && sc.ImageCounter > 0)
+                            )
+                        ) &&
+                        (
+                            StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SalesOrder.Equal.HasValue &&
+                            (
+                                (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SalesOrder.Equal == 0 && sc.IndirectSalesOrderCounter == 0) ||
+                                (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SalesOrder.Equal == 1 && sc.IndirectSalesOrderCounter > 0)
+                            )
+                        )
                         select ap.Id;
             return await query.Distinct().CountAsync();
         }
+
+        [Route(StoreCheckerMonitorRoute.List), HttpPost]
         public async Task<List<StoreCheckerMonitor_StoreCheckerMonitorDTO>> List([FromBody] StoreCheckerMonitor_StoreCheckerMonitorFilterDTO StoreCheckerMonitor_StoreCheckerMonitorFilterDTO)
         {
             DateTime Start = StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.CheckIn.GreaterEqual.HasValue ?
@@ -89,6 +173,7 @@ namespace DMS.Rpc.store_checker_monitor
                             DisplayName = ap.DisplayName,
                             OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
                         };
+
             List<StoreCheckerMonitor_StoreCheckerMonitorDTO> StoreCheckerMonitor_StoreCheckerMonitorDTOs = await query
                 .Skip(StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Skip)
                 .Take(StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Take)
@@ -124,29 +209,29 @@ namespace DMS.Rpc.store_checker_monitor
                 .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue);
             // khong check
             if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Checking.Equal == 0)
-            { 
-            }    
+            {
+            }
             else
             {
                 if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.Image.Equal == 0)
                 {
-                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.CountImage == 0);
+                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.ImageCounter == 0);
                 }
                 else
                 {
-                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.CountImage > 0);
+                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.ImageCounter > 0);
                 }
 
                 if (StoreCheckerMonitor_StoreCheckerMonitorFilterDTO.SalesOrder.Equal == 0)
                 {
-                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.CountIndirectSalesOrder == 0);
+                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.IndirectSalesOrderCounter == 0);
                 }
                 else
                 {
-                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.CountIndirectSalesOrder > 0);
+                    StoreCheckingQuery = StoreCheckingQuery.Where(sc => sc.IndirectSalesOrderCounter > 0);
                 }
                 StoreCheckingDAOs = await StoreCheckingQuery.ToListAsync();
-            }    
+            }
 
             // khởi tạo khung dữ liệu
             foreach (StoreCheckerMonitor_StoreCheckerMonitorDTO StoreCheckerMonitor_StoreCheckerMonitorDTO in StoreCheckerMonitor_StoreCheckerMonitorDTOs)
@@ -239,9 +324,9 @@ namespace DMS.Rpc.store_checker_monitor
                             StoreCheckerMonitor_StoreCheckingDTO.Internal.Add(s.StoreId);
                         else
                             StoreCheckerMonitor_StoreCheckingDTO.External.Add(s.StoreId);
-                        if (s.CountImage > 0)
+                        if (s.ImageCounter > 0)
                             StoreCheckerMonitor_StoreCheckingDTO.Image.Add(s.StoreId);
-                        if (s.CountIndirectSalesOrder > 0)
+                        if (s.IndirectSalesOrderCounter > 0)
                             StoreCheckerMonitor_StoreCheckingDTO.SalesOrder.Add(s.StoreId);
                     }
                 }

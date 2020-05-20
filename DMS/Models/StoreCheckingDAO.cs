@@ -17,8 +17,8 @@ namespace DMS.Models
         public decimal? Latitude { get; set; }
         public DateTime? CheckInAt { get; set; }
         public DateTime? CheckOutAt { get; set; }
-        public long? CountIndirectSalesOrder { get; set; }
-        public long? CountImage { get; set; }
+        public long? IndirectSalesOrderCounter { get; set; }
+        public long? ImageCounter { get; set; }
 
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StoreDAO Store { get; set; }

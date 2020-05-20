@@ -45,9 +45,9 @@ namespace DMS.Repositories
             if (filter.CheckOutAt != null)
                 query = query.Where(q => q.CheckOutAt, filter.CheckOutAt);
             if (filter.CountIndirectSalesOrder != null)
-                query = query.Where(q => q.CountIndirectSalesOrder, filter.CountIndirectSalesOrder);
+                query = query.Where(q => q.IndirectSalesOrderCounter, filter.CountIndirectSalesOrder);
             if (filter.CountImage != null)
-                query = query.Where(q => q.CountImage, filter.CountImage);
+                query = query.Where(q => q.ImageCounter, filter.CountImage);
             query = OrFilter(query, filter);
             return query;
         }
@@ -75,9 +75,9 @@ namespace DMS.Repositories
                 if (filter.CheckOutAt != null)
                     queryable = queryable.Where(q => q.CheckOutAt, filter.CheckOutAt);
                 if (filter.CountIndirectSalesOrder != null)
-                    queryable = queryable.Where(q => q.CountIndirectSalesOrder, filter.CountIndirectSalesOrder);
+                    queryable = queryable.Where(q => q.IndirectSalesOrderCounter, filter.CountIndirectSalesOrder);
                 if (filter.CountImage != null)
-                    queryable = queryable.Where(q => q.CountImage, filter.CountImage);
+                    queryable = queryable.Where(q => q.ImageCounter, filter.CountImage);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -112,10 +112,10 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.CheckOutAt);
                             break;
                         case StoreCheckingOrder.CountIndirectSalesOrder:
-                            query = query.OrderBy(q => q.CountIndirectSalesOrder);
+                            query = query.OrderBy(q => q.IndirectSalesOrderCounter);
                             break;
                         case StoreCheckingOrder.CountImage:
-                            query = query.OrderBy(q => q.CountImage);
+                            query = query.OrderBy(q => q.ImageCounter);
                             break;
                     }
                     break;
@@ -144,10 +144,10 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.CheckOutAt);
                             break;
                         case StoreCheckingOrder.CountIndirectSalesOrder:
-                            query = query.OrderByDescending(q => q.CountIndirectSalesOrder);
+                            query = query.OrderByDescending(q => q.IndirectSalesOrderCounter);
                             break;
                         case StoreCheckingOrder.CountImage:
-                            query = query.OrderByDescending(q => q.CountImage);
+                            query = query.OrderByDescending(q => q.ImageCounter);
                             break;
                     }
                     break;
@@ -167,8 +167,8 @@ namespace DMS.Repositories
                 Latitude = filter.Selects.Contains(StoreCheckingSelect.Latitude) ? q.Latitude : default(decimal?),
                 CheckInAt = filter.Selects.Contains(StoreCheckingSelect.CheckInAt) ? q.CheckInAt : default(DateTime?),
                 CheckOutAt = filter.Selects.Contains(StoreCheckingSelect.CheckOutAt) ? q.CheckOutAt : default(DateTime?),
-                CountIndirectSalesOrder = filter.Selects.Contains(StoreCheckingSelect.CountIndirectSalesOrder) ? q.CountIndirectSalesOrder : default(long?),
-                CountImage = filter.Selects.Contains(StoreCheckingSelect.CountImage) ? q.CountImage : default(long?),
+                CountIndirectSalesOrder = filter.Selects.Contains(StoreCheckingSelect.CountIndirectSalesOrder) ? q.IndirectSalesOrderCounter : default(long?),
+                CountImage = filter.Selects.Contains(StoreCheckingSelect.CountImage) ? q.ImageCounter : default(long?),
                 SaleEmployee = filter.Selects.Contains(StoreCheckingSelect.SaleEmployee) && q.SaleEmployee == null ? null : new AppUser
                 {
                     Id = q.SaleEmployee.Id,
@@ -247,8 +247,8 @@ namespace DMS.Repositories
                 Latitude = x.Latitude,
                 CheckInAt = x.CheckInAt,
                 CheckOutAt = x.CheckOutAt,
-                CountIndirectSalesOrder = x.CountIndirectSalesOrder,
-                CountImage = x.CountImage,
+                CountIndirectSalesOrder = x.IndirectSalesOrderCounter,
+                CountImage = x.ImageCounter,
                 SaleEmployee = x.SaleEmployee == null ? null : new AppUser
                 {
                     Id = x.SaleEmployee.Id,
@@ -351,8 +351,8 @@ namespace DMS.Repositories
             StoreCheckingDAO.Latitude = StoreChecking.Latitude;
             StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
             StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
-            StoreCheckingDAO.CountIndirectSalesOrder = StoreChecking.CountIndirectSalesOrder;
-            StoreCheckingDAO.CountImage = StoreChecking.CountImage;
+            StoreCheckingDAO.IndirectSalesOrderCounter = StoreChecking.CountIndirectSalesOrder;
+            StoreCheckingDAO.ImageCounter = StoreChecking.CountImage;
             DataContext.StoreChecking.Add(StoreCheckingDAO);
             await DataContext.SaveChangesAsync();
             StoreChecking.Id = StoreCheckingDAO.Id;
@@ -372,8 +372,8 @@ namespace DMS.Repositories
             StoreCheckingDAO.Latitude = StoreChecking.Latitude;
             StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
             StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
-            StoreCheckingDAO.CountIndirectSalesOrder = StoreChecking.CountIndirectSalesOrder;
-            StoreCheckingDAO.CountImage = StoreChecking.CountImage;
+            StoreCheckingDAO.IndirectSalesOrderCounter = StoreChecking.CountIndirectSalesOrder;
+            StoreCheckingDAO.ImageCounter = StoreChecking.CountImage;
             await DataContext.SaveChangesAsync();
             await SaveReference(StoreChecking);
             return true;
@@ -392,8 +392,8 @@ namespace DMS.Repositories
                 StoreCheckingDAO.Latitude = StoreChecking.Latitude;
                 StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
                 StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
-                StoreCheckingDAO.CountIndirectSalesOrder = StoreChecking.CountIndirectSalesOrder;
-                StoreCheckingDAO.CountImage = StoreChecking.CountImage;
+                StoreCheckingDAO.IndirectSalesOrderCounter = StoreChecking.CountIndirectSalesOrder;
+                StoreCheckingDAO.ImageCounter = StoreChecking.CountImage;
                 StoreCheckingDAOs.Add(StoreCheckingDAO);
             }
             await DataContext.BulkMergeAsync(StoreCheckingDAOs);
