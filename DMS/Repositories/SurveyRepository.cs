@@ -19,8 +19,7 @@ namespace DMS.Repositories
         Task<bool> Create(Survey Survey);
         Task<bool> Update(Survey Survey);
         Task<bool> Delete(Survey Survey);
-        Task<bool> BulkMerge(List<Survey> Surveys);
-        Task<bool> BulkDelete(List<Survey> Surveys);
+        Task<bool> SaveResult(Survey Survey);
     }
     public class SurveyRepository : ISurveyRepository
     {
@@ -268,6 +267,8 @@ namespace DMS.Repositories
             foreach (SurveyQuestion surveyQuestion in Survey.SurveyQuestions)
             {
                 surveyQuestion.SurveyOptions = SurveyOptions.Where(so => so.SurveyQuestionId == surveyQuestion.Id).ToList();
+                surveyQuestion.SurveyResultCells = new List<SurveyResultCell>();
+                surveyQuestion.SurveyResultSingles = new List<SurveyResultSingle>();
             }
             return Survey;
         }
@@ -310,35 +311,6 @@ namespace DMS.Repositories
         public async Task<bool> Delete(Survey Survey)
         {
             await DataContext.Survey.Where(x => x.Id == Survey.Id).UpdateFromQueryAsync(x => new SurveyDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<Survey> Surveys)
-        {
-            List<SurveyDAO> SurveyDAOs = new List<SurveyDAO>();
-            foreach (Survey Survey in Surveys)
-            {
-                SurveyDAO SurveyDAO = new SurveyDAO();
-                SurveyDAO.Id = Survey.Id;
-                SurveyDAO.Title = Survey.Title;
-                SurveyDAO.Description = Survey.Description;
-                SurveyDAO.StartAt = Survey.StartAt;
-                SurveyDAO.EndAt = Survey.EndAt;
-                SurveyDAO.StatusId = Survey.StatusId;
-                SurveyDAO.CreatedAt = StaticParams.DateTimeNow;
-                SurveyDAO.UpdatedAt = StaticParams.DateTimeNow;
-                SurveyDAOs.Add(SurveyDAO);
-            }
-            await DataContext.BulkMergeAsync(SurveyDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<Survey> Surveys)
-        {
-            List<long> Ids = Surveys.Select(x => x.Id).ToList();
-            await DataContext.Survey
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new SurveyDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 
