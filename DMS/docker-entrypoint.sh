@@ -19,9 +19,9 @@ PROJECT_NAME="DMS"
 
 consul agent -config-dir /consul/config -node ${NODE} &
 CONSUL_PID="$!"
-sleep 5
+sleep 1
 consul connect envoy -sidecar-for dms-backend &
-sleep 5
+sleep 2
 dotnet ${PROJECT_NAME}.dll --urls http://localhost:80 --environment Production &
 wait "${CONSUL_PID}"
 
