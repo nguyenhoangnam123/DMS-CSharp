@@ -11,7 +11,7 @@ namespace DMS.Entities
         public long Id { get; set; }
         public long WorkflowDefinitionId { get; set; }
         public string Name { get; set; }
-        public WorkflowDirection WorkflowDefinition { get; set; }
+        public WorkflowDefinition WorkflowDefinition { get; set; }
 
         public bool Equals(WorkflowParameter other)
         {
