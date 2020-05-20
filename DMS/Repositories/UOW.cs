@@ -63,6 +63,9 @@ namespace DMS.Repositories
         IStoreGroupingRepository StoreGroupingRepository { get; }
         IStoreTypeRepository StoreTypeRepository { get; }
         ISupplierRepository SupplierRepository { get; }
+        ISurveyOptionTypeRepository SurveyOptionTypeRepository { get; }
+        ISurveyQuestionTypeRepository SurveyQuestionTypeRepository { get; }
+        ISurveyRepository SurveyRepository { get; }
         ITaxTypeRepository TaxTypeRepository { get; }
         IUnitOfMeasureRepository UnitOfMeasureRepository { get; }
         IUnitOfMeasureGroupingContentRepository UnitOfMeasureGroupingContentRepository { get; }
@@ -132,6 +135,9 @@ namespace DMS.Repositories
         public IStoreGroupingRepository StoreGroupingRepository { get; private set; }
         public IStoreTypeRepository StoreTypeRepository { get; private set; }
         public ISupplierRepository SupplierRepository { get; private set; }
+        public ISurveyOptionTypeRepository SurveyOptionTypeRepository { get; private set; }
+        public ISurveyQuestionTypeRepository SurveyQuestionTypeRepository { get; private set; }
+        public ISurveyRepository SurveyRepository { get; private set; }
         public ITaxTypeRepository TaxTypeRepository { get; private set; }
         public IUnitOfMeasureRepository UnitOfMeasureRepository { get; private set; }
         public IUnitOfMeasureGroupingContentRepository UnitOfMeasureGroupingContentRepository { get; private set; }
@@ -199,6 +205,9 @@ namespace DMS.Repositories
             StoreGroupingRepository = new StoreGroupingRepository(DataContext);
             StoreTypeRepository = new StoreTypeRepository(DataContext);
             SupplierRepository = new SupplierRepository(DataContext);
+            SurveyOptionTypeRepository = new SurveyOptionTypeRepository(DataContext);
+            SurveyQuestionTypeRepository = new SurveyQuestionTypeRepository(DataContext);
+            SurveyRepository = new SurveyRepository(DataContext);
             TaxTypeRepository = new TaxTypeRepository(DataContext);
             UnitOfMeasureRepository = new UnitOfMeasureRepository(DataContext);
             UnitOfMeasureGroupingContentRepository = new UnitOfMeasureGroupingContentRepository(DataContext);
