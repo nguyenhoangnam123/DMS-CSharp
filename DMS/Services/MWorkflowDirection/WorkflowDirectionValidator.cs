@@ -23,6 +23,7 @@ namespace DMS.Services.MWorkflowDirection
         public enum ErrorCode
         {
             IdNotExisted,
+            WorkflowDefinitionInUsed
         }
 
         private IUOW UOW;
@@ -50,6 +51,21 @@ namespace DMS.Services.MWorkflowDirection
             return count == 1;
         }
 
+        private async Task<bool> CanDelete(WorkflowDirection WorkflowDirection)
+        {
+            RequestWorkflowDefinitionMappingFilter RequestWorkflowDefinitionMappingFilter = new RequestWorkflowDefinitionMappingFilter
+            {
+                Skip = 0,
+                Take = 1,
+                WorkflowDefinitionId = new IdFilter { Equal = WorkflowDirection.WorkflowDefinitionId }
+            };
+
+            var count = await UOW.RequestWorkflowDefinitionMappingRepository.Count(RequestWorkflowDefinitionMappingFilter);
+            if (count != 0)
+                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDefinition.Id), ErrorCode.WorkflowDefinitionInUsed);
+            return WorkflowDirection.IsValidated;
+        }
+
         public async Task<bool>Create(WorkflowDirection WorkflowDirection)
         {
             return WorkflowDirection.IsValidated;
@@ -67,13 +83,18 @@ namespace DMS.Services.MWorkflowDirection
         {
             if (await ValidateId(WorkflowDirection))
             {
+                await CanDelete(WorkflowDirection);
             }
             return WorkflowDirection.IsValidated;
         }
         
         public async Task<bool> BulkDelete(List<WorkflowDirection> WorkflowDirections)
         {
-            return true;
+            foreach (WorkflowDirection WorkflowDirection in WorkflowDirections)
+            {
+                await Delete(WorkflowDirection);
+            }
+            return WorkflowDirections.All(st => st.IsValidated);
         }
         
         public async Task<bool> Import(List<WorkflowDirection> WorkflowDirections)

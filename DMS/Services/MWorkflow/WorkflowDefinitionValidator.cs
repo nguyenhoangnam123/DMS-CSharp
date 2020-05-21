@@ -165,7 +165,11 @@ namespace DMS.Services.MWorkflow
         
         public async Task<bool> BulkDelete(List<WorkflowDefinition> WorkflowDefinitions)
         {
-            return true;
+            foreach (WorkflowDefinition WorkflowDefinition in WorkflowDefinitions)
+            {
+                await Delete(WorkflowDefinition);
+            }
+            return WorkflowDefinitions.All(st => st.IsValidated);
         }
         
         public async Task<bool> Import(List<WorkflowDefinition> WorkflowDefinitions)

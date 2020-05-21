@@ -12,6 +12,7 @@ namespace DMS.Repositories
 {
     public interface IRequestWorkflowStepMappingRepository
     {
+        Task<long> Count(RequestWorkflowStepMappingFilter filter);
         Task<List<RequestWorkflowStepMapping>> List(Guid RequestId);
         Task<bool> BulkMerge(Guid RequestId, List<RequestWorkflowStepMapping> RequestWorkflowStepMappings);
     }
@@ -21,6 +22,16 @@ namespace DMS.Repositories
         public RequestWorkflowStepMappingRepository(DataContext DataContext)
         {
             this.DataContext = DataContext;
+        }
+
+        public async Task<long> Count(RequestWorkflowStepMappingFilter filter) 
+        {
+            IQueryable<RequestWorkflowStepMappingDAO> query = DataContext.RequestWorkflowStepMapping.AsNoTracking();
+            if (filter.RequestId != null)
+                query = query.Where(q => q.RequestId, filter.RequestId);
+            if (filter.WorkflowStepId != null)
+                query = query.Where(q => q.WorkflowStepId, filter.WorkflowStepId);
+            return await query.CountAsync();
         }
 
         public async Task<List<RequestWorkflowStepMapping>> List(Guid RequestId)
