@@ -11,6 +11,7 @@ namespace DMS.Repositories
 {
     public interface IRequestWorkflowDefinitionMappingRepository 
     {
+        Task<long> Count(RequestWorkflowDefinitionMappingFilter filter);
         Task<List<RequestWorkflowDefinitionMapping>> List(RequestWorkflowDefinitionMappingFilter filter);
         Task<RequestWorkflowDefinitionMapping> Get(Guid RequestId);
         Task<RequestWorkflowDefinitionMapping> Update(RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping);
@@ -24,6 +25,15 @@ namespace DMS.Repositories
             this.DataContext = DataContext;
         }
 
+        public async Task<long> Count(RequestWorkflowDefinitionMappingFilter filter)
+        {
+            IQueryable<RequestWorkflowDefinitionMappingDAO> query = DataContext.RequestWorkflowDefinitionMapping.AsNoTracking();
+            if (filter.RequestId != null)
+                query = query.Where(q => q.RequestId, filter.RequestId);
+            if (filter.WorkflowDefinitionId != null)
+                query = query.Where(q => q.WorkflowDefinitionId, filter.WorkflowDefinitionId);
+            return await query.CountAsync();
+        }
         public async Task<RequestWorkflowDefinitionMapping> Get(Guid RequestId)
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await DataContext.RequestWorkflowDefinitionMapping.AsNoTracking()

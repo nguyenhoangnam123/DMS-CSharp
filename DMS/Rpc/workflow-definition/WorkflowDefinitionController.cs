@@ -1024,7 +1024,7 @@ namespace DMS.Rpc.workflow_definition
             RoleFilter.Id = WorkflowDefinition_RoleFilterDTO.Id;
             RoleFilter.Code = WorkflowDefinition_RoleFilterDTO.Code;
             RoleFilter.Name = WorkflowDefinition_RoleFilterDTO.Name;
-            RoleFilter.StatusId = WorkflowDefinition_RoleFilterDTO.StatusId;
+            RoleFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
             List<Role> Roles = await RoleService.List(RoleFilter);
             List<WorkflowDefinition_RoleDTO> WorkflowDefinition_RoleDTOs = Roles
@@ -1046,6 +1046,41 @@ namespace DMS.Rpc.workflow_definition
             List<WorkflowDefinition_StatusDTO> WorkflowDefinition_StatusDTOs = Statuses
                 .Select(x => new WorkflowDefinition_StatusDTO(x)).ToList();
             return WorkflowDefinition_StatusDTOs;
+        }
+
+        [Route(WorkflowDefinitionRoute.CountDirection), HttpPost]
+        public async Task<long> CountDirection([FromBody] WorkflowDefinition_WorkflowDirectionFilterDTO WorkflowDefinition_WorkflowDirectionFilterDTO)
+        {
+            WorkflowDirectionFilter WorkflowDirectionFilter = new WorkflowDirectionFilter();
+            WorkflowDirectionFilter.FromStepId = WorkflowDefinition_WorkflowDirectionFilterDTO.FromStepId;
+            WorkflowDirectionFilter.Id = WorkflowDefinition_WorkflowDirectionFilterDTO.Id;
+            WorkflowDirectionFilter.ToStepId = WorkflowDefinition_WorkflowDirectionFilterDTO.ToStepId;
+            WorkflowDirectionFilter.UpdatedAt = WorkflowDefinition_WorkflowDirectionFilterDTO.UpdatedAt;
+            WorkflowDirectionFilter.WorkflowDefinitionId = WorkflowDefinition_WorkflowDirectionFilterDTO.WorkflowDefinitionId;
+
+            long count = await WorkflowDirectionService.Count(WorkflowDirectionFilter);
+            return count;
+        }
+
+        [Route(WorkflowDefinitionRoute.ListDirection), HttpPost]
+        public async Task<List<WorkflowDefinition_WorkflowDirectionDTO>> ListDirection([FromBody] WorkflowDefinition_WorkflowDirectionFilterDTO WorkflowDefinition_WorkflowDirectionFilterDTO)
+        {
+            WorkflowDirectionFilter WorkflowDirectionFilter = new WorkflowDirectionFilter();
+            WorkflowDirectionFilter.Skip = 0;
+            WorkflowDirectionFilter.Take = 20;
+            WorkflowDirectionFilter.OrderBy = WorkflowDirectionOrder.Id;
+            WorkflowDirectionFilter.OrderType = OrderType.ASC;
+            WorkflowDirectionFilter.Selects = WorkflowDirectionSelect.ALL;
+            WorkflowDirectionFilter.FromStepId = WorkflowDefinition_WorkflowDirectionFilterDTO.FromStepId;
+            WorkflowDirectionFilter.Id = WorkflowDefinition_WorkflowDirectionFilterDTO.Id;
+            WorkflowDirectionFilter.ToStepId = WorkflowDefinition_WorkflowDirectionFilterDTO.ToStepId;
+            WorkflowDirectionFilter.UpdatedAt = WorkflowDefinition_WorkflowDirectionFilterDTO.UpdatedAt;
+            WorkflowDirectionFilter.WorkflowDefinitionId = WorkflowDefinition_WorkflowDirectionFilterDTO.WorkflowDefinitionId;
+
+            List<WorkflowDirection> WorkflowDirections = await WorkflowDirectionService.List(WorkflowDirectionFilter);
+            List<WorkflowDefinition_WorkflowDirectionDTO> WorkflowDefinition_WorkflowDirectionDTOs = WorkflowDirections
+                .Select(x => new WorkflowDefinition_WorkflowDirectionDTO(x)).ToList();
+            return WorkflowDefinition_WorkflowDirectionDTOs;
         }
     }
 }
