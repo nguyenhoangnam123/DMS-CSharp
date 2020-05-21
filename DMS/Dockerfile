@@ -3,7 +3,7 @@
 FROM truesight.asia:8443/aspnet:3.1-buster-slim AS base
 WORKDIR /app
 
-RUN apt update --allow-releaseinfo-change && apt install -y net-tools curl iputils-ping telnetd nano vim libc6-dev libgdiplus
+RUN apt-get update --allow-releaseinfo-change && apt-get install -y net-tools curl iputils-ping telnetd nano vim libc6-dev libgdiplus
 
 FROM truesight.asia:8443/dotnet-sdk:3.1-buster AS build
 WORKDIR /src
