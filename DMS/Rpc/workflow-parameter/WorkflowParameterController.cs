@@ -40,6 +40,7 @@ namespace DMS.Rpc.workflow_parameter
         {
             { nameof(WorkflowParameterFilter.Id), FieldType.ID },
             { nameof(WorkflowParameterFilter.WorkflowDefinitionId), FieldType.ID },
+            { nameof(WorkflowParameterFilter.Code), FieldType.STRING },
             { nameof(WorkflowParameterFilter.Name), FieldType.STRING },
         };
     }
@@ -401,6 +402,7 @@ namespace DMS.Rpc.workflow_parameter
             WorkflowParameter WorkflowParameter = new WorkflowParameter();
             WorkflowParameter.Id = WorkflowParameter_WorkflowParameterDTO.Id;
             WorkflowParameter.WorkflowDefinitionId = WorkflowParameter_WorkflowParameterDTO.WorkflowDefinitionId;
+            WorkflowParameter.Code = WorkflowParameter_WorkflowParameterDTO.Code;
             WorkflowParameter.Name = WorkflowParameter_WorkflowParameterDTO.Name;
             WorkflowParameter.BaseLanguage = CurrentContext.Language;
             return WorkflowParameter;
@@ -417,6 +419,7 @@ namespace DMS.Rpc.workflow_parameter
 
             WorkflowParameterFilter.Id = WorkflowParameter_WorkflowParameterFilterDTO.Id;
             WorkflowParameterFilter.WorkflowDefinitionId = WorkflowParameter_WorkflowParameterFilterDTO.WorkflowDefinitionId;
+            WorkflowParameterFilter.Code = WorkflowParameter_WorkflowParameterFilterDTO.Code;
             WorkflowParameterFilter.Name = WorkflowParameter_WorkflowParameterFilterDTO.Name;
             return WorkflowParameterFilter;
         }
@@ -434,11 +437,13 @@ namespace DMS.Rpc.workflow_parameter
             WorkflowDefinitionFilter.OrderType = OrderType.ASC;
             WorkflowDefinitionFilter.Selects = WorkflowDefinitionSelect.ALL;
             WorkflowDefinitionFilter.Id = WorkflowParameter_WorkflowDefinitionFilterDTO.Id;
+            WorkflowDefinitionFilter.Code = WorkflowParameter_WorkflowDefinitionFilterDTO.Code;
             WorkflowDefinitionFilter.Name = WorkflowParameter_WorkflowDefinitionFilterDTO.Name;
             WorkflowDefinitionFilter.WorkflowTypeId = WorkflowParameter_WorkflowDefinitionFilterDTO.WorkflowTypeId;
             WorkflowDefinitionFilter.StartDate = WorkflowParameter_WorkflowDefinitionFilterDTO.StartDate;
             WorkflowDefinitionFilter.EndDate = WorkflowParameter_WorkflowDefinitionFilterDTO.EndDate;
             WorkflowDefinitionFilter.StatusId = WorkflowParameter_WorkflowDefinitionFilterDTO.StatusId;
+            WorkflowDefinitionFilter.UpdatedAt = WorkflowParameter_WorkflowDefinitionFilterDTO.UpdatedAt;
 
             List<WorkflowDefinition> WorkflowDefinitions = await WorkflowDefinitionService.List(WorkflowDefinitionFilter);
             List<WorkflowParameter_WorkflowDefinitionDTO> WorkflowParameter_WorkflowDefinitionDTOs = WorkflowDefinitions
@@ -459,11 +464,13 @@ namespace DMS.Rpc.workflow_parameter
             WorkflowDefinitionFilter.OrderType = OrderType.ASC;
             WorkflowDefinitionFilter.Selects = WorkflowDefinitionSelect.ALL;
             WorkflowDefinitionFilter.Id = WorkflowParameter_WorkflowDefinitionFilterDTO.Id;
+            WorkflowDefinitionFilter.Code = WorkflowParameter_WorkflowDefinitionFilterDTO.Code;
             WorkflowDefinitionFilter.Name = WorkflowParameter_WorkflowDefinitionFilterDTO.Name;
             WorkflowDefinitionFilter.WorkflowTypeId = WorkflowParameter_WorkflowDefinitionFilterDTO.WorkflowTypeId;
             WorkflowDefinitionFilter.StartDate = WorkflowParameter_WorkflowDefinitionFilterDTO.StartDate;
             WorkflowDefinitionFilter.EndDate = WorkflowParameter_WorkflowDefinitionFilterDTO.EndDate;
             WorkflowDefinitionFilter.StatusId = WorkflowParameter_WorkflowDefinitionFilterDTO.StatusId;
+            WorkflowDefinitionFilter.UpdatedAt = WorkflowParameter_WorkflowDefinitionFilterDTO.UpdatedAt;
 
             List<WorkflowDefinition> WorkflowDefinitions = await WorkflowDefinitionService.List(WorkflowDefinitionFilter);
             List<WorkflowParameter_WorkflowDefinitionDTO> WorkflowParameter_WorkflowDefinitionDTOs = WorkflowDefinitions

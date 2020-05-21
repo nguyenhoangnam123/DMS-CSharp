@@ -10,6 +10,7 @@ namespace DMS.Rpc.workflow_parameter
     {
         public long Id { get; set; }
         public long WorkflowDefinitionId { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public WorkflowParameter_WorkflowDefinitionDTO WorkflowDefinition { get; set; }
         public WorkflowParameter_WorkflowParameterDTO() {}
@@ -17,6 +18,7 @@ namespace DMS.Rpc.workflow_parameter
         {
             this.Id = WorkflowParameter.Id;
             this.WorkflowDefinitionId = WorkflowParameter.WorkflowDefinitionId;
+            this.Code = WorkflowParameter.Code;
             this.Name = WorkflowParameter.Name;
             this.WorkflowDefinition = WorkflowParameter.WorkflowDefinition == null ? null : new WorkflowParameter_WorkflowDefinitionDTO(WorkflowParameter.WorkflowDefinition);
             this.Errors = WorkflowParameter.Errors;
@@ -27,6 +29,7 @@ namespace DMS.Rpc.workflow_parameter
     {
         public IdFilter Id { get; set; }
         public IdFilter WorkflowDefinitionId { get; set; }
+        public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public WorkflowParameterOrder OrderBy { get; set; }
     }

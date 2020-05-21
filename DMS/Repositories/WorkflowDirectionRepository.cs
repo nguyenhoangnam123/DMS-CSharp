@@ -41,6 +41,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.FromStepId, filter.FromStepId);
             if (filter.ToStepId != null)
                 query = query.Where(q => q.ToStepId, filter.ToStepId);
+            if (filter.UpdatedAt != null)
+                query = query.Where(q => q.UpdatedAt, filter.UpdatedAt);
             query = OrFilter(query, filter);
             return query;
         }
@@ -61,6 +63,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.FromStepId, filter.FromStepId);
                 if (filter.ToStepId != null)
                     queryable = queryable.Where(q => q.ToStepId, filter.ToStepId);
+                if (filter.UpdatedAt != null)
+                    queryable = queryable.Where(q => q.UpdatedAt, filter.UpdatedAt);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -85,6 +89,9 @@ namespace DMS.Repositories
                         case WorkflowDirectionOrder.ToStep:
                             query = query.OrderBy(q => q.ToStepId);
                             break;
+                        case WorkflowDirectionOrder.UpdatedAt:
+                            query = query.OrderBy(q => q.UpdatedAt);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -102,6 +109,9 @@ namespace DMS.Repositories
                         case WorkflowDirectionOrder.ToStep:
                             query = query.OrderByDescending(q => q.ToStepId);
                             break;
+                        case WorkflowDirectionOrder.UpdatedAt:
+                            query = query.OrderBy(q => q.UpdatedAt);
+                            break;
                     }
                     break;
             }
@@ -117,10 +127,12 @@ namespace DMS.Repositories
                 WorkflowDefinitionId = filter.Selects.Contains(WorkflowDirectionSelect.WorkflowDefinition) ? q.WorkflowDefinitionId : default(long),
                 FromStepId = filter.Selects.Contains(WorkflowDirectionSelect.FromStep) ? q.FromStepId : default(long),
                 ToStepId = filter.Selects.Contains(WorkflowDirectionSelect.ToStep) ? q.ToStepId : default(long),
+                UpdatedAt = filter.Selects.Contains(WorkflowDirectionSelect.UpdatedAt) ? q.UpdatedAt : default(DateTime),
                 FromStep = filter.Selects.Contains(WorkflowDirectionSelect.FromStep) && q.FromStep != null ? new WorkflowStep
                 {
                     Id = q.FromStep.Id,
                     WorkflowDefinitionId = q.FromStep.WorkflowDefinitionId,
+                    Code = q.FromStep.Code,
                     Name = q.FromStep.Name,
                     RoleId = q.FromStep.RoleId,
                     SubjectMailForReject = q.FromStep.SubjectMailForReject,
@@ -130,6 +142,7 @@ namespace DMS.Repositories
                 {
                     Id = q.ToStep.Id,
                     WorkflowDefinitionId = q.ToStep.WorkflowDefinitionId,
+                    Code = q.ToStep.Code,
                     Name = q.ToStep.Name,
                     RoleId = q.ToStep.RoleId,
                     SubjectMailForReject = q.ToStep.SubjectMailForReject,
@@ -138,6 +151,7 @@ namespace DMS.Repositories
                 WorkflowDefinition = filter.Selects.Contains(WorkflowDirectionSelect.WorkflowDefinition) && q.WorkflowDefinition != null ? new WorkflowDefinition
                 {
                     Id = q.WorkflowDefinition.Id,
+                    Code = q.WorkflowDefinition.Code,
                     Name = q.WorkflowDefinition.Name,
                     WorkflowTypeId = q.WorkflowDefinition.WorkflowTypeId,
                     StartDate = q.WorkflowDefinition.StartDate,
@@ -182,6 +196,7 @@ namespace DMS.Repositories
                 {
                     Id = x.FromStep.Id,
                     WorkflowDefinitionId = x.FromStep.WorkflowDefinitionId,
+                    Code = x.FromStep.Code,
                     Name = x.FromStep.Name,
                     RoleId = x.FromStep.RoleId,
                     SubjectMailForReject = x.FromStep.SubjectMailForReject,
@@ -191,6 +206,7 @@ namespace DMS.Repositories
                 {
                     Id = x.ToStep.Id,
                     WorkflowDefinitionId = x.ToStep.WorkflowDefinitionId,
+                    Code = x.ToStep.Code,
                     Name = x.ToStep.Name,
                     RoleId = x.ToStep.RoleId,
                     SubjectMailForReject = x.ToStep.SubjectMailForReject,
@@ -199,11 +215,13 @@ namespace DMS.Repositories
                 WorkflowDefinition = x.WorkflowDefinition == null ? null : new WorkflowDefinition
                 {
                     Id = x.WorkflowDefinition.Id,
+                    Code = x.WorkflowDefinition.Code,
                     Name = x.WorkflowDefinition.Name,
                     WorkflowTypeId = x.WorkflowDefinition.WorkflowTypeId,
                     StartDate = x.WorkflowDefinition.StartDate,
                     EndDate = x.WorkflowDefinition.EndDate,
                     StatusId = x.WorkflowDefinition.StatusId,
+                    UpdatedAt = x.WorkflowDefinition.UpdatedAt,
                 },
             }).FirstOrDefaultAsync();
 
@@ -223,6 +241,8 @@ namespace DMS.Repositories
             WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
             WorkflowDirectionDAO.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
             WorkflowDirectionDAO.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
+            WorkflowDirectionDAO.CreatedAt = StaticParams.DateTimeNow;
+            WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.WorkflowDirection.Add(WorkflowDirectionDAO);
             await DataContext.SaveChangesAsync();
             WorkflowDirection.Id = WorkflowDirectionDAO.Id;
@@ -243,6 +263,7 @@ namespace DMS.Repositories
             WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
             WorkflowDirectionDAO.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
             WorkflowDirectionDAO.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
+            WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(WorkflowDirection);
             return true;
@@ -268,6 +289,8 @@ namespace DMS.Repositories
                 WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
                 WorkflowDirectionDAO.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
                 WorkflowDirectionDAO.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
+                WorkflowDirectionDAO.CreatedAt = StaticParams.DateTimeNow;
+                WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
                 WorkflowDirectionDAOs.Add(WorkflowDirectionDAO);
             }
             await DataContext.BulkMergeAsync(WorkflowDirectionDAOs);

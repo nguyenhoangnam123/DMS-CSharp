@@ -16,6 +16,7 @@ namespace DMS.Rpc.workflow_definition
         public string SubjectMailForNextStep { get; set; }
         public string BodyMailForCreator { get; set; }
         public string BodyMailForNextStep { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public WorkflowDefinition_WorkflowStepDTO FromStep { get; set; }   
         public WorkflowDefinition_WorkflowStepDTO ToStep { get; set; }   
         
@@ -30,6 +31,7 @@ namespace DMS.Rpc.workflow_definition
             this.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
             this.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
             this.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
+            this.UpdatedAt = WorkflowDirection.UpdatedAt;
             this.FromStep = WorkflowDirection.FromStep == null ? null : new WorkflowDefinition_WorkflowStepDTO(WorkflowDirection.FromStep);
             this.ToStep = WorkflowDirection.ToStep == null ? null : new WorkflowDefinition_WorkflowStepDTO(WorkflowDirection.ToStep);
             this.Errors = WorkflowDirection.Errors;
@@ -54,7 +56,7 @@ namespace DMS.Rpc.workflow_definition
         public StringFilter BodyMailForCreator { get; set; }
         
         public StringFilter BodyMailForNextStep { get; set; }
-        
+        public DateFilter UpdatedAt { get; set; }
         public WorkflowDirectionOrder OrderBy { get; set; }
     }
 }

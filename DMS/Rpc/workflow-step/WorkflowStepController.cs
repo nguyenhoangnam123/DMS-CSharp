@@ -45,6 +45,7 @@ namespace DMS.Rpc.workflow_step
         {
             { nameof(WorkflowStepFilter.Id), FieldType.ID },
             { nameof(WorkflowStepFilter.WorkflowDefinitionId), FieldType.ID },
+            { nameof(WorkflowStepFilter.Code), FieldType.STRING },
             { nameof(WorkflowStepFilter.Name), FieldType.STRING },
             { nameof(WorkflowStepFilter.RoleId), FieldType.ID },
         };
@@ -508,6 +509,7 @@ namespace DMS.Rpc.workflow_step
             WorkflowStep WorkflowStep = new WorkflowStep();
             WorkflowStep.Id = WorkflowStep_WorkflowStepDTO.Id;
             WorkflowStep.WorkflowDefinitionId = WorkflowStep_WorkflowStepDTO.WorkflowDefinitionId;
+            WorkflowStep.Code = WorkflowStep_WorkflowStepDTO.Code;
             WorkflowStep.Name = WorkflowStep_WorkflowStepDTO.Name;
             WorkflowStep.RoleId = WorkflowStep_WorkflowStepDTO.RoleId;
             WorkflowStep.SubjectMailForReject = WorkflowStep_WorkflowStepDTO.SubjectMailForReject;
@@ -522,11 +524,13 @@ namespace DMS.Rpc.workflow_step
             WorkflowStep.WorkflowDefinition = WorkflowStep_WorkflowStepDTO.WorkflowDefinition == null ? null : new WorkflowDefinition
             {
                 Id = WorkflowStep_WorkflowStepDTO.WorkflowDefinition.Id,
+                Code = WorkflowStep_WorkflowStepDTO.WorkflowDefinition.Code,
                 Name = WorkflowStep_WorkflowStepDTO.WorkflowDefinition.Name,
                 WorkflowTypeId = WorkflowStep_WorkflowStepDTO.WorkflowDefinition.WorkflowTypeId,
                 StartDate = WorkflowStep_WorkflowStepDTO.WorkflowDefinition.StartDate,
                 EndDate = WorkflowStep_WorkflowStepDTO.WorkflowDefinition.EndDate,
                 StatusId = WorkflowStep_WorkflowStepDTO.WorkflowDefinition.StatusId,
+                UpdatedAt = WorkflowStep_WorkflowStepDTO.WorkflowDefinition.UpdatedAt,
             };
             WorkflowStep.BaseLanguage = CurrentContext.Language;
             return WorkflowStep;
@@ -543,6 +547,7 @@ namespace DMS.Rpc.workflow_step
 
             WorkflowStepFilter.Id = WorkflowStep_WorkflowStepFilterDTO.Id;
             WorkflowStepFilter.WorkflowDefinitionId = WorkflowStep_WorkflowStepFilterDTO.WorkflowDefinitionId;
+            WorkflowStepFilter.Code = WorkflowStep_WorkflowStepFilterDTO.Code;
             WorkflowStepFilter.Name = WorkflowStep_WorkflowStepFilterDTO.Name;
             WorkflowStepFilter.RoleId = WorkflowStep_WorkflowStepFilterDTO.RoleId;
             return WorkflowStepFilter;
@@ -583,11 +588,13 @@ namespace DMS.Rpc.workflow_step
             WorkflowDefinitionFilter.OrderType = OrderType.ASC;
             WorkflowDefinitionFilter.Selects = WorkflowDefinitionSelect.ALL;
             WorkflowDefinitionFilter.Id = WorkflowStep_WorkflowDefinitionFilterDTO.Id;
+            WorkflowDefinitionFilter.Code = WorkflowStep_WorkflowDefinitionFilterDTO.Code;
             WorkflowDefinitionFilter.Name = WorkflowStep_WorkflowDefinitionFilterDTO.Name;
             WorkflowDefinitionFilter.WorkflowTypeId = WorkflowStep_WorkflowDefinitionFilterDTO.WorkflowTypeId;
             WorkflowDefinitionFilter.StartDate = WorkflowStep_WorkflowDefinitionFilterDTO.StartDate;
             WorkflowDefinitionFilter.EndDate = WorkflowStep_WorkflowDefinitionFilterDTO.EndDate;
             WorkflowDefinitionFilter.StatusId = WorkflowStep_WorkflowDefinitionFilterDTO.StatusId;
+            WorkflowDefinitionFilter.UpdatedAt = WorkflowStep_WorkflowDefinitionFilterDTO.UpdatedAt;
 
             List<WorkflowDefinition> WorkflowDefinitions = await WorkflowDefinitionService.List(WorkflowDefinitionFilter);
             List<WorkflowStep_WorkflowDefinitionDTO> WorkflowStep_WorkflowDefinitionDTOs = WorkflowDefinitions
@@ -630,11 +637,13 @@ namespace DMS.Rpc.workflow_step
             WorkflowDefinitionFilter.OrderType = OrderType.ASC;
             WorkflowDefinitionFilter.Selects = WorkflowDefinitionSelect.ALL;
             WorkflowDefinitionFilter.Id = WorkflowStep_WorkflowDefinitionFilterDTO.Id;
+            WorkflowDefinitionFilter.Code = WorkflowStep_WorkflowDefinitionFilterDTO.Code;
             WorkflowDefinitionFilter.Name = WorkflowStep_WorkflowDefinitionFilterDTO.Name;
             WorkflowDefinitionFilter.WorkflowTypeId = WorkflowStep_WorkflowDefinitionFilterDTO.WorkflowTypeId;
             WorkflowDefinitionFilter.StartDate = WorkflowStep_WorkflowDefinitionFilterDTO.StartDate;
             WorkflowDefinitionFilter.EndDate = WorkflowStep_WorkflowDefinitionFilterDTO.EndDate;
             WorkflowDefinitionFilter.StatusId = WorkflowStep_WorkflowDefinitionFilterDTO.StatusId;
+            WorkflowDefinitionFilter.UpdatedAt = WorkflowStep_WorkflowDefinitionFilterDTO.UpdatedAt;
 
             List<WorkflowDefinition> WorkflowDefinitions = await WorkflowDefinitionService.List(WorkflowDefinitionFilter);
             List<WorkflowStep_WorkflowDefinitionDTO> WorkflowStep_WorkflowDefinitionDTOs = WorkflowDefinitions

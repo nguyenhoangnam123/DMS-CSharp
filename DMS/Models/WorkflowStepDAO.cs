@@ -14,6 +14,7 @@ namespace DMS.Models
 
         public long Id { get; set; }
         public long WorkflowDefinitionId { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public long RoleId { get; set; }
         public string SubjectMailForReject { get; set; }
