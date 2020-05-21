@@ -10,25 +10,22 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public string Username { get; set; }
-        public string Password { get; set; }
-        public string NewPassword { get; set; }
-        public string Token { get; set; }
         public string DisplayName { get; set; }
         public string Address { get; set; }
         public string Avatar { get; set; }
-        public DateTime? Birthday { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Position { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
-        public long? SexId { get; set; }
         public long StatusId { get; set; }
         public long? ProvinceId { get; set; }
         public Guid RowId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeleteAt { get; set; }
         public Organization Organization { get; set; }
         public Province Province { get; set; }
-        public Sex Sex { get; set; }
         public Status Status { get; set; }
         public List<AppUserRoleMapping> AppUserRoleMappings { get; set; }
 
