@@ -35,6 +35,7 @@ namespace DMS.Handlers
                         Take = int.MaxValue,
                         RowId = new GuidFilter { In = RowIds },
                         EntityName = new StringFilter { Equal = nameof(Organization) },
+                        Selects = EventMessageSelect.ALL,
                     };
                     List<EventMessage<Organization>> OrganizationEventMessages = await UOW.EventMessageRepository.List<Organization>(EventMessageFilter);
 
@@ -45,7 +46,24 @@ namespace DMS.Handlers
                         if (EventMessage != null)
                             Organizations.Add(EventMessage.Content);
                     }
-                    context.BulkMerge<OrganizationDAO>(Organizations);
+                    List<OrganizationDAO> OrganizationDAOs = Organizations.Select(o => new OrganizationDAO
+                    {
+                        Address = o.Address,
+                        Code = o.Address,
+                        CreatedAt = o.CreatedAt,
+                        UpdatedAt = o.UpdatedAt,
+                        DeletedAt = o.DeletedAt,
+                        Email = o.Email,
+                        Id = o.Id,
+                        Level = o.Level,
+                        Name = o.Name,
+                        ParentId = o.ParentId,
+                        Path = o.Path,
+                        Phone = o.Phone,
+                        RowId = o.RowId,
+                        StatusId = o.StatusId,
+                    }).ToList();
+                    context.Organization.BulkMerge(OrganizationDAOs);
                     break;
             }
             return true;
