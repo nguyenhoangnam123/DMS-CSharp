@@ -14,6 +14,7 @@ namespace DMS.Services.MSurvey
         Task<bool> Create(Survey Survey);
         Task<bool> Update(Survey Survey);
         Task<bool> Delete(Survey Survey);
+        Task<bool> SaveResult(Survey Survey);
     }
 
     public class SurveyValidator : ISurveyValidator
@@ -21,6 +22,9 @@ namespace DMS.Services.MSurvey
         public enum ErrorCode
         {
             IdNotExisted,
+            EndDateWrong,
+            TitleEmpty,
+            DescriptionEmpty,
         }
 
         private IUOW UOW;
@@ -63,7 +67,24 @@ namespace DMS.Services.MSurvey
 
         public async Task<bool> Create(Survey Survey)
         {
-            await ValidateSurveyQuestions(Survey);
+            if (Survey.SurveyQuestions == null)
+                Survey.SurveyQuestions = new List<SurveyQuestion>();
+            if (Survey.StartAt > Survey.EndAt)
+                Survey.AddError(nameof(SurveyValidator), nameof(Survey.EndAt), ErrorCode.EndDateWrong);
+            if (string.IsNullOrWhiteSpace(Survey.Title))
+            {
+                Survey.AddError(nameof(SurveyValidator), nameof(Survey.Title), ErrorCode.TitleEmpty);
+            }
+            if (string.IsNullOrWhiteSpace(Survey.Description))
+            {
+                Survey.AddError(nameof(SurveyValidator), nameof(Survey.Description), ErrorCode.DescriptionEmpty);
+            }
+            foreach(SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
+            {
+                if (string.IsNullOrWhiteSpace( SurveyQuestion.Content))
+                    SurveyQuestion.AddError(nameof(SurveyValidator), nameof(Survey.Description), ErrorCode.DescriptionEmpty);
+
+            }    
             return Survey.IsValidated;
         }
 
@@ -82,6 +103,11 @@ namespace DMS.Services.MSurvey
             {
             }
             return Survey.IsValidated;
+        }
+
+        public Task<bool> SaveResult(Survey Survey)
+        {
+            throw new NotImplementedException();
         }
     }
 }
