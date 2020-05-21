@@ -2,14 +2,7 @@
 
 FROM truesight.asia:8443/aspnet:3.1-buster-slim AS base
 WORKDIR /app
-
-RUN apt-get install -y net-tools
-RUN apt-get install -y curl
-RUN apt-get install -y iputils-ping
-RUN apt-get install -y telnetd
-RUN apt-get install -y nano
-RUN apt-get install -y vim
-RUN apt-get install -y libc6-dev libgdiplus
+RUN apt-get update && apt-get install -y net-tools curl iputils-ping telnetd nano vim libc6-dev libgdiplus
 
 FROM truesight.asia:8443/dotnet-sdk:3.1-buster AS build
 WORKDIR /src
