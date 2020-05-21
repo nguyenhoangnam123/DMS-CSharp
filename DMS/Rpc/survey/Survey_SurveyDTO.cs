@@ -18,6 +18,7 @@ namespace DMS.Rpc.survey
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public Survey_AppUserDTO Creator { get; set; }
+        public Survey_StatusDTO Status { get; set; }
         public Survey_SurveyDTO() {}
         public Survey_SurveyDTO(Survey Survey)
         {
@@ -31,6 +32,7 @@ namespace DMS.Rpc.survey
             this.CreatedAt = Survey.CreatedAt;
             this.UpdatedAt = Survey.UpdatedAt;
             this.Creator = Survey.Creator == null ? null : new Survey_AppUserDTO(Survey.Creator);
+            this.Status = Survey.Status == null ? null : new Survey_StatusDTO(Survey.Status);
             this.Errors = Survey.Errors;
         }
     }
