@@ -2538,6 +2538,12 @@ namespace DMS.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.WorkflowDefinitions)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowDefinition_Status");
+
                 entity.HasOne(d => d.WorkflowType)
                     .WithMany(p => p.WorkflowDefinitions)
                     .HasForeignKey(d => d.WorkflowTypeId)
