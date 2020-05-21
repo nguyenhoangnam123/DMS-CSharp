@@ -173,6 +173,8 @@ namespace DMS.Rpc.workflow_step
 
             List<WorkflowStep> WorkflowSteps = await WorkflowStepService.List(WorkflowStepFilter);
             WorkflowSteps = await WorkflowStepService.BulkDelete(WorkflowSteps);
+            if (WorkflowSteps.Any(x => !x.IsValidated))
+                return BadRequest(WorkflowSteps.Where(x => !x.IsValidated));
             return true;
         }
         

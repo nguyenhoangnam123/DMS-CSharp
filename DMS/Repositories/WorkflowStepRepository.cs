@@ -238,6 +238,8 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(WorkflowStep WorkflowStep)
         {
+            await DataContext.WorkflowDirection.Where(x => x.FromStepId == WorkflowStep.Id).DeleteFromQueryAsync();
+            await DataContext.WorkflowDirection.Where(x => x.ToStepId == WorkflowStep.Id).DeleteFromQueryAsync();
             await DataContext.WorkflowStep.Where(x => x.Id == WorkflowStep.Id).DeleteFromQueryAsync();
             return true;
         }
@@ -264,6 +266,8 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<WorkflowStep> WorkflowSteps)
         {
             List<long> Ids = WorkflowSteps.Select(x => x.Id).ToList();
+            await DataContext.WorkflowDirection.Where(x => Ids.Contains(x.FromStepId)).DeleteFromQueryAsync();
+            await DataContext.WorkflowDirection.Where(x => Ids.Contains(x.ToStepId)).DeleteFromQueryAsync();
             await DataContext.WorkflowStep
                 .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
             return true;
