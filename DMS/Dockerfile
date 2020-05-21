@@ -9,6 +9,7 @@ RUN apt-get install -y iputils-ping
 RUN apt-get install -y telnetd
 RUN apt-get install -y nano
 RUN apt-get install -y vim
+RUN apt-get install -y libc6-dev libgdiplus
 
 FROM truesight.asia:8443/dotnet-sdk:3.1-buster AS build
 WORKDIR /src
@@ -23,8 +24,6 @@ RUN dotnet publish "DMS.csproj" -c Release -o /app/publish
 
 FROM base AS final
 
-RUN apt-get update \
-    && apt-get install -y libc6-dev libgdiplus
 WORKDIR /app
 
 COPY --from=truesight.asia:8443/consul:stable /bin/consul /usr/local/bin/consul
