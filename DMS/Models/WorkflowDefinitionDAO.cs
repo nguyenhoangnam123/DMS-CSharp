@@ -24,6 +24,7 @@ namespace DMS.Models
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        public virtual StatusDAO Status { get; set; }
         public virtual WorkflowTypeDAO WorkflowType { get; set; }
         public virtual ICollection<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMappings { get; set; }
         public virtual ICollection<WorkflowDirectionDAO> WorkflowDirections { get; set; }

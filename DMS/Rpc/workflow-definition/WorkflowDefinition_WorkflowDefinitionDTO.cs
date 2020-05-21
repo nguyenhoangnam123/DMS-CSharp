@@ -15,6 +15,7 @@ namespace DMS.Rpc.workflow_definition
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
+        public WorkflowDefinition_StatusDTO Status { get; set; }
         public WorkflowDefinition_WorkflowTypeDTO WorkflowType { get; set; }
         public List<WorkflowDefinition_WorkflowDirectionDTO> WorkflowDirections { get; set; }
         public List<WorkflowDefinition_WorkflowParameterDTO> WorkflowParameters { get; set; }
@@ -32,6 +33,7 @@ namespace DMS.Rpc.workflow_definition
             this.EndDate = WorkflowDefinition.EndDate;
             this.StatusId = WorkflowDefinition.StatusId;
             this.UpdatedAt = WorkflowDefinition.UpdatedAt;
+            this.Status = WorkflowDefinition.Status == null ? null : new WorkflowDefinition_StatusDTO(WorkflowDefinition.Status);
             this.WorkflowType = WorkflowDefinition.WorkflowType == null ? null : new WorkflowDefinition_WorkflowTypeDTO(WorkflowDefinition.WorkflowType);
             this.WorkflowDirections = WorkflowDefinition.WorkflowDirections?.Select(x => new WorkflowDefinition_WorkflowDirectionDTO(x)).ToList();
             this.WorkflowParameters = WorkflowDefinition.WorkflowParameters?.Select(x => new WorkflowDefinition_WorkflowParameterDTO(x)).ToList();

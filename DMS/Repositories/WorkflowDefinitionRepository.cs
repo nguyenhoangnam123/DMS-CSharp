@@ -167,7 +167,13 @@ namespace DMS.Repositories
                     Id = q.WorkflowType.Id,
                     Code = q.WorkflowType.Code,
                     Name = q.WorkflowType.Name,
-                } : null
+                } : null,
+                Status = filter.Selects.Contains(WorkflowDefinitionSelect.Status) && q.Status != null ? new Status
+                {
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
+                } : null,
             }).ToListAsync();
 
             return WorkflowDefinitions;
@@ -207,6 +213,12 @@ namespace DMS.Repositories
                     Id = x.WorkflowType.Id,
                     Code = x.WorkflowType.Code,
                     Name = x.WorkflowType.Name,
+                },
+                Status = x.Status == null ? null : new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
                 },
             }).AsNoTracking().FirstOrDefaultAsync();
 

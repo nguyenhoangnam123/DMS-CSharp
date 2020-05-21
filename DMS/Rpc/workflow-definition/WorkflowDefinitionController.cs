@@ -1,6 +1,7 @@
 using Common;
 using DMS.Entities;
 using DMS.Services.MRole;
+using DMS.Services.MStatus;
 using DMS.Services.MWorkflow;
 using DMS.Services.MWorkflowDirection;
 using DMS.Services.MWorkflowParameter;
@@ -43,7 +44,11 @@ namespace DMS.Rpc.workflow_definition
         public const string SingleListWorkflowStep = Default + "/single-list-workflow-step";
         public const string SingleListWorkflowParameter = Default + "/single-list-workflow-parameter";
         public const string SingleListRole = Default + "/single-list-role";
-        
+        public const string SingleListStatus = Default + "/single-list-status";
+
+        public const string CountDirection = Default + "/count-direction";
+        public const string ListDirection = Default + "/list-direction";
+
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(WorkflowDefinitionFilter.Id), FieldType.ID },
@@ -65,6 +70,7 @@ namespace DMS.Rpc.workflow_definition
         private IWorkflowParameterService WorkflowParameterService;
         private IRoleService RoleService;
         private IWorkflowDefinitionService WorkflowDefinitionService;
+        private IStatusService StatusService;
         private ICurrentContext CurrentContext;
         public WorkflowDefinitionController(
             IWorkflowTypeService WorkflowTypeService,
@@ -73,6 +79,7 @@ namespace DMS.Rpc.workflow_definition
             IWorkflowParameterService WorkflowParameterService,
             IRoleService RoleService,
             IWorkflowDefinitionService WorkflowDefinitionService,
+            IStatusService StatusService,
             ICurrentContext CurrentContext
         )
         {
@@ -82,6 +89,7 @@ namespace DMS.Rpc.workflow_definition
             this.WorkflowParameterService = WorkflowParameterService;
             this.RoleService = RoleService;
             this.WorkflowDefinitionService = WorkflowDefinitionService;
+            this.StatusService = StatusService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -1024,6 +1032,21 @@ namespace DMS.Rpc.workflow_definition
             return WorkflowDefinition_RoleDTOs;
         }
 
+        [Route(WorkflowDefinitionRoute.SingleListStatus), HttpPost]
+        public async Task<List<WorkflowDefinition_StatusDTO>> SingleListStatus([FromBody] WorkflowDefinition_StatusFilterDTO WorkflowDefinition_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<WorkflowDefinition_StatusDTO> WorkflowDefinition_StatusDTOs = Statuses
+                .Select(x => new WorkflowDefinition_StatusDTO(x)).ToList();
+            return WorkflowDefinition_StatusDTOs;
+        }
     }
 }
 

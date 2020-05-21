@@ -16,6 +16,7 @@ namespace DMS.Entities
         public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public Status Status { get; set; }
         public WorkflowType WorkflowType { get; set; }
         public List<WorkflowStep> WorkflowSteps { get; set; }
         public List<WorkflowDirection> WorkflowDirections { get; set; }
