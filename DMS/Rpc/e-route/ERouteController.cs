@@ -427,7 +427,6 @@ namespace DMS.Rpc.e_route
                     {
                         AppUser.Id,
                         AppUser.Username,
-                        AppUser.Password,
                         AppUser.DisplayName,
                         AppUser.Address,
                         AppUser.Email,
@@ -574,7 +573,6 @@ namespace DMS.Rpc.e_route
                     {
                         AppUser.Id,
                         AppUser.Username,
-                        AppUser.Password,
                         AppUser.DisplayName,
                         AppUser.Address,
                         AppUser.Email,
@@ -691,7 +689,6 @@ namespace DMS.Rpc.e_route
             {
                 Id = ERoute_ERouteDTO.Creator.Id,
                 Username = ERoute_ERouteDTO.Creator.Username,
-                Password = ERoute_ERouteDTO.Creator.Password,
                 DisplayName = ERoute_ERouteDTO.Creator.DisplayName,
                 Address = ERoute_ERouteDTO.Creator.Address,
                 Email = ERoute_ERouteDTO.Creator.Email,
@@ -721,7 +718,6 @@ namespace DMS.Rpc.e_route
             {
                 Id = ERoute_ERouteDTO.SaleEmployee.Id,
                 Username = ERoute_ERouteDTO.SaleEmployee.Username,
-                Password = ERoute_ERouteDTO.SaleEmployee.Password,
                 DisplayName = ERoute_ERouteDTO.SaleEmployee.DisplayName,
                 Address = ERoute_ERouteDTO.SaleEmployee.Address,
                 Email = ERoute_ERouteDTO.SaleEmployee.Email,

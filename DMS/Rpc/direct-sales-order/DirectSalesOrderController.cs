@@ -647,7 +647,6 @@ namespace DMS.Rpc.direct_sales_order
                     {
                         AppUser.Id,
                         AppUser.Username,
-                        AppUser.Password,
                         AppUser.DisplayName,
                         AppUser.Address,
                         AppUser.Email,
@@ -873,7 +872,6 @@ namespace DMS.Rpc.direct_sales_order
                     {
                         AppUser.Id,
                         AppUser.Username,
-                        AppUser.Password,
                         AppUser.DisplayName,
                         AppUser.Address,
                         AppUser.Email,
@@ -977,7 +975,6 @@ namespace DMS.Rpc.direct_sales_order
             {
                 Id = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.Id,
                 Username = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.Username,
-                Password = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.Password,
                 DisplayName = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.DisplayName,
                 Address = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.Address,
                 Email = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.Email,

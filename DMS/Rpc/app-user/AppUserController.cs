@@ -266,7 +266,6 @@ namespace DMS.Rpc.app_user
             AppUser AppUser = new AppUser();
             AppUser.Id = AppUser_AppUserDTO.Id;
             AppUser.Username = AppUser_AppUserDTO.Username;
-            AppUser.Password = AppUser_AppUserDTO.Password;
             AppUser.DisplayName = AppUser_AppUserDTO.DisplayName;
             AppUser.Address = AppUser_AppUserDTO.Address;
             AppUser.Avatar = AppUser_AppUserDTO.Avatar;

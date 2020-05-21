@@ -32,8 +32,6 @@ namespace DMS.Rpc.supplier
 
             this.Username = AppUser.Username;
 
-            this.Password = AppUser.Password;
-
             this.DisplayName = AppUser.DisplayName;
 
             this.Email = AppUser.Email;

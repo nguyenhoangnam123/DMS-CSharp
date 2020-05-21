@@ -170,7 +170,6 @@ namespace DMS.Repositories
                 {
                     Id = q.Creator.Id,
                     Username = q.Creator.Username,
-                    Password = q.Creator.Password,
                     DisplayName = q.Creator.DisplayName,
                     Address = q.Creator.Address,
                     Email = q.Creator.Email,
@@ -238,7 +237,6 @@ namespace DMS.Repositories
                 {
                     Id = x.Creator.Id,
                     Username = x.Creator.Username,
-                    Password = x.Creator.Password,
                     DisplayName = x.Creator.DisplayName,
                     Address = x.Creator.Address,
                     Email = x.Creator.Email,

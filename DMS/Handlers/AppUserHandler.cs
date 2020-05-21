@@ -36,6 +36,7 @@ namespace DMS.Handlers
                         Skip = 0,
                         Take = int.MaxValue,
                         RowId = new GuidFilter { In = RowIds },
+                        Selects = EventMessageSelect.ALL,
                         EntityName = new StringFilter { Equal = nameof(AppUser) },
                     };
                     List<EventMessage<AppUser>> AppUserEventMessages = await UOW.EventMessageRepository.List<AppUser>(EventMessageFilter);
@@ -47,7 +48,35 @@ namespace DMS.Handlers
                         if (EventMessage != null)
                             AppUsers.Add(EventMessage.Content);
                     }
-                    context.BulkMerge<AppUserDAO>(AppUsers);
+                    try
+                    {
+                        List<AppUserDAO> appUserDAOs = AppUsers.Select(au => new AppUserDAO
+                        {
+                            Address = au.Address,
+                            Avatar = au.Avatar,
+                            CreatedAt = au.CreatedAt,
+                            UpdatedAt = au.UpdatedAt,
+                            DeletedAt = au.UpdatedAt,
+                            Department = au.Department,
+                            DisplayName = au.DisplayName,
+                            Email = au.Email,
+                            Id = au.Id,
+                            OrganizationId = au.OrganizationId,
+                            Phone = au.Phone,
+                            Position = au.Position,
+                            ProvinceId = au.ProvinceId,
+                            RowId = au.RowId,
+                            StatusId = au.StatusId,
+                            Username = au.Username,
+                            SexId = au.SexId,
+                            Birthday = au.Birthday,
+                        }).ToList();
+                        context.BulkMerge<AppUserDAO>(AppUsers);
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
                     break;
             }
             return true;

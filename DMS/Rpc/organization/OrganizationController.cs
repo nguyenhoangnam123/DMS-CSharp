@@ -201,7 +201,6 @@ namespace DMS.Rpc.organization
                 {
                     Id = x.Id,
                     Username = x.Username,
-                    Password = x.Password,
                     DisplayName = x.DisplayName,
                     Address = x.Address,
                     Email = x.Email,

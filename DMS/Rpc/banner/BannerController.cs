@@ -381,7 +381,6 @@ namespace DMS.Rpc.banner
                     {
                         AppUser.Id,
                         AppUser.Username,
-                        AppUser.Password,
                         AppUser.DisplayName,
                         AppUser.Address,
                         AppUser.Email,
@@ -527,7 +526,6 @@ namespace DMS.Rpc.banner
                     {
                         AppUser.Id,
                         AppUser.Username,
-                        AppUser.Password,
                         AppUser.DisplayName,
                         AppUser.Address,
                         AppUser.Email,

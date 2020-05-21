@@ -34,7 +34,6 @@ namespace DMS.Rpc.app_user
         {
             this.Id = AppUser.Id;
             this.Username = AppUser.Username;
-            this.Password = AppUser.Password;
             this.DisplayName = AppUser.DisplayName;
             this.Address = AppUser.Address;
             this.Avatar = AppUser.Avatar;

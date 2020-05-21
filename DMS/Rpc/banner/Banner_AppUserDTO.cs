@@ -48,8 +48,6 @@ namespace DMS.Rpc.banner
             
             this.Username = AppUser.Username;
             
-            this.Password = AppUser.Password;
-            
             this.DisplayName = AppUser.DisplayName;
             
             this.Address = AppUser.Address;

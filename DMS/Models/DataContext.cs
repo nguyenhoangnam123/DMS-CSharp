@@ -139,9 +139,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.Avatar).HasComment("Ảnh đại diện");
 
-                entity.Property(e => e.Birthday)
-                    .HasColumnType("datetime")
-                    .HasComment("Ngày sinh");
+                entity.Property(e => e.Birthday).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -165,11 +163,6 @@ namespace DMS.Models
 
                 entity.Property(e => e.OrganizationId).HasComment("Đơn vị công tác");
 
-                entity.Property(e => e.Password)
-                    .IsRequired()
-                    .HasMaxLength(500)
-                    .HasComment("Mật khẩu");
-
                 entity.Property(e => e.Phone)
                     .HasMaxLength(500)
                     .HasComment("Số điện thoại liên hệ");
@@ -181,8 +174,6 @@ namespace DMS.Models
                 entity.Property(e => e.ProvinceId).HasComment("Tỉnh thành");
 
                 entity.Property(e => e.RowId).HasComment("Trường để đồng bộ");
-
-                entity.Property(e => e.SexId).HasComment("Giới tính");
 
                 entity.Property(e => e.StatusId).HasComment("Trạng thái");
 
