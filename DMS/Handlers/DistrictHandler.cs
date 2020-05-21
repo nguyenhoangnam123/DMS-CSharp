@@ -35,6 +35,7 @@ namespace DMS.Handlers
                         Take = int.MaxValue,
                         RowId = new GuidFilter { In = RowIds },
                         EntityName = new StringFilter { Equal = nameof(District) },
+                        Selects = EventMessageSelect.ALL,
                     };
                     List<EventMessage<District>> DistrictEventMessages = await UOW.EventMessageRepository.List<District>(EventMessageFilter);
 
@@ -45,7 +46,20 @@ namespace DMS.Handlers
                         if (EventMessage != null)
                             Districts.Add(EventMessage.Content);
                     }
-                    context.BulkMerge<DistrictDAO>(Districts);
+                    List<DistrictDAO> DistrictDAOs = Districts.Select(x => new DistrictDAO
+                    {
+                        Code = x.Code,
+                        CreatedAt = x.CreatedAt,
+                        UpdatedAt = x.UpdatedAt,
+                        DeletedAt = x.DeletedAt,
+                        ProvinceId = x.ProvinceId,
+                        Id = x.Id,
+                        Name = x.Name,
+                        Priority = x.Priority,
+                        RowId = x.RowId,
+                        StatusId = x.StatusId,
+                    }).ToList();
+                    await context.BulkMergeAsync(DistrictDAOs);
                     break;
             }
             return true;

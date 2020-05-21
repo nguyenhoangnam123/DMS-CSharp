@@ -15,6 +15,9 @@ namespace DMS.Entities
         public long DistrictId { get; set; }
         public long StatusId { get; set; }
         public Guid RowId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public District District { get; set; }
         public Status Status { get; set; }
 

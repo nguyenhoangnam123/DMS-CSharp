@@ -50,7 +50,7 @@ namespace DMS.Handlers
                     }
                     try
                     {
-                        List<AppUserDAO> appUserDAOs = AppUsers.Select(au => new AppUserDAO
+                        List<AppUserDAO> AppUserDAOs = AppUsers.Select(au => new AppUserDAO
                         {
                             Address = au.Address,
                             Avatar = au.Avatar,
@@ -71,7 +71,7 @@ namespace DMS.Handlers
                             SexId = au.SexId,
                             Birthday = au.Birthday,
                         }).ToList();
-                        context.BulkMerge<AppUserDAO>(AppUsers);
+                        await context.BulkMergeAsync(AppUserDAOs);
                     }
                     catch (Exception ex)
                     {
