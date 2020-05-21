@@ -27,7 +27,6 @@ namespace DMS.Rpc.organization
         {
             this.Id = AppUser.Id;
             this.Username = AppUser.Username;
-            this.Password = AppUser.Password;
             this.DisplayName = AppUser.DisplayName;
             this.Address = AppUser.Address;
             this.Email = AppUser.Email;

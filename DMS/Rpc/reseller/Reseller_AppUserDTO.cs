@@ -36,8 +36,6 @@ namespace DMS.Rpc.reseller
             
             this.Username = AppUser.Username;
             
-            this.Password = AppUser.Password;
-            
             this.DisplayName = AppUser.DisplayName;
             
             this.SexId = AppUser.SexId;

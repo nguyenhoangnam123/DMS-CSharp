@@ -444,7 +444,6 @@ namespace DMS.Rpc.e_route_change_request
                     {
                         AppUser.Id,
                         AppUser.Username,
-                        AppUser.Password,
                         AppUser.DisplayName,
                         AppUser.Address,
                         AppUser.Email,
@@ -724,7 +723,6 @@ namespace DMS.Rpc.e_route_change_request
                     {
                         AppUser.Id,
                         AppUser.Username,
-                        AppUser.Password,
                         AppUser.DisplayName,
                         AppUser.Address,
                         AppUser.Email,
@@ -973,7 +971,6 @@ namespace DMS.Rpc.e_route_change_request
             {
                 Id = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.Id,
                 Username = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.Username,
-                Password = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.Password,
                 DisplayName = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.DisplayName,
                 Address = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.Address,
                 Email = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.Email,

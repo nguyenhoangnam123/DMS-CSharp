@@ -19,6 +19,8 @@ namespace DMS.Entities
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
         public long StatusId { get; set; }
+        public long? SexId { get; set; }
+        public DateTime? Birthday { get; set; }
         public long? ProvinceId { get; set; }
         public Guid RowId { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -27,6 +29,7 @@ namespace DMS.Entities
         public Organization Organization { get; set; }
         public Province Province { get; set; }
         public Status Status { get; set; }
+        public Sex Sex { get; set; }
         public List<AppUserRoleMapping> AppUserRoleMappings { get; set; }
 
         public bool Equals(AppUser other)

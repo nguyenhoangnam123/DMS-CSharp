@@ -32,8 +32,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.Username != null)
                 query = query.Where(q => q.Username, filter.Username);
-            if (filter.Password != null)
-                query = query.Where(q => q.Password, filter.Password);
             if (filter.DisplayName != null)
                 query = query.Where(q => q.DisplayName, filter.DisplayName);
             if (filter.Address != null)
@@ -82,8 +80,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, filter.Id);
                 if (filter.Username != null)
                     queryable = queryable.Where(q => q.Username, filter.Username);
-                if (filter.Password != null)
-                    queryable = queryable.Where(q => q.Password, filter.Password);
                 if (filter.DisplayName != null)
                     queryable = queryable.Where(q => q.DisplayName, filter.DisplayName);
                 if (filter.Address != null)
@@ -123,9 +119,6 @@ namespace DMS.Repositories
                             break;
                         case AppUserOrder.Username:
                             query = query.OrderBy(q => q.Username);
-                            break;
-                        case AppUserOrder.Password:
-                            query = query.OrderBy(q => q.Password);
                             break;
                         case AppUserOrder.DisplayName:
                             query = query.OrderBy(q => q.DisplayName);
@@ -170,9 +163,6 @@ namespace DMS.Repositories
                             break;
                         case AppUserOrder.Username:
                             query = query.OrderByDescending(q => q.Username);
-                            break;
-                        case AppUserOrder.Password:
-                            query = query.OrderByDescending(q => q.Password);
                             break;
                         case AppUserOrder.DisplayName:
                             query = query.OrderByDescending(q => q.DisplayName);
@@ -220,7 +210,6 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(AppUserSelect.Id) ? q.Id : default(long),
                 Username = filter.Selects.Contains(AppUserSelect.Username) ? q.Username : default(string),
-                Password = filter.Selects.Contains(AppUserSelect.Password) ? q.Password : default(string),
                 DisplayName = filter.Selects.Contains(AppUserSelect.DisplayName) ? q.DisplayName : default(string),
                 Address = filter.Selects.Contains(AppUserSelect.Address) ? q.Address : default(string),
                 Avatar = filter.Selects.Contains(AppUserSelect.Avatar) ? q.Avatar : default(string),
@@ -294,7 +283,6 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 Username = x.Username,
-                Password = x.Password,
                 DisplayName = x.DisplayName,
                 Address = x.Address,
                 Avatar = x.Avatar,

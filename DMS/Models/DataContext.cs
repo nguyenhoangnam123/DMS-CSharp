@@ -139,6 +139,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.Avatar).HasComment("Ảnh đại diện");
 
+                entity.Property(e => e.Birthday).HasColumnType("datetime");
+
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasComment("Ngày tạo");
@@ -193,6 +195,11 @@ namespace DMS.Models
                     .WithMany(p => p.AppUsers)
                     .HasForeignKey(d => d.ProvinceId)
                     .HasConstraintName("FK_AppUser_Province");
+
+                entity.HasOne(d => d.Sex)
+                    .WithMany(p => p.AppUsers)
+                    .HasForeignKey(d => d.SexId)
+                    .HasConstraintName("FK_AppUser_Sex");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.AppUsers)

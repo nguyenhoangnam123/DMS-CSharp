@@ -484,7 +484,6 @@ namespace DMS.Rpc.reseller
             {
                 Id = Reseller_ResellerDTO.Staff.Id,
                 Username = Reseller_ResellerDTO.Staff.Username,
-                Password = Reseller_ResellerDTO.Staff.Password,
                 DisplayName = Reseller_ResellerDTO.Staff.DisplayName,
                 SexId = Reseller_ResellerDTO.Staff.SexId,
                 Address = Reseller_ResellerDTO.Staff.Address,

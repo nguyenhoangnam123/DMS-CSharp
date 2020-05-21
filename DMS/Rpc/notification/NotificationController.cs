@@ -359,7 +359,6 @@ namespace DMS.Rpc.notification
                     {
                         AppUser.Id,
                         AppUser.Username,
-                        AppUser.Password,
                         AppUser.DisplayName,
                         AppUser.Address,
                         AppUser.Email,

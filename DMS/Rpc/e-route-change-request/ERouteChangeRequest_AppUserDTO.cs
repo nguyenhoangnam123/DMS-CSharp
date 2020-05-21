@@ -48,8 +48,6 @@ namespace DMS.Rpc.e_route_change_request
             
             this.Username = AppUser.Username;
             
-            this.Password = AppUser.Password;
-            
             this.DisplayName = AppUser.DisplayName;
             
             this.Address = AppUser.Address;

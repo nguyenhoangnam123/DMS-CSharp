@@ -68,6 +68,8 @@ namespace DMS.Handlers
                             RowId = au.RowId,
                             StatusId = au.StatusId,
                             Username = au.Username,
+                            SexId = au.SexId,
+                            Birthday = au.Birthday,
                         }).ToList();
                         context.BulkMerge<AppUserDAO>(AppUsers);
                     }

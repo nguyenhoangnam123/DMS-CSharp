@@ -269,7 +269,6 @@ namespace DMS.Repositories
                 {
                     Id = q.Staff.Id,
                     Username = q.Staff.Username,
-                    Password = q.Staff.Password,
                     DisplayName = q.Staff.DisplayName,
                     SexId = q.Staff.SexId,
                     Address = q.Staff.Address,
@@ -354,7 +353,6 @@ namespace DMS.Repositories
                 {
                     Id = x.Staff.Id,
                     Username = x.Staff.Username,
-                    Password = x.Staff.Password,
                     DisplayName = x.Staff.DisplayName,
                     SexId = x.Staff.SexId,
                     Address = x.Staff.Address,

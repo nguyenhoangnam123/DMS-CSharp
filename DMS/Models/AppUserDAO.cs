@@ -41,9 +41,12 @@ namespace DMS.Models
         public string Avatar { get; set; }
         public Guid RowId { get; set; }
         public long? ProvinceId { get; set; }
+        public long? SexId { get; set; }
+        public DateTime? Birthday { get; set; }
 
         public virtual OrganizationDAO Organization { get; set; }
         public virtual ProvinceDAO Province { get; set; }
+        public virtual SexDAO Sex { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
         public virtual ICollection<BannerDAO> Banners { get; set; }

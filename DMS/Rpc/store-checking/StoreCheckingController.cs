@@ -255,7 +255,6 @@ namespace DMS.Rpc.store_checking
             {
                 Id = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Id,
                 Username = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Username,
-                Password = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Password,
                 DisplayName = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.DisplayName,
                 Address = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Address,
                 Email = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Email,
@@ -428,7 +427,6 @@ namespace DMS.Rpc.store_checking
                     {
                         Id = x.SaleEmployee.Id,
                         Username = x.SaleEmployee.Username,
-                        Password = x.SaleEmployee.Password,
                         DisplayName = x.SaleEmployee.DisplayName,
                         Address = x.SaleEmployee.Address,
                         Email = x.SaleEmployee.Email,

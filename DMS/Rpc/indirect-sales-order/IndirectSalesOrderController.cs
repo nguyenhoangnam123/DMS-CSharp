@@ -526,7 +526,6 @@ namespace DMS.Rpc.indirect_sales_order
             {
                 Id = IndirectSalesOrder_IndirectSalesOrderDTO.SaleEmployee.Id,
                 Username = IndirectSalesOrder_IndirectSalesOrderDTO.SaleEmployee.Username,
-                Password = IndirectSalesOrder_IndirectSalesOrderDTO.SaleEmployee.Password,
                 DisplayName = IndirectSalesOrder_IndirectSalesOrderDTO.SaleEmployee.DisplayName,
                 Address = IndirectSalesOrder_IndirectSalesOrderDTO.SaleEmployee.Address,
                 Email = IndirectSalesOrder_IndirectSalesOrderDTO.SaleEmployee.Email,
