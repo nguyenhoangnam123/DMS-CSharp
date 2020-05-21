@@ -2520,6 +2520,10 @@ namespace DMS.Models
             {
                 entity.ToTable("WorkflowDefinition", "WF");
 
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -2533,6 +2537,12 @@ namespace DMS.Models
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.WorkflowDefinitions)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowDefinition_Status");
 
                 entity.HasOne(d => d.WorkflowType)
                     .WithMany(p => p.WorkflowDefinitions)
@@ -2553,6 +2563,10 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(4000);
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.SubjectMailForCreator)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -2560,6 +2574,8 @@ namespace DMS.Models
                 entity.Property(e => e.SubjectMailForNextStep)
                     .IsRequired()
                     .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.FromStep)
                     .WithMany(p => p.WorkflowDirectionFromSteps)
@@ -2583,6 +2599,10 @@ namespace DMS.Models
             modelBuilder.Entity<WorkflowParameterDAO>(entity =>
             {
                 entity.ToTable("WorkflowParameter", "WF");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -2615,6 +2635,10 @@ namespace DMS.Models
                 entity.ToTable("WorkflowStep", "WF");
 
                 entity.Property(e => e.BodyMailForReject).HasMaxLength(4000);
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Name)
                     .IsRequired()

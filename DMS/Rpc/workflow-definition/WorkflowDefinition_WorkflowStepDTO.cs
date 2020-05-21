@@ -10,6 +10,7 @@ namespace DMS.Rpc.workflow_definition
     {
         public long Id { get; set; }
         public long WorkflowDefinitionId { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public long RoleId { get; set; }
         public string SubjectMailForReject { get; set; }
@@ -21,6 +22,7 @@ namespace DMS.Rpc.workflow_definition
         {
             this.Id = WorkflowStep.Id;
             this.WorkflowDefinitionId = WorkflowStep.WorkflowDefinitionId;
+            this.Code = WorkflowStep.Code;
             this.Name = WorkflowStep.Name;
             this.RoleId = WorkflowStep.RoleId;
             this.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
@@ -37,6 +39,7 @@ namespace DMS.Rpc.workflow_definition
         
         public IdFilter WorkflowDefinitionId { get; set; }
         
+        public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         
         public IdFilter RoleId { get; set; }

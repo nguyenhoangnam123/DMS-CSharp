@@ -32,6 +32,7 @@ namespace DMS.Models
             UnitOfMeasures = new HashSet<UnitOfMeasureDAO>();
             Wards = new HashSet<WardDAO>();
             Warehouses = new HashSet<WarehouseDAO>();
+            WorkflowDefinitions = new HashSet<WorkflowDefinitionDAO>();
         }
 
         public long Id { get; set; }
@@ -63,5 +64,6 @@ namespace DMS.Models
         public virtual ICollection<UnitOfMeasureDAO> UnitOfMeasures { get; set; }
         public virtual ICollection<WardDAO> Wards { get; set; }
         public virtual ICollection<WarehouseDAO> Warehouses { get; set; }
+        public virtual ICollection<WorkflowDefinitionDAO> WorkflowDefinitions { get; set; }
     }
 }

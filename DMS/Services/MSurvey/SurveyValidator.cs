@@ -52,6 +52,19 @@ namespace DMS.Services.MSurvey
             return count == 1;
         }
 
+        private async Task<bool> ValidateSurveyQuestions(Survey Survey)
+        {
+            if (Survey.SurveyQuestions == null) Survey.SurveyQuestions = new List<SurveyQuestion>();
+            else
+            {
+                foreach (var SurveyQuestion in Survey.SurveyQuestions)
+                {
+                    if (SurveyQuestion.SurveyOptions == null) SurveyQuestion.SurveyOptions = new List<SurveyOption>();
+                }
+            }
+            return Survey.IsValidated;
+        }
+
         public async Task<bool> Create(Survey Survey)
         {
             if (Survey.SurveyQuestions == null)
@@ -79,6 +92,7 @@ namespace DMS.Services.MSurvey
         {
             if (await ValidateId(Survey))
             {
+                await ValidateSurveyQuestions(Survey);
             }
             return Survey.IsValidated;
         }

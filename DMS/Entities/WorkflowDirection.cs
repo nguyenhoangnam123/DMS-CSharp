@@ -18,6 +18,7 @@ namespace DMS.Entities
         public string SubjectMailForNextStep { get; set; }
         public string BodyMailForCreator { get; set; }
         public string BodyMailForNextStep { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }
         
 
@@ -38,6 +39,7 @@ namespace DMS.Entities
         public IdFilter WorkflowDefinitionId { get; set; }
         public IdFilter FromStepId { get; set; }
         public IdFilter ToStepId { get; set; }
+        public DateFilter UpdatedAt { get; set; }
         public List<WorkflowDirectionFilter> OrFilter { get; set; }
         public WorkflowDirectionOrder OrderBy {get; set;}
         public WorkflowDirectionSelect Selects {get; set;}
@@ -50,6 +52,7 @@ namespace DMS.Entities
         WorkflowDefinition = 1,
         FromStep = 2,
         ToStep = 3,
+        UpdatedAt = 4,
     }
 
     [Flags]
@@ -60,5 +63,6 @@ namespace DMS.Entities
         WorkflowDefinition = E._1,
         FromStep = E._2,
         ToStep = E._3,
+        UpdatedAt = E._4,
     }
 }

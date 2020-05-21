@@ -10,6 +10,7 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public long WorkflowDefinitionId { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }
 
@@ -27,6 +28,7 @@ namespace DMS.Entities
     {
         public IdFilter Id { get; set; }
         public IdFilter WorkflowDefinitionId { get; set; }
+        public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public List<WorkflowParameterFilter> OrFilter { get; set; }
         public WorkflowParameterOrder OrderBy {get; set;}
@@ -39,6 +41,7 @@ namespace DMS.Entities
         Id = 0,
         WorkflowDefinition = 1,
         Name = 2,
+        Code = 3,
     }
 
     [Flags]
@@ -48,5 +51,6 @@ namespace DMS.Entities
         Id = E._0,
         WorkflowDefinition = E._1,
         Name = E._2,
+        Code = E._3,
     }
 }

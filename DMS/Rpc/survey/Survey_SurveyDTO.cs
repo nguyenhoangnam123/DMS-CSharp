@@ -17,6 +17,7 @@ namespace DMS.Rpc.survey
         public List<Survey_SurveyQuestionDTO> SurveyQuestions { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public Survey_AppUserDTO Creator { get; set; }
         public Survey_SurveyDTO() {}
         public Survey_SurveyDTO(Survey Survey)
         {
@@ -29,6 +30,7 @@ namespace DMS.Rpc.survey
             this.SurveyQuestions = Survey.SurveyQuestions?.Select(x => new Survey_SurveyQuestionDTO(x)).ToList();
             this.CreatedAt = Survey.CreatedAt;
             this.UpdatedAt = Survey.UpdatedAt;
+            this.Creator = Survey.Creator == null ? null : new Survey_AppUserDTO(Survey.Creator);
             this.Errors = Survey.Errors;
         }
     }
@@ -43,6 +45,7 @@ namespace DMS.Rpc.survey
         public IdFilter StatusId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
+        public IdFilter CreatorId { get; set; }
         public SurveyOrder OrderBy { get; set; }
     }
 }

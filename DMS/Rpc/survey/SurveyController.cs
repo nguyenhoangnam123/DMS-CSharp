@@ -207,6 +207,13 @@ namespace DMS.Rpc.survey
                         Code = x.SurveyQuestionType.Code,
                         Name = x.SurveyQuestionType.Name,
                     },
+                    SurveyOptions = x.SurveyOptions?.Select(x => new SurveyOption
+                    {
+                        Id = x.Id,
+                        Content = x.Content,
+                        SurveyOptionTypeId = x.SurveyOptionTypeId,
+                        SurveyQuestionId = x.SurveyOptionTypeId
+                    }).ToList(),
                 }).ToList();
             Survey.BaseLanguage = CurrentContext.Language;
             return Survey;

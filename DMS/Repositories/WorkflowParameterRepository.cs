@@ -37,6 +37,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.WorkflowDefinitionId != null)
                 query = query.Where(q => q.WorkflowDefinitionId, filter.WorkflowDefinitionId);
+            if (filter.Code != null)
+                query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
             query = OrFilter(query, filter);
@@ -55,6 +57,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, filter.Id);
                 if (filter.WorkflowDefinitionId != null)
                     queryable = queryable.Where(q => q.WorkflowDefinitionId, filter.WorkflowDefinitionId);
+                if (filter.Code != null)
+                    queryable = queryable.Where(q => q.Code, filter.Code);
                 if (filter.Name != null)
                     queryable = queryable.Where(q => q.Name, filter.Name);
                 initQuery = initQuery.Union(queryable);
@@ -78,6 +82,9 @@ namespace DMS.Repositories
                         case WorkflowParameterOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
+                        case WorkflowParameterOrder.Code:
+                            query = query.OrderBy(q => q.Code);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -92,6 +99,9 @@ namespace DMS.Repositories
                         case WorkflowParameterOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
                             break;
+                        case WorkflowParameterOrder.Code:
+                            query = query.OrderByDescending(q => q.Code);
+                            break;
                     }
                     break;
             }
@@ -105,15 +115,18 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(WorkflowParameterSelect.Id) ? q.Id : default(long),
                 WorkflowDefinitionId = filter.Selects.Contains(WorkflowParameterSelect.WorkflowDefinition) ? q.WorkflowDefinitionId : default(long),
+                Code = filter.Selects.Contains(WorkflowParameterSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(WorkflowParameterSelect.Name) ? q.Name : default(string),
                 WorkflowDefinition = filter.Selects.Contains(WorkflowParameterSelect.WorkflowDefinition) && q.WorkflowDefinition != null ? new WorkflowDefinition
                 {
                     Id = q.WorkflowDefinition.Id,
+                    Code = q.WorkflowDefinition.Code,
                     Name = q.WorkflowDefinition.Name,
                     WorkflowTypeId = q.WorkflowDefinition.WorkflowTypeId,
                     StartDate = q.WorkflowDefinition.StartDate,
                     EndDate = q.WorkflowDefinition.EndDate,
                     StatusId = q.WorkflowDefinition.StatusId,
+                    UpdatedAt = q.WorkflowDefinition.UpdatedAt,
                 } : null,
             }).ToListAsync();
             return WorkflowParameters;
@@ -143,15 +156,18 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 WorkflowDefinitionId = x.WorkflowDefinitionId,
+                Code = x.Code,
                 Name = x.Name,
                 WorkflowDefinition = x.WorkflowDefinition == null ? null : new WorkflowDefinition
                 {
                     Id = x.WorkflowDefinition.Id,
+                    Code = x.WorkflowDefinition.Code,
                     Name = x.WorkflowDefinition.Name,
                     WorkflowTypeId = x.WorkflowDefinition.WorkflowTypeId,
                     StartDate = x.WorkflowDefinition.StartDate,
                     EndDate = x.WorkflowDefinition.EndDate,
                     StatusId = x.WorkflowDefinition.StatusId,
+                    UpdatedAt = x.WorkflowDefinition.UpdatedAt,
                 },
             }).FirstOrDefaultAsync();
 
@@ -165,6 +181,7 @@ namespace DMS.Repositories
             WorkflowParameterDAO WorkflowParameterDAO = new WorkflowParameterDAO();
             WorkflowParameterDAO.Id = WorkflowParameter.Id;
             WorkflowParameterDAO.WorkflowDefinitionId = WorkflowParameter.WorkflowDefinitionId;
+            WorkflowParameterDAO.Code = WorkflowParameter.Code;
             WorkflowParameterDAO.Name = WorkflowParameter.Name;
             DataContext.WorkflowParameter.Add(WorkflowParameterDAO);
             await DataContext.SaveChangesAsync();
@@ -180,6 +197,7 @@ namespace DMS.Repositories
                 return false;
             WorkflowParameterDAO.Id = WorkflowParameter.Id;
             WorkflowParameterDAO.WorkflowDefinitionId = WorkflowParameter.WorkflowDefinitionId;
+            WorkflowParameterDAO.Code = WorkflowParameter.Code;
             WorkflowParameterDAO.Name = WorkflowParameter.Name;
             await DataContext.SaveChangesAsync();
             await SaveReference(WorkflowParameter);
@@ -200,6 +218,7 @@ namespace DMS.Repositories
                 WorkflowParameterDAO WorkflowParameterDAO = new WorkflowParameterDAO();
                 WorkflowParameterDAO.Id = WorkflowParameter.Id;
                 WorkflowParameterDAO.WorkflowDefinitionId = WorkflowParameter.WorkflowDefinitionId;
+                WorkflowParameterDAO.Code = WorkflowParameter.Code;
                 WorkflowParameterDAO.Name = WorkflowParameter.Name;
                 WorkflowParameterDAOs.Add(WorkflowParameterDAO);
             }

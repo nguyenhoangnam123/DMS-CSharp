@@ -13,6 +13,9 @@ namespace DMS.Models
         public string SubjectMailForNextStep { get; set; }
         public string BodyMailForCreator { get; set; }
         public string BodyMailForNextStep { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         public virtual WorkflowStepDAO FromStep { get; set; }
         public virtual WorkflowStepDAO ToStep { get; set; }

@@ -36,6 +36,8 @@ namespace DMS.Repositories
             query = query.Where(q => !q.DeletedAt.HasValue);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
+            if (filter.Code != null)
+                query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.WorkflowTypeId != null)
@@ -46,6 +48,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.EndDate, filter.EndDate);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
+            if (filter.UpdatedAt != null)
+                query = query.Where(q => q.UpdatedAt, filter.UpdatedAt);
             query = OrFilter(query, filter);
             return query;
         }
@@ -60,6 +64,8 @@ namespace DMS.Repositories
                 IQueryable<WorkflowDefinitionDAO> queryable = query;
                 if (filter.Id != null)
                     queryable = queryable.Where(q => q.Id, filter.Id);
+                if (filter.Code != null)
+                    queryable = queryable.Where(q => q.Code, filter.Code);
                 if (filter.Name != null)
                     queryable = queryable.Where(q => q.Name, filter.Name);
                 if (filter.WorkflowTypeId != null)
@@ -70,6 +76,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.EndDate, filter.EndDate);
                 if (filter.StatusId != null)
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (filter.UpdatedAt != null)
+                    queryable = queryable.Where(q => q.UpdatedAt, filter.UpdatedAt);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -84,6 +92,9 @@ namespace DMS.Repositories
                     {
                         case WorkflowDefinitionOrder.Id:
                             query = query.OrderBy(q => q.Id);
+                            break;
+                        case WorkflowDefinitionOrder.Code:
+                            query = query.OrderBy(q => q.Code);
                             break;
                         case WorkflowDefinitionOrder.Name:
                             query = query.OrderBy(q => q.Name);
@@ -100,6 +111,9 @@ namespace DMS.Repositories
                         case WorkflowDefinitionOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
                             break;
+                        case WorkflowDefinitionOrder.UpdatedAt:
+                            query = query.OrderBy(q => q.UpdatedAt);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -107,6 +121,9 @@ namespace DMS.Repositories
                     {
                         case WorkflowDefinitionOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
+                            break;
+                        case WorkflowDefinitionOrder.Code:
+                            query = query.OrderByDescending(q => q.Code);
                             break;
                         case WorkflowDefinitionOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
@@ -123,6 +140,9 @@ namespace DMS.Repositories
                         case WorkflowDefinitionOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
                             break;
+                        case WorkflowDefinitionOrder.UpdatedAt:
+                            query = query.OrderByDescending(q => q.UpdatedAt);
+                            break;
                     }
                     break;
             }
@@ -135,17 +155,25 @@ namespace DMS.Repositories
             List<WorkflowDefinition> WorkflowDefinitions = await query.Select(q => new WorkflowDefinition()
             {
                 Id = filter.Selects.Contains(WorkflowDefinitionSelect.Id) ? q.Id : default(long),
+                Code = filter.Selects.Contains(WorkflowDefinitionSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(WorkflowDefinitionSelect.Name) ? q.Name : default(string),
                 WorkflowTypeId = filter.Selects.Contains(WorkflowDefinitionSelect.WorkflowType) ? q.WorkflowTypeId : default(long),
                 StartDate = filter.Selects.Contains(WorkflowDefinitionSelect.StartDate) ? q.StartDate : default(DateTime?),
                 EndDate = filter.Selects.Contains(WorkflowDefinitionSelect.EndDate) ? q.EndDate : default(DateTime?),
                 StatusId = filter.Selects.Contains(WorkflowDefinitionSelect.Status) ? q.StatusId : default(long),
+                UpdatedAt = filter.Selects.Contains(WorkflowDefinitionSelect.UpdatedAt) ? q.UpdatedAt : default(DateTime),
                 WorkflowType = filter.Selects.Contains(WorkflowDefinitionSelect.WorkflowType) && q.WorkflowType != null ? new WorkflowType
                 {
                     Id = q.WorkflowType.Id,
                     Code = q.WorkflowType.Code,
                     Name = q.WorkflowType.Name,
-                } : null
+                } : null,
+                Status = filter.Selects.Contains(WorkflowDefinitionSelect.Status) && q.Status != null ? new Status
+                {
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
+                } : null,
             }).ToListAsync();
 
             return WorkflowDefinitions;
@@ -173,16 +201,24 @@ namespace DMS.Repositories
             WorkflowDefinition WorkflowDefinition = await DataContext.WorkflowDefinition.Where(x => x.Id == Id).Select(x => new WorkflowDefinition()
             {
                 Id = x.Id,
+                Code = x.Code,
                 Name = x.Name,
                 WorkflowTypeId = x.WorkflowTypeId,
                 StartDate = x.StartDate,
                 EndDate = x.EndDate,
                 StatusId = x.StatusId,
+                UpdatedAt = x.UpdatedAt,
                 WorkflowType = x.WorkflowType == null ? null : new WorkflowType
                 {
                     Id = x.WorkflowType.Id,
                     Code = x.WorkflowType.Code,
                     Name = x.WorkflowType.Name,
+                },
+                Status = x.Status == null ? null : new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
                 },
             }).AsNoTracking().FirstOrDefaultAsync();
 
@@ -193,9 +229,11 @@ namespace DMS.Repositories
                 {
                     BodyMailForReject = x.BodyMailForReject,
                     Id = x.Id,
+                    Code = x.Code,
                     Name = x.Name,
                     RoleId = x.RoleId,
                     SubjectMailForReject = x.SubjectMailForReject,
+                    WorkflowDefinitionId = x.WorkflowDefinitionId
                 }).ToListAsync();
             WorkflowDefinition.WorkflowDirections = await DataContext.WorkflowDirection
                 .Where(x => x.WorkflowDefinitionId == Id).Select(x => new WorkflowDirection
@@ -208,9 +246,11 @@ namespace DMS.Repositories
                     BodyMailForCreator = x.BodyMailForCreator,
                     BodyMailForNextStep = x.BodyMailForNextStep,
                     WorkflowDefinitionId = x.WorkflowDefinitionId,
+                    UpdatedAt = x.UpdatedAt,
                     FromStep = new WorkflowStep
                     {
                         Id = x.FromStep.Id,
+                        Code = x.FromStep.Code,
                         Name = x.FromStep.Name,
                         RoleId = x.FromStep.RoleId,
                         WorkflowDefinitionId = x.FromStep.WorkflowDefinitionId,
@@ -220,13 +260,14 @@ namespace DMS.Repositories
                     ToStep = new WorkflowStep
                     {
                         Id = x.ToStep.Id,
+                        Code = x.ToStep.Code,
                         Name = x.ToStep.Name,
                         RoleId = x.ToStep.RoleId,
                         WorkflowDefinitionId = x.ToStep.WorkflowDefinitionId,
                         SubjectMailForReject = x.ToStep.SubjectMailForReject,
                         BodyMailForReject = x.ToStep.BodyMailForReject,
                     },
-
+                    
                 }).ToListAsync();
 
             WorkflowDefinition.WorkflowParameters = await DataContext.WorkflowParameter
@@ -245,6 +286,7 @@ namespace DMS.Repositories
             WorkflowDefinitionDAO WorkflowDefinitionDAO = new WorkflowDefinitionDAO();
             WorkflowDefinitionDAO.Id = WorkflowDefinition.Id;
             WorkflowDefinitionDAO.Name = WorkflowDefinition.Name;
+            WorkflowDefinitionDAO.Code = WorkflowDefinition.Code;
             WorkflowDefinitionDAO.WorkflowTypeId = WorkflowDefinition.WorkflowTypeId;
             WorkflowDefinitionDAO.StartDate = WorkflowDefinition.StartDate;
             WorkflowDefinitionDAO.EndDate = WorkflowDefinition.EndDate;
@@ -265,6 +307,7 @@ namespace DMS.Repositories
                 return false;
             WorkflowDefinitionDAO.Id = WorkflowDefinition.Id;
             WorkflowDefinitionDAO.Name = WorkflowDefinition.Name;
+            WorkflowDefinitionDAO.Code = WorkflowDefinition.Code;
             WorkflowDefinitionDAO.WorkflowTypeId = WorkflowDefinition.WorkflowTypeId;
             WorkflowDefinitionDAO.StartDate = WorkflowDefinition.StartDate;
             WorkflowDefinitionDAO.EndDate = WorkflowDefinition.EndDate;
@@ -289,6 +332,7 @@ namespace DMS.Repositories
                 WorkflowDefinitionDAO WorkflowDefinitionDAO = new WorkflowDefinitionDAO();
                 WorkflowDefinitionDAO.Id = WorkflowDefinition.Id;
                 WorkflowDefinitionDAO.Name = WorkflowDefinition.Name;
+                WorkflowDefinitionDAO.Code = WorkflowDefinition.Code;
                 WorkflowDefinitionDAO.WorkflowTypeId = WorkflowDefinition.WorkflowTypeId;
                 WorkflowDefinitionDAO.StartDate = WorkflowDefinition.StartDate;
                 WorkflowDefinitionDAO.EndDate = WorkflowDefinition.EndDate;
@@ -320,6 +364,7 @@ namespace DMS.Repositories
                 {
                     WorkflowStepDAO WorkflowStepDAO = new WorkflowStepDAO();
                     WorkflowStepDAO.WorkflowDefinitionId = WorkflowDefinition.Id;
+                    WorkflowStepDAO.Code = WorkflowStep.Code;
                     WorkflowStepDAO.Name = WorkflowStep.Name;
                     WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
                     WorkflowStepDAOs.Add(WorkflowStepDAO);

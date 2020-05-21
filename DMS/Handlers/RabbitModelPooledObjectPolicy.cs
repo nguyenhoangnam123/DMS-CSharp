@@ -24,7 +24,7 @@ namespace DMS.Handlers
                 VirtualHost = Configuration["RabbitConfig:VirtualHost"],
                 Port = int.Parse(Configuration["RabbitConfig:Port"]),
             };
-
+            
             // create connection  
             _connection = factory.CreateConnection();
             _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;

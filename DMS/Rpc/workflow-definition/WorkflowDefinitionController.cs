@@ -1,6 +1,7 @@
 using Common;
 using DMS.Entities;
 using DMS.Services.MRole;
+using DMS.Services.MStatus;
 using DMS.Services.MWorkflow;
 using DMS.Services.MWorkflowDirection;
 using DMS.Services.MWorkflowParameter;
@@ -32,37 +33,32 @@ namespace DMS.Rpc.workflow_definition
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
         
-        
         public const string FilterListWorkflowType = Default + "/filter-list-workflow-type";
-        
         public const string FilterListWorkflowDirection = Default + "/filter-list-workflow-direction";
-        
         public const string FilterListWorkflowStep = Default + "/filter-list-workflow-step";
-        
         public const string FilterListWorkflowParameter = Default + "/filter-list-workflow-parameter";
-        
         public const string FilterListRole = Default + "/filter-list-role";
         
-
-        
         public const string SingleListWorkflowType = Default + "/single-list-workflow-type";
-        
         public const string SingleListWorkflowDirection = Default + "/single-list-workflow-direction";
-        
         public const string SingleListWorkflowStep = Default + "/single-list-workflow-step";
-        
         public const string SingleListWorkflowParameter = Default + "/single-list-workflow-parameter";
-        
         public const string SingleListRole = Default + "/single-list-role";
-        
+        public const string SingleListStatus = Default + "/single-list-status";
+
+        public const string CountDirection = Default + "/count-direction";
+        public const string ListDirection = Default + "/list-direction";
+
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(WorkflowDefinitionFilter.Id), FieldType.ID },
+            { nameof(WorkflowDefinitionFilter.Code), FieldType.STRING },
             { nameof(WorkflowDefinitionFilter.Name), FieldType.STRING },
             { nameof(WorkflowDefinitionFilter.WorkflowTypeId), FieldType.ID },
             { nameof(WorkflowDefinitionFilter.StartDate), FieldType.DATE },
             { nameof(WorkflowDefinitionFilter.EndDate), FieldType.DATE },
             { nameof(WorkflowDefinitionFilter.StatusId), FieldType.ID },
+            { nameof(WorkflowDefinitionFilter.UpdatedAt), FieldType.DATE },
         };
     }
 
@@ -74,6 +70,7 @@ namespace DMS.Rpc.workflow_definition
         private IWorkflowParameterService WorkflowParameterService;
         private IRoleService RoleService;
         private IWorkflowDefinitionService WorkflowDefinitionService;
+        private IStatusService StatusService;
         private ICurrentContext CurrentContext;
         public WorkflowDefinitionController(
             IWorkflowTypeService WorkflowTypeService,
@@ -82,6 +79,7 @@ namespace DMS.Rpc.workflow_definition
             IWorkflowParameterService WorkflowParameterService,
             IRoleService RoleService,
             IWorkflowDefinitionService WorkflowDefinitionService,
+            IStatusService StatusService,
             ICurrentContext CurrentContext
         )
         {
@@ -91,6 +89,7 @@ namespace DMS.Rpc.workflow_definition
             this.WorkflowParameterService = WorkflowParameterService;
             this.RoleService = RoleService;
             this.WorkflowDefinitionService = WorkflowDefinitionService;
+            this.StatusService = StatusService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -722,11 +721,13 @@ namespace DMS.Rpc.workflow_definition
         {
             WorkflowDefinition WorkflowDefinition = new WorkflowDefinition();
             WorkflowDefinition.Id = WorkflowDefinition_WorkflowDefinitionDTO.Id;
+            WorkflowDefinition.Code = WorkflowDefinition_WorkflowDefinitionDTO.Code;
             WorkflowDefinition.Name = WorkflowDefinition_WorkflowDefinitionDTO.Name;
             WorkflowDefinition.WorkflowTypeId = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowTypeId;
             WorkflowDefinition.StartDate = WorkflowDefinition_WorkflowDefinitionDTO.StartDate;
             WorkflowDefinition.EndDate = WorkflowDefinition_WorkflowDefinitionDTO.EndDate;
             WorkflowDefinition.StatusId = WorkflowDefinition_WorkflowDefinitionDTO.StatusId;
+            WorkflowDefinition.UpdatedAt = WorkflowDefinition_WorkflowDefinitionDTO.UpdatedAt;
             WorkflowDefinition.WorkflowType = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowType == null ? null : new WorkflowType
             {
                 Id = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowType.Id,
@@ -743,10 +744,12 @@ namespace DMS.Rpc.workflow_definition
                     SubjectMailForNextStep = x.SubjectMailForNextStep,
                     BodyMailForCreator = x.BodyMailForCreator,
                     BodyMailForNextStep = x.BodyMailForNextStep,
+                    UpdatedAt = x.UpdatedAt,
                     FromStep = x.FromStep == null ? null : new WorkflowStep
                     {
                         Id = x.FromStep.Id,
                         WorkflowDefinitionId = x.FromStep.WorkflowDefinitionId,
+                        Code = x.FromStep.Code,
                         Name = x.FromStep.Name,
                         RoleId = x.FromStep.RoleId,
                         SubjectMailForReject = x.FromStep.SubjectMailForReject,
@@ -756,6 +759,7 @@ namespace DMS.Rpc.workflow_definition
                     {
                         Id = x.ToStep.Id,
                         WorkflowDefinitionId = x.ToStep.WorkflowDefinitionId,
+                        Code = x.ToStep.Code,
                         Name = x.ToStep.Name,
                         RoleId = x.ToStep.RoleId,
                         SubjectMailForReject = x.ToStep.SubjectMailForReject,
@@ -766,12 +770,14 @@ namespace DMS.Rpc.workflow_definition
                 .Select(x => new WorkflowParameter
                 {
                     Id = x.Id,
+                    Code = x.Code,
                     Name = x.Name,
                 }).ToList();
             WorkflowDefinition.WorkflowSteps = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowSteps?
                 .Select(x => new WorkflowStep
                 {
                     Id = x.Id,
+                    Code = x.Code,
                     Name = x.Name,
                     RoleId = x.RoleId,
                     SubjectMailForReject = x.SubjectMailForReject,
@@ -798,11 +804,13 @@ namespace DMS.Rpc.workflow_definition
             WorkflowDefinitionFilter.OrderType = WorkflowDefinition_WorkflowDefinitionFilterDTO.OrderType;
 
             WorkflowDefinitionFilter.Id = WorkflowDefinition_WorkflowDefinitionFilterDTO.Id;
+            WorkflowDefinitionFilter.Code = WorkflowDefinition_WorkflowDefinitionFilterDTO.Code;
             WorkflowDefinitionFilter.Name = WorkflowDefinition_WorkflowDefinitionFilterDTO.Name;
             WorkflowDefinitionFilter.WorkflowTypeId = WorkflowDefinition_WorkflowDefinitionFilterDTO.WorkflowTypeId;
             WorkflowDefinitionFilter.StartDate = WorkflowDefinition_WorkflowDefinitionFilterDTO.StartDate;
             WorkflowDefinitionFilter.EndDate = WorkflowDefinition_WorkflowDefinitionFilterDTO.EndDate;
             WorkflowDefinitionFilter.StatusId = WorkflowDefinition_WorkflowDefinitionFilterDTO.StatusId;
+            WorkflowDefinitionFilter.UpdatedAt = WorkflowDefinition_WorkflowDefinitionFilterDTO.UpdatedAt;
             return WorkflowDefinitionFilter;
         }
 
@@ -861,6 +869,7 @@ namespace DMS.Rpc.workflow_definition
             WorkflowStepFilter.Selects = WorkflowStepSelect.ALL;
             WorkflowStepFilter.Id = WorkflowDefinition_WorkflowStepFilterDTO.Id;
             WorkflowStepFilter.WorkflowDefinitionId = WorkflowDefinition_WorkflowStepFilterDTO.WorkflowDefinitionId;
+            WorkflowStepFilter.Code = WorkflowDefinition_WorkflowStepFilterDTO.Code;
             WorkflowStepFilter.Name = WorkflowDefinition_WorkflowStepFilterDTO.Name;
             WorkflowStepFilter.RoleId = WorkflowDefinition_WorkflowStepFilterDTO.RoleId;
 
@@ -883,6 +892,7 @@ namespace DMS.Rpc.workflow_definition
             WorkflowParameterFilter.Selects = WorkflowParameterSelect.ALL;
             WorkflowParameterFilter.Id = WorkflowDefinition_WorkflowParameterFilterDTO.Id;
             WorkflowParameterFilter.WorkflowDefinitionId = WorkflowDefinition_WorkflowParameterFilterDTO.WorkflowDefinitionId;
+            WorkflowParameterFilter.Code = WorkflowDefinition_WorkflowParameterFilterDTO.Code;
             WorkflowParameterFilter.Name = WorkflowDefinition_WorkflowParameterFilterDTO.Name;
 
             List<WorkflowParameter> WorkflowParameters = await WorkflowParameterService.List(WorkflowParameterFilter);
@@ -968,6 +978,7 @@ namespace DMS.Rpc.workflow_definition
             WorkflowStepFilter.Selects = WorkflowStepSelect.ALL;
             WorkflowStepFilter.Id = WorkflowDefinition_WorkflowStepFilterDTO.Id;
             WorkflowStepFilter.WorkflowDefinitionId = WorkflowDefinition_WorkflowStepFilterDTO.WorkflowDefinitionId;
+            WorkflowStepFilter.Code = WorkflowDefinition_WorkflowStepFilterDTO.Code;
             WorkflowStepFilter.Name = WorkflowDefinition_WorkflowStepFilterDTO.Name;
             WorkflowStepFilter.RoleId = WorkflowDefinition_WorkflowStepFilterDTO.RoleId;
 
@@ -990,6 +1001,7 @@ namespace DMS.Rpc.workflow_definition
             WorkflowParameterFilter.Selects = WorkflowParameterSelect.ALL;
             WorkflowParameterFilter.Id = WorkflowDefinition_WorkflowParameterFilterDTO.Id;
             WorkflowParameterFilter.WorkflowDefinitionId = WorkflowDefinition_WorkflowParameterFilterDTO.WorkflowDefinitionId;
+            WorkflowParameterFilter.Code = WorkflowDefinition_WorkflowParameterFilterDTO.Code;
             WorkflowParameterFilter.Name = WorkflowDefinition_WorkflowParameterFilterDTO.Name;
 
             List<WorkflowParameter> WorkflowParameters = await WorkflowParameterService.List(WorkflowParameterFilter);
@@ -1020,6 +1032,21 @@ namespace DMS.Rpc.workflow_definition
             return WorkflowDefinition_RoleDTOs;
         }
 
+        [Route(WorkflowDefinitionRoute.SingleListStatus), HttpPost]
+        public async Task<List<WorkflowDefinition_StatusDTO>> SingleListStatus([FromBody] WorkflowDefinition_StatusFilterDTO WorkflowDefinition_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<WorkflowDefinition_StatusDTO> WorkflowDefinition_StatusDTOs = Statuses
+                .Select(x => new WorkflowDefinition_StatusDTO(x)).ToList();
+            return WorkflowDefinition_StatusDTOs;
+        }
     }
 }
 

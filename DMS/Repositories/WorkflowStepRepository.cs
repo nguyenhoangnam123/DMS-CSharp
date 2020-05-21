@@ -39,6 +39,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.WorkflowDefinitionId, filter.WorkflowDefinitionId);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
+            if (filter.Code != null)
+                query = query.Where(q => q.Code, filter.Code);
             if (filter.RoleId != null)
                 query = query.Where(q => q.RoleId, filter.RoleId);
             query = OrFilter(query, filter);
@@ -57,6 +59,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, filter.Id);
                 if (filter.WorkflowDefinitionId != null)
                     queryable = queryable.Where(q => q.WorkflowDefinitionId, filter.WorkflowDefinitionId);
+                if (filter.Code != null)
+                    queryable = queryable.Where(q => q.Code, filter.Code);
                 if (filter.Name != null)
                     queryable = queryable.Where(q => q.Name, filter.Name);
                 if (filter.RoleId != null)
@@ -79,6 +83,9 @@ namespace DMS.Repositories
                         case WorkflowStepOrder.WorkflowDefinition:
                             query = query.OrderBy(q => q.WorkflowDefinitionId);
                             break;
+                        case WorkflowStepOrder.Code:
+                            query = query.OrderBy(q => q.Code);
+                            break;
                         case WorkflowStepOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
@@ -95,6 +102,9 @@ namespace DMS.Repositories
                             break;
                         case WorkflowStepOrder.WorkflowDefinition:
                             query = query.OrderByDescending(q => q.WorkflowDefinitionId);
+                            break;
+                        case WorkflowStepOrder.Code:
+                            query = query.OrderByDescending(q => q.Code);
                             break;
                         case WorkflowStepOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
@@ -115,6 +125,7 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(WorkflowStepSelect.Id) ? q.Id : default(long),
                 WorkflowDefinitionId = filter.Selects.Contains(WorkflowStepSelect.WorkflowDefinition) ? q.WorkflowDefinitionId : default(long),
+                Code = filter.Selects.Contains(WorkflowStepSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(WorkflowStepSelect.Name) ? q.Name : default(string),
                 RoleId = filter.Selects.Contains(WorkflowStepSelect.Role) ? q.RoleId : default(long),
                 Role = filter.Selects.Contains(WorkflowStepSelect.Role) && q.Role != null ? new Role
@@ -161,6 +172,7 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 WorkflowDefinitionId = x.WorkflowDefinitionId,
+                Code = x.Code,
                 Name = x.Name,
                 RoleId = x.RoleId,
                 SubjectMailForReject = x.SubjectMailForReject,
@@ -175,11 +187,13 @@ namespace DMS.Repositories
                 WorkflowDefinition = x.WorkflowDefinition == null ? null : new WorkflowDefinition
                 {
                     Id = x.WorkflowDefinition.Id,
+                    Code = x.WorkflowDefinition.Code,
                     Name = x.WorkflowDefinition.Name,
                     WorkflowTypeId = x.WorkflowDefinition.WorkflowTypeId,
                     StartDate = x.WorkflowDefinition.StartDate,
                     EndDate = x.WorkflowDefinition.EndDate,
                     StatusId = x.WorkflowDefinition.StatusId,
+                    UpdatedAt = x.WorkflowDefinition.UpdatedAt,
                 },
             }).FirstOrDefaultAsync();
 
@@ -193,6 +207,7 @@ namespace DMS.Repositories
             WorkflowStepDAO WorkflowStepDAO = new WorkflowStepDAO();
             WorkflowStepDAO.Id = WorkflowStep.Id;
             WorkflowStepDAO.WorkflowDefinitionId = WorkflowStep.WorkflowDefinitionId;
+            WorkflowStepDAO.Code = WorkflowStep.Code;
             WorkflowStepDAO.Name = WorkflowStep.Name;
             WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
             WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
@@ -211,6 +226,7 @@ namespace DMS.Repositories
                 return false;
             WorkflowStepDAO.Id = WorkflowStep.Id;
             WorkflowStepDAO.WorkflowDefinitionId = WorkflowStep.WorkflowDefinitionId;
+            WorkflowStepDAO.Code = WorkflowStep.Code;
             WorkflowStepDAO.Name = WorkflowStep.Name;
             WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
             WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
@@ -234,6 +250,7 @@ namespace DMS.Repositories
                 WorkflowStepDAO WorkflowStepDAO = new WorkflowStepDAO();
                 WorkflowStepDAO.Id = WorkflowStep.Id;
                 WorkflowStepDAO.WorkflowDefinitionId = WorkflowStep.WorkflowDefinitionId;
+                WorkflowStepDAO.Code = WorkflowStep.Code;
                 WorkflowStepDAO.Name = WorkflowStep.Name;
                 WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
                 WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
