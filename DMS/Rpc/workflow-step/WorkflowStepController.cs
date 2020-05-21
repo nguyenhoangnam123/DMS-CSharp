@@ -30,15 +30,10 @@ namespace DMS.Rpc.workflow_step
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
         
-        
         public const string FilterListRole = Default + "/filter-list-role";
-        
         public const string FilterListWorkflowDefinition = Default + "/filter-list-workflow-definition";
         
-
-        
         public const string SingleListRole = Default + "/single-list-role";
-        
         public const string SingleListWorkflowDefinition = Default + "/single-list-workflow-definition";
         
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
