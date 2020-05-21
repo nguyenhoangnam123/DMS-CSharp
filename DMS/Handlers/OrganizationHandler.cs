@@ -63,7 +63,7 @@ namespace DMS.Handlers
                         RowId = o.RowId,
                         StatusId = o.StatusId,
                     }).ToList();
-                    context.Organization.BulkMerge(OrganizationDAOs);
+                    await context.Organization.BulkMergeAsync(OrganizationDAOs);
                     break;
             }
             return true;

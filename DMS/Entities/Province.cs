@@ -14,6 +14,9 @@ namespace DMS.Entities
         public long? Priority { get; set; }
         public long StatusId { get; set; }
         public Guid RowId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public Status Status { get; set; }
         public List<District> Districts { get; set; }
         public bool Equals(Province other)
