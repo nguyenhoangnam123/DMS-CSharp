@@ -23,7 +23,11 @@ namespace DMS.Services.MWorkflowDirection
         public enum ErrorCode
         {
             IdNotExisted,
-            WorkflowDefinitionInUsed
+            WorkflowDefinitionInUsed,
+            FromStepIdNotExisted,
+            ToStepIdNotExisted,
+            SubjectMailForCreatorOverLength,
+            SubjectMailForNextStepOverLength
         }
 
         private IUOW UOW;
@@ -62,12 +66,41 @@ namespace DMS.Services.MWorkflowDirection
 
             var count = await UOW.RequestWorkflowDefinitionMappingRepository.Count(RequestWorkflowDefinitionMappingFilter);
             if (count != 0)
-                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDefinition.Id), ErrorCode.WorkflowDefinitionInUsed);
+                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.Id), ErrorCode.WorkflowDefinitionInUsed);
+            return WorkflowDirection.IsValidated;
+        }
+
+        private async Task<bool> ValidateStep(WorkflowDirection WorkflowDirection)
+        {
+            WorkflowStepFilter WorkflowStepFilter = new WorkflowStepFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { In = new List<long> { WorkflowDirection.FromStepId, WorkflowDirection.ToStepId } },
+                Selects = WorkflowStepSelect.Id
+            };
+
+            List<long> WorkflowStepIds = (await UOW.WorkflowStepRepository.List(WorkflowStepFilter)).Select(x => x.Id).ToList();
+            if(!WorkflowStepIds.Contains(WorkflowDirection.FromStepId))
+                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.FromStep), ErrorCode.FromStepIdNotExisted);
+            if (!WorkflowStepIds.Contains(WorkflowDirection.ToStepId))
+                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepIdNotExisted);
+            return WorkflowDirection.IsValidated;
+        }
+
+        private async Task<bool> ValidateSubjectMail(WorkflowDirection WorkflowDirection)
+        {
+            if (!string.IsNullOrWhiteSpace(WorkflowDirection.SubjectMailForCreator) && WorkflowDirection.SubjectMailForCreator.Length > 255)
+                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.SubjectMailForCreator), ErrorCode.SubjectMailForCreatorOverLength);
+            if (!string.IsNullOrWhiteSpace(WorkflowDirection.SubjectMailForNextStep) && WorkflowDirection.SubjectMailForNextStep.Length > 255)
+                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.SubjectMailForNextStep), ErrorCode.SubjectMailForNextStepOverLength);
             return WorkflowDirection.IsValidated;
         }
 
         public async Task<bool>Create(WorkflowDirection WorkflowDirection)
         {
+            await ValidateStep(WorkflowDirection);
+            await ValidateSubjectMail(WorkflowDirection);
             return WorkflowDirection.IsValidated;
         }
 
@@ -75,6 +108,8 @@ namespace DMS.Services.MWorkflowDirection
         {
             if (await ValidateId(WorkflowDirection))
             {
+                await ValidateStep(WorkflowDirection);
+                await ValidateSubjectMail(WorkflowDirection);
             }
             return WorkflowDirection.IsValidated;
         }
