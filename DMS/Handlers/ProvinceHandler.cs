@@ -50,13 +50,13 @@ namespace DMS.Handlers
                     {
                         Code = x.Code,
                         CreatedAt = x.CreatedAt,
+                        UpdatedAt = x.UpdatedAt,
                         DeletedAt = x.DeletedAt,
                         Id = x.Id,
                         Name = x.Name,
                         Priority = x.Priority,
                         RowId = x.RowId,
                         StatusId = x.StatusId,
-                        UpdatedAt = x.UpdatedAt,
                     }).ToList();
                     await context.BulkMergeAsync(ProvinceDAOs);
                     break;
