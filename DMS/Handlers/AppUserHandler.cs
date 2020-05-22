@@ -56,7 +56,7 @@ namespace DMS.Handlers
                             Avatar = au.Avatar,
                             CreatedAt = au.CreatedAt,
                             UpdatedAt = au.UpdatedAt,
-                            DeletedAt = au.DeleteAt,
+                            DeletedAt = au.DeletedAt,
                             Department = au.Department,
                             DisplayName = au.DisplayName,
                             Email = au.Email,
