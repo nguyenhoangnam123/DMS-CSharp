@@ -14,7 +14,7 @@ namespace DMS.Handlers
     {
         private DataContext context;
         private IUOW UOW;
-        private const string SyncKey = "District.Sync";
+        private const string SyncKey = "Ward.Sync";
         public WardHandler(DataContext context, IUOW UOW)
         {
             this.context = context;
