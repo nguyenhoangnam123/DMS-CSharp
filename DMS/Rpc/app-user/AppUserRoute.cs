@@ -12,6 +12,7 @@ namespace DMS.Rpc.app_user
         public const string Master = Module + "/app-user/app-user-master";
         public const string Detail = Module + "/app-user/app-user-detail";
         private const string Default = Rpc + Module + "/app-user";
+        public const string Mobile = Default + "/master-data.profile";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
