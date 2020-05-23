@@ -31,7 +31,8 @@ namespace DMS.Rpc.role
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-template";
-
+        public const string GetMenu = Default + "/get-menu";
+        public const string CreatePermission = Default + "/create-permission";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListStatus = Default + "/single-list-status";
@@ -52,18 +53,21 @@ namespace DMS.Rpc.role
         private IAppUserService AppUserService;
         private IMenuService MenuService;
         private IRoleService RoleService;
+        private IPermissionService PermissionService;
         private IStatusService StatusService;
 
         public RoleController(
             IAppUserService AppUserService,
             IMenuService MenuService,
             IRoleService RoleService,
+            IPermissionService PermissionService,
             IStatusService StatusService
         )
         {
             this.AppUserService = AppUserService;
             this.MenuService = MenuService;
             this.RoleService = RoleService;
+            this.PermissionService = PermissionService;
             this.StatusService = StatusService;
         }
 
@@ -565,6 +569,63 @@ namespace DMS.Rpc.role
             RoleFilter.Name = Role_RoleFilterDTO.Name;
             RoleFilter.StatusId = Role_RoleFilterDTO.StatusId;
             return RoleFilter;
+        }
+
+        [Route(RoleRoute.GetMenu), HttpPost]
+        public async Task<ActionResult<Role_MenuDTO>> GetMenu([FromBody]Role_MenuDTO Role_MenuDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            Menu Menu = await MenuService.Get(Role_MenuDTO.Id);
+            return new Role_MenuDTO(Menu);
+        }
+
+        [Route(RoleRoute.CreatePermission), HttpPost]
+        public async Task<ActionResult<Role_PermissionDTO>> CreatePermission([FromBody]Role_PermissionDTO Role_PermissionDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            Permission Permission = new Permission
+            {
+                Id = Role_PermissionDTO.Id,
+                Code = Role_PermissionDTO.Code,
+                Name = Role_PermissionDTO.Name,
+                RoleId = Role_PermissionDTO.RoleId,
+                MenuId = Role_PermissionDTO.MenuId,
+                StatusId = Role_PermissionDTO.StatusId,
+                Menu = new Menu
+                {
+                    Id = Role_PermissionDTO.Menu.Id,
+                    Code = Role_PermissionDTO.Menu.Code,
+                    Name = Role_PermissionDTO.Menu.Name,
+                    Path = Role_PermissionDTO.Menu.Path,
+                    IsDeleted = Role_PermissionDTO.Menu.IsDeleted,
+                    Fields = Role_PermissionDTO.Menu.Fields?.Select(f => new Field
+                    {
+                        Id = f.Id,
+                        Name = f.Name,
+                        Type = f.Type,
+                    }).ToList(),
+                    Actions = Role_PermissionDTO.Menu.Actions?.Select(p => new Entities.Action
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                    }).ToList(),
+                },
+                PermissionFieldMappings = Role_PermissionDTO.PermissionFieldMappings?.Select(pf => new PermissionFieldMapping
+                {
+                    FieldId = pf.FieldId
+                }).ToList(),
+                PermissionActionMappings = Role_PermissionDTO.PermissionPageMappings?.Select(pp => new PermissionActionMapping
+                {
+                    ActionId = pp.ActionId,
+                }).ToList(),
+            };
+            Permission = await PermissionService.Create(Permission);
+
+            return new Role_PermissionDTO(Permission);
         }
 
         [Route(RoleRoute.SingleListAppUser), HttpPost]

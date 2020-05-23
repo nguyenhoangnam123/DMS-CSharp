@@ -25,11 +25,8 @@ namespace DMS.Rpc.role
             this.Id = Menu.Id;
             this.Code = Menu.Code;
             this.Name = Menu.Name;
-
             this.Path = Menu.Path;
-
             this.IsDeleted = Menu.IsDeleted;
-
             this.Fields = Menu.Fields?.Select(x => new Role_FieldDTO(x)).ToList();
             this.Actions = Menu.Actions?.Select(x => new Role_ActionDTO(x)).ToList();
         }
