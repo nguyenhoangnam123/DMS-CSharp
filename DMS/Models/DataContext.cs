@@ -150,6 +150,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<AlbumDAO>(entity =>
             {
+                entity.ToTable("Album", "MDM");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -159,6 +161,12 @@ namespace DMS.Models
                     .HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Albums)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Album_Status");
             });
 
             modelBuilder.Entity<AppUserDAO>(entity =>
@@ -270,6 +278,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<BannerDAO>(entity =>
             {
+                entity.ToTable("Banner", "MDM");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(50);

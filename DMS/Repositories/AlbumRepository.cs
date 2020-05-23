@@ -42,6 +42,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
+            if (filter.StatusId != null)
+                query = query.Where(q => q.StatusId, filter.StatusId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -58,6 +60,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, filter.Id);
                 if (filter.Name != null)
                     queryable = queryable.Where(q => q.Name, filter.Name);
+                if (filter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -76,6 +80,9 @@ namespace DMS.Repositories
                         case AlbumOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
+                        case AlbumOrder.Status:
+                            query = query.OrderBy(q => q.StatusId);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -86,6 +93,9 @@ namespace DMS.Repositories
                             break;
                         case AlbumOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
+                            break;
+                        case AlbumOrder.Status:
+                            query = query.OrderByDescending(q => q.StatusId);
                             break;
                     }
                     break;
@@ -100,6 +110,13 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(AlbumSelect.Id) ? q.Id : default(long),
                 Name = filter.Selects.Contains(AlbumSelect.Name) ? q.Name : default(string),
+                StatusId = filter.Selects.Contains(AlbumSelect.Status) ? q.StatusId : default(long),
+                Status = filter.Selects.Contains(AlbumSelect.Status) && q.Status != null ? new Status
+                {
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
+                } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
             }).ToListAsync();
@@ -132,6 +149,13 @@ namespace DMS.Repositories
                 UpdatedAt = x.UpdatedAt,
                 Id = x.Id,
                 Name = x.Name,
+                StatusId = x.StatusId,
+                Status = x.Status == null ? null : new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
+                },
             }).FirstOrDefaultAsync();
 
             if (Album == null)
@@ -144,6 +168,7 @@ namespace DMS.Repositories
             AlbumDAO AlbumDAO = new AlbumDAO();
             AlbumDAO.Id = Album.Id;
             AlbumDAO.Name = Album.Name;
+            AlbumDAO.StatusId = Album.StatusId;
             AlbumDAO.CreatedAt = StaticParams.DateTimeNow;
             AlbumDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.Album.Add(AlbumDAO);
@@ -160,6 +185,7 @@ namespace DMS.Repositories
                 return false;
             AlbumDAO.Id = Album.Id;
             AlbumDAO.Name = Album.Name;
+            AlbumDAO.StatusId = Album.StatusId;
             AlbumDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(Album);
@@ -180,6 +206,7 @@ namespace DMS.Repositories
                 AlbumDAO AlbumDAO = new AlbumDAO();
                 AlbumDAO.Id = Album.Id;
                 AlbumDAO.Name = Album.Name;
+                AlbumDAO.StatusId = Album.StatusId;
                 AlbumDAO.CreatedAt = StaticParams.DateTimeNow;
                 AlbumDAO.UpdatedAt = StaticParams.DateTimeNow;
                 AlbumDAOs.Add(AlbumDAO);

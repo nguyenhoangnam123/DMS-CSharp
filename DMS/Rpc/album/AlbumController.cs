@@ -11,18 +11,22 @@ using System.IO;
 using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MAlbum;
+using DMS.Services.MStatus;
 
 namespace DMS.Rpc.album
 {
     public class AlbumController : RpcController
     {
+        private IStatusService StatusService;
         private IAlbumService AlbumService;
         private ICurrentContext CurrentContext;
         public AlbumController(
+            IStatusService StatusService,
             IAlbumService AlbumService,
             ICurrentContext CurrentContext
         )
         {
+            this.StatusService = StatusService;
             this.AlbumService = AlbumService;
             this.CurrentContext = CurrentContext;
         }
@@ -143,6 +147,13 @@ namespace DMS.Rpc.album
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            StatusFilter StatusFilter = new StatusFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StatusSelect.ALL
+            };
+            List<Status> Statuses = await StatusService.List(StatusFilter);
             List<Album> Albums = new List<Album>();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
@@ -153,6 +164,7 @@ namespace DMS.Rpc.album
                 int StartRow = 1;
                 int IdColumn = 0 + StartColumn;
                 int NameColumn = 1 + StartColumn;
+                int StatusIdColumn = 2 + StartColumn;
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
@@ -160,9 +172,13 @@ namespace DMS.Rpc.album
                         break;
                     string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
                     string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
+                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
                     
                     Album Album = new Album();
                     Album.Name = NameValue;
+                    Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
+                    Album.StatusId = Status == null ? 0 : Status.Id;
+                    Album.Status = Status;
                     
                     Albums.Add(Album);
                 }
@@ -183,6 +199,8 @@ namespace DMS.Rpc.album
                             Error += Album.Errors[nameof(Album.Id)];
                         if (Album.Errors.ContainsKey(nameof(Album.Name)))
                             Error += Album.Errors[nameof(Album.Name)];
+                        if (Album.Errors.ContainsKey(nameof(Album.StatusId)))
+                            Error += Album.Errors[nameof(Album.StatusId)];
                         Errors.Add(Error);
                     }
                 }
@@ -211,6 +229,7 @@ namespace DMS.Rpc.album
                     new string[] { 
                         "Id",
                         "Name",
+                        "StatusId",
                     }
                 };
                 List<object[]> AlbumData = new List<object[]>();
@@ -221,11 +240,42 @@ namespace DMS.Rpc.album
                     {
                         Album.Id,
                         Album.Name,
+                        Album.StatusId,
                     });
                 }
                 excel.GenerateWorksheet("Album", AlbumHeaders, AlbumData);
                 #endregion
                 
+                #region Status
+                var StatusFilter = new StatusFilter();
+                StatusFilter.Selects = StatusSelect.ALL;
+                StatusFilter.OrderBy = StatusOrder.Id;
+                StatusFilter.OrderType = OrderType.ASC;
+                StatusFilter.Skip = 0;
+                StatusFilter.Take = int.MaxValue;
+                List<Status> Statuses = await StatusService.List(StatusFilter);
+
+                var StatusHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "Code",
+                        "Name",
+                    }
+                };
+                List<object[]> StatusData = new List<object[]>();
+                for (int i = 0; i < Statuses.Count; i++)
+                {
+                    var Status = Statuses[i];
+                    StatusData.Add(new Object[]
+                    {
+                        Status.Id,
+                        Status.Code,
+                        Status.Name,
+                    });
+                }
+                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
+                #endregion
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", "Album.xlsx");
@@ -246,12 +296,43 @@ namespace DMS.Rpc.album
                     new string[] { 
                         "Id",
                         "Name",
+                        "StatusId",
                     }
                 };
                 List<object[]> AlbumData = new List<object[]>();
                 excel.GenerateWorksheet("Album", AlbumHeaders, AlbumData);
                 #endregion
                 
+                #region Status
+                var StatusFilter = new StatusFilter();
+                StatusFilter.Selects = StatusSelect.ALL;
+                StatusFilter.OrderBy = StatusOrder.Id;
+                StatusFilter.OrderType = OrderType.ASC;
+                StatusFilter.Skip = 0;
+                StatusFilter.Take = int.MaxValue;
+                List<Status> Statuses = await StatusService.List(StatusFilter);
+
+                var StatusHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "Code",
+                        "Name",
+                    }
+                };
+                List<object[]> StatusData = new List<object[]>();
+                for (int i = 0; i < Statuses.Count; i++)
+                {
+                    var Status = Statuses[i];
+                    StatusData.Add(new Object[]
+                    {
+                        Status.Id,
+                        Status.Code,
+                        Status.Name,
+                    });
+                }
+                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
+                #endregion
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", "Album.xlsx");
@@ -280,6 +361,13 @@ namespace DMS.Rpc.album
             Album Album = new Album();
             Album.Id = Album_AlbumDTO.Id;
             Album.Name = Album_AlbumDTO.Name;
+            Album.StatusId = Album_AlbumDTO.StatusId;
+            Album.Status = Album_AlbumDTO.Status == null ? null : new Status
+            {
+                Id = Album_AlbumDTO.Status.Id,
+                Code = Album_AlbumDTO.Status.Code,
+                Name = Album_AlbumDTO.Status.Name,
+            };
             Album.BaseLanguage = CurrentContext.Language;
             return Album;
         }
@@ -295,12 +383,51 @@ namespace DMS.Rpc.album
 
             AlbumFilter.Id = Album_AlbumFilterDTO.Id;
             AlbumFilter.Name = Album_AlbumFilterDTO.Name;
+            AlbumFilter.StatusId = Album_AlbumFilterDTO.StatusId;
             AlbumFilter.CreatedAt = Album_AlbumFilterDTO.CreatedAt;
             AlbumFilter.UpdatedAt = Album_AlbumFilterDTO.UpdatedAt;
             return AlbumFilter;
         }
 
+        [Route(AlbumRoute.FilterListStatus), HttpPost]
+        public async Task<List<Album_StatusDTO>> FilterListStatus([FromBody] Album_StatusFilterDTO Album_StatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
 
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = int.MaxValue;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<Album_StatusDTO> Album_StatusDTOs = Statuses
+                .Select(x => new Album_StatusDTO(x)).ToList();
+            return Album_StatusDTOs;
+        }
+
+        [Route(AlbumRoute.SingleListStatus), HttpPost]
+        public async Task<List<Album_StatusDTO>> SingleListStatus([FromBody] Album_StatusFilterDTO Album_StatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = int.MaxValue;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<Album_StatusDTO> Album_StatusDTOs = Statuses
+                .Select(x => new Album_StatusDTO(x)).ToList();
+            return Album_StatusDTOs;
+        }
 
     }
 }

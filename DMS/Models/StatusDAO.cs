@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public StatusDAO()
         {
+            Albums = new HashSet<AlbumDAO>();
             AppUsers = new HashSet<AppUserDAO>();
             Banners = new HashSet<BannerDAO>();
             Brands = new HashSet<BrandDAO>();
@@ -39,6 +40,7 @@ namespace DMS.Models
         public string Code { get; set; }
         public string Name { get; set; }
 
+        public virtual ICollection<AlbumDAO> Albums { get; set; }
         public virtual ICollection<AppUserDAO> AppUsers { get; set; }
         public virtual ICollection<BannerDAO> Banners { get; set; }
         public virtual ICollection<BrandDAO> Brands { get; set; }

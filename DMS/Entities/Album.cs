@@ -10,6 +10,8 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public string Name { get; set; }
+        public long StatusId { get; set; }
+        public Status Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
@@ -27,6 +29,7 @@ namespace DMS.Entities
     {
         public IdFilter Id { get; set; }
         public StringFilter Name { get; set; }
+        public IdFilter StatusId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<AlbumFilter> OrFilter { get; set; }
@@ -39,6 +42,7 @@ namespace DMS.Entities
     {
         Id = 0,
         Name = 1,
+        Status = 2,
         CreatedAt = 50,
         UpdatedAt = 51,
     }
@@ -49,5 +53,6 @@ namespace DMS.Entities
         ALL = E.ALL,
         Id = E._0,
         Name = E._1,
+        Status = E._2,
     }
 }

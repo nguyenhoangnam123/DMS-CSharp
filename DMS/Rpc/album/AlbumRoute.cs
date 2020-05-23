@@ -23,6 +23,8 @@ namespace DMS.Rpc.album
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
 
+        public const string FilterListStatus = Default + "/filter-list-status";
+        public const string SingleListStatus = Default + "/single-list-status";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(AlbumFilter.Name), FieldType.STRING },

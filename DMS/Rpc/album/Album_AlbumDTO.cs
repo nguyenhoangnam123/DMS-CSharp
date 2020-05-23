@@ -10,6 +10,8 @@ namespace DMS.Rpc.album
     {
         public long Id { get; set; }
         public string Name { get; set; }
+        public long StatusId { get; set; }
+        public Album_StatusDTO Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public Album_AlbumDTO() {}
@@ -17,6 +19,8 @@ namespace DMS.Rpc.album
         {
             this.Id = Album.Id;
             this.Name = Album.Name;
+            this.StatusId = Album.StatusId;
+            this.Status = Album.Status == null ? null : new Album_StatusDTO(Album.Status);
             this.CreatedAt = Album.CreatedAt;
             this.UpdatedAt = Album.UpdatedAt;
             this.Errors = Album.Errors;
@@ -27,6 +31,7 @@ namespace DMS.Rpc.album
     {
         public IdFilter Id { get; set; }
         public StringFilter Name { get; set; }
+        public IdFilter StatusId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public AlbumOrder OrderBy { get; set; }
