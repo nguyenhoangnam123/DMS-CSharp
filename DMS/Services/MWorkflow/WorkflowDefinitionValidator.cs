@@ -105,8 +105,8 @@ namespace DMS.Services.MWorkflow
 
         private async Task<bool> ValidateWorkflowType(WorkflowDefinition WorkflowDefinition)
         {
-            if(WorkflowDefinition.WorkflowTypeId != Enums.WorkflowTypeEnum.ORDER.Id || WorkflowDefinition.WorkflowTypeId != Enums.WorkflowTypeEnum.PRODUCT.Id || 
-                WorkflowDefinition.WorkflowTypeId != Enums.WorkflowTypeEnum.ROUTE.Id || WorkflowDefinition.WorkflowTypeId != Enums.WorkflowTypeEnum.STORE.Id)
+            if(WorkflowDefinition.WorkflowTypeId != Enums.WorkflowTypeEnum.ORDER.Id && WorkflowDefinition.WorkflowTypeId != Enums.WorkflowTypeEnum.PRODUCT.Id &&
+                WorkflowDefinition.WorkflowTypeId != Enums.WorkflowTypeEnum.ROUTE.Id && WorkflowDefinition.WorkflowTypeId != Enums.WorkflowTypeEnum.STORE.Id)
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.WorkflowType), ErrorCode.WorkflowTypeNotExisted);
             return WorkflowDefinition.IsValidated;
         }
