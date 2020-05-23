@@ -256,6 +256,11 @@ namespace DMS.Repositories
                         WorkflowDefinitionId = x.FromStep.WorkflowDefinitionId,
                         SubjectMailForReject = x.FromStep.SubjectMailForReject,
                         BodyMailForReject = x.FromStep.BodyMailForReject,
+                        Role = x.FromStep.Role == null ? null : new Role
+                        {
+                            Code = x.FromStep.Role.Code,
+                            Name = x.FromStep.Role.Name,
+                        }
                     },
                     ToStep = new WorkflowStep
                     {
@@ -266,6 +271,11 @@ namespace DMS.Repositories
                         WorkflowDefinitionId = x.ToStep.WorkflowDefinitionId,
                         SubjectMailForReject = x.ToStep.SubjectMailForReject,
                         BodyMailForReject = x.ToStep.BodyMailForReject,
+                        Role = x.ToStep.Role == null ? null : new Role
+                        {
+                            Code = x.ToStep.Role.Code,
+                            Name = x.ToStep.Role.Name,
+                        }
                     },
                     
                 }).ToListAsync();
