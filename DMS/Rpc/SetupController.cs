@@ -29,13 +29,8 @@ namespace DMS.Rpc
             return Ok();
         }
 
-        [HttpGet, Route("rpc/dms/setup/init-route")]
-        public ActionResult InitRoute()
+        private void InitMenu(List<Type> routeTypes)
         {
-            List<Type> routeTypes = typeof(SetupController).Assembly.GetTypes()
-               .Where(x => typeof(Root).IsAssignableFrom(x) && x.IsClass)
-               .ToList();
-
             List<MenuDAO> Menus = DataContext.Menu.AsNoTracking().ToList();
             Menus.ForEach(m => m.IsDeleted = true);
             foreach (Type type in routeTypes)
@@ -57,7 +52,11 @@ namespace DMS.Rpc
                 }
             }
             DataContext.BulkMerge(Menus);
-            Menus = DataContext.Menu.AsNoTracking().ToList();
+        }
+
+        private void InitPage(List<Type> routeTypes)
+        {
+            List<MenuDAO> Menus = DataContext.Menu.AsNoTracking().ToList();
             List<PageDAO> pages = DataContext.Page.AsNoTracking().OrderBy(p => p.Path).ToList();
             pages.ForEach(p => p.IsDeleted = true);
             foreach (Type type in routeTypes)
@@ -88,6 +87,11 @@ namespace DMS.Rpc
                 }
             }
             DataContext.BulkMerge(pages);
+        }
+
+        private void InitField(List<Type> routeTypes)
+        {
+            List<MenuDAO> Menus = DataContext.Menu.AsNoTracking().ToList();
             List<FieldDAO> fields = DataContext.Field.AsNoTracking().ToList();
             fields.ForEach(p => p.IsDeleted = true);
             foreach (Type type in routeTypes)
@@ -123,9 +127,100 @@ namespace DMS.Rpc
                 }
             }
             DataContext.BulkMerge(fields);
+        }
+        private void InitAction(List<Type> routeTypes)
+        {
+            List<MenuDAO> Menus = DataContext.Menu.AsNoTracking().ToList();
+            List<ActionDAO> actions = DataContext.Action.AsNoTracking().ToList();
+            actions.ForEach(p => p.IsDeleted = true);
+            foreach (Type type in routeTypes)
+            {
+                MenuDAO Menu = Menus.Where(m => m.Code == type.Name).FirstOrDefault();
+                var value = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+               .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, List<string>>))
+               .Select(x => (Dictionary<string, List<string>>)x.GetValue(x))
+               .FirstOrDefault();
+                if (value == null)
+                    continue;
+                foreach (var pair in value)
+                {
+                    ActionDAO action = actions
+                        .Where(p => p.MenuId == Menu.Id && p.Name == pair.Key)
+                        .FirstOrDefault();
+                    if (action == null)
+                    {
+                        action = new ActionDAO
+                        {
+                            MenuId = Menu.Id,
+                            Name = pair.Key,
+                            IsDeleted = false,
+                        };
+                        actions.Add(action);
+                    }
+                    else
+                    {
+                        action.IsDeleted = false;
+                    }
+                }
+            }
+            DataContext.BulkMerge(actions);
+
+            actions = DataContext.Action.Where(a => a.IsDeleted == false).AsNoTracking().ToList();
+            List<PageDAO> PageDAOs = DataContext.Page.AsNoTracking().ToList();
+            List<ActionPageMappingDAO> ActionPageMappingDAOs = new List<ActionPageMappingDAO>();
+            foreach (Type type in routeTypes)
+            {
+                MenuDAO Menu = Menus.Where(m => m.Code == type.Name).FirstOrDefault();
+                var value = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+               .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, List<string>>))
+               .Select(x => (Dictionary<string, List<string>>)x.GetValue(x))
+               .FirstOrDefault();
+                if (value == null)
+                    continue;
+
+                foreach (var pair in value)
+                {
+                    ActionDAO action = actions
+                        .Where(p => p.MenuId == Menu.Id && p.Name == pair.Key)
+                        .FirstOrDefault();
+                    if (action == null)
+                        continue;
+                    List<string> pages = pair.Value;
+                    foreach (string page in pages)
+                    {
+                        PageDAO PageDAO = PageDAOs.Where(p => p.Path == page).FirstOrDefault();
+                        if (PageDAO != null)
+                        {
+                            ActionPageMappingDAOs.Add(new ActionPageMappingDAO
+                            {
+                                ActionId = action.Id,
+                                PageId = PageDAO.Id
+                            });
+                        }
+                    }
+                }
+            }
+
+            DataContext.BulkMerge(ActionPageMappingDAOs);
+        }
+
+        [HttpGet, Route("rpc/dms/setup/init-route")]
+        public ActionResult InitRoute()
+        {
+            List<Type> routeTypes = typeof(SetupController).Assembly.GetTypes()
+               .Where(x => typeof(Root).IsAssignableFrom(x) && x.IsClass)
+               .ToList();
+
+            InitMenu(routeTypes);
+            InitPage(routeTypes);
+            InitField(routeTypes);
+            InitAction(routeTypes);
+
+            DataContext.ActionPageMapping.Where(ap => ap.Action.IsDeleted || ap.Page.IsDeleted).DeleteFromQuery();
             DataContext.PermissionPageMapping.Where(ppm => ppm.Page.IsDeleted).DeleteFromQuery();
-            DataContext.Page.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.PermissionFieldMapping.Where(pd => pd.Field.IsDeleted).DeleteFromQuery();
+            DataContext.Action.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
+            DataContext.Page.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Field.Where(pf => pf.IsDeleted || pf.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Permission.Where(p => p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Menu.Where(v => v.IsDeleted).DeleteFromQuery();

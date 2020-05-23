@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public MenuDAO()
         {
+            Actions = new HashSet<ActionDAO>();
             Fields = new HashSet<FieldDAO>();
             Pages = new HashSet<PageDAO>();
             Permissions = new HashSet<PermissionDAO>();
@@ -18,6 +19,7 @@ namespace DMS.Models
         public string Path { get; set; }
         public bool IsDeleted { get; set; }
 
+        public virtual ICollection<ActionDAO> Actions { get; set; }
         public virtual ICollection<FieldDAO> Fields { get; set; }
         public virtual ICollection<PageDAO> Pages { get; set; }
         public virtual ICollection<PermissionDAO> Permissions { get; set; }

@@ -6,6 +6,8 @@ namespace DMS.Models
 {
     public partial class DataContext : DbContext
     {
+        public virtual DbSet<ActionDAO> Action { get; set; }
+        public virtual DbSet<ActionPageMappingDAO> ActionPageMapping { get; set; }
         public virtual DbSet<AlbumDAO> Album { get; set; }
         public virtual DbSet<AppUserDAO> AppUser { get; set; }
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
@@ -112,6 +114,40 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ActionDAO>(entity =>
+            {
+                entity.ToTable("Action", "PER");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.Menu)
+                    .WithMany(p => p.Actions)
+                    .HasForeignKey(d => d.MenuId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Action_Menu");
+            });
+
+            modelBuilder.Entity<ActionPageMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ActionId, e.PageId });
+
+                entity.ToTable("ActionPageMapping", "PER");
+
+                entity.HasOne(d => d.Action)
+                    .WithMany(p => p.ActionPageMappings)
+                    .HasForeignKey(d => d.ActionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ActionPageMapping_Action");
+
+                entity.HasOne(d => d.Page)
+                    .WithMany(p => p.ActionPageMappings)
+                    .HasForeignKey(d => d.PageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ActionPageMapping_Page");
+            });
+
             modelBuilder.Entity<AlbumDAO>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");

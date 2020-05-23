@@ -30,7 +30,8 @@ namespace DMS.Rpc.album
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Thêm mới", new List<string> {Master,Detail, Count,List,Get,Create}},
+            { "Thêm mới", new List<string> {Master,Detail,Count,List,Get,Create}},
+            { "Sửa", new List<string> {Master,Detail,Count,List,Get,Update}},
         };
     }
 }
