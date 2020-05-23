@@ -233,7 +233,12 @@ namespace DMS.Repositories
                     Name = x.Name,
                     RoleId = x.RoleId,
                     SubjectMailForReject = x.SubjectMailForReject,
-                    WorkflowDefinitionId = x.WorkflowDefinitionId
+                    WorkflowDefinitionId = x.WorkflowDefinitionId,
+                    Role = x.Role == null ? null : new Role
+                    {
+                        Code = x.Role.Code,
+                        Name = x.Role.Name,
+                    },
                 }).ToListAsync();
             WorkflowDefinition.WorkflowDirections = await DataContext.WorkflowDirection
                 .Where(x => x.WorkflowDefinitionId == Id).Select(x => new WorkflowDirection
