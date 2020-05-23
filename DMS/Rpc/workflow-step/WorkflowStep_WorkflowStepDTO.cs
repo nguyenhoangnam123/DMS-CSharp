@@ -17,6 +17,7 @@ namespace DMS.Rpc.workflow_step
         public string BodyMailForReject { get; set; }
         public WorkflowStep_RoleDTO Role { get; set; }
         public WorkflowStep_WorkflowDefinitionDTO WorkflowDefinition { get; set; }
+        public List<WorkflowStep_WorkflowParameterDTO> WorkflowParameters { get; set; }
         public WorkflowStep_WorkflowStepDTO() {}
         public WorkflowStep_WorkflowStepDTO(WorkflowStep WorkflowStep)
         {
@@ -29,6 +30,7 @@ namespace DMS.Rpc.workflow_step
             this.BodyMailForReject = WorkflowStep.BodyMailForReject;
             this.Role = WorkflowStep.Role == null ? null : new WorkflowStep_RoleDTO(WorkflowStep.Role);
             this.WorkflowDefinition = WorkflowStep.WorkflowDefinition == null ? null : new WorkflowStep_WorkflowDefinitionDTO(WorkflowStep.WorkflowDefinition);
+            this.WorkflowParameters = WorkflowStep.WorkflowParameters?.Select(p => new WorkflowStep_WorkflowParameterDTO(p)).ToList();
             this.Errors = WorkflowStep.Errors;
         }
     }

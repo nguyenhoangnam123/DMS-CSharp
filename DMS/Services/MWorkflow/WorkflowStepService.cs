@@ -11,7 +11,7 @@ using DMS.Entities;
 
 namespace DMS.Services.MWorkflowStep
 {
-    public interface IWorkflowStepService :  IServiceScoped
+    public interface IWorkflowStepService : IServiceScoped
     {
         Task<int> Count(WorkflowStepFilter WorkflowStepFilter);
         Task<List<WorkflowStep>> List(WorkflowStepFilter WorkflowStepFilter);
@@ -81,9 +81,17 @@ namespace DMS.Services.MWorkflowStep
             WorkflowStep WorkflowStep = await UOW.WorkflowStepRepository.Get(Id);
             if (WorkflowStep == null)
                 return null;
+            List<WorkflowParameter> WorkflowParameters = await UOW.WorkflowParameterRepository.List(new WorkflowParameterFilter
+            {
+                WorkflowDefinitionId = new IdFilter { Equal = WorkflowStep.WorkflowDefinitionId },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = WorkflowParameterSelect.ALL,
+            });
+            WorkflowStep.WorkflowParameters = WorkflowParameters;
             return WorkflowStep;
         }
-       
+
         public async Task<WorkflowStep> Create(WorkflowStep WorkflowStep)
         {
             if (!await WorkflowStepValidator.Create(WorkflowStep))
@@ -183,7 +191,7 @@ namespace DMS.Services.MWorkflowStep
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<WorkflowStep>> Import(List<WorkflowStep> WorkflowSteps)
         {
             if (!await WorkflowStepValidator.Import(WorkflowSteps))
@@ -206,8 +214,8 @@ namespace DMS.Services.MWorkflowStep
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public WorkflowStepFilter ToFilter(WorkflowStepFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<WorkflowStepFilter>();

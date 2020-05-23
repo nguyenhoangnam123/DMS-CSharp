@@ -17,6 +17,7 @@ namespace DMS.Entities
         public string BodyMailForReject { get; set; }
         public Role Role { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }
+        public List<WorkflowParameter> WorkflowParameters { get; set; }
 
         public bool Equals(WorkflowStep other)
         {
