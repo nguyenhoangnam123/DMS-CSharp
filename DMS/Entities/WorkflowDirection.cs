@@ -20,7 +20,7 @@ namespace DMS.Entities
         public string BodyMailForNextStep { get; set; }
         public DateTime UpdatedAt { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }
-        
+        public List<WorkflowParameter> WorkflowParameters { get; set; }
 
 
         public bool Equals(WorkflowDirection other)

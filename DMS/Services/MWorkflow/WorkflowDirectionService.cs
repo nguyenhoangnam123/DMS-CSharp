@@ -9,9 +9,9 @@ using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
 
-namespace DMS.Services.MWorkflowDirection
+namespace DMS.Services.MWorkflow
 {
-    public interface IWorkflowDirectionService :  IServiceScoped
+    public interface IWorkflowDirectionService : IServiceScoped
     {
         Task<int> Count(WorkflowDirectionFilter WorkflowDirectionFilter);
         Task<List<WorkflowDirection>> List(WorkflowDirectionFilter WorkflowDirectionFilter);
@@ -81,9 +81,17 @@ namespace DMS.Services.MWorkflowDirection
             WorkflowDirection WorkflowDirection = await UOW.WorkflowDirectionRepository.Get(Id);
             if (WorkflowDirection == null)
                 return null;
+            List<WorkflowParameter> WorkflowParameters = await UOW.WorkflowParameterRepository.List(new WorkflowParameterFilter
+            {
+                WorkflowDefinitionId = new IdFilter { Equal = WorkflowDirection.WorkflowDefinitionId },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = WorkflowParameterSelect.ALL,
+            });
+            WorkflowDirection.WorkflowParameters = WorkflowParameters;
             return WorkflowDirection;
         }
-       
+
         public async Task<WorkflowDirection> Create(WorkflowDirection WorkflowDirection)
         {
             if (!await WorkflowDirectionValidator.Create(WorkflowDirection))
@@ -183,7 +191,7 @@ namespace DMS.Services.MWorkflowDirection
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<WorkflowDirection>> Import(List<WorkflowDirection> WorkflowDirections)
         {
             if (!await WorkflowDirectionValidator.Import(WorkflowDirections))
@@ -206,8 +214,8 @@ namespace DMS.Services.MWorkflowDirection
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public WorkflowDirectionFilter ToFilter(WorkflowDirectionFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<WorkflowDirectionFilter>();

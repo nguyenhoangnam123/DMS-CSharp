@@ -20,6 +20,7 @@ namespace DMS.Rpc.workflow_direction
         public WorkflowDirection_WorkflowStepDTO FromStep { get; set; }
         public WorkflowDirection_WorkflowStepDTO ToStep { get; set; }
         public WorkflowDirection_WorkflowDefinitionDTO WorkflowDefinition { get; set; }
+        public List<WorkflowDirection_WorkflowParameterDTO> WorkflowParameters { get; set; }
         public WorkflowDirection_WorkflowDirectionDTO() {}
         public WorkflowDirection_WorkflowDirectionDTO(WorkflowDirection WorkflowDirection)
         {
@@ -35,6 +36,7 @@ namespace DMS.Rpc.workflow_direction
             this.FromStep = WorkflowDirection.FromStep == null ? null : new WorkflowDirection_WorkflowStepDTO(WorkflowDirection.FromStep);
             this.ToStep = WorkflowDirection.ToStep == null ? null : new WorkflowDirection_WorkflowStepDTO(WorkflowDirection.ToStep);
             this.WorkflowDefinition = WorkflowDirection.WorkflowDefinition == null ? null : new WorkflowDirection_WorkflowDefinitionDTO(WorkflowDirection.WorkflowDefinition);
+            this.WorkflowParameters = WorkflowDirection.WorkflowParameters?.Select(p => new WorkflowDirection_WorkflowParameterDTO(p)).ToList();
             this.Errors = WorkflowDirection.Errors;
         }
     }

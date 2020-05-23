@@ -1,7 +1,6 @@
 using Common;
 using DMS.Entities;
 using DMS.Services.MWorkflow;
-using DMS.Services.MWorkflowParameter;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
@@ -29,11 +28,8 @@ namespace DMS.Rpc.workflow_parameter
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
         
-        
         public const string FilterListWorkflowDefinition = Default + "/filter-list-workflow-definition";
-        
 
-        
         public const string SingleListWorkflowDefinition = Default + "/single-list-workflow-definition";
         
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>

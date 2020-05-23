@@ -7,7 +7,7 @@ using DMS.Entities;
 using DMS;
 using DMS.Repositories;
 
-namespace DMS.Services.MWorkflowDirection
+namespace DMS.Services.MWorkflow
 {
     public interface IWorkflowDirectionValidator : IServiceScoped
     {

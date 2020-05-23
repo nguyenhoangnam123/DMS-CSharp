@@ -9,7 +9,7 @@ using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
 
-namespace DMS.Services.MWorkflowParameter
+namespace DMS.Services.MWorkflow
 {
     public interface IWorkflowParameterService :  IServiceScoped
     {
