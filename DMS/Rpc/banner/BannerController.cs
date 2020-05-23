@@ -17,42 +17,7 @@ using DMS.Services.MStatus;
 
 namespace DMS.Rpc.banner
 {
-    public class BannerRoute : Root
-    {
-        public const string Master = Module + "/banner/banner-master";
-        public const string Detail = Module + "/banner/banner-detail";
-        private const string Default = Rpc + Module + "/banner";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-tempate";
-        public const string BulkDelete = Default + "/bulk-delete";
-        
-        public const string FilterListAppUser = Default + "/filter-list-app-user";
-        public const string FilterListImage = Default + "/filter-list-image";
-        public const string FilterListStatus = Default + "/filter-list-status";
-        
-        public const string SingleListAppUser = Default + "/single-list-app-user";
-        public const string SingleListImage = Default + "/single-list-image";
-        public const string SingleListStatus = Default + "/single-list-status";
-        
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
-        {
-            { nameof(BannerFilter.Id), FieldType.ID },
-            { nameof(BannerFilter.Code), FieldType.STRING },
-            { nameof(BannerFilter.Title), FieldType.STRING },
-            { nameof(BannerFilter.Priority), FieldType.LONG },
-            { nameof(BannerFilter.Content), FieldType.STRING },
-            { nameof(BannerFilter.CreatorId), FieldType.ID },
-            { nameof(BannerFilter.ImageId), FieldType.ID },
-            { nameof(BannerFilter.StatusId), FieldType.ID },
-        };
-    }
+    
 
     public class BannerController : RpcController
     {
@@ -721,27 +686,7 @@ namespace DMS.Rpc.banner
                 .Select(x => new Banner_AppUserDTO(x)).ToList();
             return Banner_AppUserDTOs;
         }
-        [Route(BannerRoute.FilterListImage), HttpPost]
-        public async Task<List<Banner_ImageDTO>> FilterListImage([FromBody] Banner_ImageFilterDTO Banner_ImageFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ImageFilter ImageFilter = new ImageFilter();
-            ImageFilter.Skip = 0;
-            ImageFilter.Take = 20;
-            ImageFilter.OrderBy = ImageOrder.Id;
-            ImageFilter.OrderType = OrderType.ASC;
-            ImageFilter.Selects = ImageSelect.ALL;
-            ImageFilter.Id = Banner_ImageFilterDTO.Id;
-            ImageFilter.Name = Banner_ImageFilterDTO.Name;
-            ImageFilter.Url = Banner_ImageFilterDTO.Url;
-
-            List<Image> Images = await ImageService.List(ImageFilter);
-            List<Banner_ImageDTO> Banner_ImageDTOs = Images
-                .Select(x => new Banner_ImageDTO(x)).ToList();
-            return Banner_ImageDTOs;
-        }
+    
         [Route(BannerRoute.FilterListStatus), HttpPost]
         public async Task<List<Banner_StatusDTO>> FilterListStatus([FromBody] Banner_StatusFilterDTO Banner_StatusFilterDTO)
         {
@@ -793,27 +738,7 @@ namespace DMS.Rpc.banner
                 .Select(x => new Banner_AppUserDTO(x)).ToList();
             return Banner_AppUserDTOs;
         }
-        [Route(BannerRoute.SingleListImage), HttpPost]
-        public async Task<List<Banner_ImageDTO>> SingleListImage([FromBody] Banner_ImageFilterDTO Banner_ImageFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ImageFilter ImageFilter = new ImageFilter();
-            ImageFilter.Skip = 0;
-            ImageFilter.Take = 20;
-            ImageFilter.OrderBy = ImageOrder.Id;
-            ImageFilter.OrderType = OrderType.ASC;
-            ImageFilter.Selects = ImageSelect.ALL;
-            ImageFilter.Id = Banner_ImageFilterDTO.Id;
-            ImageFilter.Name = Banner_ImageFilterDTO.Name;
-            ImageFilter.Url = Banner_ImageFilterDTO.Url;
-
-            List<Image> Images = await ImageService.List(ImageFilter);
-            List<Banner_ImageDTO> Banner_ImageDTOs = Images
-                .Select(x => new Banner_ImageDTO(x)).ToList();
-            return Banner_ImageDTOs;
-        }
+    
         [Route(BannerRoute.SingleListStatus), HttpPost]
         public async Task<List<Banner_StatusDTO>> SingleListStatus([FromBody] Banner_StatusFilterDTO Banner_StatusFilterDTO)
         {

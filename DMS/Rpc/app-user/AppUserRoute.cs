@@ -42,7 +42,7 @@ namespace DMS.Rpc.app_user
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> {Master,Detail,Count,List,Get, SingleListOrganization, SingleListSex, SingleListStatus, SingleListSex}},
+            { "Tìm kiếm", new List<string> {Master,Detail,Count,List,Get, SingleListOrganization, SingleListSex, SingleListStatus, SingleListRole, CountRole, ListRole}},
         };
     }
 }

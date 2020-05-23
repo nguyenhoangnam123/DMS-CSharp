@@ -188,16 +188,19 @@ namespace DMS.Rpc
                         PageDAO PageDAO = PageDAOs.Where(p => p.Path == page).FirstOrDefault();
                         if (PageDAO != null)
                         {
-                            ActionPageMappingDAOs.Add(new ActionPageMappingDAO
+                            if (!ActionPageMappingDAOs.Any(ap => ap.ActionId == action.Id && ap.PageId == PageDAO.Id))
                             {
-                                ActionId = action.Id,
-                                PageId = PageDAO.Id
-                            });
+                                ActionPageMappingDAOs.Add(new ActionPageMappingDAO
+                                {
+                                    ActionId = action.Id,
+                                    PageId = PageDAO.Id
+                                });
+                            }
                         }
                     }
                 }
             }
-
+            ActionPageMappingDAOs = ActionPageMappingDAOs.Distinct().ToList();
             DataContext.BulkMerge(ActionPageMappingDAOs);
         }
 
