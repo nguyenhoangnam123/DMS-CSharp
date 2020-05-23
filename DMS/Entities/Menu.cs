@@ -14,7 +14,7 @@ namespace DMS.Entities
         public string Path { get; set; }
         public bool IsDeleted { get; set; }
         public List<Field> Fields { get; set; }
-        public List<Page> Pages { get; set; }
+        public List<Action> Actions { get; set; }
 
         public bool Equals(Menu other)
         {

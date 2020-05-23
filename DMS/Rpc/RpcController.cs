@@ -57,8 +57,9 @@ namespace DMS.Rpc
             List<long> permissionIds = await
                 (from p in DataContext.Permission
                  join ru in DataContext.AppUserRoleMapping on p.RoleId equals ru.RoleId
-                 join ppm in DataContext.PermissionPageMapping on p.Id equals ppm.PermissionId
-                 join page in DataContext.Page on ppm.PageId equals page.Id
+                 join pam in DataContext.PermissionActionMapping on p.Id equals pam.PermissionId
+                 join apm in DataContext.ActionPageMapping on pam.ActionId equals apm.ActionId
+                 join page in DataContext.Page on apm.PageId equals page.Id
                  where page.Path == url && ru.AppUserId == UserId
                  select p.Id).Distinct().ToListAsync();
 

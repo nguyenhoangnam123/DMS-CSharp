@@ -178,28 +178,28 @@ namespace DMS.Repositories
         {
             Permission Permission = await DataContext.Permission.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new Permission()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                RoleId = x.RoleId,
-                MenuId = x.MenuId,
-                Menu = x.Menu == null ? null : new Menu
                 {
-                    Id = x.Menu.Id,
-                    Code = x.Menu.Code,
-                    Name = x.Menu.Name,
-                    Path = x.Menu.Path,
-                    IsDeleted = x.Menu.IsDeleted,
-                },
-                Role = x.Role == null ? null : new Role
-                {
-                    Id = x.Role.Id,
-                    Code = x.Role.Code,
-                    Name = x.Role.Name,
-                    StatusId = x.Role.StatusId,
-                },
-            }).FirstOrDefaultAsync();
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    RoleId = x.RoleId,
+                    MenuId = x.MenuId,
+                    Menu = x.Menu == null ? null : new Menu
+                    {
+                        Id = x.Menu.Id,
+                        Code = x.Menu.Code,
+                        Name = x.Menu.Name,
+                        Path = x.Menu.Path,
+                        IsDeleted = x.Menu.IsDeleted,
+                    },
+                    Role = x.Role == null ? null : new Role
+                    {
+                        Id = x.Role.Id,
+                        Code = x.Role.Code,
+                        Name = x.Role.Name,
+                        StatusId = x.Role.StatusId,
+                    },
+                }).FirstOrDefaultAsync();
 
             if (Permission == null)
                 return null;
@@ -219,19 +219,17 @@ namespace DMS.Repositories
                         IsDeleted = x.Field.IsDeleted,
                     },
                 }).ToListAsync();
-            Permission.PermissionPageMappings = await DataContext.PermissionPageMapping
+            Permission.PermissionActionMappings = await DataContext.PermissionActionMapping
                 .Where(x => x.PermissionId == Permission.Id)
-                .Select(x => new PermissionPageMapping
+                .Select(x => new PermissionActionMapping
                 {
                     PermissionId = x.PermissionId,
-                    PageId = x.PageId,
-                    Page = new Page
+                    ActionId = x.ActionId,
+                    Action = x.Action == null ? null : new Entities.Action
                     {
-                        Id = x.Page.Id,
-                        Name = x.Page.Name,
-                        Path = x.Page.Path,
-                        MenuId = x.Page.MenuId,
-                        IsDeleted = x.Page.IsDeleted,
+                        Id = x.Action.Id,
+                        Name = x.Action.Name,
+                        MenuId = x.Action.MenuId,
                     },
                 }).ToListAsync();
 
@@ -319,20 +317,20 @@ namespace DMS.Repositories
                 }
                 await DataContext.PermissionFieldMapping.BulkMergeAsync(PermissionFieldMappingDAOs);
             }
-            await DataContext.PermissionPageMapping
+            await DataContext.PermissionActionMapping
                 .Where(x => x.PermissionId == Permission.Id)
                 .DeleteFromQueryAsync();
-            List<PermissionPageMappingDAO> PermissionPageMappingDAOs = new List<PermissionPageMappingDAO>();
-            if (Permission.PermissionPageMappings != null)
+            List<PermissionActionMappingDAO> PermissionActionMappingDAOs = new List<PermissionActionMappingDAO>();
+            if (Permission.PermissionActionMappings != null)
             {
-                foreach (PermissionPageMapping PermissionPageMapping in Permission.PermissionPageMappings)
+                foreach (PermissionActionMapping PermissionPageMapping in Permission.PermissionActionMappings)
                 {
-                    PermissionPageMappingDAO PermissionPageMappingDAO = new PermissionPageMappingDAO();
-                    PermissionPageMappingDAO.PermissionId = PermissionPageMapping.PermissionId;
-                    PermissionPageMappingDAO.PageId = PermissionPageMapping.PageId;
-                    PermissionPageMappingDAOs.Add(PermissionPageMappingDAO);
+                    PermissionActionMappingDAO PermissionActionMappingDAO = new PermissionActionMappingDAO();
+                    PermissionActionMappingDAO.PermissionId = PermissionPageMapping.PermissionId;
+                    PermissionActionMappingDAO.ActionId = PermissionPageMapping.ActionId;
+                    PermissionActionMappingDAOs.Add(PermissionActionMappingDAO);
                 }
-                await DataContext.PermissionPageMapping.BulkMergeAsync(PermissionPageMappingDAOs);
+                await DataContext.PermissionActionMapping.BulkMergeAsync(PermissionActionMappingDAOs);
             }
         }
 

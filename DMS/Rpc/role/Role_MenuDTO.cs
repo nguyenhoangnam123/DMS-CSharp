@@ -16,7 +16,7 @@ namespace DMS.Rpc.role
 
         public bool IsDeleted { get; set; }
         public List<Role_FieldDTO> Fields { get; set; }
-        public List<Role_PageDTO> Pages { get; set; }
+        public List<Role_ActionDTO> Actions { get; set; }
 
         public Role_MenuDTO() { }
         public Role_MenuDTO(Menu Menu)
@@ -31,7 +31,7 @@ namespace DMS.Rpc.role
             this.IsDeleted = Menu.IsDeleted;
 
             this.Fields = Menu.Fields?.Select(x => new Role_FieldDTO(x)).ToList();
-            this.Pages = Menu.Pages?.Select(x => new Role_PageDTO(x)).ToList();
+            this.Actions = Menu.Actions?.Select(x => new Role_ActionDTO(x)).ToList();
         }
     }
 

@@ -240,16 +240,16 @@ namespace DMS.Rpc.role
                         {
                             Code = PermissionCodeValue,
                             Name = PermissionNameValue,
-                            PermissionPageMappings = new List<PermissionPageMapping>()
+                            PermissionActionMappings = new List<PermissionActionMapping>()
                         };
 
                         var Menu = MenusInDB.Where(m => m.Code == MenuCodeValue).FirstOrDefault();
                         if (Menu == null) continue;
-
-                        var Page = Menu.Pages.Where(p => p.Path == PagePathValue).FirstOrDefault();
-                        if (Page == null) continue;
-                        Permission.PermissionPageMappings.Add(new PermissionPageMapping { PageId = Page.Id, Page = Page });
-                        Role.Permissions.Add(Permission);
+                        // TODO
+                        //var Page = Menu.Pages.Where(p => p.Path == PagePathValue).FirstOrDefault();
+                        //if (Page == null) continue;
+                        //Permission.PermissionActionMappings.Add(new PermissionActionMapping { ActionId = Page.Id, Action = Page });
+                        //Role.Permissions.Add(Permission);
                         Roles.Add(Role);
                     }
                     else
@@ -261,28 +261,28 @@ namespace DMS.Rpc.role
                             {
                                 Code = PermissionCodeValue,
                                 Name = PermissionNameValue,
-                                PermissionPageMappings = new List<PermissionPageMapping>()
+                                PermissionActionMappings = new List<PermissionActionMapping>()
                             };
 
                             var Menu = MenusInDB.Where(m => m.Code == MenuCodeValue).FirstOrDefault();
                             if (Menu == null) continue;
 
-                            var Page = Menu.Pages.Where(p => p.Path == PagePathValue).FirstOrDefault();
-                            if (Page == null) continue;
-                            Permission.PermissionPageMappings.Add(new PermissionPageMapping { PageId = Page.Id, Page = Page });
+                            //var Page = Menu.Pages.Where(p => p.Path == PagePathValue).FirstOrDefault();
+                            //if (Page == null) continue;
+                            //Permission.PermissionActionMappings.Add(new PermissionActionMapping { PageId = Page.Id, Page = Page });
                             Role.Permissions.Add(Permission);
                         }
                         else
                         {
-                            if (!Permission.PermissionPageMappings.Any(p => p.Page.Path == PagePathValue))
-                            {
-                                var Menu = MenusInDB.Where(m => m.Code == MenuCodeValue).FirstOrDefault();
-                                if (Menu == null) continue;
+                            //if (!Permission.PermissionActionMappings.Any(p => p.Page.Path == PagePathValue))
+                            //{
+                            //    var Menu = MenusInDB.Where(m => m.Code == MenuCodeValue).FirstOrDefault();
+                            //    if (Menu == null) continue;
 
-                                var Page = Menu.Pages.Where(p => p.Path == PagePathValue).FirstOrDefault();
-                                if (Page == null) continue;
-                                Permission.PermissionPageMappings.Add(new PermissionPageMapping { PageId = Page.Id, Page = Page });
-                            }
+                            //    var Page = Menu.Pages.Where(p => p.Path == PagePathValue).FirstOrDefault();
+                            //    if (Page == null) continue;
+                            //    Permission.PermissionActionMappings.Add(new PermissionActionMapping { PageId = Page.Id, Page = Page });
+                            //}
                         }
                     }
                 }
@@ -430,7 +430,7 @@ namespace DMS.Rpc.role
                 data.Clear();
                 var PageHeader = new List<string[]>()
                 {
-                    new string[] { "Mã vai trò", "Tên vai trò", "Mã quyền", "Tên quyền", "Menu", "Page Path" }
+                    new string[] { "Mã vai trò", "Tên vai trò", "Mã quyền", "Tên quyền", "Menu", "Action" }
                 };
                 for (int i = 0; i < Roles.Count; i++)
                 {
@@ -438,7 +438,7 @@ namespace DMS.Rpc.role
                     if (Role.Permissions != null)
                         foreach (var rolePermission in Role.Permissions)
                         {
-                            foreach (var permissionPageMapping in rolePermission.PermissionPageMappings)
+                            foreach (var permissionPageMapping in rolePermission.PermissionActionMappings)
                             {
                                 data.Add(new object[] {
                                 Role.Code,
@@ -446,7 +446,7 @@ namespace DMS.Rpc.role
                                 rolePermission.Code,
                                 rolePermission.Name,
                                 rolePermission.Menu.Code,
-                                permissionPageMapping.Page.Path
+                                permissionPageMapping.Action.Name
                                 });
                             }
 
@@ -527,20 +527,19 @@ namespace DMS.Rpc.role
                             Name = f.Name,
                             Type = f.Type,
                         }).ToList(),
-                        Pages = x.Menu.Pages?.Select(p => new Page
+                        Actions = x.Menu.Actions?.Select(p => new Entities.Action
                         {
                             Id = p.Id,
                             Name = p.Name,
-                            Path = p.Path,
                         }).ToList(),
                     },
                     PermissionFieldMappings = x.PermissionFieldMappings?.Select(pf => new PermissionFieldMapping
                     {
                         FieldId = pf.FieldId
                     }).ToList(),
-                    PermissionPageMappings = x.PermissionPageMappings?.Select(pp => new PermissionPageMapping
+                    PermissionActionMappings = x.PermissionPageMappings?.Select(pp => new PermissionActionMapping
                     {
-                        PageId = pp.PageId,
+                        ActionId = pp.ActionId,
                     }).ToList(),
                 }).ToList();
             Role.AppUserRoleMappings = Role_RoleDTO.AppUserRoleMappings?

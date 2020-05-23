@@ -15,7 +15,7 @@ namespace DMS.Rpc.role
         public long StatusId { get; set; }
         public Role_MenuDTO Menu { get; set; }
         public List<Role_PermissionFieldMappingDTO> PermissionFieldMappings { get; set; }
-        public List<Role_PermissionPageMappingDTO> PermissionPageMappings { get; set; }
+        public List<Role_PermissionActionMappingDTO> PermissionPageMappings { get; set; }
         public Role_PermissionDTO() { }
         public Role_PermissionDTO(Permission Permission)
         {
@@ -27,7 +27,7 @@ namespace DMS.Rpc.role
             this.StatusId = Permission.StatusId;
             this.Menu = Permission.Menu == null ? null : new Role_MenuDTO(Permission.Menu);
             this.PermissionFieldMappings = Permission.PermissionFieldMappings?.Select(x => new Role_PermissionFieldMappingDTO(x)).ToList();
-            this.PermissionPageMappings = Permission.PermissionPageMappings?.Select(x => new Role_PermissionPageMappingDTO(x)).ToList();
+            this.PermissionPageMappings = Permission.PermissionActionMappings?.Select(x => new Role_PermissionActionMappingDTO(x)).ToList();
             this.Errors = Permission.Errors;
         }
     }

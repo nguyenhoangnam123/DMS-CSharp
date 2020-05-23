@@ -13,7 +13,7 @@ namespace DMS.Rpc.menu
         public string Path { get; set; }
         public bool IsDeleted { get; set; }
         public List<Menu_FieldDTO> Fields { get; set; }
-        public List<Menu_PageDTO> Pages { get; set; }
+        public List<Menu_ActionDTO> Actions { get; set; }
         public Menu_MenuDTO() { }
         public Menu_MenuDTO(Menu Menu)
         {
@@ -23,7 +23,7 @@ namespace DMS.Rpc.menu
             this.Path = Menu.Path;
             this.IsDeleted = Menu.IsDeleted;
             this.Fields = Menu.Fields?.Select(x => new Menu_FieldDTO(x)).ToList();
-            this.Pages = Menu.Pages?.Select(x => new Menu_PageDTO(x)).ToList();
+            this.Actions = Menu.Actions?.Select(x => new Menu_ActionDTO(x)).ToList();
         }
     }
 

@@ -8,6 +8,7 @@ namespace DMS.Models
         public ActionDAO()
         {
             ActionPageMappings = new HashSet<ActionPageMappingDAO>();
+            PermissionActionMappings = new HashSet<PermissionActionMappingDAO>();
         }
 
         public long Id { get; set; }
@@ -17,5 +18,6 @@ namespace DMS.Models
 
         public virtual MenuDAO Menu { get; set; }
         public virtual ICollection<ActionPageMappingDAO> ActionPageMappings { get; set; }
+        public virtual ICollection<PermissionActionMappingDAO> PermissionActionMappings { get; set; }
     }
 }

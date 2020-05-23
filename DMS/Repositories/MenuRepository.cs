@@ -168,13 +168,12 @@ namespace DMS.Repositories
                     MenuId = x.MenuId,
                     IsDeleted = x.IsDeleted,
                 }).ToListAsync();
-            Menu.Pages = await DataContext.Page
+            Menu.Actions = await DataContext.Action
                 .Where(x => x.MenuId == Menu.Id)
-                .Select(x => new Page
+                .Select(x => new Entities.Action
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    Path = x.Path,
                     MenuId = x.MenuId,
                     IsDeleted = x.IsDeleted,
                 }).ToListAsync();
@@ -264,21 +263,20 @@ namespace DMS.Repositories
             await DataContext.Page
                 .Where(x => x.MenuId == Menu.Id)
                 .DeleteFromQueryAsync();
-            List<PageDAO> PageDAOs = new List<PageDAO>();
-            if (Menu.Pages != null)
-            {
-                foreach (Page Page in Menu.Pages)
-                {
-                    PageDAO PageDAO = new PageDAO();
-                    PageDAO.Id = Page.Id;
-                    PageDAO.Name = Page.Name;
-                    PageDAO.Path = Page.Path;
-                    PageDAO.MenuId = Page.MenuId;
-                    PageDAO.IsDeleted = Page.IsDeleted;
-                    PageDAOs.Add(PageDAO);
-                }
-                await DataContext.Page.BulkMergeAsync(PageDAOs);
-            }
+            //List<PageDAO> PageDAOs = new List<PageDAO>();
+            //if (Menu.Actions != null)
+            //{
+            //    foreach (Entities.Action Action in Menu.Actions)
+            //    {
+            //        ActionDAO ActionDAO = new ActionDAO();
+            //        ActionDAO.Id = Action.Id;
+            //        ActionDAO.Name = Action.Name;
+            //        ActionDAO.MenuId = Action.MenuId;
+            //        ActionDAO.IsDeleted = Action.IsDeleted;
+            //        PageDAOs.Add(ActionDAO);
+            //    }
+            //    await DataContext.Page.BulkMergeAsync(PageDAOs);
+            //}
         }
 
     }

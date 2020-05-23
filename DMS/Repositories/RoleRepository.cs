@@ -206,12 +206,11 @@ namespace DMS.Repositories
                         Type = f.Type,
                         IsDeleted = f.IsDeleted
                     }).ToList(),
-                    Pages = x.Pages.Select(p => new Page
+                    Actions = x.Actions.Select(p => new Entities.Action
                     {
                         Id = p.Id,
                         MenuId = p.MenuId,
                         Name = p.Name,
-                        Path = p.Path,
                         IsDeleted = p.IsDeleted
                     }).ToList()
                 }).ToListAsync();
@@ -231,10 +230,10 @@ namespace DMS.Repositories
                         FieldId = pf.FieldId,
                         Value = pf.Value
                     }).ToList(),
-                    PermissionPageMappings = x.PermissionPageMappings.Select(pp => new PermissionPageMapping
+                    PermissionActionMappings = x.PermissionActionMappings.Select(pp => new PermissionActionMapping
                     {
                         PermissionId = pp.PermissionId,
-                        PageId = pp.PageId,
+                        ActionId = pp.ActionId,
                     }).ToList()
                 }).ToListAsync();
             Role.Permissions.ForEach(p =>
@@ -273,7 +272,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Role Role)
         {
-            await DataContext.PermissionPageMapping.Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
+            await DataContext.PermissionActionMapping.Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
             await DataContext.PermissionFieldMapping.Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
             await DataContext.Permission.Where(x => x.RoleId == Role.Id).DeleteFromQueryAsync();
             await DataContext.Role.Where(x => x.Id == Role.Id).DeleteFromQueryAsync();
@@ -324,7 +323,7 @@ namespace DMS.Repositories
 
             await DataContext.PermissionFieldMapping
                .Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
-            await DataContext.PermissionPageMapping
+            await DataContext.PermissionActionMapping
              .Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
             await DataContext.Permission
                 .Where(x => x.RoleId == Role.Id).DeleteFromQueryAsync();
@@ -354,16 +353,16 @@ namespace DMS.Repositories
                             PermissionDAO.PermissionFieldMappings.Add(PermissionFieldMappingDAO);
                         }
                     }
-                    if (Permission.PermissionPageMappings != null)
+                    if (Permission.PermissionActionMappings != null)
                     {
-                        foreach (var PermissionPageMapping in Permission.PermissionPageMappings)
+                        foreach (var PermissionPageMapping in Permission.PermissionActionMappings)
                         {
-                            PermissionPageMappingDAO PermissionPageMappingDAO = new PermissionPageMappingDAO
+                            PermissionActionMappingDAO PermissionActionMappingDAO = new PermissionActionMappingDAO
                             {
                                 PermissionId = PermissionPageMapping.PermissionId,
-                                PageId = PermissionPageMapping.PageId,
+                                ActionId = PermissionPageMapping.ActionId,
                             };
-                            PermissionDAO.PermissionPageMappings.Add(PermissionPageMappingDAO);
+                            PermissionDAO.PermissionActionMappings.Add(PermissionActionMappingDAO);
                         }
                     }
                     PermissionDAOs.Add(PermissionDAO);

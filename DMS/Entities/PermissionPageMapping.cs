@@ -6,14 +6,14 @@ using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class PermissionPageMapping : DataEntity, IEquatable<PermissionPageMapping>
+    public class PermissionActionMapping : DataEntity, IEquatable<PermissionActionMapping>
     {
         public long PermissionId { get; set; }
-        public long PageId { get; set; }
-        public Page Page { get; set; }
+        public long ActionId { get; set; }
+        public Action Action { get; set; }
         public Permission Permission { get; set; }
 
-        public bool Equals(PermissionPageMapping other)
+        public bool Equals(PermissionActionMapping other)
         {
             return true;
         }
@@ -26,7 +26,7 @@ namespace DMS.Entities
     public class PermissionPageMappingFilter : FilterEntity
     {
         public IdFilter PermissionId { get; set; }
-        public IdFilter PageId { get; set; }
+        public IdFilter ActionId { get; set; }
         public List<PermissionPageMappingFilter> OrFilter { get; set; }
         public PermissionPageMappingOrder OrderBy { get; set; }
         public PermissionPageMappingSelect Selects { get; set; }

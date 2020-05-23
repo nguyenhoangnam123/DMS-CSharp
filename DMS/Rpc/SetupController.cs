@@ -217,7 +217,7 @@ namespace DMS.Rpc
             InitAction(routeTypes);
 
             DataContext.ActionPageMapping.Where(ap => ap.Action.IsDeleted || ap.Page.IsDeleted).DeleteFromQuery();
-            DataContext.PermissionPageMapping.Where(ppm => ppm.Page.IsDeleted).DeleteFromQuery();
+            DataContext.PermissionActionMapping.Where(ap => ap.Action.IsDeleted).DeleteFromQuery();
             DataContext.PermissionFieldMapping.Where(pd => pd.Field.IsDeleted).DeleteFromQuery();
             DataContext.Action.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Page.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
@@ -287,7 +287,7 @@ namespace DMS.Rpc
                 .ToList();
             List<PermissionDAO> permissions = DataContext.Permission.AsNoTracking()
                 .Include(p => p.PermissionFieldMappings)
-                .Include(p => p.PermissionPageMappings)
+                .Include(p => p.PermissionActionMappings)
                 .ToList();
             foreach (MenuDAO Menu in Menus)
             {
@@ -303,7 +303,7 @@ namespace DMS.Rpc
                         MenuId = Menu.Id,
                         RoleId = Admin.Id,
                         PermissionFieldMappings = new List<PermissionFieldMappingDAO>(),
-                        PermissionPageMappings = new List<PermissionPageMappingDAO>(),
+                        PermissionActionMappings = new List<PermissionActionMappingDAO>(),
                     };
                     permissions.Add(permission);
                 }
@@ -311,22 +311,22 @@ namespace DMS.Rpc
                 {
                     if (permission.PermissionFieldMappings == null)
                         permission.PermissionFieldMappings = new List<PermissionFieldMappingDAO>();
-                    if (permission.PermissionPageMappings == null)
-                        permission.PermissionPageMappings = new List<PermissionPageMappingDAO>();
+                    if (permission.PermissionActionMappings == null)
+                        permission.PermissionActionMappings = new List<PermissionActionMappingDAO>();
                 }
-                foreach (PageDAO page in Menu.Pages)
-                {
-                    PermissionPageMappingDAO PermissionPageMappingDAO = permission.PermissionPageMappings
-                        .Where(ppm => ppm.PageId == page.Id).FirstOrDefault();
-                    if (PermissionPageMappingDAO == null)
-                    {
-                        PermissionPageMappingDAO = new PermissionPageMappingDAO
-                        {
-                            PageId = page.Id
-                        };
-                        permission.PermissionPageMappings.Add(PermissionPageMappingDAO);
-                    }
-                }
+                //foreach (PageDAO page in Menu.Pages)
+                //{
+                //    PermissionActionMappingDAO PermissionPageMappingDAO = permission.PermissionPageMappings
+                //        .Where(ppm => ppm.PageId == page.Id).FirstOrDefault();
+                //    if (PermissionPageMappingDAO == null)
+                //    {
+                //        PermissionPageMappingDAO = new PermissionPageMappingDAO
+                //        {
+                //            PageId = page.Id
+                //        };
+                //        permission.PermissionPageMappings.Add(PermissionPageMappingDAO);
+                //    }
+                //}
                 foreach (FieldDAO field in Menu.Fields)
                 {
                     PermissionFieldMappingDAO permissionFieldMapping = permission.PermissionFieldMappings
@@ -348,19 +348,19 @@ namespace DMS.Rpc
                 {
                     field.PermissionId = p.Id;
                 }
-                foreach (var page in p.PermissionPageMappings)
+                foreach (var action in p.PermissionActionMappings)
                 {
-                    page.PermissionId = p.Id;
+                    action.PermissionId = p.Id;
                 }
             });
             List<PermissionFieldMappingDAO> permissionFieldMappings = permissions
                 .SelectMany(p => p.PermissionFieldMappings).ToList();
-            List<PermissionPageMappingDAO> permissionPageMappings = permissions
-                .SelectMany(p => p.PermissionPageMappings).ToList();
+            List<PermissionActionMappingDAO> permissionPageMappings = permissions
+                .SelectMany(p => p.PermissionActionMappings).ToList();
             DataContext.PermissionFieldMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
             DataContext.PermissionFieldMapping.BulkMerge(permissionFieldMappings);
-            DataContext.PermissionPageMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
-            DataContext.PermissionPageMapping.BulkMerge(permissionPageMappings);
+            DataContext.PermissionActionMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
+            DataContext.PermissionActionMapping.BulkMerge(permissionPageMappings);
             return Ok();
         }
 

@@ -168,12 +168,11 @@ namespace DMS.Rpc.menu
                     IsDeleted = x.IsDeleted,
                     MenuId = x.MenuId
                 }).ToList();
-            Menu.Pages = Menu_MenuDTO.Pages?
-                .Select(x => new Page
+            Menu.Actions = Menu_MenuDTO.Actions?
+                .Select(x => new Action
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    Path = x.Path,
                     IsDeleted = x.IsDeleted,
                     MenuId = x.MenuId
                 }).ToList();

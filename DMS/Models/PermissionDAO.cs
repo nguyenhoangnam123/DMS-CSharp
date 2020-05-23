@@ -7,8 +7,8 @@ namespace DMS.Models
     {
         public PermissionDAO()
         {
+            PermissionActionMappings = new HashSet<PermissionActionMappingDAO>();
             PermissionFieldMappings = new HashSet<PermissionFieldMappingDAO>();
-            PermissionPageMappings = new HashSet<PermissionPageMappingDAO>();
         }
 
         public long Id { get; set; }
@@ -21,7 +21,7 @@ namespace DMS.Models
         public virtual MenuDAO Menu { get; set; }
         public virtual RoleDAO Role { get; set; }
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<PermissionActionMappingDAO> PermissionActionMappings { get; set; }
         public virtual ICollection<PermissionFieldMappingDAO> PermissionFieldMappings { get; set; }
-        public virtual ICollection<PermissionPageMappingDAO> PermissionPageMappings { get; set; }
     }
 }

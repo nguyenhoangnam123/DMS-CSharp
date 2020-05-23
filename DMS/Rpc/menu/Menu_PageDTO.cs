@@ -3,22 +3,20 @@ using DMS.Entities;
 
 namespace DMS.Rpc.menu
 {
-    public class Menu_PageDTO : DataDTO
+    public class Menu_ActionDTO : DataDTO
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public string Path { get; set; }
         public long MenuId { get; set; }
         public bool IsDeleted { get; set; }
 
-        public Menu_PageDTO() { }
-        public Menu_PageDTO(Page Page)
+        public Menu_ActionDTO() { }
+        public Menu_ActionDTO(Action Action)
         {
-            this.Id = Page.Id;
-            this.Name = Page.Name;
-            this.Path = Page.Path;
-            this.MenuId = Page.MenuId;
-            this.IsDeleted = Page.IsDeleted;
+            this.Id = Action.Id;
+            this.Name = Action.Name;
+            this.MenuId = Action.MenuId;
+            this.IsDeleted = Action.IsDeleted;
         }
     }
 

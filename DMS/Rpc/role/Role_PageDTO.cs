@@ -3,33 +3,29 @@ using DMS.Entities;
 
 namespace DMS.Rpc.role
 {
-    public class Role_PageDTO : DataDTO
+    public class Role_ActionDTO : DataDTO
     {
 
         public long Id { get; set; }
 
         public string Name { get; set; }
 
-        public string Path { get; set; }
-
         public long MenuId { get; set; }
 
         public bool IsDeleted { get; set; }
 
 
-        public Role_PageDTO() { }
-        public Role_PageDTO(Page Page)
+        public Role_ActionDTO() { }
+        public Role_ActionDTO(Action Action)
         {
 
-            this.Id = Page.Id;
+            this.Id = Action.Id;
 
-            this.Name = Page.Name;
+            this.Name = Action.Name;
 
-            this.Path = Page.Path;
+            this.MenuId = Action.MenuId;
 
-            this.MenuId = Page.MenuId;
-
-            this.IsDeleted = Page.IsDeleted;
+            this.IsDeleted = Action.IsDeleted;
 
         }
     }

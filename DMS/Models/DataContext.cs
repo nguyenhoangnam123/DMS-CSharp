@@ -51,8 +51,8 @@ namespace DMS.Models
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
         public virtual DbSet<PageDAO> Page { get; set; }
         public virtual DbSet<PermissionDAO> Permission { get; set; }
+        public virtual DbSet<PermissionActionMappingDAO> PermissionActionMapping { get; set; }
         public virtual DbSet<PermissionFieldMappingDAO> PermissionFieldMapping { get; set; }
-        public virtual DbSet<PermissionPageMappingDAO> PermissionPageMapping { get; set; }
         public virtual DbSet<ProductDAO> Product { get; set; }
         public virtual DbSet<ProductGroupingDAO> ProductGrouping { get; set; }
         public virtual DbSet<ProductImageMappingDAO> ProductImageMapping { get; set; }
@@ -1400,6 +1400,26 @@ namespace DMS.Models
                     .HasConstraintName("FK_Permission_Status");
             });
 
+            modelBuilder.Entity<PermissionActionMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ActionId, e.PermissionId })
+                    .HasName("PK_ActionPermissionMapping");
+
+                entity.ToTable("PermissionActionMapping", "PER");
+
+                entity.HasOne(d => d.Action)
+                    .WithMany(p => p.PermissionActionMappings)
+                    .HasForeignKey(d => d.ActionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ActionPermissionMapping_Action");
+
+                entity.HasOne(d => d.Permission)
+                    .WithMany(p => p.PermissionActionMappings)
+                    .HasForeignKey(d => d.PermissionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ActionPermissionMapping_Permission");
+            });
+
             modelBuilder.Entity<PermissionFieldMappingDAO>(entity =>
             {
                 entity.HasKey(e => new { e.PermissionId, e.FieldId })
@@ -1420,26 +1440,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.PermissionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PermissionData_Permission");
-            });
-
-            modelBuilder.Entity<PermissionPageMappingDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.PermissionId, e.PageId })
-                    .HasName("PK_PermissionAction");
-
-                entity.ToTable("PermissionPageMapping", "PER");
-
-                entity.HasOne(d => d.Page)
-                    .WithMany(p => p.PermissionPageMappings)
-                    .HasForeignKey(d => d.PageId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PermissionPageMapping_Page");
-
-                entity.HasOne(d => d.Permission)
-                    .WithMany(p => p.PermissionPageMappings)
-                    .HasForeignKey(d => d.PermissionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PermissionAction_Permission");
             });
 
             modelBuilder.Entity<ProductDAO>(entity =>

@@ -137,14 +137,14 @@ namespace DMS.Services.MRole
                     }
                 }
 
-                foreach (var Page in Menu.Pages)
-                {
-                    if (!MenuInDB.Pages.Select(p => p.Path).Contains(Page.Path))
-                    {
-                        Page.AddError(nameof(RoleValidator), nameof(Page.Path), ErrorCode.PageNotExisted);
-                        return false;
-                    }
-                }
+                //foreach (var Page in Menu.Actions)
+                //{
+                //    if (!MenuInDB.Actions.Select(p => p.Path).Contains(Page.Path))
+                //    {
+                //        Page.AddError(nameof(RoleValidator), nameof(Page.Path), ErrorCode.PageNotExisted);
+                //        return false;
+                //    }
+                //}
             }
             return Menu.IsValidated;
         }

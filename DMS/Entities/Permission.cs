@@ -18,7 +18,7 @@ namespace DMS.Entities
         public Role Role { get; set; }
         public Status Status { get; set; }
         public List<PermissionFieldMapping> PermissionFieldMappings { get; set; }
-        public List<PermissionPageMapping> PermissionPageMappings { get; set; }
+        public List<PermissionActionMapping> PermissionActionMappings { get; set; }
 
         public bool Equals(Permission other)
         {
