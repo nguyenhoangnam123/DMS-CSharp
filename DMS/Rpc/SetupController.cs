@@ -56,12 +56,10 @@ namespace DMS.Rpc
 
         private void InitPage(List<Type> routeTypes)
         {
-            List<MenuDAO> Menus = DataContext.Menu.AsNoTracking().ToList();
             List<PageDAO> pages = DataContext.Page.AsNoTracking().OrderBy(p => p.Path).ToList();
             pages.ForEach(p => p.IsDeleted = true);
             foreach (Type type in routeTypes)
             {
-                MenuDAO Menu = Menus.Where(m => m.Code == type.Name).FirstOrDefault();
                 var values = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
                 .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(string))
                 .Select(x => (string)x.GetRawConstantValue())
@@ -76,7 +74,6 @@ namespace DMS.Rpc
                             Name = value,
                             Path = value,
                             IsDeleted = false,
-                            MenuId = Menu.Id,
                         };
                         pages.Add(page);
                     }
@@ -220,7 +217,7 @@ namespace DMS.Rpc
             DataContext.PermissionActionMapping.Where(ap => ap.Action.IsDeleted).DeleteFromQuery();
             DataContext.PermissionFieldMapping.Where(pd => pd.Field.IsDeleted).DeleteFromQuery();
             DataContext.Action.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
-            DataContext.Page.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
+            DataContext.Page.Where(p => p.IsDeleted).DeleteFromQuery();
             DataContext.Field.Where(pf => pf.IsDeleted || pf.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Permission.Where(p => p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Menu.Where(v => v.IsDeleted).DeleteFromQuery();
@@ -282,7 +279,7 @@ namespace DMS.Rpc
             }
 
             List<MenuDAO> Menus = DataContext.Menu.AsNoTracking()
-                .Include(v => v.Pages)
+                .Include(v => v.Actions)
                 .Include(v => v.Fields)
                 .ToList();
             List<PermissionDAO> permissions = DataContext.Permission.AsNoTracking()
@@ -314,19 +311,19 @@ namespace DMS.Rpc
                     if (permission.PermissionActionMappings == null)
                         permission.PermissionActionMappings = new List<PermissionActionMappingDAO>();
                 }
-                //foreach (PageDAO page in Menu.Pages)
-                //{
-                //    PermissionActionMappingDAO PermissionPageMappingDAO = permission.PermissionPageMappings
-                //        .Where(ppm => ppm.PageId == page.Id).FirstOrDefault();
-                //    if (PermissionPageMappingDAO == null)
-                //    {
-                //        PermissionPageMappingDAO = new PermissionPageMappingDAO
-                //        {
-                //            PageId = page.Id
-                //        };
-                //        permission.PermissionPageMappings.Add(PermissionPageMappingDAO);
-                //    }
-                //}
+                foreach (ActionDAO action in Menu.Actions)
+                {
+                    PermissionActionMappingDAO PermissionActionMappingDAO = permission.PermissionActionMappings
+                        .Where(ppm => ppm.ActionId == action.Id).FirstOrDefault();
+                    if (PermissionActionMappingDAO == null)
+                    {
+                        PermissionActionMappingDAO = new PermissionActionMappingDAO
+                        {
+                            ActionId = action.Id
+                        };
+                        permission.PermissionActionMappings.Add(PermissionActionMappingDAO);
+                    }
+                }
                 foreach (FieldDAO field in Menu.Fields)
                 {
                     PermissionFieldMappingDAO permissionFieldMapping = permission.PermissionFieldMappings

@@ -14,11 +14,6 @@ namespace DMS.Repositories
         Task<int> Count(MenuFilter MenuFilter);
         Task<List<Menu>> List(MenuFilter MenuFilter);
         Task<Menu> Get(long Id);
-        Task<bool> Create(Menu Menu);
-        Task<bool> Update(Menu Menu);
-        Task<bool> Delete(Menu Menu);
-        Task<bool> BulkMerge(List<Menu> Menus);
-        Task<bool> BulkDelete(List<Menu> Menus);
     }
     public class MenuRepository : IMenuRepository
     {
@@ -178,105 +173,6 @@ namespace DMS.Repositories
                     IsDeleted = x.IsDeleted,
                 }).ToListAsync();
             return Menu;
-        }
-        public async Task<bool> Create(Menu Menu)
-        {
-            MenuDAO MenuDAO = new MenuDAO();
-            MenuDAO.Id = Menu.Id;
-            MenuDAO.Code = Menu.Code;
-            MenuDAO.Name = Menu.Name;
-            MenuDAO.Path = Menu.Path;
-            MenuDAO.IsDeleted = Menu.IsDeleted;
-            DataContext.Menu.Add(MenuDAO);
-            await DataContext.SaveChangesAsync();
-            Menu.Id = MenuDAO.Id;
-            await SaveReference(Menu);
-            return true;
-        }
-
-        public async Task<bool> Update(Menu Menu)
-        {
-            MenuDAO MenuDAO = DataContext.Menu.Where(x => x.Id == Menu.Id).FirstOrDefault();
-            if (MenuDAO == null)
-                return false;
-            MenuDAO.Id = Menu.Id;
-            MenuDAO.Code = Menu.Code;
-            MenuDAO.Name = Menu.Name;
-            MenuDAO.Path = Menu.Path;
-            MenuDAO.IsDeleted = Menu.IsDeleted;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(Menu);
-            return true;
-        }
-
-        public async Task<bool> Delete(Menu Menu)
-        {
-            await DataContext.Menu.Where(x => x.Id == Menu.Id).DeleteFromQueryAsync();
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<Menu> Menus)
-        {
-            List<MenuDAO> MenuDAOs = new List<MenuDAO>();
-            foreach (Menu Menu in Menus)
-            {
-                MenuDAO MenuDAO = new MenuDAO();
-                MenuDAO.Id = Menu.Id;
-                MenuDAO.Code = Menu.Code;
-                MenuDAO.Name = Menu.Name;
-                MenuDAO.Path = Menu.Path;
-                MenuDAO.IsDeleted = Menu.IsDeleted;
-                MenuDAOs.Add(MenuDAO);
-            }
-            await DataContext.BulkMergeAsync(MenuDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<Menu> Menus)
-        {
-            List<long> Ids = Menus.Select(x => x.Id).ToList();
-            await DataContext.Menu
-                .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
-            return true;
-        }
-
-        private async Task SaveReference(Menu Menu)
-        {
-            await DataContext.Field
-                .Where(x => x.MenuId == Menu.Id)
-                .DeleteFromQueryAsync();
-            List<FieldDAO> FieldDAOs = new List<FieldDAO>();
-            if (Menu.Fields != null)
-            {
-                foreach (Field Field in Menu.Fields)
-                {
-                    FieldDAO FieldDAO = new FieldDAO();
-                    FieldDAO.Id = Field.Id;
-                    FieldDAO.Name = Field.Name;
-                    FieldDAO.Type = Field.Type;
-                    FieldDAO.MenuId = Field.MenuId;
-                    FieldDAO.IsDeleted = Field.IsDeleted;
-                    FieldDAOs.Add(FieldDAO);
-                }
-                await DataContext.Field.BulkMergeAsync(FieldDAOs);
-            }
-            await DataContext.Page
-                .Where(x => x.MenuId == Menu.Id)
-                .DeleteFromQueryAsync();
-            //List<PageDAO> PageDAOs = new List<PageDAO>();
-            //if (Menu.Actions != null)
-            //{
-            //    foreach (Entities.Action Action in Menu.Actions)
-            //    {
-            //        ActionDAO ActionDAO = new ActionDAO();
-            //        ActionDAO.Id = Action.Id;
-            //        ActionDAO.Name = Action.Name;
-            //        ActionDAO.MenuId = Action.MenuId;
-            //        ActionDAO.IsDeleted = Action.IsDeleted;
-            //        PageDAOs.Add(ActionDAO);
-            //    }
-            //    await DataContext.Page.BulkMergeAsync(PageDAOs);
-            //}
         }
 
     }

@@ -1361,12 +1361,6 @@ namespace DMS.Models
                 entity.Property(e => e.Path)
                     .IsRequired()
                     .HasMaxLength(3000);
-
-                entity.HasOne(d => d.Menu)
-                    .WithMany(p => p.Pages)
-                    .HasForeignKey(d => d.MenuId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Page_Menu");
             });
 
             modelBuilder.Entity<PermissionDAO>(entity =>

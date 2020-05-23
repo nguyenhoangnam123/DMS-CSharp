@@ -13,10 +13,8 @@ namespace DMS.Models
         public long Id { get; set; }
         public string Name { get; set; }
         public string Path { get; set; }
-        public long MenuId { get; set; }
         public bool IsDeleted { get; set; }
 
-        public virtual MenuDAO Menu { get; set; }
         public virtual ICollection<ActionPageMappingDAO> ActionPageMappings { get; set; }
     }
 }
