@@ -14,35 +14,7 @@ using DMS.Enums;
 
 namespace DMS.Rpc.product_grouping
 {
-    public class ProductGroupingRoute : Root
-    {
-        public const string Master = Module + "/product-grouping/product-grouping-master";
-        public const string Detail = Module + "/product-grouping/product-grouping-detail";
-        private const string Default = Rpc + Module + "/product-grouping";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string BulkDelete = Default + "/bulk-delete";
-
-        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
-        public const string SingleListProduct = Default + "/single-list-product";
-
-        public const string CountProduct = Default + "/count-product";
-        public const string ListProduct = Default + "/list-product";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
-        {
-            { nameof(ProductGroupingFilter.Code), FieldType.STRING },
-            { nameof(ProductGroupingFilter.Name), FieldType.STRING },
-            { nameof(ProductGroupingFilter.ParentId), FieldType.ID },
-            { nameof(ProductGroupingFilter.Path), FieldType.STRING },
-            { nameof(ProductGroupingFilter.Description), FieldType.STRING },
-        };
-    }
+    
 
     public class ProductGroupingController : RpcController
     {

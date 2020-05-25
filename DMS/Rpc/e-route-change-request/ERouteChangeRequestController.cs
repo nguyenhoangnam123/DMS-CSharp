@@ -24,47 +24,6 @@ using DMS.Services.MERouteType;
 
 namespace DMS.Rpc.e_route_change_request
 {
-    public class ERouteChangeRequestRoute : Root
-    {
-        public const string Master = Module + "/e-route-change-request/e-route-change-request-master";
-        public const string Detail = Module + "/e-route-change-request/e-route-change-request-detail";
-        private const string Default = Rpc + Module + "/e-route-change-request";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
-        public const string GetDraft = Default + "/get-draft";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-tempate";
-        public const string BulkDelete = Default + "/bulk-delete";
-        
-        public const string FilterListAppUser = Default + "/filter-list-app-user";
-        public const string FilterListERoute = Default + "/filter-list-e-route";
-        public const string FilterListStore = Default + "/filter-list-store";
-        
-        public const string SingleListAppUser = Default + "/single-list-app-user";
-        public const string SingleListERoute = Default + "/single-list-e-route";
-        public const string SingleListERouteType = Default + "/single-list-eroute-type";
-        public const string SingleListOrganization = Default + "/single-list-organization";
-        public const string SingleListRequestState = Default + "/single-list-request-state";
-        public const string SingleListERouteChangeRequestContent = Default + "/single-list-e-route-change-request-content";
-        public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
-        public const string SingleListStoreType = Default + "/single-list-store-type";
-        public const string SingleListStore = Default + "/single-list-store";
-
-        public const string CountStore = Default + "/count-store";
-        public const string ListStore = Default + "/list-store";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
-        {
-            { nameof(ERouteChangeRequestFilter.ERouteId), FieldType.ID },
-            { nameof(ERouteChangeRequestFilter.CreatorId), FieldType.ID },
-            { nameof(ERouteChangeRequestFilter.RequestStateId), FieldType.ID },
-        };
-    }
-
     public class ERouteChangeRequestController : RpcController
     {
         private IAppUserService AppUserService;

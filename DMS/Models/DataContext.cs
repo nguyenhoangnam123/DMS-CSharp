@@ -2003,8 +2003,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<StoreCheckingDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.CheckInAt).HasColumnType("datetime");
 
                 entity.Property(e => e.CheckOutAt).HasColumnType("datetime");

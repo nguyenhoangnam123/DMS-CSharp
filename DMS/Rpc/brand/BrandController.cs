@@ -14,32 +14,6 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.brand
 {
-    public class BrandRoute : Root
-    {
-        public const string Master = Module + "/brand/brand-master";
-        public const string Detail = Module + "/brand/brand-detail";
-        private const string Default = Rpc + Module + "/brand";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-template";
-        public const string BulkDelete = Default + "/bulk-delete";
-
-        public const string SingleListStatus = Default + "/single-list-status";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
-        {
-            { nameof(BrandFilter.Code), FieldType.STRING },
-            { nameof(BrandFilter.Name), FieldType.STRING },
-            { nameof(BrandFilter.Description), FieldType.STRING },
-            { nameof(BrandFilter.StatusId), FieldType.ID },
-        };
-    }
-
     public class BrandController : RpcController
     {
         private IStatusService StatusService;

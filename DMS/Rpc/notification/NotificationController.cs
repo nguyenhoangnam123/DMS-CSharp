@@ -17,34 +17,7 @@ using DMS.Services.MStatus;
 
 namespace DMS.Rpc.notification
 {
-    public class NotificationRoute : Root
-    {
-        public const string Master = Module + "/notification/notification-master";
-        public const string Detail = Module + "/notification/notification-detail";
-        private const string Default = Rpc + Module + "/notification";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-tempate";
-        public const string BulkDelete = Default + "/bulk-delete";
-        
-        public const string FilterListOrganization = Default + "/filter-list-organization";
-        
-        public const string SingleListOrganization = Default + "/single-list-organization";
-        
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
-        {
-            { nameof(NotificationFilter.Id), FieldType.ID },
-            { nameof(NotificationFilter.Title), FieldType.STRING },
-            { nameof(NotificationFilter.Content), FieldType.STRING },
-            { nameof(NotificationFilter.OrganizationId), FieldType.ID },
-        };
-    }
+    
 
     public class NotificationController : RpcController
     {

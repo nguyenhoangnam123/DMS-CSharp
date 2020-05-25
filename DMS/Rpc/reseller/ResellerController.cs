@@ -21,49 +21,7 @@ using DMS.Services.MStore;
 
 namespace DMS.Rpc.reseller
 {
-    public class ResellerRoute : Root
-    {
-        public const string Master = Module + "/reseller/reseller-master";
-        public const string Detail = Module + "/reseller/reseller-detail";
-        private const string Default = Rpc + Module + "/reseller";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Approve = Default + "/approve";
-        public const string Reject = Default + "/reject";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string BulkDelete = Default + "/bulk-delete";
-
-        public const string SingleListAppUser = Default + "/single-list-app-user";
-        public const string SingleListOrganization = Default + "/single-list-organization";
-        public const string SingleListResellerStatus = Default + "/single-list-reseller-status";
-        public const string SingleListResellerType = Default + "/single-list-reseller-type";
-        public const string SingleListStatus = Default + "/single-list-status";
-
-        public const string CountStore = Default + "/count-store";
-        public const string ListStore = Default + "/list-store";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
-        {
-            { nameof(ResellerFilter.Code), FieldType.STRING },
-            { nameof(ResellerFilter.Name), FieldType.STRING },
-            { nameof(ResellerFilter.Phone), FieldType.STRING },
-            { nameof(ResellerFilter.Email), FieldType.STRING },
-            { nameof(ResellerFilter.Address), FieldType.STRING },
-            { nameof(ResellerFilter.TaxCode), FieldType.STRING },
-            { nameof(ResellerFilter.CompanyName), FieldType.STRING },
-            { nameof(ResellerFilter.DeputyName), FieldType.STRING },
-            { nameof(ResellerFilter.Description), FieldType.STRING },
-            { nameof(ResellerFilter.OrganizationId), FieldType.ID },
-            { nameof(ResellerFilter.ResellerTypeId), FieldType.ID },
-            { nameof(ResellerFilter.ResellerStatusId), FieldType.ID },
-            { nameof(ResellerFilter.StaffId), FieldType.ID },
-            { nameof(ResellerFilter.StatusId), FieldType.ID },
-        };
-    }
+  
 
     public class ResellerController : RpcController
     {

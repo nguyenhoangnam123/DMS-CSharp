@@ -11,31 +11,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.product_type
 {
-    public class ProductTypeRoute : Root
-    {
-        public const string Master = Module + "/product-type/product-type-master";
-        public const string Detail = Module + "/product-type/product-type-detail";
-        private const string Default = Rpc + Module + "/product-type";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string BulkDelete = Default + "/bulk-delete";
-
-        public const string SingleListStatus = Default + "/single-list-status";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
-        {
-            { nameof(ProductTypeFilter.Code), FieldType.STRING },
-            { nameof(ProductTypeFilter.Name), FieldType.STRING },
-            { nameof(ProductTypeFilter.Description), FieldType.STRING },
-            { nameof(ProductTypeFilter.StatusId), FieldType.ID },
-            { nameof(ProductTypeFilter.UpdatedTime), FieldType.DATE },
-        };
-    }
+    
 
     public class ProductTypeController : RpcController
     {

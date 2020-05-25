@@ -89,6 +89,7 @@ namespace DMS.Services.MStoreChecking
             try
             {
                 StoreChecking.CheckInAt = StaticParams.DateTimeNow;
+                StoreChecking.SaleEmployeeId = CurrentContext.UserId;
                 await UOW.Begin();
                 await UOW.StoreCheckingRepository.Create(StoreChecking);
                 await UOW.Commit();
