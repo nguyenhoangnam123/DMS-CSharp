@@ -2279,6 +2279,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyResultTable_SurveyOption");
 
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.SurveyResultCells)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyResultCell_Store");
+
                 entity.HasOne(d => d.SurveyQuestion)
                     .WithMany(p => p.SurveyResultCells)
                     .HasForeignKey(d => d.SurveyQuestionId)
@@ -2295,6 +2301,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.AppUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyResultSingle_AppUser");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.SurveyResultSingles)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyResultSingle_Store");
 
                 entity.HasOne(d => d.SurveyOption)
                     .WithMany(p => p.SurveyResultSingles)
@@ -2586,25 +2598,17 @@ namespace DMS.Models
             {
                 entity.ToTable("WorkflowDirection", "WF");
 
-                entity.Property(e => e.BodyMailForCreator)
-                    .IsRequired()
-                    .HasMaxLength(4000);
+                entity.Property(e => e.BodyMailForCreator).HasMaxLength(4000);
 
-                entity.Property(e => e.BodyMailForNextStep)
-                    .IsRequired()
-                    .HasMaxLength(4000);
+                entity.Property(e => e.BodyMailForNextStep).HasMaxLength(4000);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.SubjectMailForCreator)
-                    .IsRequired()
-                    .HasMaxLength(500);
+                entity.Property(e => e.SubjectMailForCreator).HasMaxLength(500);
 
-                entity.Property(e => e.SubjectMailForNextStep)
-                    .IsRequired()
-                    .HasMaxLength(500);
+                entity.Property(e => e.SubjectMailForNextStep).HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 

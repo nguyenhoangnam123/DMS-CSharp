@@ -126,7 +126,6 @@ namespace DMS.Services.MWorkflow
             {
                 var oldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
                 InitParameter(WorkflowDefinition);
-
                 await UOW.Begin();
                 await UOW.WorkflowDefinitionRepository.Update(WorkflowDefinition);
                 await UOW.Commit();

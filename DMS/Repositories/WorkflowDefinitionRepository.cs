@@ -48,6 +48,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.EndDate, filter.EndDate);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
+            if (filter.CreatedAt != null)
+                query = query.Where(q => q.CreatedAt, filter.CreatedAt);
             if (filter.UpdatedAt != null)
                 query = query.Where(q => q.UpdatedAt, filter.UpdatedAt);
             query = OrFilter(query, filter);
@@ -111,6 +113,9 @@ namespace DMS.Repositories
                         case WorkflowDefinitionOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
                             break;
+                        case WorkflowDefinitionOrder.CreatedAt:
+                            query = query.OrderBy(q => q.CreatedAt);
+                            break;
                         case WorkflowDefinitionOrder.UpdatedAt:
                             query = query.OrderBy(q => q.UpdatedAt);
                             break;
@@ -143,6 +148,9 @@ namespace DMS.Repositories
                         case WorkflowDefinitionOrder.UpdatedAt:
                             query = query.OrderByDescending(q => q.UpdatedAt);
                             break;
+                        case WorkflowDefinitionOrder.CreatedAt:
+                            query = query.OrderByDescending(q => q.CreatedAt);
+                            break;
                     }
                     break;
             }
@@ -161,6 +169,7 @@ namespace DMS.Repositories
                 StartDate = filter.Selects.Contains(WorkflowDefinitionSelect.StartDate) ? q.StartDate : default(DateTime?),
                 EndDate = filter.Selects.Contains(WorkflowDefinitionSelect.EndDate) ? q.EndDate : default(DateTime?),
                 StatusId = filter.Selects.Contains(WorkflowDefinitionSelect.Status) ? q.StatusId : default(long),
+                CreatedAt = filter.Selects.Contains(WorkflowDefinitionSelect.CreatedAt) ? q.CreatedAt : default(DateTime),
                 UpdatedAt = filter.Selects.Contains(WorkflowDefinitionSelect.UpdatedAt) ? q.UpdatedAt : default(DateTime),
                 WorkflowType = filter.Selects.Contains(WorkflowDefinitionSelect.WorkflowType) && q.WorkflowType != null ? new WorkflowType
                 {
@@ -207,6 +216,7 @@ namespace DMS.Repositories
                 StartDate = x.StartDate,
                 EndDate = x.EndDate,
                 StatusId = x.StatusId,
+                CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
                 WorkflowType = x.WorkflowType == null ? null : new WorkflowType
                 {
@@ -396,6 +406,8 @@ namespace DMS.Repositories
                         WorkflowDirectionDAO.WorkflowDefinitionId = WorkflowDefinition.Id;
                         WorkflowDirectionDAO.FromStepId = WorkflowStepDAOs.Where(s => s.Name == WorkflowDirection.FromStep.Name).Select(s => s.Id).FirstOrDefault();
                         WorkflowDirectionDAO.ToStepId = WorkflowStepDAOs.Where(s => s.Name == WorkflowDirection.ToStep.Name).Select(s => s.Id).FirstOrDefault();
+                        WorkflowDirectionDAO.CreatedAt = StaticParams.DateTimeNow;
+                        WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
                         WorkflowDirectionDAOs.Add(WorkflowDirectionDAO);
                     }
                     await DataContext.WorkflowDirection.BulkMergeAsync(WorkflowDirectionDAOs);

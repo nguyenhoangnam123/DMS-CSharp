@@ -725,6 +725,7 @@ namespace DMS.Rpc.workflow_definition
             WorkflowDefinition.StartDate = WorkflowDefinition_WorkflowDefinitionDTO.StartDate;
             WorkflowDefinition.EndDate = WorkflowDefinition_WorkflowDefinitionDTO.EndDate;
             WorkflowDefinition.StatusId = WorkflowDefinition_WorkflowDefinitionDTO.StatusId;
+            WorkflowDefinition.CreatedAt = WorkflowDefinition_WorkflowDefinitionDTO.CreatedAt;
             WorkflowDefinition.UpdatedAt = WorkflowDefinition_WorkflowDefinitionDTO.UpdatedAt;
             WorkflowDefinition.WorkflowType = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowType == null ? null : new WorkflowType
             {
@@ -808,6 +809,7 @@ namespace DMS.Rpc.workflow_definition
             WorkflowDefinitionFilter.StartDate = WorkflowDefinition_WorkflowDefinitionFilterDTO.StartDate;
             WorkflowDefinitionFilter.EndDate = WorkflowDefinition_WorkflowDefinitionFilterDTO.EndDate;
             WorkflowDefinitionFilter.StatusId = WorkflowDefinition_WorkflowDefinitionFilterDTO.StatusId;
+            WorkflowDefinitionFilter.CreatedAt = WorkflowDefinition_WorkflowDefinitionFilterDTO.CreatedAt;
             WorkflowDefinitionFilter.UpdatedAt = WorkflowDefinition_WorkflowDefinitionFilterDTO.UpdatedAt;
             return WorkflowDefinitionFilter;
         }

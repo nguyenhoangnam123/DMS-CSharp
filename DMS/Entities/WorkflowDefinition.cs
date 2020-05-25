@@ -15,6 +15,7 @@ namespace DMS.Entities
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
+        public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public Status Status { get; set; }
         public WorkflowType WorkflowType { get; set; }
@@ -41,6 +42,7 @@ namespace DMS.Entities
         public DateFilter StartDate { get; set; }
         public DateFilter EndDate { get; set; }
         public IdFilter StatusId { get; set; }
+        public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<WorkflowDefinitionFilter> OrFilter { get; set; }
         public WorkflowDefinitionOrder OrderBy {get; set;}
@@ -58,7 +60,8 @@ namespace DMS.Entities
         EndDate = 5,
         Status = 6,
         WorkflowDirection = 7,
-        UpdatedAt = 8,
+        CreatedAt = 8,
+        UpdatedAt = 9,
     }
 
     [Flags]
@@ -73,6 +76,7 @@ namespace DMS.Entities
         EndDate = E._5,
         Status = E._6,
         WorkflowDirection = E._7,
+        CreatedAt = E._9,
         UpdatedAt = E._8,
     }
 }

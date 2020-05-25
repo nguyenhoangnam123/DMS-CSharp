@@ -32,6 +32,7 @@ namespace DMS.Rpc.workflow_definition
             this.StartDate = WorkflowDefinition.StartDate;
             this.EndDate = WorkflowDefinition.EndDate;
             this.StatusId = WorkflowDefinition.StatusId;
+            this.CreatedAt = WorkflowDefinition.CreatedAt;
             this.UpdatedAt = WorkflowDefinition.UpdatedAt;
             this.Status = WorkflowDefinition.Status == null ? null : new WorkflowDefinition_StatusDTO(WorkflowDefinition.Status);
             this.WorkflowType = WorkflowDefinition.WorkflowType == null ? null : new WorkflowDefinition_WorkflowTypeDTO(WorkflowDefinition.WorkflowType);
