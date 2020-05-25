@@ -318,6 +318,32 @@ namespace DMS.Rpc.app_user
             return AppUserFilter;
         }
 
+        [Route(AppUserRoute.FilterListOrganization), HttpPost]
+        public async Task<List<AppUser_OrganizationDTO>> FilterListOrganization([FromBody] AppUser_OrganizationFilterDTO AppUser_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = 99999;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.Id = AppUser_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = AppUser_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = AppUser_OrganizationFilterDTO.Name;
+            OrganizationFilter.ParentId = AppUser_OrganizationFilterDTO.ParentId;
+            OrganizationFilter.Path = AppUser_OrganizationFilterDTO.Path;
+            OrganizationFilter.Level = AppUser_OrganizationFilterDTO.Level;
+            OrganizationFilter.StatusId = AppUser_OrganizationFilterDTO.StatusId;
+            OrganizationFilter.Phone = AppUser_OrganizationFilterDTO.Phone;
+            OrganizationFilter.Address = AppUser_OrganizationFilterDTO.Address;
+            OrganizationFilter.Email = AppUser_OrganizationFilterDTO.Email;
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<AppUser_OrganizationDTO> AppUser_OrganizationDTOs = Organizations
+                .Select(x => new AppUser_OrganizationDTO(x)).ToList();
+            return AppUser_OrganizationDTOs;
+        }
+
         [Route(AppUserRoute.SingleListOrganization), HttpPost]
         public async Task<List<AppUser_OrganizationDTO>> SingleListOrganization([FromBody] AppUser_OrganizationFilterDTO AppUser_OrganizationFilterDTO)
         {

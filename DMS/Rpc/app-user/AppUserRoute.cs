@@ -17,6 +17,9 @@ namespace DMS.Rpc.app_user
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
         public const string Export = Default + "/export";
+
+        public const string FilterListOrganization = Default + "/filter-list-organization";
+
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListSex = Default + "/single-list-sex";
         public const string SingleListStatus = Default + "/single-list-status";
@@ -42,7 +45,7 @@ namespace DMS.Rpc.app_user
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> {Master,Detail,Count,List,Get, SingleListOrganization, SingleListSex, SingleListStatus, SingleListRole, CountRole, ListRole}},
+            { "Tìm kiếm", new List<string> {Master,Detail,Count,List,Get, FilterListOrganization, SingleListOrganization, SingleListSex, SingleListStatus, SingleListRole, CountRole, ListRole}},
         };
     }
 }

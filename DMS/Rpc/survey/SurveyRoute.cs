@@ -15,6 +15,7 @@ namespace DMS.Rpc.survey
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
+        public const string Export = Default + "/export";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListStatus = Default + "/filter-list-status";

@@ -14,6 +14,7 @@ namespace DMS.Rpc.survey
         public DateTime StartAt { get; set; }
         public DateTime EndAt { get; set; }
         public long StatusId { get; set; }
+        public long ResultCounter { get; set; }
         public List<Survey_SurveyQuestionDTO> SurveyQuestions { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

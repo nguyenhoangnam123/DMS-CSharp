@@ -21,8 +21,6 @@ namespace DMS.Services.MSurvey
         Task<Survey> Update(Survey Survey);
         Task<Survey> Delete(Survey Survey);
         SurveyFilter ToFilter(SurveyFilter SurveyFilter);
-        Task<Survey> SaveResult(Survey Survey);
-        Task<Survey> GetResult(long Id);
     }
 
     public class SurveyService : BaseService, ISurveyService
@@ -83,11 +81,6 @@ namespace DMS.Services.MSurvey
             if (Survey == null)
                 return null;
             return Survey;
-        }
-
-        public async Task<Survey> GetResult(long Id)
-        {
-            return null;
         }
 
         public async Task<Survey> Create(Survey Survey)
@@ -194,11 +187,6 @@ namespace DMS.Services.MSurvey
             }
             return filter;
         }
-
-        public async Task<Survey> SaveResult(Survey Survey)
-        {
-            
-            return Survey;
-        }
+       
     }
 }
