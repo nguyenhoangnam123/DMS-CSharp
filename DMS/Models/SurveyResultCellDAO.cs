@@ -10,11 +10,13 @@ namespace DMS.Models
         public long AppUserId { get; set; }
         public long RowOptionId { get; set; }
         public long ColumnOptionId { get; set; }
+        public long StoreId { get; set; }
         public DateTime Time { get; set; }
 
         public virtual AppUserDAO AppUser { get; set; }
         public virtual SurveyOptionDAO ColumnOption { get; set; }
         public virtual SurveyOptionDAO RowOption { get; set; }
+        public virtual StoreDAO Store { get; set; }
         public virtual SurveyQuestionDAO SurveyQuestion { get; set; }
     }
 }
