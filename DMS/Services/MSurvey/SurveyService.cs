@@ -22,6 +22,7 @@ namespace DMS.Services.MSurvey
         Task<Survey> Delete(Survey Survey);
         SurveyFilter ToFilter(SurveyFilter SurveyFilter);
         Task<Survey> SaveResult(Survey Survey);
+        Task<Survey> GetResult(long Id);
     }
 
     public class SurveyService : BaseService, ISurveyService
@@ -82,6 +83,11 @@ namespace DMS.Services.MSurvey
             if (Survey == null)
                 return null;
             return Survey;
+        }
+
+        public async Task<Survey> GetResult(long Id)
+        {
+            return null;
         }
 
         public async Task<Survey> Create(Survey Survey)
@@ -191,23 +197,7 @@ namespace DMS.Services.MSurvey
 
         public async Task<Survey> SaveResult(Survey Survey)
         {
-            List<SurveyResultSingle> SurveyResultSingles = new List<SurveyResultSingle>();
-            List<SurveyResultCell> SurveyResultCells = new List<SurveyResultCell>();
-            foreach (SurveyQuestion surveyQuestion in Survey.SurveyQuestions)
-            {
-                if (surveyQuestion.SurveyResultSingles != null && 
-                    (surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id ||
-                    surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id) )
-                {
-                    surveyQuestion.SurveyResultSingles.ForEach(s => s.AppUserId = CurrentContext.UserId);
-                }
-
-                if (surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id ||
-                    surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
-                {
-                    surveyQuestion.SurveyResultCells.ForEach(s => s.AppUserId = CurrentContext.UserId);
-                }
-            }
+            
             return Survey;
         }
     }

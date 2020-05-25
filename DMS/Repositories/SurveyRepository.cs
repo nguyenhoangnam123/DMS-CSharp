@@ -19,7 +19,6 @@ namespace DMS.Repositories
         Task<bool> Create(Survey Survey);
         Task<bool> Update(Survey Survey);
         Task<bool> Delete(Survey Survey);
-        Task<bool> SaveResult(Survey Survey);
     }
     public class SurveyRepository : ISurveyRepository
     {
@@ -271,6 +270,7 @@ namespace DMS.Repositories
             }
             return Survey;
         }
+
         public async Task<bool> Create(Survey Survey)
         {
             SurveyDAO SurveyDAO = new SurveyDAO();
@@ -355,47 +355,6 @@ namespace DMS.Repositories
                 }
                 await DataContext.SurveyOption.BulkMergeAsync(SurveyOptionDAOs);
             }
-        }
-        public async Task<bool> SaveResult(Survey Survey)
-        {
-            List<SurveyResultSingle> SurveyResultSingles = new List<SurveyResultSingle>();
-            List<SurveyResultCell> SurveyResultCells = new List<SurveyResultCell>();
-            foreach (SurveyQuestion surveyQuestion in Survey.SurveyQuestions)
-            {
-                if (surveyQuestion.SurveyResultSingles != null &&
-                    (surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id ||
-                    surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id))
-                {
-                    SurveyResultSingles.AddRange(surveyQuestion.SurveyResultSingles);
-                }
-
-                if (surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id ||
-                    surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
-                {
-                    SurveyResultCells.AddRange(surveyQuestion.SurveyResultCells);
-                }
-            }
-            List<SurveyResultSingleDAO> SurveyResultSingleDAOs = SurveyResultSingles.Select(s => new SurveyResultSingleDAO
-            {
-                AppUserId = s.AppUserId,
-                SurveyOptionId = s.SurveyOptionId,
-                SurveyQuestionId = s.SurveyQuestionId,
-                Time = StaticParams.DateTimeNow,
-            }).ToList();
-            List<SurveyResultCellDAO> SurveyResultCellDAOs = SurveyResultCells.Select(s => new SurveyResultCellDAO
-            {
-                AppUserId = s.AppUserId,
-                ColumnOptionId = s.ColumnOptionId,
-                RowOptionId = s.RowOptionId,
-                SurveyQuestionId = s.SurveyQuestionId,
-                Time = StaticParams.DateTimeNow,
-            }).ToList();
-
-            await DataContext.SurveyResultSingle.Where(s => s.SurveyQuestion.SurveyId == Survey.Id).DeleteFromQueryAsync();
-            await DataContext.SurveyResultCell.Where(s => s.SurveyQuestion.SurveyId == Survey.Id).DeleteFromQueryAsync();
-            await DataContext.SurveyResultSingle.BulkInsertAsync(SurveyResultSingleDAOs);
-            await DataContext.SurveyResultCell.BulkInsertAsync(SurveyResultCellDAOs);
-            return true;
         }
     }
 }

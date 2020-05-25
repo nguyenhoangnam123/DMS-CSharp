@@ -8,6 +8,7 @@ namespace DMS.Models
         public SurveyDAO()
         {
             SurveyQuestions = new HashSet<SurveyQuestionDAO>();
+            SurveyResults = new HashSet<SurveyResultDAO>();
         }
 
         public long Id { get; set; }
@@ -24,5 +25,6 @@ namespace DMS.Models
         public virtual AppUserDAO Creator { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<SurveyQuestionDAO> SurveyQuestions { get; set; }
+        public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
     }
 }

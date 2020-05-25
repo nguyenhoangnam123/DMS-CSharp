@@ -6,24 +6,21 @@ using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class SurveyResultSingle : DataEntity,  IEquatable<SurveyResultSingle>
+    public class SurveyResultSingle : DataEntity, IEquatable<SurveyResultSingle>
     {
-        public long Id { get; set; }
         public long SurveyQuestionId { get; set; }
+        public long SurveyResultId { get; set; }
         public long SurveyOptionId { get; set; }
-        public long AppUserId { get; set; }
-        public DateTime Time { get; set; }
-        public AppUser AppUser { get; set; }
+        public SurveyResult SurveyResult { get; set; }
         public SurveyOption SurveyOption { get; set; }
-        public SurveyQuestion SurveyQuestion { get; set; }
 
         public bool Equals(SurveyResultSingle other)
         {
-            return other != null && Id == other.Id;
+            return other != null && SurveyQuestionId == other.SurveyQuestionId && SurveyResultId == other.SurveyResultId;
         }
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            return SurveyQuestionId.GetHashCode() ^ SurveyResultId.GetHashCode();
         }
     }
 
@@ -33,10 +30,11 @@ namespace DMS.Entities
         public IdFilter SurveyQuestionId { get; set; }
         public IdFilter SurveyOptionId { get; set; }
         public IdFilter AppUserId { get; set; }
+        public IdFilter StoreId { get; set; }
         public DateFilter Time { get; set; }
         public List<SurveyResultSingleFilter> OrFilter { get; set; }
-        public SurveyResultSingleOrder OrderBy {get; set;}
-        public SurveyResultSingleSelect Selects {get; set;}
+        public SurveyResultSingleOrder OrderBy { get; set; }
+        public SurveyResultSingleSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -46,17 +44,19 @@ namespace DMS.Entities
         SurveyQuestion = 1,
         SurveyOption = 2,
         AppUser = 3,
-        Time = 4,
+        Store = 4,
+        Time = 5,
     }
 
     [Flags]
-    public enum SurveyResultSingleSelect:long
+    public enum SurveyResultSingleSelect : long
     {
         ALL = E.ALL,
         Id = E._0,
         SurveyQuestion = E._1,
         SurveyOption = E._2,
         AppUser = E._3,
-        Time = E._4,
+        Store = E._4,
+        Time = E._5,
     }
 }

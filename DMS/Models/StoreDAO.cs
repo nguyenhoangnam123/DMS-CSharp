@@ -18,8 +18,7 @@ namespace DMS.Models
             InverseParentStore = new HashSet<StoreDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
             StoreImageMappings = new HashSet<StoreImageMappingDAO>();
-            SurveyResultCells = new HashSet<SurveyResultCellDAO>();
-            SurveyResultSingles = new HashSet<SurveyResultSingleDAO>();
+            SurveyResults = new HashSet<SurveyResultDAO>();
         }
 
         public long Id { get; set; }
@@ -71,7 +70,6 @@ namespace DMS.Models
         public virtual ICollection<StoreDAO> InverseParentStore { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
         public virtual ICollection<StoreImageMappingDAO> StoreImageMappings { get; set; }
-        public virtual ICollection<SurveyResultCellDAO> SurveyResultCells { get; set; }
-        public virtual ICollection<SurveyResultSingleDAO> SurveyResultSingles { get; set; }
+        public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
     }
 }

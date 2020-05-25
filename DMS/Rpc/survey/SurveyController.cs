@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +28,7 @@ namespace DMS.Rpc.survey
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
+        public const string Export = Default + "/export";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListStatus = Default + "/filter-list-status";
@@ -165,7 +166,97 @@ namespace DMS.Rpc.survey
             else
                 return BadRequest(Survey_SurveyDTO);
         }
-        
+
+        //[Route(SurveyRoute.Export), HttpPost]
+        //public async Task<FileResult> Export([FromBody] Survey_SurveyFilterDTO Survey_SurveyFilterDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
+
+        //    MemoryStream memoryStream = new MemoryStream();
+        //    using (ExcelPackage excel = new ExcelPackage(memoryStream))
+        //    {
+        //        #region Survey
+        //        Survey Survey = await SurveyService.GetResult(Survey_SurveyFilterDTO.Id.Equal ?? 0);
+        //        if (Survey == null)
+        //            return null;
+
+        //        List<Survey_SurveyResultSingleDTO> QUESTION_SINGLE_CHOICEs = Survey.SurveyQuestions
+        //            .Where(x => x.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id)
+        //            .SelectMany(x => x.SurveyResultSingles)
+        //            .Select(x => new Survey_SurveyResultSingleDTO(x)).ToList();
+
+        //        List<Survey_SurveyResultSingleDTO> QUESTION_MULTIPLE_CHOICEs = Survey.SurveyQuestions
+        //            .Where(x => x.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id)
+        //            .SelectMany(x => x.SurveyResultSingles)
+        //            .Select(x => new Survey_SurveyResultSingleDTO(x)).ToList();
+
+        //        List<Survey_SurveyResultCellDTO> TABLE_SINGLE_CHOICEs = Survey.SurveyQuestions
+        //            .Where(x => x.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
+        //            .SelectMany(x => x.SurveyResultCells)
+        //            .Select(x => new Survey_SurveyResultCellDTO(x)).ToList();
+
+        //        List<Survey_SurveyResultCellDTO> TABLE_MULTIPLE_CHOICEs = Survey.SurveyQuestions
+        //            .Where(x => x.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id)
+        //            .SelectMany(x => x.SurveyResultCells)
+        //            .Select(x => new Survey_SurveyResultCellDTO(x)).ToList();
+        //        var CellAppUserIds = Survey.SurveyQuestions.SelectMany( sq => sq.SurveyResultCells.Select(x => x.AppUserId)).ToList();
+        //        var SingleAppUserIds = Survey.SurveyQuestions.SelectMany( sq => sq.SurveyResultSingles.Select(x => x.AppUserId)).ToList();
+        //        Dictionary<AppUser, Dictionary<string, List<string>>> Results = new Dictionary<AppUser, Dictionary<string, List<string>>>();
+        //        foreach (var SurveyQuestion in Survey.SurveyQuestions)
+        //        {
+        //            if(SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
+        //            {
+        //                var SurveyResultCells = SurveyQuestion.SurveyResultCells.Where(x => x.SurveyQuestionId == SurveyQuestion.Id).ToList();
+                        
+        //                Dictionary<string, List<string>> questionResult = new Dictionary<string, List<string>>();
+        //                Results.Add()
+        //                foreach (var AppUserId in AppUserIds)
+        //                {
+        //                    List<SurveyOption> surveyOptions = SurveyQuestion.SurveyOptions
+        //                        .Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.ROW.Id).ToList();
+
+        //                }
+                        
+                        
+        //                foreach (var SurveyResultCell in SurveyResultCells)
+        //                {
+        //                    questionResult.Add(SurveyResultCell.RowOption.Content, SurveyResultCell.)
+        //                    Results.Add(SurveyResultCell.AppUser, )
+        //                }
+        //            }
+        //        }
+
+        //        var SurveyResultHeaders = new List<string[]>()
+        //        {
+        //            new string[] {
+        //                "Thời gian",
+        //                "Cửa hàng",
+        //                "Mã cửa hàng",
+        //                "Nhân viên",
+        //            }
+        //        };
+        //        List<object[]> SurveyData = new List<object[]>();
+        //        for (int i = 0; i < Surveys.Count; i++)
+        //        {
+        //            var Survey = Surveys[i];
+        //            SurveyData.Add(new Object[]
+        //            {
+        //                Survey.Id,
+        //                Survey.Title,
+        //                Survey.Description,
+        //                Survey.StartAt,
+        //                Survey.EndAt,
+        //                Survey.StatusId,
+        //                Survey.CreatorId,
+        //            });
+        //        }
+        //        excel.GenerateWorksheet("Survey", SurveyHeaders, SurveyData);
+        //        #endregion
+        //        excel.Save();
+        //    }
+        //    return File(memoryStream.ToArray(), "application/octet-stream", "Survey.xlsx");
+        //}
 
         private async Task<bool> HasPermission(long Id)
         {
