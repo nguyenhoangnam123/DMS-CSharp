@@ -377,18 +377,14 @@ namespace DMS.Repositories
             }
             List<SurveyResultSingleDAO> SurveyResultSingleDAOs = SurveyResultSingles.Select(s => new SurveyResultSingleDAO
             {
-                AppUserId = s.AppUserId,
                 SurveyOptionId = s.SurveyOptionId,
                 SurveyQuestionId = s.SurveyQuestionId,
-                Time = StaticParams.DateTimeNow,
             }).ToList();
             List<SurveyResultCellDAO> SurveyResultCellDAOs = SurveyResultCells.Select(s => new SurveyResultCellDAO
             {
-                AppUserId = s.AppUserId,
                 ColumnOptionId = s.ColumnOptionId,
                 RowOptionId = s.RowOptionId,
                 SurveyQuestionId = s.SurveyQuestionId,
-                Time = StaticParams.DateTimeNow,
             }).ToList();
 
             await DataContext.SurveyResultSingle.Where(s => s.SurveyQuestion.SurveyId == Survey.Id).DeleteFromQueryAsync();

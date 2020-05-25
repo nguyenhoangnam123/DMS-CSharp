@@ -81,6 +81,7 @@ namespace DMS.Models
         public virtual DbSet<SurveyOptionTypeDAO> SurveyOptionType { get; set; }
         public virtual DbSet<SurveyQuestionDAO> SurveyQuestion { get; set; }
         public virtual DbSet<SurveyQuestionTypeDAO> SurveyQuestionType { get; set; }
+        public virtual DbSet<SurveyResultDAO> SurveyResult { get; set; }
         public virtual DbSet<SurveyResultCellDAO> SurveyResultCell { get; set; }
         public virtual DbSet<SurveyResultSingleDAO> SurveyResultSingle { get; set; }
         public virtual DbSet<TaxTypeDAO> TaxType { get; set; }
@@ -2002,8 +2003,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<StoreCheckingDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.CheckInAt).HasColumnType("datetime");
 
                 entity.Property(e => e.CheckOutAt).HasColumnType("datetime");
@@ -2257,15 +2256,33 @@ namespace DMS.Models
                     .HasMaxLength(500);
             });
 
-            modelBuilder.Entity<SurveyResultCellDAO>(entity =>
+            modelBuilder.Entity<SurveyResultDAO>(entity =>
             {
                 entity.Property(e => e.Time).HasColumnType("datetime");
 
                 entity.HasOne(d => d.AppUser)
-                    .WithMany(p => p.SurveyResultCells)
+                    .WithMany(p => p.SurveyResults)
                     .HasForeignKey(d => d.AppUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SurveyResultTable_AppUser");
+                    .HasConstraintName("FK_SurveyResult_AppUser");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.SurveyResults)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyResult_Store");
+
+                entity.HasOne(d => d.Survey)
+                    .WithMany(p => p.SurveyResults)
+                    .HasForeignKey(d => d.SurveyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyResult_Survey");
+            });
+
+            modelBuilder.Entity<SurveyResultCellDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.SurveyResultId, e.SurveyQuestionId })
+                    .HasName("PK_SurveyResultTable");
 
                 entity.HasOne(d => d.ColumnOption)
                     .WithMany(p => p.SurveyResultCellColumnOptions)
@@ -2279,34 +2296,23 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyResultTable_SurveyOption");
 
-                entity.HasOne(d => d.Store)
-                    .WithMany(p => p.SurveyResultCells)
-                    .HasForeignKey(d => d.StoreId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SurveyResultCell_Store");
-
                 entity.HasOne(d => d.SurveyQuestion)
                     .WithMany(p => p.SurveyResultCells)
                     .HasForeignKey(d => d.SurveyQuestionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyResultCell_SurveyQuestion");
+
+                entity.HasOne(d => d.SurveyResult)
+                    .WithMany(p => p.SurveyResultCells)
+                    .HasForeignKey(d => d.SurveyResultId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyResultCell_SurveyResult");
             });
 
             modelBuilder.Entity<SurveyResultSingleDAO>(entity =>
             {
-                entity.Property(e => e.Time).HasColumnType("datetime");
-
-                entity.HasOne(d => d.AppUser)
-                    .WithMany(p => p.SurveyResultSingles)
-                    .HasForeignKey(d => d.AppUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SurveyResultSingle_AppUser");
-
-                entity.HasOne(d => d.Store)
-                    .WithMany(p => p.SurveyResultSingles)
-                    .HasForeignKey(d => d.StoreId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SurveyResultSingle_Store");
+                entity.HasKey(e => new { e.SurveyResultId, e.SurveyQuestionId })
+                    .HasName("PK_SurveyResultSingle_1");
 
                 entity.HasOne(d => d.SurveyOption)
                     .WithMany(p => p.SurveyResultSingles)
@@ -2319,6 +2325,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.SurveyQuestionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyResultSingle_SurveyQuestion");
+
+                entity.HasOne(d => d.SurveyResult)
+                    .WithMany(p => p.SurveyResultSingles)
+                    .HasForeignKey(d => d.SurveyResultId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyResultSingle_SurveyResult");
             });
 
             modelBuilder.Entity<TaxTypeDAO>(entity =>
