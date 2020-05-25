@@ -22,63 +22,6 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.store
 {
-    public class StoreRoute : Root
-    {
-        public const string Master = Module + "/store/store-master";
-        public const string Detail = Module + "/store/store-detail";
-        private const string Default = Rpc + Module + "/store";
-        public const string Mobile = Default + "/master-data.stores";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Approve = Default + "/approve";
-        public const string Reject = Default + "/reject";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-template";
-        public const string BulkDelete = Default + "/bulk-delete";
-        public const string SaveImage = Default + "/save-image";
-
-        public const string SingleListDistrict = Default + "/single-list-district";
-        public const string SingleListOrganization = Default + "/single-list-organization";
-        public const string SingleListParentStore = Default + "/single-list-parent-store";
-        public const string SingleListProvince = Default + "/single-list-province";
-        public const string SingleListStatus = Default + "/single-list-status";
-        public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
-        public const string SingleListStoreType = Default + "/single-list-store-type";
-        public const string SingleListWard = Default + "/single-list-ward";
-
-        public const string ListReseller = Default + "/list-reseller";
-        public const string CountReseller = Default + "/count-reseller";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
-        {
-            { nameof(StoreFilter.Code), FieldType.STRING },
-            { nameof(StoreFilter.Name), FieldType.STRING },
-            { nameof(StoreFilter.ParentStoreId), FieldType.ID },
-            { nameof(StoreFilter.OrganizationId), FieldType.ID },
-            { nameof(StoreFilter.StoreTypeId), FieldType.ID },
-            { nameof(StoreFilter.StoreGroupingId), FieldType.ID },
-            { nameof(StoreFilter.ResellerId), FieldType.ID },
-            { nameof(StoreFilter.Telephone), FieldType.STRING },
-            { nameof(StoreFilter.ProvinceId), FieldType.ID },
-            { nameof(StoreFilter.DistrictId), FieldType.ID },
-            { nameof(StoreFilter.WardId), FieldType.ID },
-            { nameof(StoreFilter.Address), FieldType.STRING },
-            { nameof(StoreFilter.DeliveryAddress), FieldType.STRING },
-            { nameof(StoreFilter.Latitude), FieldType.DECIMAL },
-            { nameof(StoreFilter.Longitude), FieldType.DECIMAL },
-            { nameof(StoreFilter.DeliveryLatitude), FieldType.DECIMAL },
-            { nameof(StoreFilter.DeliveryLongitude), FieldType.DECIMAL },
-            { nameof(StoreFilter.OwnerName), FieldType.STRING },
-            { nameof(StoreFilter.OwnerPhone), FieldType.STRING },
-            { nameof(StoreFilter.OwnerEmail), FieldType.STRING },
-            { nameof(StoreFilter.StatusId), FieldType.ID },
-        };
-    }
-
     public class StoreController : RpcController
     {
         private IDistrictService DistrictService;
@@ -969,6 +912,118 @@ namespace DMS.Rpc.store
             StoreFilter.OwnerEmail = Store_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = Store_StoreFilterDTO.StatusId;
             return StoreFilter;
+        }
+
+        [Route(StoreRoute.FilterListDistrict), HttpPost]
+        public async Task<List<Store_DistrictDTO>> FilterListDistrict([FromBody] Store_DistrictFilterDTO Store_DistrictFilterDTO)
+        {
+            DistrictFilter DistrictFilter = new DistrictFilter();
+            DistrictFilter.Skip = 0;
+            DistrictFilter.Take = 20;
+            DistrictFilter.OrderBy = DistrictOrder.Id;
+            DistrictFilter.OrderType = OrderType.ASC;
+            DistrictFilter.Selects = DistrictSelect.ALL;
+            DistrictFilter.Id = Store_DistrictFilterDTO.Id;
+            DistrictFilter.Name = Store_DistrictFilterDTO.Name;
+            DistrictFilter.Priority = Store_DistrictFilterDTO.Priority;
+            DistrictFilter.ProvinceId = Store_DistrictFilterDTO.ProvinceId;
+            DistrictFilter.StatusId = Store_DistrictFilterDTO.StatusId;
+
+            List<District> Districts = await DistrictService.List(DistrictFilter);
+            List<Store_DistrictDTO> Store_DistrictDTOs = Districts
+                .Select(x => new Store_DistrictDTO(x)).ToList();
+            return Store_DistrictDTOs;
+        }
+
+        [Route(StoreRoute.FilterListOrganization), HttpPost]
+        public async Task<List<Store_OrganizationDTO>> FilterListOrganization([FromBody] Store_OrganizationFilterDTO Store_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = int.MaxValue;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.StatusId = Store_OrganizationFilterDTO.StatusId;
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<Store_OrganizationDTO> Store_OrganizationDTOs = Organizations
+                .Select(x => new Store_OrganizationDTO(x)).ToList();
+            return Store_OrganizationDTOs;
+        }
+
+        [Route(StoreRoute.FilterListProvince), HttpPost]
+        public async Task<List<Store_ProvinceDTO>> FilterListProvince([FromBody] Store_ProvinceFilterDTO Store_ProvinceFilterDTO)
+        {
+            ProvinceFilter ProvinceFilter = new ProvinceFilter();
+            ProvinceFilter.Skip = 0;
+            ProvinceFilter.Take = 20;
+            ProvinceFilter.OrderBy = ProvinceOrder.Id;
+            ProvinceFilter.OrderType = OrderType.ASC;
+            ProvinceFilter.Selects = ProvinceSelect.ALL;
+            ProvinceFilter.Id = Store_ProvinceFilterDTO.Id;
+            ProvinceFilter.Name = Store_ProvinceFilterDTO.Name;
+            ProvinceFilter.StatusId = Store_ProvinceFilterDTO.StatusId;
+
+            List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
+            List<Store_ProvinceDTO> Store_ProvinceDTOs = Provinces
+                .Select(x => new Store_ProvinceDTO(x)).ToList();
+            return Store_ProvinceDTOs;
+        }
+
+        [Route(StoreRoute.FilterListParentStore), HttpPost]
+        public async Task<List<Store_StoreDTO>> FilterListParentStore([FromBody] Store_StoreFilterDTO Store_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = 0;
+            StoreFilter.Take = 20;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = Store_StoreFilterDTO.Id;
+            StoreFilter.Code = Store_StoreFilterDTO.Code;
+            StoreFilter.Name = Store_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = Store_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = Store_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = Store_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = Store_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.Telephone = Store_StoreFilterDTO.Telephone;
+            StoreFilter.ResellerId = Store_StoreFilterDTO.ResellerId;
+            StoreFilter.ProvinceId = Store_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = Store_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = Store_StoreFilterDTO.WardId;
+            StoreFilter.Address = Store_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = Store_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = Store_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = Store_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = Store_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = Store_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = Store_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = Store_StoreFilterDTO.StatusId;
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<Store_StoreDTO> Store_StoreDTOs = Stores
+                .Select(x => new Store_StoreDTO(x)).ToList();
+            return Store_StoreDTOs;
+        }
+
+        [Route(StoreRoute.FilterListWard), HttpPost]
+        public async Task<List<Store_WardDTO>> FilterListWard([FromBody] Store_WardFilterDTO Store_WardFilterDTO)
+        {
+            WardFilter WardFilter = new WardFilter();
+            WardFilter.Skip = 0;
+            WardFilter.Take = 20;
+            WardFilter.OrderBy = WardOrder.Id;
+            WardFilter.OrderType = OrderType.ASC;
+            WardFilter.Selects = WardSelect.ALL;
+            WardFilter.Id = Store_WardFilterDTO.Id;
+            WardFilter.Name = Store_WardFilterDTO.Name;
+            WardFilter.DistrictId = Store_WardFilterDTO.DistrictId;
+            WardFilter.StatusId = Store_WardFilterDTO.StatusId;
+            List<Ward> Wards = await WardService.List(WardFilter);
+            List<Store_WardDTO> Store_WardDTOs = Wards
+                .Select(x => new Store_WardDTO(x)).ToList();
+            return Store_WardDTOs;
         }
 
         [Route(StoreRoute.SingleListDistrict), HttpPost]

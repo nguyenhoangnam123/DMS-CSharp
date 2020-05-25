@@ -23,31 +23,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.organization
 {
-    public class OrganizationRoute : Root
-    {
-        public const string Master = Module + "/organization/organization-master";
-        public const string Detail = Module + "/organization/organization-detail";
-        private const string Default = Rpc + Module + "/organization";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
-        public const string Export = Default + "/export";
-        public const string SingleListOrganization = Default + "/single-list-organization";
-        public const string SingleListStatus = Default + "/single-list-status";
-        public const string SingleListAppUser = Default + "/single-list-app-user";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
-        {
-            { nameof(OrganizationFilter.Code), FieldType.STRING },
-            { nameof(OrganizationFilter.Name), FieldType.STRING },
-            { nameof(OrganizationFilter.ParentId), FieldType.ID },
-            { nameof(OrganizationFilter.Path), FieldType.STRING },
-            { nameof(OrganizationFilter.Level), FieldType.LONG },
-            { nameof(OrganizationFilter.StatusId), FieldType.ID },
-            { nameof(OrganizationFilter.Phone), FieldType.STRING },
-            { nameof(OrganizationFilter.Email), FieldType.STRING },
-            { nameof(OrganizationFilter.Address), FieldType.STRING },
-        };
-    }
+    
 
     public class OrganizationController : RpcController
     {

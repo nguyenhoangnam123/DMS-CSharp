@@ -29,64 +29,7 @@ using DMS.Services.MUsedVariation;
 
 namespace DMS.Rpc.product
 {
-    public class ProductRoute : Root
-    {
-        public const string Master = Module + "/product/product-master";
-        public const string Detail = Module + "/product/product-detail";
-        private const string Default = Rpc + Module + "/product";
-        public const string Mobile = Default + "/master-data.products";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-template";
-        public const string BulkDelete = Default + "/bulk-delete";
-        public const string SaveImage = Default + "/save-image";
-        public const string SaveItemImage = Default + "/save-item-image";
-
-        public const string SingleListBrand = Default + "/single-list-brand";
-        public const string SingleListProductType = Default + "/single-list-product-type";
-        public const string SingleListStatus = Default + "/single-list-status";
-        public const string SingleListSupplier = Default + "/single-list-supplier";
-        public const string SingleListTaxType = Default + "/single-list-tax-type";
-        public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
-        public const string SingleListUnitOfMeasureGrouping = Default + "/single-list-unit-of-measure-grouping";
-        public const string SingleListItem = Default + "/single-list-item";
-        public const string SingleListImage = Default + "/single-list-image";
-        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
-        public const string SingleListVariationGrouping = Default + "/single-list-variation-grouping";
-        public const string SingleListUsedVariation = Default + "/single-list-used-variation";
-
-        public const string CountProductGrouping = Default + "/count-product-grouping";
-        public const string ListProductGrouping = Default + "/list-product-grouping";
-        public const string ListItem = Default + "/list-item";
-        public const string CountItem = Default + "/count-item";
-        public const string ListInventory = Default + "/list-inventory";
-        public const string CountInventory = Default + "/count-inventory";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
-        {
-            { nameof(ProductFilter.Code), FieldType.STRING },
-            { nameof(ProductFilter.SupplierCode), FieldType.STRING },
-            { nameof(ProductFilter.Name), FieldType.STRING },
-            { nameof(ProductFilter.Description), FieldType.STRING },
-            { nameof(ProductFilter.ScanCode), FieldType.STRING },
-            { nameof(ProductFilter.ProductTypeId), FieldType.ID },
-            { nameof(ProductFilter.SupplierId), FieldType.ID },
-            { nameof(ProductFilter.BrandId), FieldType.ID },
-            { nameof(ProductFilter.UnitOfMeasureId), FieldType.ID },
-            { nameof(ProductFilter.UnitOfMeasureGroupingId), FieldType.ID },
-            { nameof(ProductFilter.SalePrice), FieldType.DECIMAL },
-            { nameof(ProductFilter.RetailPrice), FieldType.DECIMAL },
-            { nameof(ProductFilter.TaxTypeId), FieldType.ID },
-            { nameof(ProductFilter.StatusId), FieldType.ID },
-            { nameof(ProductFilter.UsedVariationId), FieldType.ID },
-        };
-    }
-
+   
     public class ProductController : RpcController
     {
         private readonly IWebHostEnvironment _env;

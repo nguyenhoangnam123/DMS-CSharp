@@ -18,37 +18,6 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.store_grouping
 {
-    public class StoreGroupingRoute : Root
-    {
-        public const string Master = Module + "/store-grouping/store-grouping-master";
-        public const string Detail = Module + "/store-grouping/store-grouping-detail";
-        private const string Default = Rpc + Module + "/store-grouping";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string BulkDelete = Default + "/bulk-delete";
-
-        public const string SingleListParentStoreGrouping = Default + "/single-list-parent-store-store";
-        public const string SingleListStatus = Default + "/single-list-status";
-
-        public const string CountStore = Default + "/count-store";
-        public const string ListStore = Default + "/list-store";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
-        {
-            { nameof(StoreGroupingFilter.Code), FieldType.STRING },
-            { nameof(StoreGroupingFilter.Name), FieldType.STRING },
-            { nameof(StoreGroupingFilter.ParentId), FieldType.ID },
-            { nameof(StoreGroupingFilter.Path), FieldType.STRING },
-            { nameof(StoreGroupingFilter.Level), FieldType.LONG },
-            { nameof(StoreGroupingFilter.StatusId), FieldType.ID },
-        };
-    }
-
     public class StoreGroupingController : RpcController
     {
         private IStoreService StoreService;

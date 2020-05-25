@@ -54,9 +54,12 @@ namespace DMS.Rpc.banner
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {Master,Detail,Count,List,Get, FilterListAppUser, FilterListStatus}},
-            { "Thêm mới", new List<string> {Detail, Create, SingleListAppUser, SingleListAppUser}},
-            { "Sửa", new List<string> {Detail, Update, SingleListAppUser, SingleListAppUser}},
-            { "Xoá", new List<string> {Master,Detail,Count,List,Get, Delete, FilterListAppUser, FilterListStatus}},
+            { "Thêm mới", new List<string> {Master, Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Create, SingleListAppUser, SingleListAppUser,}},
+            { "Sửa", new List<string> { Master, Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Update, SingleListAppUser, SingleListAppUser}},
+            { "Xoá", new List<string> { Master, Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Delete, SingleListAppUser, SingleListAppUser}},
+            { "Xoá nhiều", new List<string> {Master,Detail,Count,List,Get, BulkDelete, FilterListAppUser, FilterListStatus}},
+            { "Xuất excel", new List<string> {Master,Detail,Count,List,Get, Export, FilterListAppUser, FilterListStatus}},
+            { "Nhập excel", new List<string> {Master,Detail,Count,List,Get, ExportTemplate, Import, FilterListAppUser, FilterListStatus}},
         };
     }
 }
