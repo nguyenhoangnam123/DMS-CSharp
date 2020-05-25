@@ -33,7 +33,8 @@ namespace DMS.Services.MIndirectSalesOrder
             UnitOfMeasureNotExisted,
             PrimaryUnitOfMeasureNotExisted,
             QuantityEmpty,
-            ItemNotExisted
+            ItemNotExisted,
+            QuantityInvalid
         }
 
         private IUOW UOW;
@@ -228,7 +229,11 @@ namespace DMS.Services.MIndirectSalesOrder
                 foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                 {
                     if(listIdsNotExisted.Contains(IndirectSalesOrderContent.ItemId))
-                        IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Item), ErrorCode.ItemNotExisted);
+                        IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Item), ErrorCode.ItemNotExisted);
+                    else if(IndirectSalesOrderContent.Quantity <= 0)
+                    {
+                        IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Quantity), ErrorCode.QuantityInvalid);
+                    }
                 }
             }
 
@@ -248,7 +253,11 @@ namespace DMS.Services.MIndirectSalesOrder
                 foreach (var IndirectSalesOrderPromotion in IndirectSalesOrder.IndirectSalesOrderPromotions)
                 {
                     if (listIdsNotExisted.Contains(IndirectSalesOrderPromotion.ItemId))
-                        IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderPromotion.Item), ErrorCode.ItemNotExisted);
+                        IndirectSalesOrderPromotion.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderPromotion.Item), ErrorCode.ItemNotExisted);
+                    else if (IndirectSalesOrderPromotion.Quantity <= 0)
+                    {
+                        IndirectSalesOrderPromotion.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderPromotion.Quantity), ErrorCode.QuantityInvalid);
+                    }
                 }
             }
             return IndirectSalesOrder.IsValidated;
