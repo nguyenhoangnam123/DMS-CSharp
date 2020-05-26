@@ -13,15 +13,20 @@ namespace DMS.Models
             ERouteChangeRequests = new HashSet<ERouteChangeRequestDAO>();
             ERouteCreators = new HashSet<ERouteDAO>();
             ERouteSaleEmployees = new HashSet<ERouteDAO>();
+            GeneralKpiCreators = new HashSet<GeneralKpiDAO>();
+            GeneralKpiEmployees = new HashSet<GeneralKpiDAO>();
             ImageStoreCheckingMappings = new HashSet<ImageStoreCheckingMappingDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
             InventoryHistories = new HashSet<InventoryHistoryDAO>();
+            ItemSpecificKpiCreators = new HashSet<ItemSpecificKpiDAO>();
+            ItemSpecificKpiEmployees = new HashSet<ItemSpecificKpiDAO>();
             RequestWorkflowStepMappings = new HashSet<RequestWorkflowStepMappingDAO>();
             Resellers = new HashSet<ResellerDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
             Suppliers = new HashSet<SupplierDAO>();
             SurveyResults = new HashSet<SurveyResultDAO>();
             Surveys = new HashSet<SurveyDAO>();
+            WorkflowDefinitions = new HashSet<WorkflowDefinitionDAO>();
         }
 
         public long Id { get; set; }
@@ -30,7 +35,7 @@ namespace DMS.Models
         public string Address { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public string Position { get; set; }
+        public long? PositionId { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
         public long StatusId { get; set; }
@@ -44,6 +49,7 @@ namespace DMS.Models
         public DateTime? Birthday { get; set; }
 
         public virtual OrganizationDAO Organization { get; set; }
+        public virtual PositionDAO Position { get; set; }
         public virtual ProvinceDAO Province { get; set; }
         public virtual SexDAO Sex { get; set; }
         public virtual StatusDAO Status { get; set; }
@@ -53,14 +59,19 @@ namespace DMS.Models
         public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }
         public virtual ICollection<ERouteDAO> ERouteCreators { get; set; }
         public virtual ICollection<ERouteDAO> ERouteSaleEmployees { get; set; }
+        public virtual ICollection<GeneralKpiDAO> GeneralKpiCreators { get; set; }
+        public virtual ICollection<GeneralKpiDAO> GeneralKpiEmployees { get; set; }
         public virtual ICollection<ImageStoreCheckingMappingDAO> ImageStoreCheckingMappings { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
         public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
+        public virtual ICollection<ItemSpecificKpiDAO> ItemSpecificKpiCreators { get; set; }
+        public virtual ICollection<ItemSpecificKpiDAO> ItemSpecificKpiEmployees { get; set; }
         public virtual ICollection<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappings { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
         public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
         public virtual ICollection<SurveyDAO> Surveys { get; set; }
+        public virtual ICollection<WorkflowDefinitionDAO> WorkflowDefinitions { get; set; }
     }
 }
