@@ -13,6 +13,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using DMS.Services.MBrand;
+using DMS.Services.MOrganization;
+using DMS.Services.MProduct;
+using DMS.Services.MProductGrouping;
+using DMS.Services.MProductType;
+using DMS.Services.MReseller;
+using DMS.Services.MStore;
+using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreType;
+using DMS.Services.MSupplier;
+using DMS.Services.MWarehouse;
 
 namespace DMS.Rpc.role
 {
@@ -23,12 +34,34 @@ namespace DMS.Rpc.role
         private IRoleService RoleService;
         private IPermissionService PermissionService;
         private IStatusService StatusService;
+        private IBrandService BrandService;
+        private IOrganizationService OrganizationService;
+        private IProductService ProductService;
+        private IProductGroupingService ProductGroupingService;
+        private IProductTypeService ProductTypeService;
+        private IResellerService ResellerService;
+        private IStoreService StoreService;
+        private IStoreGroupingService StoreGroupingService;
+        private IStoreTypeService StoreTypeService;
+        private ISupplierService SupplierService;
+        private IWarehouseService WarehouseService;
 
         public RoleController(
             IAppUserService AppUserService,
             IMenuService MenuService,
             IRoleService RoleService,
             IPermissionService PermissionService,
+            IBrandService BrandService,
+            IOrganizationService OrganizationService,
+            IProductService ProductService,
+            IProductGroupingService ProductGroupingService,
+            IProductTypeService ProductTypeService,
+            IResellerService ResellerService,
+            IStoreService StoreService,
+            IStoreGroupingService StoreGroupingService,
+            IStoreTypeService StoreTypeService,
+            ISupplierService SupplierService,
+            IWarehouseService WarehouseService,
             IStatusService StatusService
         )
         {
@@ -36,6 +69,17 @@ namespace DMS.Rpc.role
             this.MenuService = MenuService;
             this.RoleService = RoleService;
             this.PermissionService = PermissionService;
+            this.BrandService = BrandService;
+            this.OrganizationService = OrganizationService;
+            this.ProductService = ProductService;
+            this.ProductGroupingService = ProductGroupingService;
+            this.ProductTypeService = ProductTypeService;
+            this.ResellerService = ResellerService;
+            this.StoreService = StoreService;
+            this.StoreGroupingService = StoreGroupingService;
+            this.StoreTypeService = StoreTypeService;
+            this.SupplierService = SupplierService;
+            this.WarehouseService = WarehouseService;
             this.StatusService = StatusService;
         }
 
@@ -604,7 +648,7 @@ namespace DMS.Rpc.role
             AppUserFilter.Take = 20;
             AppUserFilter.OrderBy = AppUserOrder.Id;
             AppUserFilter.OrderType = OrderType.ASC;
-            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Email | AppUserSelect.Phone;
             AppUserFilter.Id = Role_AppUserFilterDTO.Id;
             AppUserFilter.Username = Role_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = Role_AppUserFilterDTO.DisplayName;
@@ -636,6 +680,7 @@ namespace DMS.Rpc.role
                 .Select(x => new Role_MenuDTO(x)).ToList();
             return Role_MenuDTOs;
         }
+
         [Route(RoleRoute.SingleListStatus), HttpPost]
         public async Task<List<Role_StatusDTO>> SingleListStatus([FromBody] Role_StatusFilterDTO Role_StatusFilterDTO)
         {
@@ -654,6 +699,217 @@ namespace DMS.Rpc.role
                 .Select(x => new Role_StatusDTO(x)).ToList();
             return Role_StatusDTOs;
         }
+
+        [Route(RoleRoute.SingleListBrand), HttpPost]
+        public async Task<List<Role_BrandDTO>> SingleListBrand([FromBody] Role_BrandFilterDTO Role_BrandFilterDTO)
+        {
+            BrandFilter BrandFilter = new BrandFilter();
+            BrandFilter.Skip = 0;
+            BrandFilter.Take = 20;
+            BrandFilter.OrderBy = BrandOrder.Id;
+            BrandFilter.OrderType = OrderType.ASC;
+            BrandFilter.Selects = BrandSelect.Id | BrandSelect.Code | BrandSelect.Name;
+            BrandFilter.Id = Role_BrandFilterDTO.Id;
+            BrandFilter.Code = Role_BrandFilterDTO.Code;
+            BrandFilter.Name = Role_BrandFilterDTO.Name;
+
+            List<Brand> Brandes = await BrandService.List(BrandFilter);
+            List<Role_BrandDTO> Role_BrandDTOs = Brandes
+                .Select(x => new Role_BrandDTO(x)).ToList();
+            return Role_BrandDTOs;
+        }
+
+        [Route(RoleRoute.SingleListOrganization), HttpPost]
+        public async Task<List<Role_OrganizationDTO>> SingleListOrganization([FromBody] Role_OrganizationFilterDTO Role_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = 20;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.Id | OrganizationSelect.Code | OrganizationSelect.Name;
+            OrganizationFilter.Id = Role_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = Role_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = Role_OrganizationFilterDTO.Name;
+
+            List<Organization> Organizationes = await OrganizationService.List(OrganizationFilter);
+            List<Role_OrganizationDTO> Role_OrganizationDTOs = Organizationes
+                .Select(x => new Role_OrganizationDTO(x)).ToList();
+            return Role_OrganizationDTOs;
+        }
+
+        [Route(RoleRoute.SingleListProduct), HttpPost]
+        public async Task<List<Role_ProductDTO>> SingleListProduct([FromBody] Role_ProductFilterDTO Role_ProductFilterDTO)
+        {
+            ProductFilter ProductFilter = new ProductFilter();
+            ProductFilter.Skip = 0;
+            ProductFilter.Take = 20;
+            ProductFilter.OrderBy = ProductOrder.Id;
+            ProductFilter.OrderType = OrderType.ASC;
+            ProductFilter.Selects = ProductSelect.Id | ProductSelect.Code | ProductSelect.Name;
+            ProductFilter.Id = Role_ProductFilterDTO.Id;
+            ProductFilter.Code = Role_ProductFilterDTO.Code;
+            ProductFilter.Name = Role_ProductFilterDTO.Name;
+
+            List<Product> Productes = await ProductService.List(ProductFilter);
+            List<Role_ProductDTO> Role_ProductDTOs = Productes
+                .Select(x => new Role_ProductDTO(x)).ToList();
+            return Role_ProductDTOs;
+        }
+
+        [Route(RoleRoute.SingleListProductGrouping), HttpPost]
+        public async Task<List<Role_ProductGroupingDTO>> SingleListProductGrouping([FromBody] Role_ProductGroupingFilterDTO Role_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = 20;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code | ProductGroupingSelect.Name;
+            ProductGroupingFilter.Id = Role_ProductGroupingFilterDTO.Id;
+            ProductGroupingFilter.Code = Role_ProductGroupingFilterDTO.Code;
+            ProductGroupingFilter.Name = Role_ProductGroupingFilterDTO.Name;
+
+            List<ProductGrouping> ProductGroupinges = await ProductGroupingService.List(ProductGroupingFilter);
+            List<Role_ProductGroupingDTO> Role_ProductGroupingDTOs = ProductGroupinges
+                .Select(x => new Role_ProductGroupingDTO(x)).ToList();
+            return Role_ProductGroupingDTOs;
+        }
+
+        [Route(RoleRoute.SingleListProductType), HttpPost]
+        public async Task<List<Role_ProductTypeDTO>> SingleListProductType([FromBody] Role_ProductTypeFilterDTO Role_ProductTypeFilterDTO)
+        {
+            ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
+            ProductTypeFilter.Skip = 0;
+            ProductTypeFilter.Take = 20;
+            ProductTypeFilter.OrderBy = ProductTypeOrder.Id;
+            ProductTypeFilter.OrderType = OrderType.ASC;
+            ProductTypeFilter.Selects = ProductTypeSelect.Id | ProductTypeSelect.Code | ProductTypeSelect.Name;
+            ProductTypeFilter.Id = Role_ProductTypeFilterDTO.Id;
+            ProductTypeFilter.Code = Role_ProductTypeFilterDTO.Code;
+            ProductTypeFilter.Name = Role_ProductTypeFilterDTO.Name;
+
+            List<ProductType> ProductTypees = await ProductTypeService.List(ProductTypeFilter);
+            List<Role_ProductTypeDTO> Role_ProductTypeDTOs = ProductTypees
+                .Select(x => new Role_ProductTypeDTO(x)).ToList();
+            return Role_ProductTypeDTOs;
+        }
+
+        [Route(RoleRoute.SingleListReseller), HttpPost]
+        public async Task<List<Role_ResellerDTO>> SingleListReseller([FromBody] Role_ResellerFilterDTO Role_ResellerFilterDTO)
+        {
+            ResellerFilter ResellerFilter = new ResellerFilter();
+            ResellerFilter.Skip = 0;
+            ResellerFilter.Take = 20;
+            ResellerFilter.OrderBy = ResellerOrder.Id;
+            ResellerFilter.OrderType = OrderType.ASC;
+            ResellerFilter.Selects = ResellerSelect.Id | ResellerSelect.Code | ResellerSelect.Name;
+            ResellerFilter.Id = Role_ResellerFilterDTO.Id;
+            ResellerFilter.Code = Role_ResellerFilterDTO.Code;
+            ResellerFilter.Name = Role_ResellerFilterDTO.Name;
+
+            List<Reseller> Reselleres = await ResellerService.List(ResellerFilter);
+            List<Role_ResellerDTO> Role_ResellerDTOs = Reselleres
+                .Select(x => new Role_ResellerDTO(x)).ToList();
+            return Role_ResellerDTOs;
+        }
+
+        [Route(RoleRoute.SingleListStore), HttpPost]
+        public async Task<List<Role_StoreDTO>> SingleListStore([FromBody] Role_StoreFilterDTO Role_StoreFilterDTO)
+        {
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = 0;
+            StoreFilter.Take = 20;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name;
+            StoreFilter.Id = Role_StoreFilterDTO.Id;
+            StoreFilter.Code = Role_StoreFilterDTO.Code;
+            StoreFilter.Name = Role_StoreFilterDTO.Name;
+
+            List<Store> Storees = await StoreService.List(StoreFilter);
+            List<Role_StoreDTO> Role_StoreDTOs = Storees
+                .Select(x => new Role_StoreDTO(x)).ToList();
+            return Role_StoreDTOs;
+        }
+
+        [Route(RoleRoute.SingleListStoreGrouping), HttpPost]
+        public async Task<List<Role_StoreGroupingDTO>> SingleListStoreGrouping([FromBody] Role_StoreGroupingFilterDTO Role_StoreGroupingFilterDTO)
+        {
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = 0;
+            StoreGroupingFilter.Take = 20;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.Id | StoreGroupingSelect.Code | StoreGroupingSelect.Name;
+            StoreGroupingFilter.Id = Role_StoreGroupingFilterDTO.Id;
+            StoreGroupingFilter.Code = Role_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = Role_StoreGroupingFilterDTO.Name;
+
+            List<StoreGrouping> StoreGroupinges = await StoreGroupingService.List(StoreGroupingFilter);
+            List<Role_StoreGroupingDTO> Role_StoreGroupingDTOs = StoreGroupinges
+                .Select(x => new Role_StoreGroupingDTO(x)).ToList();
+            return Role_StoreGroupingDTOs;
+        }
+
+
+        [Route(RoleRoute.SingleListStoreType), HttpPost]
+        public async Task<List<Role_StoreTypeDTO>> SingleListStoreType([FromBody] Role_StoreTypeFilterDTO Role_StoreTypeFilterDTO)
+        {
+            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
+            StoreTypeFilter.Skip = 0;
+            StoreTypeFilter.Take = 20;
+            StoreTypeFilter.OrderBy = StoreTypeOrder.Id;
+            StoreTypeFilter.OrderType = OrderType.ASC;
+            StoreTypeFilter.Selects = StoreTypeSelect.Id | StoreTypeSelect.Code | StoreTypeSelect.Name;
+            StoreTypeFilter.Id = Role_StoreTypeFilterDTO.Id;
+            StoreTypeFilter.Code = Role_StoreTypeFilterDTO.Code;
+            StoreTypeFilter.Name = Role_StoreTypeFilterDTO.Name;
+
+            List<StoreType> StoreTypees = await StoreTypeService.List(StoreTypeFilter);
+            List<Role_StoreTypeDTO> Role_StoreTypeDTOs = StoreTypees
+                .Select(x => new Role_StoreTypeDTO(x)).ToList();
+            return Role_StoreTypeDTOs;
+        }
+
+        [Route(RoleRoute.SingleListSupplier), HttpPost]
+        public async Task<List<Role_SupplierDTO>> SingleListSupplier([FromBody] Role_SupplierFilterDTO Role_SupplierFilterDTO)
+        {
+            SupplierFilter SupplierFilter = new SupplierFilter();
+            SupplierFilter.Skip = 0;
+            SupplierFilter.Take = 20;
+            SupplierFilter.OrderBy = SupplierOrder.Id;
+            SupplierFilter.OrderType = OrderType.ASC;
+            SupplierFilter.Selects = SupplierSelect.Id | SupplierSelect.Code | SupplierSelect.Name;
+            SupplierFilter.Id = Role_SupplierFilterDTO.Id;
+            SupplierFilter.Code = Role_SupplierFilterDTO.Code;
+            SupplierFilter.Name = Role_SupplierFilterDTO.Name;
+
+            List<Supplier> Supplieres = await SupplierService.List(SupplierFilter);
+            List<Role_SupplierDTO> Role_SupplierDTOs = Supplieres
+                .Select(x => new Role_SupplierDTO(x)).ToList();
+            return Role_SupplierDTOs;
+        }
+
+        [Route(RoleRoute.SingleListWarehouse), HttpPost]
+        public async Task<List<Role_WarehouseDTO>> SingleListWarehouse([FromBody] Role_WarehouseFilterDTO Role_WarehouseFilterDTO)
+        {
+            WarehouseFilter WarehouseFilter = new WarehouseFilter();
+            WarehouseFilter.Skip = 0;
+            WarehouseFilter.Take = 20;
+            WarehouseFilter.OrderBy = WarehouseOrder.Id;
+            WarehouseFilter.OrderType = OrderType.ASC;
+            WarehouseFilter.Selects = WarehouseSelect.Id | WarehouseSelect.Code | WarehouseSelect.Name;
+            WarehouseFilter.Id = Role_WarehouseFilterDTO.Id;
+            WarehouseFilter.Code = Role_WarehouseFilterDTO.Code;
+            WarehouseFilter.Name = Role_WarehouseFilterDTO.Name;
+
+            List<Warehouse> Warehousees = await WarehouseService.List(WarehouseFilter);
+            List<Role_WarehouseDTO> Role_WarehouseDTOs = Warehousees
+                .Select(x => new Role_WarehouseDTO(x)).ToList();
+            return Role_WarehouseDTOs;
+        }
+
         [Route(RoleRoute.CountAppUser), HttpPost]
         public async Task<long> CountAppUser([FromBody] Role_AppUserFilterDTO Role_AppUserFilterDTO)
         {
@@ -668,7 +924,6 @@ namespace DMS.Rpc.role
 
             return await AppUserService.Count(AppUserFilter);
         }
-
         [Route(RoleRoute.ListAppUser), HttpPost]
         public async Task<List<Role_AppUserDTO>> ListAppUser([FromBody] Role_AppUserFilterDTO Role_AppUserFilterDTO)
         {

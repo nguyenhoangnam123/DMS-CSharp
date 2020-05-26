@@ -26,11 +26,24 @@ namespace DMS.Rpc.role
         public const string CreatePermission = Default + "/create-permission";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
+        
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListMenu = Default + "/single-list-menu";
+        public const string SingleListBrand = Default + "/single-list-brand";
+        public const string SingleListOrganization = Default + "/single-list-organization";
+        public const string SingleListProduct = Default + "/single-list-product";
+        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
+        public const string SingleListProductType = Default + "/single-list-product-type";
+        public const string SingleListReseller = Default + "/single-list-reseller";
+        public const string SingleListStore = Default + "/single-list-store";
+        public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
+        public const string SingleListStoreType = Default + "/single-list-store-type";
+        public const string SingleListSupplier = Default + "/single-list-supplier";
+        public const string SingleListWarehouse = Default + "/single-list-warehouse";
 
         public const string CountAppUser = Default + "/count-app-user";
         public const string ListAppUser = Default + "/list-app-user";
+
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(RoleFilter.Code), FieldType.STRING },
