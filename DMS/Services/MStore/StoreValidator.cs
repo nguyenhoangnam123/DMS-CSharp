@@ -28,6 +28,7 @@ namespace DMS.Services.MStore
             NameEmpty,
             NameOverLength,
             OrganizationNotExisted,
+            OrganizationEmpty,
             ParentStoreNotExisted,
             StoreTypeNotExisted,
             StoreTypeEmpty,
@@ -47,7 +48,8 @@ namespace DMS.Services.MStore
             OwnerPhoneOverLength,
             OwnerEmailOverLength,
             StatusNotExisted,
-            StoreHasChild
+            StoreHasChild,
+            TaxCodeEmpty
         }
 
         private IUOW UOW;
@@ -141,6 +143,10 @@ namespace DMS.Services.MStore
                 int count = await UOW.OrganizationRepository.Count(OrganizationFilter);
                 if (count == 0)
                     Store.AddError(nameof(StoreValidator), nameof(Store.OrganizationId), ErrorCode.OrganizationNotExisted);
+            }
+            else
+            {
+                Store.AddError(nameof(StoreValidator), nameof(Store.OrganizationId), ErrorCode.OrganizationEmpty);
             }
             return Store.IsValidated;
         }
@@ -368,7 +374,14 @@ namespace DMS.Services.MStore
             return Store.IsValidated;
         }
         #endregion
-
+        private async Task<bool> ValidateTaxCode(Store Store)
+        {
+            if (string.IsNullOrWhiteSpace(Store.TaxCode))
+            {
+                Store.AddError(nameof(StoreValidator), nameof(Store.OwnerEmail), ErrorCode.TaxCodeEmpty);
+            }
+            return Store.IsValidated;
+        }
         #region Status
         private async Task<bool> ValidateStatusId(Store Store)
         {
@@ -410,6 +423,7 @@ namespace DMS.Services.MStore
             await ValidateOwnerName(Store);
             await ValidateOwnerPhone(Store);
             await ValidateOwnerEmail(Store);
+            await ValidateTaxCode(Store);
             await ValidateStatusId(Store);
             return Store.IsValidated;
         }

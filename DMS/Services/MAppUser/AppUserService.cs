@@ -108,8 +108,8 @@ namespace DMS.Services.MAppUser
                         subFilter.Email = Map(subFilter.Email, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Phone))
                         subFilter.Phone = Map(subFilter.Phone, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Position))
-                        subFilter.Position = Map(subFilter.Position, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.PositionId))
+                        subFilter.PositionId = Map(subFilter.PositionId, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Department))
                         subFilter.Department = Map(subFilter.Department, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))

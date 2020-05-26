@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Services.MAppUser;
 using DMS.Services.MRole;
 using DMS.Services.MStatus;
 using DMS.Services.MWorkflow;
@@ -30,13 +31,15 @@ namespace DMS.Rpc.workflow_definition
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
-        
+
+        public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListWorkflowType = Default + "/filter-list-workflow-type";
         public const string FilterListWorkflowDirection = Default + "/filter-list-workflow-direction";
         public const string FilterListWorkflowStep = Default + "/filter-list-workflow-step";
         public const string FilterListWorkflowParameter = Default + "/filter-list-workflow-parameter";
         public const string FilterListRole = Default + "/filter-list-role";
-        
+
+        public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListWorkflowType = Default + "/single-list-workflow-type";
         public const string SingleListWorkflowDirection = Default + "/single-list-workflow-direction";
         public const string SingleListWorkflowStep = Default + "/single-list-workflow-step";
@@ -62,6 +65,7 @@ namespace DMS.Rpc.workflow_definition
 
     public class WorkflowDefinitionController : RpcController
     {
+        private IAppUserService AppUserService;
         private IWorkflowTypeService WorkflowTypeService;
         private IWorkflowDirectionService WorkflowDirectionService;
         private IWorkflowStepService WorkflowStepService;
@@ -71,6 +75,7 @@ namespace DMS.Rpc.workflow_definition
         private IStatusService StatusService;
         private ICurrentContext CurrentContext;
         public WorkflowDefinitionController(
+            IAppUserService AppUserService,
             IWorkflowTypeService WorkflowTypeService,
             IWorkflowDirectionService WorkflowDirectionService,
             IWorkflowStepService WorkflowStepService,
@@ -81,6 +86,7 @@ namespace DMS.Rpc.workflow_definition
             ICurrentContext CurrentContext
         )
         {
+            this.AppUserService = AppUserService;
             this.WorkflowTypeService = WorkflowTypeService;
             this.WorkflowDirectionService = WorkflowDirectionService;
             this.WorkflowStepService = WorkflowStepService;
@@ -721,6 +727,8 @@ namespace DMS.Rpc.workflow_definition
             WorkflowDefinition.Id = WorkflowDefinition_WorkflowDefinitionDTO.Id;
             WorkflowDefinition.Code = WorkflowDefinition_WorkflowDefinitionDTO.Code;
             WorkflowDefinition.Name = WorkflowDefinition_WorkflowDefinitionDTO.Name;
+            WorkflowDefinition.CreatorId = WorkflowDefinition_WorkflowDefinitionDTO.CreatorId;
+            WorkflowDefinition.ModifierId = WorkflowDefinition_WorkflowDefinitionDTO.ModifierId;
             WorkflowDefinition.WorkflowTypeId = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowTypeId;
             WorkflowDefinition.StartDate = WorkflowDefinition_WorkflowDefinitionDTO.StartDate;
             WorkflowDefinition.EndDate = WorkflowDefinition_WorkflowDefinitionDTO.EndDate;
@@ -805,6 +813,8 @@ namespace DMS.Rpc.workflow_definition
             WorkflowDefinitionFilter.Id = WorkflowDefinition_WorkflowDefinitionFilterDTO.Id;
             WorkflowDefinitionFilter.Code = WorkflowDefinition_WorkflowDefinitionFilterDTO.Code;
             WorkflowDefinitionFilter.Name = WorkflowDefinition_WorkflowDefinitionFilterDTO.Name;
+            WorkflowDefinitionFilter.CreatorId = WorkflowDefinition_WorkflowDefinitionFilterDTO.CreatorId;
+            WorkflowDefinitionFilter.ModifierId = WorkflowDefinition_WorkflowDefinitionFilterDTO.ModifierId;
             WorkflowDefinitionFilter.WorkflowTypeId = WorkflowDefinition_WorkflowDefinitionFilterDTO.WorkflowTypeId;
             WorkflowDefinitionFilter.StartDate = WorkflowDefinition_WorkflowDefinitionFilterDTO.StartDate;
             WorkflowDefinitionFilter.EndDate = WorkflowDefinition_WorkflowDefinitionFilterDTO.EndDate;
@@ -812,6 +822,38 @@ namespace DMS.Rpc.workflow_definition
             WorkflowDefinitionFilter.CreatedAt = WorkflowDefinition_WorkflowDefinitionFilterDTO.CreatedAt;
             WorkflowDefinitionFilter.UpdatedAt = WorkflowDefinition_WorkflowDefinitionFilterDTO.UpdatedAt;
             return WorkflowDefinitionFilter;
+        }
+
+        [Route(WorkflowDefinitionRoute.FilterListAppUser), HttpPost]
+        public async Task<List<WorkflowDefinition_AppUserDTO>> FilterListAppUser([FromBody] WorkflowDefinition_AppUserFilterDTO WorkflowDefinition_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = WorkflowDefinition_AppUserFilterDTO.Id;
+            AppUserFilter.Username = WorkflowDefinition_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = WorkflowDefinition_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Address = WorkflowDefinition_AppUserFilterDTO.Address;
+            AppUserFilter.Email = WorkflowDefinition_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = WorkflowDefinition_AppUserFilterDTO.Phone;
+            AppUserFilter.PositionId = WorkflowDefinition_AppUserFilterDTO.PositionId;
+            AppUserFilter.Department = WorkflowDefinition_AppUserFilterDTO.Department;
+            AppUserFilter.OrganizationId = WorkflowDefinition_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.StatusId = WorkflowDefinition_AppUserFilterDTO.StatusId;
+            AppUserFilter.ProvinceId = WorkflowDefinition_AppUserFilterDTO.ProvinceId;
+            AppUserFilter.SexId = WorkflowDefinition_AppUserFilterDTO.SexId;
+            AppUserFilter.Birthday = WorkflowDefinition_AppUserFilterDTO.Birthday;
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<WorkflowDefinition_AppUserDTO> WorkflowDefinition_AppUserDTOs = AppUsers
+                .Select(x => new WorkflowDefinition_AppUserDTO(x)).ToList();
+            return WorkflowDefinition_AppUserDTOs;
         }
 
         [Route(WorkflowDefinitionRoute.FilterListWorkflowType), HttpPost]
@@ -923,6 +965,38 @@ namespace DMS.Rpc.workflow_definition
             return WorkflowDefinition_RoleDTOs;
         }
 
+        [Route(WorkflowDefinitionRoute.SingleListAppUser), HttpPost]
+        public async Task<List<WorkflowDefinition_AppUserDTO>> SingleListAppUser([FromBody] WorkflowDefinition_AppUserFilterDTO WorkflowDefinition_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = WorkflowDefinition_AppUserFilterDTO.Id;
+            AppUserFilter.Username = WorkflowDefinition_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = WorkflowDefinition_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Address = WorkflowDefinition_AppUserFilterDTO.Address;
+            AppUserFilter.Email = WorkflowDefinition_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = WorkflowDefinition_AppUserFilterDTO.Phone;
+            AppUserFilter.PositionId = WorkflowDefinition_AppUserFilterDTO.PositionId;
+            AppUserFilter.Department = WorkflowDefinition_AppUserFilterDTO.Department;
+            AppUserFilter.OrganizationId = WorkflowDefinition_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            AppUserFilter.ProvinceId = WorkflowDefinition_AppUserFilterDTO.ProvinceId;
+            AppUserFilter.SexId = WorkflowDefinition_AppUserFilterDTO.SexId;
+            AppUserFilter.Birthday = WorkflowDefinition_AppUserFilterDTO.Birthday;
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<WorkflowDefinition_AppUserDTO> WorkflowDefinition_AppUserDTOs = AppUsers
+                .Select(x => new WorkflowDefinition_AppUserDTO(x)).ToList();
+            return WorkflowDefinition_AppUserDTOs;
+        }
+
         [Route(WorkflowDefinitionRoute.SingleListWorkflowType), HttpPost]
         public async Task<List<WorkflowDefinition_WorkflowTypeDTO>> SingleListWorkflowType([FromBody] WorkflowDefinition_WorkflowTypeFilterDTO WorkflowDefinition_WorkflowTypeFilterDTO)
         {
@@ -969,6 +1043,9 @@ namespace DMS.Rpc.workflow_definition
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            if (!WorkflowDefinition_WorkflowStepFilterDTO.WorkflowDefinitionId.Equal.HasValue)
+                return new List<WorkflowDefinition_WorkflowStepDTO>();
 
             WorkflowStepFilter WorkflowStepFilter = new WorkflowStepFilter();
             WorkflowStepFilter.Skip = 0;

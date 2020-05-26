@@ -216,7 +216,7 @@ namespace DMS.Rpc.store_checking
                 Address = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Address,
                 Email = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Email,
                 Phone = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Phone,
-                Position = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Position,
+                PositionId = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.PositionId,
                 Department = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.Department,
                 OrganizationId = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.OrganizationId,
                 SexId = StoreChecking_IndirectSalesOrderDTO.SaleEmployee.SexId,
@@ -388,7 +388,7 @@ namespace DMS.Rpc.store_checking
                         Address = x.SaleEmployee.Address,
                         Email = x.SaleEmployee.Email,
                         Phone = x.SaleEmployee.Phone,
-                        Position = x.SaleEmployee.Position,
+                        PositionId = x.SaleEmployee.PositionId,
                         Department = x.SaleEmployee.Department,
                         OrganizationId = x.SaleEmployee.OrganizationId,
                         SexId = x.SaleEmployee.SexId,
@@ -473,7 +473,7 @@ namespace DMS.Rpc.store_checking
             AppUserFilter.Address = StoreChecking_AppUserFilterDTO.Address;
             AppUserFilter.Email = StoreChecking_AppUserFilterDTO.Email;
             AppUserFilter.Phone = StoreChecking_AppUserFilterDTO.Phone;
-            AppUserFilter.Position = StoreChecking_AppUserFilterDTO.Position;
+            AppUserFilter.PositionId = StoreChecking_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = StoreChecking_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = StoreChecking_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = StoreChecking_AppUserFilterDTO.SexId;
@@ -567,7 +567,7 @@ namespace DMS.Rpc.store_checking
             AppUserFilter.Address = StoreChecking_AppUserFilterDTO.Address;
             AppUserFilter.Email = StoreChecking_AppUserFilterDTO.Email;
             AppUserFilter.Phone = StoreChecking_AppUserFilterDTO.Phone;
-            AppUserFilter.Position = StoreChecking_AppUserFilterDTO.Position;
+            AppUserFilter.PositionId = StoreChecking_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = StoreChecking_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = StoreChecking_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = StoreChecking_AppUserFilterDTO.SexId;

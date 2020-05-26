@@ -839,18 +839,6 @@ namespace DMS.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-                entity.HasOne(d => d.Creator)
-                    .WithMany(p => p.GeneralKpiCreators)
-                    .HasForeignKey(d => d.CreatorId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_GeneralKpi_AppUser1");
-
-                entity.HasOne(d => d.Employee)
-                    .WithMany(p => p.GeneralKpiEmployees)
-                    .HasForeignKey(d => d.EmployeeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_GeneralKpi_AppUser");
-
                 entity.HasOne(d => d.KpiPeriod)
                     .WithMany(p => p.GeneralKpis)
                     .HasForeignKey(d => d.KpiPeriodId)
@@ -1387,18 +1375,6 @@ namespace DMS.Models
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Creator)
-                    .WithMany(p => p.ItemSpecificKpiCreators)
-                    .HasForeignKey(d => d.CreatorId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ItemSpecificKpi_AppUser1");
-
-                entity.HasOne(d => d.Employee)
-                    .WithMany(p => p.ItemSpecificKpiEmployees)
-                    .HasForeignKey(d => d.EmployeeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ItemSpecificKpi_AppUser");
 
                 entity.HasOne(d => d.KpiPeriod)
                     .WithMany(p => p.ItemSpecificKpis)
@@ -2806,10 +2782,15 @@ namespace DMS.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Creator)
-                    .WithMany(p => p.WorkflowDefinitions)
+                    .WithMany(p => p.WorkflowDefinitionCreators)
                     .HasForeignKey(d => d.CreatorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WorkflowDefinition_AppUser");
+
+                entity.HasOne(d => d.Modifier)
+                    .WithMany(p => p.WorkflowDefinitionModifiers)
+                    .HasForeignKey(d => d.ModifierId)
+                    .HasConstraintName("FK_WorkflowDefinition_AppUser1");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.WorkflowDefinitions)

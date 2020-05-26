@@ -23,7 +23,7 @@ namespace DMS.Rpc.store_checking
         
         public string Phone { get; set; }
         
-        public string Position { get; set; }
+        public long? PositionId { get; set; }
         
         public string Department { get; set; }
         
@@ -56,7 +56,7 @@ namespace DMS.Rpc.store_checking
             
             this.Phone = AppUser.Phone;
             
-            this.Position = AppUser.Position;
+            this.PositionId = AppUser.PositionId;
             
             this.Department = AppUser.Department;
             
@@ -93,7 +93,7 @@ namespace DMS.Rpc.store_checking
         
         public StringFilter Phone { get; set; }
         
-        public StringFilter Position { get; set; }
+        public IdFilter PositionId { get; set; }
         
         public StringFilter Department { get; set; }
         

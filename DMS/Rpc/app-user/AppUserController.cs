@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
+using DMS.Services.MPosition;
 using DMS.Services.MRole;
 using DMS.Services.MSex;
 using DMS.Services.MStatus;
@@ -21,6 +22,7 @@ namespace DMS.Rpc.app_user
     public class AppUserController : RpcController
     {
         private IOrganizationService OrganizationService;
+        private IPositionService PositionService;
         private ISexService SexService;
         private IStatusService StatusService;
         private IRoleService RoleService;
@@ -28,6 +30,7 @@ namespace DMS.Rpc.app_user
         private ICurrentContext CurrentContext;
         public AppUserController(
             IOrganizationService OrganizationService,
+            IPositionService PositionService,
             ISexService SexService,
             IStatusService StatusService,
             IRoleService RoleService,
@@ -36,6 +39,7 @@ namespace DMS.Rpc.app_user
         )
         {
             this.OrganizationService = OrganizationService;
+            this.PositionService = PositionService;
             this.SexService = SexService;
             this.StatusService = StatusService;
             this.RoleService = RoleService;
@@ -238,7 +242,7 @@ namespace DMS.Rpc.app_user
             AppUser.Birthday = AppUser_AppUserDTO.Birthday;
             AppUser.Email = AppUser_AppUserDTO.Email;
             AppUser.Phone = AppUser_AppUserDTO.Phone;
-            AppUser.Position = AppUser_AppUserDTO.Position;
+            AppUser.PositionId = AppUser_AppUserDTO.PositionId;
             AppUser.Department = AppUser_AppUserDTO.Department;
             AppUser.OrganizationId = AppUser_AppUserDTO.OrganizationId;
             AppUser.ProvinceId = AppUser_AppUserDTO.ProvinceId;
@@ -309,7 +313,7 @@ namespace DMS.Rpc.app_user
             AppUserFilter.Address = AppUser_AppUserFilterDTO.Address;
             AppUserFilter.Email = AppUser_AppUserFilterDTO.Email;
             AppUserFilter.Phone = AppUser_AppUserFilterDTO.Phone;
-            AppUserFilter.Position = AppUser_AppUserFilterDTO.Position;
+            AppUserFilter.PositionId = AppUser_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = AppUser_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = AppUser_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = AppUser_AppUserFilterDTO.SexId;
@@ -344,6 +348,26 @@ namespace DMS.Rpc.app_user
             return AppUser_OrganizationDTOs;
         }
 
+        [Route(AppUserRoute.FilterListPosition), HttpPost]
+        public async Task<List<AppUser_PositionDTO>> FilterListPosition([FromBody] AppUser_PositionFilterDTO AppUser_PositionFilterDTO)
+        {
+            PositionFilter PositionFilter = new PositionFilter();
+            PositionFilter.Skip = 0;
+            PositionFilter.Take = 99999;
+            PositionFilter.OrderBy = PositionOrder.Id;
+            PositionFilter.OrderType = OrderType.ASC;
+            PositionFilter.Selects = PositionSelect.ALL;
+            PositionFilter.Id = AppUser_PositionFilterDTO.Id;
+            PositionFilter.Code = AppUser_PositionFilterDTO.Code;
+            PositionFilter.Name = AppUser_PositionFilterDTO.Name;
+            PositionFilter.StatusId = AppUser_PositionFilterDTO.StatusId;
+
+            List<Position> Positions = await PositionService.List(PositionFilter);
+            List<AppUser_PositionDTO> AppUser_PositionDTOs = Positions
+                .Select(x => new AppUser_PositionDTO(x)).ToList();
+            return AppUser_PositionDTOs;
+        }
+
         [Route(AppUserRoute.SingleListOrganization), HttpPost]
         public async Task<List<AppUser_OrganizationDTO>> SingleListOrganization([FromBody] AppUser_OrganizationFilterDTO AppUser_OrganizationFilterDTO)
         {
@@ -369,6 +393,27 @@ namespace DMS.Rpc.app_user
                 .Select(x => new AppUser_OrganizationDTO(x)).ToList();
             return AppUser_OrganizationDTOs;
         }
+
+        [Route(AppUserRoute.SingleListPosition), HttpPost]
+        public async Task<List<AppUser_PositionDTO>> SingleListPosition([FromBody] AppUser_PositionFilterDTO AppUser_PositionFilterDTO)
+        {
+            PositionFilter PositionFilter = new PositionFilter();
+            PositionFilter.Skip = 0;
+            PositionFilter.Take = 99999;
+            PositionFilter.OrderBy = PositionOrder.Id;
+            PositionFilter.OrderType = OrderType.ASC;
+            PositionFilter.Selects = PositionSelect.ALL;
+            PositionFilter.Id = AppUser_PositionFilterDTO.Id;
+            PositionFilter.Code = AppUser_PositionFilterDTO.Code;
+            PositionFilter.Name = AppUser_PositionFilterDTO.Name;
+            PositionFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<Position> Positions = await PositionService.List(PositionFilter);
+            List<AppUser_PositionDTO> AppUser_PositionDTOs = Positions
+                .Select(x => new AppUser_PositionDTO(x)).ToList();
+            return AppUser_PositionDTOs;
+        }
+
         [Route(AppUserRoute.SingleListSex), HttpPost]
         public async Task<List<AppUser_SexDTO>> SingleListSex([FromBody] AppUser_SexFilterDTO AppUser_SexFilterDTO)
         {

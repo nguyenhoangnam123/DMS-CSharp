@@ -115,7 +115,8 @@ namespace DMS.Services.MNotification
                         Content = Notification.Content,
                         Time = StaticParams.DateTimeNow,
                         Unread = false,
-                        AppUserId = x.Id
+                        SenderId = CurrentContext.UserId,
+                        RecipientId = x.Id
                     }).ToList();
 
                     await SendNotification(NotificationUtilss);
@@ -287,7 +288,8 @@ namespace DMS.Services.MNotification
         {
             public long Id { get; set; }
             public string Content { get; set; }
-            public long AppUserId { get; set; }
+            public long SenderId { get; set; }
+            public long RecipientId { get; set; }
             public bool Unread { get; set; }
             public DateTime Time { get; set; }
         }

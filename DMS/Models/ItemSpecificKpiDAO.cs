@@ -21,8 +21,6 @@ namespace DMS.Models
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual AppUserDAO Creator { get; set; }
-        public virtual AppUserDAO Employee { get; set; }
         public virtual KpiPeriodDAO KpiPeriod { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual StatusDAO Status { get; set; }

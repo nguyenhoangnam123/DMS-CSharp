@@ -649,7 +649,7 @@ namespace DMS.Rpc.e_route
                 Address = ERoute_ERouteDTO.Creator.Address,
                 Email = ERoute_ERouteDTO.Creator.Email,
                 Phone = ERoute_ERouteDTO.Creator.Phone,
-                Position = ERoute_ERouteDTO.Creator.Position,
+                PositionId = ERoute_ERouteDTO.Creator.PositionId,
                 Department = ERoute_ERouteDTO.Creator.Department,
                 OrganizationId = ERoute_ERouteDTO.Creator.OrganizationId,
                 SexId = ERoute_ERouteDTO.Creator.SexId,
@@ -678,7 +678,7 @@ namespace DMS.Rpc.e_route
                 Address = ERoute_ERouteDTO.SaleEmployee.Address,
                 Email = ERoute_ERouteDTO.SaleEmployee.Email,
                 Phone = ERoute_ERouteDTO.SaleEmployee.Phone,
-                Position = ERoute_ERouteDTO.SaleEmployee.Position,
+                PositionId = ERoute_ERouteDTO.SaleEmployee.PositionId,
                 Department = ERoute_ERouteDTO.SaleEmployee.Department,
                 OrganizationId = ERoute_ERouteDTO.SaleEmployee.OrganizationId,
                 SexId = ERoute_ERouteDTO.SaleEmployee.SexId,
@@ -782,7 +782,7 @@ namespace DMS.Rpc.e_route
             AppUserFilter.Address = ERoute_AppUserFilterDTO.Address;
             AppUserFilter.Email = ERoute_AppUserFilterDTO.Email;
             AppUserFilter.Phone = ERoute_AppUserFilterDTO.Phone;
-            AppUserFilter.Position = ERoute_AppUserFilterDTO.Position;
+            AppUserFilter.PositionId = ERoute_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = ERoute_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = ERoute_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = ERoute_AppUserFilterDTO.SexId;
@@ -849,7 +849,7 @@ namespace DMS.Rpc.e_route
             AppUserFilter.Address = ERoute_AppUserFilterDTO.Address;
             AppUserFilter.Email = ERoute_AppUserFilterDTO.Email;
             AppUserFilter.Phone = ERoute_AppUserFilterDTO.Phone;
-            AppUserFilter.Position = ERoute_AppUserFilterDTO.Position;
+            AppUserFilter.PositionId = ERoute_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = ERoute_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = ERoute_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = ERoute_AppUserFilterDTO.SexId;

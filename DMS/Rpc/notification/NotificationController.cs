@@ -17,8 +17,6 @@ using DMS.Services.MStatus;
 
 namespace DMS.Rpc.notification
 {
-    
-
     public class NotificationController : RpcController
     {
         private IAppUserService AppUserService;

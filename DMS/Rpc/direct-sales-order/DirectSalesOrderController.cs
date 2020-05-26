@@ -918,7 +918,7 @@ namespace DMS.Rpc.direct_sales_order
                 Address = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.Address,
                 Email = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.Email,
                 Phone = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.Phone,
-                Position = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.Position,
+                PositionId = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.PositionId,
                 Department = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.Department,
                 OrganizationId = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.OrganizationId,
                 SexId = DirectSalesOrder_DirectSalesOrderDTO.SaleEmployee.SexId,
@@ -1045,7 +1045,7 @@ namespace DMS.Rpc.direct_sales_order
             AppUserFilter.Address = DirectSalesOrder_AppUserFilterDTO.Address;
             AppUserFilter.Email = DirectSalesOrder_AppUserFilterDTO.Email;
             AppUserFilter.Phone = DirectSalesOrder_AppUserFilterDTO.Phone;
-            AppUserFilter.Position = DirectSalesOrder_AppUserFilterDTO.Position;
+            AppUserFilter.PositionId = DirectSalesOrder_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = DirectSalesOrder_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = DirectSalesOrder_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = DirectSalesOrder_AppUserFilterDTO.SexId;
@@ -1193,7 +1193,7 @@ namespace DMS.Rpc.direct_sales_order
             AppUserFilter.Address = DirectSalesOrder_AppUserFilterDTO.Address;
             AppUserFilter.Email = DirectSalesOrder_AppUserFilterDTO.Email;
             AppUserFilter.Phone = DirectSalesOrder_AppUserFilterDTO.Phone;
-            AppUserFilter.Position = DirectSalesOrder_AppUserFilterDTO.Position;
+            AppUserFilter.PositionId = DirectSalesOrder_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = DirectSalesOrder_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = DirectSalesOrder_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = DirectSalesOrder_AppUserFilterDTO.SexId;

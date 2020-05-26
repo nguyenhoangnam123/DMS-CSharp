@@ -224,7 +224,7 @@ namespace DMS.Repositories
                         Email = x.AppUser.Email,
                         OrganizationId = x.AppUser.OrganizationId,
                         Phone = x.AppUser.Phone,
-                        Position = x.AppUser.Position,
+                        PositionId = x.AppUser.PositionId,
                         RowId = x.AppUser.RowId,
                         SexId = x.AppUser.SexId,
                         StatusId = x.AppUser.StatusId,

@@ -609,7 +609,7 @@ namespace DMS.Rpc.banner
                 Address = Banner_BannerDTO.Creator.Address,
                 Email = Banner_BannerDTO.Creator.Email,
                 Phone = Banner_BannerDTO.Creator.Phone,
-                Position = Banner_BannerDTO.Creator.Position,
+                PositionId = Banner_BannerDTO.Creator.PositionId,
                 Department = Banner_BannerDTO.Creator.Department,
                 OrganizationId = Banner_BannerDTO.Creator.OrganizationId,
                 SexId = Banner_BannerDTO.Creator.SexId,
@@ -673,7 +673,7 @@ namespace DMS.Rpc.banner
             AppUserFilter.Address = Banner_AppUserFilterDTO.Address;
             AppUserFilter.Email = Banner_AppUserFilterDTO.Email;
             AppUserFilter.Phone = Banner_AppUserFilterDTO.Phone;
-            AppUserFilter.Position = Banner_AppUserFilterDTO.Position;
+            AppUserFilter.PositionId = Banner_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = Banner_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = Banner_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = Banner_AppUserFilterDTO.SexId;
@@ -725,7 +725,7 @@ namespace DMS.Rpc.banner
             AppUserFilter.Address = Banner_AppUserFilterDTO.Address;
             AppUserFilter.Email = Banner_AppUserFilterDTO.Email;
             AppUserFilter.Phone = Banner_AppUserFilterDTO.Phone;
-            AppUserFilter.Position = Banner_AppUserFilterDTO.Position;
+            AppUserFilter.PositionId = Banner_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = Banner_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = Banner_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = Banner_AppUserFilterDTO.SexId;
