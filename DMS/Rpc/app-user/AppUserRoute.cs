@@ -19,8 +19,10 @@ namespace DMS.Rpc.app_user
         public const string Export = Default + "/export";
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
+        public const string FilterListPosition = Default + "/filter-list-position";
 
         public const string SingleListOrganization = Default + "/single-list-organization";
+        public const string SingleListPosition = Default + "/single-list-position";
         public const string SingleListSex = Default + "/single-list-sex";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListRole = Default + "/single-list-role";
@@ -35,7 +37,7 @@ namespace DMS.Rpc.app_user
             { nameof(AppUserFilter.Email), FieldType.STRING },
             { nameof(AppUserFilter.Phone), FieldType.STRING },
             { nameof(AppUserFilter.Birthday), FieldType.DATE },
-            { nameof(AppUserFilter.Position), FieldType.STRING },
+            { nameof(AppUserFilter.PositionId), FieldType.ID },
             { nameof(AppUserFilter.Department), FieldType.STRING },
             { nameof(AppUserFilter.OrganizationId), FieldType.ID },
             { nameof(AppUserFilter.SexId), FieldType.ID },
@@ -45,7 +47,7 @@ namespace DMS.Rpc.app_user
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> {Master,Detail,Count,List,Get, FilterListOrganization, SingleListOrganization, SingleListSex, SingleListStatus, SingleListRole, CountRole, ListRole}},
+            { "Tìm kiếm", new List<string> {Master,Detail,Count,List,Get, FilterListPosition, FilterListOrganization, SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, CountRole, ListRole}},
         };
     }
 }

@@ -162,7 +162,7 @@ namespace DMS.Repositories
                     Address = q.Creator.Address,
                     Email = q.Creator.Email,
                     Phone = q.Creator.Phone,
-                    Position = q.Creator.Position,
+                    PositionId = q.Creator.PositionId,
                     Department = q.Creator.Department,
                     OrganizationId = q.Creator.OrganizationId,
                     SexId = q.Creator.SexId,

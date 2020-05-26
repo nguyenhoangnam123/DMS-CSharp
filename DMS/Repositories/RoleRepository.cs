@@ -177,7 +177,7 @@ namespace DMS.Repositories
                         Phone = x.AppUser.Phone,
                         Address = x.AppUser.Address,
                         Department = x.AppUser.Department,
-                        Position = x.AppUser.Position,
+                        PositionId = x.AppUser.PositionId,
                         RowId = x.AppUser.RowId,
                         SexId = x.AppUser.SexId,
                         StatusId = x.AppUser.StatusId,

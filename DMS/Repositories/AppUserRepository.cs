@@ -46,8 +46,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.SexId, filter.SexId);
             if (filter.Birthday != null)
                 query = query.Where(q => q.Birthday, filter.Birthday);
-            if (filter.Position != null)
-                query = query.Where(q => q.Position, filter.Position);
+            if (filter.PositionId != null)
+                query = query.Where(q => q.PositionId, filter.PositionId);
             if (filter.Department != null)
                 query = query.Where(q => q.Department, filter.Department);
             if (filter.OrganizationId != null)
@@ -94,8 +94,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.SexId, filter.SexId);
                 if (filter.Birthday != null)
                     queryable = queryable.Where(q => q.Birthday, filter.Birthday);
-                if (filter.Position != null)
-                    queryable = queryable.Where(q => q.Position, filter.Position);
+                if (filter.PositionId != null)
+                    queryable = queryable.Where(q => q.PositionId, filter.PositionId);
                 if (filter.Department != null)
                     queryable = queryable.Where(q => q.Department, filter.Department);
                 if (filter.OrganizationId != null)
@@ -142,7 +142,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Birthday);
                             break;
                         case AppUserOrder.Position:
-                            query = query.OrderBy(q => q.Position);
+                            query = query.OrderBy(q => q.PositionId);
                             break;
                         case AppUserOrder.Department:
                             query = query.OrderBy(q => q.Department);
@@ -186,7 +186,7 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Birthday);
                             break;
                         case AppUserOrder.Position:
-                            query = query.OrderByDescending(q => q.Position);
+                            query = query.OrderByDescending(q => q.PositionId);
                             break;
                         case AppUserOrder.Department:
                             query = query.OrderByDescending(q => q.Department);
@@ -218,7 +218,7 @@ namespace DMS.Repositories
                 StatusId = filter.Selects.Contains(AppUserSelect.Status) ? q.StatusId : default(long),
                 SexId = filter.Selects.Contains(AppUserSelect.Sex) ? q.SexId : default(long),
                 Birthday = filter.Selects.Contains(AppUserSelect.Birthday) ? q.Birthday : default(DateTime?),
-                Position = filter.Selects.Contains(AppUserSelect.Position) ? q.Position : default(string),
+                PositionId = filter.Selects.Contains(AppUserSelect.Position) ? q.PositionId : default(long),
                 Department = filter.Selects.Contains(AppUserSelect.Department) ? q.Department : default(string),
                 OrganizationId = filter.Selects.Contains(AppUserSelect.Organization) ? q.OrganizationId : default(long),
                 ProvinceId = filter.Selects.Contains(AppUserSelect.Province) ? q.ProvinceId : default(long),
@@ -242,6 +242,13 @@ namespace DMS.Repositories
                     Name = q.Province.Name,
                     Priority = q.Province.Priority,
                     StatusId = q.Province.StatusId,
+                } : null,
+                Position = filter.Selects.Contains(AppUserSelect.Position) && q.Position != null ? new Position
+                {
+                    Id = q.Position.Id,
+                    Code = q.Position.Code,
+                    Name = q.Position.Name,
+                    StatusId = q.Position.StatusId,
                 } : null,
                 Status = filter.Selects.Contains(AppUserSelect.Status) && q.Status != null ? new Status
                 {
@@ -291,7 +298,7 @@ namespace DMS.Repositories
                 Phone = x.Phone,
                 StatusId = x.StatusId,
                 SexId = x.SexId,
-                Position = x.Position,
+                PositionId = x.PositionId,
                 Department = x.Department,
                 OrganizationId = x.OrganizationId,
                 ProvinceId = x.ProvinceId,
@@ -307,6 +314,13 @@ namespace DMS.Repositories
                     Email = x.Organization.Email,
                     StatusId = x.Organization.StatusId,
                     Level = x.Organization.Level
+                },
+                Position = x.Position == null ? null : new Position
+                {
+                    Id = x.Position.Id,
+                    Code = x.Position.Code,
+                    Name = x.Position.Name,
+                    StatusId = x.Position.StatusId,
                 },
                 Province = x.Province == null ? null : new Province
                 {

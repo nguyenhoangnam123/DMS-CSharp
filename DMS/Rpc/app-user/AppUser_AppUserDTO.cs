@@ -18,13 +18,14 @@ namespace DMS.Rpc.app_user
         public DateTime? Birthday { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public string Position { get; set; }
+        public long? PositionId { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
         public long? ProvinceId { get; set; }
         public long? SexId { get; set; }
         public long StatusId { get; set; }
         public AppUser_OrganizationDTO Organization { get; set; }
+        public AppUser_PositionDTO Position { get; set; }
         public AppUser_ProvinceDTO Province { get; set; }
         public AppUser_SexDTO Sex { get; set; }
         public AppUser_StatusDTO Status { get; set; }
@@ -40,12 +41,13 @@ namespace DMS.Rpc.app_user
             this.Birthday = AppUser.Birthday;
             this.Email = AppUser.Email;
             this.Phone = AppUser.Phone;
-            this.Position = AppUser.Position;
+            this.PositionId = AppUser.PositionId;
             this.Department = AppUser.Department;
             this.OrganizationId = AppUser.OrganizationId;
             this.SexId = AppUser.SexId;
             this.StatusId = AppUser.StatusId;
             this.Organization = AppUser.Organization == null ? null : new AppUser_OrganizationDTO(AppUser.Organization);
+            this.Position = AppUser.Position == null ? null : new AppUser_PositionDTO(AppUser.Position);
             this.Province = AppUser.Province == null ? null : new AppUser_ProvinceDTO(AppUser.Province);
             this.Sex = AppUser.Sex == null ? null : new AppUser_SexDTO(AppUser.Sex);
             this.Status = AppUser.Status == null ? null : new AppUser_StatusDTO(AppUser.Status);
@@ -64,7 +66,7 @@ namespace DMS.Rpc.app_user
         public StringFilter Email { get; set; }
         public StringFilter Phone { get; set; }
         public DateFilter Birthday { get; set; }
-        public StringFilter Position { get; set; }
+        public IdFilter PositionId { get; set; }
         public StringFilter Department { get; set; }
         public IdFilter OrganizationId { get; set; }
         public IdFilter SexId { get; set; }

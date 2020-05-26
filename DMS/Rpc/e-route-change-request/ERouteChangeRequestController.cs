@@ -934,7 +934,7 @@ namespace DMS.Rpc.e_route_change_request
                 Address = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.Address,
                 Email = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.Email,
                 Phone = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.Phone,
-                Position = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.Position,
+                PositionId = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.PositionId,
                 Department = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.Department,
                 OrganizationId = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.OrganizationId,
                 SexId = ERouteChangeRequest_ERouteChangeRequestDTO.Creator.SexId,
@@ -1053,7 +1053,7 @@ namespace DMS.Rpc.e_route_change_request
             AppUserFilter.Address = ERouteChangeRequest_AppUserFilterDTO.Address;
             AppUserFilter.Email = ERouteChangeRequest_AppUserFilterDTO.Email;
             AppUserFilter.Phone = ERouteChangeRequest_AppUserFilterDTO.Phone;
-            AppUserFilter.Position = ERouteChangeRequest_AppUserFilterDTO.Position;
+            AppUserFilter.PositionId = ERouteChangeRequest_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = ERouteChangeRequest_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = ERouteChangeRequest_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = ERouteChangeRequest_AppUserFilterDTO.SexId;
@@ -1145,7 +1145,7 @@ namespace DMS.Rpc.e_route_change_request
             AppUserFilter.Address = ERouteChangeRequest_AppUserFilterDTO.Address;
             AppUserFilter.Email = ERouteChangeRequest_AppUserFilterDTO.Email;
             AppUserFilter.Phone = ERouteChangeRequest_AppUserFilterDTO.Phone;
-            AppUserFilter.Position = ERouteChangeRequest_AppUserFilterDTO.Position;
+            AppUserFilter.PositionId = ERouteChangeRequest_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = ERouteChangeRequest_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = ERouteChangeRequest_AppUserFilterDTO.OrganizationId;
             AppUserFilter.SexId = ERouteChangeRequest_AppUserFilterDTO.SexId;

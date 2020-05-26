@@ -17,7 +17,7 @@ namespace DMS.Rpc.role
         public DateTime? Birthday { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public string Position { get; set; }
+        public long? PositionId { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
         public long? SexId { get; set; }
@@ -34,7 +34,7 @@ namespace DMS.Rpc.role
             this.Birthday = AppUser.Birthday;
             this.Email = AppUser.Email;
             this.Phone = AppUser.Phone;
-            this.Position = AppUser.Position;
+            this.PositionId = AppUser.PositionId;
             this.Department = AppUser.Department;
             this.OrganizationId = AppUser.OrganizationId;
             this.SexId = AppUser.SexId;
@@ -52,7 +52,7 @@ namespace DMS.Rpc.role
         public StringFilter Email { get; set; }
         public StringFilter Phone { get; set; }
         public DateFilter Birthday { get; set; }
-        public StringFilter Position { get; set; }
+        public IdFilter PositionId { get; set; }
         public StringFilter Department { get; set; }
         public IdFilter OrganizationId { get; set; }
         public IdFilter SexId { get; set; }

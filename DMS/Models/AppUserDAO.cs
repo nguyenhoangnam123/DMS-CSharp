@@ -22,6 +22,7 @@ namespace DMS.Models
             Suppliers = new HashSet<SupplierDAO>();
             SurveyResults = new HashSet<SurveyResultDAO>();
             Surveys = new HashSet<SurveyDAO>();
+            WorkflowDefinitions = new HashSet<WorkflowDefinitionDAO>();
         }
 
         public long Id { get; set; }
@@ -30,7 +31,7 @@ namespace DMS.Models
         public string Address { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public string Position { get; set; }
+        public long? PositionId { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
         public long StatusId { get; set; }
@@ -44,6 +45,7 @@ namespace DMS.Models
         public DateTime? Birthday { get; set; }
 
         public virtual OrganizationDAO Organization { get; set; }
+        public virtual PositionDAO Position { get; set; }
         public virtual ProvinceDAO Province { get; set; }
         public virtual SexDAO Sex { get; set; }
         public virtual StatusDAO Status { get; set; }
@@ -62,5 +64,6 @@ namespace DMS.Models
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
         public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
         public virtual ICollection<SurveyDAO> Surveys { get; set; }
+        public virtual ICollection<WorkflowDefinitionDAO> WorkflowDefinitions { get; set; }
     }
 }

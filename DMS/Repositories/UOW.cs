@@ -44,6 +44,7 @@ namespace DMS.Repositories
         INotificationRepository NotificationRepository { get; }
         IOrganizationRepository OrganizationRepository { get; }
         IPermissionRepository PermissionRepository { get; }
+        IPositionRepository PositionRepository { get; }
         IProductRepository ProductRepository { get; }
         IProductGroupingRepository ProductGroupingRepository { get; }
         IProductProductGroupingMappingRepository ProductProductGroupingMappingRepository { get; }
@@ -121,6 +122,7 @@ namespace DMS.Repositories
         public INotificationRepository NotificationRepository { get; private set; }
         public IOrganizationRepository OrganizationRepository { get; private set; }
         public IPermissionRepository PermissionRepository { get; private set; }
+        public IPositionRepository PositionRepository { get; private set; }
         public IProductRepository ProductRepository { get; private set; }
         public IProductGroupingRepository ProductGroupingRepository { get; private set; }
         public IProductProductGroupingMappingRepository ProductProductGroupingMappingRepository { get; private set; }
@@ -196,6 +198,7 @@ namespace DMS.Repositories
             NotificationRepository = new NotificationRepository(DataContext);
             OrganizationRepository = new OrganizationRepository(DataContext);
             PermissionRepository = new PermissionRepository(DataContext);
+            PositionRepository = new PositionRepository(DataContext);
             ProductRepository = new ProductRepository(DataContext);
             ProductGroupingRepository = new ProductGroupingRepository(DataContext);
             ProductProductGroupingMappingRepository = new ProductProductGroupingMappingRepository(DataContext);

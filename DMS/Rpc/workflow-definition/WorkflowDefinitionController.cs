@@ -970,6 +970,9 @@ namespace DMS.Rpc.workflow_definition
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            if (!WorkflowDefinition_WorkflowStepFilterDTO.WorkflowDefinitionId.Equal.HasValue)
+                return new List<WorkflowDefinition_WorkflowStepDTO>();
+
             WorkflowStepFilter WorkflowStepFilter = new WorkflowStepFilter();
             WorkflowStepFilter.Skip = 0;
             WorkflowStepFilter.Take = 20;

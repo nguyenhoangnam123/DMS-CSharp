@@ -16,6 +16,7 @@ namespace DMS.Models
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public long CreatorId { get; set; }
         public long WorkflowTypeId { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -24,6 +25,7 @@ namespace DMS.Models
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        public virtual AppUserDAO Creator { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual WorkflowTypeDAO WorkflowType { get; set; }
         public virtual ICollection<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMappings { get; set; }

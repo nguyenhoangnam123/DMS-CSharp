@@ -63,7 +63,7 @@ namespace DMS.Handlers
                             Id = au.Id,
                             OrganizationId = au.OrganizationId,
                             Phone = au.Phone,
-                            Position = au.Position,
+                            PositionId = au.PositionId,
                             ProvinceId = au.ProvinceId,
                             RowId = au.RowId,
                             StatusId = au.StatusId,

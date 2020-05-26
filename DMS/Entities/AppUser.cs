@@ -15,7 +15,7 @@ namespace DMS.Entities
         public string Avatar { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public string Position { get; set; }
+        public long? PositionId { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
         public long StatusId { get; set; }
@@ -27,6 +27,7 @@ namespace DMS.Entities
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
         public Organization Organization { get; set; }
+        public Position Position { get; set; }
         public Province Province { get; set; }
         public Status Status { get; set; }
         public Sex Sex { get; set; }
@@ -51,7 +52,7 @@ namespace DMS.Entities
         public StringFilter Address { get; set; }
         public StringFilter Email { get; set; }
         public StringFilter Phone { get; set; }
-        public StringFilter Position { get; set; }
+        public IdFilter PositionId { get; set; }
         public StringFilter Department { get; set; }
         public IdFilter OrganizationId { get; set; }
         public IdFilter SexId { get; set; }

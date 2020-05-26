@@ -14,8 +14,6 @@ using DMS.Enums;
 
 namespace DMS.Rpc.product_grouping
 {
-    
-
     public class ProductGroupingController : RpcController
     {
         private IProductService ProductService;

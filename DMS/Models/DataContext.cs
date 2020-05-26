@@ -31,6 +31,9 @@ namespace DMS.Models
         public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
+        public virtual DbSet<GeneralCriteriaDAO> GeneralCriteria { get; set; }
+        public virtual DbSet<GeneralKpiDAO> GeneralKpi { get; set; }
+        public virtual DbSet<GeneralKpiCriteriaMappingDAO> GeneralKpiCriteriaMapping { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
         public virtual DbSet<ImageStoreCheckingMappingDAO> ImageStoreCheckingMapping { get; set; }
         public virtual DbSet<IndirectPriceListDAO> IndirectPriceList { get; set; }
@@ -46,6 +49,10 @@ namespace DMS.Models
         public virtual DbSet<InventoryHistoryDAO> InventoryHistory { get; set; }
         public virtual DbSet<ItemDAO> Item { get; set; }
         public virtual DbSet<ItemImageMappingDAO> ItemImageMapping { get; set; }
+        public virtual DbSet<ItemSpecificCriteriaDAO> ItemSpecificCriteria { get; set; }
+        public virtual DbSet<ItemSpecificKpiDAO> ItemSpecificKpi { get; set; }
+        public virtual DbSet<ItemSpecificKpiContentDAO> ItemSpecificKpiContent { get; set; }
+        public virtual DbSet<ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO> ItemSpecificKpiTotalItemSpecificCriteriaMapping { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<NotificationDAO> Notification { get; set; }
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
@@ -53,6 +60,7 @@ namespace DMS.Models
         public virtual DbSet<PermissionDAO> Permission { get; set; }
         public virtual DbSet<PermissionActionMappingDAO> PermissionActionMapping { get; set; }
         public virtual DbSet<PermissionFieldMappingDAO> PermissionFieldMapping { get; set; }
+        public virtual DbSet<PositionDAO> Position { get; set; }
         public virtual DbSet<ProductDAO> Product { get; set; }
         public virtual DbSet<ProductGroupingDAO> ProductGrouping { get; set; }
         public virtual DbSet<ProductImageMappingDAO> ProductImageMapping { get; set; }
@@ -85,6 +93,7 @@ namespace DMS.Models
         public virtual DbSet<SurveyResultCellDAO> SurveyResultCell { get; set; }
         public virtual DbSet<SurveyResultSingleDAO> SurveyResultSingle { get; set; }
         public virtual DbSet<TaxTypeDAO> TaxType { get; set; }
+        public virtual DbSet<TotalItemSpecificCriteriaDAO> TotalItemSpecificCriteria { get; set; }
         public virtual DbSet<UnitOfMeasureDAO> UnitOfMeasure { get; set; }
         public virtual DbSet<UnitOfMeasureGroupingDAO> UnitOfMeasureGrouping { get; set; }
         public virtual DbSet<UnitOfMeasureGroupingContentDAO> UnitOfMeasureGroupingContent { get; set; }
@@ -212,10 +221,6 @@ namespace DMS.Models
                     .HasMaxLength(500)
                     .HasComment("Số điện thoại liên hệ");
 
-                entity.Property(e => e.Position)
-                    .HasMaxLength(500)
-                    .HasComment("Vị trí công tác");
-
                 entity.Property(e => e.ProvinceId).HasComment("Tỉnh thành");
 
                 entity.Property(e => e.RowId).HasComment("Trường để đồng bộ");
@@ -235,6 +240,11 @@ namespace DMS.Models
                     .WithMany(p => p.AppUsers)
                     .HasForeignKey(d => d.OrganizationId)
                     .HasConstraintName("FK_AppUser_Organization");
+
+                entity.HasOne(d => d.Position)
+                    .WithMany(p => p.AppUsers)
+                    .HasForeignKey(d => d.PositionId)
+                    .HasConstraintName("FK_AppUser_Position");
 
                 entity.HasOne(d => d.Province)
                     .WithMany(p => p.AppUsers)
@@ -807,6 +817,46 @@ namespace DMS.Models
                     .HasConstraintName("FK_PermissionField_Menu");
             });
 
+            modelBuilder.Entity<GeneralCriteriaDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<GeneralKpiDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<GeneralKpiCriteriaMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.GeneralKpiId, e.GeneralCriteriaId })
+                    .HasName("PK_KpiContent_1");
+
+                entity.HasOne(d => d.GeneralCriteria)
+                    .WithMany(p => p.GeneralKpiCriteriaMappings)
+                    .HasForeignKey(d => d.GeneralCriteriaId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GeneralKpiCriteriaMapping_GeneralCriteria");
+
+                entity.HasOne(d => d.GeneralKpi)
+                    .WithMany(p => p.GeneralKpiCriteriaMappings)
+                    .HasForeignKey(d => d.GeneralKpiId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GeneralKpiCriteriaMapping_GeneralKpi");
+            });
+
             modelBuilder.Entity<ImageDAO>(entity =>
             {
                 entity.ToTable("Image", "MDM");
@@ -1290,6 +1340,64 @@ namespace DMS.Models
                     .HasConstraintName("FK_ItemImageMapping_Item");
             });
 
+            modelBuilder.Entity<ItemSpecificCriteriaDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code).HasMaxLength(500);
+
+                entity.Property(e => e.Name).HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<ItemSpecificKpiDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<ItemSpecificKpiContentDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.ItemSpecificKpiContents)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemSpecificKpiContent_Item");
+
+                entity.HasOne(d => d.ItemSpecificCriteria)
+                    .WithMany(p => p.ItemSpecificKpiContents)
+                    .HasForeignKey(d => d.ItemSpecificCriteriaId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemSpecificKpiContent_ItemSpecificCriteria");
+
+                entity.HasOne(d => d.ItemSpecificKpi)
+                    .WithMany(p => p.ItemSpecificKpiContents)
+                    .HasForeignKey(d => d.ItemSpecificKpiId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemSpecificKpiContent_ItemSpecificKpi");
+            });
+
+            modelBuilder.Entity<ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ItemSpecificKpiId, e.TotalItemSpecificCriteriaId });
+
+                entity.HasOne(d => d.ItemSpecificKpi)
+                    .WithMany(p => p.ItemSpecificKpiTotalItemSpecificCriteriaMappings)
+                    .HasForeignKey(d => d.ItemSpecificKpiId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemSpecificKpiTotalItemSpecificCriteriaMapping_ItemSpecificKpi");
+
+                entity.HasOne(d => d.TotalItemSpecificCriteria)
+                    .WithMany(p => p.ItemSpecificKpiTotalItemSpecificCriteriaMappings)
+                    .HasForeignKey(d => d.TotalItemSpecificCriteriaId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemSpecificKpiTotalItemSpecificCriteriaMapping_TotalItemSpecificCriteria");
+            });
+
             modelBuilder.Entity<MenuDAO>(entity =>
             {
                 entity.ToTable("Menu", "PER");
@@ -1445,6 +1553,31 @@ namespace DMS.Models
                     .HasForeignKey(d => d.PermissionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PermissionData_Permission");
+            });
+
+            modelBuilder.Entity<PositionDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Positions)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Position_Status");
             });
 
             modelBuilder.Entity<ProductDAO>(entity =>
@@ -2360,6 +2493,15 @@ namespace DMS.Models
                     .HasConstraintName("FK_TaxType_Status");
             });
 
+            modelBuilder.Entity<TotalItemSpecificCriteriaDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code).HasMaxLength(500);
+
+                entity.Property(e => e.Name).HasMaxLength(500);
+            });
+
             modelBuilder.Entity<UnitOfMeasureDAO>(entity =>
             {
                 entity.ToTable("UnitOfMeasure", "MDM");
@@ -2592,6 +2734,12 @@ namespace DMS.Models
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.WorkflowDefinitions)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowDefinition_AppUser");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.WorkflowDefinitions)
