@@ -11,12 +11,14 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public long CreatorId { get; set; }
         public long WorkflowTypeId { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public AppUser Creator { get; set; }
         public Status Status { get; set; }
         public WorkflowType WorkflowType { get; set; }
         public List<WorkflowStep> WorkflowSteps { get; set; }
@@ -38,6 +40,7 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public IdFilter CreatorId { get; set; }
         public IdFilter WorkflowTypeId { get; set; }
         public DateFilter StartDate { get; set; }
         public DateFilter EndDate { get; set; }
@@ -62,6 +65,7 @@ namespace DMS.Entities
         WorkflowDirection = 7,
         CreatedAt = 8,
         UpdatedAt = 9,
+        Creator = 10,
     }
 
     [Flags]
@@ -76,7 +80,8 @@ namespace DMS.Entities
         EndDate = E._5,
         Status = E._6,
         WorkflowDirection = E._7,
-        CreatedAt = E._9,
-        UpdatedAt = E._8,
+        CreatedAt = E._8,
+        UpdatedAt = E._9,
+        Creator = E._10,
     }
 }
