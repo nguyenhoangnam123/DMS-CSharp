@@ -724,13 +724,14 @@ namespace DMS.Rpc.role
         {
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
             OrganizationFilter.Skip = 0;
-            OrganizationFilter.Take = 20;
+            OrganizationFilter.Take = int.MaxValue;
             OrganizationFilter.OrderBy = OrganizationOrder.Id;
             OrganizationFilter.OrderType = OrderType.ASC;
-            OrganizationFilter.Selects = OrganizationSelect.Id | OrganizationSelect.Code | OrganizationSelect.Name;
+            OrganizationFilter.Selects = OrganizationSelect.Id | OrganizationSelect.Code | OrganizationSelect.Name | OrganizationSelect.Parent;
             OrganizationFilter.Id = Role_OrganizationFilterDTO.Id;
             OrganizationFilter.Code = Role_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = Role_OrganizationFilterDTO.Name;
+            OrganizationFilter.ParentId = Role_OrganizationFilterDTO.ParentId;
 
             List<Organization> Organizationes = await OrganizationService.List(OrganizationFilter);
             List<Role_OrganizationDTO> Role_OrganizationDTOs = Organizationes
@@ -762,10 +763,10 @@ namespace DMS.Rpc.role
         {
             ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
             ProductGroupingFilter.Skip = 0;
-            ProductGroupingFilter.Take = 20;
+            ProductGroupingFilter.Take = int.MaxValue;
             ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
             ProductGroupingFilter.OrderType = OrderType.ASC;
-            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code | ProductGroupingSelect.Name;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
             ProductGroupingFilter.Id = Role_ProductGroupingFilterDTO.Id;
             ProductGroupingFilter.Code = Role_ProductGroupingFilterDTO.Code;
             ProductGroupingFilter.Name = Role_ProductGroupingFilterDTO.Name;
