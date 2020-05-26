@@ -127,7 +127,7 @@ namespace DMS.Services.MWorkflow
             {
                 var oldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
                 InitParameter(WorkflowDefinition);
-                WorkflowDefinition.CreatorId = CurrentContext.UserId;
+                WorkflowDefinition.ModifierId = CurrentContext.UserId;
                 await UOW.Begin();
                 await UOW.WorkflowDefinitionRepository.Update(WorkflowDefinition);
                 await UOW.Commit();
@@ -236,6 +236,8 @@ namespace DMS.Services.MWorkflow
                         subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.CreatorId))
                         subFilter.CreatorId = Map(subFilter.CreatorId, FilterPermissionDefinition);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ModifierId))
+                        subFilter.ModifierId = Map(subFilter.ModifierId, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.WorkflowTypeId))
                         subFilter.WorkflowTypeId = Map(subFilter.WorkflowTypeId, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.StartDate))

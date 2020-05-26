@@ -42,6 +42,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.CreatorId != null)
                 query = query.Where(q => q.CreatorId, filter.CreatorId);
+            if (filter.ModifierId != null)
+                query = query.Where(q => q.ModifierId, filter.ModifierId);
             if (filter.WorkflowTypeId != null)
                 query = query.Where(q => q.WorkflowTypeId, filter.WorkflowTypeId);
             if (filter.StartDate != null)
@@ -74,6 +76,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Name, filter.Name);
                 if (filter.CreatorId != null)
                     queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
+                if (filter.ModifierId != null)
+                    queryable = queryable.Where(q => q.ModifierId, filter.ModifierId);
                 if (filter.WorkflowTypeId != null)
                     queryable = queryable.Where(q => q.WorkflowTypeId, filter.WorkflowTypeId);
                 if (filter.StartDate != null)
@@ -107,6 +111,9 @@ namespace DMS.Repositories
                             break;
                         case WorkflowDefinitionOrder.WorkflowType:
                             query = query.OrderBy(q => q.WorkflowTypeId);
+                            break;
+                        case WorkflowDefinitionOrder.Modifier:
+                            query = query.OrderBy(q => q.Modifier);
                             break;
                         case WorkflowDefinitionOrder.Creator:
                             query = query.OrderBy(q => q.CreatorId);
@@ -143,6 +150,9 @@ namespace DMS.Repositories
                         case WorkflowDefinitionOrder.Creator:
                             query = query.OrderByDescending(q => q.CreatorId);
                             break;
+                        case WorkflowDefinitionOrder.Modifier:
+                            query = query.OrderByDescending(q => q.Modifier);
+                            break;
                         case WorkflowDefinitionOrder.WorkflowType:
                             query = query.OrderByDescending(q => q.WorkflowTypeId);
                             break;
@@ -176,6 +186,7 @@ namespace DMS.Repositories
                 Code = filter.Selects.Contains(WorkflowDefinitionSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(WorkflowDefinitionSelect.Name) ? q.Name : default(string),
                 CreatorId = filter.Selects.Contains(WorkflowDefinitionSelect.Creator) ? q.CreatorId : default(long),
+                ModifierId = filter.Selects.Contains(WorkflowDefinitionSelect.Modifier) ? q.ModifierId : default(long),
                 WorkflowTypeId = filter.Selects.Contains(WorkflowDefinitionSelect.WorkflowType) ? q.WorkflowTypeId : default(long),
                 StartDate = filter.Selects.Contains(WorkflowDefinitionSelect.StartDate) ? q.StartDate : default(DateTime?),
                 EndDate = filter.Selects.Contains(WorkflowDefinitionSelect.EndDate) ? q.EndDate : default(DateTime?),
@@ -190,6 +201,15 @@ namespace DMS.Repositories
                     Address = q.Creator.Address,
                     Email = q.Creator.Email,
                     Phone = q.Creator.Phone,
+                } : null,
+                Modifier = filter.Selects.Contains(WorkflowDefinitionSelect.Modifier) && q.Modifier != null ? new AppUser
+                {
+                    Id = q.Modifier.Id,
+                    Username = q.Modifier.Username,
+                    DisplayName = q.Modifier.DisplayName,
+                    Address = q.Modifier.Address,
+                    Email = q.Modifier.Email,
+                    Phone = q.Modifier.Phone,
                 } : null,
                 WorkflowType = filter.Selects.Contains(WorkflowDefinitionSelect.WorkflowType) && q.WorkflowType != null ? new WorkflowType
                 {
@@ -233,6 +253,7 @@ namespace DMS.Repositories
                 Code = x.Code,
                 Name = x.Name,
                 CreatorId = x.CreatorId,
+                ModifierId = x.ModifierId,
                 WorkflowTypeId = x.WorkflowTypeId,
                 StartDate = x.StartDate,
                 EndDate = x.EndDate,
@@ -247,6 +268,15 @@ namespace DMS.Repositories
                     Address = x.Creator.Address,
                     Email = x.Creator.Email,
                     Phone = x.Creator.Phone,
+                },
+                Modifier = x.Modifier == null ? null : new AppUser
+                {
+                    Id = x.Modifier.Id,
+                    Username = x.Modifier.Username,
+                    DisplayName = x.Modifier.DisplayName,
+                    Address = x.Modifier.Address,
+                    Email = x.Modifier.Email,
+                    Phone = x.Modifier.Phone,
                 },
                 WorkflowType = x.WorkflowType == null ? null : new WorkflowType
                 {
@@ -343,6 +373,7 @@ namespace DMS.Repositories
             WorkflowDefinitionDAO.Name = WorkflowDefinition.Name;
             WorkflowDefinitionDAO.Code = WorkflowDefinition.Code;
             WorkflowDefinitionDAO.CreatorId = WorkflowDefinition.CreatorId;
+            WorkflowDefinitionDAO.ModifierId = WorkflowDefinition.ModifierId;
             WorkflowDefinitionDAO.WorkflowTypeId = WorkflowDefinition.WorkflowTypeId;
             WorkflowDefinitionDAO.StartDate = WorkflowDefinition.StartDate;
             WorkflowDefinitionDAO.EndDate = WorkflowDefinition.EndDate;
@@ -365,6 +396,7 @@ namespace DMS.Repositories
             WorkflowDefinitionDAO.Name = WorkflowDefinition.Name;
             WorkflowDefinitionDAO.Code = WorkflowDefinition.Code;
             WorkflowDefinitionDAO.CreatorId = WorkflowDefinition.CreatorId;
+            WorkflowDefinitionDAO.ModifierId = WorkflowDefinition.ModifierId;
             WorkflowDefinitionDAO.WorkflowTypeId = WorkflowDefinition.WorkflowTypeId;
             WorkflowDefinitionDAO.StartDate = WorkflowDefinition.StartDate;
             WorkflowDefinitionDAO.EndDate = WorkflowDefinition.EndDate;
@@ -391,6 +423,7 @@ namespace DMS.Repositories
                 WorkflowDefinitionDAO.Name = WorkflowDefinition.Name;
                 WorkflowDefinitionDAO.Code = WorkflowDefinition.Code;
                 WorkflowDefinitionDAO.CreatorId = WorkflowDefinition.CreatorId;
+                WorkflowDefinitionDAO.ModifierId = WorkflowDefinition.ModifierId;
                 WorkflowDefinitionDAO.WorkflowTypeId = WorkflowDefinition.WorkflowTypeId;
                 WorkflowDefinitionDAO.StartDate = WorkflowDefinition.StartDate;
                 WorkflowDefinitionDAO.EndDate = WorkflowDefinition.EndDate;

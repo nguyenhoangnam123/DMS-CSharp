@@ -21,6 +21,9 @@ namespace DMS.Models
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        public virtual KpiPeriodDAO KpiPeriod { get; set; }
+        public virtual OrganizationDAO Organization { get; set; }
+        public virtual StatusDAO Status { get; set; }
         public virtual ICollection<ItemSpecificKpiContentDAO> ItemSpecificKpiContents { get; set; }
         public virtual ICollection<ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO> ItemSpecificKpiTotalItemSpecificCriteriaMappings { get; set; }
     }

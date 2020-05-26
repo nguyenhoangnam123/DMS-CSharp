@@ -14,7 +14,9 @@ namespace DMS.Models
             DirectPriceLists = new HashSet<DirectPriceListDAO>();
             Districts = new HashSet<DistrictDAO>();
             ERoutes = new HashSet<ERouteDAO>();
+            GeneralKpiCriteriaMappings = new HashSet<GeneralKpiCriteriaMappingDAO>();
             IndirectPriceLists = new HashSet<IndirectPriceListDAO>();
+            ItemSpecificKpis = new HashSet<ItemSpecificKpiDAO>();
             Items = new HashSet<ItemDAO>();
             Organizations = new HashSet<OrganizationDAO>();
             Permissions = new HashSet<PermissionDAO>();
@@ -48,7 +50,9 @@ namespace DMS.Models
         public virtual ICollection<DirectPriceListDAO> DirectPriceLists { get; set; }
         public virtual ICollection<DistrictDAO> Districts { get; set; }
         public virtual ICollection<ERouteDAO> ERoutes { get; set; }
+        public virtual ICollection<GeneralKpiCriteriaMappingDAO> GeneralKpiCriteriaMappings { get; set; }
         public virtual ICollection<IndirectPriceListDAO> IndirectPriceLists { get; set; }
+        public virtual ICollection<ItemSpecificKpiDAO> ItemSpecificKpis { get; set; }
         public virtual ICollection<ItemDAO> Items { get; set; }
         public virtual ICollection<OrganizationDAO> Organizations { get; set; }
         public virtual ICollection<PermissionDAO> Permissions { get; set; }

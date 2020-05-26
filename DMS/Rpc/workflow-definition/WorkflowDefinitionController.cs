@@ -727,6 +727,8 @@ namespace DMS.Rpc.workflow_definition
             WorkflowDefinition.Id = WorkflowDefinition_WorkflowDefinitionDTO.Id;
             WorkflowDefinition.Code = WorkflowDefinition_WorkflowDefinitionDTO.Code;
             WorkflowDefinition.Name = WorkflowDefinition_WorkflowDefinitionDTO.Name;
+            WorkflowDefinition.CreatorId = WorkflowDefinition_WorkflowDefinitionDTO.CreatorId;
+            WorkflowDefinition.ModifierId = WorkflowDefinition_WorkflowDefinitionDTO.ModifierId;
             WorkflowDefinition.WorkflowTypeId = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowTypeId;
             WorkflowDefinition.StartDate = WorkflowDefinition_WorkflowDefinitionDTO.StartDate;
             WorkflowDefinition.EndDate = WorkflowDefinition_WorkflowDefinitionDTO.EndDate;
@@ -811,6 +813,8 @@ namespace DMS.Rpc.workflow_definition
             WorkflowDefinitionFilter.Id = WorkflowDefinition_WorkflowDefinitionFilterDTO.Id;
             WorkflowDefinitionFilter.Code = WorkflowDefinition_WorkflowDefinitionFilterDTO.Code;
             WorkflowDefinitionFilter.Name = WorkflowDefinition_WorkflowDefinitionFilterDTO.Name;
+            WorkflowDefinitionFilter.CreatorId = WorkflowDefinition_WorkflowDefinitionFilterDTO.CreatorId;
+            WorkflowDefinitionFilter.ModifierId = WorkflowDefinition_WorkflowDefinitionFilterDTO.ModifierId;
             WorkflowDefinitionFilter.WorkflowTypeId = WorkflowDefinition_WorkflowDefinitionFilterDTO.WorkflowTypeId;
             WorkflowDefinitionFilter.StartDate = WorkflowDefinition_WorkflowDefinitionFilterDTO.StartDate;
             WorkflowDefinitionFilter.EndDate = WorkflowDefinition_WorkflowDefinitionFilterDTO.EndDate;

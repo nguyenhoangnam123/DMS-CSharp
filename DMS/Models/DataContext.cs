@@ -53,6 +53,7 @@ namespace DMS.Models
         public virtual DbSet<ItemSpecificKpiDAO> ItemSpecificKpi { get; set; }
         public virtual DbSet<ItemSpecificKpiContentDAO> ItemSpecificKpiContent { get; set; }
         public virtual DbSet<ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO> ItemSpecificKpiTotalItemSpecificCriteriaMapping { get; set; }
+        public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<NotificationDAO> Notification { get; set; }
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
@@ -837,6 +838,18 @@ namespace DMS.Models
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.KpiPeriod)
+                    .WithMany(p => p.GeneralKpis)
+                    .HasForeignKey(d => d.KpiPeriodId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GeneralKpi_KpiPeriod");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.GeneralKpis)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GeneralKpi_Organization");
             });
 
             modelBuilder.Entity<GeneralKpiCriteriaMappingDAO>(entity =>
@@ -855,6 +868,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.GeneralKpiId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_GeneralKpiCriteriaMapping_GeneralKpi");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.GeneralKpiCriteriaMappings)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GeneralKpiCriteriaMapping_Status");
             });
 
             modelBuilder.Entity<ImageDAO>(entity =>
@@ -1356,6 +1375,24 @@ namespace DMS.Models
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.KpiPeriod)
+                    .WithMany(p => p.ItemSpecificKpis)
+                    .HasForeignKey(d => d.KpiPeriodId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemSpecificKpi_KpiPeriod");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.ItemSpecificKpis)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemSpecificKpi_Organization");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.ItemSpecificKpis)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemSpecificKpi_Status");
             });
 
             modelBuilder.Entity<ItemSpecificKpiContentDAO>(entity =>
@@ -1396,6 +1433,15 @@ namespace DMS.Models
                     .HasForeignKey(d => d.TotalItemSpecificCriteriaId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ItemSpecificKpiTotalItemSpecificCriteriaMapping_TotalItemSpecificCriteria");
+            });
+
+            modelBuilder.Entity<KpiPeriodDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code).HasMaxLength(50);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<MenuDAO>(entity =>
@@ -2736,10 +2782,15 @@ namespace DMS.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Creator)
-                    .WithMany(p => p.WorkflowDefinitions)
+                    .WithMany(p => p.WorkflowDefinitionCreators)
                     .HasForeignKey(d => d.CreatorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WorkflowDefinition_AppUser");
+
+                entity.HasOne(d => d.Modifier)
+                    .WithMany(p => p.WorkflowDefinitionModifiers)
+                    .HasForeignKey(d => d.ModifierId)
+                    .HasConstraintName("FK_WorkflowDefinition_AppUser1");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.WorkflowDefinitions)

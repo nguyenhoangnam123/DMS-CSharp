@@ -22,7 +22,8 @@ namespace DMS.Models
             Suppliers = new HashSet<SupplierDAO>();
             SurveyResults = new HashSet<SurveyResultDAO>();
             Surveys = new HashSet<SurveyDAO>();
-            WorkflowDefinitions = new HashSet<WorkflowDefinitionDAO>();
+            WorkflowDefinitionCreators = new HashSet<WorkflowDefinitionDAO>();
+            WorkflowDefinitionModifiers = new HashSet<WorkflowDefinitionDAO>();
         }
 
         public long Id { get; set; }
@@ -64,6 +65,7 @@ namespace DMS.Models
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
         public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
         public virtual ICollection<SurveyDAO> Surveys { get; set; }
-        public virtual ICollection<WorkflowDefinitionDAO> WorkflowDefinitions { get; set; }
+        public virtual ICollection<WorkflowDefinitionDAO> WorkflowDefinitionCreators { get; set; }
+        public virtual ICollection<WorkflowDefinitionDAO> WorkflowDefinitionModifiers { get; set; }
     }
 }

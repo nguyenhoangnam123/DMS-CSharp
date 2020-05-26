@@ -28,5 +28,6 @@ namespace DMS.Models
 
         public virtual GeneralCriteriaDAO GeneralCriteria { get; set; }
         public virtual GeneralKpiDAO GeneralKpi { get; set; }
+        public virtual StatusDAO Status { get; set; }
     }
 }
