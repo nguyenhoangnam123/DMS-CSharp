@@ -87,7 +87,54 @@ namespace DMS.Services.MProduct
                 List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
                 foreach (Product Product in Products)
                 {
+                    Product.CanDelete = true;
                     Product.VariationCounter = Items.Where(i => i.ProductId == Product.Id).Count();
+                    List<long> ItemIds = Items.Where(i => i.ProductId == Product.Id).Select(i => i.Id).ToList();
+                    IndirectSalesOrderContentFilter IndirectSalesOrderContentFilter = new IndirectSalesOrderContentFilter()
+                    {
+                        ItemId = new IdFilter { In = ItemIds }
+                    };
+
+                    int count = await UOW.IndirectSalesOrderContentRepository.Count(IndirectSalesOrderContentFilter);
+                    if (count != 0)
+                    {
+                        Product.CanDelete = false;
+                        continue;
+                    }
+
+                    IndirectSalesOrderPromotionFilter IndirectSalesOrderPromotionFilter = new IndirectSalesOrderPromotionFilter
+                    {
+                        ItemId = new IdFilter { In = ItemIds }
+                    };
+                    count = await UOW.IndirectSalesOrderPromotionRepository.Count(IndirectSalesOrderPromotionFilter);
+                    if (count != 0)
+                    {
+                        Product.CanDelete = false;
+                        continue;
+                    }
+
+                    DirectSalesOrderContentFilter DirectSalesOrderContentFilter = new DirectSalesOrderContentFilter()
+                    {
+                        ItemId = new IdFilter { In = ItemIds }
+                    };
+
+                    count = await UOW.DirectSalesOrderContentRepository.Count(DirectSalesOrderContentFilter);
+                    if (count != 0)
+                    {
+                        Product.CanDelete = false;
+                        continue;
+                    }
+
+                    DirectSalesOrderPromotionFilter DirectSalesOrderPromotionFilter = new DirectSalesOrderPromotionFilter
+                    {
+                        ItemId = new IdFilter { In = ItemIds }
+                    };
+                    count = await UOW.DirectSalesOrderPromotionRepository.Count(DirectSalesOrderPromotionFilter);
+                    if (count != 0)
+                    {
+                        Product.CanDelete = false;
+                        continue;
+                    }
                 }
                 return Products;
             }
@@ -105,6 +152,7 @@ namespace DMS.Services.MProduct
             Product Product = await UOW.ProductRepository.Get(Id);
             if (Product == null)
                 return null;
+            Product.CanDelete = true;
             if (Product.Items != null && Product.Items.Any())
             {
                 Product.VariationCounter = Product.Items.Count;
@@ -113,6 +161,8 @@ namespace DMS.Services.MProduct
                 foreach (var Item in Product.Items)
                 {
                     Item.CanDelete = await CanDelete(Item);
+                    if (Item.CanDelete == false)
+                        Product.CanDelete = false;
                 }
             }
             return Product;
