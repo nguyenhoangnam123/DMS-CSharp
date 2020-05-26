@@ -23,8 +23,6 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.organization
 {
-    
-
     public class OrganizationController : RpcController
     {
         private IStatusService StatusService;
@@ -140,61 +138,6 @@ namespace DMS.Rpc.organization
             return true;
         }
 
-        private Organization ConvertDTOToEntity(Organization_OrganizationDTO Organization_OrganizationDTO)
-        {
-            Organization Organization = new Organization();
-            Organization.Id = Organization_OrganizationDTO.Id;
-            Organization.Code = Organization_OrganizationDTO.Code;
-            Organization.Name = Organization_OrganizationDTO.Name;
-            Organization.ParentId = Organization_OrganizationDTO.ParentId;
-            Organization.Path = Organization_OrganizationDTO.Path;
-            Organization.Level = Organization_OrganizationDTO.Level;
-            Organization.StatusId = Organization_OrganizationDTO.StatusId;
-            Organization.Phone = Organization_OrganizationDTO.Phone;
-            Organization.Address = Organization_OrganizationDTO.Address;
-            Organization.Email = Organization_OrganizationDTO.Email;
-            Organization.Parent = Organization_OrganizationDTO.Parent == null ? null : new Organization
-            {
-                Id = Organization_OrganizationDTO.Parent.Id,
-                Code = Organization_OrganizationDTO.Parent.Code,
-                Name = Organization_OrganizationDTO.Parent.Name,
-                ParentId = Organization_OrganizationDTO.Parent.ParentId,
-                Path = Organization_OrganizationDTO.Parent.Path,
-                Level = Organization_OrganizationDTO.Parent.Level,
-                StatusId = Organization_OrganizationDTO.Parent.StatusId,
-                Phone = Organization_OrganizationDTO.Parent.Phone,
-                Address = Organization_OrganizationDTO.Parent.Address,
-                Email = Organization_OrganizationDTO.Parent.Email,
-            };
-            Organization.Status = Organization_OrganizationDTO.Status == null ? null : new Status
-            {
-                Id = Organization_OrganizationDTO.Status.Id,
-                Code = Organization_OrganizationDTO.Status.Code,
-                Name = Organization_OrganizationDTO.Status.Name,
-            };
-            Organization.AppUsers = Organization_OrganizationDTO.AppUsers?
-                .Select(x => new AppUser
-                {
-                    Id = x.Id,
-                    Username = x.Username,
-                    DisplayName = x.DisplayName,
-                    Address = x.Address,
-                    Email = x.Email,
-                    Phone = x.Phone,
-                    Department = x.Department,
-                    SexId = x.SexId,
-                    StatusId = x.StatusId,
-                    Status = x.Status == null ? null : new Status
-                    {
-                        Id = x.Status.Id,
-                        Code = x.Status.Code,
-                        Name = x.Status.Name,
-                    },
-                }).ToList();
-            Organization.BaseLanguage = CurrentContext.Language;
-            return Organization;
-        }
-
         private OrganizationFilter ConvertFilterDTOToFilterEntity(Organization_OrganizationFilterDTO Organization_OrganizationFilterDTO)
         {
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
@@ -215,6 +158,73 @@ namespace DMS.Rpc.organization
             OrganizationFilter.Address = Organization_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = Organization_OrganizationFilterDTO.Email;
             return OrganizationFilter;
+        }
+
+        [Route(OrganizationRoute.FilterListOrganization), HttpPost]
+        public async Task<List<Organization_OrganizationDTO>> FilterListOrganization([FromBody] Organization_OrganizationFilterDTO Organization_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = 99999;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.Id = Organization_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = Organization_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = Organization_OrganizationFilterDTO.Name;
+            OrganizationFilter.ParentId = Organization_OrganizationFilterDTO.ParentId;
+            OrganizationFilter.Path = Organization_OrganizationFilterDTO.Path;
+            OrganizationFilter.Level = Organization_OrganizationFilterDTO.Level;
+            OrganizationFilter.StatusId = null;
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<Organization_OrganizationDTO> Organization_OrganizationDTOs = Organizations
+                .Select(x => new Organization_OrganizationDTO(x)).ToList();
+            return Organization_OrganizationDTOs;
+        }
+        [Route(OrganizationRoute.FilterListStatus), HttpPost]
+        public async Task<List<Organization_StatusDTO>> FilterListStatus([FromBody] Organization_StatusFilterDTO Organization_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+            StatusFilter.Id = Organization_StatusFilterDTO.Id;
+            StatusFilter.Code = Organization_StatusFilterDTO.Code;
+            StatusFilter.Name = Organization_StatusFilterDTO.Name;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<Organization_StatusDTO> Organization_StatusDTOs = Statuses
+                .Select(x => new Organization_StatusDTO(x)).ToList();
+            return Organization_StatusDTOs;
+        }
+        [Route(OrganizationRoute.FilterListAppUser), HttpPost]
+        public async Task<List<Organization_AppUserDTO>> FilterListAppUser([FromBody] Organization_AppUserFilterDTO Organization_AppUserFilterDTO)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = Organization_AppUserFilterDTO.Id;
+            AppUserFilter.Username = Organization_AppUserFilterDTO.Username;
+            AppUserFilter.Password = Organization_AppUserFilterDTO.Password;
+            AppUserFilter.DisplayName = Organization_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Address = Organization_AppUserFilterDTO.Address;
+            AppUserFilter.Email = Organization_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = Organization_AppUserFilterDTO.Phone;
+            AppUserFilter.Department = Organization_AppUserFilterDTO.Department;
+            AppUserFilter.OrganizationId = Organization_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.SexId = Organization_AppUserFilterDTO.SexId;
+            AppUserFilter.StatusId = null;
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<Organization_AppUserDTO> Organization_AppUserDTOs = AppUsers
+                .Select(x => new Organization_AppUserDTO(x)).ToList();
+            return Organization_AppUserDTOs;
         }
 
         [Route(OrganizationRoute.SingleListOrganization), HttpPost]
