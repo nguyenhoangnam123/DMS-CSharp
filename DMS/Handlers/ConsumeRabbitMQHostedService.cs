@@ -32,6 +32,7 @@ namespace DMS.Handlers
             _channel.QueueBind(StaticParams.ModuleName, exchangeName, $"{nameof(AppUser)}.*", null);
             _channel.QueueBind(StaticParams.ModuleName, exchangeName, $"{nameof(Organization)}.*", null);
             _channel.QueueBind(StaticParams.ModuleName, exchangeName, $"{nameof(Province)}.*", null);
+            _channel.QueueBind(StaticParams.ModuleName, exchangeName, $"{nameof(Position)}.*", null);
             _channel.QueueBind(StaticParams.ModuleName, exchangeName, $"{nameof(District)}.*", null);
             _channel.QueueBind(StaticParams.ModuleName, exchangeName, $"{nameof(Ward)}.*", null);
             _channel.BasicQos(0, 1, false);
@@ -90,6 +91,10 @@ namespace DMS.Handlers
                 case nameof(Province):
                     ProvinceHandler ProvinceHandler = new ProvinceHandler(context, UOW);
                     await ProvinceHandler.Handle(routingKey, content);
+                    break;
+                case nameof(Position):
+                    PositionHandler PositionHandler = new PositionHandler(context, UOW);
+                    await PositionHandler.Handle(routingKey, content);
                     break;
                 case nameof(District):
                     DistrictHandler DistrictHandler = new DistrictHandler(context, UOW);
