@@ -29,6 +29,7 @@ namespace DMS.Rpc.product
         public bool IsNew { get; set; }
         public long UsedVariationId { get; set; }
         public long VariationCounter { get; set; }
+        public bool CanDelete { get; set; }
         public Product_BrandDTO Brand { get; set; }
         public Product_ProductTypeDTO ProductType { get; set; }
         public Product_StatusDTO Status { get; set; }
@@ -66,6 +67,7 @@ namespace DMS.Rpc.product
             this.IsNew = Product.IsNew;
             this.UsedVariationId = Product.UsedVariationId;
             this.VariationCounter = Product.VariationCounter;
+            this.CanDelete = Product.CanDelete;
             this.Brand = Product.Brand == null ? null : new Product_BrandDTO(Product.Brand);
             this.ProductType = Product.ProductType == null ? null : new Product_ProductTypeDTO(Product.ProductType);
             this.Status = Product.Status == null ? null : new Product_StatusDTO(Product.Status);
