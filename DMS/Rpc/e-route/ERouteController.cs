@@ -758,6 +758,7 @@ namespace DMS.Rpc.e_route
             ERouteFilter.StartDate = ERoute_ERouteFilterDTO.StartDate;
             ERouteFilter.EndDate = ERoute_ERouteFilterDTO.EndDate;
             ERouteFilter.RequestStateId = ERoute_ERouteFilterDTO.RequestStateId;
+            ERouteFilter.ERouteTypeId = ERoute_ERouteFilterDTO.ERouteTypeId;
             ERouteFilter.StatusId = ERoute_ERouteFilterDTO.StatusId;
             ERouteFilter.CreatorId = ERoute_ERouteFilterDTO.CreatorId;
             ERouteFilter.StoreId = ERoute_ERouteFilterDTO.StoreId;
