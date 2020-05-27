@@ -553,7 +553,7 @@ namespace DMS.Rpc.role
                     {
                         FieldId = pf.FieldId
                     }).ToList(),
-                    PermissionActionMappings = x.PermissionPageMappings?.Select(pp => new PermissionActionMapping
+                    PermissionActionMappings = x.PermissionActionMappings?.Select(pp => new PermissionActionMapping
                     {
                         ActionId = pp.ActionId,
                     }).ToList(),
@@ -630,7 +630,7 @@ namespace DMS.Rpc.role
                 {
                     FieldId = pf.FieldId
                 }).ToList(),
-                PermissionActionMappings = Role_PermissionDTO.PermissionPageMappings?.Select(pp => new PermissionActionMapping
+                PermissionActionMappings = Role_PermissionDTO.PermissionActionMappings?.Select(pp => new PermissionActionMapping
                 {
                     ActionId = pp.ActionId,
                 }).ToList(),

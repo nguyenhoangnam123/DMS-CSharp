@@ -310,7 +310,7 @@ namespace DMS.Repositories
                 foreach (PermissionFieldMapping PermissionFieldMapping in Permission.PermissionFieldMappings)
                 {
                     PermissionFieldMappingDAO PermissionFieldMappingDAO = new PermissionFieldMappingDAO();
-                    PermissionFieldMappingDAO.PermissionId = PermissionFieldMapping.PermissionId;
+                    PermissionFieldMappingDAO.PermissionId = Permission.Id;
                     PermissionFieldMappingDAO.FieldId = PermissionFieldMapping.FieldId;
                     PermissionFieldMappingDAO.Value = PermissionFieldMapping.Value;
                     PermissionFieldMappingDAOs.Add(PermissionFieldMappingDAO);
@@ -326,7 +326,7 @@ namespace DMS.Repositories
                 foreach (PermissionActionMapping PermissionPageMapping in Permission.PermissionActionMappings)
                 {
                     PermissionActionMappingDAO PermissionActionMappingDAO = new PermissionActionMappingDAO();
-                    PermissionActionMappingDAO.PermissionId = PermissionPageMapping.PermissionId;
+                    PermissionActionMappingDAO.PermissionId = Permission.Id;
                     PermissionActionMappingDAO.ActionId = PermissionPageMapping.ActionId;
                     PermissionActionMappingDAOs.Add(PermissionActionMappingDAO);
                 }
