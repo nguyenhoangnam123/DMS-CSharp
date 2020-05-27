@@ -36,7 +36,8 @@ namespace DMS.Services.MERoute
             StartDateEmpty,
             EndDateEmpty,
             StoreNotExisted,
-            ERouteInUsed
+            ERouteInUsed,
+            ERouteContentsEmpty
         }
 
         private IUOW UOW;
@@ -170,7 +171,7 @@ namespace DMS.Services.MERoute
 
         private async Task<bool> ValidateStore(ERoute ERoute)
         {
-            if(ERoute.ERouteContents != null)
+            if(ERoute.ERouteContents != null && ERoute.ERouteContents.Any())
             {
                 var IdsStore = ERoute.ERouteContents.Select(x => x.StoreId).ToList();
 
@@ -190,7 +191,10 @@ namespace DMS.Services.MERoute
                         ERoute.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreNotExisted);
                 }
             }
-
+            else
+            {
+                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.ERouteContents), ErrorCode.ERouteContentsEmpty);
+            }
             return ERoute.IsValidated;
         }
 

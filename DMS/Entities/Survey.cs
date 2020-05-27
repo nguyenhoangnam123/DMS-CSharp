@@ -12,7 +12,7 @@ namespace DMS.Entities
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime StartAt { get; set; }
-        public DateTime EndAt { get; set; }
+        public DateTime? EndAt { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
         public AppUser Creator { get; set; }

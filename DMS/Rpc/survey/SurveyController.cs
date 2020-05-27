@@ -329,6 +329,7 @@ namespace DMS.Rpc.survey
 
             SurveyFilter.Id = Survey_SurveyFilterDTO.Id;
             SurveyFilter.Title = Survey_SurveyFilterDTO.Title;
+            SurveyFilter.CreatorId = Survey_SurveyFilterDTO.CreatorId;
             SurveyFilter.Description = Survey_SurveyFilterDTO.Description;
             SurveyFilter.StartAt = Survey_SurveyFilterDTO.StartAt;
             SurveyFilter.EndAt = Survey_SurveyFilterDTO.EndAt;
