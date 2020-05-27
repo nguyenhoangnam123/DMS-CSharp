@@ -46,6 +46,7 @@ namespace DMS.Rpc.warehouse
         public const string SingleListWard = Default + "/single-list-ward";
         public const string SingleListItem = Default + "/single-list-item";
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
+        public const string SingleListProductTypeId = Default + "/single-list-product-grouping";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {

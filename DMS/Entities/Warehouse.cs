@@ -45,6 +45,8 @@ namespace DMS.Entities
         public IdFilter DistrictId { get; set; }
         public IdFilter WardId { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter ProductTypeId { get; set; }
+        public IdFilter ProductGroupingId { get; set; }
         public List<WarehouseFilter> OrFilter { get; set; }
         public WarehouseOrder OrderBy {get; set;}
         public WarehouseSelect Selects {get; set;}

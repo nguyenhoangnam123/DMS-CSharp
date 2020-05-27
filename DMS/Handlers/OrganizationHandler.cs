@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Models;
 using DMS.Repositories;
 using Newtonsoft.Json;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,63 +11,53 @@ using System.Threading.Tasks;
 
 namespace DMS.Handlers
 {
-    public class OrganizationHandler
+    public class OrganizationHandler : Handler
     {
-        private DataContext context;
-        private IUOW UOW;
-        private const string SyncKey = "Organization.Sync";
-        public OrganizationHandler(DataContext context, IUOW UOW)
+        private string SyncKey => Name + ".Sync";
+        public override string Name => nameof(Organization);
+
+        public override void QueueBind(IModel channel, string queue, string exchange)
         {
-            this.context = context;
-            this.UOW = UOW;
+            channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public async Task<bool> Handle(string routingKey, string json)
+        public override async Task Handle(DataContext context, string routingKey, string content)
         {
-            switch (routingKey)
+            if (routingKey == SyncKey)
+                await Sync(context, content);
+        }
+
+        private async Task Sync(DataContext context, string json)
+        {
+            List<EventMessage<Organization>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Organization>>>(json);
+            await SaveEventMessage(context, EventMessageReviced);
+            List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
+            List<EventMessage<Organization>> OrganizationEventMessages = await ListEventMessage<Organization>(context, RowIds);
+
+            List<Organization> Organizations = new List<Organization>();
+            foreach (var RowId in RowIds)
             {
-                case SyncKey:
-                    List<EventMessage<Organization>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Organization>>>(json);
-                    await UOW.EventMessageRepository.BulkMerge(EventMessageReviced);
-                    List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
-
-                    EventMessageFilter EventMessageFilter = new EventMessageFilter
-                    {
-                        Skip = 0,
-                        Take = int.MaxValue,
-                        RowId = new GuidFilter { In = RowIds },
-                        EntityName = new StringFilter { Equal = nameof(Organization) },
-                        Selects = EventMessageSelect.ALL,
-                    };
-                    List<EventMessage<Organization>> OrganizationEventMessages = await UOW.EventMessageRepository.List<Organization>(EventMessageFilter);
-
-                    List<Organization> Organizations = new List<Organization>();
-                    foreach (var RowId in RowIds)
-                    {
-                        EventMessage<Organization> EventMessage = OrganizationEventMessages.Where(e => e.RowId == RowId).OrderByDescending(e => e.Time).FirstOrDefault();
-                        if (EventMessage != null)
-                            Organizations.Add(EventMessage.Content);
-                    }
-                    List<OrganizationDAO> OrganizationDAOs = Organizations.Select(o => new OrganizationDAO
-                    {
-                        Address = o.Address,
-                        Code = o.Address,
-                        CreatedAt = o.CreatedAt,
-                        UpdatedAt = o.UpdatedAt,
-                        DeletedAt = o.DeletedAt,
-                        Email = o.Email,
-                        Id = o.Id,
-                        Level = o.Level,
-                        Name = o.Name,
-                        ParentId = o.ParentId,
-                        Path = o.Path,
-                        Phone = o.Phone,
-                        RowId = o.RowId,
-                        StatusId = o.StatusId,
-                    }).ToList();
-                    await context.Organization.BulkMergeAsync(OrganizationDAOs);
-                    break;
+                EventMessage<Organization> EventMessage = OrganizationEventMessages.Where(e => e.RowId == RowId).OrderByDescending(e => e.Time).FirstOrDefault();
+                if (EventMessage != null)
+                    Organizations.Add(EventMessage.Content);
             }
-            return true;
+            List<OrganizationDAO> OrganizationDAOs = Organizations.Select(o => new OrganizationDAO
+            {
+                Address = o.Address,
+                Code = o.Address,
+                CreatedAt = o.CreatedAt,
+                UpdatedAt = o.UpdatedAt,
+                DeletedAt = o.DeletedAt,
+                Email = o.Email,
+                Id = o.Id,
+                Level = o.Level,
+                Name = o.Name,
+                ParentId = o.ParentId,
+                Path = o.Path,
+                Phone = o.Phone,
+                RowId = o.RowId,
+                StatusId = o.StatusId,
+            }).ToList();
+            await context.Organization.BulkMergeAsync(OrganizationDAOs);
         }
     }
 }

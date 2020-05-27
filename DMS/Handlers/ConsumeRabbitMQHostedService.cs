@@ -1,4 +1,5 @@
-﻿using DMS.Entities;
+﻿using Common;
+using DMS.Entities;
 using DMS.Models;
 using DMS.Repositories;
 using Helpers;
@@ -21,6 +22,7 @@ namespace DMS.Handlers
         private IModel _channel;
         private IConfiguration Configuration;
         private readonly DefaultObjectPool<IModel> _objectPool;
+        internal List<IHandler> Handlers = new List<IHandler>();
         public ConsumeRabbitMQHostedService(IPooledObjectPolicy<IModel> objectPolicy, IConfiguration Configuration)
         {
             this.Configuration = Configuration;
@@ -29,13 +31,25 @@ namespace DMS.Handlers
             _channel = _objectPool.Get();
             _channel.ExchangeDeclare(exchangeName, ExchangeType.Topic, true, false);
             _channel.QueueDeclare(StaticParams.ModuleName, true, false, false, null);
-            _channel.QueueBind(StaticParams.ModuleName, exchangeName, $"{nameof(AppUser)}.*", null);
-            _channel.QueueBind(StaticParams.ModuleName, exchangeName, $"{nameof(Organization)}.*", null);
-            _channel.QueueBind(StaticParams.ModuleName, exchangeName, $"{nameof(Province)}.*", null);
-            _channel.QueueBind(StaticParams.ModuleName, exchangeName, $"{nameof(Position)}.*", null);
-            _channel.QueueBind(StaticParams.ModuleName, exchangeName, $"{nameof(District)}.*", null);
-            _channel.QueueBind(StaticParams.ModuleName, exchangeName, $"{nameof(Ward)}.*", null);
+            Init();
+
+            foreach (IHandler handler in Handlers)
+            {
+                handler.QueueBind(_channel, StaticParams.ModuleName, exchangeName);
+            }
             _channel.BasicQos(0, 1, false);
+        }
+
+        private void Init()
+        {
+            Handlers.Add(new AppUserHandler());
+            Handlers.Add(new DistrictHandler());
+            Handlers.Add(new OrganizationHandler());
+            Handlers.Add(new PositionHandler());
+            Handlers.Add(new ProvinceHandler());
+            Handlers.Add(new DistrictHandler());
+            Handlers.Add(new RoleHandler());
+            Handlers.Add(new WardHandler());
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -74,36 +88,19 @@ namespace DMS.Handlers
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
             optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DataContext"));
             DataContext context = new DataContext(optionsBuilder.Options);
-            IUOW UOW = new UOW(context);
+            ICurrentContext CurrentContext = new CurrentContext
+            {
+                UserId = 0,
+                UserName = "SYSTEM",
+            };
+            ILogging Logging = new Logging(Configuration, CurrentContext);
             List<string> path = routingKey.Split(".").ToList();
             if (path.Count < 1)
                 throw new Exception();
-            switch (path[0])
+            foreach (IHandler handler in Handlers)
             {
-                case nameof(AppUser):
-                    AppUserHandler AppUserHandler = new AppUserHandler(context, UOW);
-                    await AppUserHandler.Handle(routingKey, content);
-                    break;
-                case nameof(Organization):
-                    OrganizationHandler OrganizationHandler = new OrganizationHandler(context, UOW);
-                    await OrganizationHandler.Handle(routingKey, content);
-                    break;
-                case nameof(Province):
-                    ProvinceHandler ProvinceHandler = new ProvinceHandler(context, UOW);
-                    await ProvinceHandler.Handle(routingKey, content);
-                    break;
-                case nameof(Position):
-                    PositionHandler PositionHandler = new PositionHandler(context, UOW);
-                    await PositionHandler.Handle(routingKey, content);
-                    break;
-                case nameof(District):
-                    DistrictHandler DistrictHandler = new DistrictHandler(context, UOW);
-                    await DistrictHandler.Handle(routingKey, content);
-                    break;
-                case nameof(Ward):
-                    WardHandler WardHandler = new WardHandler(context, UOW);
-                    await WardHandler.Handle(routingKey, content);
-                    break;
+                if (path[0] == handler.Name)
+                    await handler.Handle(context, routingKey, content);
             }
         }
 
