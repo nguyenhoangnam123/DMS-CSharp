@@ -114,7 +114,7 @@ namespace DMS.Rpc.warehouse
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Warehouse_WarehouseDTO.Id))
                 return Forbid();
 
@@ -132,7 +132,7 @@ namespace DMS.Rpc.warehouse
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Warehouse_WarehouseDTO.Id))
                 return Forbid();
 
@@ -162,7 +162,7 @@ namespace DMS.Rpc.warehouse
             else
                 return BadRequest(Warehouse_WarehouseDTO);
         }
-        
+
         [Route(WarehouseRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -180,7 +180,7 @@ namespace DMS.Rpc.warehouse
             Warehouses = await WarehouseService.BulkDelete(Warehouses);
             return true;
         }
-        
+
         [Route(WarehouseRoute.ImportInventory), HttpPost]
         public async Task<ActionResult<List<Warehouse_InventoryDTO>>> ImportInventory([FromBody] Warehouse_InventoryDTO Warehouse_InventoryDTO, IFormFile file)
         {
@@ -239,117 +239,17 @@ namespace DMS.Rpc.warehouse
                  .Select(c => new Warehouse_InventoryDTO(c)).ToList();
             return Warehouse_InventoryDTOs;
         }
-        
+
         [Route(WarehouseRoute.ExportInventory), HttpPost]
-        public async Task<FileResult> ExportInventory([FromBody] Warehouse_InventoryFilterDTO Warehouse_InventoryFilterDTO)
+        public async Task<FileResult> ExportInventory([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            WarehouseFilter WarehouseFilter = new WarehouseFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Id = Warehouse_InventoryFilterDTO.Id,
-                Selects = WarehouseSelect.Id
-            };
-            Warehouse Warehouses = (await WarehouseService.List(WarehouseFilter)).FirstOrDefault();
-
-            var InventoryFilter = new InventoryFilter
-            {
-                Id = Warehouse_InventoryFilterDTO.Id,
-                ItemId = Warehouse_InventoryFilterDTO.ItemId,
-                WarehouseId = new IdFilter { Equal = Warehouses .Id },
-                SaleStock = Warehouse_InventoryFilterDTO.SaleStock,
-                AccountingStock = Warehouse_InventoryFilterDTO.AccountingStock,
-
-                Selects = InventorySelect.ALL,
-                Skip = 0,
-                Take = int.MaxValue,
-                OrderBy = Warehouse_InventoryFilterDTO.OrderBy,
-                OrderType = Warehouse_InventoryFilterDTO.OrderType,
-            };
-            InventoryFilter = InventoryService.ToFilter(InventoryFilter);
-
-            List<Inventory> Inventories = await InventoryService.List(InventoryFilter);
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
-            {
-                var InventoryHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "STT",
-                        "Mã kho",
-                        "Tên kho",
-                        "Mã sản phẩm",
-                        "Tên sản phẩm",
-                        "Có thể bán",
-                        "Tồn kế toán",
-                    }
-                };
-                List<object[]> data = new List<object[]>();
-                for (int i = 0; i < Inventories.Count; i++)
-                {
-                    var Inventory = Inventories[i];
-                    data.Add(new Object[]
-                    {
-                        i+1,
-                        Inventory.Warehouse.Code,
-                        Inventory.Warehouse.Name,
-                        Inventory.Item.Code,
-                        Inventory.Item.Name,
-                        Inventory.SaleStock,
-                        Inventory.AccountingStock
-                    });
-                }
-                excel.GenerateWorksheet("Inventory", InventoryHeaders, data);
-                excel.Save();
-            }
-            return File(memoryStream.ToArray(), "application/octet-stream", "Inventory.xlsx");
-        }
-
-        [Route(WarehouseRoute.ExportTemplate), HttpPost]
-        public async Task<FileResult> ExportTemplate()
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            WarehouseFilter WarehouseFilter = new WarehouseFilter
-            {
-                Skip = 0,
-                Take = 1,
-                Selects = WarehouseSelect.ALL
-            };
-            List<Warehouse> Warehouses = await WarehouseService.List(WarehouseFilter);
-
-            var ProductFilter = new ProductFilter
-            {
-                Selects = ProductSelect.Id,
-                Skip = 0,
-                Take = int.MaxValue,
-                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
-            };
-            var Products = await ProductService.List(ProductFilter);
-            var ItemFilter = new ItemFilter
-            {
-                Selects = ItemSelect.Id,
-                Skip = 0,
-                Take = int.MaxValue,
-                ProductId = new IdFilter { In = Products.Select(x => x.Id).ToList() }
-            };
-            var Items = await ItemService.List(ItemFilter);
-
-            var InventoryFilter = new InventoryFilter
-            {
-                ItemId = new IdFilter { In = Items .Select(x => x.Id).ToList() },
-
-                Selects = InventorySelect.ALL,
-                Skip = 0,
-                Take = int.MaxValue,
-            };
-            InventoryFilter = InventoryService.ToFilter(InventoryFilter);
-
-            List<Inventory> Inventories = await InventoryService.List(InventoryFilter);
+            long WarehouseId = Warehouse_WarehouseDTO?.Id ?? 0;
+            Warehouse Warehouse = await WarehouseService.Get(WarehouseId);
+            if (Warehouse == null)
+                return null;
+         
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -366,18 +266,76 @@ namespace DMS.Rpc.warehouse
                     }
                 };
                 List<object[]> data = new List<object[]>();
-                for (int i = 0; i < Inventories.Count; i++)
+                for (int i = 0; i < Warehouse.Inventories.Count; i++)
                 {
-                    var Inventory = Inventories[i];
+                    var Inventory = Warehouse.Inventories[i];
                     data.Add(new Object[]
                     {
                         i+1,
-                        Inventory.Warehouse.Code,
-                        Inventory.Warehouse.Name,
+                        Warehouse.Code,
+                        Warehouse.Name,
                         Inventory.Item.Code,
                         Inventory.Item.Name,
                         Inventory.SaleStock,
                         Inventory.AccountingStock
+                    });
+                }
+                excel.GenerateWorksheet("Inventory", InventoryHeaders, data);
+                excel.Save();
+            }
+            return File(memoryStream.ToArray(), "application/octet-stream", $"{Warehouse.Code}_Inventory.xlsx");
+        }
+
+        [Route(WarehouseRoute.ExportTemplate), HttpPost]
+        public async Task<FileResult> ExportTemplate([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            long WarehouseId = Warehouse_WarehouseDTO?.Id ?? 0;
+            Warehouse Warehouse = await WarehouseService.Get(WarehouseId);
+            if (Warehouse == null)
+                Warehouse = new Warehouse
+                {
+                    Inventories = new List<Inventory>()
+                };
+
+            var ItemFilter = new ItemFilter
+            {
+                Selects = ItemSelect.ALL,
+                Skip = 0,
+                Take = int.MaxValue,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+            var Items = await ItemService.List(ItemFilter);
+
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            {
+                var InventoryHeaders = new List<string[]>()
+                {
+                    new string[] {
+                        "STT",
+                        "Mã kho",
+                        "Tên kho",
+                        "Mã sản phẩm",
+                        "Tên sản phẩm",
+                        "Có thể bán",
+                        "Tồn kế toán",
+                    }
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < Items.Count; i++)
+                {
+                    var Item = Items[i];
+                    data.Add(new Object[]
+                    {
+                        i+1,
+                        Warehouse.Code,
+                        Warehouse.Name,
+                        Item.Code,
+                        Item.Name,
+                        0,
+                        0,
                     });
                 }
                 excel.GenerateWorksheet("Inventory", InventoryHeaders, data);
@@ -390,18 +348,15 @@ namespace DMS.Rpc.warehouse
                         "Tên",
                     }
                 };
-                foreach (var Warehouse in Warehouses)
+                data.Add(new object[]
                 {
-                    data.Add(new object[]
-                    {
-                        Warehouse.Code,
-                        Warehouse.Name
-                    });
-                }
+                    Warehouse.Code,
+                    Warehouse.Name,
+                });
                 excel.GenerateWorksheet("Warehouse", WarehouseHeader, data);
                 excel.Save();
             }
-            return File(memoryStream.ToArray(), "application/octet-stream", "Temmplate_Inventory.xlsx");
+            return File(memoryStream.ToArray(), "application/octet-stream", "Template_Inventory.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)
