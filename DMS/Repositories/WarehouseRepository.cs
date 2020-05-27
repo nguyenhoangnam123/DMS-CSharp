@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Helpers;
+using DMS.Enums;
 
 namespace DMS.Repositories
 {
@@ -273,9 +274,36 @@ namespace DMS.Repositories
 
             if (Warehouse == null)
                 return null;
-            Warehouse.Inventories = await DataContext.Inventory.Include(x => x.Item.Product.ProductProductGroupingMappings)
+            List<Item> Items = await DataContext.Item.AsNoTracking()
+                .Where(i => i.DeletedAt == null && i.StatusId == StatusEnum.ACTIVE.Id)
+                .Select(x => new Item
+                {
+                    Id = x.Id,
+                    ProductId = x.ProductId,
+                    Code = x.Code,
+                    Name = x.Name,
+                    ScanCode = x.ScanCode,
+                    SalePrice = x.SalePrice,
+                    RetailPrice = x.RetailPrice,
+                    Product = new Product
+                    {
+                        Id = x.Product.Id,
+                        Code = x.Product.Code,
+                        Name = x.Product.Name,
+                        ERPCode = x.Product.ERPCode,
+                        UnitOfMeasureId = x.Product.UnitOfMeasureId,
+                        UnitOfMeasure = new UnitOfMeasure
+                        {
+                            Id = x.Product.UnitOfMeasure.Id,
+                            Code = x.Product.UnitOfMeasure.Code,
+                            Name = x.Product.UnitOfMeasure.Name,
+                        },
+                    }
+                }).ToListAsync();
+
+            Warehouse.Inventories = await DataContext.Inventory.AsNoTracking()
                 .Where(x => x.WarehouseId == Warehouse.Id)
-                .Where(x => x.DeletedAt == null && x.Item.DeletedAt == null)
+                .Where(x => x.DeletedAt == null && x.Item.DeletedAt == null && x.Item.StatusId == StatusEnum.ACTIVE.Id)
                 .Select(x => new Inventory
                 {
                     Id = x.Id,
@@ -283,47 +311,24 @@ namespace DMS.Repositories
                     ItemId = x.ItemId,
                     SaleStock = x.SaleStock,
                     AccountingStock = x.AccountingStock,
-                    Item = new Item
-                    {
-                        Id = x.Item.Id,
-                        ProductId = x.Item.ProductId,
-                        Code = x.Item.Code,
-                        Name = x.Item.Name,
-                        ScanCode = x.Item.ScanCode,
-                        SalePrice = x.Item.SalePrice,
-                        RetailPrice = x.Item.RetailPrice,
-                        Product = new Product
-                        {
-                            Id = x.Item.Product.Id,
-                            Code = x.Item.Product.Code,
-                            Name = x.Item.Product.Name,
-                            ERPCode = x.Item.Product.ERPCode,
-                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
-                            UnitOfMeasure = new UnitOfMeasure
-                            {
-                                Id = x.Item.Product.UnitOfMeasure.Id,
-                                Code = x.Item.Product.UnitOfMeasure.Code,
-                                Name = x.Item.Product.UnitOfMeasure.Name,
-                            },
-                            ProductProductGroupingMappings = x.Item.Product.ProductProductGroupingMappings.Select(g => new ProductProductGroupingMapping
-                            {
-                                ProductId = g.ProductId,
-                                ProductGroupingId = g.ProductGroupingId,
-                                ProductGrouping = new ProductGrouping
-                                {
-                                    Id = g.ProductGrouping.Id,
-                                    Code = g.ProductGrouping.Code,
-                                    Name = g.ProductGrouping.Name,
-                                    Path = g.ProductGrouping.Path,
-                                    Level = g.ProductGrouping.Level,
-                                    Description = g.ProductGrouping.Description,
-                                    ParentId = g.ProductGrouping.ParentId,
-                                }
-                            }).ToList()
-                        }
-                    },
                 }).ToListAsync();
-
+            foreach(Item Item in Items)
+            {
+                Inventory Inventory = Warehouse.Inventories.Where(i => i.ItemId == Item.Id).FirstOrDefault();
+                if (Inventory == null)
+                {
+                    Inventory = new Inventory
+                    {
+                        Id = 0,
+                        WarehouseId = Warehouse.Id,
+                        ItemId = Item.Id,
+                        SaleStock = 0,
+                        AccountingStock = 0,
+                    };
+                    Warehouse.Inventories.Add(Inventory);
+                }
+            }
+            Warehouse.Inventories = Warehouse.Inventories.OrderBy(i => i.ItemId).ToList();
             return Warehouse;
         }
         public async Task<bool> Create(Warehouse Warehouse)
