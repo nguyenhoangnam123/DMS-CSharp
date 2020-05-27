@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Helpers;
 using DMS.Enums;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace DMS.Repositories
 {
@@ -327,6 +328,7 @@ namespace DMS.Repositories
                     };
                     Warehouse.Inventories.Add(Inventory);
                 }
+                Inventory.Item = Item;
             }
             Warehouse.Inventories = Warehouse.Inventories.OrderBy(i => i.ItemId).ToList();
             return Warehouse;
