@@ -151,7 +151,7 @@ namespace DMS.Repositories
                 Title = filter.Selects.Contains(SurveySelect.Title) ? q.Title : default(string),
                 Description = filter.Selects.Contains(SurveySelect.Description) ? q.Description : default(string),
                 StartAt = filter.Selects.Contains(SurveySelect.StartAt) ? q.StartAt : default(DateTime),
-                EndAt = filter.Selects.Contains(SurveySelect.EndAt) ? q.EndAt : default(DateTime),
+                EndAt = filter.Selects.Contains(SurveySelect.EndAt) ? q.EndAt : default(DateTime?),
                 StatusId = filter.Selects.Contains(SurveySelect.Status) ? q.StatusId : default(long),
                 CreatorId = filter.Selects.Contains(SurveySelect.Creator) ? q.CreatorId : default(long),
                 Creator = filter.Selects.Contains(SurveySelect.Creator) && q.Creator != null ? new AppUser

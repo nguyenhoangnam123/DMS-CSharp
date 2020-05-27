@@ -24,7 +24,7 @@ namespace DMS.Services.MSurvey
             IdNotExisted,
             EndDateWrong,
             TitleEmpty,
-            DescriptionEmpty,
+            StartDateWrong
         }
 
         private IUOW UOW;
@@ -65,26 +65,30 @@ namespace DMS.Services.MSurvey
             return Survey.IsValidated;
         }
 
-        public async Task<bool> Create(Survey Survey)
+        private async Task<bool> ValidateTitle(Survey Survey)
         {
-            if (Survey.SurveyQuestions == null)
-                Survey.SurveyQuestions = new List<SurveyQuestion>();
-            if (Survey.StartAt > Survey.EndAt)
-                Survey.AddError(nameof(SurveyValidator), nameof(Survey.EndAt), ErrorCode.EndDateWrong);
             if (string.IsNullOrWhiteSpace(Survey.Title))
             {
                 Survey.AddError(nameof(SurveyValidator), nameof(Survey.Title), ErrorCode.TitleEmpty);
             }
-            if (string.IsNullOrWhiteSpace(Survey.Description))
-            {
-                Survey.AddError(nameof(SurveyValidator), nameof(Survey.Description), ErrorCode.DescriptionEmpty);
-            }
-            foreach(SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
-            {
-                if (string.IsNullOrWhiteSpace( SurveyQuestion.Content))
-                    SurveyQuestion.AddError(nameof(SurveyValidator), nameof(Survey.Description), ErrorCode.DescriptionEmpty);
+            return Survey.IsValidated;
+        }
 
-            }    
+        private async Task<bool> ValidateStartDate(Survey Survey)
+        {
+            if(Survey.StartAt == default(DateTime))
+            {
+                Survey.AddError(nameof(SurveyValidator), nameof(Survey.StartAt), ErrorCode.StartDateWrong);
+            }
+            return Survey.IsValidated;
+        }
+
+        public async Task<bool> Create(Survey Survey)
+        {
+            await ValidateSurveyQuestions(Survey);
+            await ValidateTitle(Survey);
+            await ValidateStartDate(Survey);
+
             return Survey.IsValidated;
         }
 
@@ -93,6 +97,8 @@ namespace DMS.Services.MSurvey
             if (await ValidateId(Survey))
             {
                 await ValidateSurveyQuestions(Survey);
+                await ValidateTitle(Survey);
+                await ValidateStartDate(Survey);
             }
             return Survey.IsValidated;
         }

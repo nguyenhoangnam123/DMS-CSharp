@@ -12,8 +12,9 @@ namespace DMS.Rpc.survey
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime StartAt { get; set; }
-        public DateTime EndAt { get; set; }
+        public DateTime? EndAt { get; set; }
         public long StatusId { get; set; }
+        public long CreatorId { get; set; }
         public long ResultCounter { get; set; }
         public List<Survey_SurveyQuestionDTO> SurveyQuestions { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -27,6 +28,7 @@ namespace DMS.Rpc.survey
             this.Title = Survey.Title;
             this.Description = Survey.Description;
             this.StartAt = Survey.StartAt;
+            this.CreatorId = Survey.CreatorId;
             this.EndAt = Survey.EndAt;
             this.StatusId = Survey.StatusId;
             this.SurveyQuestions = Survey.SurveyQuestions?.Select(x => new Survey_SurveyQuestionDTO(x)).ToList();
