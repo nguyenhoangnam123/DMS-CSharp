@@ -27,7 +27,8 @@ namespace DMS.Services.MERouteChangeRequest
             StoreNotExisted,
             ERouteChangeRequestInUsed,
             ERouteNotExisted,
-            RequestStateIsNotApproved
+            RequestStateIsNotApproved,
+            ERouteChangeRequestContentsEmpty
         }
 
         private IUOW UOW;
@@ -69,7 +70,7 @@ namespace DMS.Services.MERouteChangeRequest
 
         private async Task<bool> ValidateStore(ERouteChangeRequest ERouteChangeRequest)
         {
-            if (ERouteChangeRequest.ERouteChangeRequestContents != null)
+            if (ERouteChangeRequest.ERouteChangeRequestContents != null && ERouteChangeRequest.ERouteChangeRequestContents.Any())
             {
                 var IdsStore = ERouteChangeRequest.ERouteChangeRequestContents.Select(x => x.StoreId).ToList();
 
@@ -89,7 +90,10 @@ namespace DMS.Services.MERouteChangeRequest
                         ERouteChangeRequest.AddError(nameof(ERouteChangeRequestValidator), nameof(ERouteChangeRequestContent.Store), ErrorCode.StoreNotExisted);
                 }
             }
-
+            else
+            {
+                ERouteChangeRequest.AddError(nameof(ERouteChangeRequestValidator), nameof(ERouteChangeRequest.ERouteChangeRequestContents), ErrorCode.ERouteChangeRequestContentsEmpty);
+            }
             return ERouteChangeRequest.IsValidated;
         }
 
