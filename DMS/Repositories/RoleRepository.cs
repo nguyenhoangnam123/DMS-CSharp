@@ -337,20 +337,29 @@ namespace DMS.Repositories
                     PermissionDAO.Id = Permission.Id;
                     PermissionDAO.Code = Permission.Code;
                     PermissionDAO.Name = Permission.Name;
-                    PermissionDAO.RoleId = Permission.RoleId;
+                    PermissionDAO.RoleId = Role.Id;
                     PermissionDAO.MenuId = Permission.MenuId;
                     PermissionDAO.StatusId = Permission.StatusId;
+                    
+                    PermissionDAOs.Add(PermissionDAO);
+                }
+                await DataContext.Permission.BulkMergeAsync(PermissionDAOs);
+                List<PermissionFieldMappingDAO> PermissionFieldMappingDAOs = new List<PermissionFieldMappingDAO>();
+                List<PermissionActionMappingDAO> PermissionActionMappingDAOs = new List<PermissionActionMappingDAO>();
+                foreach (Permission Permission in Role.Permissions)
+                {
+                    Permission.Id = PermissionDAOs.Where(p => p.Code == Permission.Code).Select(p => p.Id).FirstOrDefault();
                     if (Permission.PermissionFieldMappings != null)
                     {
                         foreach (var PermissionFieldMapping in Permission.PermissionFieldMappings)
                         {
                             PermissionFieldMappingDAO PermissionFieldMappingDAO = new PermissionFieldMappingDAO
                             {
-                                PermissionId = PermissionFieldMapping.PermissionId,
+                                PermissionId = Permission.Id,
                                 FieldId = PermissionFieldMapping.FieldId,
                                 Value = PermissionFieldMapping.Value
                             };
-                            PermissionDAO.PermissionFieldMappings.Add(PermissionFieldMappingDAO);
+                            PermissionFieldMappingDAOs.Add(PermissionFieldMappingDAO);
                         }
                     }
                     if (Permission.PermissionActionMappings != null)
@@ -359,15 +368,15 @@ namespace DMS.Repositories
                         {
                             PermissionActionMappingDAO PermissionActionMappingDAO = new PermissionActionMappingDAO
                             {
-                                PermissionId = PermissionPageMapping.PermissionId,
+                                PermissionId = Permission.Id,
                                 ActionId = PermissionPageMapping.ActionId,
                             };
-                            PermissionDAO.PermissionActionMappings.Add(PermissionActionMappingDAO);
+                            PermissionActionMappingDAOs.Add(PermissionActionMappingDAO);
                         }
                     }
-                    PermissionDAOs.Add(PermissionDAO);
                 }
-                await DataContext.Permission.BulkMergeAsync(PermissionDAOs);
+                await DataContext.PermissionFieldMapping.BulkMergeAsync(PermissionFieldMappingDAOs);
+                await DataContext.PermissionActionMapping.BulkMergeAsync(PermissionActionMappingDAOs);
             }
         }
     }
