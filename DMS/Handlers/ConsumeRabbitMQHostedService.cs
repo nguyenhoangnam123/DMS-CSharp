@@ -93,7 +93,6 @@ namespace DMS.Handlers
                 UserId = 0,
                 UserName = "SYSTEM",
             };
-            ILogging Logging = new Logging(Configuration, CurrentContext);
             List<string> path = routingKey.Split(".").ToList();
             if (path.Count < 1)
                 throw new Exception();
