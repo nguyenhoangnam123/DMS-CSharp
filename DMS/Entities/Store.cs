@@ -47,7 +47,7 @@ namespace DMS.Entities
         public List<StoreImageMapping> StoreImageMappings { get; set; }
         public List<RequestWorkflowStepMapping> StoreWorkflows { get; set; }
         public List<RequestWorkflowStepMapping> RequestWorkflowStepMappings { get; set; }
-
+        public List<StoreChecking> StoreCheckings { get; set; }
         public bool Equals(Store other)
         {
             return other != null && Id == other.Id;

@@ -600,6 +600,35 @@ namespace DMS.Repositories
                         Url = x.Image.Url
                     }
                 }).ToListAsync();
+            Store.StoreCheckings = await DataContext.StoreChecking
+                .Where(x => x.StoreId == Id).Select(x => new StoreChecking
+                {
+                    Id = x.Id,
+                    CheckInAt = x.CheckInAt,
+                    CheckOutAt = x.CheckOutAt,
+                    CountImage = x.ImageCounter,
+                    CountIndirectSalesOrder = x.IndirectSalesOrderCounter,
+                    Latitude = x.Latitude,
+                    Longtitude = x.Longtitude,
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    StoreId = x.StoreId,
+                    SaleEmployee = new AppUser
+                    {
+                        Id = x.SaleEmployee.Id,
+                        Username = x.SaleEmployee.Username,
+                        DisplayName = x.SaleEmployee.DisplayName,
+                        Address = x.SaleEmployee.Address,
+                        Email = x.SaleEmployee.Email,
+                        Phone = x.SaleEmployee.Phone,
+                        PositionId = x.SaleEmployee.PositionId,
+                        Department = x.SaleEmployee.Department,
+                        OrganizationId = x.SaleEmployee.OrganizationId,
+                        SexId = x.SaleEmployee.SexId,
+                        StatusId = x.SaleEmployee.StatusId,
+                        Birthday = x.SaleEmployee.Birthday,
+                        ProvinceId = x.SaleEmployee.ProvinceId,
+                    }
+                }).ToListAsync();
             return Store;
         }
         public async Task<bool> Create(Store Store)
