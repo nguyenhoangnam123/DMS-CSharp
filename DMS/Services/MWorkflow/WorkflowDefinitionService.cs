@@ -34,18 +34,15 @@ namespace DMS.Services.MWorkflow
         private IWorkflowDefinitionValidator WorkflowDefinitionValidator;
         private List<string> StoreParameters;
         private List<string> ROUTER;
-        private IMailService MailService;
         public WorkflowDefinitionService(
             IUOW UOW,
             ILogging Logging,
-            IMailService MailService,
             ICurrentContext CurrentContext,
             IWorkflowDefinitionValidator WorkflowDefinitionValidator
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
-            this.MailService = MailService;
             this.CurrentContext = CurrentContext;
             this.WorkflowDefinitionValidator = WorkflowDefinitionValidator;
 

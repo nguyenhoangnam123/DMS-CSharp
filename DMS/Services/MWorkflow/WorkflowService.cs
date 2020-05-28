@@ -8,6 +8,7 @@ using DMS.Entities;
 using DMS.Enums;
 using Helpers;
 using HandlebarsDotNet;
+using DMS.Handlers;
 
 namespace DMS.Services.MWorkflow
 {
@@ -23,15 +24,15 @@ namespace DMS.Services.MWorkflow
     {
         private IUOW UOW;
         private ICurrentContext CurrentContext;
-        private IMailService MailService;
+        private IRabbitManager RabbitManager;
         public WorkflowService(IUOW UOW,
-            IMailService MailService,
-            ICurrentContext CurrentContext
+            ICurrentContext CurrentContext,
+            IRabbitManager RabbitManager
             )
         {
             this.UOW = UOW;
-            this.MailService = MailService;
             this.CurrentContext = CurrentContext;
+            this.RabbitManager = RabbitManager;
         }
 
         public async Task<RequestState> GetRequestState(Guid RequestId)
@@ -250,6 +251,7 @@ namespace DMS.Services.MWorkflow
                         Recipients = recipients,
                         Subject = CreateMailContent(WorkflowDirection.SubjectMailForCreator, Parameters),
                         Body = CreateMailContent(WorkflowDirection.BodyMailForCreator, Parameters),
+                        RowId = Guid.NewGuid()
                     };
 
                     Mail MailForNextStep = new Mail
@@ -257,12 +259,13 @@ namespace DMS.Services.MWorkflow
                         Recipients = recipients,
                         Subject = CreateMailContent(WorkflowDirection.SubjectMailForNextStep, Parameters),
                         Body = CreateMailContent(WorkflowDirection.BodyMailForNextStep, Parameters),
+                        RowId = Guid.NewGuid()
                     };
                     Mails.Add(MailForCreator);
                     Mails.Add(MailForNextStep);
                 }
                 Mails.Distinct();
-                Mails.ForEach(x => MailService.Send(x));
+                RabbitManager.Publish(Mails, RoutingKeyEnum.SendMail);
                 return true;
             }
 
@@ -277,6 +280,7 @@ namespace DMS.Services.MWorkflow
             if (WorkflowDefinition != null && RequestWorkflowStepMappings.Count > 0)
             {
                 List<WorkflowStep> ToSteps = new List<WorkflowStep>();
+                List<Mail> Mails = new List<Mail>();
                 foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
                 {
                     if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
@@ -304,11 +308,13 @@ namespace DMS.Services.MWorkflow
                             Recipients = recipients,
                             Subject = CreateMailContent(WorkflowStep.SubjectMailForReject, Parameters),
                             Body = CreateMailContent(WorkflowStep.BodyMailForReject, Parameters),
+                            RowId = Guid.NewGuid()
                         };
-                        await MailService.Send(MailForReject);
+                        Mails.Add(MailForReject);
                         return true;
                     }
                 }
+                RabbitManager.Publish(Mails, RoutingKeyEnum.SendMail);
             }
 
             return false;
