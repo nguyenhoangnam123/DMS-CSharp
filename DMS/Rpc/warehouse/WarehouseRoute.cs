@@ -29,6 +29,7 @@ namespace DMS.Rpc.warehouse
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string GetPreview = Default + "/get-preview";
         public const string ListHistory = Default + "/list-history";
         public const string CountHistory = Default + "/count-history";
         public const string Create = Default + "/create";
@@ -63,24 +64,24 @@ namespace DMS.Rpc.warehouse
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, } },
+                Master, Count, List, Get, GetPreview} },
             { "Thêm", new List<string> {
-                Master, Count, List, Get, 
+                Master, Count, List, Get, GetPreview,
                 Detail, Create, 
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Sửa", new List<string> {
-                Master, Count, List, Get,
+                Master, Count, List, Get,GetPreview,
                 Detail, Update,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Xoá", new List<string> {
-                Master, Count, List, Get, 
+                Master, Count, List, Get, GetPreview,
                 Detail, Delete, 
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get,
+                Master, Count, List, Get, GetPreview,
                 BulkDelete } },
             { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, 
+                Master, Count, List, Get, GetPreview,
                 ExportTemplate, } },
         };
     }

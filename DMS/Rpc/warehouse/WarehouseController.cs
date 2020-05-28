@@ -109,6 +109,21 @@ namespace DMS.Rpc.warehouse
             return new Warehouse_WarehouseDTO(Warehouse);
         }
 
+        [Route(WarehouseRoute.GetPreview), HttpPost]
+        public async Task<ActionResult<Warehouse_WarehouseDTO>> GetPreview([FromBody]Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Warehouse_WarehouseDTO.Id))
+                return Forbid();
+
+            Warehouse Warehouse = await WarehouseService.Get(Warehouse_WarehouseDTO.Id);
+            Warehouse_WarehouseDTO = new Warehouse_WarehouseDTO(Warehouse);
+            Warehouse_WarehouseDTO.Inventories = Warehouse_WarehouseDTO.Inventories.Where(x => x.SaleStock + x.AccountingStock > 0).ToList();
+            return Warehouse_WarehouseDTO;
+        }
+
         [Route(WarehouseRoute.Create), HttpPost]
         public async Task<ActionResult<Warehouse_WarehouseDTO>> Create([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
         {

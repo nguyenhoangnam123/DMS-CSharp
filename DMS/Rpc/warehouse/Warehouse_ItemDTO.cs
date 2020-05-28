@@ -16,6 +16,8 @@ namespace DMS.Rpc.warehouse
         public string Code { get; set; }
         
         public string Name { get; set; }
+        public string CodeLower { get; set; }
+        public string NameLower { get; set; }
         
         public string ScanCode { get; set; }
         
@@ -35,6 +37,8 @@ namespace DMS.Rpc.warehouse
             this.Code = Item.Code;
             
             this.Name = Item.Name;
+            this.NameLower = Item.Name.ToLower();
+            this.CodeLower = Item.Code.ToLower();
             
             this.ScanCode = Item.ScanCode;
             
