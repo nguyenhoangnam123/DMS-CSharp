@@ -11,6 +11,7 @@ namespace DMS.Rpc.warehouse
         public string Code { get; set; }
 
         public string Name { get; set; }
+        public string NameLower { get; set; }
 
         public string Description { get; set; }
 
@@ -26,6 +27,7 @@ namespace DMS.Rpc.warehouse
             this.Code = UnitOfMeasure.Code;
 
             this.Name = UnitOfMeasure.Name;
+            this.NameLower = UnitOfMeasure.Name.ToLower();
 
             this.Description = UnitOfMeasure.Description;
 

@@ -30,7 +30,6 @@ namespace DMS.Rpc.warehouse
         public long? BrandId { get; set; }
         
         public long UnitOfMeasureId { get; set; }
-        public string UnitOfMeasureNameLower { get; set; }
         public long? UnitOfMeasureGroupingId { get; set; }
         
         public decimal? SalePrice { get; set; }
@@ -74,7 +73,6 @@ namespace DMS.Rpc.warehouse
             this.BrandId = Product.BrandId;
             
             this.UnitOfMeasureId = Product.UnitOfMeasureId;
-            this.UnitOfMeasureNameLower = Product.UnitOfMeasure.Name.ToLower();
             this.UnitOfMeasureGroupingId = Product.UnitOfMeasureGroupingId;
             
             this.SalePrice = Product.SalePrice;
