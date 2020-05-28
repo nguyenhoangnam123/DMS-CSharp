@@ -15,6 +15,7 @@ namespace DMS.Entities
         public List<Attachment> Attachments { get; set; }
         public long RetryCount { get; set; }
         public string Error { get; set; }
+        public Guid RowId { get; set; }
         public Mail() { }
     }
 

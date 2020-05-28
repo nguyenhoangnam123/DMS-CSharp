@@ -34,7 +34,6 @@ namespace DMS.Services.MStore
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IMailService MailService;
         private IStoreValidator StoreValidator;
         private IWorkflowService WorkflowService;
         private IImageService ImageService;
@@ -43,7 +42,6 @@ namespace DMS.Services.MStore
             ILogging Logging,
             ICurrentContext CurrentContext,
             IImageService ImageService,
-            IMailService MailService,
             IWorkflowService WorkflowService,
             IStoreValidator StoreValidator
         )
@@ -51,7 +49,6 @@ namespace DMS.Services.MStore
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.MailService = MailService;
             this.WorkflowService = WorkflowService;
             this.StoreValidator = StoreValidator;
             this.ImageService = ImageService;
