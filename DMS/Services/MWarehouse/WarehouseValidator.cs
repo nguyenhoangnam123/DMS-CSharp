@@ -34,7 +34,8 @@ namespace DMS.Services.MWarehouse
             DistrictNotExisted,
             ProvinceNotExisted,
             WardNotExisted,
-            StatusNotExisted
+            StatusNotExisted,
+            WarehouseHasInventory
         }
 
         private IUOW UOW;
@@ -239,28 +240,27 @@ namespace DMS.Services.MWarehouse
         {
             if (await ValidateId(Warehouse))
             {
+                InventoryFilter filter = new InventoryFilter
+                {
+                    WarehouseId = new IdFilter { Equal = Warehouse.Id }
+                };
+
+                int count = await UOW.InventoryRepository.Count(filter);
+                if(count != 0)
+                {
+                    Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.Status), ErrorCode.WarehouseHasInventory);
+                }
             }
             return Warehouse.IsValidated;
         }
         
         public async Task<bool> BulkDelete(List<Warehouse> Warehouses)
         {
-            WarehouseFilter WarehouseFilter = new WarehouseFilter
+            foreach (var Warehouse in Warehouses)
             {
-                Skip = 0,
-                Take = int.MaxValue,
-                Id = new IdFilter { In = Warehouses.Select(a => a.Id).ToList() },
-                Selects = WarehouseSelect.Id
-            };
-
-            var listInDB = await UOW.WarehouseRepository.List(WarehouseFilter);
-            var listExcept = Warehouses.Except(listInDB);
-            if (listExcept == null || listExcept.Count() == 0) return true;
-            foreach (var Warehouse in listExcept)
-            {
-                Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.Id), ErrorCode.IdNotExisted);
+                await Delete(Warehouse);
             }
-            return false;
+            return Warehouses.All(st => st.IsValidated);
         }
         
         public async Task<bool> Import(List<Warehouse> Warehouses)
