@@ -21,7 +21,7 @@ namespace Helpers
         private ICurrentContext CurrentContext;
         private IRabbitManager RabbitManager;
         private IUOW UOW;
-        public Logging(IConfiguration Configuration, 
+        public Logging(IConfiguration Configuration,
             ICurrentContext CurrentContext,
             IRabbitManager RabbitManager,
             IUOW UOW)
@@ -46,6 +46,7 @@ namespace Helpers
 
             RabbitManager.Publish(AuditLog, RoutingKeyEnum.AuditLog);
             return true;
+
         }
         public async Task<bool> CreateSystemLog(Exception ex, string className, [CallerMemberName] string methodName = "")
         {
