@@ -55,19 +55,16 @@ namespace DMS.Rpc.role
         {
             { "Tìm kiếm", new List<string> { 
                 Master, Count, List, Get, 
-                CountAppUser, ListAppUser,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse } },
             { "Thêm", new List<string> { 
                 Master, Count, List, Get,
-                CountAppUser, ListAppUser,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, 
                 Detail, Create, GetMenu,
                 SingleListStatus } },
             { "Sửa", new List<string> { 
                 Master, Count, List, Get,
-                CountAppUser, ListAppUser,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
                 Detail, Update, GetMenu,
@@ -81,26 +78,22 @@ namespace DMS.Rpc.role
                 SingleListAppUser, SingleListMenu, SingleListStatus } },
              { "Tạo nhanh quyền", new List<string> {
                 Master, Count, List, Get,
-                CountAppUser, ListAppUser,
                 Detail, CreatePermission, GetMenu,
                 SingleListAppUser, SingleListMenu, SingleListStatus } },
             { "Xoá", new List<string> { 
                 Master, Count, List, Get,
-                CountAppUser, ListAppUser,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
                 Detail, Delete, 
                 SingleListStatus } },
             { "Xuất excel", new List<string> { 
                 Master, Count, List, Get,
-                CountAppUser, ListAppUser,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
                 Detail, Export, GetMenu,
                 SingleListAppUser, SingleListMenu, SingleListStatus} },
             { "Nhập excel", new List<string> { 
                 Master, Count, List, Get,
-                CountAppUser, ListAppUser,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
                 Detail, ExportTemplate, Import, GetMenu,
