@@ -41,6 +41,7 @@ namespace DMS.Rpc.store
         public Store_StoreTypeDTO StoreType { get; set; }
         public Store_WardDTO Ward { get; set; }
         public List<Store_StoreImageMappingDTO> StoreImageMappings { get; set; }
+        public List<Store_StoreCheckingDTO> StoreCheckings { get; set; }
         public Store_StoreDTO() { }
         public Store_StoreDTO(Store Store)
         {
@@ -78,6 +79,7 @@ namespace DMS.Rpc.store
             this.StoreType = Store.StoreType == null ? null : new Store_StoreTypeDTO(Store.StoreType);
             this.Ward = Store.Ward == null ? null : new Store_WardDTO(Store.Ward);
             this.StoreImageMappings = Store.StoreImageMappings?.Select(x => new Store_StoreImageMappingDTO(x)).ToList();
+            this.StoreCheckings = Store.StoreCheckings?.Select(x => new Store_StoreCheckingDTO(x)).ToList();
             this.Errors = Store.Errors;
         }
     }
