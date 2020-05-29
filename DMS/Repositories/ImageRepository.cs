@@ -44,7 +44,7 @@ namespace DMS.Repositories
                 if (filter.AlbumId.Equal.HasValue)
                 {
                     query = from q in query
-                            join iscm in DataContext.ImageStoreCheckingMapping on q.Id equals iscm.ImageId
+                            join iscm in DataContext.StoreCheckingImageMapping on q.Id equals iscm.ImageId
                             where iscm.AlbumId == filter.AlbumId.Equal.Value
                             select q;
                 }
@@ -54,7 +54,7 @@ namespace DMS.Repositories
                 if (filter.StoreCheckingId.Equal.HasValue)
                 {
                     query = from q in query
-                            join iscm in DataContext.ImageStoreCheckingMapping on q.Id equals iscm.ImageId
+                            join iscm in DataContext.StoreCheckingImageMapping on q.Id equals iscm.ImageId
                             where iscm.StoreCheckingId == filter.StoreCheckingId.Equal.Value
                             select q;
                 }

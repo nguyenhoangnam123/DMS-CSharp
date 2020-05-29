@@ -132,7 +132,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             return await query.Distinct().CountAsync();
         }
 
-
+        [Route(MonitorStoreCheckerRoute.List), HttpPost]
         public async Task<List<MonitorStoreChecker_MonitorStoreCheckerDTO>> List([FromBody] MonitorStoreChecker_MonitorStoreCheckerFilterDTO MonitorStoreChecker_MonitorStoreCheckerFilterDTO)
         {
 

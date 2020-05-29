@@ -7,7 +7,7 @@ namespace DMS.Models
     {
         public AlbumDAO()
         {
-            ImageStoreCheckingMappings = new HashSet<ImageStoreCheckingMappingDAO>();
+            StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
         }
 
         public long Id { get; set; }
@@ -18,6 +18,6 @@ namespace DMS.Models
         public DateTime? DeletedAt { get; set; }
 
         public virtual StatusDAO Status { get; set; }
-        public virtual ICollection<ImageStoreCheckingMappingDAO> ImageStoreCheckingMappings { get; set; }
+        public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }
     }
 }

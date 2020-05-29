@@ -7,7 +7,7 @@ namespace DMS.Models
     {
         public StoreCheckingDAO()
         {
-            ImageStoreCheckingMappings = new HashSet<ImageStoreCheckingMappingDAO>();
+            StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
         }
 
         public long Id { get; set; }
@@ -22,6 +22,6 @@ namespace DMS.Models
 
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StoreDAO Store { get; set; }
-        public virtual ICollection<ImageStoreCheckingMappingDAO> ImageStoreCheckingMappings { get; set; }
+        public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }
     }
 }
