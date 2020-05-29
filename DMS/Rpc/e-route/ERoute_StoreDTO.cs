@@ -51,6 +51,7 @@ namespace DMS.Rpc.e_route
         public string LegalEntity { get; set; }
 
         public long StatusId { get; set; }
+        public bool HasEroute { get; set; }
 
         public long? WorkflowDefinitionId { get; set; }
 
@@ -97,17 +98,13 @@ namespace DMS.Rpc.e_route
             this.DeliveryLatitude = Store.DeliveryLatitude;
 
             this.DeliveryLongitude = Store.DeliveryLongitude;
-
             this.OwnerName = Store.OwnerName;
-
             this.OwnerPhone = Store.OwnerPhone;
-
             this.OwnerEmail = Store.OwnerEmail;
             this.TaxCode = Store.TaxCode;
             this.LegalEntity = Store.LegalEntity;
-
             this.StatusId = Store.StatusId;
-
+            this.HasEroute = Store.HasEroute;
             this.Organization = Store.Organization == null ? null : new ERoute_OrganizationDTO(Store.Organization);
             this.StoreGrouping = Store.StoreGrouping == null ? null : new ERoute_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new ERoute_StoreTypeDTO(Store.StoreType);

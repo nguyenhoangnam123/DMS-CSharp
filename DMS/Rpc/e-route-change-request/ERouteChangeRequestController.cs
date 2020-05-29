@@ -1395,7 +1395,7 @@ namespace DMS.Rpc.e_route_change_request
             StoreFilter.OwnerEmail = ERouteChangeRequest_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
-            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<Store> Stores = await ERouteChangeRequestService.ListStore(StoreFilter);
             List<ERouteChangeRequest_StoreDTO> ERouteChangeRequest_StoreDTOs = Stores
                 .Select(x => new ERouteChangeRequest_StoreDTO(x)).ToList();
             return ERouteChangeRequest_StoreDTOs;

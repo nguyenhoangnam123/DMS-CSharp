@@ -104,7 +104,7 @@ namespace DMS.Rpc.e_route
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(ERoute_ERouteDTO.Id))
                 return Forbid();
 
@@ -122,7 +122,7 @@ namespace DMS.Rpc.e_route
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(ERoute_ERouteDTO.Id))
                 return Forbid();
 
@@ -152,7 +152,7 @@ namespace DMS.Rpc.e_route
             else
                 return BadRequest(ERoute_ERouteDTO);
         }
-        
+
         [Route(ERouteRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -172,7 +172,7 @@ namespace DMS.Rpc.e_route
                 return BadRequest(ERoutes.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         [Route(ERouteRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -237,7 +237,7 @@ namespace DMS.Rpc.e_route
                     string RequestStateIdValue = worksheet.Cells[i + StartRow, RequestStateIdColumn].Value?.ToString();
                     string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
                     string CreatorIdValue = worksheet.Cells[i + StartRow, CreatorIdColumn].Value?.ToString();
-                    
+
                     ERoute ERoute = new ERoute();
                     ERoute.Code = CodeValue;
                     ERoute.Name = NameValue;
@@ -255,7 +255,7 @@ namespace DMS.Rpc.e_route
                     Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
                     ERoute.StatusId = Status == null ? 0 : Status.Id;
                     ERoute.Status = Status;
-                    
+
                     ERoutes.Add(ERoute);
                 }
             }
@@ -295,13 +295,13 @@ namespace DMS.Rpc.e_route
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(ERouteRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] ERoute_ERouteFilterDTO ERoute_ERouteFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -314,7 +314,7 @@ namespace DMS.Rpc.e_route
 
                 var ERouteHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -345,7 +345,7 @@ namespace DMS.Rpc.e_route
                 }
                 excel.GenerateWorksheet("ERoute", ERouteHeaders, ERouteData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -357,7 +357,7 @@ namespace DMS.Rpc.e_route
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "Password",
@@ -410,7 +410,7 @@ namespace DMS.Rpc.e_route
 
                 var RequestStateHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -440,7 +440,7 @@ namespace DMS.Rpc.e_route
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -469,14 +469,14 @@ namespace DMS.Rpc.e_route
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
                 #region ERoute
                 var ERouteHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -491,7 +491,7 @@ namespace DMS.Rpc.e_route
                 List<object[]> ERouteData = new List<object[]>();
                 excel.GenerateWorksheet("ERoute", ERouteHeaders, ERouteData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -503,7 +503,7 @@ namespace DMS.Rpc.e_route
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "Password",
@@ -556,7 +556,7 @@ namespace DMS.Rpc.e_route
 
                 var RequestStateHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -586,7 +586,7 @@ namespace DMS.Rpc.e_route
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -1071,7 +1071,7 @@ namespace DMS.Rpc.e_route
             StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
-            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<Store> Stores = await ERouteService.ListStore(StoreFilter);
             List<ERoute_StoreDTO> ERoute_StoreDTOs = Stores
                 .Select(x => new ERoute_StoreDTO(x)).ToList();
             return ERoute_StoreDTOs;

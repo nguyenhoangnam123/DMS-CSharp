@@ -2,7 +2,6 @@
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
-using DMS.Services.MERoute;
 using DMS.Services.MImage;
 using DMS.Services.MWorkflow;
 using Helpers;
@@ -92,13 +91,6 @@ namespace DMS.Services.MStore
             Store Store = await UOW.StoreRepository.Get(Id);
             if (Store == null)
                 return null;
-            ERouteFilter ERouteFilter = new ERouteFilter
-            {
-                StoreId = new IdFilter { Equal = Id },
-                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
-            };
-            int count = await UOW.ERouteRepository.Count(ERouteFilter);
-            Store.HasEroute = count > 0;
             Store.RequestState = await WorkflowService.GetRequestState(Store.RowId);
             if (Store.RequestState == null)
             {

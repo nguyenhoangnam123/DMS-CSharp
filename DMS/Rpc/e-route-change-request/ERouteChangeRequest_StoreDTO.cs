@@ -54,7 +54,7 @@ namespace DMS.Rpc.e_route_change_request
         public string LegalEntity { get; set; }
         
         public long StatusId { get; set; }
-        
+        public bool HasEroute { get; set; }
         public long? WorkflowDefinitionId { get; set; }
         
         public long? RequestStateId { get; set; }
@@ -110,7 +110,7 @@ namespace DMS.Rpc.e_route_change_request
             this.LegalEntity = Store.LegalEntity;
             
             this.StatusId = Store.StatusId;
-            
+            this.HasEroute = Store.HasEroute;
             this.Organization = Store.Organization == null ? null : new ERouteChangeRequest_OrganizationDTO(Store.Organization);
             this.StoreGrouping = Store.StoreGrouping == null ? null : new ERouteChangeRequest_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new ERouteChangeRequest_StoreTypeDTO(Store.StoreType);
