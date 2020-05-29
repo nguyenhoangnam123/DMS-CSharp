@@ -18,7 +18,7 @@ namespace Common
                 if (_ErrorResource == null)
                 {
                     _ErrorResource = new Dictionary<string, JObject>();
-                    List<string> languages = new List<string> { "VN", "EN" };
+                    List<string> languages = new List<string> { "vi", "en" };
                     foreach (string language in languages)
                     {
                         string folder = Path.Combine(Directory.GetCurrentDirectory(), "Resources/" + language);
