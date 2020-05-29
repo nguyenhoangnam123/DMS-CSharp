@@ -10,6 +10,7 @@ namespace DMS.Models
         public virtual DbSet<ActionPageMappingDAO> ActionPageMapping { get; set; }
         public virtual DbSet<AlbumDAO> Album { get; set; }
         public virtual DbSet<AppUserDAO> AppUser { get; set; }
+        public virtual DbSet<AppUserPermissionDAO> AppUserPermission { get; set; }
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
         public virtual DbSet<BannerDAO> Banner { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
@@ -262,6 +263,17 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AppUser_UserStatus");
+            });
+
+            modelBuilder.Entity<AppUserPermissionDAO>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("AppUserPermission", "PER");
+
+                entity.Property(e => e.Path)
+                    .IsRequired()
+                    .HasMaxLength(400);
             });
 
             modelBuilder.Entity<AppUserRoleMappingDAO>(entity =>
@@ -1488,7 +1500,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.Path)
                     .IsRequired()
-                    .HasMaxLength(3000);
+                    .HasMaxLength(400);
             });
 
             modelBuilder.Entity<PermissionDAO>(entity =>

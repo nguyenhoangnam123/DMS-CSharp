@@ -54,14 +54,10 @@ namespace DMS.Rpc
             CurrentContext.TimeZone = int.TryParse(TimeZone, out int t) ? t : 0;
             CurrentContext.Language = Language ?? "vi";
             context.Succeed(requirement);
-            List<long> permissionIds = await
-                (from p in DataContext.Permission
-                 join ru in DataContext.AppUserRoleMapping on p.RoleId equals ru.RoleId
-                 join pam in DataContext.PermissionActionMapping on p.Id equals pam.PermissionId
-                 join apm in DataContext.ActionPageMapping on pam.ActionId equals apm.ActionId
-                 join page in DataContext.Page on apm.PageId equals page.Id
-                 where page.Path == url && ru.AppUserId == UserId
-                 select p.Id).Distinct().ToListAsync();
+            List<long> permissionIds = await DataContext.AppUserPermission
+                .Where(p => p.AppUserId == UserId && p.Path == url)
+                .Select(p => p.PermissionId).ToListAsync();
+
             if (permissionIds.Count == 0)
             {
                 context.Fail();
