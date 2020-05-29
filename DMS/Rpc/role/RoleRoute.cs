@@ -54,34 +54,48 @@ namespace DMS.Rpc.role
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get} },
-            { "Thêm", new List<string> { 
                 Master, Count, List, Get, 
-                Detail, Create, 
+                SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
+                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse } },
+            { "Thêm", new List<string> { 
+                Master, Count, List, Get,
+                SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
+                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, 
+                Detail, Create, GetMenu,
                 SingleListStatus } },
             { "Sửa", new List<string> { 
-                Master, Count, List, Get, 
-                Detail, Update,
-                SingleListAppUser, SingleListMenu, SingleListStatus } },
+                Master, Count, List, Get,
+                SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
+                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
+                Detail, Update, GetMenu,
+                 } },
              { "Gán người dùng", new List<string> {
                 Master, Count, List, Get,
+                SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
+                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
                 Detail, AssignAppUser,
                 SingleListAppUser, SingleListMenu, SingleListStatus } },
              { "Tạo nhanh quyền", new List<string> {
                 Master, Count, List, Get,
-                Detail, CreatePermission,
+                Detail, CreatePermission, GetMenu,
                 SingleListAppUser, SingleListMenu, SingleListStatus } },
             { "Xoá", new List<string> { 
-                Master, Count, List, Get, 
+                Master, Count, List, Get,
+                SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
+                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
                 Detail, Delete, 
                 SingleListStatus } },
             { "Xuất excel", new List<string> { 
                 Master, Count, List, Get,
-                Detail, Export,
+                SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
+                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
+                Detail, Export, GetMenu,
                 SingleListAppUser, SingleListMenu, SingleListStatus} },
             { "Nhập excel", new List<string> { 
                 Master, Count, List, Get,
-                Detail, ExportTemplate, Import,
+                SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
+                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
+                Detail, ExportTemplate, Import, GetMenu,
                 SingleListAppUser, SingleListMenu, SingleListStatus} },
         };
     }
