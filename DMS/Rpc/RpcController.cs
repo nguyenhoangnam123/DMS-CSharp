@@ -54,7 +54,6 @@ namespace DMS.Rpc
             CurrentContext.TimeZone = int.TryParse(TimeZone, out int t) ? t : 0;
             CurrentContext.Language = Language ?? "vi";
             context.Succeed(requirement);
-            return;
             List<long> permissionIds = await
                 (from p in DataContext.Permission
                  join ru in DataContext.AppUserRoleMapping on p.RoleId equals ru.RoleId
