@@ -119,7 +119,7 @@ namespace DMS.Services.MDirectSalesOrder
                             if(oldDataContent != null)
                             {
                                 if (DirectSalesOrderContent.Amount > 1.1 * oldDataContent.Amount || DirectSalesOrderContent.Amount < 0.9 * oldDataContent.Amount)
-                                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Amount), ErrorCode.PriceOutOfRange);
+                                    DirectSalesOrderContent.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Amount), ErrorCode.PriceOutOfRange);
                             }
                         }
                     }

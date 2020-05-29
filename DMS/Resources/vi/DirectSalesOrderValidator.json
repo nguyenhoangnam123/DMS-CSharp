@@ -1,0 +1,26 @@
+﻿{
+  "Id": {
+    "IdNotExisted": "Id không tồn tại"
+  },
+  "BuyerStore": {
+    "BuyerStoreNotExisted": "Chưa chọn cửa hàng mua"
+  },
+  "SaleEmployee": {
+    "SaleEmployeeNotExisted": "Chưa chọn nhân viên kinh doanh"
+  },
+  "OrderDate": {
+    "OrderDateEmpty": "Chưa chọn ngày đặt hàng"
+  },
+  "EditedPriceStatus": {
+    "EditedPriceStatusNotExisted": "Trạng thái sửa giá không hợp lệ"
+  },
+  "Amount": {
+    "PriceOutOfRange": "Không được phép sửa giá vượt quá khung"
+  },
+  "UnitOfMeasure": {
+    "UnitOfMeasureNotExisted": "Chưa chọn đơn vị tính"
+  },
+  "Quantity": {
+    "QuantityEmpty": "Chưa nhập số lượng"
+  }
+}
