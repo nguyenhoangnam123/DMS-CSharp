@@ -13,11 +13,11 @@ namespace DMS.Models
             ERouteChangeRequests = new HashSet<ERouteChangeRequestDAO>();
             ERouteCreators = new HashSet<ERouteDAO>();
             ERouteSaleEmployees = new HashSet<ERouteDAO>();
-            ImageStoreCheckingMappings = new HashSet<ImageStoreCheckingMappingDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
             InventoryHistories = new HashSet<InventoryHistoryDAO>();
             RequestWorkflowStepMappings = new HashSet<RequestWorkflowStepMappingDAO>();
             Resellers = new HashSet<ResellerDAO>();
+            StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
             Suppliers = new HashSet<SupplierDAO>();
             SurveyResults = new HashSet<SurveyResultDAO>();
@@ -56,11 +56,11 @@ namespace DMS.Models
         public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }
         public virtual ICollection<ERouteDAO> ERouteCreators { get; set; }
         public virtual ICollection<ERouteDAO> ERouteSaleEmployees { get; set; }
-        public virtual ICollection<ImageStoreCheckingMappingDAO> ImageStoreCheckingMappings { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
         public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
         public virtual ICollection<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappings { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
+        public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
         public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
