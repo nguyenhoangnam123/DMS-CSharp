@@ -153,15 +153,6 @@ namespace DMS.Repositories
                     Username = q.Creator.Username,
                     Address = q.Creator.Address,
                     Email = q.Creator.Email,
-                    Phone = q.Creator.Phone,
-                    PositionId = q.Creator.PositionId,
-                    Department = q.Creator.Department,
-                    OrganizationId = q.Creator.OrganizationId,
-                    SexId = q.Creator.SexId,
-                    StatusId = q.Creator.StatusId,
-                    Avatar = q.Creator.Avatar,
-                    Birthday = q.Creator.Birthday,
-                    ProvinceId = q.Creator.ProvinceId,
                 } : null,
                 ERoute = filter.Selects.Contains(ERouteChangeRequestSelect.ERoute) && q.ERoute != null ? new ERoute
                 {
@@ -255,15 +246,6 @@ namespace DMS.Repositories
                     DisplayName = x.Creator.DisplayName,
                     Address = x.Creator.Address,
                     Email = x.Creator.Email,
-                    Phone = x.Creator.Phone,
-                    PositionId = x.Creator.PositionId,
-                    Department = x.Creator.Department,
-                    OrganizationId = x.Creator.OrganizationId,
-                    SexId = x.Creator.SexId,
-                    StatusId = x.Creator.StatusId,
-                    Avatar = x.Creator.Avatar,
-                    Birthday = x.Creator.Birthday,
-                    ProvinceId = x.Creator.ProvinceId,
                 },
                 ERoute = x.ERoute == null ? null : new ERoute
                 {

@@ -40,6 +40,7 @@ namespace DMS.Rpc.e_route_change_request
         public const string FilterListERoute = Default + "/filter-list-e-route";
         public const string FilterListStore = Default + "/filter-list-store";
         public const string FilterListRequestState = Default + "/filter-list-request-state";
+        public const string FilterListERouteType = Default + "/filter-list-eroute-type";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListERoute = Default + "/single-list-e-route";
@@ -63,33 +64,33 @@ namespace DMS.Rpc.e_route_change_request
     public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, } },
+                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore,FilterListERouteType, } },
 
             { "Thêm", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, 
+                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Create, 
                 SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent } },
 
             { "Sửa", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, 
+                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Update, 
                 SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent } },
 
             { "Xoá", new List<string> { 
-                Master, Count, List, Get,  FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, 
+                Master, Count, List, Get,  FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Delete, 
                 SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent} },
 
             { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore,
+                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 BulkDelete } },
 
             { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore,
+                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Export } },
 
             { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore,
+                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 ExportTemplate, Import } },
         };
     }

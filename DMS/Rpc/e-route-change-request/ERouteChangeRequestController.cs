@@ -1128,6 +1128,25 @@ namespace DMS.Rpc.e_route_change_request
                 .Select(x => new ERouteChangeRequest_StoreDTO(x)).ToList();
             return ERouteChangeRequest_StoreDTOs;
         }
+        [Route(ERouteChangeRequestRoute.FilterListERouteType), HttpPost]
+        public async Task<List<ERouteChangeRequest_ERouteTypeDTO>> FilterListERouteType([FromBody] ERouteChangeRequest_ERouteTypeFilterDTO ERouteChangeRequest_ERouteTypeFilterDTO)
+        {
+            ERouteTypeFilter ERouteTypeFilter = new ERouteTypeFilter();
+            ERouteTypeFilter.Skip = 0;
+            ERouteTypeFilter.Take = 20;
+            ERouteTypeFilter.OrderBy = ERouteTypeOrder.Id;
+            ERouteTypeFilter.OrderType = OrderType.ASC;
+            ERouteTypeFilter.Selects = ERouteTypeSelect.ALL;
+            ERouteTypeFilter.Id = ERouteChangeRequest_ERouteTypeFilterDTO.Id;
+            ERouteTypeFilter.Code = ERouteChangeRequest_ERouteTypeFilterDTO.Code;
+            ERouteTypeFilter.Name = ERouteChangeRequest_ERouteTypeFilterDTO.Name;
+
+            List<ERouteType> ERouteTypes = await ERouteTypeService.List(ERouteTypeFilter);
+            List<ERouteChangeRequest_ERouteTypeDTO> ERouteChangeRequest_ERouteTypeDTOs = ERouteTypes
+                .Select(x => new ERouteChangeRequest_ERouteTypeDTO(x)).ToList();
+            return ERouteChangeRequest_ERouteTypeDTOs;
+        }
+
 
         [Route(ERouteChangeRequestRoute.SingleListAppUser), HttpPost]
         public async Task<List<ERouteChangeRequest_AppUserDTO>> SingleListAppUser([FromBody] ERouteChangeRequest_AppUserFilterDTO ERouteChangeRequest_AppUserFilterDTO)
