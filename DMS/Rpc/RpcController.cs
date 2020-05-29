@@ -62,7 +62,11 @@ namespace DMS.Rpc
                  join page in DataContext.Page on apm.PageId equals page.Id
                  where page.Path == url && ru.AppUserId == UserId
                  select p.Id).Distinct().ToListAsync();
-
+            if (permissionIds.Count == 0)
+            {
+                context.Fail();
+                return;
+            }
             List<PermissionDAO> PermissionDAOs = await DataContext.Permission.AsNoTracking()
                 .Include(p => p.PermissionFieldMappings).ThenInclude(pf => pf.Field)
                 .Where(p => permissionIds.Contains(p.Id))
