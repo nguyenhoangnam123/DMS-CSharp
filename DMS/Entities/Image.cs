@@ -13,7 +13,7 @@ namespace DMS.Entities
         public string Url { get; set; }
         public byte[] Content { get; set; }
 
-        public List<ImageStoreCheckingMapping> ImageStoreCheckingMapping { get; set; }
+        public List<StoreCheckingImageMapping> ImageStoreCheckingMapping { get; set; }
         public bool Equals(Image other)
         {
             return other != null && Id == other.Id;

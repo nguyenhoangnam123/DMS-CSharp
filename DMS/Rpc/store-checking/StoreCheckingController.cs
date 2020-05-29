@@ -367,8 +367,8 @@ namespace DMS.Rpc.store_checking
             StoreChecking.CheckOutAt = StoreChecking_StoreCheckingDTO.CheckOutAt;
             StoreChecking.CountIndirectSalesOrder = StoreChecking_StoreCheckingDTO.CountIndirectSalesOrder;
             StoreChecking.CountImage = StoreChecking_StoreCheckingDTO.CountImage;
-            StoreChecking.ImageStoreCheckingMappings = StoreChecking_StoreCheckingDTO.ImageStoreCheckingMappings?
-                .Select(x => new ImageStoreCheckingMapping
+            StoreChecking.StoreCheckingImageMappings = StoreChecking_StoreCheckingDTO.ImageStoreCheckingMappings?
+                .Select(x => new StoreCheckingImageMapping
                 {
                     ImageId = x.ImageId,
                     AlbumId = x.AlbumId,

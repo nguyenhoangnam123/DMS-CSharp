@@ -6,7 +6,7 @@ using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class ImageStoreCheckingMapping : DataEntity,  IEquatable<ImageStoreCheckingMapping>
+    public class StoreCheckingImageMapping : DataEntity,  IEquatable<StoreCheckingImageMapping>
     {
         public long ImageId { get; set; }
         public long StoreCheckingId { get; set; }
@@ -20,7 +20,7 @@ namespace DMS.Entities
         public Store Store { get; set; }
         public StoreChecking StoreChecking { get; set; }
 
-        public bool Equals(ImageStoreCheckingMapping other)
+        public bool Equals(StoreCheckingImageMapping other)
         {
             return true;
         }

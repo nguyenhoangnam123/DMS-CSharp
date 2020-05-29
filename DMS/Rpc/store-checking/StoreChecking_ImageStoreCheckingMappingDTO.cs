@@ -20,7 +20,7 @@ namespace DMS.Rpc.store_checking
         public StoreChecking_StoreDTO Store { get; set; }   
         
         public StoreChecking_ImageStoreCheckingMappingDTO() {}
-        public StoreChecking_ImageStoreCheckingMappingDTO(ImageStoreCheckingMapping ImageStoreCheckingMapping)
+        public StoreChecking_ImageStoreCheckingMappingDTO(StoreCheckingImageMapping ImageStoreCheckingMapping)
         {
             this.ImageId = ImageStoreCheckingMapping.ImageId;
             this.StoreCheckingId = ImageStoreCheckingMapping.StoreCheckingId;

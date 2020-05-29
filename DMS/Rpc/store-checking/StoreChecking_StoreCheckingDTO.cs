@@ -34,7 +34,7 @@ namespace DMS.Rpc.store_checking
             this.CountImage = StoreChecking.CountImage;
             this.SaleEmployee = StoreChecking.SaleEmployee == null ? null : new StoreChecking_AppUserDTO(StoreChecking.SaleEmployee);
             this.Store = StoreChecking.Store == null ? null : new StoreChecking_StoreDTO(StoreChecking.Store);
-            this.ImageStoreCheckingMappings = StoreChecking.ImageStoreCheckingMappings?.Select(x => new StoreChecking_ImageStoreCheckingMappingDTO(x)).ToList();
+            this.ImageStoreCheckingMappings = StoreChecking.StoreCheckingImageMappings?.Select(x => new StoreChecking_ImageStoreCheckingMappingDTO(x)).ToList();
             this.Errors = StoreChecking.Errors;
         }
     }

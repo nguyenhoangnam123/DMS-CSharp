@@ -19,7 +19,7 @@ namespace DMS.Entities
         public long? CountImage { get; set; }
         public Store Store { get; set; }
         public AppUser SaleEmployee { get; set; }
-        public List<ImageStoreCheckingMapping> ImageStoreCheckingMappings { get; set; }
+        public List<StoreCheckingImageMapping> StoreCheckingImageMappings { get; set; }
 
         public bool Equals(StoreChecking other)
         {

@@ -298,10 +298,10 @@ namespace DMS.Repositories
 
             if (StoreChecking == null)
                 return null;
-            StoreChecking.ImageStoreCheckingMappings = await DataContext.ImageStoreCheckingMapping.AsNoTracking()
+            StoreChecking.StoreCheckingImageMappings = await DataContext.StoreCheckingImageMapping.AsNoTracking()
                 .Where(x => x.StoreCheckingId == StoreChecking.Id)
                 .Where(x => x.Image.DeletedAt == null)
-                .Select(x => new ImageStoreCheckingMapping
+                .Select(x => new StoreCheckingImageMapping
                 {
                     ImageId = x.ImageId,
                     StoreCheckingId = x.StoreCheckingId,
@@ -410,24 +410,24 @@ namespace DMS.Repositories
 
         private async Task SaveReference(StoreChecking StoreChecking)
         {
-            await DataContext.ImageStoreCheckingMapping
+            await DataContext.StoreCheckingImageMapping
                 .Where(x => x.StoreCheckingId == StoreChecking.Id)
                 .DeleteFromQueryAsync();
-            List<ImageStoreCheckingMappingDAO> ImageStoreCheckingMappingDAOs = new List<ImageStoreCheckingMappingDAO>();
-            if (StoreChecking.ImageStoreCheckingMappings != null)
+            List<StoreCheckingImageMappingDAO> StoreCheckingImageMappingDAOs = new List<StoreCheckingImageMappingDAO>();
+            if (StoreChecking.StoreCheckingImageMappings != null)
             {
-                foreach (ImageStoreCheckingMapping ImageStoreCheckingMapping in StoreChecking.ImageStoreCheckingMappings)
+                foreach (StoreCheckingImageMapping StoreCheckingImageMapping in StoreChecking.StoreCheckingImageMappings)
                 {
-                    ImageStoreCheckingMappingDAO ImageStoreCheckingMappingDAO = new ImageStoreCheckingMappingDAO();
-                    ImageStoreCheckingMappingDAO.ImageId = ImageStoreCheckingMapping.ImageId;
-                    ImageStoreCheckingMappingDAO.StoreCheckingId = StoreChecking.Id;
-                    ImageStoreCheckingMappingDAO.AlbumId = ImageStoreCheckingMapping.AlbumId;
-                    ImageStoreCheckingMappingDAO.StoreId = ImageStoreCheckingMapping.StoreId;
-                    ImageStoreCheckingMappingDAO.SaleEmployeeId = ImageStoreCheckingMapping.SaleEmployeeId;
-                    ImageStoreCheckingMappingDAO.ShootingAt = ImageStoreCheckingMapping.ShootingAt;
-                    ImageStoreCheckingMappingDAOs.Add(ImageStoreCheckingMappingDAO);
+                    StoreCheckingImageMappingDAO StoreCheckingImageMappingDAO = new StoreCheckingImageMappingDAO();
+                    StoreCheckingImageMappingDAO.ImageId = StoreCheckingImageMapping.ImageId;
+                    StoreCheckingImageMappingDAO.StoreCheckingId = StoreChecking.Id;
+                    StoreCheckingImageMappingDAO.AlbumId = StoreCheckingImageMapping.AlbumId;
+                    StoreCheckingImageMappingDAO.StoreId = StoreCheckingImageMapping.StoreId;
+                    StoreCheckingImageMappingDAO.SaleEmployeeId = StoreCheckingImageMapping.SaleEmployeeId;
+                    StoreCheckingImageMappingDAO.ShootingAt = StoreCheckingImageMapping.ShootingAt;
+                    StoreCheckingImageMappingDAOs.Add(StoreCheckingImageMappingDAO);
                 }
-                await DataContext.ImageStoreCheckingMapping.BulkMergeAsync(ImageStoreCheckingMappingDAOs);
+                await DataContext.StoreCheckingImageMapping.BulkMergeAsync(StoreCheckingImageMappingDAOs);
             }
         }
     }
