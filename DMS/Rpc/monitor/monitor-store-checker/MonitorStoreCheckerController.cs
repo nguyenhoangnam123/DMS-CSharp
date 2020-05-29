@@ -99,6 +99,8 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow :
                     MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value;
+            Start = new DateTime(Start.Year, Start.Month, Start.Day);
+            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
             OrganizationDAO OrganizationDAO = null;
             long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.SaleEmployeeId?.Equal;
@@ -112,21 +114,17 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                         join o in DataContext.Organization on ap.OrganizationId equals o.Id
                         join sc in DataContext.StoreChecking on ap.Id equals sc.SaleEmployeeId
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                        (OrganizationDAO != null && o.Path.StartsWith(OrganizationDAO.Path)) &&
-                        (SaleEmployeeId != null && ap.Id == SaleEmployeeId.Value) &&
+                        (OrganizationDAO == null || o.Path.StartsWith(OrganizationDAO.Path)) &&
+                        (SaleEmployeeId == null || ap.Id == SaleEmployeeId.Value) &&
                         (
-                            Image != null &&
-                            (
-                                (Image.Value == 0 && sc.ImageCounter == 0) ||
-                                (Image.Value == 1 && sc.ImageCounter > 0)
-                            )
+                            Image == null ||
+                            (Image.Value == 0 && sc.ImageCounter == 0) ||
+                            (Image.Value == 1 && sc.ImageCounter > 0)
                         ) &&
                         (
-                            SalesOrder != null &&
-                            (
-                                (SalesOrder.Value == 0 && sc.IndirectSalesOrderCounter == 0) ||
-                                (SalesOrder.Value == 1 && sc.IndirectSalesOrderCounter > 0)
-                            )
+                            SalesOrder == null ||
+                            (SalesOrder.Value == 0 && sc.IndirectSalesOrderCounter == 0) ||
+                            (SalesOrder.Value == 1 && sc.IndirectSalesOrderCounter > 0)
                         )
                         select ap.Id;
             return await query.Distinct().CountAsync();
@@ -158,10 +156,11 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                             OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
                         };
 
-            List<MonitorStoreChecker_MonitorStoreCheckerDTO> MonitorStoreChecker_MonitorStoreCheckerDTOs = await query
+            List<MonitorStoreChecker_MonitorStoreCheckerDTO> MonitorStoreChecker_MonitorStoreCheckerDTOs = await query.Distinct().OrderBy(q => q.DisplayName)
                 .Skip(MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Skip)
                 .Take(MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Take)
                 .ToListAsync();
+
             List<long> AppUserIds = MonitorStoreChecker_MonitorStoreCheckerDTOs.Select(s => s.SaleEmployeeId).ToList();
             List<ERouteContent> ERouteContents = await (from ec in DataContext.ERouteContent
                                                         join e in DataContext.ERoute on ec.ERouteId equals e.Id
@@ -220,13 +219,16 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             foreach (MonitorStoreChecker_MonitorStoreCheckerDTO MonitorStoreChecker_MonitorStoreCheckerDTO in MonitorStoreChecker_MonitorStoreCheckerDTOs)
             {
                 MonitorStoreChecker_MonitorStoreCheckerDTO.StoreCheckings = new List<MonitorStoreChecker_StoreCheckingDTO>();
-                for (DateTime i = Start; i < End; i.AddDays(1))
+                for (DateTime i = Start; i < End; i = i.AddDays(1))
                 {
                     MonitorStoreChecker_StoreCheckingDTO StoreCheckerMonitor_StoreCheckingDTO = new MonitorStoreChecker_StoreCheckingDTO();
                     StoreCheckerMonitor_StoreCheckingDTO.Date = i;
                     StoreCheckerMonitor_StoreCheckingDTO.Image = new HashSet<long>();
                     StoreCheckerMonitor_StoreCheckingDTO.SalesOrder = new HashSet<long>();
                     StoreCheckerMonitor_StoreCheckingDTO.Plan = new HashSet<long>();
+                    StoreCheckerMonitor_StoreCheckingDTO.External = new HashSet<long>();
+                    StoreCheckerMonitor_StoreCheckingDTO.Internal = new HashSet<long>();
+                    StoreCheckerMonitor_StoreCheckingDTO.Revenue = new Dictionary<long, long>();
                     MonitorStoreChecker_MonitorStoreCheckerDTO.StoreCheckings.Add(StoreCheckerMonitor_StoreCheckingDTO);
                 }
             }
@@ -234,7 +236,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             // khởi tạo kế hoạch
             foreach (MonitorStoreChecker_MonitorStoreCheckerDTO MonitorStoreChecker_MonitorStoreCheckerDTO in MonitorStoreChecker_MonitorStoreCheckerDTOs)
             {
-                for (DateTime i = Start; i < End; i.AddDays(1))
+                for (DateTime i = Start; i < End; i = i.AddDays(1))
                 {
                     MonitorStoreChecker_StoreCheckingDTO MonitorStoreChecker_StoreCheckingDTO = MonitorStoreChecker_MonitorStoreCheckerDTO.StoreCheckings
                         .Where(s => s.Date == i).FirstOrDefault();
@@ -296,27 +298,45 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                         if (PlanDay && PlanWeek)
                             MonitorStoreChecker_StoreCheckingDTO.Plan.Add(ERouteContent.StoreId);
                     }
-                    List<StoreCheckingDAO> Checked = StoreCheckingDAOs
+                    List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
                            .Where(s =>
                                s.SaleEmployeeId == MonitorStoreChecker_MonitorStoreCheckerDTO.SaleEmployeeId &&
-                               s.CheckOutAt.Value == i
+                               s.CheckOutAt.Value.Date == i
                            ).ToList();
-                    foreach (StoreCheckingDAO s in Checked)
+                    List<long> StoreCheckingIds = ListChecked.Select(sc => sc.Id).ToList();
+                    List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.Where(so => so.StoreCheckingId.HasValue &&
+                        StoreCheckingIds.Contains(so.StoreCheckingId.Value))
+                        .Select(so => new IndirectSalesOrderDAO
+                        {
+                            Id = so.Id,
+                            Total = so.Total,
+                            StoreCheckingId = so.StoreCheckingId,
+                        })
+                        .ToListAsync();
+
+                    foreach (StoreCheckingDAO Checked in ListChecked)
                     {
-                        if (MonitorStoreChecker_StoreCheckingDTO.Plan.Contains(s.StoreId))
-                            MonitorStoreChecker_StoreCheckingDTO.Internal.Add(s.StoreId);
+                        List<IndirectSalesOrderDAO> CheckedIndirectSalesOrderCounter = IndirectSalesOrderDAOs.Where(so => so.StoreCheckingId.Value == Checked.Id).ToList();
+                        Checked.IndirectSalesOrderCounter = CheckedIndirectSalesOrderCounter.Count();
+                        if (MonitorStoreChecker_StoreCheckingDTO.Plan.Contains(Checked.StoreId))
+                            MonitorStoreChecker_StoreCheckingDTO.Internal.Add(Checked.StoreId);
                         else
-                            MonitorStoreChecker_StoreCheckingDTO.External.Add(s.StoreId);
-                        if (s.ImageCounter > 0)
-                            MonitorStoreChecker_StoreCheckingDTO.Image.Add(s.StoreId);
-                        if (s.IndirectSalesOrderCounter > 0)
-                            MonitorStoreChecker_StoreCheckingDTO.SalesOrder.Add(s.StoreId);
+                            MonitorStoreChecker_StoreCheckingDTO.External.Add(Checked.StoreId);
+                        if (Checked.ImageCounter > 0)
+                            MonitorStoreChecker_StoreCheckingDTO.Image.Add(Checked.StoreId);
+                        if (Checked.IndirectSalesOrderCounter > 0)
+                        {
+                            MonitorStoreChecker_StoreCheckingDTO.SalesOrder.Add(Checked.StoreId);
+                            if (!MonitorStoreChecker_StoreCheckingDTO.Revenue.ContainsKey(Checked.StoreId))
+                                MonitorStoreChecker_StoreCheckingDTO.Revenue.Add(Checked.StoreId, 0);
+                            MonitorStoreChecker_StoreCheckingDTO.Revenue[Checked.StoreId] += CheckedIndirectSalesOrderCounter.Select(so => so.Total).DefaultIfEmpty().Sum();
+                        }
                     }
                 }
             }
             return MonitorStoreChecker_MonitorStoreCheckerDTOs;
         }
 
-       
+
     }
 }
