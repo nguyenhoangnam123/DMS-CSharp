@@ -31,6 +31,7 @@
 	<PackageReference Include="RabbitMQ.Client" Version="6.0.0" />
 	<PackageReference Include="RestSharp" Version="106.10.1" />
 	<PackageReference Include="Scrutor" Version="3.2.1" />
+	<PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-rc0001" />
 	<PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
 	<PackageReference Include="Winton.Extensions.Configuration.Consul" Version="3.0.2" />
 	<PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="3.0.68" />

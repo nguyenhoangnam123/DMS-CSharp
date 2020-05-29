@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
+using DMS.Services.MImage;
+//using SixLabors.ImageSharp;
 
 namespace DMS.Services.MBanner
 {
@@ -20,6 +22,7 @@ namespace DMS.Services.MBanner
         Task<Banner> Update(Banner Banner);
         Task<Banner> Delete(Banner Banner);
         Task<List<Banner>> BulkDelete(List<Banner> Banners);
+        Task<Image> SaveImage(Image Image);
         Task<List<Banner>> Import(List<Banner> Banners);
         BannerFilter ToFilter(BannerFilter BannerFilter);
     }
@@ -30,18 +33,20 @@ namespace DMS.Services.MBanner
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IBannerValidator BannerValidator;
-
+        private IImageService ImageService;
         public BannerService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IBannerValidator BannerValidator
+            IBannerValidator BannerValidator,
+            IImageService ImageService
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.BannerValidator = BannerValidator;
+            this.ImageService = ImageService;
         }
         public async Task<int> Count(BannerFilter BannerFilter)
         {
@@ -207,8 +212,22 @@ namespace DMS.Services.MBanner
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
+        public async Task<Image> SaveImage(Image Image)
+        {
+            //FileInfo fileInfo = new FileInfo(Image.Name);
+            //string path = $"/banner/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            //using (var image = SixLabors.ImageSharp.Image.Load(Image.Content))
+            //{
+            //    var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "foo.png");
+
+            //    image.Clone(ctx => ctx.Crop(560, 300)).Save(path);
+            //}
+            //Image = await ImageService.Create(Image, path);
+            return Image;
+        }
+
         public BannerFilter ToFilter(BannerFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<BannerFilter>();
