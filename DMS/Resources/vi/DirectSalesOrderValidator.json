@@ -21,6 +21,11 @@
     "UnitOfMeasureNotExisted": "Chưa chọn đơn vị tính"
   },
   "Quantity": {
-    "QuantityEmpty": "Chưa nhập số lượng"
+    "QuantityEmpty": "Chưa nhập số lượng",
+    "QuantityInvalid": "Số lượng không hợp lệ",
+    "InventoryHasntEnough": "Số lượng tồn kho không đủ"
+  },
+  "Item": {
+    "ItemNotExisted": "Chưa chọn phiên bản sản phẩm"
   }
 }

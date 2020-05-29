@@ -32,6 +32,7 @@ namespace DMS.Services.MDirectSalesOrder
             UnitOfMeasureNotExisted,
             PrimaryUnitOfMeasureNotExisted,
             QuantityEmpty,
+            QuantityInvalid,
             ItemNotExisted,
             InventoryHasntEnough
         }
@@ -198,9 +199,10 @@ namespace DMS.Services.MDirectSalesOrder
                 var SaleStockOfItems = inventories.GroupBy(x => x.ItemId).Select(x => new { ItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
                 foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
                 {
-                    if (DirectSalesOrderContent.Quantity <= 0)
+                    if (DirectSalesOrderContent.Quantity == 0)
                         DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Quantity), ErrorCode.QuantityEmpty);
-
+                    else if(DirectSalesOrderContent.Quantity < 0)
+                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Quantity), ErrorCode.QuantityInvalid);
                     var saleStockOfItem = SaleStockOfItems.Where(x => x.ItemId == DirectSalesOrderContent.ItemId).Select(x => x.SaleStock).FirstOrDefault();
                     if(DirectSalesOrderContent.Quantity > saleStockOfItem)
                     {
@@ -227,9 +229,10 @@ namespace DMS.Services.MDirectSalesOrder
 
                 foreach (var DirectSalesOrderPromotion in DirectSalesOrder.DirectSalesOrderPromotions)
                 {
-                    if (DirectSalesOrderPromotion.Quantity <= 0)
+                    if (DirectSalesOrderPromotion.Quantity == 0)
                         DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.Quantity), ErrorCode.QuantityEmpty);
-
+                    else if(DirectSalesOrderPromotion.Quantity < 0)
+                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.Quantity), ErrorCode.QuantityInvalid);
                     var saleStockOfItem = SaleStockOfItems.Where(x => x.ItemId == DirectSalesOrderPromotion.ItemId).Select(x => x.SaleStock).FirstOrDefault();
                     if (DirectSalesOrderPromotion.Quantity > saleStockOfItem)
                     {
@@ -259,7 +262,7 @@ namespace DMS.Services.MDirectSalesOrder
                 foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
                 {
                     if (listIdsNotExisted.Contains(DirectSalesOrderContent.ItemId))
-                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Item), ErrorCode.ItemNotExisted);
+                        DirectSalesOrderContent.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Item), ErrorCode.ItemNotExisted);
                 }
             }
 
