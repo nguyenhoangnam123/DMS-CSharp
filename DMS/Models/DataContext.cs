@@ -1603,6 +1603,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<PositionDAO>(entity =>
             {
+                entity.ToTable("Position", "MDM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -2627,6 +2629,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<UsedVariationDAO>(entity =>
             {
+                entity.ToTable("UsedVariation", "MDM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
