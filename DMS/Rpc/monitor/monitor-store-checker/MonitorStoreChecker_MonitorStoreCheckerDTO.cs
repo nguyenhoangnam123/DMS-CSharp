@@ -6,18 +6,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.store_checker_monitor
+namespace DMS.Rpc.monitor.monitor_store_checker
 {
-    public class StoreCheckerMonitor_StoreCheckerMonitorDTO : DataDTO
+    public class MonitorStoreChecker_MonitorStoreCheckerDTO : DataDTO
     {
         public long SaleEmployeeId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
         public string OrganizationName { get; set; }
-        public List<StoreCheckerMonitor_StoreCheckingDTO> StoreCheckings { get;set;}
+        public List<MonitorStoreChecker_StoreCheckingDTO> StoreCheckings { get;set;}
     }
 
-    public class StoreCheckerMonitor_StoreCheckerMonitorFilterDTO : FilterDTO
+    public class MonitorStoreChecker_MonitorStoreCheckerFilterDTO : FilterDTO
     {
         public IdFilter OrganizationId { get; set; }
         public IdFilter SaleEmployeeId { get; set; }
@@ -28,7 +28,7 @@ namespace DMS.Rpc.store_checker_monitor
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum StoreCheckerMonitorOrder
+    public enum MonitorStoreCheckerOrder
     {
         Username = 1,
         DisplayName = 2,

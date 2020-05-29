@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.store_checker_monitor
+namespace DMS.Rpc.monitor.monitor_store_checker
 {
-    public class StoreCheckerMonitor_StoreCheckingDTO : DataDTO
+    public class MonitorStoreChecker_StoreCheckingDTO : DataDTO
     {
         public DateTime Date { get; set; }
         public long PlanCounter { get { return Plan == null ? 0 : Plan.Count; } }

@@ -72,7 +72,7 @@ namespace DMS.Rpc.indirect_price_list
             { nameof(IndirectPriceListFilter.IndirectPriceListTypeId), FieldType.ID },
         };
 
-    public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
+        public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { 
                 Master, Count, List, Get, FilterListIndirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, } },
