@@ -5,16 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.store_checker_monitor
+namespace DMS.Rpc.monitor.monitor_store_checker
 {
-    public class StoreCheckerMonitor_AppUserDTO : DataDTO
+    public class MonitorStoreChecker_AppUserDTO : DataDTO
     {
         public long Id { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
 
-        public StoreCheckerMonitor_AppUserDTO() { }
-        public StoreCheckerMonitor_AppUserDTO(AppUser AppUser)
+        public MonitorStoreChecker_AppUserDTO() { }
+        public MonitorStoreChecker_AppUserDTO(AppUser AppUser)
         {
             this.Id = AppUser.Id;
             this.Username = AppUser.Username;

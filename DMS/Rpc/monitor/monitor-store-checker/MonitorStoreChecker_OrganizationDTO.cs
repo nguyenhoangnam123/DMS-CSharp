@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.store_checker_monitor
+namespace DMS.Rpc.monitor.monitor_store_checker
 {
-    public class StoreCheckerMonitor_OrganizationDTO : DataDTO
+    public class MonitorStoreChecker_OrganizationDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -19,8 +19,8 @@ namespace DMS.Rpc.store_checker_monitor
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
-        public StoreCheckerMonitor_OrganizationDTO() { }
-        public StoreCheckerMonitor_OrganizationDTO(Organization Organization)
+        public MonitorStoreChecker_OrganizationDTO() { }
+        public MonitorStoreChecker_OrganizationDTO(Organization Organization)
         {
             this.Id = Organization.Id;
             this.Code = Organization.Code;

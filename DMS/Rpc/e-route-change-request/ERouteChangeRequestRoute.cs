@@ -68,20 +68,20 @@ namespace DMS.Rpc.e_route_change_request
 
             { "Thêm", new List<string> { 
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
-                Detail, Create, 
-                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent,
+                Detail, Create, GetDraft,
+                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent, SingleListERouteType,
                 CountStore, ListStore, } },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
-                Detail, Update, 
-                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent,
+                Detail, Update, GetDraft,
+                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent, SingleListERouteType,
                 CountStore, ListStore,  } },
 
             { "Xoá", new List<string> { 
                 Master, Count, List, Get,  FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
-                Detail, Delete, 
-                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent,
+                Detail, Delete, GetDraft,
+                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent, SingleListERouteType,
                 CountStore, ListStore, } },
 
             { "Xoá nhiều", new List<string> { 
