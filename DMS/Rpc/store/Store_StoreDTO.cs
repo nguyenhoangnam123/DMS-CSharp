@@ -31,6 +31,7 @@ namespace DMS.Rpc.store
         public string TaxCode { get; set; }
         public string LegalEntity { get; set; }
         public long StatusId { get; set; }
+        public bool HasEroute { get; set; }
         public Store_DistrictDTO District { get; set; }
         public Store_OrganizationDTO Organization { get; set; }
         public Store_StoreDTO ParentStore { get; set; }
@@ -69,6 +70,7 @@ namespace DMS.Rpc.store
             this.TaxCode = Store.TaxCode;
             this.LegalEntity = Store.LegalEntity;
             this.StatusId = Store.StatusId;
+            this.HasEroute = Store.HasEroute;
             this.District = Store.District == null ? null : new Store_DistrictDTO(Store.District);
             this.Organization = Store.Organization == null ? null : new Store_OrganizationDTO(Store.Organization);
             this.ParentStore = Store.ParentStore == null ? null : new Store_StoreDTO(Store.ParentStore);
