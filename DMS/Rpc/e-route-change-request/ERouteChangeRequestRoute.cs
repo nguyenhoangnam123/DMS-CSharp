@@ -61,7 +61,7 @@ namespace DMS.Rpc.e_route_change_request
             { nameof(ERouteChangeRequestFilter.RequestStateId), FieldType.ID },
         };
 
-    public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
+        public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { 
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore,FilterListERouteType, } },
@@ -69,17 +69,20 @@ namespace DMS.Rpc.e_route_change_request
             { "Thêm", new List<string> { 
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Create, 
-                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent } },
+                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent,
+                CountStore, ListStore, } },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Update, 
-                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent } },
+                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent,
+                CountStore, ListStore,  } },
 
             { "Xoá", new List<string> { 
                 Master, Count, List, Get,  FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Delete, 
-                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent} },
+                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent,
+                CountStore, ListStore, } },
 
             { "Xoá nhiều", new List<string> { 
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
