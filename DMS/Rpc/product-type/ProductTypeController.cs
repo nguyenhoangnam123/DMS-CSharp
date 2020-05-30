@@ -166,6 +166,8 @@ namespace DMS.Rpc.product_type
 
             List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
             ProductTypes = await ProductTypeService.BulkDelete(ProductTypes);
+            if (ProductTypes.Any(x => !x.IsValidated))
+                return BadRequest(ProductTypes.Where(x => !x.IsValidated));
             return true;
         }
 
