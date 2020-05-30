@@ -216,15 +216,15 @@ namespace DMS.Services.MBanner
 
         public async Task<Image> SaveImage(Image Image)
         {
-            //FileInfo fileInfo = new FileInfo(Image.Name);
-            //string path = $"/banner/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            FileInfo fileInfo = new FileInfo(Image.Name);
+            string path = $"/banner/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
             //using (var image = SixLabors.ImageSharp.Image.Load(Image.Content))
             //{
             //    var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "foo.png");
 
             //    image.Clone(ctx => ctx.Crop(560, 300)).Save(path);
             //}
-            //Image = await ImageService.Create(Image, path);
+            Image = await ImageService.Create(Image, path);
             return Image;
         }
 
