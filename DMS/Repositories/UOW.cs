@@ -30,6 +30,8 @@ namespace DMS.Repositories
         IERouteRepository ERouteRepository { get; }
         IERouteTypeRepository ERouteTypeRepository { get; }
         IEventMessageRepository EventMessageRepository { get; }
+        IGeneralCriteriaRepository GeneralCriteriaRepository { get; }
+        IGeneralKpiRepository GeneralKpiRepository { get; }
         IImageRepository ImageRepository { get; }
         IIndirectPriceListRepository IndirectPriceListRepository { get; }
         IIndirectPriceListTypeRepository IndirectPriceListTypeRepository { get; }
@@ -38,6 +40,10 @@ namespace DMS.Repositories
         IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; }
         IIndirectSalesOrderPromotionRepository IndirectSalesOrderPromotionRepository { get; }
         IItemRepository ItemRepository { get; }
+        IItemSpecificCriteriaRepository ItemSpecificCriteriaRepository { get; }
+        IItemSpecificKpiContentRepository ItemSpecificKpiContentRepository { get; }
+        IItemSpecificKpiRepository ItemSpecificKpiRepository { get; }
+        IKpiPeriodRepository KpiPeriodRepository { get; }
         IInventoryRepository InventoryRepository { get; }
         IInventoryHistoryRepository InventoryHistoryRepository { get; }
         IMenuRepository MenuRepository { get; }
@@ -70,6 +76,7 @@ namespace DMS.Repositories
         ISurveyRepository SurveyRepository { get; }
         ISurveyResultRepository SurveyResultRepository { get; }
         ITaxTypeRepository TaxTypeRepository { get; }
+        ITotalItemSpecificCriteriaRepository TotalItemSpecificCriteriaRepository { get; }
         IUnitOfMeasureRepository UnitOfMeasureRepository { get; }
         IUnitOfMeasureGroupingContentRepository UnitOfMeasureGroupingContentRepository { get; }
         IUnitOfMeasureGroupingRepository UnitOfMeasureGroupingRepository { get; }
@@ -108,6 +115,8 @@ namespace DMS.Repositories
         public IERouteRepository ERouteRepository { get; private set; }
         public IERouteTypeRepository ERouteTypeRepository { get; private set; }
         public IEventMessageRepository EventMessageRepository { get; private set; }
+        public IGeneralCriteriaRepository GeneralCriteriaRepository { get; private set; }
+        public IGeneralKpiRepository GeneralKpiRepository { get; private set; }
         public IImageRepository ImageRepository { get; private set; }
         public IIndirectPriceListRepository IndirectPriceListRepository { get; private set; }
         public IIndirectPriceListTypeRepository IndirectPriceListTypeRepository { get; private set; }
@@ -118,6 +127,10 @@ namespace DMS.Repositories
         public IItemRepository ItemRepository { get; private set; }
         public IInventoryRepository InventoryRepository { get; private set; }
         public IInventoryHistoryRepository InventoryHistoryRepository { get; private set; }
+        public IItemSpecificCriteriaRepository ItemSpecificCriteriaRepository { get; private set; }
+        public IItemSpecificKpiContentRepository ItemSpecificKpiContentRepository { get; private set; }
+        public IItemSpecificKpiRepository ItemSpecificKpiRepository { get; private set; }
+        public IKpiPeriodRepository KpiPeriodRepository { get; private set; }
         public IMenuRepository MenuRepository { get; private set; }
         public INotificationRepository NotificationRepository { get; private set; }
         public IOrganizationRepository OrganizationRepository { get; private set; }
@@ -148,6 +161,7 @@ namespace DMS.Repositories
         public ISurveyRepository SurveyRepository { get; private set; }
         public ISurveyResultRepository SurveyResultRepository { get; private set; }
         public ITaxTypeRepository TaxTypeRepository { get; private set; }
+        public ITotalItemSpecificCriteriaRepository TotalItemSpecificCriteriaRepository { get; private set; }
         public IUnitOfMeasureRepository UnitOfMeasureRepository { get; private set; }
         public IUnitOfMeasureGroupingContentRepository UnitOfMeasureGroupingContentRepository { get; private set; }
         public IUnitOfMeasureGroupingRepository UnitOfMeasureGroupingRepository { get; private set; }
@@ -184,6 +198,8 @@ namespace DMS.Repositories
             ERouteRepository = new ERouteRepository(DataContext);
             ERouteTypeRepository = new ERouteTypeRepository(DataContext);
             EventMessageRepository = new EventMessageRepository(DataContext);
+            GeneralCriteriaRepository = new GeneralCriteriaRepository(DataContext);
+            GeneralKpiRepository = new GeneralKpiRepository(DataContext);
             ImageRepository = new ImageRepository(DataContext);
             IndirectPriceListRepository = new IndirectPriceListRepository(DataContext);
             IndirectPriceListTypeRepository = new IndirectPriceListTypeRepository(DataContext);
@@ -194,6 +210,10 @@ namespace DMS.Repositories
             ItemRepository = new ItemRepository(DataContext);
             InventoryRepository = new InventoryRepository(DataContext);
             InventoryHistoryRepository = new InventoryHistoryRepository(DataContext);
+            ItemSpecificCriteriaRepository = new ItemSpecificCriteriaRepository(DataContext);
+            ItemSpecificKpiContentRepository = new ItemSpecificKpiContentRepository(DataContext);
+            ItemSpecificKpiRepository = new ItemSpecificKpiRepository(DataContext);
+            KpiPeriodRepository = new KpiPeriodRepository(DataContext);
             MenuRepository = new MenuRepository(DataContext);
             NotificationRepository = new NotificationRepository(DataContext);
             OrganizationRepository = new OrganizationRepository(DataContext);
@@ -224,6 +244,7 @@ namespace DMS.Repositories
             SurveyRepository = new SurveyRepository(DataContext);
             SurveyResultRepository = new SurveyResultRepository(DataContext);
             TaxTypeRepository = new TaxTypeRepository(DataContext);
+            TotalItemSpecificCriteriaRepository = new TotalItemSpecificCriteriaRepository(DataContext);
             UnitOfMeasureRepository = new UnitOfMeasureRepository(DataContext);
             UnitOfMeasureGroupingContentRepository = new UnitOfMeasureGroupingContentRepository(DataContext);
             UnitOfMeasureGroupingRepository = new UnitOfMeasureGroupingRepository(DataContext);
