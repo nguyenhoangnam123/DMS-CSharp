@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MTaxType
@@ -106,6 +107,8 @@ namespace DMS.Services.MTaxType
 
         public async Task<bool> Create(TaxType TaxType)
         {
+            await ValidateCode(TaxType);
+            await ValidateName(TaxType);
             return TaxType.IsValidated;
         }
 
@@ -113,6 +116,8 @@ namespace DMS.Services.MTaxType
         {
             if (await ValidateId(TaxType))
             {
+                await ValidateCode(TaxType);
+                await ValidateName(TaxType);
             }
             return TaxType.IsValidated;
         }
@@ -128,7 +133,11 @@ namespace DMS.Services.MTaxType
 
         public async Task<bool> BulkDelete(List<TaxType> TaxTypes)
         {
-            return true;
+            foreach (TaxType TaxType in TaxTypes)
+            {
+                await Delete(TaxType);
+            }
+            return TaxTypes.All(st => st.IsValidated);
         }
 
         public async Task<bool> Import(List<TaxType> TaxTypes)
