@@ -122,7 +122,10 @@ namespace DMS.Rpc.product
                 Detail, Delete,
                 SingleListBrand, SingleListProductType, SingleListStatus, SingleListSupplier, SingleListTaxType, SingleListUnitOfMeasure, SingleListUnitOfMeasureGrouping,
                 SingleListUsedVariation, SingleListItem, SingleListImage, SingleListProductGrouping, } },
-
+            { "Lưu ảnh", new List<string>
+            {
+                SaveImage}
+            },
             { "Xoá nhiều", new List<string> { 
                 Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping, 
