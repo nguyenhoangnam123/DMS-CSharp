@@ -33,7 +33,6 @@ namespace DMS.Rpc.banner
         
         public long StatusId { get; set; }
         
-        public string Avatar { get; set; }
         
         public DateTime? Birthday { get; set; }
         
@@ -65,8 +64,6 @@ namespace DMS.Rpc.banner
             this.SexId = AppUser.SexId;
             
             this.StatusId = AppUser.StatusId;
-            
-            this.Avatar = AppUser.Avatar;
             
             this.Birthday = AppUser.Birthday;
             
