@@ -50,18 +50,18 @@ namespace Helpers
         }
         public async Task<bool> CreateSystemLog(Exception ex, string className, [CallerMemberName] string methodName = "")
         {
-            AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-            SystemLog SystemLog = new SystemLog
-            {
-                AppUserId = CurrentContext.UserId,
-                AppUser = AppUser.DisplayName,
-                ClassName = className,
-                MethodName = methodName,
-                ModuleName = StaticParams.ModuleName,
-                Exception = ex.ToString()
-            };
+            //AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            //SystemLog SystemLog = new SystemLog
+            //{
+            //    AppUserId = CurrentContext.UserId,
+            //    AppUser = AppUser.DisplayName,
+            //    ClassName = className,
+            //    MethodName = methodName,
+            //    ModuleName = StaticParams.ModuleName,
+            //    Exception = ex.ToString()
+            //};
 
-            RabbitManager.Publish(SystemLog, RoutingKeyEnum.SystemLog);
+            //RabbitManager.Publish(SystemLog, RoutingKeyEnum.SystemLog);
             return true;
         }
     }
