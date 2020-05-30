@@ -96,6 +96,8 @@ namespace DMS.Services.MBanner
 
             try
             {
+                var Code = await UOW.BannerRepository.Count(new BannerFilter { });
+                Banner.Code = (Code + 1).ToString();
                 Banner.CreatorId = CurrentContext.UserId;
                 await UOW.Begin();
                 await UOW.BannerRepository.Create(Banner);
