@@ -572,6 +572,31 @@ namespace DMS.Rpc.banner
             return File(memoryStream.ToArray(), "application/octet-stream", "Banner.xlsx");
         }
 
+        [HttpPost]
+        [Route(BannerRoute.SaveImage)]
+        public async Task<ActionResult<Banner_ImageDTO>> SaveImage(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            MemoryStream memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            Image Image = new Image
+            {
+                Name = file.FileName,
+                Content = memoryStream.ToArray()
+            };
+            Image = await BannerService.SaveImage(Image);
+            if (Image == null)
+                return BadRequest();
+            Banner_ImageDTO Banner_ImageDTO = new Banner_ImageDTO
+            {
+                Id = Image.Id,
+                Name = Image.Name,
+                Url = Image.Url,
+            };
+            return Ok(Banner_ImageDTO);
+        }
+
         private async Task<bool> HasPermission(long Id)
         {
             BannerFilter BannerFilter = new BannerFilter();

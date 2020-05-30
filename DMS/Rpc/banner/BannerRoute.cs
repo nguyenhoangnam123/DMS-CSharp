@@ -32,6 +32,7 @@ namespace DMS.Rpc.banner
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
+        public const string SaveImage = Default + "/save-image";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListStatus = Default + "/filter-list-status";
