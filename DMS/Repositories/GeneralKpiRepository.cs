@@ -144,6 +144,40 @@ namespace DMS.Repositories
                 KpiPeriodId = filter.Selects.Contains(GeneralKpiSelect.KpiPeriod) ? q.KpiPeriodId : default(long),
                 StatusId = filter.Selects.Contains(GeneralKpiSelect.Status) ? q.StatusId : default(long),
                 CreatorId = filter.Selects.Contains(GeneralKpiSelect.Creator) ? q.CreatorId : default(long),
+                Creator = filter.Selects.Contains(GeneralKpiSelect.Creator) && q.Creator != null ? new AppUser
+                {
+                    Id = q.Creator.Id,
+                    Username = q.Creator.Username,
+                    DisplayName = q.Creator.DisplayName,
+                    Address = q.Creator.Address,
+                    Email = q.Creator.Email,
+                    Phone = q.Creator.Phone,
+                    PositionId = q.Creator.PositionId,
+                    Department = q.Creator.Department,
+                    OrganizationId = q.Creator.OrganizationId,
+                    StatusId = q.Creator.StatusId,
+                    Avatar = q.Creator.Avatar,
+                    ProvinceId = q.Creator.ProvinceId,
+                    SexId = q.Creator.SexId,
+                    Birthday = q.Creator.Birthday,
+                } : null,
+                Employee = filter.Selects.Contains(GeneralKpiSelect.Employee) && q.Employee != null ? new AppUser
+                {
+                    Id = q.Employee.Id,
+                    Username = q.Employee.Username,
+                    DisplayName = q.Employee.DisplayName,
+                    Address = q.Employee.Address,
+                    Email = q.Employee.Email,
+                    Phone = q.Employee.Phone,
+                    PositionId = q.Employee.PositionId,
+                    Department = q.Employee.Department,
+                    OrganizationId = q.Employee.OrganizationId,
+                    StatusId = q.Employee.StatusId,
+                    Avatar = q.Employee.Avatar,
+                    ProvinceId = q.Employee.ProvinceId,
+                    SexId = q.Employee.SexId,
+                    Birthday = q.Employee.Birthday,
+                } : null,
                 KpiPeriod = filter.Selects.Contains(GeneralKpiSelect.KpiPeriod) && q.KpiPeriod != null ? new KpiPeriod
                 {
                     Id = q.KpiPeriod.Id,
@@ -162,6 +196,12 @@ namespace DMS.Repositories
                     Phone = q.Organization.Phone,
                     Email = q.Organization.Email,
                     Address = q.Organization.Address,
+                } : null,
+                Status = filter.Selects.Contains(GeneralKpiSelect.Status) && q.Status != null ? new Status
+                {
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
                 } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
@@ -199,6 +239,40 @@ namespace DMS.Repositories
                 KpiPeriodId = x.KpiPeriodId,
                 StatusId = x.StatusId,
                 CreatorId = x.CreatorId,
+                Creator = x.Creator == null ? null : new AppUser
+                {
+                    Id = x.Creator.Id,
+                    Username = x.Creator.Username,
+                    DisplayName = x.Creator.DisplayName,
+                    Address = x.Creator.Address,
+                    Email = x.Creator.Email,
+                    Phone = x.Creator.Phone,
+                    PositionId = x.Creator.PositionId,
+                    Department = x.Creator.Department,
+                    OrganizationId = x.Creator.OrganizationId,
+                    StatusId = x.Creator.StatusId,
+                    Avatar = x.Creator.Avatar,
+                    ProvinceId = x.Creator.ProvinceId,
+                    SexId = x.Creator.SexId,
+                    Birthday = x.Creator.Birthday,
+                },
+                Employee = x.Employee == null ? null : new AppUser
+                {
+                    Id = x.Employee.Id,
+                    Username = x.Employee.Username,
+                    DisplayName = x.Employee.DisplayName,
+                    Address = x.Employee.Address,
+                    Email = x.Employee.Email,
+                    Phone = x.Employee.Phone,
+                    PositionId = x.Employee.PositionId,
+                    Department = x.Employee.Department,
+                    OrganizationId = x.Employee.OrganizationId,
+                    StatusId = x.Employee.StatusId,
+                    Avatar = x.Employee.Avatar,
+                    ProvinceId = x.Employee.ProvinceId,
+                    SexId = x.Employee.SexId,
+                    Birthday = x.Employee.Birthday,
+                },
                 KpiPeriod = x.KpiPeriod == null ? null : new KpiPeriod
                 {
                     Id = x.KpiPeriod.Id,
@@ -218,6 +292,12 @@ namespace DMS.Repositories
                     Email = x.Organization.Email,
                     Address = x.Organization.Address,
                 },
+                Status = x.Status == null ? null : new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
+                },
             }).FirstOrDefaultAsync();
 
             if (GeneralKpi == null)
@@ -236,6 +316,7 @@ namespace DMS.Repositories
             GeneralKpiDAO.CreatorId = GeneralKpi.CreatorId;
             GeneralKpiDAO.CreatedAt = StaticParams.DateTimeNow;
             GeneralKpiDAO.UpdatedAt = StaticParams.DateTimeNow;
+            GeneralKpiDAO.RowId = GeneralKpi.RowId;
             DataContext.GeneralKpi.Add(GeneralKpiDAO);
             await DataContext.SaveChangesAsync();
             GeneralKpi.Id = GeneralKpiDAO.Id;
@@ -262,10 +343,11 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(GeneralKpi GeneralKpi)
         {
+            await DataContext.GeneralKpiCriteriaMapping.Where(x => x.GeneralKpiId == GeneralKpi.Id).DeleteFromQueryAsync();
             await DataContext.GeneralKpi.Where(x => x.Id == GeneralKpi.Id).UpdateFromQueryAsync(x => new GeneralKpiDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<GeneralKpi> GeneralKpis)
         {
             List<GeneralKpiDAO> GeneralKpiDAOs = new List<GeneralKpiDAO>();
@@ -280,15 +362,50 @@ namespace DMS.Repositories
                 GeneralKpiDAO.CreatorId = GeneralKpi.CreatorId;
                 GeneralKpiDAO.CreatedAt = StaticParams.DateTimeNow;
                 GeneralKpiDAO.UpdatedAt = StaticParams.DateTimeNow;
+                GeneralKpiDAO.RowId = Guid.NewGuid();
                 GeneralKpiDAOs.Add(GeneralKpiDAO);
+                GeneralKpi.RowId = GeneralKpiDAO.RowId;
             }
             await DataContext.BulkMergeAsync(GeneralKpiDAOs);
+
+            var GeneralKpiCriteriaMappingDAOs = new List<GeneralKpiCriteriaMappingDAO>();
+            foreach (var GeneralKpi in GeneralKpis)
+            {
+                GeneralKpi.Id = GeneralKpiDAOs.Where(x => x.RowId == GeneralKpi.RowId).Select(x => x.Id).FirstOrDefault();
+                var list = GeneralKpi.GeneralKpiCriteriaMappings.Select(x => new GeneralKpiCriteriaMappingDAO
+                {
+                    GeneralKpiId = GeneralKpi.Id,
+                    GeneralCriteriaId = x.GeneralCriteriaId,
+                    M01 = x.M01,
+                    M02 = x.M02,
+                    M03 = x.M03,
+                    M04 = x.M04,
+                    M05 = x.M05,
+                    M06 = x.M06,
+                    M07 = x.M07,
+                    M08 = x.M08,
+                    M09 = x.M09,
+                    M10 = x.M10,
+                    M11 = x.M11,
+                    M12 = x.M12,
+                    Q01 = x.Q01,
+                    Q02 = x.Q02,
+                    Q03 = x.Q03,
+                    Q04 = x.Q04,
+                    Y01 = x.Y01,
+                    StatusId = x.StatusId
+                }).ToList();
+                GeneralKpiCriteriaMappingDAOs.AddRange(list);
+            }
+
+            await DataContext.BulkMergeAsync(GeneralKpiCriteriaMappingDAOs);
             return true;
         }
 
         public async Task<bool> BulkDelete(List<GeneralKpi> GeneralKpis)
         {
             List<long> Ids = GeneralKpis.Select(x => x.Id).ToList();
+            await DataContext.GeneralKpiCriteriaMapping.Where(x => Ids.Contains(x.GeneralKpiId)).DeleteFromQueryAsync();
             await DataContext.GeneralKpi
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new GeneralKpiDAO { DeletedAt = StaticParams.DateTimeNow });
@@ -297,6 +414,39 @@ namespace DMS.Repositories
 
         private async Task SaveReference(GeneralKpi GeneralKpi)
         {
+            await DataContext.GeneralKpiCriteriaMapping.Where(x => x.GeneralKpiId == GeneralKpi.Id).DeleteFromQueryAsync();
+            if(GeneralKpi.GeneralKpiCriteriaMappings != null)
+            {
+                List<GeneralKpiCriteriaMappingDAO> GeneralKpiCriteriaMappingDAOs = new List<GeneralKpiCriteriaMappingDAO>();
+                foreach (var GeneralKpiCriteriaMapping in GeneralKpi.GeneralKpiCriteriaMappings)
+                {
+                    GeneralKpiCriteriaMappingDAO GeneralKpiCriteriaMappingDAO = new GeneralKpiCriteriaMappingDAO()
+                    {
+                        GeneralKpiId = GeneralKpi.Id,
+                        GeneralCriteriaId = GeneralKpiCriteriaMapping.GeneralCriteriaId,
+                        M01 = GeneralKpiCriteriaMapping.M01,
+                        M02 = GeneralKpiCriteriaMapping.M02,
+                        M03 = GeneralKpiCriteriaMapping.M03,
+                        M04 = GeneralKpiCriteriaMapping.M04,
+                        M05 = GeneralKpiCriteriaMapping.M05,
+                        M06 = GeneralKpiCriteriaMapping.M06,
+                        M07 = GeneralKpiCriteriaMapping.M07,
+                        M08 = GeneralKpiCriteriaMapping.M08,
+                        M09 = GeneralKpiCriteriaMapping.M09,
+                        M10 = GeneralKpiCriteriaMapping.M10,
+                        M11 = GeneralKpiCriteriaMapping.M11,
+                        M12 = GeneralKpiCriteriaMapping.M12,
+                        Q01 = GeneralKpiCriteriaMapping.Q01,
+                        Q02 = GeneralKpiCriteriaMapping.Q02,
+                        Q03 = GeneralKpiCriteriaMapping.Q03,
+                        Q04 = GeneralKpiCriteriaMapping.Q04,
+                        Y01 = GeneralKpiCriteriaMapping.Y01,
+                        StatusId = GeneralKpiCriteriaMapping.StatusId
+                    };
+                    GeneralKpiCriteriaMappingDAOs.Add(GeneralKpiCriteriaMappingDAO);
+                }
+                await DataContext.BulkMergeAsync(GeneralKpiCriteriaMappingDAOs);
+            }
         }
         
     }

@@ -14,11 +14,16 @@ namespace DMS.Entities
         public long KpiPeriodId { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
+        public AppUser Creator { get; set; }
+        public AppUser Employee { get; set; }
         public KpiPeriod KpiPeriod { get; set; }
         public Organization Organization { get; set; }
+        public Status Status { get; set; }
+        public List<long> EmployeeIds { get; set; }
+        public List<GeneralKpiCriteriaMapping> GeneralKpiCriteriaMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
+        public Guid RowId { get; set; }
         public bool Equals(GeneralKpi other)
         {
             return other != null && Id == other.Id;

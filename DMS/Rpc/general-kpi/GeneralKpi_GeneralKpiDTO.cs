@@ -14,8 +14,13 @@ namespace DMS.Rpc.general_kpi
         public long KpiPeriodId { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
+        public List<long> EmployeeIds { get; set; }
+        public GeneralKpi_AppUserDTO Creator { get; set; }
+        public GeneralKpi_AppUserDTO Employee { get; set; }
         public GeneralKpi_KpiPeriodDTO KpiPeriod { get; set; }
         public GeneralKpi_OrganizationDTO Organization { get; set; }
+        public GeneralKpi_StatusDTO Status { get; set; }
+        public List<GeneralKpi_GeneralKpiCriteriaMappingDTO> GeneralKpiCriteriaMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public GeneralKpi_GeneralKpiDTO() {}
@@ -27,8 +32,12 @@ namespace DMS.Rpc.general_kpi
             this.KpiPeriodId = GeneralKpi.KpiPeriodId;
             this.StatusId = GeneralKpi.StatusId;
             this.CreatorId = GeneralKpi.CreatorId;
+            this.Creator = GeneralKpi.Creator == null ? null : new GeneralKpi_AppUserDTO(GeneralKpi.Creator);
+            this.Employee = GeneralKpi.Employee == null ? null : new GeneralKpi_AppUserDTO(GeneralKpi.Employee);
             this.KpiPeriod = GeneralKpi.KpiPeriod == null ? null : new GeneralKpi_KpiPeriodDTO(GeneralKpi.KpiPeriod);
             this.Organization = GeneralKpi.Organization == null ? null : new GeneralKpi_OrganizationDTO(GeneralKpi.Organization);
+            this.Status = GeneralKpi.Status == null ? null : new GeneralKpi_StatusDTO(GeneralKpi.Status);
+            this.GeneralKpiCriteriaMappings = GeneralKpi.GeneralKpiCriteriaMappings?.Select(x => new GeneralKpi_GeneralKpiCriteriaMappingDTO(x)).ToList();
             this.CreatedAt = GeneralKpi.CreatedAt;
             this.UpdatedAt = GeneralKpi.UpdatedAt;
             this.Errors = GeneralKpi.Errors;

@@ -14,6 +14,8 @@ namespace DMS.Rpc.item_specific_kpi
         public long StatusId { get; set; }
         public long EmployeeId { get; set; }
         public long CreatorId { get; set; }
+        public ItemSpecificKpi_AppUserDTO Creator { get; set; }
+        public ItemSpecificKpi_AppUserDTO Employee { get; set; }
         public ItemSpecificKpi_KpiPeriodDTO KpiPeriod { get; set; }
         public ItemSpecificKpi_OrganizationDTO Organization { get; set; }
         public ItemSpecificKpi_StatusDTO Status { get; set; }
@@ -30,6 +32,8 @@ namespace DMS.Rpc.item_specific_kpi
             this.StatusId = ItemSpecificKpi.StatusId;
             this.EmployeeId = ItemSpecificKpi.EmployeeId;
             this.CreatorId = ItemSpecificKpi.CreatorId;
+            this.Creator = ItemSpecificKpi.Creator == null ? null : new ItemSpecificKpi_AppUserDTO(ItemSpecificKpi.Creator);
+            this.Employee = ItemSpecificKpi.Employee == null ? null : new ItemSpecificKpi_AppUserDTO(ItemSpecificKpi.Employee);
             this.KpiPeriod = ItemSpecificKpi.KpiPeriod == null ? null : new ItemSpecificKpi_KpiPeriodDTO(ItemSpecificKpi.KpiPeriod);
             this.Organization = ItemSpecificKpi.Organization == null ? null : new ItemSpecificKpi_OrganizationDTO(ItemSpecificKpi.Organization);
             this.Status = ItemSpecificKpi.Status == null ? null : new ItemSpecificKpi_StatusDTO(ItemSpecificKpi.Status);

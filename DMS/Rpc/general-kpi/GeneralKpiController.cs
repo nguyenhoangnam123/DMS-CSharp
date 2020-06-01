@@ -11,27 +11,39 @@ using System.IO;
 using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MGeneralKpi;
+using DMS.Services.MAppUser;
 using DMS.Services.MKpiPeriod;
 using DMS.Services.MOrganization;
+using DMS.Services.MStatus;
+using DMS.Services.MGeneralCriteria;
 
 namespace DMS.Rpc.general_kpi
 {
     public class GeneralKpiController : RpcController
     {
+        private IAppUserService AppUserService;
         private IKpiPeriodService KpiPeriodService;
         private IOrganizationService OrganizationService;
+        private IStatusService StatusService;
         private IGeneralKpiService GeneralKpiService;
+        private IGeneralCriteriaService GeneralCriteriaService;
         private ICurrentContext CurrentContext;
         public GeneralKpiController(
+            IAppUserService AppUserService,
             IKpiPeriodService KpiPeriodService,
             IOrganizationService OrganizationService,
+            IStatusService StatusService,
             IGeneralKpiService GeneralKpiService,
+            IGeneralCriteriaService GeneralCriteriaService,
             ICurrentContext CurrentContext
         )
         {
+            this.AppUserService = AppUserService;
             this.KpiPeriodService = KpiPeriodService;
             this.OrganizationService = OrganizationService;
+            this.StatusService = StatusService;
             this.GeneralKpiService = GeneralKpiService;
+            this.GeneralCriteriaService = GeneralCriteriaService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -90,6 +102,38 @@ namespace DMS.Rpc.general_kpi
                 return GeneralKpi_GeneralKpiDTO;
             else
                 return BadRequest(GeneralKpi_GeneralKpiDTO);
+        }
+
+        [Route(GeneralKpiRoute.CreateDraft), HttpPost]
+        public async Task<ActionResult<GeneralKpi_GeneralKpiDTO>> CreateDraft([FromBody] GeneralKpi_GeneralKpiDTO GeneralKpi_GeneralKpiDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(GeneralKpi_GeneralKpiDTO.Id))
+                return Forbid();
+
+            List<GeneralCriteria> GeneralCriterias = await GeneralCriteriaService.List(new GeneralCriteriaFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = GeneralCriteriaSelect.ALL
+            });
+
+            GeneralKpi_GeneralKpiDTO = new GeneralKpi_GeneralKpiDTO
+            {
+                GeneralKpiCriteriaMappings = new List<GeneralKpi_GeneralKpiCriteriaMappingDTO>()
+            };
+            foreach (var GeneralCriteria in GeneralCriterias)
+            {
+                GeneralKpi_GeneralKpiDTO.GeneralKpiCriteriaMappings.Add(new GeneralKpi_GeneralKpiCriteriaMappingDTO
+                {
+                    GeneralCriteriaId = GeneralCriteria.Id,
+                    GeneralCriteria = new GeneralKpi_GeneralCriteriaDTO(GeneralCriteria),
+                    
+                });
+            }
+            return GeneralKpi_GeneralKpiDTO;
         }
 
         [Route(GeneralKpiRoute.Update), HttpPost]
@@ -151,6 +195,20 @@ namespace DMS.Rpc.general_kpi
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            AppUserFilter CreatorFilter = new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.ALL
+            };
+            List<AppUser> Creators = await AppUserService.List(CreatorFilter);
+            AppUserFilter EmployeeFilter = new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.ALL
+            };
+            List<AppUser> Employees = await AppUserService.List(EmployeeFilter);
             KpiPeriodFilter KpiPeriodFilter = new KpiPeriodFilter
             {
                 Skip = 0,
@@ -158,6 +216,13 @@ namespace DMS.Rpc.general_kpi
                 Selects = KpiPeriodSelect.ALL
             };
             List<KpiPeriod> KpiPeriods = await KpiPeriodService.List(KpiPeriodFilter);
+            StatusFilter StatusFilter = new StatusFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StatusSelect.ALL
+            };
+            List<Status> Statuses = await StatusService.List(StatusFilter);
             List<GeneralKpi> GeneralKpis = new List<GeneralKpi>();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
@@ -185,9 +250,18 @@ namespace DMS.Rpc.general_kpi
                     string CreatorIdValue = worksheet.Cells[i + StartRow, CreatorIdColumn].Value?.ToString();
                     
                     GeneralKpi GeneralKpi = new GeneralKpi();
+                    AppUser Creator = Creators.Where(x => x.Id.ToString() == CreatorIdValue).FirstOrDefault();
+                    GeneralKpi.CreatorId = Creator == null ? 0 : Creator.Id;
+                    GeneralKpi.Creator = Creator;
+                    AppUser Employee = Employees.Where(x => x.Id.ToString() == EmployeeIdValue).FirstOrDefault();
+                    GeneralKpi.EmployeeId = Employee == null ? 0 : Employee.Id;
+                    GeneralKpi.Employee = Employee;
                     KpiPeriod KpiPeriod = KpiPeriods.Where(x => x.Id.ToString() == KpiPeriodIdValue).FirstOrDefault();
                     GeneralKpi.KpiPeriodId = KpiPeriod == null ? 0 : KpiPeriod.Id;
                     GeneralKpi.KpiPeriod = KpiPeriod;
+                    Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
+                    GeneralKpi.StatusId = Status == null ? 0 : Status.Id;
+                    GeneralKpi.Status = Status;
                     
                     GeneralKpis.Add(GeneralKpi);
                 }
@@ -267,6 +341,58 @@ namespace DMS.Rpc.general_kpi
                 excel.GenerateWorksheet("GeneralKpi", GeneralKpiHeaders, GeneralKpiData);
                 #endregion
                 
+                #region AppUser
+                var AppUserFilter = new AppUserFilter();
+                AppUserFilter.Selects = AppUserSelect.ALL;
+                AppUserFilter.OrderBy = AppUserOrder.Id;
+                AppUserFilter.OrderType = OrderType.ASC;
+                AppUserFilter.Skip = 0;
+                AppUserFilter.Take = int.MaxValue;
+                List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+
+                var AppUserHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "Username",
+                        "DisplayName",
+                        "Address",
+                        "Email",
+                        "Phone",
+                        "PositionId",
+                        "Department",
+                        "OrganizationId",
+                        "StatusId",
+                        "Avatar",
+                        "ProvinceId",
+                        "SexId",
+                        "Birthday",
+                    }
+                };
+                List<object[]> AppUserData = new List<object[]>();
+                for (int i = 0; i < AppUsers.Count; i++)
+                {
+                    var AppUser = AppUsers[i];
+                    AppUserData.Add(new Object[]
+                    {
+                        AppUser.Id,
+                        AppUser.Username,
+                        AppUser.DisplayName,
+                        AppUser.Address,
+                        AppUser.Email,
+                        AppUser.Phone,
+                        AppUser.PositionId,
+                        AppUser.Department,
+                        AppUser.OrganizationId,
+                        AppUser.StatusId,
+                        AppUser.Avatar,
+                        AppUser.ProvinceId,
+                        AppUser.SexId,
+                        AppUser.Birthday,
+                    });
+                }
+                excel.GenerateWorksheet("AppUser", AppUserHeaders, AppUserData);
+                #endregion
                 #region KpiPeriod
                 var KpiPeriodFilter = new KpiPeriodFilter();
                 KpiPeriodFilter.Selects = KpiPeriodSelect.ALL;
@@ -340,6 +466,36 @@ namespace DMS.Rpc.general_kpi
                     });
                 }
                 excel.GenerateWorksheet("Organization", OrganizationHeaders, OrganizationData);
+                #endregion
+                #region Status
+                var StatusFilter = new StatusFilter();
+                StatusFilter.Selects = StatusSelect.ALL;
+                StatusFilter.OrderBy = StatusOrder.Id;
+                StatusFilter.OrderType = OrderType.ASC;
+                StatusFilter.Skip = 0;
+                StatusFilter.Take = int.MaxValue;
+                List<Status> Statuses = await StatusService.List(StatusFilter);
+
+                var StatusHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "Code",
+                        "Name",
+                    }
+                };
+                List<object[]> StatusData = new List<object[]>();
+                for (int i = 0; i < Statuses.Count; i++)
+                {
+                    var Status = Statuses[i];
+                    StatusData.Add(new Object[]
+                    {
+                        Status.Id,
+                        Status.Code,
+                        Status.Name,
+                    });
+                }
+                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
                 #endregion
                 excel.Save();
             }
@@ -371,6 +527,58 @@ namespace DMS.Rpc.general_kpi
                 excel.GenerateWorksheet("GeneralKpi", GeneralKpiHeaders, GeneralKpiData);
                 #endregion
                 
+                #region AppUser
+                var AppUserFilter = new AppUserFilter();
+                AppUserFilter.Selects = AppUserSelect.ALL;
+                AppUserFilter.OrderBy = AppUserOrder.Id;
+                AppUserFilter.OrderType = OrderType.ASC;
+                AppUserFilter.Skip = 0;
+                AppUserFilter.Take = int.MaxValue;
+                List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+
+                var AppUserHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "Username",
+                        "DisplayName",
+                        "Address",
+                        "Email",
+                        "Phone",
+                        "PositionId",
+                        "Department",
+                        "OrganizationId",
+                        "StatusId",
+                        "Avatar",
+                        "ProvinceId",
+                        "SexId",
+                        "Birthday",
+                    }
+                };
+                List<object[]> AppUserData = new List<object[]>();
+                for (int i = 0; i < AppUsers.Count; i++)
+                {
+                    var AppUser = AppUsers[i];
+                    AppUserData.Add(new Object[]
+                    {
+                        AppUser.Id,
+                        AppUser.Username,
+                        AppUser.DisplayName,
+                        AppUser.Address,
+                        AppUser.Email,
+                        AppUser.Phone,
+                        AppUser.PositionId,
+                        AppUser.Department,
+                        AppUser.OrganizationId,
+                        AppUser.StatusId,
+                        AppUser.Avatar,
+                        AppUser.ProvinceId,
+                        AppUser.SexId,
+                        AppUser.Birthday,
+                    });
+                }
+                excel.GenerateWorksheet("AppUser", AppUserHeaders, AppUserData);
+                #endregion
                 #region KpiPeriod
                 var KpiPeriodFilter = new KpiPeriodFilter();
                 KpiPeriodFilter.Selects = KpiPeriodSelect.ALL;
@@ -444,6 +652,36 @@ namespace DMS.Rpc.general_kpi
                     });
                 }
                 excel.GenerateWorksheet("Organization", OrganizationHeaders, OrganizationData);
+                #endregion
+                #region Status
+                var StatusFilter = new StatusFilter();
+                StatusFilter.Selects = StatusSelect.ALL;
+                StatusFilter.OrderBy = StatusOrder.Id;
+                StatusFilter.OrderType = OrderType.ASC;
+                StatusFilter.Skip = 0;
+                StatusFilter.Take = int.MaxValue;
+                List<Status> Statuses = await StatusService.List(StatusFilter);
+
+                var StatusHeaders = new List<string[]>()
+                {
+                    new string[] { 
+                        "Id",
+                        "Code",
+                        "Name",
+                    }
+                };
+                List<object[]> StatusData = new List<object[]>();
+                for (int i = 0; i < Statuses.Count; i++)
+                {
+                    var Status = Statuses[i];
+                    StatusData.Add(new Object[]
+                    {
+                        Status.Id,
+                        Status.Code,
+                        Status.Name,
+                    });
+                }
+                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
                 #endregion
                 excel.Save();
             }
@@ -477,6 +715,40 @@ namespace DMS.Rpc.general_kpi
             GeneralKpi.KpiPeriodId = GeneralKpi_GeneralKpiDTO.KpiPeriodId;
             GeneralKpi.StatusId = GeneralKpi_GeneralKpiDTO.StatusId;
             GeneralKpi.CreatorId = GeneralKpi_GeneralKpiDTO.CreatorId;
+            GeneralKpi.Creator = GeneralKpi_GeneralKpiDTO.Creator == null ? null : new AppUser
+            {
+                Id = GeneralKpi_GeneralKpiDTO.Creator.Id,
+                Username = GeneralKpi_GeneralKpiDTO.Creator.Username,
+                DisplayName = GeneralKpi_GeneralKpiDTO.Creator.DisplayName,
+                Address = GeneralKpi_GeneralKpiDTO.Creator.Address,
+                Email = GeneralKpi_GeneralKpiDTO.Creator.Email,
+                Phone = GeneralKpi_GeneralKpiDTO.Creator.Phone,
+                PositionId = GeneralKpi_GeneralKpiDTO.Creator.PositionId,
+                Department = GeneralKpi_GeneralKpiDTO.Creator.Department,
+                OrganizationId = GeneralKpi_GeneralKpiDTO.Creator.OrganizationId,
+                StatusId = GeneralKpi_GeneralKpiDTO.Creator.StatusId,
+                Avatar = GeneralKpi_GeneralKpiDTO.Creator.Avatar,
+                ProvinceId = GeneralKpi_GeneralKpiDTO.Creator.ProvinceId,
+                SexId = GeneralKpi_GeneralKpiDTO.Creator.SexId,
+                Birthday = GeneralKpi_GeneralKpiDTO.Creator.Birthday,
+            };
+            GeneralKpi.Employee = GeneralKpi_GeneralKpiDTO.Employee == null ? null : new AppUser
+            {
+                Id = GeneralKpi_GeneralKpiDTO.Employee.Id,
+                Username = GeneralKpi_GeneralKpiDTO.Employee.Username,
+                DisplayName = GeneralKpi_GeneralKpiDTO.Employee.DisplayName,
+                Address = GeneralKpi_GeneralKpiDTO.Employee.Address,
+                Email = GeneralKpi_GeneralKpiDTO.Employee.Email,
+                Phone = GeneralKpi_GeneralKpiDTO.Employee.Phone,
+                PositionId = GeneralKpi_GeneralKpiDTO.Employee.PositionId,
+                Department = GeneralKpi_GeneralKpiDTO.Employee.Department,
+                OrganizationId = GeneralKpi_GeneralKpiDTO.Employee.OrganizationId,
+                StatusId = GeneralKpi_GeneralKpiDTO.Employee.StatusId,
+                Avatar = GeneralKpi_GeneralKpiDTO.Employee.Avatar,
+                ProvinceId = GeneralKpi_GeneralKpiDTO.Employee.ProvinceId,
+                SexId = GeneralKpi_GeneralKpiDTO.Employee.SexId,
+                Birthday = GeneralKpi_GeneralKpiDTO.Employee.Birthday,
+            };
             GeneralKpi.KpiPeriod = GeneralKpi_GeneralKpiDTO.KpiPeriod == null ? null : new KpiPeriod
             {
                 Id = GeneralKpi_GeneralKpiDTO.KpiPeriod.Id,
@@ -496,6 +768,36 @@ namespace DMS.Rpc.general_kpi
                 Email = GeneralKpi_GeneralKpiDTO.Organization.Email,
                 Address = GeneralKpi_GeneralKpiDTO.Organization.Address,
             };
+            GeneralKpi.Status = GeneralKpi_GeneralKpiDTO.Status == null ? null : new Status
+            {
+                Id = GeneralKpi_GeneralKpiDTO.Status.Id,
+                Code = GeneralKpi_GeneralKpiDTO.Status.Code,
+                Name = GeneralKpi_GeneralKpiDTO.Status.Name,
+            };
+            GeneralKpi.EmployeeIds = GeneralKpi_GeneralKpiDTO.EmployeeIds;
+            GeneralKpi.GeneralKpiCriteriaMappings = GeneralKpi_GeneralKpiDTO.GeneralKpiCriteriaMappings?.Select(x => new GeneralKpiCriteriaMapping
+            {
+                GeneralKpiId = x.GeneralKpiId,
+                GeneralCriteriaId = x.GeneralCriteriaId,
+                M01 = x.M01,
+                M02 = x.M02,
+                M03 = x.M03,
+                M04 = x.M04,
+                M05 = x.M05,
+                M06 = x.M06,
+                M07 = x.M07,
+                M08 = x.M08,
+                M09 = x.M09,
+                M10 = x.M10,
+                M11 = x.M11,
+                M12 = x.M12,
+                Q01 = x.Q01,
+                Q02 = x.Q02,
+                Q03 = x.Q03,
+                Q04 = x.Q04,
+                Y01 = x.Y01,
+                StatusId = x.StatusId
+            }).ToList();
             GeneralKpi.BaseLanguage = CurrentContext.Language;
             return GeneralKpi;
         }
@@ -520,6 +822,37 @@ namespace DMS.Rpc.general_kpi
             return GeneralKpiFilter;
         }
 
+        [Route(GeneralKpiRoute.FilterListAppUser), HttpPost]
+        public async Task<List<GeneralKpi_AppUserDTO>> FilterListAppUser([FromBody] GeneralKpi_AppUserFilterDTO GeneralKpi_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = GeneralKpi_AppUserFilterDTO.Id;
+            AppUserFilter.Username = GeneralKpi_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = GeneralKpi_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Address = GeneralKpi_AppUserFilterDTO.Address;
+            AppUserFilter.Email = GeneralKpi_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = GeneralKpi_AppUserFilterDTO.Phone;
+            AppUserFilter.PositionId = GeneralKpi_AppUserFilterDTO.PositionId;
+            AppUserFilter.Department = GeneralKpi_AppUserFilterDTO.Department;
+            AppUserFilter.OrganizationId = GeneralKpi_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.StatusId = GeneralKpi_AppUserFilterDTO.StatusId;
+            AppUserFilter.ProvinceId = GeneralKpi_AppUserFilterDTO.ProvinceId;
+            AppUserFilter.SexId = GeneralKpi_AppUserFilterDTO.SexId;
+            AppUserFilter.Birthday = GeneralKpi_AppUserFilterDTO.Birthday;
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<GeneralKpi_AppUserDTO> GeneralKpi_AppUserDTOs = AppUsers
+                .Select(x => new GeneralKpi_AppUserDTO(x)).ToList();
+            return GeneralKpi_AppUserDTOs;
+        }
         [Route(GeneralKpiRoute.FilterListKpiPeriod), HttpPost]
         public async Task<List<GeneralKpi_KpiPeriodDTO>> FilterListKpiPeriod([FromBody] GeneralKpi_KpiPeriodFilterDTO GeneralKpi_KpiPeriodFilterDTO)
         {
@@ -569,7 +902,57 @@ namespace DMS.Rpc.general_kpi
                 .Select(x => new GeneralKpi_OrganizationDTO(x)).ToList();
             return GeneralKpi_OrganizationDTOs;
         }
+        [Route(GeneralKpiRoute.FilterListStatus), HttpPost]
+        public async Task<List<GeneralKpi_StatusDTO>> FilterListStatus([FromBody] GeneralKpi_StatusFilterDTO GeneralKpi_StatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
 
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = int.MaxValue;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<GeneralKpi_StatusDTO> GeneralKpi_StatusDTOs = Statuses
+                .Select(x => new GeneralKpi_StatusDTO(x)).ToList();
+            return GeneralKpi_StatusDTOs;
+        }
+
+        [Route(GeneralKpiRoute.SingleListAppUser), HttpPost]
+        public async Task<List<GeneralKpi_AppUserDTO>> SingleListAppUser([FromBody] GeneralKpi_AppUserFilterDTO GeneralKpi_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = GeneralKpi_AppUserFilterDTO.Id;
+            AppUserFilter.Username = GeneralKpi_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = GeneralKpi_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Address = GeneralKpi_AppUserFilterDTO.Address;
+            AppUserFilter.Email = GeneralKpi_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = GeneralKpi_AppUserFilterDTO.Phone;
+            AppUserFilter.PositionId = GeneralKpi_AppUserFilterDTO.PositionId;
+            AppUserFilter.Department = GeneralKpi_AppUserFilterDTO.Department;
+            AppUserFilter.OrganizationId = GeneralKpi_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            AppUserFilter.ProvinceId = GeneralKpi_AppUserFilterDTO.ProvinceId;
+            AppUserFilter.SexId = GeneralKpi_AppUserFilterDTO.SexId;
+            AppUserFilter.Birthday = GeneralKpi_AppUserFilterDTO.Birthday;
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<GeneralKpi_AppUserDTO> GeneralKpi_AppUserDTOs = AppUsers
+                .Select(x => new GeneralKpi_AppUserDTO(x)).ToList();
+            return GeneralKpi_AppUserDTOs;
+        }
         [Route(GeneralKpiRoute.SingleListKpiPeriod), HttpPost]
         public async Task<List<GeneralKpi_KpiPeriodDTO>> SingleListKpiPeriod([FromBody] GeneralKpi_KpiPeriodFilterDTO GeneralKpi_KpiPeriodFilterDTO)
         {
@@ -609,7 +992,7 @@ namespace DMS.Rpc.general_kpi
             OrganizationFilter.ParentId = GeneralKpi_OrganizationFilterDTO.ParentId;
             OrganizationFilter.Path = GeneralKpi_OrganizationFilterDTO.Path;
             OrganizationFilter.Level = GeneralKpi_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = GeneralKpi_OrganizationFilterDTO.StatusId;
+            OrganizationFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
             OrganizationFilter.Phone = GeneralKpi_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = GeneralKpi_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = GeneralKpi_OrganizationFilterDTO.Address;
@@ -618,6 +1001,25 @@ namespace DMS.Rpc.general_kpi
             List<GeneralKpi_OrganizationDTO> GeneralKpi_OrganizationDTOs = Organizations
                 .Select(x => new GeneralKpi_OrganizationDTO(x)).ToList();
             return GeneralKpi_OrganizationDTOs;
+        }
+        [Route(GeneralKpiRoute.SingleListStatus), HttpPost]
+        public async Task<List<GeneralKpi_StatusDTO>> SingleListStatus([FromBody] GeneralKpi_StatusFilterDTO GeneralKpi_StatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = int.MaxValue;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<GeneralKpi_StatusDTO> GeneralKpi_StatusDTOs = Statuses
+                .Select(x => new GeneralKpi_StatusDTO(x)).ToList();
+            return GeneralKpi_StatusDTOs;
         }
 
     }

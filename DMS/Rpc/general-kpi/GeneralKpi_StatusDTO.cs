@@ -4,9 +4,9 @@ using System.Linq;
 using System.Collections.Generic;
 using DMS.Entities;
 
-namespace DMS.Rpc.kpi_period
+namespace DMS.Rpc.general_kpi
 {
-    public class KpiPeriod_StatusDTO : DataDTO
+    public class GeneralKpi_StatusDTO : DataDTO
     {
         
         public long Id { get; set; }
@@ -16,8 +16,8 @@ namespace DMS.Rpc.kpi_period
         public string Name { get; set; }
         
 
-        public KpiPeriod_StatusDTO() {}
-        public KpiPeriod_StatusDTO(Status Status)
+        public GeneralKpi_StatusDTO() {}
+        public GeneralKpi_StatusDTO(Status Status)
         {
             
             this.Id = Status.Id;
@@ -30,7 +30,7 @@ namespace DMS.Rpc.kpi_period
         }
     }
 
-    public class KpiPeriod_StatusFilterDTO : FilterDTO
+    public class GeneralKpi_StatusFilterDTO : FilterDTO
     {
         
         public IdFilter Id { get; set; }

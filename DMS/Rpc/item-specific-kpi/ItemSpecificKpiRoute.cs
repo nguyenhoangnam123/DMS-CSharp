@@ -11,6 +11,7 @@ using System.IO;
 using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MItemSpecificKpi;
+using DMS.Services.MAppUser;
 using DMS.Services.MKpiPeriod;
 using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
@@ -38,6 +39,8 @@ namespace DMS.Rpc.item_specific_kpi
         public const string BulkDelete = Default + "/bulk-delete";
         
         
+        public const string FilterListAppUser = Default + "/filter-list-app-user";
+        
         public const string FilterListKpiPeriod = Default + "/filter-list-kpi-period";
         
         public const string FilterListOrganization = Default + "/filter-list-organization";
@@ -53,6 +56,8 @@ namespace DMS.Rpc.item_specific_kpi
         public const string FilterListTotalItemSpecificCriteria = Default + "/filter-list-total-item-specific-criteria";
         
 
+        
+        public const string SingleListAppUser = Default + "/single-list-app-user";
         
         public const string SingleListKpiPeriod = Default + "/single-list-kpi-period";
         
@@ -83,33 +88,33 @@ namespace DMS.Rpc.item_specific_kpi
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, } },
+                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, } },
 
             { "Thêm", new List<string> { 
-                Master, Count, List, Get,  FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
+                Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
                 Detail, Create, 
-                 SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListItemSpecificKpiContent, SingleListItem, SingleListItemSpecificCriteria, SingleListTotalItemSpecificCriteria, } },
+                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListItemSpecificKpiContent, SingleListItem, SingleListItemSpecificCriteria, SingleListTotalItemSpecificCriteria, } },
 
             { "Sửa", new List<string> { 
-                Master, Count, List, Get,  FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
+                Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
                 Detail, Update, 
-                 SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListItemSpecificKpiContent, SingleListItem, SingleListItemSpecificCriteria, SingleListTotalItemSpecificCriteria, } },
+                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListItemSpecificKpiContent, SingleListItem, SingleListItemSpecificCriteria, SingleListTotalItemSpecificCriteria, } },
 
             { "Xoá", new List<string> { 
-                Master, Count, List, Get,  FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
+                Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
                 Detail, Delete, 
-                 SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListItemSpecificKpiContent, SingleListItem, SingleListItemSpecificCriteria, SingleListTotalItemSpecificCriteria, } },
+                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListItemSpecificKpiContent, SingleListItem, SingleListItemSpecificCriteria, SingleListTotalItemSpecificCriteria, } },
 
             { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
+                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
                 BulkDelete } },
 
             { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
+                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
                 Export } },
 
             { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
+                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
                 ExportTemplate, Import } },
         };
     }

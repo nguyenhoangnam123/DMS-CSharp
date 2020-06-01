@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
+using DMS.Helpers;
 
 namespace DMS.Services.MGeneralKpi
 {
@@ -92,10 +93,21 @@ namespace DMS.Services.MGeneralKpi
             try
             {
                 await UOW.Begin();
-                await UOW.GeneralKpiRepository.Create(GeneralKpi);
+                List<GeneralKpi> GeneralKpis = new List<GeneralKpi>();
+                if (GeneralKpi.EmployeeIds != null && GeneralKpi.EmployeeIds.Any())
+                {
+                    foreach (var EmployeeId in GeneralKpi.EmployeeIds)
+                    {
+                        var newObj = Utils.Clone(GeneralKpi);
+                        newObj.EmployeeId = EmployeeId;
+                        newObj.CreatorId = CurrentContext.UserId;
+                        GeneralKpis.Add(newObj);
+                    }
+                }
+                await UOW.GeneralKpiRepository.BulkMerge(GeneralKpis);
                 await UOW.Commit();
 
-                await Logging.CreateAuditLog(GeneralKpi, new { }, nameof(GeneralKpiService));
+                await Logging.CreateAuditLog(GeneralKpis, new { }, nameof(GeneralKpiService));
                 return await UOW.GeneralKpiRepository.Get(GeneralKpi.Id);
             }
             catch (Exception ex)
