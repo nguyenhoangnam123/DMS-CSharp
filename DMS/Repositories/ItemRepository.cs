@@ -76,6 +76,10 @@ namespace DMS.Repositories
             {
                 query = query.Where(q => q.StatusId, filter.StatusId);
             }
+            if (filter.IsNew != null)
+            {
+                query = query.Where(q => q.Product.IsNew == filter.IsNew);
+            }
             query = OrFilter(query, filter);
             return query;
         }

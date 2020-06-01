@@ -44,7 +44,9 @@ namespace DMS.Rpc.general_kpi
         public const string SingleListKpiPeriod = Default + "/single-list-kpi-period";
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListStatus = Default + "/single-list-status";
-        
+
+        public const string CountAppUser = Default + "/count-app-user";
+        public const string ListAppUser = Default + "/list-app-user";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(GeneralKpiFilter.Id), FieldType.ID },
@@ -63,12 +65,12 @@ namespace DMS.Rpc.general_kpi
             { "Thêm", new List<string> { 
                 Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, 
                 Detail, Create, CreateDraft,
-                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, } },
+                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, CountAppUser, ListAppUser} },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, 
-                Detail, Update, CreateDraft,
-                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, } },
+                Detail, Update, 
+                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, CountAppUser, ListAppUser} },
 
             { "Xoá", new List<string> { 
                 Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, 
