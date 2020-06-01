@@ -62,6 +62,9 @@ namespace DMS.Models
         public virtual DbSet<PermissionActionMappingDAO> PermissionActionMapping { get; set; }
         public virtual DbSet<PermissionFieldMappingDAO> PermissionFieldMapping { get; set; }
         public virtual DbSet<PositionDAO> Position { get; set; }
+        public virtual DbSet<ProblemDAO> Problem { get; set; }
+        public virtual DbSet<ProblemImageMappingDAO> ProblemImageMapping { get; set; }
+        public virtual DbSet<ProblemTypeDAO> ProblemType { get; set; }
         public virtual DbSet<ProductDAO> Product { get; set; }
         public virtual DbSet<ProductGroupingDAO> ProductGrouping { get; set; }
         public virtual DbSet<ProductImageMappingDAO> ProductImageMapping { get; set; }
@@ -851,6 +854,18 @@ namespace DMS.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.GeneralKpiCreators)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GeneralKpi_AppUser1");
+
+                entity.HasOne(d => d.Employee)
+                    .WithMany(p => p.GeneralKpiEmployees)
+                    .HasForeignKey(d => d.EmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GeneralKpi_AppUser");
+
                 entity.HasOne(d => d.KpiPeriod)
                     .WithMany(p => p.GeneralKpis)
                     .HasForeignKey(d => d.KpiPeriodId)
@@ -862,6 +877,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.OrganizationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_GeneralKpi_Organization");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.GeneralKpis)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GeneralKpi_Status");
             });
 
             modelBuilder.Entity<GeneralKpiCriteriaMappingDAO>(entity =>
@@ -1351,6 +1372,18 @@ namespace DMS.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.ItemSpecificKpiCreators)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemSpecificKpi_AppUser1");
+
+                entity.HasOne(d => d.Employee)
+                    .WithMany(p => p.ItemSpecificKpiEmployees)
+                    .HasForeignKey(d => d.EmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemSpecificKpi_AppUser");
+
                 entity.HasOne(d => d.KpiPeriod)
                     .WithMany(p => p.ItemSpecificKpis)
                     .HasForeignKey(d => d.KpiPeriodId)
@@ -1601,6 +1634,58 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Position_Status");
+            });
+
+            modelBuilder.Entity<ProblemDAO>(entity =>
+            {
+                entity.Property(e => e.Content).HasMaxLength(4000);
+
+                entity.Property(e => e.NoteAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.ProblemType)
+                    .WithMany(p => p.Problems)
+                    .HasForeignKey(d => d.ProblemTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Problem_ProblemType");
+
+                entity.HasOne(d => d.StoreChecking)
+                    .WithMany(p => p.Problems)
+                    .HasForeignKey(d => d.StoreCheckingId)
+                    .HasConstraintName("FK_Problem_StoreChecking");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.Problems)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Problem_Store");
+            });
+
+            modelBuilder.Entity<ProblemImageMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ProblemId, e.ImageId });
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.ProblemImageMappings)
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProblemImageMapping_Image");
+
+                entity.HasOne(d => d.Problem)
+                    .WithMany(p => p.ProblemImageMappings)
+                    .HasForeignKey(d => d.ProblemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProblemImageMapping_Problem");
+            });
+
+            modelBuilder.Entity<ProblemTypeDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<ProductDAO>(entity =>

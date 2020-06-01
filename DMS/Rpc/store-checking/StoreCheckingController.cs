@@ -23,6 +23,8 @@ using DMS.Services.MTaxType;
 using DMS.Services.MProduct;
 using DMS.Services.MItem;
 using DMS.Services.MIndirectSalesOrder;
+using DMS.Services.MProblem;
+using DMS.Services.MProblemType;
 
 namespace DMS.Rpc.store_checking
 {
@@ -32,14 +34,15 @@ namespace DMS.Rpc.store_checking
         private IAppUserService AppUserService;
         private IERouteService ERouteService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
-        private IImageService ImageService;
         private IItemService ItemService;
-        private IProductService ProductService;
         private IStoreService StoreService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreCheckingService StoreCheckingService;
         private IStoreTypeService StoreTypeService;
         private ITaxTypeService TaxTypeService;
+        private IProductService ProductService;
+        private IProblemService ProblemService;
+        private IProblemTypeService ProblemTypeService;
         private ICurrentContext CurrentContext;
         public StoreCheckingController(
             IAlbumService AlbumService,
@@ -47,13 +50,14 @@ namespace DMS.Rpc.store_checking
             IERouteService ERouteService,
             IIndirectSalesOrderService IndirectSalesOrderService,
             IItemService ItemService,
-            IImageService ImageService,
-            IProductService ProductService,
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreCheckingService StoreCheckingService,
             IStoreTypeService StoreTypeService,
+            IProductService ProductService,
             ITaxTypeService TaxTypeService,
+            IProblemService ProblemService,
+            IProblemTypeService ProblemTypeService,
             ICurrentContext CurrentContext
         )
         {
@@ -62,13 +66,14 @@ namespace DMS.Rpc.store_checking
             this.ERouteService = ERouteService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
             this.ItemService = ItemService;
-            this.ImageService = ImageService;
-            this.ProductService = ProductService;
             this.StoreService = StoreService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreCheckingService = StoreCheckingService;
             this.StoreTypeService = StoreTypeService;
             this.TaxTypeService = TaxTypeService;
+            this.ProductService = ProductService;
+            this.ProblemService = ProblemService;
+            this.ProblemTypeService = ProblemTypeService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -337,6 +342,50 @@ namespace DMS.Rpc.store_checking
                 return BadRequest(StoreChecking_IndirectSalesOrderDTO);
         }
 
+        [Route(StoreCheckingRoute.CreateProblem), HttpPost]
+        public async Task<ActionResult<StoreChecking_ProblemDTO>> CreateProblem([FromBody] StoreChecking_ProblemDTO StoreChecking_ProblemDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            Problem Problem = new Problem
+            {
+                Id = StoreChecking_ProblemDTO.Id,
+                Content = StoreChecking_ProblemDTO.Content,
+                NoteAt = StoreChecking_ProblemDTO.NoteAt,
+                ProblemTypeId = StoreChecking_ProblemDTO.ProblemTypeId,
+                StoreCheckingId = StoreChecking_ProblemDTO.StoreCheckingId,
+                StoreId = StoreChecking_ProblemDTO.StoreId,
+            };
+            Problem = await ProblemService.Create(Problem);
+            if (Problem.IsValidated)
+                return StoreChecking_ProblemDTO;
+            else
+                return BadRequest(StoreChecking_ProblemDTO);
+        }
+        [Route(StoreCheckingRoute.SaveImage), HttpPost]
+        public async Task<ActionResult<StoreChecking_ImageDTO>> SaveImage(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            MemoryStream memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            Image Image = new Image
+            {
+                Name = file.FileName,
+                Content = memoryStream.ToArray()
+            };
+            Image = await StoreCheckingService.SaveImage(Image);
+            if (Image == null)
+                return BadRequest();
+            StoreChecking_ImageDTO StoreChecking_ImageDTO = new StoreChecking_ImageDTO
+            {
+                Id = Image.Id,
+                Name = Image.Name,
+                Url = Image.Url,
+            };
+            return Ok(StoreChecking_ImageDTO);
+        }
         private async Task<bool> HasPermission(long Id)
         {
             StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter();
@@ -613,16 +662,6 @@ namespace DMS.Rpc.store_checking
             StoreFilter.Id = StoreChecking_StoreFilterDTO.Id;
             StoreFilter.Code = StoreChecking_StoreFilterDTO.Code;
             StoreFilter.Name = StoreChecking_StoreFilterDTO.Name;
-            StoreFilter.ParentStoreId = StoreChecking_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = StoreChecking_StoreFilterDTO.OrganizationId;
-            StoreFilter.StoreTypeId = StoreChecking_StoreFilterDTO.StoreTypeId;
-            StoreFilter.StoreGroupingId = StoreChecking_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = StoreChecking_StoreFilterDTO.ResellerId;
-            StoreFilter.Telephone = StoreChecking_StoreFilterDTO.Telephone;
-            StoreFilter.ProvinceId = StoreChecking_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = StoreChecking_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = StoreChecking_StoreFilterDTO.WardId;
-            StoreFilter.Address = StoreChecking_StoreFilterDTO.Address;
             StoreFilter.DeliveryAddress = StoreChecking_StoreFilterDTO.DeliveryAddress;
             StoreFilter.Latitude = StoreChecking_StoreFilterDTO.Latitude;
             StoreFilter.Longitude = StoreChecking_StoreFilterDTO.Longitude;
@@ -631,7 +670,7 @@ namespace DMS.Rpc.store_checking
             StoreFilter.OwnerName = StoreChecking_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = StoreChecking_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = StoreChecking_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = StoreChecking_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<StoreChecking_StoreDTO> StoreChecking_StoreDTOs = Stores
@@ -678,28 +717,6 @@ namespace DMS.Rpc.store_checking
             return StoreChecking_StoreTypeDTOs;
         }
 
-        [Route(StoreCheckingRoute.SingleListStoreCheckingStatus), HttpPost]
-        public async Task<List<StoreChecking_StoreCheckingStatusDTO>> SingleListStoreCheckingStatus(StoreChecking_StoreCheckingStatusFilterDTO StoreChecking_StoreCheckingStatusDTO)
-        {
-            List<StoreChecking_StoreCheckingStatusDTO> StoreChecking_StoreCheckingStatusDTOs = new List<StoreChecking_StoreCheckingStatusDTO>();
-            StoreChecking_StoreCheckingStatusDTO CheckedIn = new StoreChecking_StoreCheckingStatusDTO
-            {
-                Id = StoreCheckingStatusEnum.CHECKEDIN.Id,
-                Name = StoreCheckingStatusEnum.CHECKEDIN.Name,
-                Code = StoreCheckingStatusEnum.CHECKEDIN.Code,
-            };
-
-            StoreChecking_StoreCheckingStatusDTO NotChecked = new StoreChecking_StoreCheckingStatusDTO
-            {
-                Id = StoreCheckingStatusEnum.NOTCHECKED.Id,
-                Name = StoreCheckingStatusEnum.NOTCHECKED.Name,
-                Code = StoreCheckingStatusEnum.NOTCHECKED.Code,
-            };
-            StoreChecking_StoreCheckingStatusDTOs.Add(CheckedIn);
-            StoreChecking_StoreCheckingStatusDTOs.Add(NotChecked);
-            return StoreChecking_StoreCheckingStatusDTOs;
-        }
-
         [Route(StoreCheckingRoute.SingleListTaxType), HttpPost]
         public async Task<List<StoreChecking_TaxTypeDTO>> SingleListTaxType([FromBody] StoreChecking_TaxTypeFilterDTO StoreChecking_TaxTypeFilterDTO)
         {
@@ -744,6 +761,27 @@ namespace DMS.Rpc.store_checking
             });
             return StoreChecking_UnitOfMeasureDTOs;
         }
+
+        [Route(StoreCheckingRoute.SingleListProblemType), HttpPost]
+        public async Task<List<StoreChecking_ProblemTypeDTO>> SingleListProblemType()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ProblemTypeFilter ProblemTypeFilter = new ProblemTypeFilter();
+            ProblemTypeFilter.Skip = 0;
+            ProblemTypeFilter.Take = 20;
+            ProblemTypeFilter.OrderBy = ProblemTypeOrder.Id;
+            ProblemTypeFilter.OrderType = OrderType.ASC;
+            ProblemTypeFilter.Selects = ProblemTypeSelect.ALL;
+
+            List<ProblemType> ProblemTypes = await ProblemTypeService.List(ProblemTypeFilter);
+            List<StoreChecking_ProblemTypeDTO> StoreChecking_ProblemTypeDTOs = ProblemTypes
+
+                .Select(x => new StoreChecking_ProblemTypeDTO(x)).ToList();
+            return StoreChecking_ProblemTypeDTOs;
+        }
+        [Route(StoreCheckingRoute.SingleListAppUser), HttpPost]
 
         [Route(StoreCheckingRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
@@ -877,29 +915,6 @@ namespace DMS.Rpc.store_checking
                     .Select(x => new StoreChecking_ItemDTO(x)).ToList();
                 return StoreChecking_ItemDTOs;
             }
-        }
-
-        [Route(StoreCheckingRoute.ListImage), HttpPost]
-        public async Task<List<StoreChecking_ImageDTO>> ListImage([FromBody] StoreChecking_ImageFilterDTO StoreChecking_ImageFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ImageFilter ImageFilter = new ImageFilter
-            {
-                Skip = StoreChecking_ImageFilterDTO.Skip,
-                Take = StoreChecking_ImageFilterDTO.Take,
-                OrderBy = ImageOrder.Id,
-                OrderType = OrderType.ASC,
-                Selects = ImageSelect.ALL,
-                AlbumId = StoreChecking_ImageFilterDTO.AlbumId,
-                StoreCheckingId = StoreChecking_ImageFilterDTO.StoreCheckingId,
-            };
-
-            List<Image> Images = await ImageService.List(ImageFilter);
-            List<StoreChecking_ImageDTO> StoreChecking_ImageDTOs = Images
-                .Select(x => new StoreChecking_ImageDTO(x)).ToList();
-            return StoreChecking_ImageDTOs;
         }
     }
 }

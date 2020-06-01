@@ -29,6 +29,8 @@ namespace DMS.Rpc.store_checking
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string CreateIndirectSalesOrder = Default + "/create-indirect-sales-order";
+        public const string CreateProblem = Default + "/create-problem";
+        public const string SaveImage = Default + "/save-image";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListStore = Default + "/filter-list-store";
@@ -39,12 +41,11 @@ namespace DMS.Rpc.store_checking
         public const string SingleListStore = Default + "/single-list-store";
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
         public const string SingleListStoreType = Default + "/single-list-store-type";
-        public const string SingleListStoreCheckingStatus = Default + "/single-list-store-checking-status";
         public const string SingleListTaxType = Default + "/single-list-tax-type";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
+        public const string SingleListProblemType = Default + "/single-list-problem-type";
 
-        public const string CountImage = Default + "/count-image";
-        public const string ListImage = Default + "/list-image";
+
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
         public const string ListStore = Default + "/list-store";
@@ -66,12 +67,8 @@ namespace DMS.Rpc.store_checking
                 Master, Count, List, Get, FilterListAppUser, FilterListStore, } },
             { "Checkin", new List<string> { 
                 Master, Count, List, Get, FilterListAppUser, FilterListStore, 
-                Detail, Create, 
-                SingleListAppUser, SingleListStore, SingleListAlbum, } },
-            { "Checkout", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListStore, 
-                Detail, Update, 
-                SingleListAppUser, SingleListStore, SingleListAlbum, } },
+                Detail, Create, Update, CreateIndirectSalesOrder, CreateProblem, SaveImage, 
+                SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, } },
         };
     }
 }

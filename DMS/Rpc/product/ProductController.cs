@@ -1005,8 +1005,7 @@ namespace DMS.Rpc.product
             return true;
         }
 
-        [HttpPost]
-        [Route(ProductRoute.SaveImage)]
+        [Route(ProductRoute.SaveImage), HttpPost]
         public async Task<ActionResult<Product_ImageDTO>> SaveImage(IFormFile file)
         {
             if (!ModelState.IsValid)
@@ -1030,8 +1029,7 @@ namespace DMS.Rpc.product
             return Ok(product_ImageDTO);
         }
 
-        [HttpPost]
-        [Route(ProductRoute.SaveItemImage)]
+        [Route(ProductRoute.SaveItemImage),HttpPost]
         public async Task<ActionResult<Product_ImageDTO>> SaveItemImage(IFormFile file)
         {
             if (!ModelState.IsValid)

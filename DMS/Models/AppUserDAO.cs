@@ -13,8 +13,12 @@ namespace DMS.Models
             ERouteChangeRequests = new HashSet<ERouteChangeRequestDAO>();
             ERouteCreators = new HashSet<ERouteDAO>();
             ERouteSaleEmployees = new HashSet<ERouteDAO>();
+            GeneralKpiCreators = new HashSet<GeneralKpiDAO>();
+            GeneralKpiEmployees = new HashSet<GeneralKpiDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
             InventoryHistories = new HashSet<InventoryHistoryDAO>();
+            ItemSpecificKpiCreators = new HashSet<ItemSpecificKpiDAO>();
+            ItemSpecificKpiEmployees = new HashSet<ItemSpecificKpiDAO>();
             RequestWorkflowStepMappings = new HashSet<RequestWorkflowStepMappingDAO>();
             Resellers = new HashSet<ResellerDAO>();
             StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
@@ -56,8 +60,12 @@ namespace DMS.Models
         public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }
         public virtual ICollection<ERouteDAO> ERouteCreators { get; set; }
         public virtual ICollection<ERouteDAO> ERouteSaleEmployees { get; set; }
+        public virtual ICollection<GeneralKpiDAO> GeneralKpiCreators { get; set; }
+        public virtual ICollection<GeneralKpiDAO> GeneralKpiEmployees { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
         public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
+        public virtual ICollection<ItemSpecificKpiDAO> ItemSpecificKpiCreators { get; set; }
+        public virtual ICollection<ItemSpecificKpiDAO> ItemSpecificKpiEmployees { get; set; }
         public virtual ICollection<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappings { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
+using DMS.Services.MImage;
 
 namespace DMS.Services.MStoreChecking
 {
@@ -18,6 +19,7 @@ namespace DMS.Services.MStoreChecking
         Task<StoreChecking> Get(long Id);
         Task<StoreChecking> Create(StoreChecking StoreChecking);
         Task<StoreChecking> Update(StoreChecking StoreChecking);
+        Task<Image> SaveImage(Image Image);
         StoreCheckingFilter ToFilter(StoreCheckingFilter StoreCheckingFilter);
     }
 
@@ -26,18 +28,21 @@ namespace DMS.Services.MStoreChecking
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
+        private IImageService ImageService;
         private IStoreCheckingValidator StoreCheckingValidator;
 
         public StoreCheckingService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
+            IImageService ImageService,
             IStoreCheckingValidator StoreCheckingValidator
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
+            this.ImageService = ImageService;
             this.StoreCheckingValidator = StoreCheckingValidator;
         }
         public async Task<int> Count(StoreCheckingFilter StoreCheckingFilter)
@@ -167,6 +172,14 @@ namespace DMS.Services.MStoreChecking
                 }
             }
             return filter;
+        }
+
+        public async Task<Image> SaveImage(Image Image)
+        {
+            FileInfo fileInfo = new FileInfo(Image.Name);
+            string path = $"/store-checking/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            Image = await ImageService.Create(Image, path);
+            return Image;
         }
     }
 }

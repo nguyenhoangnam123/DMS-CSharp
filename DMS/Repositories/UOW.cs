@@ -45,6 +45,8 @@ namespace DMS.Repositories
         IOrganizationRepository OrganizationRepository { get; }
         IPermissionRepository PermissionRepository { get; }
         IPositionRepository PositionRepository { get; }
+        IProblemRepository ProblemRepository { get; }
+        IProblemTypeRepository ProblemTypeRepository { get; }
         IProductRepository ProductRepository { get; }
         IProductGroupingRepository ProductGroupingRepository { get; }
         IProductProductGroupingMappingRepository ProductProductGroupingMappingRepository { get; }
@@ -123,6 +125,8 @@ namespace DMS.Repositories
         public IOrganizationRepository OrganizationRepository { get; private set; }
         public IPermissionRepository PermissionRepository { get; private set; }
         public IPositionRepository PositionRepository { get; private set; }
+        public IProblemRepository ProblemRepository { get; private set; }
+        public IProblemTypeRepository ProblemTypeRepository { get; private set; }
         public IProductRepository ProductRepository { get; private set; }
         public IProductGroupingRepository ProductGroupingRepository { get; private set; }
         public IProductProductGroupingMappingRepository ProductProductGroupingMappingRepository { get; private set; }
@@ -199,6 +203,8 @@ namespace DMS.Repositories
             OrganizationRepository = new OrganizationRepository(DataContext);
             PermissionRepository = new PermissionRepository(DataContext);
             PositionRepository = new PositionRepository(DataContext);
+            ProblemRepository = new ProblemRepository(DataContext);
+            ProblemTypeRepository = new ProblemTypeRepository(DataContext);
             ProductRepository = new ProductRepository(DataContext);
             ProductGroupingRepository = new ProductGroupingRepository(DataContext);
             ProductProductGroupingMappingRepository = new ProductProductGroupingMappingRepository(DataContext);

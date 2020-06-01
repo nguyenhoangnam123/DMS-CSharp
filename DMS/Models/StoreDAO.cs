@@ -15,6 +15,7 @@ namespace DMS.Models
             IndirectSalesOrderBuyerStores = new HashSet<IndirectSalesOrderDAO>();
             IndirectSalesOrderSellerStores = new HashSet<IndirectSalesOrderDAO>();
             InverseParentStore = new HashSet<StoreDAO>();
+            Problems = new HashSet<ProblemDAO>();
             StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
             StoreImageMappings = new HashSet<StoreImageMappingDAO>();
@@ -67,6 +68,7 @@ namespace DMS.Models
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrderBuyerStores { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrderSellerStores { get; set; }
         public virtual ICollection<StoreDAO> InverseParentStore { get; set; }
+        public virtual ICollection<ProblemDAO> Problems { get; set; }
         public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
         public virtual ICollection<StoreImageMappingDAO> StoreImageMappings { get; set; }
