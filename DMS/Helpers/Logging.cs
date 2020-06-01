@@ -58,7 +58,7 @@ namespace Helpers
                 ClassName = className,
                 MethodName = methodName,
                 ModuleName = StaticParams.ModuleName,
-                Exception = ex.ToString()
+                Exception = ex?.ToString()
             };
 
             RabbitManager.Publish(SystemLog, RoutingKeyEnum.SystemLog);
