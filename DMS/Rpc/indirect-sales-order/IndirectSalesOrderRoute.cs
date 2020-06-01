@@ -92,12 +92,14 @@ namespace DMS.Rpc.indirect_sales_order
             { "Thêm", new List<string> {
                 Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, 
                 Detail, Create, 
-                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure,  } },
+                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure,
+                CountItem, ListItem, CountStore, ListStore, } },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, 
                 Detail, Update, 
-                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure,  } },
+                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure,
+                CountItem, ListItem, CountStore, ListStore, } },
 
             { "Xoá", new List<string> { 
                 Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure,  

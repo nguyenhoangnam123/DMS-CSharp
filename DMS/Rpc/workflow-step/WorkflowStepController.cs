@@ -14,37 +14,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.workflow_step
 {
-    public class WorkflowStepRoute : Root
-    {
-        public const string Master = Module + "/workflow-step/workflow-step-master";
-        public const string Detail = Module + "/workflow-step/workflow-step-detail";
-        private const string Default = Rpc + Module + "/workflow-step";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
-        public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-tempate";
-        public const string BulkDelete = Default + "/bulk-delete";
-        
-        public const string FilterListRole = Default + "/filter-list-role";
-        public const string FilterListWorkflowDefinition = Default + "/filter-list-workflow-definition";
-        
-        public const string SingleListRole = Default + "/single-list-role";
-        public const string SingleListWorkflowDefinition = Default + "/single-list-workflow-definition";
-        
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
-        {
-            { nameof(WorkflowStepFilter.Id), FieldType.ID },
-            { nameof(WorkflowStepFilter.WorkflowDefinitionId), FieldType.ID },
-            { nameof(WorkflowStepFilter.Code), FieldType.STRING },
-            { nameof(WorkflowStepFilter.Name), FieldType.STRING },
-            { nameof(WorkflowStepFilter.RoleId), FieldType.ID },
-        };
-    }
+
 
     public class WorkflowStepController : RpcController
     {

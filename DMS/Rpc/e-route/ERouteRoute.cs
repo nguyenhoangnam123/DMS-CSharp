@@ -75,20 +75,18 @@ namespace DMS.Rpc.e_route
             { "Thêm", new List<string> { 
                 Master, Count, List, Get,  FilterListAppUser, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore,
                 Detail, Create,  
-                SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore,
+                SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore, SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore, } },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get,  FilterListAppUser, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore, 
                 Detail, Update, 
-                SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore,
+                SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore,  SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore, } },
 
             { "Xoá", new List<string> { 
                 Master, Count, List, Get,  FilterListAppUser, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore, 
-                Detail, Delete, 
-                SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore,
-                CountStore, ListStore, } },
+                Detail, Delete,  } },
 
             { "Xoá nhiều", new List<string> { 
                 Master, Count, List, Get, FilterListAppUser, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore, 

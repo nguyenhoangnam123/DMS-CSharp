@@ -32,8 +32,13 @@ namespace DMS.Rpc.album
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Thêm mới", new List<string> {Master,Detail,Count,List,Get,Create}},
-            { "Sửa", new List<string> {Master,Detail,Count,List,Get,Update}},
+            { "Tìm kiếm", new List<string> { Master, Count, List, Get, FilterListStatus, } },
+            { "Thêm", new List<string> { Master, Count, List, Get,  FilterListStatus, Detail, Create,  SingleListStatus, } },
+            { "Sửa", new List<string> { Master, Count, List, Get,  FilterListStatus, Detail, Update,  SingleListStatus, } },
+            { "Xoá", new List<string> { Master, Count, List, Get,  FilterListStatus, Detail, Delete,  } },
+            { "Xoá nhiều", new List<string> { Master, Count, List, Get, FilterListStatus, BulkDelete } },
+            { "Xuất excel", new List<string> { Master, Count, List, Get, FilterListStatus, Export } },
+            { "Nhập excel", new List<string> { Master, Count, List, Get, FilterListStatus, ExportTemplate, Import } },
         };
     }
 }

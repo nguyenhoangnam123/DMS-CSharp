@@ -90,20 +90,15 @@ namespace DMS.Rpc.store
                 Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, } },
             { "Thêm", new List<string> { 
                 Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, 
-                Detail, Create,  
+                Detail, Create, SaveImage,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, } },
             { "Sửa", new List<string> { 
                 Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, 
-                Detail, Update, 
+                Detail, Update, SaveImage,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, } },
             { "Xoá", new List<string> { 
                 Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, 
-                Detail, Delete, 
-                SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, } },
-            { "Lưu ảnh", new List<string>
-            {
-                SaveImage}
-            },
+                Delete, } },
             { "Xoá nhiều", new List<string> { 
                 Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, 
                 Detail, BulkDelete } },

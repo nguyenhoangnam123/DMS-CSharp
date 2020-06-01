@@ -781,7 +781,6 @@ namespace DMS.Rpc.store_checking
                 .Select(x => new StoreChecking_ProblemTypeDTO(x)).ToList();
             return StoreChecking_ProblemTypeDTOs;
         }
-        [Route(StoreCheckingRoute.SingleListAppUser), HttpPost]
 
         [Route(StoreCheckingRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)

@@ -56,12 +56,14 @@ namespace DMS.Rpc.product_grouping
             { "Thêm", new List<string> {
                 Master, Count, List, Get, FilterListProductGrouping, FilterListProduct, 
                 Detail, Create, 
-                SingleListProductGrouping, SingleListProduct, } },
+                SingleListProductGrouping, SingleListProduct, 
+                CountProduct, ListProduct, } },
 
             { "Sửa", new List<string> {
                 Master, Count, List, Get, FilterListProductGrouping, FilterListProduct, 
                 Detail, Update,  
-                SingleListProductGrouping, SingleListProduct, } },
+                SingleListProductGrouping, SingleListProduct,
+                CountProduct, ListProduct,} },
 
             { "Xoá", new List<string> { 
                 Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,

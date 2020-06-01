@@ -64,7 +64,8 @@ namespace DMS.Rpc.warehouse
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, GetPreview} },
+                Master, Count, List, Get, GetPreview,
+                SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Thêm", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 Detail, Create, 

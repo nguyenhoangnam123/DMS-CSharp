@@ -69,20 +69,18 @@ namespace DMS.Rpc.e_route_change_request
             { "Thêm", new List<string> { 
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Create, GetDraft,
-                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent, SingleListERouteType,
+                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent, SingleListERouteType, SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore, } },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
-                Detail, Update, GetDraft,
-                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent, SingleListERouteType,
+                Detail, Update,
+                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent, SingleListERouteType,  SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore,  } },
 
             { "Xoá", new List<string> { 
                 Master, Count, List, Get,  FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
-                Detail, Delete, GetDraft,
-                SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent, SingleListERouteType,
-                CountStore, ListStore, } },
+                Detail, Delete, } },
 
             { "Xoá nhiều", new List<string> { 
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
