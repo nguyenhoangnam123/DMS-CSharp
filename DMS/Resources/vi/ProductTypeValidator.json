@@ -1,5 +1,19 @@
 ﻿{
   "Id": {
     "IdNotExisted": "Id không tồn tại",
+    "ProductTypeInUsed": "Loại sản phẩm đang sử dụng"
+  },
+  "Name": {
+    "NameEmpty": "Chưa nhập tên",
+    "NameOverLength": "Tên quá dài",
+    "NameExisted": "Tên đã tồn tại"
+  },
+  "Code": {
+    "CodeEmpty": "Chưa nhập Code",
+    "CodeOverLength": "Code quá dài",
+    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
+  },
+  "Status": {
+    "StatusNotExisted": "Chưa chọn trạng thái"
   }
 }
