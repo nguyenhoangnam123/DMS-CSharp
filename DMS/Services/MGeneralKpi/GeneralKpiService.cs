@@ -108,7 +108,7 @@ namespace DMS.Services.MGeneralKpi
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(GeneralKpis, new { }, nameof(GeneralKpiService));
-                return await UOW.GeneralKpiRepository.Get(GeneralKpi.Id);
+                return GeneralKpi;
             }
             catch (Exception ex)
             {
