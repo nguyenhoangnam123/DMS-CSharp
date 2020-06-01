@@ -302,6 +302,7 @@ namespace DMS.Rpc
                         Name = Admin + "_" + Menu.Name,
                         MenuId = Menu.Id,
                         RoleId = Admin.Id,
+                        StatusId = StatusEnum.ACTIVE.Id,
                         PermissionFieldMappings = new List<PermissionFieldMappingDAO>(),
                         PermissionActionMappings = new List<PermissionActionMappingDAO>(),
                     };
@@ -309,6 +310,7 @@ namespace DMS.Rpc
                 }
                 else
                 {
+                    permission.StatusId = StatusEnum.ACTIVE.Id;
                     if (permission.PermissionFieldMappings == null)
                         permission.PermissionFieldMappings = new List<PermissionFieldMappingDAO>();
                     if (permission.PermissionActionMappings == null)
