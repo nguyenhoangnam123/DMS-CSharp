@@ -1022,6 +1022,43 @@ namespace DMS.Rpc.general_kpi
             return GeneralKpi_StatusDTOs;
         }
 
+        [Route(GeneralKpiRoute.CountAppUser), HttpPost]
+        public async Task<long> CountAppUser([FromBody] GeneralKpi_AppUserFilterDTO GeneralKpi_AppUserFilterDTO)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Id = GeneralKpi_AppUserFilterDTO.Id;
+            AppUserFilter.Username = GeneralKpi_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = GeneralKpi_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Email = GeneralKpi_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = GeneralKpi_AppUserFilterDTO.Phone;
+            AppUserFilter.OrganizationId = GeneralKpi_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            return await AppUserService.Count(AppUserFilter);
+        }
+        [Route(GeneralKpiRoute.ListAppUser), HttpPost]
+        public async Task<List<GeneralKpi_AppUserDTO>> ListAppUser([FromBody] GeneralKpi_AppUserFilterDTO GeneralKpi_AppUserFilterDTO)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = GeneralKpi_AppUserFilterDTO.Skip;
+            AppUserFilter.Take = GeneralKpi_AppUserFilterDTO.Take;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = GeneralKpi_AppUserFilterDTO.Id;
+            AppUserFilter.Username = GeneralKpi_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = GeneralKpi_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Email = GeneralKpi_AppUserFilterDTO.Email;
+            AppUserFilter.OrganizationId = GeneralKpi_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.Phone = GeneralKpi_AppUserFilterDTO.Phone;
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<GeneralKpi_AppUserDTO> GeneralKpi_AppUserDTOs = AppUsers
+                .Select(x => new GeneralKpi_AppUserDTO(x)).ToList();
+            return GeneralKpi_AppUserDTOs;
+        }
+
     }
 }
 

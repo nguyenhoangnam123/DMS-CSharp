@@ -357,9 +357,11 @@ namespace DMS.Repositories
             ItemSpecificKpiDAO.CreatorId = ItemSpecificKpi.CreatorId;
             ItemSpecificKpiDAO.CreatedAt = StaticParams.DateTimeNow;
             ItemSpecificKpiDAO.UpdatedAt = StaticParams.DateTimeNow;
+            ItemSpecificKpiDAO.RowId = Guid.NewGuid();
             DataContext.ItemSpecificKpi.Add(ItemSpecificKpiDAO);
             await DataContext.SaveChangesAsync();
             ItemSpecificKpi.Id = ItemSpecificKpiDAO.Id;
+            ItemSpecificKpi.RowId = ItemSpecificKpiDAO.RowId;
             await SaveReference(ItemSpecificKpi);
             return true;
         }
@@ -383,6 +385,8 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(ItemSpecificKpi ItemSpecificKpi)
         {
+            await DataContext.ItemSpecificKpiContent.Where(x => x.ItemSpecificKpiId == ItemSpecificKpi.Id).DeleteFromQueryAsync();
+            await DataContext.ItemSpecificKpiTotalItemSpecificCriteriaMapping.Where(x => x.ItemSpecificKpiId == ItemSpecificKpi.Id).DeleteFromQueryAsync();
             await DataContext.ItemSpecificKpi.Where(x => x.Id == ItemSpecificKpi.Id).UpdateFromQueryAsync(x => new ItemSpecificKpiDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
@@ -401,15 +405,48 @@ namespace DMS.Repositories
                 ItemSpecificKpiDAO.CreatorId = ItemSpecificKpi.CreatorId;
                 ItemSpecificKpiDAO.CreatedAt = StaticParams.DateTimeNow;
                 ItemSpecificKpiDAO.UpdatedAt = StaticParams.DateTimeNow;
+                ItemSpecificKpiDAO.RowId = Guid.NewGuid();
                 ItemSpecificKpiDAOs.Add(ItemSpecificKpiDAO);
+                ItemSpecificKpi.RowId = ItemSpecificKpiDAO.RowId;
             }
             await DataContext.BulkMergeAsync(ItemSpecificKpiDAOs);
+
+            var ItemSpecificKpiContentDAOs = new List<ItemSpecificKpiContentDAO>();
+            foreach (var ItemSpecificKpi in ItemSpecificKpis)
+            {
+                ItemSpecificKpi.Id = ItemSpecificKpiDAOs.Where(x => x.RowId == ItemSpecificKpi.RowId).Select(x => x.Id).FirstOrDefault();
+                var listContent = ItemSpecificKpi.ItemSpecificKpiContents?.Select(x => new ItemSpecificKpiContentDAO
+                {
+                    ItemId = x.ItemId,
+                    ItemSpecificCriteriaId = x.ItemSpecificCriteriaId,
+                    ItemSpecificKpiId = ItemSpecificKpi.Id,
+                    Value = x.Value
+                }).ToList();
+                ItemSpecificKpiContentDAOs.AddRange(listContent);
+            }
+
+            var ItemSpecificKpiTotalItemSpecificCriteriaMappingDAOs = new List<ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO>();
+            foreach (var ItemSpecificKpi in ItemSpecificKpis)
+            {
+                var listTotal = ItemSpecificKpi.ItemSpecificKpiTotalItemSpecificCriteriaMappings?.Select(x => new ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO
+                {
+                    ItemSpecificKpiId = ItemSpecificKpi.Id,
+                    TotalItemSpecificCriteriaId = x.TotalItemSpecificCriteriaId,
+                    Value = x.Value,
+                }).ToList();
+                ItemSpecificKpiTotalItemSpecificCriteriaMappingDAOs.AddRange(listTotal);
+            }
+
+            await DataContext.ItemSpecificKpiContent.BulkMergeAsync(ItemSpecificKpiContentDAOs);
+            await DataContext.ItemSpecificKpiTotalItemSpecificCriteriaMapping.BulkMergeAsync(ItemSpecificKpiTotalItemSpecificCriteriaMappingDAOs);
             return true;
         }
 
         public async Task<bool> BulkDelete(List<ItemSpecificKpi> ItemSpecificKpis)
         {
             List<long> Ids = ItemSpecificKpis.Select(x => x.Id).ToList();
+            await DataContext.ItemSpecificKpiContent.Where(x => Ids.Contains(x.ItemSpecificKpiId)).DeleteFromQueryAsync();
+            await DataContext.ItemSpecificKpiTotalItemSpecificCriteriaMapping.Where(x => Ids.Contains(x.ItemSpecificKpiId)).DeleteFromQueryAsync();
             await DataContext.ItemSpecificKpi
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new ItemSpecificKpiDAO { DeletedAt = StaticParams.DateTimeNow });

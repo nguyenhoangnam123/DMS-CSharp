@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.indirect_sales_order
+namespace DMS.Rpc.item_specific_kpi
 {
-    public class IndirectSalesOrder_ProductTypeDTO : DataDTO
+    public class ItemSpecificKpi_ProductTypeDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -15,8 +15,8 @@ namespace DMS.Rpc.indirect_sales_order
         public string Description { get; set; }
         public long StatusId { get; set; }
         public DateTime UpdatedTime { get; set; }
-        public IndirectSalesOrder_ProductTypeDTO() { }
-        public IndirectSalesOrder_ProductTypeDTO(ProductType ProductType)
+        public ItemSpecificKpi_ProductTypeDTO() { }
+        public ItemSpecificKpi_ProductTypeDTO(ProductType ProductType)
         {
 
             this.Id = ProductType.Id;
@@ -32,7 +32,7 @@ namespace DMS.Rpc.indirect_sales_order
         }
     }
 
-    public class IndirectSalesOrder_ProductTypeFilterDTO : FilterDTO
+    public class ItemSpecificKpi_ProductTypeFilterDTO : FilterDTO
     {
 
         public IdFilter Id { get; set; }
