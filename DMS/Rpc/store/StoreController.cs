@@ -708,6 +708,8 @@ namespace DMS.Rpc.store
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             Stores = await StoreService.BulkDelete(Stores);
+            if (Stores.Any(x => !x.IsValidated))
+                return BadRequest(Stores.Where(x => !x.IsValidated));
             return true;
         }
 

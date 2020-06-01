@@ -330,6 +330,8 @@ namespace DMS.Rpc.supplier
 
             List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
             Suppliers = await SupplierService.BulkDelete(Suppliers);
+            if (Suppliers.Any(x => !x.IsValidated))
+                return BadRequest(Suppliers.Where(x => !x.IsValidated));
             return true;
         }
 

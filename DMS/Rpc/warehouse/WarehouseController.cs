@@ -193,6 +193,8 @@ namespace DMS.Rpc.warehouse
 
             List<Warehouse> Warehouses = await WarehouseService.List(WarehouseFilter);
             Warehouses = await WarehouseService.BulkDelete(Warehouses);
+            if (Warehouses.Any(x => !x.IsValidated))
+                return BadRequest(Warehouses.Where(x => !x.IsValidated));
             return true;
         }
 

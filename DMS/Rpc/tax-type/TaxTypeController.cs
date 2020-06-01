@@ -164,6 +164,8 @@ namespace DMS.Rpc.tax_type
 
             List<TaxType> TaxTypes = await TaxTypeService.List(TaxTypeFilter);
             TaxTypes = await TaxTypeService.BulkDelete(TaxTypes);
+            if (TaxTypes.Any(x => !x.IsValidated))
+                return BadRequest(TaxTypes.Where(x => !x.IsValidated));
             return true;
         }
 

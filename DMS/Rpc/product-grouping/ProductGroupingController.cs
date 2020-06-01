@@ -171,6 +171,8 @@ namespace DMS.Rpc.product_grouping
 
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
             ProductGroupings = await ProductGroupingService.BulkDelete(ProductGroupings);
+            if (ProductGroupings.Any(x => !x.IsValidated))
+                return BadRequest(ProductGroupings.Where(x => !x.IsValidated));
             return true;
         }
 

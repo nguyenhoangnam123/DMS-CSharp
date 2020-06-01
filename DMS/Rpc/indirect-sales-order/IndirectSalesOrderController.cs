@@ -222,6 +222,8 @@ namespace DMS.Rpc.indirect_sales_order
 
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
             IndirectSalesOrders = await IndirectSalesOrderService.BulkDelete(IndirectSalesOrders);
+            if (IndirectSalesOrders.Any(x => !x.IsValidated))
+                return BadRequest(IndirectSalesOrders.Where(x => !x.IsValidated));
             return true;
         }
         

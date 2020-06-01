@@ -163,8 +163,11 @@ namespace DMS.Rpc.indirect_price_list
 
             List<IndirectPriceList> IndirectPriceLists = await IndirectPriceListService.List(IndirectPriceListFilter);
             IndirectPriceLists = await IndirectPriceListService.BulkDelete(IndirectPriceLists);
+            if (IndirectPriceLists.Any(x => !x.IsValidated))
+                return BadRequest(IndirectPriceLists.Where(x => !x.IsValidated));
+
             return true;
-        }
+        }   
         
         [Route(IndirectPriceListRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)

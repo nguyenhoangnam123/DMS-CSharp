@@ -149,6 +149,8 @@ namespace DMS.Rpc.banner
 
             List<Banner> Banners = await BannerService.List(BannerFilter);
             Banners = await BannerService.BulkDelete(Banners);
+            if (Banners.Any(x => !x.IsValidated))
+                return BadRequest(Banners.Where(x => !x.IsValidated));
             return true;
         }
         
