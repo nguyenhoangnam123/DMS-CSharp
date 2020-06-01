@@ -38,19 +38,22 @@ namespace DMS.Rpc.survey
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, } },
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, } },
             { "Thêm", new List<string> {
-                Master, Count, List, Get, FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, 
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, 
                 Detail, Create, 
-                SingleListAppUser, SingleListStatus, SingleListSurveyQuestionType, } },
+                SingleListAppUser, SingleListStatus, SingleListSurveyQuestionType, SingleListSurveyOptionType,  } },
             { "Sửa", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, 
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, 
                 Detail, Update, 
-                SingleListAppUser, SingleListStatus, SingleListSurveyQuestionType, } },
-            { "Xoá", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, 
-                Detail, Delete, 
-                SingleListAppUser, SingleListStatus, SingleListSurveyQuestionType, } },
+                SingleListAppUser, SingleListStatus, SingleListSurveyQuestionType, SingleListSurveyOptionType, } },
+            { "Xoá", new List<string> {
+                Master, Count, List, Get,
+                FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType,
+                Delete, } },
         };
     }
 }

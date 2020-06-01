@@ -33,7 +33,6 @@ namespace DMS.Services.MWorkflow
         private ICurrentContext CurrentContext;
         private IWorkflowDefinitionValidator WorkflowDefinitionValidator;
         private List<string> StoreParameters;
-        private List<string> ROUTER;
         public WorkflowDefinitionService(
             IUOW UOW,
             ILogging Logging,

@@ -33,10 +33,6 @@ namespace DMS.Rpc.indirect_sales_order
         public const string Delete = Default + "/delete";
         public const string Approve = Default + "/approve";
         public const string Reject = Default + "/reject";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-tempate";
-        public const string BulkDelete = Default + "/bulk-delete";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListItem = Default + "/filter-list-item";
@@ -105,18 +101,6 @@ namespace DMS.Rpc.indirect_sales_order
                 Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure,  
                 Detail, Delete,  
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure,  } },
-
-            { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, 
-                BulkDelete } },
-
-            { "Xuất excel", new List<string> {
-                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure,
-                Export } },
-
-            { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, 
-                ExportTemplate, Import } },
         };
     }
 }
