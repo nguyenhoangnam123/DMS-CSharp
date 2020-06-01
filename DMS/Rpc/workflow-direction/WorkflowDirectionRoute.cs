@@ -18,10 +18,7 @@ namespace DMS.Rpc.workflow_direction
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
         public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-tempate";
-        public const string BulkDelete = Default + "/bulk-delete";
 
         public const string FilterListWorkflowStep = Default + "/filter-list-workflow-step";
         public const string FilterListWorkflowDefinition = Default + "/filter-list-workflow-definition";
@@ -56,14 +53,6 @@ namespace DMS.Rpc.workflow_direction
                 FilterListWorkflowStep, SingleListWorkflowDefinition,
                 Detail, Delete,
                 SingleListWorkflowStep, SingleListWorkflowDefinition,  } },
-            { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get,
-                FilterListWorkflowStep, SingleListWorkflowDefinition,
-                BulkDelete } },
-            { "Nhập excel", new List<string> {
-                Master, Count, List, Get,
-                FilterListWorkflowStep, SingleListWorkflowDefinition,
-                ExportTemplate, } },
         };
     }
 }
