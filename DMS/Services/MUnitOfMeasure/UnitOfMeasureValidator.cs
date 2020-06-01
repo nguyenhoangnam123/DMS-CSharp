@@ -93,7 +93,7 @@ namespace DMS.Services.MUnitOfMeasure
             {
                 UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Name), ErrorCode.NameEmpty);
             }
-            if (UnitOfMeasure.Name.Length > 255)
+            else if (UnitOfMeasure.Name.Length > 255)
             {
                 UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Name), ErrorCode.NameOverLength);
             }
@@ -175,8 +175,8 @@ namespace DMS.Services.MUnitOfMeasure
                     return false;
                 }
 
-                if (!await(ValidateName(UnitOfMeasure))) return false;
-                if (!await(ValidateStatus(UnitOfMeasure))) return false;
+                if (!await (ValidateName(UnitOfMeasure))) return false;
+                if (!await (ValidateStatus(UnitOfMeasure))) return false;
             }
             return true;
         }
