@@ -433,40 +433,6 @@ namespace DMS.Repositories
                     }
                 }).ToList() : null,
             }).ToListAsync();
-
-            var Ids = Stores.Select(x => x.Id).ToList();
-            var StoreCheckings = await DataContext.StoreChecking.Where(x => Ids.Contains(x.StoreId)).ToListAsync();
-            foreach (var Store in Stores)
-            {
-                Store.StoreCheckings = StoreCheckings.Where(x => x.StoreId == Store.Id).Select(x => new StoreChecking
-                {
-                    Id = x.Id,
-                    CheckInAt = x.CheckInAt,
-                    CheckOutAt = x.CheckOutAt,
-                    CountImage = x.ImageCounter,
-                    CountIndirectSalesOrder = x.IndirectSalesOrderCounter,
-                    Latitude = x.Latitude,
-                    Longtitude = x.Longtitude,
-                    SaleEmployeeId = x.SaleEmployeeId,
-                    StoreId = x.StoreId,
-                    SaleEmployee = x.SaleEmployee == null ? null : new AppUser
-                    {
-                        Id = x.SaleEmployee.Id,
-                        Username = x.SaleEmployee.Username,
-                        DisplayName = x.SaleEmployee.DisplayName,
-                        Address = x.SaleEmployee.Address,
-                        Email = x.SaleEmployee.Email,
-                        Phone = x.SaleEmployee.Phone,
-                        PositionId = x.SaleEmployee.PositionId,
-                        Department = x.SaleEmployee.Department,
-                        OrganizationId = x.SaleEmployee.OrganizationId,
-                        SexId = x.SaleEmployee.SexId,
-                        StatusId = x.SaleEmployee.StatusId,
-                        Birthday = x.SaleEmployee.Birthday,
-                        ProvinceId = x.SaleEmployee.ProvinceId,
-                    }
-                }).ToList();
-            }
             return Stores;
         }
 
@@ -632,35 +598,6 @@ namespace DMS.Repositories
                         Id = x.Image.Id,
                         Name = x.Image.Name,
                         Url = x.Image.Url
-                    }
-                }).ToListAsync();
-            Store.StoreCheckings = await DataContext.StoreChecking
-                .Where(x => x.StoreId == Id).Select(x => new StoreChecking
-                {
-                    Id = x.Id,
-                    CheckInAt = x.CheckInAt,
-                    CheckOutAt = x.CheckOutAt,
-                    CountImage = x.ImageCounter,
-                    CountIndirectSalesOrder = x.IndirectSalesOrderCounter,
-                    Latitude = x.Latitude,
-                    Longtitude = x.Longtitude,
-                    SaleEmployeeId = x.SaleEmployeeId,
-                    StoreId = x.StoreId,
-                    SaleEmployee = x.SaleEmployee == null ? null : new AppUser
-                    {
-                        Id = x.SaleEmployee.Id,
-                        Username = x.SaleEmployee.Username,
-                        DisplayName = x.SaleEmployee.DisplayName,
-                        Address = x.SaleEmployee.Address,
-                        Email = x.SaleEmployee.Email,
-                        Phone = x.SaleEmployee.Phone,
-                        PositionId = x.SaleEmployee.PositionId,
-                        Department = x.SaleEmployee.Department,
-                        OrganizationId = x.SaleEmployee.OrganizationId,
-                        SexId = x.SaleEmployee.SexId,
-                        StatusId = x.SaleEmployee.StatusId,
-                        Birthday = x.SaleEmployee.Birthday,
-                        ProvinceId = x.SaleEmployee.ProvinceId,
                     }
                 }).ToListAsync();
             return Store;

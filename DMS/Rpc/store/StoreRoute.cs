@@ -100,6 +100,10 @@ namespace DMS.Rpc.store
                 Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, 
                 Detail, Delete, 
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, } },
+            { "Lưu ảnh", new List<string>
+            {
+                SaveImage}
+            },
             { "Xoá nhiều", new List<string> { 
                 Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, 
                 Detail, BulkDelete } },

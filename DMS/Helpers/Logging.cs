@@ -61,7 +61,7 @@ namespace Helpers
                 Exception = ex?.ToString()
             };
 
-            RabbitManager.Publish(SystemLog, RoutingKeyEnum.SystemLog);
+            //RabbitManager.Publish(SystemLog, RoutingKeyEnum.SystemLog);
             return true;
         }
     }

@@ -1760,8 +1760,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(100)
-                    .IsFixedLength();
+                    .HasMaxLength(255);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 

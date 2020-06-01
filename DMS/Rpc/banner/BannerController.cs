@@ -572,6 +572,31 @@ namespace DMS.Rpc.banner
             return File(memoryStream.ToArray(), "application/octet-stream", "Banner.xlsx");
         }
 
+        [HttpPost]
+        [Route(BannerRoute.SaveImage)]
+        public async Task<ActionResult<Banner_ImageDTO>> SaveImage(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            MemoryStream memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            Image Image = new Image
+            {
+                Name = file.FileName,
+                Content = memoryStream.ToArray()
+            };
+            Image = await BannerService.SaveImage(Image);
+            if (Image == null)
+                return BadRequest();
+            Banner_ImageDTO Banner_ImageDTO = new Banner_ImageDTO
+            {
+                Id = Image.Id,
+                Name = Image.Name,
+                Url = Image.Url,
+            };
+            return Ok(Banner_ImageDTO);
+        }
+
         private async Task<bool> HasPermission(long Id)
         {
             BannerFilter BannerFilter = new BannerFilter();
@@ -617,12 +642,12 @@ namespace DMS.Rpc.banner
                 Birthday = Banner_BannerDTO.Creator.Birthday,
                 ProvinceId = Banner_BannerDTO.Creator.ProvinceId,
             };
-            Banner.Image = Banner_BannerDTO.Image == null ? null : new Image
+            Banner.Image = Banner_BannerDTO.Images == null ? null : Banner_BannerDTO.Images.Select(x => new Image
             {
-                Id = Banner_BannerDTO.Image.Id,
-                Name = Banner_BannerDTO.Image.Name,
-                Url = Banner_BannerDTO.Image.Url,
-            };
+                Id = x.Id,
+                Name = x.Name,
+                Url = x.Url,
+            }).FirstOrDefault();
             Banner.Status = Banner_BannerDTO.Status == null ? null : new Status
             {
                 Id = Banner_BannerDTO.Status.Id,

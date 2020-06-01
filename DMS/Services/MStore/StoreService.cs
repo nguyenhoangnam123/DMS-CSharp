@@ -75,6 +75,22 @@ namespace DMS.Services.MStore
             try
             {
                 List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+                List<long> Ids = Stores.Select(x => x.Id).ToList();
+                StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = StoreCheckingSelect.ALL,
+                    StoreId = new IdFilter { In = Ids },
+                    SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                    CheckOutAt = new DateFilter { GreaterEqual = StaticParams.DateTimeNow.Date, Less = StaticParams.DateTimeNow.Date.AddDays(1) }
+                };
+                List<StoreChecking> StoreCheckings = await UOW.StoreCheckingRepository.List(StoreCheckingFilter);
+                foreach (var Store in Stores)
+                {
+                    var count = StoreCheckings.Where(x => x.StoreId == Store.Id).Count();
+                    Store.HasChecking = count != 0 ? true : false;
+                }
                 return Stores;
             }
             catch (Exception ex)
@@ -91,6 +107,18 @@ namespace DMS.Services.MStore
             Store Store = await UOW.StoreRepository.Get(Id);
             if (Store == null)
                 return null;
+
+            StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
+            {
+                Skip = 0,
+                Take = 1,
+                Selects = StoreCheckingSelect.ALL,
+                StoreId = new IdFilter { Equal = Id },
+                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                CheckOutAt = new DateFilter { GreaterEqual = StaticParams.DateTimeNow.Date, Less = StaticParams.DateTimeNow.Date.AddDays(1) }
+            };
+            int count = await UOW.StoreCheckingRepository.Count(StoreCheckingFilter);
+            Store.HasChecking = count != 0 ? true : false;
             Store.RequestState = await WorkflowService.GetRequestState(Store.RowId);
             if (Store.RequestState == null)
             {

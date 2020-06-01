@@ -17,7 +17,7 @@ namespace DMS.Rpc.banner
         public long? ImageId { get; set; }
         public long StatusId { get; set; }
         public Banner_AppUserDTO Creator { get; set; }
-        public Banner_ImageDTO Image { get; set; }
+        public List<Banner_ImageDTO> Images { get; set; }
         public Banner_StatusDTO Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -33,7 +33,7 @@ namespace DMS.Rpc.banner
             this.ImageId = Banner.ImageId;
             this.StatusId = Banner.StatusId;
             this.Creator = Banner.Creator == null ? null : new Banner_AppUserDTO(Banner.Creator);
-            this.Image = Banner.Image == null ? null : new Banner_ImageDTO(Banner.Image);
+            this.Images = new List<Banner_ImageDTO> { Banner.Image == null ? null : new Banner_ImageDTO(Banner.Image) };
             this.Status = Banner.Status == null ? null : new Banner_StatusDTO(Banner.Status);
             this.CreatedAt = Banner.CreatedAt;
             this.UpdatedAt = Banner.UpdatedAt;

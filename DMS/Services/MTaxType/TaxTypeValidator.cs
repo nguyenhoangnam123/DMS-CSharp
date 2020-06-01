@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MTaxType
@@ -21,7 +22,11 @@ namespace DMS.Services.MTaxType
         public enum ErrorCode
         {
             IdNotExisted,
-            TaxTypeInUsed
+            TaxTypeInUsed,
+            CodeEmpty,
+            CodeExisted,
+            NameEmpty,
+            NameOverLength
         }
 
         private IUOW UOW;
@@ -63,8 +68,47 @@ namespace DMS.Services.MTaxType
             return TaxType.IsValidated;
         }
 
+        private async Task<bool> ValidateCode(TaxType TaxType)
+        {
+            if (string.IsNullOrEmpty(TaxType.Code))
+            {
+                TaxType.AddError(nameof(TaxTypeValidator), nameof(TaxType.Code), ErrorCode.CodeEmpty);
+                return false;
+            }
+            TaxTypeFilter TaxTypeFilter = new TaxTypeFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { NotEqual = TaxType.Id },
+                Code = new StringFilter { Equal = TaxType.Code },
+                Selects = TaxTypeSelect.Code
+            };
+
+            int count = await UOW.TaxTypeRepository.Count(TaxTypeFilter);
+            if (count != 0)
+                TaxType.AddError(nameof(TaxTypeValidator), nameof(TaxType.Code), ErrorCode.CodeExisted);
+            return count == 0;
+        }
+
+        private async Task<bool> ValidateName(TaxType TaxType)
+        {
+            if (string.IsNullOrEmpty(TaxType.Name))
+            {
+                TaxType.AddError(nameof(TaxTypeValidator), nameof(TaxType.Name), ErrorCode.NameEmpty);
+                return false;
+            }
+            else if (TaxType.Name.Length > 255)
+            {
+                TaxType.AddError(nameof(TaxTypeValidator), nameof(TaxType.Name), ErrorCode.NameOverLength);
+                return false;
+            }
+            return true;
+        }
+
         public async Task<bool> Create(TaxType TaxType)
         {
+            await ValidateCode(TaxType);
+            await ValidateName(TaxType);
             return TaxType.IsValidated;
         }
 
@@ -72,6 +116,8 @@ namespace DMS.Services.MTaxType
         {
             if (await ValidateId(TaxType))
             {
+                await ValidateCode(TaxType);
+                await ValidateName(TaxType);
             }
             return TaxType.IsValidated;
         }
@@ -87,7 +133,11 @@ namespace DMS.Services.MTaxType
 
         public async Task<bool> BulkDelete(List<TaxType> TaxTypes)
         {
-            return true;
+            foreach (TaxType TaxType in TaxTypes)
+            {
+                await Delete(TaxType);
+            }
+            return TaxTypes.All(st => st.IsValidated);
         }
 
         public async Task<bool> Import(List<TaxType> TaxTypes)
