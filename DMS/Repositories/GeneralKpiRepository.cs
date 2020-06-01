@@ -372,30 +372,33 @@ namespace DMS.Repositories
             foreach (var GeneralKpi in GeneralKpis)
             {
                 GeneralKpi.Id = GeneralKpiDAOs.Where(x => x.RowId == GeneralKpi.RowId).Select(x => x.Id).FirstOrDefault();
-                var list = GeneralKpi.GeneralKpiCriteriaMappings?.Select(x => new GeneralKpiCriteriaMappingDAO
+                if(GeneralKpi.GeneralKpiCriteriaMappings != null && GeneralKpi.GeneralKpiCriteriaMappings.Any())
                 {
-                    GeneralKpiId = GeneralKpi.Id,
-                    GeneralCriteriaId = x.GeneralCriteriaId,
-                    M01 = x.M01,
-                    M02 = x.M02,
-                    M03 = x.M03,
-                    M04 = x.M04,
-                    M05 = x.M05,
-                    M06 = x.M06,
-                    M07 = x.M07,
-                    M08 = x.M08,
-                    M09 = x.M09,
-                    M10 = x.M10,
-                    M11 = x.M11,
-                    M12 = x.M12,
-                    Q01 = x.Q01,
-                    Q02 = x.Q02,
-                    Q03 = x.Q03,
-                    Q04 = x.Q04,
-                    Y01 = x.Y01,
-                    StatusId = x.StatusId
-                }).ToList();
-                GeneralKpiCriteriaMappingDAOs.AddRange(list);
+                    var list = GeneralKpi.GeneralKpiCriteriaMappings.Select(x => new GeneralKpiCriteriaMappingDAO
+                    {
+                        GeneralKpiId = GeneralKpi.Id,
+                        GeneralCriteriaId = x.GeneralCriteriaId,
+                        M01 = x.M01,
+                        M02 = x.M02,
+                        M03 = x.M03,
+                        M04 = x.M04,
+                        M05 = x.M05,
+                        M06 = x.M06,
+                        M07 = x.M07,
+                        M08 = x.M08,
+                        M09 = x.M09,
+                        M10 = x.M10,
+                        M11 = x.M11,
+                        M12 = x.M12,
+                        Q01 = x.Q01,
+                        Q02 = x.Q02,
+                        Q03 = x.Q03,
+                        Q04 = x.Q04,
+                        Y01 = x.Y01,
+                        StatusId = x.StatusId
+                    }).ToList();
+                    GeneralKpiCriteriaMappingDAOs.AddRange(list);
+                }
             }
 
             await DataContext.GeneralKpiCriteriaMapping.BulkMergeAsync(GeneralKpiCriteriaMappingDAOs);

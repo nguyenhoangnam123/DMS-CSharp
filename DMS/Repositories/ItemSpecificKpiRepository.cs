@@ -415,26 +415,34 @@ namespace DMS.Repositories
             foreach (var ItemSpecificKpi in ItemSpecificKpis)
             {
                 ItemSpecificKpi.Id = ItemSpecificKpiDAOs.Where(x => x.RowId == ItemSpecificKpi.RowId).Select(x => x.Id).FirstOrDefault();
-                var listContent = ItemSpecificKpi.ItemSpecificKpiContents?.Select(x => new ItemSpecificKpiContentDAO
+                if(ItemSpecificKpi.ItemSpecificKpiContents != null && ItemSpecificKpi.ItemSpecificKpiContents.Any())
                 {
-                    ItemId = x.ItemId,
-                    ItemSpecificCriteriaId = x.ItemSpecificCriteriaId,
-                    ItemSpecificKpiId = ItemSpecificKpi.Id,
-                    Value = x.Value
-                }).ToList();
-                ItemSpecificKpiContentDAOs.AddRange(listContent);
+                    var listContent = ItemSpecificKpi.ItemSpecificKpiContents.Select(x => new ItemSpecificKpiContentDAO
+                    {
+                        ItemId = x.ItemId,
+                        ItemSpecificCriteriaId = x.ItemSpecificCriteriaId,
+                        ItemSpecificKpiId = ItemSpecificKpi.Id,
+                        Value = x.Value
+                    }).ToList();
+                    ItemSpecificKpiContentDAOs.AddRange(listContent);
+                }
+                
             }
 
             var ItemSpecificKpiTotalItemSpecificCriteriaMappingDAOs = new List<ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO>();
             foreach (var ItemSpecificKpi in ItemSpecificKpis)
             {
-                var listTotal = ItemSpecificKpi.ItemSpecificKpiTotalItemSpecificCriteriaMappings?.Select(x => new ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO
+                if(ItemSpecificKpi.ItemSpecificKpiTotalItemSpecificCriteriaMappings != null && ItemSpecificKpi.ItemSpecificKpiTotalItemSpecificCriteriaMappings.Any())
                 {
-                    ItemSpecificKpiId = ItemSpecificKpi.Id,
-                    TotalItemSpecificCriteriaId = x.TotalItemSpecificCriteriaId,
-                    Value = x.Value,
-                }).ToList();
-                ItemSpecificKpiTotalItemSpecificCriteriaMappingDAOs.AddRange(listTotal);
+                    var listTotal = ItemSpecificKpi.ItemSpecificKpiTotalItemSpecificCriteriaMappings.Select(x => new ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO
+                    {
+                        ItemSpecificKpiId = ItemSpecificKpi.Id,
+                        TotalItemSpecificCriteriaId = x.TotalItemSpecificCriteriaId,
+                        Value = x.Value,
+                    }).ToList();
+                    ItemSpecificKpiTotalItemSpecificCriteriaMappingDAOs.AddRange(listTotal);
+                }
+                
             }
 
             await DataContext.ItemSpecificKpiContent.BulkMergeAsync(ItemSpecificKpiContentDAOs);

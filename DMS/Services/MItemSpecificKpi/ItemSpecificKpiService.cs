@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
+using DMS.Helpers;
 
 namespace DMS.Services.MItemSpecificKpi
 {
@@ -92,11 +93,22 @@ namespace DMS.Services.MItemSpecificKpi
             try
             {
                 await UOW.Begin();
-                await UOW.ItemSpecificKpiRepository.Create(ItemSpecificKpi);
+                List<ItemSpecificKpi> ItemSpecificKpis = new List<ItemSpecificKpi>();
+                if (ItemSpecificKpi.EmployeeIds != null && ItemSpecificKpi.EmployeeIds.Any())
+                {
+                    foreach (var EmployeeId in ItemSpecificKpi.EmployeeIds)
+                    {
+                        var newObj = Utils.Clone(ItemSpecificKpi);
+                        newObj.EmployeeId = EmployeeId;
+                        newObj.CreatorId = CurrentContext.UserId;
+                        ItemSpecificKpis.Add(newObj);
+                    }
+                }
+                await UOW.ItemSpecificKpiRepository.BulkMerge(ItemSpecificKpis);
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(ItemSpecificKpi, new { }, nameof(ItemSpecificKpiService));
-                return await UOW.ItemSpecificKpiRepository.Get(ItemSpecificKpi.Id);
+                return ItemSpecificKpi;
             }
             catch (Exception ex)
             {
