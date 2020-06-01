@@ -37,44 +37,25 @@ namespace DMS.Rpc.item_specific_kpi
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
-        
+        public const string CreateDraft = Default + "/create-draft";
         
         public const string FilterListAppUser = Default + "/filter-list-app-user";
-        
         public const string FilterListKpiPeriod = Default + "/filter-list-kpi-period";
-        
         public const string FilterListOrganization = Default + "/filter-list-organization";
-        
         public const string FilterListStatus = Default + "/filter-list-status";
         
-        public const string FilterListItemSpecificKpiContent = Default + "/filter-list-item-specific-kpi-content";
-        
-        public const string FilterListItem = Default + "/filter-list-item";
-        
-        public const string FilterListItemSpecificCriteria = Default + "/filter-list-item-specific-criteria";
-        
-        public const string FilterListTotalItemSpecificCriteria = Default + "/filter-list-total-item-specific-criteria";
-        
-
-        
         public const string SingleListAppUser = Default + "/single-list-app-user";
-        
         public const string SingleListKpiPeriod = Default + "/single-list-kpi-period";
-        
         public const string SingleListOrganization = Default + "/single-list-organization";
-        
+        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
+        public const string SingleListProductType = Default + "/single-list-product-type";
+        public const string SingleListSupplier = Default + "/single-list-supplier";
         public const string SingleListStatus = Default + "/single-list-status";
-        
-        public const string SingleListItemSpecificKpiContent = Default + "/single-list-item-specific-kpi-content";
-        
-        public const string SingleListItem = Default + "/single-list-item";
-        
-        public const string SingleListItemSpecificCriteria = Default + "/single-list-item-specific-criteria";
-        
-        public const string SingleListTotalItemSpecificCriteria = Default + "/single-list-total-item-specific-criteria";
-        
-        public const string CountTotalItemSpecificCriteria = Default + "/count-total-item-specific-criteria";
-        public const string ListTotalItemSpecificCriteria = Default + "/list-total-item-specific-criteria";
+
+        public const string CountAppUser = Default + "/count-app-user";
+        public const string ListAppUser = Default + "/list-app-user";
+        public const string CountItem = Default + "/count-item";
+        public const string ListItem = Default + "/list-item";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(ItemSpecificKpiFilter.Id), FieldType.ID },
@@ -88,33 +69,35 @@ namespace DMS.Rpc.item_specific_kpi
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, } },
+                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus } },
 
             { "Thêm", new List<string> { 
-                Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
-                Detail, Create, 
-                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListItemSpecificKpiContent, SingleListItem, SingleListItemSpecificCriteria, SingleListTotalItemSpecificCriteria, } },
+                Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, 
+                Detail, Create, CreateDraft,
+                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListProductGrouping, SingleListProductType, SingleListSupplier,SingleListStatus, 
+                CountAppUser, ListAppUser, CountItem, ListItem} },
 
             { "Sửa", new List<string> { 
-                Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
+                Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, 
                 Detail, Update, 
-                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListItemSpecificKpiContent, SingleListItem, SingleListItemSpecificCriteria, SingleListTotalItemSpecificCriteria, } },
+                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListProductGrouping, SingleListProductType, SingleListSupplier,SingleListStatus,
+                CountAppUser, ListAppUser, CountItem, ListItem } },
 
             { "Xoá", new List<string> { 
-                Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
+                Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus,
                 Detail, Delete, 
-                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListItemSpecificKpiContent, SingleListItem, SingleListItemSpecificCriteria, SingleListTotalItemSpecificCriteria, } },
+                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListProductGrouping, SingleListProductType, SingleListSupplier,SingleListStatus,  } },
 
             { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
+                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus,
                 BulkDelete } },
 
             { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
+                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus,
                 Export } },
 
             { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListItemSpecificKpiContent, FilterListItem, FilterListItemSpecificCriteria, FilterListTotalItemSpecificCriteria, 
+                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus,
                 ExportTemplate, Import } },
         };
     }

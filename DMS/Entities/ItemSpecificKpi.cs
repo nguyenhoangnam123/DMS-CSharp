@@ -19,11 +19,12 @@ namespace DMS.Entities
         public KpiPeriod KpiPeriod { get; set; }
         public Organization Organization { get; set; }
         public Status Status { get; set; }
+        public List<long> EmployeeIds { get; set; }
         public List<ItemSpecificKpiContent> ItemSpecificKpiContents { get; set; }
         public List<ItemSpecificKpiTotalItemSpecificCriteriaMapping> ItemSpecificKpiTotalItemSpecificCriteriaMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
+        public Guid RowId { get; set; }
         public bool Equals(ItemSpecificKpi other)
         {
             return other != null && Id == other.Id;

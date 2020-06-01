@@ -316,7 +316,7 @@ namespace DMS.Repositories
             GeneralKpiDAO.CreatorId = GeneralKpi.CreatorId;
             GeneralKpiDAO.CreatedAt = StaticParams.DateTimeNow;
             GeneralKpiDAO.UpdatedAt = StaticParams.DateTimeNow;
-            GeneralKpiDAO.RowId = GeneralKpi.RowId;
+            GeneralKpiDAO.RowId = Guid.NewGuid();
             DataContext.GeneralKpi.Add(GeneralKpiDAO);
             await DataContext.SaveChangesAsync();
             GeneralKpi.Id = GeneralKpiDAO.Id;
@@ -398,7 +398,7 @@ namespace DMS.Repositories
                 GeneralKpiCriteriaMappingDAOs.AddRange(list);
             }
 
-            await DataContext.BulkMergeAsync(GeneralKpiCriteriaMappingDAOs);
+            await DataContext.GeneralKpiCriteriaMapping.BulkMergeAsync(GeneralKpiCriteriaMappingDAOs);
             return true;
         }
 
@@ -445,7 +445,7 @@ namespace DMS.Repositories
                     };
                     GeneralKpiCriteriaMappingDAOs.Add(GeneralKpiCriteriaMappingDAO);
                 }
-                await DataContext.BulkMergeAsync(GeneralKpiCriteriaMappingDAOs);
+                await DataContext.GeneralKpiCriteriaMapping.BulkMergeAsync(GeneralKpiCriteriaMappingDAOs);
             }
         }
         

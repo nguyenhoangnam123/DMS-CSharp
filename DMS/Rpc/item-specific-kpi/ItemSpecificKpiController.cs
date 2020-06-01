@@ -19,6 +19,9 @@ using DMS.Services.MItemSpecificKpiContent;
 using DMS.Services.MItem;
 using DMS.Services.MItemSpecificCriteria;
 using DMS.Services.MTotalItemSpecificCriteria;
+using DMS.Services.MProductGrouping;
+using DMS.Services.MProductType;
+using DMS.Services.MSupplier;
 
 namespace DMS.Rpc.item_specific_kpi
 {
@@ -33,6 +36,9 @@ namespace DMS.Rpc.item_specific_kpi
         private IItemSpecificCriteriaService ItemSpecificCriteriaService;
         private ITotalItemSpecificCriteriaService TotalItemSpecificCriteriaService;
         private IItemSpecificKpiService ItemSpecificKpiService;
+        private IProductGroupingService ProductGroupingService;
+        private IProductTypeService ProductTypeService;
+        private ISupplierService SupplierService;
         private ICurrentContext CurrentContext;
         public ItemSpecificKpiController(
             IAppUserService AppUserService,
@@ -44,6 +50,9 @@ namespace DMS.Rpc.item_specific_kpi
             IItemSpecificCriteriaService ItemSpecificCriteriaService,
             ITotalItemSpecificCriteriaService TotalItemSpecificCriteriaService,
             IItemSpecificKpiService ItemSpecificKpiService,
+            IProductGroupingService ProductGroupingService,
+            IProductTypeService ProductTypeService,
+            ISupplierService SupplierService,
             ICurrentContext CurrentContext
         )
         {
@@ -56,6 +65,9 @@ namespace DMS.Rpc.item_specific_kpi
             this.ItemSpecificCriteriaService = ItemSpecificCriteriaService;
             this.TotalItemSpecificCriteriaService = TotalItemSpecificCriteriaService;
             this.ItemSpecificKpiService = ItemSpecificKpiService;
+            this.ProductGroupingService = ProductGroupingService;
+            this.ProductTypeService = ProductTypeService;
+            this.SupplierService = SupplierService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -114,6 +126,55 @@ namespace DMS.Rpc.item_specific_kpi
                 return ItemSpecificKpi_ItemSpecificKpiDTO;
             else
                 return BadRequest(ItemSpecificKpi_ItemSpecificKpiDTO);
+        }
+
+        [Route(ItemSpecificKpiRoute.CreateDraft), HttpPost]
+        public async Task<ActionResult<ItemSpecificKpi_ItemSpecificKpiDTO>> CreateDraft([FromBody] ItemSpecificKpi_ItemSpecificKpiDTO ItemSpecificKpi_ItemSpecificKpiDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(ItemSpecificKpi_ItemSpecificKpiDTO.Id))
+                return Forbid();
+
+            List<ItemSpecificCriteria> ItemSpecificCriterias = await ItemSpecificCriteriaService.List(new ItemSpecificCriteriaFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ItemSpecificCriteriaSelect.ALL
+            });
+
+            List<TotalItemSpecificCriteria> TotalItemSpecificCriteria = await TotalItemSpecificCriteriaService.List(new TotalItemSpecificCriteriaFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = TotalItemSpecificCriteriaSelect.ALL
+            });
+
+            ItemSpecificKpi_ItemSpecificKpiDTO = new ItemSpecificKpi_ItemSpecificKpiDTO()
+            {
+                ItemSpecificKpiContents = new List<ItemSpecificKpi_ItemSpecificKpiContentDTO>(),
+                ItemSpecificKpiTotalItemSpecificCriteriaMappings = new List<ItemSpecificKpi_ItemSpecificKpiTotalItemSpecificCriteriaMappingDTO>()
+            };
+
+            foreach (var ItemSpecificCriteria in ItemSpecificCriterias)
+            {
+                ItemSpecificKpi_ItemSpecificKpiDTO.ItemSpecificKpiContents.Add(new ItemSpecificKpi_ItemSpecificKpiContentDTO
+                {
+                    ItemSpecificCriteriaId = ItemSpecificCriteria.Id,
+                    ItemSpecificCriteria = new ItemSpecificKpi_ItemSpecificCriteriaDTO(ItemSpecificCriteria)
+                });
+            }
+
+            foreach (var TotalItemSpecificCriteri in TotalItemSpecificCriteria)
+            {
+                ItemSpecificKpi_ItemSpecificKpiDTO.ItemSpecificKpiTotalItemSpecificCriteriaMappings.Add(new ItemSpecificKpi_ItemSpecificKpiTotalItemSpecificCriteriaMappingDTO
+                {
+                    TotalItemSpecificCriteriaId = TotalItemSpecificCriteri.Id,
+                    TotalItemSpecificCriteria = new ItemSpecificKpi_TotalItemSpecificCriteriaDTO(TotalItemSpecificCriteri)
+                });
+            }
+            return ItemSpecificKpi_ItemSpecificKpiDTO;
         }
 
         [Route(ItemSpecificKpiRoute.Update), HttpPost]
@@ -1022,6 +1083,7 @@ namespace DMS.Rpc.item_specific_kpi
                 Code = ItemSpecificKpi_ItemSpecificKpiDTO.Status.Code,
                 Name = ItemSpecificKpi_ItemSpecificKpiDTO.Status.Name,
             };
+            ItemSpecificKpi.EmployeeIds = ItemSpecificKpi_ItemSpecificKpiDTO.EmployeeIds;
             ItemSpecificKpi.ItemSpecificKpiContents = ItemSpecificKpi_ItemSpecificKpiDTO.ItemSpecificKpiContents?
                 .Select(x => new ItemSpecificKpiContent
                 {
@@ -1182,98 +1244,6 @@ namespace DMS.Rpc.item_specific_kpi
                 .Select(x => new ItemSpecificKpi_StatusDTO(x)).ToList();
             return ItemSpecificKpi_StatusDTOs;
         }
-        [Route(ItemSpecificKpiRoute.FilterListItemSpecificKpiContent), HttpPost]
-        public async Task<List<ItemSpecificKpi_ItemSpecificKpiContentDTO>> FilterListItemSpecificKpiContent([FromBody] ItemSpecificKpi_ItemSpecificKpiContentFilterDTO ItemSpecificKpi_ItemSpecificKpiContentFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ItemSpecificKpiContentFilter ItemSpecificKpiContentFilter = new ItemSpecificKpiContentFilter();
-            ItemSpecificKpiContentFilter.Skip = 0;
-            ItemSpecificKpiContentFilter.Take = 20;
-            ItemSpecificKpiContentFilter.OrderBy = ItemSpecificKpiContentOrder.Id;
-            ItemSpecificKpiContentFilter.OrderType = OrderType.ASC;
-            ItemSpecificKpiContentFilter.Selects = ItemSpecificKpiContentSelect.ALL;
-            ItemSpecificKpiContentFilter.Id = ItemSpecificKpi_ItemSpecificKpiContentFilterDTO.Id;
-            ItemSpecificKpiContentFilter.ItemSpecificKpiId = ItemSpecificKpi_ItemSpecificKpiContentFilterDTO.ItemSpecificKpiId;
-            ItemSpecificKpiContentFilter.ItemSpecificCriteriaId = ItemSpecificKpi_ItemSpecificKpiContentFilterDTO.ItemSpecificCriteriaId;
-            ItemSpecificKpiContentFilter.ItemId = ItemSpecificKpi_ItemSpecificKpiContentFilterDTO.ItemId;
-            ItemSpecificKpiContentFilter.Value = ItemSpecificKpi_ItemSpecificKpiContentFilterDTO.Value;
-
-            List<ItemSpecificKpiContent> ItemSpecificKpiContents = await ItemSpecificKpiContentService.List(ItemSpecificKpiContentFilter);
-            List<ItemSpecificKpi_ItemSpecificKpiContentDTO> ItemSpecificKpi_ItemSpecificKpiContentDTOs = ItemSpecificKpiContents
-                .Select(x => new ItemSpecificKpi_ItemSpecificKpiContentDTO(x)).ToList();
-            return ItemSpecificKpi_ItemSpecificKpiContentDTOs;
-        }
-        [Route(ItemSpecificKpiRoute.FilterListItem), HttpPost]
-        public async Task<List<ItemSpecificKpi_ItemDTO>> FilterListItem([FromBody] ItemSpecificKpi_ItemFilterDTO ItemSpecificKpi_ItemFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ItemFilter ItemFilter = new ItemFilter();
-            ItemFilter.Skip = 0;
-            ItemFilter.Take = 20;
-            ItemFilter.OrderBy = ItemOrder.Id;
-            ItemFilter.OrderType = OrderType.ASC;
-            ItemFilter.Selects = ItemSelect.ALL;
-            ItemFilter.Id = ItemSpecificKpi_ItemFilterDTO.Id;
-            ItemFilter.ProductId = ItemSpecificKpi_ItemFilterDTO.ProductId;
-            ItemFilter.Code = ItemSpecificKpi_ItemFilterDTO.Code;
-            ItemFilter.Name = ItemSpecificKpi_ItemFilterDTO.Name;
-            ItemFilter.ScanCode = ItemSpecificKpi_ItemFilterDTO.ScanCode;
-            ItemFilter.SalePrice = ItemSpecificKpi_ItemFilterDTO.SalePrice;
-            ItemFilter.RetailPrice = ItemSpecificKpi_ItemFilterDTO.RetailPrice;
-            ItemFilter.StatusId = ItemSpecificKpi_ItemFilterDTO.StatusId;
-
-            List<Item> Items = await ItemService.List(ItemFilter);
-            List<ItemSpecificKpi_ItemDTO> ItemSpecificKpi_ItemDTOs = Items
-                .Select(x => new ItemSpecificKpi_ItemDTO(x)).ToList();
-            return ItemSpecificKpi_ItemDTOs;
-        }
-        [Route(ItemSpecificKpiRoute.FilterListItemSpecificCriteria), HttpPost]
-        public async Task<List<ItemSpecificKpi_ItemSpecificCriteriaDTO>> FilterListItemSpecificCriteria([FromBody] ItemSpecificKpi_ItemSpecificCriteriaFilterDTO ItemSpecificKpi_ItemSpecificCriteriaFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ItemSpecificCriteriaFilter ItemSpecificCriteriaFilter = new ItemSpecificCriteriaFilter();
-            ItemSpecificCriteriaFilter.Skip = 0;
-            ItemSpecificCriteriaFilter.Take = 20;
-            ItemSpecificCriteriaFilter.OrderBy = ItemSpecificCriteriaOrder.Id;
-            ItemSpecificCriteriaFilter.OrderType = OrderType.ASC;
-            ItemSpecificCriteriaFilter.Selects = ItemSpecificCriteriaSelect.ALL;
-            ItemSpecificCriteriaFilter.Id = ItemSpecificKpi_ItemSpecificCriteriaFilterDTO.Id;
-            ItemSpecificCriteriaFilter.Code = ItemSpecificKpi_ItemSpecificCriteriaFilterDTO.Code;
-            ItemSpecificCriteriaFilter.Name = ItemSpecificKpi_ItemSpecificCriteriaFilterDTO.Name;
-
-            List<ItemSpecificCriteria> ItemSpecificCriterias = await ItemSpecificCriteriaService.List(ItemSpecificCriteriaFilter);
-            List<ItemSpecificKpi_ItemSpecificCriteriaDTO> ItemSpecificKpi_ItemSpecificCriteriaDTOs = ItemSpecificCriterias
-                .Select(x => new ItemSpecificKpi_ItemSpecificCriteriaDTO(x)).ToList();
-            return ItemSpecificKpi_ItemSpecificCriteriaDTOs;
-        }
-        [Route(ItemSpecificKpiRoute.FilterListTotalItemSpecificCriteria), HttpPost]
-        public async Task<List<ItemSpecificKpi_TotalItemSpecificCriteriaDTO>> FilterListTotalItemSpecificCriteria([FromBody] ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            TotalItemSpecificCriteriaFilter TotalItemSpecificCriteriaFilter = new TotalItemSpecificCriteriaFilter();
-            TotalItemSpecificCriteriaFilter.Skip = 0;
-            TotalItemSpecificCriteriaFilter.Take = 20;
-            TotalItemSpecificCriteriaFilter.OrderBy = TotalItemSpecificCriteriaOrder.Id;
-            TotalItemSpecificCriteriaFilter.OrderType = OrderType.ASC;
-            TotalItemSpecificCriteriaFilter.Selects = TotalItemSpecificCriteriaSelect.ALL;
-            TotalItemSpecificCriteriaFilter.Id = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Id;
-            TotalItemSpecificCriteriaFilter.Code = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Code;
-            TotalItemSpecificCriteriaFilter.Name = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Name;
-
-            List<TotalItemSpecificCriteria> TotalItemSpecificCriterias = await TotalItemSpecificCriteriaService.List(TotalItemSpecificCriteriaFilter);
-            List<ItemSpecificKpi_TotalItemSpecificCriteriaDTO> ItemSpecificKpi_TotalItemSpecificCriteriaDTOs = TotalItemSpecificCriterias
-                .Select(x => new ItemSpecificKpi_TotalItemSpecificCriteriaDTO(x)).ToList();
-            return ItemSpecificKpi_TotalItemSpecificCriteriaDTOs;
-        }
-
         [Route(ItemSpecificKpiRoute.SingleListAppUser), HttpPost]
         public async Task<List<ItemSpecificKpi_AppUserDTO>> SingleListAppUser([FromBody] ItemSpecificKpi_AppUserFilterDTO ItemSpecificKpi_AppUserFilterDTO)
         {
@@ -1354,6 +1324,74 @@ namespace DMS.Rpc.item_specific_kpi
                 .Select(x => new ItemSpecificKpi_OrganizationDTO(x)).ToList();
             return ItemSpecificKpi_OrganizationDTOs;
         }
+
+        [Route(ItemSpecificKpiRoute.SingleListProductGrouping), HttpPost]
+        public async Task<List<ItemSpecificKpi_ProductGroupingDTO>> SingleListProductGrouping([FromBody] ItemSpecificKpi_ProductGroupingFilterDTO ItemSpecificKpi_ProductGroupingFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+
+            List<ProductGrouping> ItemSpecificKpiGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<ItemSpecificKpi_ProductGroupingDTO> ItemSpecificKpi_ProductGroupingDTOs = ItemSpecificKpiGroupings
+                .Select(x => new ItemSpecificKpi_ProductGroupingDTO(x)).ToList();
+            return ItemSpecificKpi_ProductGroupingDTOs;
+        }
+        [Route(ItemSpecificKpiRoute.SingleListProductType), HttpPost]
+        public async Task<List<ItemSpecificKpi_ProductTypeDTO>> SingleListProductType([FromBody] ItemSpecificKpi_ProductTypeFilterDTO ItemSpecificKpi_ProductTypeFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
+            ProductTypeFilter.Skip = 0;
+            ProductTypeFilter.Take = 20;
+            ProductTypeFilter.OrderBy = ProductTypeOrder.Id;
+            ProductTypeFilter.OrderType = OrderType.ASC;
+            ProductTypeFilter.Selects = ProductTypeSelect.ALL;
+            ProductTypeFilter.Id = ItemSpecificKpi_ProductTypeFilterDTO.Id;
+            ProductTypeFilter.Code = ItemSpecificKpi_ProductTypeFilterDTO.Code;
+            ProductTypeFilter.Name = ItemSpecificKpi_ProductTypeFilterDTO.Name;
+            ProductTypeFilter.Description = ItemSpecificKpi_ProductTypeFilterDTO.Description;
+            ProductTypeFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
+            List<ItemSpecificKpi_ProductTypeDTO> ItemSpecificKpi_ProductTypeDTOs = ProductTypes
+                .Select(x => new ItemSpecificKpi_ProductTypeDTO(x)).ToList();
+            return ItemSpecificKpi_ProductTypeDTOs;
+        }
+
+        [Route(ItemSpecificKpiRoute.SingleListSupplier), HttpPost]
+        public async Task<List<ItemSpecificKpi_SupplierDTO>> SingleListSupplier([FromBody] ItemSpecificKpi_SupplierFilterDTO Product_SupplierFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            SupplierFilter SupplierFilter = new SupplierFilter();
+            SupplierFilter.Skip = 0;
+            SupplierFilter.Take = 20;
+            SupplierFilter.OrderBy = SupplierOrder.Id;
+            SupplierFilter.OrderType = OrderType.ASC;
+            SupplierFilter.Selects = SupplierSelect.ALL;
+            SupplierFilter.Id = Product_SupplierFilterDTO.Id;
+            SupplierFilter.Code = Product_SupplierFilterDTO.Code;
+            SupplierFilter.Name = Product_SupplierFilterDTO.Name;
+            SupplierFilter.TaxCode = Product_SupplierFilterDTO.TaxCode;
+            SupplierFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
+            List<ItemSpecificKpi_SupplierDTO> ItemSpecificKpi_SupplierDTOs = Suppliers
+                .Select(x => new ItemSpecificKpi_SupplierDTO(x)).ToList();
+            return ItemSpecificKpi_SupplierDTOs;
+        }
+
         [Route(ItemSpecificKpiRoute.SingleListStatus), HttpPost]
         public async Task<List<ItemSpecificKpi_StatusDTO>> SingleListStatus([FromBody] ItemSpecificKpi_StatusFilterDTO ItemSpecificKpi_StatusFilterDTO)
         {
@@ -1373,132 +1411,95 @@ namespace DMS.Rpc.item_specific_kpi
                 .Select(x => new ItemSpecificKpi_StatusDTO(x)).ToList();
             return ItemSpecificKpi_StatusDTOs;
         }
-        [Route(ItemSpecificKpiRoute.SingleListItemSpecificKpiContent), HttpPost]
-        public async Task<List<ItemSpecificKpi_ItemSpecificKpiContentDTO>> SingleListItemSpecificKpiContent([FromBody] ItemSpecificKpi_ItemSpecificKpiContentFilterDTO ItemSpecificKpi_ItemSpecificKpiContentFilterDTO)
+
+        [Route(ItemSpecificKpiRoute.CountAppUser), HttpPost]
+        public async Task<long> CountAppUser([FromBody] ItemSpecificKpi_AppUserFilterDTO ItemSpecificKpi_AppUserFilterDTO)
         {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Id = ItemSpecificKpi_AppUserFilterDTO.Id;
+            AppUserFilter.Username = ItemSpecificKpi_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = ItemSpecificKpi_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Email = ItemSpecificKpi_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = ItemSpecificKpi_AppUserFilterDTO.Phone;
+            AppUserFilter.OrganizationId = ItemSpecificKpi_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
-            ItemSpecificKpiContentFilter ItemSpecificKpiContentFilter = new ItemSpecificKpiContentFilter();
-            ItemSpecificKpiContentFilter.Skip = 0;
-            ItemSpecificKpiContentFilter.Take = 20;
-            ItemSpecificKpiContentFilter.OrderBy = ItemSpecificKpiContentOrder.Id;
-            ItemSpecificKpiContentFilter.OrderType = OrderType.ASC;
-            ItemSpecificKpiContentFilter.Selects = ItemSpecificKpiContentSelect.ALL;
-            ItemSpecificKpiContentFilter.Id = ItemSpecificKpi_ItemSpecificKpiContentFilterDTO.Id;
-            ItemSpecificKpiContentFilter.ItemSpecificKpiId = ItemSpecificKpi_ItemSpecificKpiContentFilterDTO.ItemSpecificKpiId;
-            ItemSpecificKpiContentFilter.ItemSpecificCriteriaId = ItemSpecificKpi_ItemSpecificKpiContentFilterDTO.ItemSpecificCriteriaId;
-            ItemSpecificKpiContentFilter.ItemId = ItemSpecificKpi_ItemSpecificKpiContentFilterDTO.ItemId;
-            ItemSpecificKpiContentFilter.Value = ItemSpecificKpi_ItemSpecificKpiContentFilterDTO.Value;
-
-            List<ItemSpecificKpiContent> ItemSpecificKpiContents = await ItemSpecificKpiContentService.List(ItemSpecificKpiContentFilter);
-            List<ItemSpecificKpi_ItemSpecificKpiContentDTO> ItemSpecificKpi_ItemSpecificKpiContentDTOs = ItemSpecificKpiContents
-                .Select(x => new ItemSpecificKpi_ItemSpecificKpiContentDTO(x)).ToList();
-            return ItemSpecificKpi_ItemSpecificKpiContentDTOs;
+            return await AppUserService.Count(AppUserFilter);
         }
-        [Route(ItemSpecificKpiRoute.SingleListItem), HttpPost]
-        public async Task<List<ItemSpecificKpi_ItemDTO>> SingleListItem([FromBody] ItemSpecificKpi_ItemFilterDTO ItemSpecificKpi_ItemFilterDTO)
+        [Route(ItemSpecificKpiRoute.ListAppUser), HttpPost]
+        public async Task<List<ItemSpecificKpi_AppUserDTO>> ListAppUser([FromBody] ItemSpecificKpi_AppUserFilterDTO ItemSpecificKpi_AppUserFilterDTO)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = ItemSpecificKpi_AppUserFilterDTO.Skip;
+            AppUserFilter.Take = ItemSpecificKpi_AppUserFilterDTO.Take;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = ItemSpecificKpi_AppUserFilterDTO.Id;
+            AppUserFilter.Username = ItemSpecificKpi_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = ItemSpecificKpi_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Email = ItemSpecificKpi_AppUserFilterDTO.Email;
+            AppUserFilter.OrganizationId = ItemSpecificKpi_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.Phone = ItemSpecificKpi_AppUserFilterDTO.Phone;
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<ItemSpecificKpi_AppUserDTO> ItemSpecificKpi_AppUserDTOs = AppUsers
+                .Select(x => new ItemSpecificKpi_AppUserDTO(x)).ToList();
+            return ItemSpecificKpi_AppUserDTOs;
+        }
+
+        [Route(ItemSpecificKpiRoute.CountItem), HttpPost]
+        public async Task<long> CountItem([FromBody] ItemSpecificKpi_ItemFilterDTO ItemSpecificKpi_ItemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
             ItemFilter ItemFilter = new ItemFilter();
-            ItemFilter.Skip = 0;
-            ItemFilter.Take = 20;
+            ItemFilter.Id = ItemSpecificKpi_ItemFilterDTO.Id;
+            ItemFilter.Code = ItemSpecificKpi_ItemFilterDTO.Code;
+            ItemFilter.Name = ItemSpecificKpi_ItemFilterDTO.Name;
+            ItemFilter.ProductGroupingId = ItemSpecificKpi_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductId = ItemSpecificKpi_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = ItemSpecificKpi_ItemFilterDTO.ProductTypeId;
+            ItemFilter.RetailPrice = ItemSpecificKpi_ItemFilterDTO.RetailPrice;
+            ItemFilter.SalePrice = ItemSpecificKpi_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = ItemSpecificKpi_ItemFilterDTO.ScanCode;
+            ItemFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            ItemFilter.SupplierId = ItemSpecificKpi_ItemFilterDTO.SupplierId;
+            ItemFilter.IsNew = ItemSpecificKpi_ItemFilterDTO.IsNew;
+            return await ItemService.Count(ItemFilter);
+        }
+
+        [Route(ItemSpecificKpiRoute.ListItem), HttpPost]
+        public async Task<List<ItemSpecificKpi_ItemDTO>> ListItem([FromBody] ItemSpecificKpi_ItemFilterDTO ItemSpecificKpi_ItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Skip = ItemSpecificKpi_ItemFilterDTO.Skip;
+            ItemFilter.Take = ItemSpecificKpi_ItemFilterDTO.Take;
             ItemFilter.OrderBy = ItemOrder.Id;
             ItemFilter.OrderType = OrderType.ASC;
             ItemFilter.Selects = ItemSelect.ALL;
             ItemFilter.Id = ItemSpecificKpi_ItemFilterDTO.Id;
-            ItemFilter.ProductId = ItemSpecificKpi_ItemFilterDTO.ProductId;
             ItemFilter.Code = ItemSpecificKpi_ItemFilterDTO.Code;
             ItemFilter.Name = ItemSpecificKpi_ItemFilterDTO.Name;
-            ItemFilter.ScanCode = ItemSpecificKpi_ItemFilterDTO.ScanCode;
-            ItemFilter.SalePrice = ItemSpecificKpi_ItemFilterDTO.SalePrice;
+            ItemFilter.ProductGroupingId = ItemSpecificKpi_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductId = ItemSpecificKpi_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = ItemSpecificKpi_ItemFilterDTO.ProductTypeId;
             ItemFilter.RetailPrice = ItemSpecificKpi_ItemFilterDTO.RetailPrice;
+            ItemFilter.SalePrice = ItemSpecificKpi_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = ItemSpecificKpi_ItemFilterDTO.ScanCode;
             ItemFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            ItemFilter.SupplierId = ItemSpecificKpi_ItemFilterDTO.SupplierId;
+            ItemFilter.IsNew = ItemSpecificKpi_ItemFilterDTO.IsNew;
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<ItemSpecificKpi_ItemDTO> ItemSpecificKpi_ItemDTOs = Items
                 .Select(x => new ItemSpecificKpi_ItemDTO(x)).ToList();
             return ItemSpecificKpi_ItemDTOs;
-        }
-        [Route(ItemSpecificKpiRoute.SingleListItemSpecificCriteria), HttpPost]
-        public async Task<List<ItemSpecificKpi_ItemSpecificCriteriaDTO>> SingleListItemSpecificCriteria([FromBody] ItemSpecificKpi_ItemSpecificCriteriaFilterDTO ItemSpecificKpi_ItemSpecificCriteriaFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ItemSpecificCriteriaFilter ItemSpecificCriteriaFilter = new ItemSpecificCriteriaFilter();
-            ItemSpecificCriteriaFilter.Skip = 0;
-            ItemSpecificCriteriaFilter.Take = 20;
-            ItemSpecificCriteriaFilter.OrderBy = ItemSpecificCriteriaOrder.Id;
-            ItemSpecificCriteriaFilter.OrderType = OrderType.ASC;
-            ItemSpecificCriteriaFilter.Selects = ItemSpecificCriteriaSelect.ALL;
-            ItemSpecificCriteriaFilter.Id = ItemSpecificKpi_ItemSpecificCriteriaFilterDTO.Id;
-            ItemSpecificCriteriaFilter.Code = ItemSpecificKpi_ItemSpecificCriteriaFilterDTO.Code;
-            ItemSpecificCriteriaFilter.Name = ItemSpecificKpi_ItemSpecificCriteriaFilterDTO.Name;
-
-            List<ItemSpecificCriteria> ItemSpecificCriterias = await ItemSpecificCriteriaService.List(ItemSpecificCriteriaFilter);
-            List<ItemSpecificKpi_ItemSpecificCriteriaDTO> ItemSpecificKpi_ItemSpecificCriteriaDTOs = ItemSpecificCriterias
-                .Select(x => new ItemSpecificKpi_ItemSpecificCriteriaDTO(x)).ToList();
-            return ItemSpecificKpi_ItemSpecificCriteriaDTOs;
-        }
-        [Route(ItemSpecificKpiRoute.SingleListTotalItemSpecificCriteria), HttpPost]
-        public async Task<List<ItemSpecificKpi_TotalItemSpecificCriteriaDTO>> SingleListTotalItemSpecificCriteria([FromBody] ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            TotalItemSpecificCriteriaFilter TotalItemSpecificCriteriaFilter = new TotalItemSpecificCriteriaFilter();
-            TotalItemSpecificCriteriaFilter.Skip = 0;
-            TotalItemSpecificCriteriaFilter.Take = 20;
-            TotalItemSpecificCriteriaFilter.OrderBy = TotalItemSpecificCriteriaOrder.Id;
-            TotalItemSpecificCriteriaFilter.OrderType = OrderType.ASC;
-            TotalItemSpecificCriteriaFilter.Selects = TotalItemSpecificCriteriaSelect.ALL;
-            TotalItemSpecificCriteriaFilter.Id = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Id;
-            TotalItemSpecificCriteriaFilter.Code = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Code;
-            TotalItemSpecificCriteriaFilter.Name = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Name;
-
-            List<TotalItemSpecificCriteria> TotalItemSpecificCriterias = await TotalItemSpecificCriteriaService.List(TotalItemSpecificCriteriaFilter);
-            List<ItemSpecificKpi_TotalItemSpecificCriteriaDTO> ItemSpecificKpi_TotalItemSpecificCriteriaDTOs = TotalItemSpecificCriterias
-                .Select(x => new ItemSpecificKpi_TotalItemSpecificCriteriaDTO(x)).ToList();
-            return ItemSpecificKpi_TotalItemSpecificCriteriaDTOs;
-        }
-
-        [Route(ItemSpecificKpiRoute.CountTotalItemSpecificCriteria), HttpPost]
-        public async Task<long> CountTotalItemSpecificCriteria([FromBody] ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            TotalItemSpecificCriteriaFilter TotalItemSpecificCriteriaFilter = new TotalItemSpecificCriteriaFilter();
-            TotalItemSpecificCriteriaFilter.Id = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Id;
-            TotalItemSpecificCriteriaFilter.Code = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Code;
-            TotalItemSpecificCriteriaFilter.Name = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Name;
-
-            return await TotalItemSpecificCriteriaService.Count(TotalItemSpecificCriteriaFilter);
-        }
-
-        [Route(ItemSpecificKpiRoute.ListTotalItemSpecificCriteria), HttpPost]
-        public async Task<List<ItemSpecificKpi_TotalItemSpecificCriteriaDTO>> ListTotalItemSpecificCriteria([FromBody] ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            TotalItemSpecificCriteriaFilter TotalItemSpecificCriteriaFilter = new TotalItemSpecificCriteriaFilter();
-            TotalItemSpecificCriteriaFilter.Skip = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Skip;
-            TotalItemSpecificCriteriaFilter.Take = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Take;
-            TotalItemSpecificCriteriaFilter.OrderBy = TotalItemSpecificCriteriaOrder.Id;
-            TotalItemSpecificCriteriaFilter.OrderType = OrderType.ASC;
-            TotalItemSpecificCriteriaFilter.Selects = TotalItemSpecificCriteriaSelect.ALL;
-            TotalItemSpecificCriteriaFilter.Id = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Id;
-            TotalItemSpecificCriteriaFilter.Code = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Code;
-            TotalItemSpecificCriteriaFilter.Name = ItemSpecificKpi_TotalItemSpecificCriteriaFilterDTO.Name;
-
-            List<TotalItemSpecificCriteria> TotalItemSpecificCriterias = await TotalItemSpecificCriteriaService.List(TotalItemSpecificCriteriaFilter);
-            List<ItemSpecificKpi_TotalItemSpecificCriteriaDTO> ItemSpecificKpi_TotalItemSpecificCriteriaDTOs = TotalItemSpecificCriterias
-                .Select(x => new ItemSpecificKpi_TotalItemSpecificCriteriaDTO(x)).ToList();
-            return ItemSpecificKpi_TotalItemSpecificCriteriaDTOs;
         }
     }
 }
