@@ -415,7 +415,7 @@ namespace DMS.Repositories
             foreach (var ItemSpecificKpi in ItemSpecificKpis)
             {
                 ItemSpecificKpi.Id = ItemSpecificKpiDAOs.Where(x => x.RowId == ItemSpecificKpi.RowId).Select(x => x.Id).FirstOrDefault();
-                var listContent = ItemSpecificKpi.ItemSpecificKpiContents.Select(x => new ItemSpecificKpiContentDAO
+                var listContent = ItemSpecificKpi.ItemSpecificKpiContents?.Select(x => new ItemSpecificKpiContentDAO
                 {
                     ItemId = x.ItemId,
                     ItemSpecificCriteriaId = x.ItemSpecificCriteriaId,
@@ -428,7 +428,7 @@ namespace DMS.Repositories
             var ItemSpecificKpiTotalItemSpecificCriteriaMappingDAOs = new List<ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO>();
             foreach (var ItemSpecificKpi in ItemSpecificKpis)
             {
-                var listTotal = ItemSpecificKpi.ItemSpecificKpiTotalItemSpecificCriteriaMappings.Select(x => new ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO
+                var listTotal = ItemSpecificKpi.ItemSpecificKpiTotalItemSpecificCriteriaMappings?.Select(x => new ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO
                 {
                     ItemSpecificKpiId = ItemSpecificKpi.Id,
                     TotalItemSpecificCriteriaId = x.TotalItemSpecificCriteriaId,

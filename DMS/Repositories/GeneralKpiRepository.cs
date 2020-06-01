@@ -372,7 +372,7 @@ namespace DMS.Repositories
             foreach (var GeneralKpi in GeneralKpis)
             {
                 GeneralKpi.Id = GeneralKpiDAOs.Where(x => x.RowId == GeneralKpi.RowId).Select(x => x.Id).FirstOrDefault();
-                var list = GeneralKpi.GeneralKpiCriteriaMappings.Select(x => new GeneralKpiCriteriaMappingDAO
+                var list = GeneralKpi.GeneralKpiCriteriaMappings?.Select(x => new GeneralKpiCriteriaMappingDAO
                 {
                     GeneralKpiId = GeneralKpi.Id,
                     GeneralCriteriaId = x.GeneralCriteriaId,
