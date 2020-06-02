@@ -315,6 +315,24 @@ namespace DMS.Rpc.brand
                 .Select(x => new Brand_StatusDTO(x)).ToList();
             return Brand_StatusDTOs;
         }
+        [Route(BrandRoute.FilterListStatus), HttpPost]
+        public async Task<List<Brand_StatusDTO>> FilterListStatus([FromBody] Brand_StatusFilterDTO Brand_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+            StatusFilter.Id = Brand_StatusFilterDTO.Id;
+            StatusFilter.Code = Brand_StatusFilterDTO.Code;
+            StatusFilter.Name = Brand_StatusFilterDTO.Name;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<Brand_StatusDTO> Brand_StatusDTOs = Statuses
+                .Select(x => new Brand_StatusDTO(x)).ToList();
+            return Brand_StatusDTOs;
+        }
 
     }
 }
