@@ -16,5 +16,11 @@ namespace DMS.Enums
         public static GenericEnum TOTALDIRECTSALESOFKEYITEM = new GenericEnum { Id = 6, Code = "TotalDirectSalesOfKeyItems", Name = "Tổng doanh số theo đơn trực tiếp" };
         public static GenericEnum TOTALDIRECTORDERSOFKEYITEM = new GenericEnum { Id = 7, Code = "TotalDirectOrdersOfKeyItems", Name = "Tổng số đơn hàng theo đơn trực tiếp" };
         public static GenericEnum TOTALDIRECTSTORESOFKEYITEM = new GenericEnum { Id = 8, Code = "TotalDirectStoresOfKeyItems", Name = "Tổng số khách hàng theo đơn trực tiếp" };
+
+        public static List<GenericEnum> TotalItemSpecificCriteriaEnumList = new List<GenericEnum>()
+        {
+            TOTALINDIRECTOUTPUTOFKEYITEM, TOTALINDIRECTSALESOFKEYITEM, TOTALINDIRECTORDERSOFKEYITEM, TOTALINDIRECTSTORESOFKEYITEM,
+            TOTALDIRECTOUTPUTOFKEYITEM, TOTALDIRECTSALESOFKEYITEM, TOTALDIRECTORDERSOFKEYITEM, TOTALDIRECTSTORESOFKEYITEM
+        }; 
     }
 }

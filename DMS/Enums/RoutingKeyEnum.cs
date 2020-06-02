@@ -15,5 +15,9 @@ namespace DMS.Enums
         public static GenericEnum AuditLog = new GenericEnum { Id = 5, Code = "AuditLog", Name = "Audit Log" };
         public static GenericEnum SystemLog = new GenericEnum { Id = 6, Code = "SystemLog", Name = "System Log" };
 
+        public static List<GenericEnum> RoutingKeyEnumList = new List<GenericEnum>()
+        {
+            AppUserSync, OrganizationSync, StorenSync, SendMail, AuditLog, SystemLog
+        };
     }
 }
