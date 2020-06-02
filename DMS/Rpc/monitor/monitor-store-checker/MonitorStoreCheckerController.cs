@@ -337,6 +337,66 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             return MonitorStoreChecker_MonitorStoreCheckerDTOs;
         }
 
-        //public async 
+        public async Task<List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO>> Get([FromBody] MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO)
+        {
+            DateTime Start = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.Date;
+            Start = new DateTime(Start.Year, Start.Month, Start.Day);
+            DateTime End = Start.AddDays(1).AddSeconds(-1);
+
+            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.Where(sc => sc.CheckOutAt.HasValue && sc.CheckInAt.HasValue &&
+                    sc.SaleEmployeeId == MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.SaleEmployeeId &&
+                    Start <= sc.CheckInAt.Value && sc.CheckInAt.Value <= End)
+                .Include(sc => sc.Store)
+                .ToListAsync();
+            List<long> StoreCheckingIds = StoreCheckingDAOs.Select(s => s.Id).ToList();
+
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.Where(i => i.StoreCheckingId.HasValue && StoreCheckingIds.Contains(i.StoreCheckingId.Value)).ToListAsync();
+            List<ProblemDAO> ProblemDAOs = await DataContext.Problem.Where(p => p.StoreCheckingId.HasValue && StoreCheckingIds.Contains(p.StoreCheckingId.Value)).ToListAsync();
+            List<StoreCheckingImageMappingDAO> StoreCheckingImageMappingDAOs = await DataContext.StoreCheckingImageMapping.Where(sc => StoreCheckingIds.Contains(sc.StoreCheckingId))
+                .Include(sc => sc.Image)
+                .ToListAsync();
+
+            List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO> MonitorStoreChecker_MonitorStoreCheckerDetailDTOs = new List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO>();
+            foreach (StoreCheckingDAO StoreCheckingDAO in StoreCheckingDAOs)
+            {
+                List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.StoreCheckingId.Value == StoreCheckingDAO.Id).ToList();
+                List<ProblemDAO> CompetitorProblems = ProblemDAOs.Where(p => p.StoreCheckingId.Value == StoreCheckingDAO.Id && p.ProblemTypeId == ProblemTypeEnum.COMPETITOR.Id).ToList();
+                List<ProblemDAO> StoreProblems = ProblemDAOs.Where(p => p.StoreCheckingId.Value == StoreCheckingDAO.Id && p.ProblemTypeId == ProblemTypeEnum.STORE.Id).ToList();
+                List<StoreCheckingImageMappingDAO> SubStoreCheckingImageMappingDAOs = StoreCheckingImageMappingDAOs.Where(sc => sc.StoreCheckingId == StoreCheckingDAO.Id).ToList();
+
+                int Max = 0;
+                Max = SubIndirectSalesOrderDAOs.Count > Max ? SubIndirectSalesOrderDAOs.Count : Max;
+                Max = CompetitorProblems.Count > Max ? CompetitorProblems.Count : Max;
+                Max = StoreProblems.Count > Max ? StoreProblems.Count : Max;
+                for (int i = 0; i < Max; i++)
+                {
+                    MonitorStoreChecker_MonitorStoreCheckerDetailDTO MonitorStoreChecker_MonitorStoreCheckerDetailDTO = new MonitorStoreChecker_MonitorStoreCheckerDetailDTO
+                    {
+                        StoreCode = StoreCheckingDAO.Store.Code,
+                        StoreName = StoreCheckingDAO.Store.Name,
+                    };
+                    if (i== 0)
+                    {
+                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.ImagePath = SubStoreCheckingImageMappingDAOs.Select(i => i.Image.Url).FirstOrDefault();
+                    }
+
+                    MonitorStoreChecker_MonitorStoreCheckerDetailDTOs.Add(MonitorStoreChecker_MonitorStoreCheckerDetailDTO);
+                    if (SubIndirectSalesOrderDAOs.Count > i)
+                    {
+                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.IndirectSalesOrderCode = SubIndirectSalesOrderDAOs[i].Code;
+                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.Sales = SubIndirectSalesOrderDAOs[i].Total;
+                    }
+                    if (CompetitorProblems.Count > i)
+                    {
+                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.CompetitorProblemId = CompetitorProblems[i].Id;
+                    }
+                    if (StoreProblems.Count > i)
+                    {
+                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.StoreProblemId = StoreProblems[i].Id;
+                    }
+                }
+            }
+            return MonitorStoreChecker_MonitorStoreCheckerDetailDTOs;
+        }
     }
 }
