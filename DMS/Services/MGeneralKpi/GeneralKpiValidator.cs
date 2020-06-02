@@ -27,7 +27,8 @@ namespace DMS.Services.MGeneralKpi
             IdNotExisted,
             OrganizationIdNotExisted,
             EmployeeIdsEmpty,
-            StatusNotExisted
+            StatusNotExisted,
+            KpiPeriodIdNotExisted
         }
 
         private IUOW UOW;
@@ -98,15 +99,32 @@ namespace DMS.Services.MGeneralKpi
             return GeneralKpi.IsValidated;
         }
 
-        public async Task<bool> ValidateStatus(GeneralKpi GeneralKpi)
+        private async Task<bool> ValidateStatus(GeneralKpi GeneralKpi)
         {
             if (StatusEnum.ACTIVE.Id != GeneralKpi.StatusId && StatusEnum.INACTIVE.Id != GeneralKpi.StatusId)
                 GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.Status), ErrorCode.StatusNotExisted);
             return GeneralKpi.IsValidated;
         }
 
+        private async Task<bool> ValidateKpiPeriod(GeneralKpi GeneralKpi)
+        {
+            KpiPeriodFilter KpiPeriodFilter = new KpiPeriodFilter
+            {
+                Id = new IdFilter { Equal = GeneralKpi.KpiPeriodId }
+            };
+
+            int count = await UOW.KpiPeriodRepository.Count(KpiPeriodFilter);
+            if(count == 0)
+                GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.KpiPeriod), ErrorCode.KpiPeriodIdNotExisted);
+            return GeneralKpi.IsValidated;
+        }
+
         public async Task<bool>Create(GeneralKpi GeneralKpi)
         {
+            await ValidateOrganization(GeneralKpi);
+            await ValidateEmployees(GeneralKpi);
+            await ValidateStatus(GeneralKpi);
+            await ValidateKpiPeriod(GeneralKpi);
             return GeneralKpi.IsValidated;
         }
 
@@ -114,6 +132,9 @@ namespace DMS.Services.MGeneralKpi
         {
             if (await ValidateId(GeneralKpi))
             {
+                await ValidateOrganization(GeneralKpi);
+                await ValidateStatus(GeneralKpi);
+                await ValidateKpiPeriod(GeneralKpi);
             }
             return GeneralKpi.IsValidated;
         }
