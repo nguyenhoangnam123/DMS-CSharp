@@ -239,6 +239,7 @@ namespace DMS.Rpc
             InitDirectPriceListTypeEnum();
             InitSurveyQuestionTypeEnum();
             InitSurveyOptionTypeEnum();
+            InitProblemType();
             DataContext.SaveChanges();
             return Ok();
         }
@@ -728,6 +729,30 @@ namespace DMS.Rpc
                     Id = SurveyOptionTypeEnum.SINGLE.Id,
                     Code = SurveyOptionTypeEnum.SINGLE.Code,
                     Name = SurveyOptionTypeEnum.SINGLE.Name,
+                });
+            }
+        }
+
+        private void InitProblemType()
+        {
+            List<ProblemTypeDAO> list = DataContext.ProblemType.ToList();
+            if (!list.Any(pt => pt.Id == ProblemTypeEnum.COMPETITOR.Id))
+            {
+                DataContext.ProblemType.Add(new ProblemTypeDAO
+                {
+                    Id = ProblemTypeEnum.COMPETITOR.Id,
+                    Code = ProblemTypeEnum.COMPETITOR.Code,
+                    Name = ProblemTypeEnum.COMPETITOR.Name,
+                });
+            }
+
+            if (!list.Any(pt => pt.Id == ProblemTypeEnum.STORE.Id))
+            {
+                DataContext.ProblemType.Add(new ProblemTypeDAO
+                {
+                    Id = ProblemTypeEnum.STORE.Id,
+                    Code = ProblemTypeEnum.STORE.Code,
+                    Name = ProblemTypeEnum.STORE.Name,
                 });
             }
         }
