@@ -219,6 +219,8 @@ namespace DMS.Rpc.unit_of_measure
 
             List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
             UnitOfMeasures = await UnitOfMeasureService.BulkDelete(UnitOfMeasures);
+            if (UnitOfMeasures.Any(x => !x.IsValidated))
+                return BadRequest(UnitOfMeasures.Where(x => !x.IsValidated));
             return true;
         }
 

@@ -177,6 +177,8 @@ namespace DMS.Rpc.store_grouping
 
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             StoreGroupings = await StoreGroupingService.BulkDelete(StoreGroupings);
+            if (StoreGroupings.Any(x => !x.IsValidated))
+                return BadRequest(StoreGroupings.Where(x => !x.IsValidated));
             return true;
         }
 

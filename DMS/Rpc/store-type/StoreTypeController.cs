@@ -164,6 +164,8 @@ namespace DMS.Rpc.store_type
 
             List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
             StoreTypes = await StoreTypeService.BulkDelete(StoreTypes);
+            if (StoreTypes.Any(x => !x.IsValidated))
+                return BadRequest(StoreTypes.Where(x => !x.IsValidated));
             return true;
         }
 

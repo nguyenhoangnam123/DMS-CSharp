@@ -197,6 +197,8 @@ namespace DMS.Rpc.unit_of_measure_grouping
 
             List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(UnitOfMeasureGroupingFilter);
             UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.BulkDelete(UnitOfMeasureGroupings);
+            if (UnitOfMeasureGroupings.Any(x => !x.IsValidated))
+                return BadRequest(UnitOfMeasureGroupings.Where(x => !x.IsValidated));
             return true;
         }
 

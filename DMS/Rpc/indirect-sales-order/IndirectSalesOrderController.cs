@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
@@ -207,6 +207,185 @@ namespace DMS.Rpc.indirect_sales_order
                 return BadRequest(IndirectSalesOrder_IndirectSalesOrderDTO);
         }
         
+        [Route(IndirectSalesOrderRoute.BulkDelete), HttpPost]
+        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter();
+            IndirectSalesOrderFilter = IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
+            IndirectSalesOrderFilter.Id = new IdFilter { In = Ids };
+            IndirectSalesOrderFilter.Selects = IndirectSalesOrderSelect.Id;
+            IndirectSalesOrderFilter.Skip = 0;
+            IndirectSalesOrderFilter.Take = int.MaxValue;
+
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+            IndirectSalesOrders = await IndirectSalesOrderService.BulkDelete(IndirectSalesOrders);
+            if (IndirectSalesOrders.Any(x => !x.IsValidated))
+                return BadRequest(IndirectSalesOrders.Where(x => !x.IsValidated));
+            return true;
+        }
+        
+        [Route(IndirectSalesOrderRoute.Import), HttpPost]
+        public async Task<ActionResult> Import(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            StoreFilter BuyerStoreFilter = new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.ALL
+            };
+            List<Store> BuyerStores = await StoreService.List(BuyerStoreFilter);
+           
+            AppUserFilter SaleEmployeeFilter = new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.ALL
+            };
+            List<AppUser> SaleEmployees = await AppUserService.List(SaleEmployeeFilter);
+            StoreFilter SellerStoreFilter = new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.ALL
+            };
+            List<Store> SellerStores = await StoreService.List(SellerStoreFilter);
+            List<IndirectSalesOrder> IndirectSalesOrders = new List<IndirectSalesOrder>();
+            using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                if (worksheet == null)
+                    return Ok(IndirectSalesOrders);
+                int StartColumn = 1;
+                int StartRow = 1;
+                int IdColumn = 0 + StartColumn;
+                int CodeColumn = 1 + StartColumn;
+                int BuyerStoreIdColumn = 2 + StartColumn;
+                int PhoneNumberColumn = 3 + StartColumn;
+                int StoreAddressColumn = 4 + StartColumn;
+                int DeliveryAddressColumn = 5 + StartColumn;
+                int SellerStoreIdColumn = 6 + StartColumn;
+                int SaleEmployeeIdColumn = 7 + StartColumn;
+                int OrderDateColumn = 8 + StartColumn;
+                int DeliveryDateColumn = 9 + StartColumn;
+                int IndirectSalesOrderStatusIdColumn = 10 + StartColumn;
+                int EditedPriceStatusIdColumn = 11 + StartColumn;
+                int NoteColumn = 12 + StartColumn;
+                int SubTotalColumn = 13 + StartColumn;
+                int GeneralDiscountPercentageColumn = 14 + StartColumn;
+                int GeneralDiscountAmountColumn = 15 + StartColumn;
+                int TotalTaxAmountColumn = 16 + StartColumn;
+                int TotalColumn = 17 + StartColumn;
+
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, StartColumn].Value?.ToString()))
+                        break;
+                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
+                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                    string BuyerStoreIdValue = worksheet.Cells[i + StartRow, BuyerStoreIdColumn].Value?.ToString();
+                    string PhoneNumberValue = worksheet.Cells[i + StartRow, PhoneNumberColumn].Value?.ToString();
+                    string StoreAddressValue = worksheet.Cells[i + StartRow, StoreAddressColumn].Value?.ToString();
+                    string DeliveryAddressValue = worksheet.Cells[i + StartRow, DeliveryAddressColumn].Value?.ToString();
+                    string SellerStoreIdValue = worksheet.Cells[i + StartRow, SellerStoreIdColumn].Value?.ToString();
+                    string SaleEmployeeIdValue = worksheet.Cells[i + StartRow, SaleEmployeeIdColumn].Value?.ToString();
+                    string OrderDateValue = worksheet.Cells[i + StartRow, OrderDateColumn].Value?.ToString();
+                    string DeliveryDateValue = worksheet.Cells[i + StartRow, DeliveryDateColumn].Value?.ToString();
+                    string IndirectSalesOrderStatusIdValue = worksheet.Cells[i + StartRow, IndirectSalesOrderStatusIdColumn].Value?.ToString();
+                    string EditedPriceStatusIdValue = worksheet.Cells[i + StartRow, EditedPriceStatusIdColumn].Value?.ToString();
+                    string NoteValue = worksheet.Cells[i + StartRow, NoteColumn].Value?.ToString();
+                    string SubTotalValue = worksheet.Cells[i + StartRow, SubTotalColumn].Value?.ToString();
+                    string GeneralDiscountPercentageValue = worksheet.Cells[i + StartRow, GeneralDiscountPercentageColumn].Value?.ToString();
+                    string GeneralDiscountAmountValue = worksheet.Cells[i + StartRow, GeneralDiscountAmountColumn].Value?.ToString();
+                    string TotalTaxAmountValue = worksheet.Cells[i + StartRow, TotalTaxAmountColumn].Value?.ToString();
+                    string TotalValue = worksheet.Cells[i + StartRow, TotalColumn].Value?.ToString();
+                    
+                    IndirectSalesOrder IndirectSalesOrder = new IndirectSalesOrder();
+                    IndirectSalesOrder.Code = CodeValue;
+                    IndirectSalesOrder.PhoneNumber = PhoneNumberValue;
+                    IndirectSalesOrder.StoreAddress = StoreAddressValue;
+                    IndirectSalesOrder.DeliveryAddress = DeliveryAddressValue;
+                    IndirectSalesOrder.OrderDate = DateTime.TryParse(OrderDateValue, out DateTime OrderDate) ? OrderDate : DateTime.Now;
+                    IndirectSalesOrder.DeliveryDate = DateTime.TryParse(DeliveryDateValue, out DateTime DeliveryDate) ? DeliveryDate : DateTime.Now;
+                    IndirectSalesOrder.Note = NoteValue;
+                    IndirectSalesOrder.SubTotal = long.TryParse(SubTotalValue, out long SubTotal) ? SubTotal : 0;
+                    IndirectSalesOrder.GeneralDiscountPercentage = long.TryParse(GeneralDiscountPercentageValue, out long GeneralDiscountPercentage) ? GeneralDiscountPercentage : 0;
+                    IndirectSalesOrder.GeneralDiscountAmount = long.TryParse(GeneralDiscountAmountValue, out long GeneralDiscountAmount) ? GeneralDiscountAmount : 0;
+                    IndirectSalesOrder.TotalTaxAmount = long.TryParse(TotalTaxAmountValue, out long TotalTaxAmount) ? TotalTaxAmount : 0;
+                    IndirectSalesOrder.Total = long.TryParse(TotalValue, out long Total) ? Total : 0;
+                    Store BuyerStore = BuyerStores.Where(x => x.Id.ToString() == BuyerStoreIdValue).FirstOrDefault();
+                    IndirectSalesOrder.BuyerStoreId = BuyerStore == null ? 0 : BuyerStore.Id;
+                    IndirectSalesOrder.BuyerStore = BuyerStore;
+                    AppUser SaleEmployee = SaleEmployees.Where(x => x.Id.ToString() == SaleEmployeeIdValue).FirstOrDefault();
+                    IndirectSalesOrder.SaleEmployeeId = SaleEmployee == null ? 0 : SaleEmployee.Id;
+                    IndirectSalesOrder.SaleEmployee = SaleEmployee;
+                    Store SellerStore = SellerStores.Where(x => x.Id.ToString() == SellerStoreIdValue).FirstOrDefault();
+                    IndirectSalesOrder.SellerStoreId = SellerStore == null ? 0 : SellerStore.Id;
+                    IndirectSalesOrder.SellerStore = SellerStore;
+                    
+                    IndirectSalesOrders.Add(IndirectSalesOrder);
+                }
+            }
+            IndirectSalesOrders = await IndirectSalesOrderService.Import(IndirectSalesOrders);
+            if (IndirectSalesOrders.All(x => x.IsValidated))
+                return Ok(true);
+            else
+            {
+                List<string> Errors = new List<string>();
+                for (int i = 0; i < IndirectSalesOrders.Count; i++)
+                {
+                    IndirectSalesOrder IndirectSalesOrder = IndirectSalesOrders[i];
+                    if (!IndirectSalesOrder.IsValidated)
+                    {
+                        string Error = $"Dòng {i + 2} có lỗi:";
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.Id)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.Id)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.Code)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.Code)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.BuyerStoreId)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.BuyerStoreId)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.PhoneNumber)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.PhoneNumber)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.StoreAddress)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.StoreAddress)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.DeliveryAddress)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.DeliveryAddress)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.SellerStoreId)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.SellerStoreId)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.SaleEmployeeId)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.SaleEmployeeId)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.OrderDate)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.OrderDate)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.DeliveryDate)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.DeliveryDate)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.RequestStateId)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.RequestStateId)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.EditedPriceStatusId)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.EditedPriceStatusId)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.Note)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.Note)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.SubTotal)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.SubTotal)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.GeneralDiscountPercentage)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.GeneralDiscountPercentage)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.GeneralDiscountAmount)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.GeneralDiscountAmount)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.TotalTaxAmount)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.TotalTaxAmount)];
+                        if (IndirectSalesOrder.Errors.ContainsKey(nameof(IndirectSalesOrder.Total)))
+                            Error += IndirectSalesOrder.Errors[nameof(IndirectSalesOrder.Total)];
+                        Errors.Add(Error);
+                    }
+                }
+                return BadRequest(Errors);
+            }
+        }
+        
+    
         private async Task<bool> HasPermission(long Id)
         {
             IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter();
