@@ -533,6 +533,22 @@ namespace DMS.Rpc.supplier
                 .Select(x => new Supplier_WardDTO(x)).ToList();
             return Supplier_WardDTOs;
         }
+
+        [Route(SupplierRoute.FilterListStatus), HttpPost]
+        public async Task<List<Supplier_StatusDTO>> FilterListStatus([FromBody] Supplier_StatusFilterDTO Supplier_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<Supplier_StatusDTO> Supplier_StatusDTOs = Statuses
+                .Select(x => new Supplier_StatusDTO(x)).ToList();
+            return Supplier_StatusDTOs;
+        }
     }
 }
 

@@ -818,6 +818,21 @@ namespace DMS.Rpc.workflow_definition
                 .Select(x => new WorkflowDefinition_WorkflowDirectionDTO(x)).ToList();
             return WorkflowDefinition_WorkflowDirectionDTOs;
         }
+        [Route(WorkflowDefinitionRoute.FilterListStatus), HttpPost]
+        public async Task<List<WorkflowDefinition_StatusDTO>> FilterListStatus([FromBody] WorkflowDefinition_StatusFilterDTO WorkflowDefinition_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<WorkflowDefinition_StatusDTO> WorkflowDefinition_StatusDTOs = Statuses
+                .Select(x => new WorkflowDefinition_StatusDTO(x)).ToList();
+            return WorkflowDefinition_StatusDTOs;
+        }
     }
 }
 

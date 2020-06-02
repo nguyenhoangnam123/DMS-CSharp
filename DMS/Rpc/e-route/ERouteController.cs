@@ -833,6 +833,40 @@ namespace DMS.Rpc.e_route
                 .Select(x => new ERoute_StoreDTO(x)).ToList();
             return ERoute_StoreDTOs;
         }
+        [Route(ERouteRoute.FilterListERouteType), HttpPost]
+        public async Task<List<ERoute_ERouteTypeDTO>> FilterListERouteType([FromBody] ERoute_ERouteTypeFilterDTO ERoute_ERouteTypeFilterDTO)
+        {
+            ERouteTypeFilter ERouteTypeFilter = new ERouteTypeFilter();
+            ERouteTypeFilter.Skip = 0;
+            ERouteTypeFilter.Take = 20;
+            ERouteTypeFilter.OrderBy = ERouteTypeOrder.Id;
+            ERouteTypeFilter.OrderType = OrderType.ASC;
+            ERouteTypeFilter.Selects = ERouteTypeSelect.ALL;
+            ERouteTypeFilter.Id = ERoute_ERouteTypeFilterDTO.Id;
+            ERouteTypeFilter.Code = ERoute_ERouteTypeFilterDTO.Code;
+            ERouteTypeFilter.Name = ERoute_ERouteTypeFilterDTO.Name;
+
+            List<ERouteType> ERouteTypes = await ERouteTypeService.List(ERouteTypeFilter);
+            List<ERoute_ERouteTypeDTO> ERoute_ERouteTypeDTOs = ERouteTypes
+                .Select(x => new ERoute_ERouteTypeDTO(x)).ToList();
+            return ERoute_ERouteTypeDTOs;
+        }
+        [Route(ERouteRoute.FilterListStatus), HttpPost]
+        public async Task<List<ERoute_StatusDTO>> FilterListStatus([FromBody] ERoute_StatusFilterDTO ERoute_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = int.MaxValue;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<ERoute_StatusDTO> ERoute_StatusDTOs = Statuses
+                .Select(x => new ERoute_StatusDTO(x)).ToList();
+            return ERoute_StatusDTOs;
+        }
 
         [Route(ERouteRoute.SingleListAppUser), HttpPost]
         public async Task<List<ERoute_AppUserDTO>> SingleListAppUser([FromBody] ERoute_AppUserFilterDTO ERoute_AppUserFilterDTO)

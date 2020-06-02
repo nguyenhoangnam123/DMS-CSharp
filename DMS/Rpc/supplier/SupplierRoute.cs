@@ -34,6 +34,9 @@ namespace DMS.Rpc.supplier
         public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
 
+        public const string FilterListStatus = Default + "/filter-list-status";
+
+
         public const string SingleListDistrict = Default + "/single-list-district";
         public const string SingleListPersonInCharge = Default + "/single-list-person-in-charge";
         public const string SingleListProvince = Default + "/single-list-province";
@@ -60,27 +63,27 @@ namespace DMS.Rpc.supplier
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get,} },
+                Master, Count, List, Get, FilterListStatus} },
             { "Thêm", new List<string> { 
-                Master, Count, List, Get, 
+                Master, Count, List, Get, FilterListStatus,
                 Detail, Create,  
                 SingleListDistrict, SingleListProvince, SingleListStatus, SingleListWard, } },
             { "Sửa", new List<string> { 
-                Master, Count, List, Get, 
+                Master, Count, List, Get, FilterListStatus,
                 Detail, Update,  
                 SingleListDistrict, SingleListProvince, SingleListStatus, SingleListWard, } },
             { "Xoá", new List<string> { 
-                Master, Count, List, Get, 
+                Master, Count, List, Get, FilterListStatus,
                 Detail, Delete,  
                 SingleListDistrict, SingleListProvince, SingleListStatus, SingleListWard, } },
             { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, 
+                Master, Count, List, Get, FilterListStatus,
                 BulkDelete } },
             { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, 
+                Master, Count, List, Get, FilterListStatus,
                 Export } },
             { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, 
+                Master, Count, List, Get, FilterListStatus,
                 Import } },
         };
     }

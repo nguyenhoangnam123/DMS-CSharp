@@ -241,6 +241,22 @@ namespace DMS.Rpc.product_type
             return ProductType_StatusDTOs;
         }
 
+        [Route(ProductTypeRoute.FilterListStatus), HttpPost]
+        public async Task<List<ProductType_StatusDTO>> FilterListStatus([FromBody] ProductType_StatusFilterDTO ProductType_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<ProductType_StatusDTO> ProductType_StatusDTOs = Statuses
+                .Select(x => new ProductType_StatusDTO(x)).ToList();
+            return ProductType_StatusDTOs;
+        }
+
     }
 }
 

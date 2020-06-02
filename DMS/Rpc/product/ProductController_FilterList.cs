@@ -1,0 +1,119 @@
+﻿using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Services.MBrand;
+using DMS.Services.MImage;
+using DMS.Services.MItem;
+using DMS.Services.MProduct;
+using DMS.Services.MProductGrouping;
+using DMS.Services.MProductType;
+using DMS.Services.MStatus;
+using DMS.Services.MSupplier;
+using DMS.Services.MTaxType;
+using DMS.Services.MUnitOfMeasure;
+using DMS.Services.MUnitOfMeasureGrouping;
+using DMS.Services.MVariationGrouping;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.IO;
+using System;
+using System.Data;
+using Microsoft.AspNetCore.Hosting;
+using DMS.Services.MInventory;
+using DMS.Services.MUsedVariation;
+
+namespace DMS.Rpc.product
+{
+    public partial class ProductController : RpcController
+    {
+        [Route(ProductRoute.FilterListStatus), HttpPost]
+        public async Task<List<Product_StatusDTO>> FilterListStatus([FromBody] Product_StatusFilterDTO Product_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<Product_StatusDTO> Product_StatusDTOs = Statuses
+                .Select(x => new Product_StatusDTO(x)).ToList();
+            return Product_StatusDTOs;
+        }
+        [Route(ProductRoute.FilterListSupplier), HttpPost]
+        public async Task<List<Product_SupplierDTO>> FilterListSupplier([FromBody] Product_SupplierFilterDTO Product_SupplierFilterDTO)
+        {
+            SupplierFilter SupplierFilter = new SupplierFilter();
+            SupplierFilter.Skip = 0;
+            SupplierFilter.Take = 20;
+            SupplierFilter.OrderBy = SupplierOrder.Id;
+            SupplierFilter.OrderType = OrderType.ASC;
+            SupplierFilter.Selects = SupplierSelect.ALL;
+            SupplierFilter.Id = Product_SupplierFilterDTO.Id;
+            SupplierFilter.Code = Product_SupplierFilterDTO.Code;
+            SupplierFilter.Name = Product_SupplierFilterDTO.Name;
+            SupplierFilter.TaxCode = Product_SupplierFilterDTO.TaxCode;
+
+            List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
+            List<Product_SupplierDTO> Product_SupplierDTOs = Suppliers
+                .Select(x => new Product_SupplierDTO(x)).ToList();
+            return Product_SupplierDTOs;
+        }
+        [Route(ProductRoute.FilterListProductType), HttpPost]
+        public async Task<List<Product_ProductTypeDTO>> FilterListProductType([FromBody] Product_ProductTypeFilterDTO Product_ProductTypeFilterDTO)
+        {
+            ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
+            ProductTypeFilter.Skip = 0;
+            ProductTypeFilter.Take = 20;
+            ProductTypeFilter.OrderBy = ProductTypeOrder.Id;
+            ProductTypeFilter.OrderType = OrderType.ASC;
+            ProductTypeFilter.Selects = ProductTypeSelect.ALL;
+            ProductTypeFilter.Id = Product_ProductTypeFilterDTO.Id;
+            ProductTypeFilter.Code = Product_ProductTypeFilterDTO.Code;
+            ProductTypeFilter.Name = Product_ProductTypeFilterDTO.Name;
+            ProductTypeFilter.Description = Product_ProductTypeFilterDTO.Description;
+
+            List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
+            List<Product_ProductTypeDTO> Product_ProductTypeDTOs = ProductTypes
+                .Select(x => new Product_ProductTypeDTO(x)).ToList();
+            return Product_ProductTypeDTOs;
+        }
+        [Route(ProductRoute.FilterListUsedVariation), HttpPost]
+        public async Task<List<Product_UsedVariationDTO>> FilterListUsedVariation([FromBody] Product_UsedVariationFilterDTO Product_UsedVariationFilterDTO)
+        {
+            UsedVariationFilter UsedVariationFilter = new UsedVariationFilter();
+            UsedVariationFilter.Skip = 0;
+            UsedVariationFilter.Take = 20;
+            UsedVariationFilter.OrderBy = UsedVariationOrder.Id;
+            UsedVariationFilter.OrderType = OrderType.ASC;
+            UsedVariationFilter.Selects = UsedVariationSelect.ALL;
+
+            List<UsedVariation> UsedVariationes = await UsedVariationService.List(UsedVariationFilter);
+            List<Product_UsedVariationDTO> Product_UsedVariationDTOs = UsedVariationes
+                .Select(x => new Product_UsedVariationDTO(x)).ToList();
+            return Product_UsedVariationDTOs;
+        }
+        [Route(ProductRoute.FilterListProductGrouping), HttpPost]
+        public async Task<List<Product_ProductGroupingDTO>> FilterListProductGrouping([FromBody] Product_ProductGroupingFilterDTO Product_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<Product_ProductGroupingDTO> Product_ProductGroupingDTOs = ProductGroupings
+                .Select(x => new Product_ProductGroupingDTO(x)).ToList();
+            return Product_ProductGroupingDTOs;
+        }
+    }   
+}

@@ -40,6 +40,10 @@ namespace DMS.Rpc.warehouse
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
 
+        public const string FilterListOrganization = Default + "/filter-list-organization";
+        public const string FilterListStatus = Default + "/filter-list-status";
+
+
         public const string SingleListDistrict = Default + "/single-list-district";
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListProvince = Default + "/single-list-province";

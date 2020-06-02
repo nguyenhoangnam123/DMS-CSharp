@@ -944,7 +944,6 @@ namespace DMS.Rpc.store
             OrganizationFilter.OrderBy = OrganizationOrder.Id;
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
-            OrganizationFilter.StatusId = Store_OrganizationFilterDTO.StatusId;
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<Store_OrganizationDTO> Store_OrganizationDTOs = Organizations
@@ -1024,6 +1023,21 @@ namespace DMS.Rpc.store
             List<Store_WardDTO> Store_WardDTOs = Wards
                 .Select(x => new Store_WardDTO(x)).ToList();
             return Store_WardDTOs;
+        }
+        [Route(StoreRoute.FilterListStatus), HttpPost]
+        public async Task<List<Store_StatusDTO>> FilterListStatus([FromBody] Store_StatusFilterDTO Store_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<Store_StatusDTO> Store_StatusDTOs = Statuses
+                .Select(x => new Store_StatusDTO(x)).ToList();
+            return Store_StatusDTOs;
         }
 
         [Route(StoreRoute.SingleListDistrict), HttpPost]
