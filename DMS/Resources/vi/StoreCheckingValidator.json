@@ -1,5 +1,10 @@
 ﻿{
   "Id": {
-    "IdNotExisted": "Id không tồn tại",
-  }
+    "IdNotExisted": "Id không tồn tại"
+  },
+  "Store": {
+    "StoreNotExisted": "Chưa chọn cửa hàng",
+    "DistanceOutOfRange":  "Khoảng cách ngoài phạm vi"
+  },
+
 }

@@ -1,5 +1,15 @@
 ﻿{
   "Id": {
-    "IdNotExisted": "Id không tồn tại",
+    "IdNotExisted": "Id không tồn tại"
+  },
+  "Name": {
+    "NameEmpty": "Chưa nhập tên",
+    "NameOverLength": "Tên quá dài",
+    "NameExisted": "Tên đã tồn tại"
+  },
+  "Code": {
+    "CodeEmpty": "Chưa nhập Code",
+    "CodeOverLength": "Code quá dài",
+    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
   }
 }
