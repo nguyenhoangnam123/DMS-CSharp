@@ -191,7 +191,6 @@ namespace DMS.Repositories
             DataContext.TaxType.Add(TaxTypeDAO);
             await DataContext.SaveChangesAsync();
             TaxType.Id = TaxTypeDAO.Id;
-            await SaveReference(TaxType);
             return true;
         }
 
@@ -207,7 +206,6 @@ namespace DMS.Repositories
             TaxTypeDAO.StatusId = TaxType.StatusId;
             TaxTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
-            await SaveReference(TaxType);
             return true;
         }
 
@@ -243,10 +241,6 @@ namespace DMS.Repositories
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new TaxTypeDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
-        }
-
-        private async Task SaveReference(TaxType TaxType)
-        {
         }
 
     }

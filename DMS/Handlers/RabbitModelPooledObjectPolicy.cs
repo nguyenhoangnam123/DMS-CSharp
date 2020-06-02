@@ -10,8 +10,6 @@ namespace DMS.Handlers
 {
     public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>
     {
-        private readonly IConfiguration Configuration;
-
         private readonly IConnection _connection;
 
         public RabbitModelPooledObjectPolicy(IConfiguration Configuration)

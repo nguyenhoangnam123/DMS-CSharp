@@ -387,7 +387,6 @@ namespace DMS.Repositories
             DataContext.Supplier.Add(SupplierDAO);
             await DataContext.SaveChangesAsync();
             Supplier.Id = SupplierDAO.Id;
-            await SaveReference(Supplier);
             return true;
         }
 
@@ -413,7 +412,6 @@ namespace DMS.Repositories
             SupplierDAO.StatusId = Supplier.StatusId;
             SupplierDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
-            await SaveReference(Supplier);
             return true;
         }
 
@@ -459,10 +457,6 @@ namespace DMS.Repositories
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new SupplierDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
-        }
-
-        private async Task SaveReference(Supplier Supplier)
-        {
         }
 
     }

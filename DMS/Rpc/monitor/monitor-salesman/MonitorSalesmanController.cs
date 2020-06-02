@@ -59,5 +59,20 @@ namespace DMS.Rpc.Monitor.monitor_salesman
                 .Select(x => new MonitorSalesman_OrganizationDTO(x)).ToList();
             return SalesmanMonitor_OrganizationDTOs;
         }
+
+        [Route(MonitorSalesmanRoute.Count), HttpPost]
+        public async Task<int> Count([FromBody] MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO)
+        {
+
+            return 0;
+        }
+
+
+        [Route(MonitorSalesmanRoute.List), HttpPost]
+        public async Task<List<MonitorSalesman_MonitorSalesmanDTO>> List([FromBody] MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO)
+        {
+
+            return null;
+        }
     } 
 }
