@@ -100,44 +100,49 @@ namespace DMS.Rpc.product
         {
             { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure, 
-                FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping,  } },
+                FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping, CountItem, ListItem,  } },
 
             { "Thêm", new List<string> { 
                 Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure, 
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping, 
-                Detail, Create,
+                Detail, Create, SaveImage,
+                CountItem, ListItem,
                 SingleListBrand, SingleListProductType, SingleListStatus, SingleListSupplier, SingleListTaxType, SingleListUnitOfMeasure, SingleListUnitOfMeasureGrouping,
                 SingleListUsedVariation, SingleListItem, SingleListImage, SingleListProductGrouping,  } },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure, 
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping,  
-                Detail, Update, 
+                Detail, Update, SaveImage,
+                CountItem, ListItem,
                 SingleListBrand, SingleListProductType, SingleListStatus, SingleListSupplier, SingleListTaxType, SingleListUnitOfMeasure, SingleListUnitOfMeasureGrouping, 
                 SingleListUsedVariation, SingleListItem, SingleListImage, SingleListProductGrouping,  } },
 
             { "Xoá", new List<string> {
                 Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure, 
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping,  
-                Detail, Delete,
+                Delete,
+                CountItem, ListItem,
                 SingleListBrand, SingleListProductType, SingleListStatus, SingleListSupplier, SingleListTaxType, SingleListUnitOfMeasure, SingleListUnitOfMeasureGrouping,
                 SingleListUsedVariation, SingleListItem, SingleListImage, SingleListProductGrouping, } },
-            { "Lưu ảnh", new List<string>
-            {
-                SaveImage}
-            },
             { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
+                Master, Count, List, Get,
+                CountItem, ListItem,
+                FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping, 
                 BulkDelete } },
 
             { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
+                Master, Count, List, Get,
+                CountItem, ListItem,
+                FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping, 
                 Export } },
 
             { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
+                Master, Count, List, Get,
+                CountItem, ListItem,
+                FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping,  
                 ExportTemplate, Import } },
         };

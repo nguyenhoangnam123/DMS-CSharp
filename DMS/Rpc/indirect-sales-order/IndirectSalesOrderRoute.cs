@@ -82,24 +82,25 @@ namespace DMS.Rpc.indirect_sales_order
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,  } },
+            { "Tìm kiếm", new List<string> {
+                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,
+                CountItem, ListItem,} },
 
             { "Thêm", new List<string> {
-                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, 
-                Detail, Create, 
+                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure,
+                Detail, Create,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure,
                 CountItem, ListItem, CountStore, ListStore, } },
 
-            { "Sửa", new List<string> { 
-                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, 
-                Detail, Update, 
+            { "Sửa", new List<string> {
+                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure,
+                Detail, Update,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure,
                 CountItem, ListItem, CountStore, ListStore, } },
 
-            { "Xoá", new List<string> { 
-                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure,  
-                Detail, Delete,  
+            { "Xoá", new List<string> {
+                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure,
+                Detail, Delete,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure,  } },
         };
     }
