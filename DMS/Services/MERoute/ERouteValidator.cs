@@ -188,7 +188,7 @@ namespace DMS.Services.MERoute
                 foreach (var ERouteContent in ERoute.ERouteContents)
                 {
                     if(listIdsNotExisted.Contains(ERouteContent.StoreId))
-                        ERoute.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreNotExisted);
+                        ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreNotExisted);
                 }
             }
             else

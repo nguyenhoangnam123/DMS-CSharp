@@ -15,8 +15,6 @@ namespace DMS.Rpc.unit_of_measure_grouping
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
         public const string BulkDelete = Default + "/bulk-delete";
 
         public const string SingleListStatus = Default + "/single-list-status";
@@ -49,12 +47,6 @@ namespace DMS.Rpc.unit_of_measure_grouping
             { "Xoá nhiều", new List<string> { 
                 Master, Count, List, Get, 
                 BulkDelete } },
-            { "Xuất excel", new List<string> { 
-                Master, Count, List, Get,
-                Export } },
-            { "Nhập excel", new List<string> { 
-                Master, Count, List, Get,
-                Import } },
         };
     }
 }

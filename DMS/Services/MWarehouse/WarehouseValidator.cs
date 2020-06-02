@@ -242,7 +242,8 @@ namespace DMS.Services.MWarehouse
             {
                 InventoryFilter filter = new InventoryFilter
                 {
-                    WarehouseId = new IdFilter { Equal = Warehouse.Id }
+                    WarehouseId = new IdFilter { Equal = Warehouse.Id },
+                    SaleStock = new LongFilter { Greater = 0 }
                 };
 
                 int count = await UOW.InventoryRepository.Count(filter);

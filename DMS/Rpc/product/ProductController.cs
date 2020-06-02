@@ -1002,6 +1002,8 @@ namespace DMS.Rpc.product
 
             List<Product> Products = await ProductService.List(ProductFilter);
             Products = await ProductService.BulkDelete(Products);
+            if(Products.Any(x => !x.IsValidated))
+                return BadRequest(Products.Where(x => !x.IsValidated));
             return true;
         }
 

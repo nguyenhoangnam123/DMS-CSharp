@@ -1,0 +1,25 @@
+﻿{
+  "Id": {
+    "IdNotExisted": "Id không tồn tại"
+  },
+  "Username": {
+    "UsernameExisted": "Username được sử dụng"
+  },
+  "DisplayName": {
+    "DisplayNameEmpty": "Chưa nhập tên hiển thị",
+    "DisplayNameOverLength": "Tên hiển thị quá dài"
+  },
+  "Email": {
+    "EmailExisted": "Email đã được sử dụng"
+  },
+  "Phone": {
+    "PhoneEmpty": "Chưa nhập số điện thoại",
+    "PhoneOverLength": "Số điện thoại không hợp lệ"
+  },
+  "Address": {
+    "AddressOverLength": "Địa chỉ quá dài"
+  },
+  "Status": {
+    "StatusNotExisted": "Trạng thái không tồn tại"
+  }
+}

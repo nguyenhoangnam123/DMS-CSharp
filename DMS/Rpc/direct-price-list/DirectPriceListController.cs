@@ -163,6 +163,8 @@ namespace DMS.Rpc.direct_price_list
 
             List<DirectPriceList> DirectPriceLists = await DirectPriceListService.List(DirectPriceListFilter);
             DirectPriceLists = await DirectPriceListService.BulkDelete(DirectPriceLists);
+            if (DirectPriceLists.Any(x => !x.IsValidated))
+                return BadRequest(DirectPriceLists.Where(x => !x.IsValidated));
             return true;
         }
         

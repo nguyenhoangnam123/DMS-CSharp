@@ -31,9 +31,6 @@ namespace DMS.Rpc.e_route_change_request
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
@@ -86,13 +83,6 @@ namespace DMS.Rpc.e_route_change_request
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 BulkDelete } },
 
-            { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
-                Export } },
-
-            { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
-                ExportTemplate, Import } },
         };
     }
 }

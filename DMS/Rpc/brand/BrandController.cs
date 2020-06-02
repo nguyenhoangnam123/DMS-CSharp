@@ -238,6 +238,8 @@ namespace DMS.Rpc.brand
 
             List<Brand> Brands = await BrandService.List(BrandFilter);
             Brands = await BrandService.BulkDelete(Brands);
+            if (Brands.Any(x => !x.IsValidated))
+                return BadRequest(Brands.Where(x => !x.IsValidated));
             return true;
         }
 

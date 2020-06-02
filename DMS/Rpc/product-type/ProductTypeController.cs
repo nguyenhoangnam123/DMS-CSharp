@@ -120,38 +120,6 @@ namespace DMS.Rpc.product_type
                 return BadRequest(ProductType_ProductTypeDTO);
         }
 
-        [Route(ProductTypeRoute.Import), HttpPost]
-        public async Task<ActionResult<List<ProductType_ProductTypeDTO>>> Import(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
-
-            List<ProductType> ProductTypes = await ProductTypeService.Import(DataFile);
-            List<ProductType_ProductTypeDTO> ProductType_ProductTypeDTOs = ProductTypes
-                .Select(c => new ProductType_ProductTypeDTO(c)).ToList();
-            return ProductType_ProductTypeDTOs;
-        }
-
-        [Route(ProductTypeRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] ProductType_ProductTypeFilterDTO ProductType_ProductTypeFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ProductTypeFilter ProductTypeFilter = ConvertFilterDTOToFilterEntity(ProductType_ProductTypeFilterDTO);
-            DataFile DataFile = await ProductTypeService.Export(ProductTypeFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
-            {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
-        }
-
         [Route(ProductTypeRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

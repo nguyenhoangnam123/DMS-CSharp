@@ -62,7 +62,6 @@ namespace DMS.Services.MUnitOfMeasureGrouping
             if (string.IsNullOrWhiteSpace(UnitOfMeasureGrouping.Code))
             {
                 UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.Code), ErrorCode.CodeEmpty);
-                return false;
             }
             else
             {
@@ -70,7 +69,6 @@ namespace DMS.Services.MUnitOfMeasureGrouping
                 if (UnitOfMeasureGrouping.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(UnitOfMeasureGrouping.Code))
                 {
                     UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.Code), ErrorCode.CodeHasSpecialCharacter);
-                    return false;
                 }
 
                 UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter
@@ -94,7 +92,7 @@ namespace DMS.Services.MUnitOfMeasureGrouping
             {
                 UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.Name), ErrorCode.NameEmpty);
             }
-            if (UnitOfMeasureGrouping.Name.Length > 255)
+            else if (UnitOfMeasureGrouping.Name.Length > 255)
             {
                 UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.Name), ErrorCode.NameOverLength);
             }
@@ -113,19 +111,22 @@ namespace DMS.Services.MUnitOfMeasureGrouping
             {
                 UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.UnitOfMeasureId), ErrorCode.UnitOfMeasureEmpty);
             }
-            UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = UnitOfMeasureGrouping.UnitOfMeasureId },
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
-                Selects = UnitOfMeasureSelect.Id
-            };
+                UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = UnitOfMeasureGrouping.UnitOfMeasureId },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
+                    Selects = UnitOfMeasureSelect.Id
+                };
 
-            int count = await UOW.UnitOfMeasureRepository.Count(UnitOfMeasureFilter);
-            if (count == 0)
-                UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.UnitOfMeasureId), ErrorCode.UnitOfMeasureNotExisted);
-            return count != 0;
+                int count = await UOW.UnitOfMeasureRepository.Count(UnitOfMeasureFilter);
+                if (count == 0)
+                    UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.UnitOfMeasureId), ErrorCode.UnitOfMeasureNotExisted);
+            }
+            return UnitOfMeasureGrouping.IsValidated;
         }
 
         private async Task<bool> ValidateUnitOfMeasureGroupingInUsed(UnitOfMeasureGrouping UnitOfMeasureGrouping)

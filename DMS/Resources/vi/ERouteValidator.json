@@ -1,0 +1,37 @@
+﻿{
+  "Id": {
+    "IdNotExisted": "Id không tồn tại"
+  },
+  "Code" {
+    "CodeEmpty": "Chưa nhập mã cho tuyến",
+    "CodeHasSpecialCharacter": "Mã không chứa khoảng trắng và ký tự Tiếng Việt",
+    "CodeExisted": "Mã đã được sử dụng"
+  },
+  "Name": {
+    "NameEmpty": "Chưa nhập tên cho tuyến",
+    "NameOverLength": "Tên quá dài"
+  },
+  "SaleEmployee": {
+    "SaleEmployeeNotExisted": "Chưa chọn nhân viên kinh doanh"
+  },
+  "ERouteType": {
+    "ERouteTypeNotExisted": "Chưa chọn loại tuyến"
+  },
+  "Status": {
+    "StatusNotExisted": "Trạng thái không tồn tài"
+  },
+  "StartDate": {
+    "StartDateEmpty": "Chưa nhập ngày bắt đầu"
+  },
+  "EndDate": {
+    "EndDateEmpty": "Chưa nhập ngày kết thúc"
+  },
+  "ERouteContents": {
+    "ERouteContentsEmpty": "Chưa tạo nội dung tuyến"
+  },
+  "ERouteContent": {
+    "Store": {
+      "StoreNotExisted": "Chưa chọn cửa hàng"
+    }
+  }
+}

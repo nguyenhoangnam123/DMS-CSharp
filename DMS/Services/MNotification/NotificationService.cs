@@ -98,6 +98,7 @@ namespace DMS.Services.MNotification
                 await UOW.NotificationRepository.Create(Notification);
                 await UOW.Commit();
 
+                List<AppUser> AppUsers = new List<AppUser>();
                 if (Notification.OrganizationId.HasValue)
                 {
                     AppUserFilter AppUserFilter = new AppUserFilter
@@ -105,10 +106,28 @@ namespace DMS.Services.MNotification
                         Skip = 0,
                         Take = int.MaxValue,
                         OrganizationId = new IdFilter { Equal = Notification.OrganizationId.Value },
-                        Selects = AppUserSelect.Id
+                        Selects = AppUserSelect.Id,
+                        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
                     };
 
-                    var AppUserIds = (await UOW.AppUserRepository.List(AppUserFilter));
+                    AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
+                }
+                else
+                {
+                    AppUserFilter AppUserFilter = new AppUserFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = AppUserSelect.Id,
+                        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+                    };
+
+                    AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
+                }
+
+                if(AppUsers != null && AppUsers.Any())
+                {
+                    var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
                     List<NotificationUtils> NotificationUtilss = AppUserIds.Select(x => new NotificationUtils
                     {
@@ -116,12 +135,12 @@ namespace DMS.Services.MNotification
                         Time = StaticParams.DateTimeNow,
                         Unread = false,
                         SenderId = CurrentContext.UserId,
-                        RecipientId = x.Id
+                        RecipientId = x
                     }).ToList();
 
                     await SendNotification(NotificationUtilss);
                 }
-
+                
                 await Logging.CreateAuditLog(Notification, new { }, nameof(NotificationService));
                 return await UOW.NotificationRepository.Get(Notification.Id);
             }
