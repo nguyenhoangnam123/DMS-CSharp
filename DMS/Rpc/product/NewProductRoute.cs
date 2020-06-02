@@ -47,7 +47,9 @@ namespace DMS.Rpc.product
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,  } },
+                Master, Count, List, Get, 
+                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,
+                CountProduct, ListProduct} },
         };
     }
 }

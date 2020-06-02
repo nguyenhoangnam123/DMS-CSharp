@@ -177,7 +177,7 @@ namespace DMS.Services.MStoreChecking
         public async Task<Image> SaveImage(Image Image)
         {
             FileInfo fileInfo = new FileInfo(Image.Name);
-            string path = $"/store-checking/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            string path = $"/store-checking/images/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
             Image = await ImageService.Create(Image, path);
             return Image;
         }
