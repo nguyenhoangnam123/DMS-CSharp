@@ -56,6 +56,7 @@ namespace DMS.Rpc.store_checking
         public string LegalEntity { get; set; }
         
         public long StatusId { get; set; }
+        public bool HasChecking { get; set; }
         
 
         public StoreChecking_StoreDTO() {}
@@ -105,6 +106,7 @@ namespace DMS.Rpc.store_checking
             this.OwnerEmail = Store.OwnerEmail;
             
             this.StatusId = Store.StatusId;
+            this.HasChecking = Store.HasChecking;
             
             this.Errors = Store.Errors;
         }
