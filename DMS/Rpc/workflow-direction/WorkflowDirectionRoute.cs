@@ -37,22 +37,21 @@ namespace DMS.Rpc.workflow_direction
         {
             { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get,
-                FilterListWorkflowStep, SingleListWorkflowDefinition, } },
+                FilterListWorkflowStep, FilterListWorkflowDefinition, } },
             { "Thêm", new List<string> {
                 Master, Count, List, Get,
-                FilterListWorkflowStep, SingleListWorkflowDefinition,
+                FilterListWorkflowStep, FilterListWorkflowDefinition,
                 Detail, Create,
                 SingleListWorkflowStep, SingleListWorkflowDefinition,  } },
             { "Sửa", new List<string> {
                 Master, Count, List, Get,
-                FilterListWorkflowStep, SingleListWorkflowDefinition,
+                FilterListWorkflowStep, FilterListWorkflowDefinition,
                 Detail, Update,
                 SingleListWorkflowStep, SingleListWorkflowDefinition,  } },
             { "Xoá", new List<string> {
                 Master, Count, List, Get,
-                FilterListWorkflowStep, SingleListWorkflowDefinition,
-                Detail, Delete,
-                SingleListWorkflowStep, SingleListWorkflowDefinition,  } },
+                FilterListWorkflowStep, FilterListWorkflowDefinition,
+                Delete, } },
         };
     }
 }
