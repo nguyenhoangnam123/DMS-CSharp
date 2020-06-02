@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Enums
 {
-    public class ItemSpecificCriteria
+    public class ItemSpecificCriteriaEnum
     {
         public static GenericEnum INDIRECTOUTPUTOFKEYITEM = new GenericEnum { Id = 1, Code = "IndirectOutputOfKeyItem", Name = "Sản lượng theo đơn gián tiếp" };
         public static GenericEnum INDIRECTSALESOFKEYITEM = new GenericEnum { Id = 2, Code = "IndirectSalesOfKeyItem", Name = "Doanh số theo đơn gián tiếp" };
@@ -16,5 +16,11 @@ namespace DMS.Enums
         public static GenericEnum DIRECTSALESOFKEYITEM = new GenericEnum { Id = 6, Code = "DirectSalesOfKeyItem", Name = "Doanh số theo đơn trực tiếp" };
         public static GenericEnum DIRECTORDERSOFKEYITEM = new GenericEnum { Id = 7, Code = "DirectOrdersOfKeyItem", Name = "Số đơn hàng theo đơn trực tiếp" };
         public static GenericEnum DIRECTSTORESOFKEYITEM = new GenericEnum { Id = 8, Code = "DirectStoresOfKeyItem", Name = "Số khách hàng theo đơn trực tiếp" };
+
+        public static List<GenericEnum> ItemSpecificCriteriaEnumList = new List<GenericEnum>()
+        {
+            INDIRECTOUTPUTOFKEYITEM, INDIRECTSALESOFKEYITEM, INDIRECTORDERSOFKEYITEM, INDIRECTSTORESOFKEYITEM, DIRECTOUTPUTOFKEYITEM, DIRECTSALESOFKEYITEM,
+            DIRECTORDERSOFKEYITEM, DIRECTSTORESOFKEYITEM
+        };
     }
 }

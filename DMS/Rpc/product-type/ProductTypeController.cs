@@ -120,38 +120,6 @@ namespace DMS.Rpc.product_type
                 return BadRequest(ProductType_ProductTypeDTO);
         }
 
-        [Route(ProductTypeRoute.Import), HttpPost]
-        public async Task<ActionResult<List<ProductType_ProductTypeDTO>>> Import(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
-
-            List<ProductType> ProductTypes = await ProductTypeService.Import(DataFile);
-            List<ProductType_ProductTypeDTO> ProductType_ProductTypeDTOs = ProductTypes
-                .Select(c => new ProductType_ProductTypeDTO(c)).ToList();
-            return ProductType_ProductTypeDTOs;
-        }
-
-        [Route(ProductTypeRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] ProductType_ProductTypeFilterDTO ProductType_ProductTypeFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ProductTypeFilter ProductTypeFilter = ConvertFilterDTOToFilterEntity(ProductType_ProductTypeFilterDTO);
-            DataFile DataFile = await ProductTypeService.Export(ProductTypeFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
-            {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
-        }
-
         [Route(ProductTypeRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -227,6 +195,22 @@ namespace DMS.Rpc.product_type
 
         [Route(ProductTypeRoute.SingleListStatus), HttpPost]
         public async Task<List<ProductType_StatusDTO>> SingleListStatus([FromBody] ProductType_StatusFilterDTO ProductType_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<ProductType_StatusDTO> ProductType_StatusDTOs = Statuses
+                .Select(x => new ProductType_StatusDTO(x)).ToList();
+            return ProductType_StatusDTOs;
+        }
+
+        [Route(ProductTypeRoute.FilterListStatus), HttpPost]
+        public async Task<List<ProductType_StatusDTO>> FilterListStatus([FromBody] ProductType_StatusFilterDTO ProductType_StatusFilterDTO)
         {
             StatusFilter StatusFilter = new StatusFilter();
             StatusFilter.Skip = 0;

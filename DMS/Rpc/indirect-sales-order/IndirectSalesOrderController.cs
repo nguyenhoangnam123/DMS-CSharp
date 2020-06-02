@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
@@ -555,6 +555,27 @@ namespace DMS.Rpc.indirect_sales_order
             List<IndirectSalesOrder_ItemDTO> IndirectSalesOrder_ItemDTOs = Items
                 .Select(x => new IndirectSalesOrder_ItemDTO(x)).ToList();
             return IndirectSalesOrder_ItemDTOs;
+        }
+        [Route(IndirectSalesOrderRoute.FilterListEditedPriceStatus), HttpPost]
+        public async Task<List<IndirectSalesOrder_EditedPriceStatusDTO>> FilterListEditedPriceStatus([FromBody] IndirectSalesOrder_EditedPriceStatusFilterDTO IndirectSalesOrder_EditedPriceStatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            EditedPriceStatusFilter EditedPriceStatusFilter = new EditedPriceStatusFilter();
+            EditedPriceStatusFilter.Skip = 0;
+            EditedPriceStatusFilter.Take = 20;
+            EditedPriceStatusFilter.OrderBy = EditedPriceStatusOrder.Id;
+            EditedPriceStatusFilter.OrderType = OrderType.ASC;
+            EditedPriceStatusFilter.Selects = EditedPriceStatusSelect.ALL;
+            EditedPriceStatusFilter.Id = IndirectSalesOrder_EditedPriceStatusFilterDTO.Id;
+            EditedPriceStatusFilter.Code = IndirectSalesOrder_EditedPriceStatusFilterDTO.Code;
+            EditedPriceStatusFilter.Name = IndirectSalesOrder_EditedPriceStatusFilterDTO.Name;
+
+            List<EditedPriceStatus> EditedPriceStatuses = await EditedPriceStatusService.List(EditedPriceStatusFilter);
+            List<IndirectSalesOrder_EditedPriceStatusDTO> IndirectSalesOrder_EditedPriceStatusDTOs = EditedPriceStatuses
+                .Select(x => new IndirectSalesOrder_EditedPriceStatusDTO(x)).ToList();
+            return IndirectSalesOrder_EditedPriceStatusDTOs;
         }
 
         [Route(IndirectSalesOrderRoute.SingleListStore), HttpPost]

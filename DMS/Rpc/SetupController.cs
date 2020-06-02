@@ -230,16 +230,21 @@ namespace DMS.Rpc
         [HttpGet, Route("rpc/dms/setup/init-enum")]
         public ActionResult InitEnum()
         {
-            InitStatusEnum();
+            InitDirectPriceListTypeEnum();
+            InitIndirectPriceListTypeEnum();
+            InitEditedPriceStatusEnum();
+            InitItemSpecificCriteriaEnum();
+            InitGeneralCriteriaEnum();
+            InitProblemType();
             InitResellerStatusEnum();
             InitRequestStateEnum();
-            InitWorkflowStateEnum();
-            InitWorkflowTypeEnum();
-            InitIndirectPriceListTypeEnum();
-            InitDirectPriceListTypeEnum();
+            InitStatusEnum();
             InitSurveyQuestionTypeEnum();
             InitSurveyOptionTypeEnum();
-            InitProblemType();
+            InitTotalItemSpecificCriteriaEnum();
+            InitUsedVariationEnum();
+            InitWorkflowStateEnum();
+            InitWorkflowTypeEnum();
             DataContext.SaveChanges();
             return Ok();
         }
@@ -391,6 +396,94 @@ namespace DMS.Rpc
             }
         }
 
+        private void InitItemSpecificCriteriaEnum()
+        {
+            List<ItemSpecificCriteriaDAO> statuses = DataContext.ItemSpecificCriteria.ToList();
+            foreach (var item in ItemSpecificCriteriaEnum.ItemSpecificCriteriaEnumList)
+            {
+                if (!statuses.Any(pt => pt.Id == item.Id))
+                {
+                    DataContext.ItemSpecificCriteria.Add(new ItemSpecificCriteriaDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
+            }
+        }
+        private void InitGeneralCriteriaEnum()
+        {
+            List<GeneralCriteriaDAO> statuses = DataContext.GeneralCriteria.ToList();
+            foreach (var item in GeneralCriteriaEnum.KpiCriteriaEnumList)
+            {
+                if (!statuses.Any(pt => pt.Id == item.Id))
+                {
+                    DataContext.GeneralCriteria.Add(new GeneralCriteriaDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
+            }
+        }
+
+        private void InitTotalItemSpecificCriteriaEnum()
+        {
+            List<TotalItemSpecificCriteriaDAO> statuses = DataContext.TotalItemSpecificCriteria.ToList();
+            foreach (var item in TotalItemSpecificCriteriaEnum.TotalItemSpecificCriteriaEnumList)
+            {
+                if (!statuses.Any(pt => pt.Id == item.Id))
+                {
+                    DataContext.TotalItemSpecificCriteria.Add(new TotalItemSpecificCriteriaDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
+            }
+        }
+        private void InitUsedVariationEnum()
+        {
+            List<UsedVariationDAO> statuses = DataContext.UsedVariation.ToList();
+            foreach (var item in UsedVariationEnum.UsedVariationEnumList)
+            {
+                if (!statuses.Any(pt => pt.Id == item.Id))
+                {
+                    DataContext.UsedVariation.Add(new UsedVariationDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
+            }
+        }
+        private void InitEditedPriceStatusEnum()
+        {
+            List<EditedPriceStatusDAO> statuses = DataContext.EditedPriceStatus.ToList();
+            if (!statuses.Any(pt => pt.Id == EditedPriceStatusEnum.ACTIVE.Id))
+            {
+                DataContext.EditedPriceStatus.Add(new EditedPriceStatusDAO
+                {
+                    Id = EditedPriceStatusEnum.ACTIVE.Id,
+                    Code = EditedPriceStatusEnum.ACTIVE.Code,
+                    Name = EditedPriceStatusEnum.ACTIVE.Name,
+                });
+            }
+
+            if (!statuses.Any(pt => pt.Id == EditedPriceStatusEnum.INACTIVE.Id))
+            {
+                DataContext.EditedPriceStatus.Add(new EditedPriceStatusDAO
+                {
+                    Id = EditedPriceStatusEnum.INACTIVE.Id,
+                    Code = EditedPriceStatusEnum.INACTIVE.Code,
+                    Name = EditedPriceStatusEnum.INACTIVE.Name,
+                });
+            }
+        }
         private void InitResellerStatusEnum()
         {
             List<ResellerStatusDAO> resellerStatuses = DataContext.ResellerStatus.ToList();

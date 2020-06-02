@@ -138,6 +138,8 @@ namespace DMS.Rpc.reseller_type
 
             List<ResellerType> ResellerTypes = await ResellerTypeService.List(ResellerTypeFilter);
             ResellerTypes = await ResellerTypeService.BulkDelete(ResellerTypes);
+            if (ResellerTypes.Any(x => !x.IsValidated))
+                return BadRequest(ResellerTypes.Where(x => !x.IsValidated));
             return true;
         }
         

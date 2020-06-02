@@ -19,9 +19,6 @@ namespace DMS.Rpc.role
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
         public const string AssignAppUser = Default + "/assign-app-user";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-template";
         public const string GetMenu = Default + "/get-menu";
         public const string CreatePermission = Default + "/create-permission";
 
@@ -86,18 +83,6 @@ namespace DMS.Rpc.role
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
                 Detail, Delete, 
                 SingleListStatus } },
-            { "Xuất excel", new List<string> { 
-                Master, Count, List, Get,
-                SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
-                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
-                Detail, Export, GetMenu,
-                SingleListAppUser, SingleListMenu, SingleListStatus} },
-            { "Nhập excel", new List<string> { 
-                Master, Count, List, Get,
-                SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
-                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
-                Detail, ExportTemplate, Import, GetMenu,
-                SingleListAppUser, SingleListMenu, SingleListStatus} },
         };
     }
 }

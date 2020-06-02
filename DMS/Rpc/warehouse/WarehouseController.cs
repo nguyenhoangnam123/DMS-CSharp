@@ -193,6 +193,8 @@ namespace DMS.Rpc.warehouse
 
             List<Warehouse> Warehouses = await WarehouseService.List(WarehouseFilter);
             Warehouses = await WarehouseService.BulkDelete(Warehouses);
+            if (Warehouses.Any(x => !x.IsValidated))
+                return BadRequest(Warehouses.Where(x => !x.IsValidated));
             return true;
         }
 
@@ -708,6 +710,41 @@ namespace DMS.Rpc.warehouse
             List<Warehouse_ProductGroupingDTO> Warehouse_ProductGroupingDTOs = WarehouseGroupings
                 .Select(x => new Warehouse_ProductGroupingDTO(x)).ToList();
             return Warehouse_ProductGroupingDTOs;
+        }
+        [Route(WarehouseRoute.FilterListStatus), HttpPost]
+        public async Task<List<Warehouse_StatusDTO>> FilterListStatus([FromBody] Warehouse_StatusFilterDTO Warehouse_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = int.MaxValue;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<Warehouse_StatusDTO> Warehouse_StatusDTOs = Statuses
+                .Select(x => new Warehouse_StatusDTO(x)).ToList();
+            return Warehouse_StatusDTOs;
+        }
+        [Route(WarehouseRoute.FilterListOrganization), HttpPost]
+        public async Task<List<Warehouse_OrganizationDTO>> FilterListOrganization([FromBody] Warehouse_OrganizationFilterDTO Warehouse_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = int.MaxValue;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.Code = Warehouse_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = Warehouse_OrganizationFilterDTO.Name;
+            OrganizationFilter.Path = Warehouse_OrganizationFilterDTO.Path;
+            OrganizationFilter.Level = Warehouse_OrganizationFilterDTO.Level;
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<Warehouse_OrganizationDTO> Warehouse_OrganizationDTOs = Organizations
+                .Select(x => new Warehouse_OrganizationDTO(x)).ToList();
+            return Warehouse_OrganizationDTOs;
         }
     }
 }

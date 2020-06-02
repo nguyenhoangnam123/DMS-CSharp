@@ -44,6 +44,7 @@ namespace DMS.Entities
     {
         public IdFilter Id { get; set; }
         public IdFilter IndirectSalesOrderId { get; set; }
+        public IdFilter ProductId { get; set; }
         public IdFilter ItemId { get; set; }
         public IdFilter UnitOfMeasureId { get; set; }
         public LongFilter Quantity { get; set; }

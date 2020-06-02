@@ -226,6 +226,8 @@ namespace DMS.Rpc.reseller
 
             List<Reseller> Resellers = await ResellerService.List(ResellerFilter);
             Resellers = await ResellerService.BulkDelete(Resellers);
+            if (Resellers.Any(x => !x.IsValidated))
+                return BadRequest(Resellers.Where(x => !x.IsValidated));
             return true;
         }
         

@@ -180,6 +180,8 @@ namespace DMS.Rpc.direct_sales_order
 
             List<DirectSalesOrder> DirectSalesOrders = await DirectSalesOrderService.List(DirectSalesOrderFilter);
             DirectSalesOrders = await DirectSalesOrderService.BulkDelete(DirectSalesOrders);
+            if (DirectSalesOrders.Any(x => !x.IsValidated))
+                return BadRequest(DirectSalesOrders.Where(x => !x.IsValidated));
             return true;
         }
         

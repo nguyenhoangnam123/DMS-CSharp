@@ -147,6 +147,8 @@ namespace DMS.Rpc.notification
 
             List<Notification> Notifications = await NotificationService.List(NotificationFilter);
             Notifications = await NotificationService.BulkDelete(Notifications);
+            if (Notifications.Any(x => !x.IsValidated))
+                return BadRequest(Notifications.Where(x => !x.IsValidated));
             return true;
         }
         

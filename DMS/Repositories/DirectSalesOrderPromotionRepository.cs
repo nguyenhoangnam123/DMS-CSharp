@@ -37,6 +37,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.DirectSalesOrderId != null)
                 query = query.Where(q => q.DirectSalesOrderId, filter.DirectSalesOrderId);
+            if (filter.ProductId != null)
+                query = query.Where(q => q.Item.ProductId, filter.ProductId);
             if (filter.ItemId != null)
                 query = query.Where(q => q.ItemId, filter.ItemId);
             if (filter.UnitOfMeasureId != null)

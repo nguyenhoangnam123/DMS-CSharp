@@ -41,7 +41,8 @@ namespace DMS.Services.MProduct
             VariationCodeExisted,
             VariationNameExisted,
             TaxTypeEmpty,
-            ItemInUsed
+            ItemInUsed,
+            ProductInUsed
         }
 
         private IUOW UOW;
@@ -253,7 +254,7 @@ namespace DMS.Services.MProduct
                         item.AddError(nameof(ProductValidator), nameof(Item.Name), ErrorCode.NameExisted);
                     }
 
-                    if (await CanDelete(item))
+                    if (await ItemCanDelete(item))
                     {
 
                     }
@@ -267,7 +268,7 @@ namespace DMS.Services.MProduct
             return Product.IsValidated;
         }
 
-        private async Task<bool> CanDelete(Item Item)
+        private async Task<bool> ItemCanDelete(Item Item)
         {
             IndirectSalesOrderContentFilter IndirectSalesOrderContentFilter = new IndirectSalesOrderContentFilter()
             {
@@ -350,6 +351,35 @@ namespace DMS.Services.MProduct
             return Product.IsValidated;
         }
 
+        private async Task<bool> CanDelete(Product Product)
+        {
+            IndirectSalesOrderContentFilter IndirectSalesOrderContentFilter = new IndirectSalesOrderContentFilter
+            {
+                ProductId = new IdFilter { Equal = Product.Id }
+            };
+            var count1 = await UOW.IndirectSalesOrderContentRepository.Count(IndirectSalesOrderContentFilter);
+            IndirectSalesOrderPromotionFilter IndirectSalesOrderPromotionFilter = new IndirectSalesOrderPromotionFilter
+            {
+                ProductId = new IdFilter { Equal = Product.Id }
+            };
+            var count2 = await UOW.IndirectSalesOrderPromotionRepository.Count(IndirectSalesOrderPromotionFilter);
+            DirectSalesOrderContentFilter DirectSalesOrderContentFilter = new DirectSalesOrderContentFilter
+            {
+                ProductId = new IdFilter { Equal = Product.Id }
+            };
+            var count3 = await UOW.DirectSalesOrderContentRepository.Count(DirectSalesOrderContentFilter);
+            DirectSalesOrderPromotionFilter DirectSalesOrderPromotionFilter = new DirectSalesOrderPromotionFilter
+            {
+                ProductId = new IdFilter { Equal = Product.Id }
+            };
+            var count4 = await UOW.DirectSalesOrderPromotionRepository.Count(DirectSalesOrderPromotionFilter);
+
+            if(count1 == 0 && count2 == 0 && count3 == 0 && count4 == 0)
+                return Product.IsValidated;
+            else
+                Product.AddError(nameof(ProductValidator), nameof(Product.Id), ErrorCode.ProductInUsed);
+            return Product.IsValidated;
+        }
         public async Task<bool> Create(Product Product)
         {
             await ValidateCode(Product);
@@ -398,6 +428,7 @@ namespace DMS.Services.MProduct
         {
             if (await ValidateId(Product))
             {
+                await CanDelete(Product);
             }
             return Product.IsValidated;
         }

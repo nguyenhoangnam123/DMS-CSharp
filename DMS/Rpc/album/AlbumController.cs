@@ -139,6 +139,8 @@ namespace DMS.Rpc.album
 
             List<Album> Albums = await AlbumService.List(AlbumFilter);
             Albums = await AlbumService.BulkDelete(Albums);
+            if (Albums.Any(x => !x.IsValidated))
+                return BadRequest(Albums.Where(x => !x.IsValidated));
             return true;
         }
         
