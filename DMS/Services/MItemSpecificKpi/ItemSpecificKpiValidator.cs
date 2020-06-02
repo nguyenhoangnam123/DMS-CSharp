@@ -6,6 +6,7 @@ using Common;
 using DMS.Entities;
 using DMS;
 using DMS.Repositories;
+using DMS.Enums;
 
 namespace DMS.Services.MItemSpecificKpi
 {
@@ -23,6 +24,12 @@ namespace DMS.Services.MItemSpecificKpi
         public enum ErrorCode
         {
             IdNotExisted,
+            OrganizationIdNotExisted,
+            EmployeeIdsEmpty,
+            StatusNotExisted,
+            KpiPeriodIdNotExisted,
+            ItemSpecificKpiContentsEmpty,
+            ItemIdNotExisted
         }
 
         private IUOW UOW;
@@ -50,8 +57,103 @@ namespace DMS.Services.MItemSpecificKpi
             return count == 1;
         }
 
+        private async Task<bool> ValidateOrganization(ItemSpecificKpi ItemSpecificKpi)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            {
+                Id = new IdFilter { Equal = ItemSpecificKpi.OrganizationId }
+            };
+
+            var count = await UOW.OrganizationRepository.Count(OrganizationFilter);
+            if (count == 0)
+                ItemSpecificKpi.AddError(nameof(ItemSpecificKpiValidator), nameof(ItemSpecificKpi.Organization), ErrorCode.OrganizationIdNotExisted);
+            return ItemSpecificKpi.IsValidated;
+        }
+
+        private async Task<bool> ValidateEmployees(ItemSpecificKpi ItemSpecificKpi)
+        {
+            if (ItemSpecificKpi.EmployeeIds == null || !ItemSpecificKpi.EmployeeIds.Any())
+                ItemSpecificKpi.AddError(nameof(ItemSpecificKpiValidator), nameof(ItemSpecificKpi.EmployeeIds), ErrorCode.EmployeeIdsEmpty);
+            else
+            {
+                AppUserFilter AppUserFilter = new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter { In = ItemSpecificKpi.EmployeeIds },
+                    OrganizationId = new IdFilter(),
+                    Selects = AppUserSelect.Id
+                };
+
+                var EmployeeIdsInDB = (await UOW.AppUserRepository.List(AppUserFilter)).Select(x => x.Id).ToList();
+                var listIdsNotExisted = ItemSpecificKpi.EmployeeIds.Except(EmployeeIdsInDB).ToList();
+
+                if (listIdsNotExisted != null && listIdsNotExisted.Any())
+                {
+                    foreach (var Id in listIdsNotExisted)
+                    {
+                        ItemSpecificKpi.AddError(nameof(ItemSpecificKpiValidator), nameof(ItemSpecificKpi.EmployeeIds), ErrorCode.IdNotExisted);
+                    }
+                }
+
+            }
+            return ItemSpecificKpi.IsValidated;
+        }
+
+        private async Task<bool> ValidateStatus(ItemSpecificKpi ItemSpecificKpi)
+        {
+            if (StatusEnum.ACTIVE.Id != ItemSpecificKpi.StatusId && StatusEnum.INACTIVE.Id != ItemSpecificKpi.StatusId)
+                ItemSpecificKpi.AddError(nameof(ItemSpecificKpiValidator), nameof(ItemSpecificKpi.Status), ErrorCode.StatusNotExisted);
+            return ItemSpecificKpi.IsValidated;
+        }
+
+        private async Task<bool> ValidateKpiPeriod(ItemSpecificKpi ItemSpecificKpi)
+        {
+            KpiPeriodFilter KpiPeriodFilter = new KpiPeriodFilter
+            {
+                Id = new IdFilter { Equal = ItemSpecificKpi.KpiPeriodId }
+            };
+
+            int count = await UOW.KpiPeriodRepository.Count(KpiPeriodFilter);
+            if (count == 0)
+                ItemSpecificKpi.AddError(nameof(ItemSpecificKpiValidator), nameof(ItemSpecificKpi.KpiPeriod), ErrorCode.KpiPeriodIdNotExisted);
+            return ItemSpecificKpi.IsValidated;
+        }
+
+        private async Task<bool> ValidateItem(ItemSpecificKpi ItemSpecificKpi)
+        {
+            if(ItemSpecificKpi.ItemSpecificKpiContents == null || !ItemSpecificKpi.ItemSpecificKpiContents.Any())
+                ItemSpecificKpi.AddError(nameof(ItemSpecificKpiValidator), nameof(ItemSpecificKpi.ItemSpecificKpiContents), ErrorCode.ItemSpecificKpiContentsEmpty);
+            else
+            {
+                var ItemIds = ItemSpecificKpi.ItemSpecificKpiContents.Select(x => x.ItemId).ToList();
+                ItemFilter ItemFilter = new ItemFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = ItemSelect.Id,
+                    Id = new IdFilter { In = ItemIds }
+                };
+
+                var ItemIdsInDB = (await UOW.ItemRepository.List(ItemFilter)).Select(x => x.Id).ToList();
+                var ItemIdsNotExisted = ItemIds.Except(ItemIdsInDB).ToList();
+                if(ItemIdsNotExisted != null && ItemIdsNotExisted.Any())
+                {
+                    foreach (var Id in ItemIdsNotExisted)
+                    {
+                        ItemSpecificKpi.AddError(nameof(ItemSpecificKpiValidator), nameof(ItemSpecificKpi.ItemSpecificKpiContents), ErrorCode.ItemIdNotExisted);
+                    }
+                }
+            }
+            return ItemSpecificKpi.IsValidated;
+        }
+
         public async Task<bool>Create(ItemSpecificKpi ItemSpecificKpi)
         {
+            await ValidateOrganization(ItemSpecificKpi);
+            await ValidateEmployees(ItemSpecificKpi);
+            await ValidateStatus(ItemSpecificKpi);
+            await ValidateKpiPeriod(ItemSpecificKpi);
             return ItemSpecificKpi.IsValidated;
         }
 
@@ -59,6 +161,9 @@ namespace DMS.Services.MItemSpecificKpi
         {
             if (await ValidateId(ItemSpecificKpi))
             {
+                await ValidateOrganization(ItemSpecificKpi);
+                await ValidateStatus(ItemSpecificKpi);
+                await ValidateKpiPeriod(ItemSpecificKpi);
             }
             return ItemSpecificKpi.IsValidated;
         }
