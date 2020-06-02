@@ -185,7 +185,8 @@ namespace DMS.Services.MProduct
                         ScanCode = Product.ScanCode,
                         RetailPrice = Product.RetailPrice,
                         SalePrice = Product.SalePrice,
-                        ProductId = Product.Id
+                        ProductId = Product.Id,
+                        StatusId = StatusEnum.ACTIVE.Id
                     });
                 }
                 await UOW.Begin();
