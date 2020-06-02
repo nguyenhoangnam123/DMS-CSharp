@@ -88,26 +88,26 @@ namespace DMS.Rpc.store
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus } },
+                Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore } },
             { "Thêm", new List<string> { 
-                Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus,
+                Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, Create, SaveImage,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore} },
             { "Sửa", new List<string> { 
-                Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus,
+                Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, Update, SaveImage,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore} },
             { "Xoá", new List<string> { 
-                Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus,
+                Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Delete, } },
             { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus,
+                Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, BulkDelete } },
             { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus,
+                Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, Export } },
             { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus,
+                Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, ExportTemplate, Import } },
         };
     }
