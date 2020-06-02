@@ -127,62 +127,6 @@ namespace DMS.Rpc.unit_of_measure_grouping
                 return BadRequest(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
         }
 
-        [Route(UnitOfMeasureGroupingRoute.Import), HttpPost]
-        public async Task<ActionResult<List<UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO>>> Import(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
-
-            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.Import(DataFile);
-            List<UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO> UnitOfMeasureGrouping_UnitOfMeasureGroupingDTOs = UnitOfMeasureGroupings
-                .Select(c => new UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO(c)).ToList();
-            return UnitOfMeasureGrouping_UnitOfMeasureGroupingDTOs;
-        }
-
-        [Route(UnitOfMeasureGroupingRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = ConvertFilterDTOToFilterEntity(UnitOfMeasureGrouping_UnitOfMeasureGroupingFilterDTO);
-            UnitOfMeasureGroupingFilter.Skip = 0;
-            UnitOfMeasureGroupingFilter.Take = int.MaxValue;
-
-            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(UnitOfMeasureGroupingFilter);
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
-            {
-                var UnitOfMeasureGroupingHeaders = new List<string[]>()
-                {
-                    new string[] {"Mã nhóm đơn vị tính","Tên nhóm đơn vị tính","Mô tả"}
-                };
-                List<object[]> data = new List<object[]>();
-                for (int i = 0; i < UnitOfMeasureGroupings.Count; i++)
-                {
-                    var UnitOfMeasureGrouping = UnitOfMeasureGroupings[i];
-
-                    data.Add(new Object[]
-                    {
-                         UnitOfMeasureGrouping.Code,
-                         UnitOfMeasureGrouping.Name,
-                         UnitOfMeasureGrouping.Description
-                    });
-                }
-                excel.GenerateWorksheet("UnitOfMeasureGrouping", UnitOfMeasureGroupingHeaders, data);
-                excel.Save();
-            }
-
-            return File(memoryStream.ToArray(), "application/octet-stream", "UnitOfMeasure.xlsx");
-
-        }
-
         [Route(UnitOfMeasureGroupingRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {

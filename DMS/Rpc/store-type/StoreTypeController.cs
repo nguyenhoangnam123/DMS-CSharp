@@ -118,38 +118,6 @@ namespace DMS.Rpc.store_type
                 return BadRequest(StoreType_StoreTypeDTO);
         }
 
-        [Route(StoreTypeRoute.Import), HttpPost]
-        public async Task<ActionResult<List<StoreType_StoreTypeDTO>>> Import(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
-
-            List<StoreType> StoreTypes = await StoreTypeService.Import(DataFile);
-            List<StoreType_StoreTypeDTO> StoreType_StoreTypeDTOs = StoreTypes
-                .Select(c => new StoreType_StoreTypeDTO(c)).ToList();
-            return StoreType_StoreTypeDTOs;
-        }
-
-        [Route(StoreTypeRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] StoreType_StoreTypeFilterDTO StoreType_StoreTypeFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            StoreTypeFilter StoreTypeFilter = ConvertFilterDTOToFilterEntity(StoreType_StoreTypeFilterDTO);
-            DataFile DataFile = await StoreTypeService.Export(StoreTypeFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
-            {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
-        }
-
         [Route(StoreTypeRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
