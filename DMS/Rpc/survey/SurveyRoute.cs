@@ -16,6 +16,7 @@ namespace DMS.Rpc.survey
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
         public const string Export = Default + "/export";
+        public const string CreateSurveyResult = Default + "/create-survey-result";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListStatus = Default + "/filter-list-status";
@@ -43,12 +44,12 @@ namespace DMS.Rpc.survey
             { "Thêm", new List<string> {
                 Master, Count, List, Get, 
                 FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, 
-                Detail, Create, 
+                Detail, Create, CreateSurveyResult,
                 SingleListAppUser, SingleListStatus, SingleListSurveyQuestionType, SingleListSurveyOptionType,  } },
             { "Sửa", new List<string> { 
                 Master, Count, List, Get, 
                 FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, 
-                Detail, Update, 
+                Detail, Update, CreateSurveyResult,
                 SingleListAppUser, SingleListStatus, SingleListSurveyQuestionType, SingleListSurveyOptionType, } },
             { "Xoá", new List<string> {
                 Master, Count, List, Get,

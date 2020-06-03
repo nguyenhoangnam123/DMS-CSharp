@@ -80,6 +80,38 @@ namespace DMS.Services.MSurvey
             Survey Survey = await UOW.SurveyRepository.Get(Id);
             if (Survey == null)
                 return null;
+            Survey.SurveyResults = new List<SurveyResult>();
+            foreach (var SurveyQuestion in Survey.SurveyQuestions)
+            {
+                if (SurveyQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id
+                    || SurveyQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id)
+                {
+                    List<SurveyResultSingle> SurveyResultSingles = SurveyQuestion.SurveyOptions.Where(x => x.SurveyQuestionId == SurveyQuestion.Id).Select(x => new SurveyResultSingle
+                    {
+                        SurveyQuestionId = SurveyQuestion.Id,
+                        SurveyOptionId = x.Id
+                    }).ToList();
+                    SurveyResult SurveyResult = new SurveyResult()
+                    {
+                        SurveyId = Id,
+                        SurveyResultSingles = SurveyResultSingles,
+                    };
+                }
+
+                if (SurveyQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
+                {
+                    List<SurveyResultCell> SurveyResultCell = SurveyQuestion.SurveyOptions.Where(x => x.SurveyQuestionId == SurveyQuestion.Id).Select(x => new SurveyResultCell
+                    {
+                        //SurveyQuestionId = SurveyQuestion.Id,
+                        //ColumnOptionId = x.c
+                    }).ToList();
+                    SurveyResult SurveyResult = new SurveyResult()
+                    {
+                        SurveyId = Id,
+                        //SurveyResultSingles = SurveyResultSingles,
+                    };
+                }
+            }
             return Survey;
         }
 
@@ -112,6 +144,33 @@ namespace DMS.Services.MSurvey
         public async Task<Survey> Update(Survey Survey)
         {
             if (!await SurveyValidator.Update(Survey))
+                return Survey;
+            try
+            {
+                var oldData = await UOW.SurveyRepository.Get(Survey.Id);
+
+                await UOW.Begin();
+                await UOW.SurveyRepository.Update(Survey);
+                await UOW.Commit();
+
+                var newData = await UOW.SurveyRepository.Get(Survey.Id);
+                await Logging.CreateAuditLog(newData, oldData, nameof(SurveyService));
+                return newData;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+        }
+
+        public async Task<Survey> CreateSurveyResult(Survey Survey)
+        {
+            if (!await SurveyValidator.CreateSurveyResult(Survey))
                 return Survey;
             try
             {

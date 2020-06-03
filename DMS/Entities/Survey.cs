@@ -18,6 +18,7 @@ namespace DMS.Entities
         public AppUser Creator { get; set; }
         public Status Status { get; set; }
         public List<SurveyQuestion> SurveyQuestions { get; set; }
+        public List<SurveyResult> SurveyResults { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

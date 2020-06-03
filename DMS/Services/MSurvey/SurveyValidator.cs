@@ -13,6 +13,7 @@ namespace DMS.Services.MSurvey
     {
         Task<bool> Create(Survey Survey);
         Task<bool> Update(Survey Survey);
+        Task<bool> CreateSurveyResult(Survey Survey);
         Task<bool> Delete(Survey Survey);
         Task<bool> SaveResult(Survey Survey);
     }
@@ -24,7 +25,8 @@ namespace DMS.Services.MSurvey
             IdNotExisted,
             EndDateWrong,
             TitleEmpty,
-            StartDateWrong
+            StartDateWrong,
+            QuestionIsMandatory
         }
 
         private IUOW UOW;
@@ -83,6 +85,26 @@ namespace DMS.Services.MSurvey
             return Survey.IsValidated;
         }
 
+        private async Task<bool> ValidateMandatoryQuestion(Survey Survey)
+        {
+            var MandatoryQuestions = Survey.SurveyQuestions.Where(x => x.IsMandatory).ToList();
+            foreach (var MandatoryQuestion in MandatoryQuestions)
+            {
+                if(MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id
+                || MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id)
+                {
+                    if (MandatoryQuestion.SurveyOptions.All(x => x.Result == false))
+                        MandatoryQuestion.AddError(nameof(SurveyValidator), nameof(MandatoryQuestion.IsMandatory), ErrorCode.QuestionIsMandatory);
+                }
+                else if(MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id
+                || MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
+                {
+
+                }
+            }
+            return Survey.IsValidated;
+        }
+
         public async Task<bool> Create(Survey Survey)
         {
             await ValidateSurveyQuestions(Survey);
@@ -99,6 +121,15 @@ namespace DMS.Services.MSurvey
                 await ValidateSurveyQuestions(Survey);
                 await ValidateTitle(Survey);
                 await ValidateStartDate(Survey);
+            }
+            return Survey.IsValidated;
+        }
+
+        public async Task<bool> CreateSurveyResult(Survey Survey)
+        {
+            if (await ValidateId(Survey))
+            {
+                await ValidateMandatoryQuestion(Survey);
             }
             return Survey.IsValidated;
         }
