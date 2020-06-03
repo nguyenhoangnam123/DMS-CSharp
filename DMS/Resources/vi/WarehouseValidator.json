@@ -1,0 +1,35 @@
+﻿{
+  "Id": {
+    "IdNotExisted": "Id không tồn tại"
+  },
+  "Code": {
+    "CodeEmpty": "Chưa nhập Code",
+    "CodeOverLength": "Code quá dài",
+    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
+  },
+  "Name": {
+    "NameEmpty": "Chưa nhập tên",
+    "NameOverLength": "Tên quá dài"
+  },
+  "Address": {
+    "AddressOverLength": "Địa chỉ quá dài"
+  },
+  "Organization": {
+    "OrganizationNotExisted": "Chưa chọn đơn vị tổ chức"
+  },
+  "District": {
+    "DistrictNotExisted": "Chưa chọn Quận/ Huyện"
+  },
+  "Province": {
+    "ProvinceNotExisted": "Chưa chọn Tỉnh/Thành phố"
+  },
+  "Ward": {
+    "WardNotExisted": "Chưa chọn xã"
+  },
+  "Status": {
+    "StatusNotExisted": "Chưa chọn trạng thái"
+  },
+  "Warehouse": {
+    "WarehouseHasInventory":  "Kho đã có hàng tồn"
+  } 
+}

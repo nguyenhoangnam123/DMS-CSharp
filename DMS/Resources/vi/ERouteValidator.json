@@ -2,7 +2,7 @@
   "Id": {
     "IdNotExisted": "Id không tồn tại"
   },
-  "Code" {
+  "Code": {
     "CodeEmpty": "Chưa nhập mã cho tuyến",
     "CodeHasSpecialCharacter": "Mã không chứa khoảng trắng và ký tự Tiếng Việt",
     "CodeExisted": "Mã đã được sử dụng"
@@ -33,5 +33,8 @@
     "Store": {
       "StoreNotExisted": "Chưa chọn cửa hàng"
     }
+  },
+  "RequestState": {
+    "ERouteInUsed":  "Nội dung tuyến đang được sử dụng"
   }
 }
