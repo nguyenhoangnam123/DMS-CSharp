@@ -10,13 +10,10 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public long ItemSpecificKpiId { get; set; }
-        public long ItemSpecificCriteriaId { get; set; }
         public long ItemId { get; set; }
-        public long Value { get; set; }
         public Item Item { get; set; }
-        public ItemSpecificCriteria ItemSpecificCriteria { get; set; }
         public ItemSpecificKpi ItemSpecificKpi { get; set; }
-
+        public List<ItemSpecificKpiContentItemSpecificKpiCriteriaMapping> ItemSpecificKpiContentItemSpecificKpiCriteriaMappings { get; set; }
         public bool Equals(ItemSpecificKpiContent other)
         {
             return other != null && Id == other.Id;
@@ -31,9 +28,7 @@ namespace DMS.Entities
     {
         public IdFilter Id { get; set; }
         public IdFilter ItemSpecificKpiId { get; set; }
-        public IdFilter ItemSpecificCriteriaId { get; set; }
         public IdFilter ItemId { get; set; }
-        public LongFilter Value { get; set; }
         public List<ItemSpecificKpiContentFilter> OrFilter { get; set; }
         public ItemSpecificKpiContentOrder OrderBy {get; set;}
         public ItemSpecificKpiContentSelect Selects {get; set;}
@@ -44,9 +39,7 @@ namespace DMS.Entities
     {
         Id = 0,
         ItemSpecificKpi = 1,
-        ItemSpecificCriteria = 2,
-        Item = 3,
-        Value = 4,
+        Item = 2,
     }
 
     [Flags]
@@ -55,8 +48,6 @@ namespace DMS.Entities
         ALL = E.ALL,
         Id = E._0,
         ItemSpecificKpi = E._1,
-        ItemSpecificCriteria = E._2,
-        Item = E._3,
-        Value = E._4,
+        Item = E._2,
     }
 }

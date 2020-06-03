@@ -308,9 +308,7 @@ namespace DMS.Repositories
                 {
                     Id = x.Id,
                     ItemSpecificKpiId = x.ItemSpecificKpiId,
-                    ItemSpecificCriteriaId = x.ItemSpecificCriteriaId,
                     ItemId = x.ItemId,
-                    Value = x.Value,
                     Item = new Item
                     {
                         Id = x.Item.Id,
@@ -322,13 +320,34 @@ namespace DMS.Repositories
                         RetailPrice = x.Item.RetailPrice,
                         StatusId = x.Item.StatusId,
                     },
-                    ItemSpecificCriteria = new ItemSpecificCriteria
-                    {
-                        Id = x.ItemSpecificCriteria.Id,
-                        Code = x.ItemSpecificCriteria.Code,
-                        Name = x.ItemSpecificCriteria.Name,
-                    },
                 }).ToListAsync();
+            var ItemSpecificKpiContentIds = ItemSpecificKpi.ItemSpecificKpiContents.Select(x => x.Id).ToList();
+            List<ItemSpecificKpiContentItemSpecificKpiCriteriaMapping> ItemSpecificKpiContentItemSpecificKpiCriteriaMappings = await DataContext.ItemSpecificKpiContentItemSpecificKpiCriteriaMapping
+                .Where(x => ItemSpecificKpiContentIds.Contains(x.ItemSpecificKpiContentId))
+                .Select(x => new ItemSpecificKpiContentItemSpecificKpiCriteriaMapping
+                {
+                    ItemSpecificCriteriaId = x.ItemSpecificCriteriaId,
+                    ItemSpecificKpiContentId = x.ItemSpecificKpiContentId,
+                    Value = x.Value,
+                    ItemSpecificKpiContent = new ItemSpecificKpiContent
+                    {
+                        Id = x.ItemSpecificKpiContent.Id,
+                        ItemId = x.ItemSpecificKpiContent.ItemId,
+                        ItemSpecificKpiId = x.ItemSpecificKpiContent.ItemSpecificKpiId,
+                        Item = new Item
+                        {
+                            Id = x.ItemSpecificKpiContent.Item.Id,
+                            ProductId = x.ItemSpecificKpiContent.Item.ProductId,
+                            Code = x.ItemSpecificKpiContent.Item.Code,
+                            Name = x.ItemSpecificKpiContent.Item.Name,
+                            ScanCode = x.ItemSpecificKpiContent.Item.ScanCode,
+                            SalePrice = x.ItemSpecificKpiContent.Item.SalePrice,
+                            RetailPrice = x.ItemSpecificKpiContent.Item.RetailPrice,
+                            StatusId = x.ItemSpecificKpiContent.Item.StatusId,
+                        },
+                    }
+                }).ToListAsync();
+
             ItemSpecificKpi.ItemSpecificKpiTotalItemSpecificCriteriaMappings = await DataContext.ItemSpecificKpiTotalItemSpecificCriteriaMapping.AsNoTracking()
                 .Where(x => x.ItemSpecificKpiId == ItemSpecificKpi.Id)
                 .Select(x => new ItemSpecificKpiTotalItemSpecificCriteriaMapping
@@ -420,9 +439,7 @@ namespace DMS.Repositories
                     var listContent = ItemSpecificKpi.ItemSpecificKpiContents.Select(x => new ItemSpecificKpiContentDAO
                     {
                         ItemId = x.ItemId,
-                        ItemSpecificCriteriaId = x.ItemSpecificCriteriaId,
                         ItemSpecificKpiId = ItemSpecificKpi.Id,
-                        Value = x.Value
                     }).ToList();
                     ItemSpecificKpiContentDAOs.AddRange(listContent);
                 }
@@ -474,9 +491,7 @@ namespace DMS.Repositories
                     ItemSpecificKpiContentDAO ItemSpecificKpiContentDAO = new ItemSpecificKpiContentDAO();
                     ItemSpecificKpiContentDAO.Id = ItemSpecificKpiContent.Id;
                     ItemSpecificKpiContentDAO.ItemSpecificKpiId = ItemSpecificKpi.Id;
-                    ItemSpecificKpiContentDAO.ItemSpecificCriteriaId = ItemSpecificKpiContent.ItemSpecificCriteriaId;
                     ItemSpecificKpiContentDAO.ItemId = ItemSpecificKpiContent.ItemId;
-                    ItemSpecificKpiContentDAO.Value = ItemSpecificKpiContent.Value;
                     ItemSpecificKpiContentDAOs.Add(ItemSpecificKpiContentDAO);
                 }
                 await DataContext.ItemSpecificKpiContent.BulkMergeAsync(ItemSpecificKpiContentDAOs);

@@ -223,12 +223,8 @@ namespace DMS.Services.MItemSpecificKpiContent
                         subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ItemSpecificKpiId))
                         subFilter.ItemSpecificKpiId = Map(subFilter.ItemSpecificKpiId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ItemSpecificCriteriaId))
-                        subFilter.ItemSpecificCriteriaId = Map(subFilter.ItemSpecificCriteriaId, FilterPermissionDefinition);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ItemId))
                         subFilter.ItemId = Map(subFilter.ItemId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Value))
-                        subFilter.Value = Map(subFilter.Value, FilterPermissionDefinition);
                 }
             }
             return filter;

@@ -10,22 +10,17 @@ namespace DMS.Rpc.item_specific_kpi
     {
         public long Id { get; set; }
         public long ItemSpecificKpiId { get; set; }
-        public long ItemSpecificCriteriaId { get; set; }
         public long ItemId { get; set; }
-        public long Value { get; set; }
         public ItemSpecificKpi_ItemDTO Item { get; set; }   
-        public ItemSpecificKpi_ItemSpecificCriteriaDTO ItemSpecificCriteria { get; set; }   
-        
+        public List<ItemSpecificKpi_ItemSpecificKpiContentItemSpecificKpiCriteriaMappingDTO> ItemSpecificKpiContentItemSpecificKpiCriteriaMappings { get; set; }
         public ItemSpecificKpi_ItemSpecificKpiContentDTO() {}
         public ItemSpecificKpi_ItemSpecificKpiContentDTO(ItemSpecificKpiContent ItemSpecificKpiContent)
         {
             this.Id = ItemSpecificKpiContent.Id;
             this.ItemSpecificKpiId = ItemSpecificKpiContent.ItemSpecificKpiId;
-            this.ItemSpecificCriteriaId = ItemSpecificKpiContent.ItemSpecificCriteriaId;
             this.ItemId = ItemSpecificKpiContent.ItemId;
-            this.Value = ItemSpecificKpiContent.Value;
             this.Item = ItemSpecificKpiContent.Item == null ? null : new ItemSpecificKpi_ItemDTO(ItemSpecificKpiContent.Item);
-            this.ItemSpecificCriteria = ItemSpecificKpiContent.ItemSpecificCriteria == null ? null : new ItemSpecificKpi_ItemSpecificCriteriaDTO(ItemSpecificKpiContent.ItemSpecificCriteria);
+            this.ItemSpecificKpiContentItemSpecificKpiCriteriaMappings = ItemSpecificKpiContent.ItemSpecificKpiContentItemSpecificKpiCriteriaMappings?.Select(x => new ItemSpecificKpi_ItemSpecificKpiContentItemSpecificKpiCriteriaMappingDTO(x)).ToList();
             this.Errors = ItemSpecificKpiContent.Errors;
         }
     }
@@ -37,11 +32,7 @@ namespace DMS.Rpc.item_specific_kpi
         
         public IdFilter ItemSpecificKpiId { get; set; }
         
-        public IdFilter ItemSpecificCriteriaId { get; set; }
-        
         public IdFilter ItemId { get; set; }
-        
-        public LongFilter Value { get; set; }
         
         public ItemSpecificKpiContentOrder OrderBy { get; set; }
     }

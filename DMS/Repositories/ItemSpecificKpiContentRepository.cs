@@ -37,12 +37,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.ItemSpecificKpiId != null)
                 query = query.Where(q => q.ItemSpecificKpiId, filter.ItemSpecificKpiId);
-            if (filter.ItemSpecificCriteriaId != null)
-                query = query.Where(q => q.ItemSpecificCriteriaId, filter.ItemSpecificCriteriaId);
             if (filter.ItemId != null)
                 query = query.Where(q => q.ItemId, filter.ItemId);
-            if (filter.Value != null)
-                query = query.Where(q => q.Value, filter.Value);
             query = OrFilter(query, filter);
             return query;
         }
@@ -59,12 +55,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, filter.Id);
                 if (filter.ItemSpecificKpiId != null)
                     queryable = queryable.Where(q => q.ItemSpecificKpiId, filter.ItemSpecificKpiId);
-                if (filter.ItemSpecificCriteriaId != null)
-                    queryable = queryable.Where(q => q.ItemSpecificCriteriaId, filter.ItemSpecificCriteriaId);
                 if (filter.ItemId != null)
                     queryable = queryable.Where(q => q.ItemId, filter.ItemId);
-                if (filter.Value != null)
-                    queryable = queryable.Where(q => q.Value, filter.Value);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -83,14 +75,8 @@ namespace DMS.Repositories
                         case ItemSpecificKpiContentOrder.ItemSpecificKpi:
                             query = query.OrderBy(q => q.ItemSpecificKpiId);
                             break;
-                        case ItemSpecificKpiContentOrder.ItemSpecificCriteria:
-                            query = query.OrderBy(q => q.ItemSpecificCriteriaId);
-                            break;
                         case ItemSpecificKpiContentOrder.Item:
                             query = query.OrderBy(q => q.ItemId);
-                            break;
-                        case ItemSpecificKpiContentOrder.Value:
-                            query = query.OrderBy(q => q.Value);
                             break;
                     }
                     break;
@@ -103,14 +89,8 @@ namespace DMS.Repositories
                         case ItemSpecificKpiContentOrder.ItemSpecificKpi:
                             query = query.OrderByDescending(q => q.ItemSpecificKpiId);
                             break;
-                        case ItemSpecificKpiContentOrder.ItemSpecificCriteria:
-                            query = query.OrderByDescending(q => q.ItemSpecificCriteriaId);
-                            break;
                         case ItemSpecificKpiContentOrder.Item:
                             query = query.OrderByDescending(q => q.ItemId);
-                            break;
-                        case ItemSpecificKpiContentOrder.Value:
-                            query = query.OrderByDescending(q => q.Value);
                             break;
                     }
                     break;
@@ -125,9 +105,7 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(ItemSpecificKpiContentSelect.Id) ? q.Id : default(long),
                 ItemSpecificKpiId = filter.Selects.Contains(ItemSpecificKpiContentSelect.ItemSpecificKpi) ? q.ItemSpecificKpiId : default(long),
-                ItemSpecificCriteriaId = filter.Selects.Contains(ItemSpecificKpiContentSelect.ItemSpecificCriteria) ? q.ItemSpecificCriteriaId : default(long),
                 ItemId = filter.Selects.Contains(ItemSpecificKpiContentSelect.Item) ? q.ItemId : default(long),
-                Value = filter.Selects.Contains(ItemSpecificKpiContentSelect.Value) ? q.Value : default(long),
                 Item = filter.Selects.Contains(ItemSpecificKpiContentSelect.Item) && q.Item != null ? new Item
                 {
                     Id = q.Item.Id,
@@ -138,12 +116,6 @@ namespace DMS.Repositories
                     SalePrice = q.Item.SalePrice,
                     RetailPrice = q.Item.RetailPrice,
                     StatusId = q.Item.StatusId,
-                } : null,
-                ItemSpecificCriteria = filter.Selects.Contains(ItemSpecificKpiContentSelect.ItemSpecificCriteria) && q.ItemSpecificCriteria != null ? new ItemSpecificCriteria
-                {
-                    Id = q.ItemSpecificCriteria.Id,
-                    Code = q.ItemSpecificCriteria.Code,
-                    Name = q.ItemSpecificCriteria.Name,
                 } : null,
                 ItemSpecificKpi = filter.Selects.Contains(ItemSpecificKpiContentSelect.ItemSpecificKpi) && q.ItemSpecificKpi != null ? new ItemSpecificKpi
                 {
@@ -182,9 +154,7 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 ItemSpecificKpiId = x.ItemSpecificKpiId,
-                ItemSpecificCriteriaId = x.ItemSpecificCriteriaId,
                 ItemId = x.ItemId,
-                Value = x.Value,
                 Item = x.Item == null ? null : new Item
                 {
                     Id = x.Item.Id,
@@ -195,12 +165,6 @@ namespace DMS.Repositories
                     SalePrice = x.Item.SalePrice,
                     RetailPrice = x.Item.RetailPrice,
                     StatusId = x.Item.StatusId,
-                },
-                ItemSpecificCriteria = x.ItemSpecificCriteria == null ? null : new ItemSpecificCriteria
-                {
-                    Id = x.ItemSpecificCriteria.Id,
-                    Code = x.ItemSpecificCriteria.Code,
-                    Name = x.ItemSpecificCriteria.Name,
                 },
                 ItemSpecificKpi = x.ItemSpecificKpi == null ? null : new ItemSpecificKpi
                 {
@@ -223,9 +187,7 @@ namespace DMS.Repositories
             ItemSpecificKpiContentDAO ItemSpecificKpiContentDAO = new ItemSpecificKpiContentDAO();
             ItemSpecificKpiContentDAO.Id = ItemSpecificKpiContent.Id;
             ItemSpecificKpiContentDAO.ItemSpecificKpiId = ItemSpecificKpiContent.ItemSpecificKpiId;
-            ItemSpecificKpiContentDAO.ItemSpecificCriteriaId = ItemSpecificKpiContent.ItemSpecificCriteriaId;
             ItemSpecificKpiContentDAO.ItemId = ItemSpecificKpiContent.ItemId;
-            ItemSpecificKpiContentDAO.Value = ItemSpecificKpiContent.Value;
             DataContext.ItemSpecificKpiContent.Add(ItemSpecificKpiContentDAO);
             await DataContext.SaveChangesAsync();
             ItemSpecificKpiContent.Id = ItemSpecificKpiContentDAO.Id;
@@ -240,9 +202,7 @@ namespace DMS.Repositories
                 return false;
             ItemSpecificKpiContentDAO.Id = ItemSpecificKpiContent.Id;
             ItemSpecificKpiContentDAO.ItemSpecificKpiId = ItemSpecificKpiContent.ItemSpecificKpiId;
-            ItemSpecificKpiContentDAO.ItemSpecificCriteriaId = ItemSpecificKpiContent.ItemSpecificCriteriaId;
             ItemSpecificKpiContentDAO.ItemId = ItemSpecificKpiContent.ItemId;
-            ItemSpecificKpiContentDAO.Value = ItemSpecificKpiContent.Value;
             await DataContext.SaveChangesAsync();
             await SaveReference(ItemSpecificKpiContent);
             return true;
@@ -262,9 +222,7 @@ namespace DMS.Repositories
                 ItemSpecificKpiContentDAO ItemSpecificKpiContentDAO = new ItemSpecificKpiContentDAO();
                 ItemSpecificKpiContentDAO.Id = ItemSpecificKpiContent.Id;
                 ItemSpecificKpiContentDAO.ItemSpecificKpiId = ItemSpecificKpiContent.ItemSpecificKpiId;
-                ItemSpecificKpiContentDAO.ItemSpecificCriteriaId = ItemSpecificKpiContent.ItemSpecificCriteriaId;
                 ItemSpecificKpiContentDAO.ItemId = ItemSpecificKpiContent.ItemId;
-                ItemSpecificKpiContentDAO.Value = ItemSpecificKpiContent.Value;
                 ItemSpecificKpiContentDAOs.Add(ItemSpecificKpiContentDAO);
             }
             await DataContext.BulkMergeAsync(ItemSpecificKpiContentDAOs);

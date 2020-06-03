@@ -7,13 +7,13 @@ namespace DMS.Models
     {
         public ItemSpecificCriteriaDAO()
         {
-            ItemSpecificKpiContents = new HashSet<ItemSpecificKpiContentDAO>();
+            ItemSpecificKpiContentItemSpecificKpiCriteriaMappings = new HashSet<ItemSpecificKpiContentItemSpecificKpiCriteriaMappingDAO>();
         }
 
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<ItemSpecificKpiContentDAO> ItemSpecificKpiContents { get; set; }
+        public virtual ICollection<ItemSpecificKpiContentItemSpecificKpiCriteriaMappingDAO> ItemSpecificKpiContentItemSpecificKpiCriteriaMappings { get; set; }
     }
 }

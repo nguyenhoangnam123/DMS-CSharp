@@ -52,6 +52,7 @@ namespace DMS.Models
         public virtual DbSet<ItemSpecificCriteriaDAO> ItemSpecificCriteria { get; set; }
         public virtual DbSet<ItemSpecificKpiDAO> ItemSpecificKpi { get; set; }
         public virtual DbSet<ItemSpecificKpiContentDAO> ItemSpecificKpiContent { get; set; }
+        public virtual DbSet<ItemSpecificKpiContentItemSpecificKpiCriteriaMappingDAO> ItemSpecificKpiContentItemSpecificKpiCriteriaMapping { get; set; }
         public virtual DbSet<ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO> ItemSpecificKpiTotalItemSpecificCriteriaMapping { get; set; }
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
@@ -1413,17 +1414,28 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ItemSpecificKpiContent_Item");
 
-                entity.HasOne(d => d.ItemSpecificCriteria)
-                    .WithMany(p => p.ItemSpecificKpiContents)
-                    .HasForeignKey(d => d.ItemSpecificCriteriaId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ItemSpecificKpiContent_ItemSpecificCriteria");
-
                 entity.HasOne(d => d.ItemSpecificKpi)
                     .WithMany(p => p.ItemSpecificKpiContents)
                     .HasForeignKey(d => d.ItemSpecificKpiId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ItemSpecificKpiContent_ItemSpecificKpi");
+            });
+
+            modelBuilder.Entity<ItemSpecificKpiContentItemSpecificKpiCriteriaMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ItemSpecificKpiContentId, e.ItemSpecificCriteriaId });
+
+                entity.HasOne(d => d.ItemSpecificCriteria)
+                    .WithMany(p => p.ItemSpecificKpiContentItemSpecificKpiCriteriaMappings)
+                    .HasForeignKey(d => d.ItemSpecificCriteriaId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemSpecificKpiContentItemSpecificKpiCriteriaMapping_ItemSpecificCriteria");
+
+                entity.HasOne(d => d.ItemSpecificKpiContent)
+                    .WithMany(p => p.ItemSpecificKpiContentItemSpecificKpiCriteriaMappings)
+                    .HasForeignKey(d => d.ItemSpecificKpiContentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemSpecificKpiContentItemSpecificKpiCriteriaMapping_ItemSpecificKpiContent");
             });
 
             modelBuilder.Entity<ItemSpecificKpiTotalItemSpecificCriteriaMappingDAO>(entity =>

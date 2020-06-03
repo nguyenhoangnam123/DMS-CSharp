@@ -139,36 +139,6 @@ namespace DMS.Repositories
 
             if (ItemSpecificCriteria == null)
                 return null;
-            ItemSpecificCriteria.ItemSpecificKpiContents = await DataContext.ItemSpecificKpiContent.AsNoTracking()
-                .Where(x => x.ItemSpecificCriteriaId == ItemSpecificCriteria.Id)
-                .Select(x => new ItemSpecificKpiContent
-                {
-                    Id = x.Id,
-                    ItemSpecificKpiId = x.ItemSpecificKpiId,
-                    ItemSpecificCriteriaId = x.ItemSpecificCriteriaId,
-                    ItemId = x.ItemId,
-                    Value = x.Value,
-                    Item = new Item
-                    {
-                        Id = x.Item.Id,
-                        ProductId = x.Item.ProductId,
-                        Code = x.Item.Code,
-                        Name = x.Item.Name,
-                        ScanCode = x.Item.ScanCode,
-                        SalePrice = x.Item.SalePrice,
-                        RetailPrice = x.Item.RetailPrice,
-                        StatusId = x.Item.StatusId,
-                    },
-                    ItemSpecificKpi = new ItemSpecificKpi
-                    {
-                        Id = x.ItemSpecificKpi.Id,
-                        OrganizationId = x.ItemSpecificKpi.OrganizationId,
-                        KpiPeriodId = x.ItemSpecificKpi.KpiPeriodId,
-                        StatusId = x.ItemSpecificKpi.StatusId,
-                        EmployeeId = x.ItemSpecificKpi.EmployeeId,
-                        CreatorId = x.ItemSpecificKpi.CreatorId,
-                    },
-                }).ToListAsync();
 
             return ItemSpecificCriteria;
         }
@@ -229,24 +199,6 @@ namespace DMS.Repositories
 
         private async Task SaveReference(ItemSpecificCriteria ItemSpecificCriteria)
         {
-            await DataContext.ItemSpecificKpiContent
-                .Where(x => x.ItemSpecificCriteriaId == ItemSpecificCriteria.Id)
-                .DeleteFromQueryAsync();
-            List<ItemSpecificKpiContentDAO> ItemSpecificKpiContentDAOs = new List<ItemSpecificKpiContentDAO>();
-            if (ItemSpecificCriteria.ItemSpecificKpiContents != null)
-            {
-                foreach (ItemSpecificKpiContent ItemSpecificKpiContent in ItemSpecificCriteria.ItemSpecificKpiContents)
-                {
-                    ItemSpecificKpiContentDAO ItemSpecificKpiContentDAO = new ItemSpecificKpiContentDAO();
-                    ItemSpecificKpiContentDAO.Id = ItemSpecificKpiContent.Id;
-                    ItemSpecificKpiContentDAO.ItemSpecificKpiId = ItemSpecificKpiContent.ItemSpecificKpiId;
-                    ItemSpecificKpiContentDAO.ItemSpecificCriteriaId = ItemSpecificCriteria.Id;
-                    ItemSpecificKpiContentDAO.ItemId = ItemSpecificKpiContent.ItemId;
-                    ItemSpecificKpiContentDAO.Value = ItemSpecificKpiContent.Value;
-                    ItemSpecificKpiContentDAOs.Add(ItemSpecificKpiContentDAO);
-                }
-                await DataContext.ItemSpecificKpiContent.BulkMergeAsync(ItemSpecificKpiContentDAOs);
-            }
         }
         
     }
