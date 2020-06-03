@@ -26,10 +26,22 @@
     "TaxTypeIdNotExisted": "Chưa chọn loại thuế"
   },
   "UnitOfMeasure": {
-    "UnitOfMeasureNotExisted": "Chưa chọn đơn vị tính"
+    "UnitOfMeasureNotExisted": "Chưa chọn đơn vị tính",
+    "UnitOfMeasureEmpty":  "Chưa nhập đơn vị tính "
   },
   "Status": {
     "StatusNotExisted": "Chưa chọn trạng thái"
+  },
+  "VariationGrouping": {
+    "VariationGroupingExisted": "Nhóm phiên bản đã tồn tại"
+  },
+  "Variation": {
+    "Code": {
+      "VariationCodeExisted": "Phiên bản code đã tồn tại"
+    },
+    "Name": {
+      "VariationNameExisted": "Tên phiên bản đã tồn tại"
+    }
   },
   "Item": {
     "Code": {

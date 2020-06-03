@@ -3,7 +3,7 @@
     "IdNotExisted": "Id không tồn tại",
     "BrandInUsed": "Brand đang hoạt động"
   },
-  "Code" {
+  "Code": {
     "CodeEmpty": "Chưa nhập mã cho Brand",
     "CodeHasSpecialCharacter": "Mã không chứa khoảng trắng và ký tự Tiếng Việt",
     "CodeExisted": "Mã đã được sử dụng"

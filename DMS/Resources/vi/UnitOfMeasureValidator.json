@@ -5,17 +5,16 @@
   "Code": {
     "CodeEmpty": "Chưa nhập Code",
     "CodeOverLength": "Code quá dài",
-    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt",
-    "FieldNotExisted":  "Trường không tồn tại"
+    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
   },
   "Name": {
-    "NameExisted": "Tên đã tồn tại"
+    "NameEmpty": "Chưa nhập tên",
+    "NameOverLength": "Tên quá dài"
   },
   "Status": {
     "StatusNotExisted": "Chưa chọn trạng thái"
   },
-  "AppUser": {
-    "AppUserNotExisted": "Chưa chọn AppUser"
+  "UnitOfMeasureID": {
+    "UnitOfMeasureInUsed":  "Đơn vị tính toán đã được sử dụng"
   }
-
 }

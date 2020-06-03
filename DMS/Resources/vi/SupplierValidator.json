@@ -1,5 +1,31 @@
 ﻿{
   "Id": {
     "IdNotExisted": "Id không tồn tại",
+    "SupplierInUsed":  "Nhà cung cấp đã được sử dụng"
+  },
+  "Name": {
+    "NameEmpty": "Chưa nhập tên",
+    "NameOverLength": "Tên quá dài",
+    "NameExisted": "Tên đã tồn tại"
+  },
+  "Code": {
+    "CodeEmpty": "Chưa nhập Code",
+    "CodeOverLength": "Code quá dài",
+    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
+  },
+  "Status": {
+    "StatusNotExisted": "Chưa chọn trạng thái"
+  },
+  "District": {
+    "DistrictNotExisted": "Chưa chọn Quận/ Huyện"
+  },
+  "Province": {
+    "ProvinceNotExisted": "Chưa chọn Tỉnh/Thành phố"
+  },
+  "Ward": {
+    "WardNotExisted": "Chưa chọn xã"
+  },
+  "PersonInChargeId": {
+    "PersonInChargeNotExisted": "Người phụ trách chưa tồn tại"
   }
 }
