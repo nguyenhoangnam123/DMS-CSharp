@@ -15,19 +15,30 @@ namespace DMS.Rpc.Monitor.monitor_salesman
 
     public class MonitorSalesman_SaleEmployeeDTO : DataDTO
     {
-        public long AppUserId { get; set; }
-        public string AppUserCode { get; set; }
-        public string AppUserName { get; set; }
+        public long SaleEmployeeId { get; set; }
+        public string Username { get; set; }
+        public string DisplayName { get; set; }
+        public string OrganizationName { get; set; }
         public long PlanCounter { get; set; }
         public long CheckinCounter { get; set; }
         public long ImageCounter { get; set; }
         public long Revenue { get; set; }
+        public List<MonitorSalesman_StoreCheckingDTO> StoreCheckings { get; set; }
     }
 
-    public class MonitorSalesman_MonitorSalesmanFilterDTO: DataDTO
+    public class MonitorSalesman_StoreCheckingDTO : DataDTO
+    {
+        public long Id { get; set; }
+        public string StoreCode { get; set; }
+        public string StoreName { get; set; }
+        public decimal Longtitude { get; set; }
+        public decimal Latitude { get; set; }
+    }
+
+    public class MonitorSalesman_MonitorSalesmanFilterDTO: FilterDTO
     {
         public IdFilter OrganizationId { get; set; }
         public IdFilter AppUserId { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime? CheckIn { get; set; }
     }
 }

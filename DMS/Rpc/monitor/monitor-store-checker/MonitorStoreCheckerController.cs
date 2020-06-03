@@ -133,7 +133,6 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         [Route(MonitorStoreCheckerRoute.List), HttpPost]
         public async Task<List<MonitorStoreChecker_MonitorStoreCheckerDTO>> List([FromBody] MonitorStoreChecker_MonitorStoreCheckerFilterDTO MonitorStoreChecker_MonitorStoreCheckerFilterDTO)
         {
-
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
                     MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
@@ -200,7 +199,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                                                         }).ToListAsync();
             List<StoreCheckingDAO> StoreCheckingDAOs = new List<StoreCheckingDAO>();
             var StoreCheckingQuery = DataContext.StoreChecking
-                .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue);
+                .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End);
             // khong check
             if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Checking?.Equal == null || MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Checking?.Equal.Value == 1)
             {
