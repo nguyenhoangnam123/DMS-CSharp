@@ -20,6 +20,8 @@ namespace DMS.Rpc.item_specific_kpi
         public ItemSpecificKpi_OrganizationDTO Organization { get; set; }
         public ItemSpecificKpi_StatusDTO Status { get; set; }
         public List<long> EmployeeIds { get; set; }
+        public List<ItemSpecificKpi_ItemSpecificCriteriaDTO> ItemSpecificCriterias { get; set; }
+        public List<ItemSpecificKpi_TotalItemSpecificCriteriaDTO> TotalItemSpecificCriterias { get; set; }
         public List<ItemSpecificKpi_ItemSpecificKpiContentDTO> ItemSpecificKpiContents { get; set; }
         public List<ItemSpecificKpi_ItemSpecificKpiTotalItemSpecificCriteriaMappingDTO> ItemSpecificKpiTotalItemSpecificCriteriaMappings { get; set; }
         public DateTime CreatedAt { get; set; }

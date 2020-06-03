@@ -144,7 +144,7 @@ namespace DMS.Rpc.item_specific_kpi
                 Selects = ItemSpecificCriteriaSelect.ALL
             });
 
-            List<TotalItemSpecificCriteria> TotalItemSpecificCriteria = await TotalItemSpecificCriteriaService.List(new TotalItemSpecificCriteriaFilter
+            List<TotalItemSpecificCriteria> s = await TotalItemSpecificCriteriaService.List(new TotalItemSpecificCriteriaFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
@@ -166,14 +166,16 @@ namespace DMS.Rpc.item_specific_kpi
                 });
             }
 
-            foreach (var TotalItemSpecificCriteri in TotalItemSpecificCriteria)
+            foreach (var TotalItemSpecificCriteria in s)
             {
                 ItemSpecificKpi_ItemSpecificKpiDTO.ItemSpecificKpiTotalItemSpecificCriteriaMappings.Add(new ItemSpecificKpi_ItemSpecificKpiTotalItemSpecificCriteriaMappingDTO
                 {
-                    TotalItemSpecificCriteriaId = TotalItemSpecificCriteri.Id,
-                    TotalItemSpecificCriteria = new ItemSpecificKpi_TotalItemSpecificCriteriaDTO(TotalItemSpecificCriteri)
+                    TotalItemSpecificCriteriaId = TotalItemSpecificCriteria.Id,
+                    TotalItemSpecificCriteria = new ItemSpecificKpi_TotalItemSpecificCriteriaDTO(TotalItemSpecificCriteria)
                 });
             }
+            ItemSpecificKpi_ItemSpecificKpiDTO.ItemSpecificCriterias = ItemSpecificCriterias?.Select(x => new ItemSpecificKpi_ItemSpecificCriteriaDTO(x)).ToList();
+            ItemSpecificKpi_ItemSpecificKpiDTO.TotalItemSpecificCriterias = s?.Select(x => new ItemSpecificKpi_TotalItemSpecificCriteriaDTO(x)).ToList();
             return ItemSpecificKpi_ItemSpecificKpiDTO;
         }
 

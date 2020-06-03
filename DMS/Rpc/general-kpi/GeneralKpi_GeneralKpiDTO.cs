@@ -20,6 +20,7 @@ namespace DMS.Rpc.general_kpi
         public GeneralKpi_KpiPeriodDTO KpiPeriod { get; set; }
         public GeneralKpi_OrganizationDTO Organization { get; set; }
         public GeneralKpi_StatusDTO Status { get; set; }
+        public List<GeneralKpi_GeneralCriteriaDTO> GeneralCriterias { get; set; }
         public List<GeneralKpi_GeneralKpiCriteriaMappingDTO> GeneralKpiCriteriaMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
