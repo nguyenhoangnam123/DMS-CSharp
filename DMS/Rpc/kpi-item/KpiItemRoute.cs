@@ -75,13 +75,13 @@ namespace DMS.Rpc.kpi_item
             { "Thêm", new List<string> { 
                 Master, Count, List, Get, 
                 FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
-                Detail, Create, GetDraft
+                Detail, Create, GetDraft,
                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, } },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get,  
                 FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
-                Detail, Update, GetDraft
+                Detail, Update, GetDraft,
                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, } },
 
             { "Xoá", new List<string> { 
