@@ -501,6 +501,24 @@ namespace DMS.Rpc.app_user
                 .Select(x => new AppUser_RoleDTO(x)).ToList();
             return AppUser_RoleDTOs;
         }
+        [Route(AppUserRoute.FilterListStatus), HttpPost]
+        public async Task<List<AppUser_StatusDTO>> FilterListStatus([FromBody] AppUser_StatusFilterDTO AppUser_StatusFilterDTO)
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+            StatusFilter.Id = AppUser_StatusFilterDTO.Id;
+            StatusFilter.Code = AppUser_StatusFilterDTO.Code;
+            StatusFilter.Name = AppUser_StatusFilterDTO.Name;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<AppUser_StatusDTO> AppUser_StatusDTOs = Statuses
+                .Select(x => new AppUser_StatusDTO(x)).ToList();
+            return AppUser_StatusDTOs;
+        }
     }
 }
 
