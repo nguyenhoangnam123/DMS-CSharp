@@ -20,6 +20,7 @@ namespace DMS.Rpc.app_user
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListPosition = Default + "/filter-list-position";
+        public const string FilterListStatus = Default + "/filter-list-status";
 
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListPosition = Default + "/single-list-position";
@@ -47,7 +48,10 @@ namespace DMS.Rpc.app_user
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> {Master,Detail,Count,List,Get, FilterListPosition, FilterListOrganization, SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, CountRole, ListRole}},
+            { "Tìm kiếm", new List<string> {
+                Master,Detail,Count,List,Get, 
+                FilterListPosition, FilterListOrganization, FilterListStatus,
+                SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, CountRole, ListRole}},
         };
     }
 }
