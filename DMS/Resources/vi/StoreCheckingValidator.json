@@ -3,8 +3,8 @@
     "IdNotExisted": "Id không tồn tại"
   },
   "Store": {
-    "StoreNotExisted": "Chưa chọn cửa hàng",
-    "DistanceOutOfRange":  "Khoảng cách ngoài phạm vi"
+    "StoreNotExisted": "Cửa hàng không tồn tại",
+    "DistanceOutOfRange": "Khoảng cách ngoài phạm vi"
   }
 
 }

@@ -14,16 +14,16 @@
     "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
   },
   "Status": {
-    "StatusNotExisted": "Chưa chọn trạng thái"
+    "StatusNotExisted": "Trạng thái không tồn tại"
   },
   "District": {
-    "DistrictNotExisted": "Chưa chọn Quận/ Huyện"
+    "DistrictNotExisted": "Quận/ Huyện không tồn tại"
   },
   "Province": {
-    "ProvinceNotExisted": "Chưa chọn Tỉnh/Thành phố"
+    "ProvinceNotExisted": "Tỉnh/Thành phố không tồn tại"
   },
   "Ward": {
-    "WardNotExisted": "Chưa chọn xã"
+    "WardNotExisted": "Xã không tồn tại"
   },
   "PersonInChargeId": {
     "PersonInChargeNotExisted": "Người phụ trách chưa tồn tại"

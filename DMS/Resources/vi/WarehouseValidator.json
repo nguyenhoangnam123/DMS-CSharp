@@ -15,19 +15,19 @@
     "AddressOverLength": "Địa chỉ quá dài"
   },
   "Organization": {
-    "OrganizationNotExisted": "Chưa chọn đơn vị tổ chức"
+    "OrganizationNotExisted": "Đơn vị tổ chức không tồn tại"
   },
   "District": {
-    "DistrictNotExisted": "Chưa chọn Quận/ Huyện"
+    "DistrictNotExisted": "Quận/ Huyện không tồn tại"
   },
   "Province": {
-    "ProvinceNotExisted": "Chưa chọn Tỉnh/Thành phố"
+    "ProvinceNotExisted": "Tỉnh/Thành phố không tồn tại"
   },
   "Ward": {
-    "WardNotExisted": "Chưa chọn xã"
+    "WardNotExisted": "Xã không tồn tại"
   },
   "Status": {
-    "StatusNotExisted": "Chưa chọn trạng thái"
+    "StatusNotExisted": "Trạng thái không tồn tại"
   },
   "Warehouse": {
     "WarehouseHasInventory":  "Kho đã có hàng tồn"

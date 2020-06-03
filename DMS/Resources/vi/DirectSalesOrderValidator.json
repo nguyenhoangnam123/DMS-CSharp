@@ -3,10 +3,10 @@
     "IdNotExisted": "Id không tồn tại"
   },
   "BuyerStore": {
-    "BuyerStoreNotExisted": "Chưa chọn cửa hàng mua"
+    "BuyerStoreNotExisted": "Cửa hàng mua không tồn tại"
   },
   "SaleEmployee": {
-    "SaleEmployeeNotExisted": "Chưa chọn nhân viên kinh doanh"
+    "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại"
   },
   "OrderDate": {
     "OrderDateEmpty": "Chưa chọn ngày đặt hàng"
@@ -26,6 +26,6 @@
     "InventoryHasntEnough": "Số lượng tồn kho không đủ"
   },
   "Item": {
-    "ItemNotExisted": "Chưa chọn phiên bản sản phẩm"
+    "ItemNotExisted": "Phiên bản sản phẩm không tồn tại"
   }
 }

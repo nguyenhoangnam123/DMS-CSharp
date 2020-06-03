@@ -14,9 +14,9 @@
     "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
   },
   "Status": {
-    "StatusNotExisted": "Chưa chọn trạng thái"
+    "StatusNotExisted": "Trạng thái không tồn tại"
   },
   "ParentId": {
-    "ParentNotExisted":  "Chưa chọn cửa hàng cha"
+    "ParentNotExisted": "Cửa hàng cha không tồn tại"
   }
 }

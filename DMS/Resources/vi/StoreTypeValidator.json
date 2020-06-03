@@ -14,6 +14,6 @@
     "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
   },
   "Status": {
-    "StatusNotExisted": "Chưa chọn trạng thái"
+    "StatusNotExisted": "Trạng thái không tồn tại"
   }
 }

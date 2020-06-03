@@ -12,7 +12,7 @@
     "NameOverLength": "Tên quá dài"
   },
   "Status": {
-    "StatusNotExisted": "Chưa chọn trạng thái"
+    "StatusNotExisted": "Trạng thái không tồn tại"
   },
   "UnitOfMeasureID": {
     "UnitOfMeasureInUsed":  "Đơn vị tính toán đã được sử dụng"

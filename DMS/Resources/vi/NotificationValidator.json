@@ -7,6 +7,6 @@
     "TitleOverLength": "Tiêu đề quá dài"
   },
   "Organization": {
-    "OrganizationIdNotExisted":  "Chưa chọn mã tổ chức"
+    "OrganizationIdNotExisted": "Mã tổ chức không tồn tại"
   }
 }
