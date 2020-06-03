@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.kpi_Total
+namespace DMS.Rpc.kpi_item
 {
-    public class KpiTotal_KpiCriteriaTotalDTO : DataDTO
+    public class KpiItem_KpiCriteriaTotalDTO : DataDTO
     {
         public long Id { get; set; }
 
@@ -16,8 +16,8 @@ namespace DMS.Rpc.kpi_Total
         public string Name { get; set; }
 
 
-        public KpiTotal_KpiCriteriaTotalDTO() { }
-        public KpiTotal_KpiCriteriaTotalDTO(KpiCriteriaTotal KpiCriteriaTotal)
+        public KpiItem_KpiCriteriaTotalDTO() { }
+        public KpiItem_KpiCriteriaTotalDTO(KpiCriteriaTotal KpiCriteriaTotal)
         {
 
             this.Id = KpiCriteriaTotal.Id;

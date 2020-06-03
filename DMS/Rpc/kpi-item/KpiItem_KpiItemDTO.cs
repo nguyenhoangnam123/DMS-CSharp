@@ -21,6 +21,8 @@ namespace DMS.Rpc.kpi_item
         public KpiItem_StatusDTO Status { get; set; }
         public List<KpiItem_KpiItemContentDTO> KpiItemContents { get; set; }
         public List<KpiItem_KpiItemKpiCriteriaTotalMappingDTO> KpiItemKpiCriteriaTotalMappings { get; set; }
+        public List<KpiItem_KpiCriteriaTotalDTO> KpiCriteriaTotals { get; set; }
+        public List<KpiItem_KpiCriteriaItemDTO> KpiCriteriaItems { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public KpiItem_KpiItemDTO() {}

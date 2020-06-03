@@ -27,6 +27,7 @@ namespace DMS.Rpc.kpi_item
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string GetDraft = Default + "/get-draft";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
@@ -42,6 +43,8 @@ namespace DMS.Rpc.kpi_item
         public const string FilterListStatus = Default + "/filter-list-status";
         public const string FilterListKpiItemContent = Default + "/filter-list-kpi-item-content";
         public const string FilterListItem = Default + "/filter-list-item";
+        public const string FilterListKpiCriteriaItem = Default + "/filter-list-criteria-item";
+        public const string FilterListKpiCriteriaTotal = Default + "/filter-list-criteria-total";
 
         
         public const string SingleListAppUser = Default + "/single-list-app-user";
@@ -50,7 +53,9 @@ namespace DMS.Rpc.kpi_item
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListKpiItemContent = Default + "/single-list-kpi-item-content";
         public const string SingleListItem = Default + "/single-list-item";
-        
+        public const string SingleListKpiCriteriaItem = Default + "/single-list-criteria-item";
+        public const string SingleListKpiCriteriaTotal = Default + "/single-list-criteria-total";
+
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(KpiItemFilter.Id), FieldType.ID },
@@ -64,33 +69,40 @@ namespace DMS.Rpc.kpi_item
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, } },
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, } },
 
             { "Thêm", new List<string> { 
-                Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, 
-                Detail, Create, 
-                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, } },
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
+                Detail, Create, GetDraft
+                SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, } },
 
             { "Sửa", new List<string> { 
-                Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, 
-                Detail, Update, 
-                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, } },
+                Master, Count, List, Get,  
+                FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
+                Detail, Update, GetDraft
+                SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, } },
 
             { "Xoá", new List<string> { 
-                Master, Count, List, Get,  FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, 
+                Master, Count, List, Get,  
+                FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
                 Detail, Delete, 
                  SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, } },
 
             { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, 
+                Master, Count, List, Get,
+                FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
                 BulkDelete } },
 
             { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, 
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
                 Export } },
 
             { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, 
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
                 ExportTemplate, Import } },
         };
     }

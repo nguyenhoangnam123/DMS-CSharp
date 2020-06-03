@@ -16,6 +16,8 @@ using DMS.Services.MKpiPeriod;
 using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
 using DMS.Services.MItem;
+using DMS.Services.MKpiCriteriaItem;
+using DMS.Services.MKpiCriteriaTotal;
 
 namespace DMS.Rpc.kpi_item
 {
@@ -24,6 +26,8 @@ namespace DMS.Rpc.kpi_item
         private IAppUserService AppUserService;
         private IKpiPeriodService KpiPeriodService;
         private IOrganizationService OrganizationService;
+        private IKpiCriteriaItemService KpiCriteriaItemService;
+        private IKpiCriteriaTotalService KpiCriteriaTotalService;
         private IStatusService StatusService;
         private IItemService ItemService;
         private IKpiItemService KpiItemService;
@@ -32,6 +36,8 @@ namespace DMS.Rpc.kpi_item
             IAppUserService AppUserService,
             IKpiPeriodService KpiPeriodService,
             IOrganizationService OrganizationService,
+            IKpiCriteriaItemService KpiCriteriaItemService,
+            IKpiCriteriaTotalService KpiCriteriaTotalService,
             IStatusService StatusService,
             IItemService ItemService,
             IKpiItemService KpiItemService,
@@ -41,6 +47,8 @@ namespace DMS.Rpc.kpi_item
             this.AppUserService = AppUserService;
             this.KpiPeriodService = KpiPeriodService;
             this.OrganizationService = OrganizationService;
+            this.KpiCriteriaItemService = KpiCriteriaItemService;
+            this.KpiCriteriaTotalService = KpiCriteriaTotalService;
             this.StatusService = StatusService;
             this.ItemService = ItemService;
             this.KpiItemService = KpiItemService;
@@ -86,12 +94,40 @@ namespace DMS.Rpc.kpi_item
             return new KpiItem_KpiItemDTO(KpiItem);
         }
 
+        [Route(KpiItemRoute.GetDraft), HttpPost]
+        public async Task<ActionResult<KpiItem_KpiItemDTO>> GetDraft([FromBody]KpiItem_KpiItemDTO KpiItem_KpiItemDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            List<KpiCriteriaTotal> KpiCriteriaTotals = await KpiCriteriaTotalService.List(new KpiCriteriaTotalFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiCriteriaTotalSelect.ALL,
+            });
+            List<KpiCriteriaItem> KpiCriteriaItems = await KpiCriteriaItemService.List(new KpiCriteriaItemFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiCriteriaItemSelect.ALL,
+            });
+            KpiItem_KpiItemDTO = new KpiItem_KpiItemDTO();
+            KpiItem_KpiItemDTO.KpiCriteriaItems = KpiCriteriaItems.Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
+            KpiItem_KpiItemDTO.KpiCriteriaTotals = KpiCriteriaTotals.Select(x => new KpiItem_KpiCriteriaTotalDTO(x)).ToList();
+            KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings = KpiCriteriaTotals.Select(t => new KpiItem_KpiItemKpiCriteriaTotalMappingDTO
+            {
+                KpiCriteriaTotalId = t.Id,
+            }).ToList();
+            return KpiItem_KpiItemDTO;
+        }
+
         [Route(KpiItemRoute.Create), HttpPost]
         public async Task<ActionResult<KpiItem_KpiItemDTO>> Create([FromBody] KpiItem_KpiItemDTO KpiItem_KpiItemDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(KpiItem_KpiItemDTO.Id))
                 return Forbid();
 
@@ -109,7 +145,7 @@ namespace DMS.Rpc.kpi_item
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(KpiItem_KpiItemDTO.Id))
                 return Forbid();
 
@@ -139,7 +175,7 @@ namespace DMS.Rpc.kpi_item
             else
                 return BadRequest(KpiItem_KpiItemDTO);
         }
-        
+
         [Route(KpiItemRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -157,7 +193,7 @@ namespace DMS.Rpc.kpi_item
             KpiItems = await KpiItemService.BulkDelete(KpiItems);
             return true;
         }
-        
+
         [Route(KpiItemRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -216,7 +252,7 @@ namespace DMS.Rpc.kpi_item
                     string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
                     string EmployeeIdValue = worksheet.Cells[i + StartRow, EmployeeIdColumn].Value?.ToString();
                     string CreatorIdValue = worksheet.Cells[i + StartRow, CreatorIdColumn].Value?.ToString();
-                    
+
                     KpiItem KpiItem = new KpiItem();
                     AppUser Creator = Creators.Where(x => x.Id.ToString() == CreatorIdValue).FirstOrDefault();
                     KpiItem.CreatorId = Creator == null ? 0 : Creator.Id;
@@ -230,7 +266,7 @@ namespace DMS.Rpc.kpi_item
                     Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
                     KpiItem.StatusId = Status == null ? 0 : Status.Id;
                     KpiItem.Status = Status;
-                    
+
                     KpiItems.Add(KpiItem);
                 }
             }
@@ -264,13 +300,13 @@ namespace DMS.Rpc.kpi_item
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(KpiItemRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] KpiItem_KpiItemFilterDTO KpiItem_KpiItemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -283,7 +319,7 @@ namespace DMS.Rpc.kpi_item
 
                 var KpiItemHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "OrganizationId",
                         "KpiPeriodId",
@@ -308,7 +344,7 @@ namespace DMS.Rpc.kpi_item
                 }
                 excel.GenerateWorksheet("KpiItem", KpiItemHeaders, KpiItemData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -320,7 +356,7 @@ namespace DMS.Rpc.kpi_item
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "DisplayName",
@@ -372,7 +408,7 @@ namespace DMS.Rpc.kpi_item
 
                 var KpiPeriodHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -402,7 +438,7 @@ namespace DMS.Rpc.kpi_item
 
                 var OrganizationHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -446,7 +482,7 @@ namespace DMS.Rpc.kpi_item
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -465,7 +501,7 @@ namespace DMS.Rpc.kpi_item
                 }
                 excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
                 #endregion
-               
+
                 #region Item
                 var ItemFilter = new ItemFilter();
                 ItemFilter.Selects = ItemSelect.ALL;
@@ -477,7 +513,7 @@ namespace DMS.Rpc.kpi_item
 
                 var ItemHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "ProductId",
                         "Code",
@@ -516,14 +552,14 @@ namespace DMS.Rpc.kpi_item
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
                 #region KpiItem
                 var KpiItemHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "OrganizationId",
                         "KpiPeriodId",
@@ -535,7 +571,7 @@ namespace DMS.Rpc.kpi_item
                 List<object[]> KpiItemData = new List<object[]>();
                 excel.GenerateWorksheet("KpiItem", KpiItemHeaders, KpiItemData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -547,7 +583,7 @@ namespace DMS.Rpc.kpi_item
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "DisplayName",
@@ -599,7 +635,7 @@ namespace DMS.Rpc.kpi_item
 
                 var KpiPeriodHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -629,7 +665,7 @@ namespace DMS.Rpc.kpi_item
 
                 var OrganizationHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -673,7 +709,7 @@ namespace DMS.Rpc.kpi_item
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -703,7 +739,7 @@ namespace DMS.Rpc.kpi_item
 
                 var ItemHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "ProductId",
                         "Code",
@@ -937,7 +973,7 @@ namespace DMS.Rpc.kpi_item
             return KpiItem_OrganizationDTOs;
         }
         [Route(KpiItemRoute.FilterListStatus), HttpPost]
-        public async Task<List<KpiItem_StatusDTO>> FilterListStatus([FromBody] KpiItem_StatusFilterDTO KpiItem_StatusFilterDTO)
+        public async Task<List<KpiItem_StatusDTO>> FilterListStatus()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -955,7 +991,47 @@ namespace DMS.Rpc.kpi_item
                 .Select(x => new KpiItem_StatusDTO(x)).ToList();
             return KpiItem_StatusDTOs;
         }
-       
+
+        [Route(KpiItemRoute.FilterListKpiCriteriaItem), HttpPost]
+        public async Task<List<KpiItem_KpiCriteriaItemDTO>> FilterListKpiCriteriaItem()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            KpiCriteriaItemFilter KpiCriteriaItemFilter = new KpiCriteriaItemFilter();
+            KpiCriteriaItemFilter.Skip = 0;
+            KpiCriteriaItemFilter.Take = int.MaxValue;
+            KpiCriteriaItemFilter.Take = 20;
+            KpiCriteriaItemFilter.OrderBy = KpiCriteriaItemOrder.Id;
+            KpiCriteriaItemFilter.OrderType = OrderType.ASC;
+            KpiCriteriaItemFilter.Selects = KpiCriteriaItemSelect.ALL;
+
+            List<KpiCriteriaItem> KpiCriteriaItemes = await KpiCriteriaItemService.List(KpiCriteriaItemFilter);
+            List<KpiItem_KpiCriteriaItemDTO> KpiItem_KpiCriteriaItemDTOs = KpiCriteriaItemes
+                .Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
+            return KpiItem_KpiCriteriaItemDTOs;
+        }
+
+        [Route(KpiItemRoute.FilterListKpiCriteriaTotal), HttpPost]
+        public async Task<List<KpiItem_KpiCriteriaTotalDTO>> FilterListKpiCriteriaTotal()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            KpiCriteriaTotalFilter KpiCriteriaTotalFilter = new KpiCriteriaTotalFilter();
+            KpiCriteriaTotalFilter.Skip = 0;
+            KpiCriteriaTotalFilter.Take = int.MaxValue;
+            KpiCriteriaTotalFilter.Take = 20;
+            KpiCriteriaTotalFilter.OrderBy = KpiCriteriaTotalOrder.Id;
+            KpiCriteriaTotalFilter.OrderType = OrderType.ASC;
+            KpiCriteriaTotalFilter.Selects = KpiCriteriaTotalSelect.ALL;
+
+            List<KpiCriteriaTotal> KpiCriteriaTotales = await KpiCriteriaTotalService.List(KpiCriteriaTotalFilter);
+            List<KpiItem_KpiCriteriaTotalDTO> KpiItem_KpiCriteriaTotalDTOs = KpiCriteriaTotales
+                .Select(x => new KpiItem_KpiCriteriaTotalDTO(x)).ToList();
+            return KpiItem_KpiCriteriaTotalDTOs;
+        }
+
         [Route(KpiItemRoute.FilterListItem), HttpPost]
         public async Task<List<KpiItem_ItemDTO>> FilterListItem([FromBody] KpiItem_ItemFilterDTO KpiItem_ItemFilterDTO)
         {
@@ -1056,7 +1132,7 @@ namespace DMS.Rpc.kpi_item
             return KpiItem_OrganizationDTOs;
         }
         [Route(KpiItemRoute.SingleListStatus), HttpPost]
-        public async Task<List<KpiItem_StatusDTO>> SingleListStatus([FromBody] KpiItem_StatusFilterDTO KpiItem_StatusFilterDTO)
+        public async Task<List<KpiItem_StatusDTO>> SingleListStatus()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -1073,6 +1149,46 @@ namespace DMS.Rpc.kpi_item
             List<KpiItem_StatusDTO> KpiItem_StatusDTOs = Statuses
                 .Select(x => new KpiItem_StatusDTO(x)).ToList();
             return KpiItem_StatusDTOs;
+        }
+
+        [Route(KpiItemRoute.SingleListKpiCriteriaItem), HttpPost]
+        public async Task<List<KpiItem_KpiCriteriaItemDTO>> SingleListKpiCriteriaItem()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            KpiCriteriaItemFilter KpiCriteriaItemFilter = new KpiCriteriaItemFilter();
+            KpiCriteriaItemFilter.Skip = 0;
+            KpiCriteriaItemFilter.Take = int.MaxValue;
+            KpiCriteriaItemFilter.Take = 20;
+            KpiCriteriaItemFilter.OrderBy = KpiCriteriaItemOrder.Id;
+            KpiCriteriaItemFilter.OrderType = OrderType.ASC;
+            KpiCriteriaItemFilter.Selects = KpiCriteriaItemSelect.ALL;
+
+            List<KpiCriteriaItem> KpiCriteriaItemes = await KpiCriteriaItemService.List(KpiCriteriaItemFilter);
+            List<KpiItem_KpiCriteriaItemDTO> KpiItem_KpiCriteriaItemDTOs = KpiCriteriaItemes
+                .Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
+            return KpiItem_KpiCriteriaItemDTOs;
+        }
+
+        [Route(KpiItemRoute.SingleListKpiCriteriaTotal), HttpPost]
+        public async Task<List<KpiItem_KpiCriteriaTotalDTO>> SingleListKpiCriteriaTotal()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            KpiCriteriaTotalFilter KpiCriteriaTotalFilter = new KpiCriteriaTotalFilter();
+            KpiCriteriaTotalFilter.Skip = 0;
+            KpiCriteriaTotalFilter.Take = int.MaxValue;
+            KpiCriteriaTotalFilter.Take = 20;
+            KpiCriteriaTotalFilter.OrderBy = KpiCriteriaTotalOrder.Id;
+            KpiCriteriaTotalFilter.OrderType = OrderType.ASC;
+            KpiCriteriaTotalFilter.Selects = KpiCriteriaTotalSelect.ALL;
+
+            List<KpiCriteriaTotal> KpiCriteriaTotales = await KpiCriteriaTotalService.List(KpiCriteriaTotalFilter);
+            List<KpiItem_KpiCriteriaTotalDTO> KpiItem_KpiCriteriaTotalDTOs = KpiCriteriaTotales
+                .Select(x => new KpiItem_KpiCriteriaTotalDTO(x)).ToList();
+            return KpiItem_KpiCriteriaTotalDTOs;
         }
 
         [Route(KpiItemRoute.SingleListItem), HttpPost]
