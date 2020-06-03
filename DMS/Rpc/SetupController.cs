@@ -233,7 +233,7 @@ namespace DMS.Rpc
             InitDirectPriceListTypeEnum();
             InitIndirectPriceListTypeEnum();
             InitEditedPriceStatusEnum();
-            InitItemSpecificCriteriaEnum();
+            InitKpiICriteriaItemEnum();
             InitGeneralCriteriaEnum();
             InitProblemType();
             InitResellerStatusEnum();
@@ -396,14 +396,14 @@ namespace DMS.Rpc
             }
         }
 
-        private void InitItemSpecificCriteriaEnum()
+        private void InitKpiICriteriaItemEnum()
         {
-            List<ItemSpecificCriteriaDAO> statuses = DataContext.ItemSpecificCriteria.ToList();
+            List<KpiCriteriaItemDAO> statuses = DataContext.KpiCriteriaItem.ToList();
             foreach (var item in ItemSpecificCriteriaEnum.ItemSpecificCriteriaEnumList)
             {
                 if (!statuses.Any(pt => pt.Id == item.Id))
                 {
-                    DataContext.ItemSpecificCriteria.Add(new ItemSpecificCriteriaDAO
+                    DataContext.KpiCriteriaItem.Add(new KpiCriteriaItemDAO
                     {
                         Id = item.Id,
                         Code = item.Code,
@@ -431,12 +431,12 @@ namespace DMS.Rpc
 
         private void InitTotalItemSpecificCriteriaEnum()
         {
-            List<TotalItemSpecificCriteriaDAO> statuses = DataContext.TotalItemSpecificCriteria.ToList();
+            List<KpiCriteriaTotalDAO> statuses = DataContext.KpiCriteriaTotal.ToList();
             foreach (var item in TotalItemSpecificCriteriaEnum.TotalItemSpecificCriteriaEnumList)
             {
                 if (!statuses.Any(pt => pt.Id == item.Id))
                 {
-                    DataContext.TotalItemSpecificCriteria.Add(new TotalItemSpecificCriteriaDAO
+                    DataContext.KpiCriteriaTotal.Add(new KpiCriteriaTotalDAO
                     {
                         Id = item.Id,
                         Code = item.Code,

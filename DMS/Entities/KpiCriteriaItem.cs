@@ -6,14 +6,13 @@ using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class KpiPeriod : DataEntity,  IEquatable<KpiPeriod>
+    public class KpiCriteriaItem : DataEntity,  IEquatable<KpiCriteriaItem>
     {
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public List<KpiItem> ItemSpecificKpis { get; set; }
 
-        public bool Equals(KpiPeriod other)
+        public bool Equals(KpiCriteriaItem other)
         {
             return other != null && Id == other.Id;
         }
@@ -23,18 +22,18 @@ namespace DMS.Entities
         }
     }
 
-    public class KpiPeriodFilter : FilterEntity
+    public class KpiCriteriaItemFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
-        public List<KpiPeriodFilter> OrFilter { get; set; }
-        public KpiPeriodOrder OrderBy {get; set;}
-        public KpiPeriodSelect Selects {get; set;}
+        public List<KpiCriteriaItemFilter> OrFilter { get; set; }
+        public KpiCriteriaItemOrder OrderBy {get; set;}
+        public KpiCriteriaItemSelect  Selects {get; set;}
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum KpiPeriodOrder
+    public enum KpiCriteriaItemOrder
     {
         Id = 0,
         Code = 1,
@@ -42,7 +41,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum KpiPeriodSelect:long
+    public enum KpiCriteriaItemSelect :long
     {
         ALL = E.ALL,
         Id = E._0,

@@ -8,7 +8,7 @@ namespace DMS.Models
         public KpiPeriodDAO()
         {
             GeneralKpis = new HashSet<GeneralKpiDAO>();
-            ItemSpecificKpis = new HashSet<ItemSpecificKpiDAO>();
+            KpiItems = new HashSet<KpiItemDAO>();
         }
 
         public long Id { get; set; }
@@ -16,6 +16,6 @@ namespace DMS.Models
         public string Name { get; set; }
 
         public virtual ICollection<GeneralKpiDAO> GeneralKpis { get; set; }
-        public virtual ICollection<ItemSpecificKpiDAO> ItemSpecificKpis { get; set; }
+        public virtual ICollection<KpiItemDAO> KpiItems { get; set; }
     }
 }
