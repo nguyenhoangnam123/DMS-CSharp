@@ -915,6 +915,39 @@ namespace DMS.Rpc.store_checking
                 return StoreChecking_ItemDTOs;
             }
         }
+
+        [Route(StoreCheckingRoute.CountProblem), HttpPost]
+        public async Task<long> CountProblem([FromBody] StoreChecking_ProblemFilterDTO StoreChecking_ProblemFilterDTO)
+        {
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            ProblemFilter ProblemFilter = new ProblemFilter();
+            ProblemFilter.Id = StoreChecking_ProblemFilterDTO.Id;
+            ProblemFilter.StoreCheckingId = StoreChecking_ProblemFilterDTO.StoreCheckingId;
+            ProblemFilter.ProblemTypeId = StoreChecking_ProblemFilterDTO.ProblemTypeId;
+            return await ProblemService.Count(ProblemFilter);
+        }
+
+        [Route(StoreCheckingRoute.ListProblem), HttpPost]
+        public async Task<List<StoreChecking_ProblemDTO>> ListProblem([FromBody] StoreChecking_ProblemFilterDTO StoreChecking_ProblemFilterDTO)
+        {
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            ProblemFilter ProblemFilter = new ProblemFilter();
+            ProblemFilter.Skip = StoreChecking_ProblemFilterDTO.Skip;
+            ProblemFilter.Take = StoreChecking_ProblemFilterDTO.Take;
+            ProblemFilter.OrderBy = ProblemOrder.NoteAt;
+            ProblemFilter.OrderType = OrderType.ASC;
+            ProblemFilter.Selects = ProblemSelect.ALL;
+            ProblemFilter.Id = StoreChecking_ProblemFilterDTO.Id;
+            ProblemFilter.StoreCheckingId = StoreChecking_ProblemFilterDTO.StoreCheckingId;
+            ProblemFilter.ProblemTypeId = StoreChecking_ProblemFilterDTO.ProblemTypeId;
+
+            List<Problem> Problems = await ProblemService.List(ProblemFilter);
+            List<StoreChecking_ProblemDTO> StoreChecking_ProblemDTOs = Problems
+                .Select(x => new StoreChecking_ProblemDTO(x)).ToList();
+            return StoreChecking_ProblemDTOs;
+        }
     }
 }
 

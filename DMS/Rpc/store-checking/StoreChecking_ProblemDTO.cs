@@ -34,7 +34,7 @@ namespace DMS.Rpc.store_checking
         }
     }
 
-    public class StoreChecking_ProblemFilter : FilterEntity
+    public class StoreChecking_ProblemFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public IdFilter StoreCheckingId { get; set; }
