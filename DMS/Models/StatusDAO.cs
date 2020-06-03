@@ -17,8 +17,8 @@ namespace DMS.Models
             GeneralKpiCriteriaMappings = new HashSet<GeneralKpiCriteriaMappingDAO>();
             GeneralKpis = new HashSet<GeneralKpiDAO>();
             IndirectPriceLists = new HashSet<IndirectPriceListDAO>();
-            ItemSpecificKpis = new HashSet<ItemSpecificKpiDAO>();
             Items = new HashSet<ItemDAO>();
+            KpiItems = new HashSet<KpiItemDAO>();
             Organizations = new HashSet<OrganizationDAO>();
             Permissions = new HashSet<PermissionDAO>();
             Positions = new HashSet<PositionDAO>();
@@ -54,8 +54,8 @@ namespace DMS.Models
         public virtual ICollection<GeneralKpiCriteriaMappingDAO> GeneralKpiCriteriaMappings { get; set; }
         public virtual ICollection<GeneralKpiDAO> GeneralKpis { get; set; }
         public virtual ICollection<IndirectPriceListDAO> IndirectPriceLists { get; set; }
-        public virtual ICollection<ItemSpecificKpiDAO> ItemSpecificKpis { get; set; }
         public virtual ICollection<ItemDAO> Items { get; set; }
+        public virtual ICollection<KpiItemDAO> KpiItems { get; set; }
         public virtual ICollection<OrganizationDAO> Organizations { get; set; }
         public virtual ICollection<PermissionDAO> Permissions { get; set; }
         public virtual ICollection<PositionDAO> Positions { get; set; }
