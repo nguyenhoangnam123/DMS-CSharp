@@ -12,7 +12,7 @@ namespace DMS.Entities
         public long KpiItemId { get; set; }
         public long ItemId { get; set; }
         public Item Item { get; set; }
-        public KpiItem ItemSpecificKpi { get; set; }
+        public KpiItem KpiItem { get; set; }
         public List<KpiItemContentKpiCriteriaItemMapping> KpiItemContentKpiCriteriaItemMappings { get; set; }
         public bool Equals(KpiItemContent other)
         {

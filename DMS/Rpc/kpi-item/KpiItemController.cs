@@ -805,14 +805,6 @@ namespace DMS.Rpc.kpi_item
                 Address = KpiItem_KpiItemDTO.Creator.Address,
                 Email = KpiItem_KpiItemDTO.Creator.Email,
                 Phone = KpiItem_KpiItemDTO.Creator.Phone,
-                PositionId = KpiItem_KpiItemDTO.Creator.PositionId,
-                Department = KpiItem_KpiItemDTO.Creator.Department,
-                OrganizationId = KpiItem_KpiItemDTO.Creator.OrganizationId,
-                StatusId = KpiItem_KpiItemDTO.Creator.StatusId,
-                Avatar = KpiItem_KpiItemDTO.Creator.Avatar,
-                ProvinceId = KpiItem_KpiItemDTO.Creator.ProvinceId,
-                SexId = KpiItem_KpiItemDTO.Creator.SexId,
-                Birthday = KpiItem_KpiItemDTO.Creator.Birthday,
             };
             KpiItem.Employee = KpiItem_KpiItemDTO.Employee == null ? null : new AppUser
             {
@@ -822,14 +814,6 @@ namespace DMS.Rpc.kpi_item
                 Address = KpiItem_KpiItemDTO.Employee.Address,
                 Email = KpiItem_KpiItemDTO.Employee.Email,
                 Phone = KpiItem_KpiItemDTO.Employee.Phone,
-                PositionId = KpiItem_KpiItemDTO.Employee.PositionId,
-                Department = KpiItem_KpiItemDTO.Employee.Department,
-                OrganizationId = KpiItem_KpiItemDTO.Employee.OrganizationId,
-                StatusId = KpiItem_KpiItemDTO.Employee.StatusId,
-                Avatar = KpiItem_KpiItemDTO.Employee.Avatar,
-                ProvinceId = KpiItem_KpiItemDTO.Employee.ProvinceId,
-                SexId = KpiItem_KpiItemDTO.Employee.SexId,
-                Birthday = KpiItem_KpiItemDTO.Employee.Birthday,
             };
             KpiItem.KpiPeriod = KpiItem_KpiItemDTO.KpiPeriod == null ? null : new KpiPeriod
             {
@@ -843,12 +827,6 @@ namespace DMS.Rpc.kpi_item
                 Code = KpiItem_KpiItemDTO.Organization.Code,
                 Name = KpiItem_KpiItemDTO.Organization.Name,
                 ParentId = KpiItem_KpiItemDTO.Organization.ParentId,
-                Path = KpiItem_KpiItemDTO.Organization.Path,
-                Level = KpiItem_KpiItemDTO.Organization.Level,
-                StatusId = KpiItem_KpiItemDTO.Organization.StatusId,
-                Phone = KpiItem_KpiItemDTO.Organization.Phone,
-                Email = KpiItem_KpiItemDTO.Organization.Email,
-                Address = KpiItem_KpiItemDTO.Organization.Address,
             };
             KpiItem.Status = KpiItem_KpiItemDTO.Status == null ? null : new Status
             {
@@ -872,7 +850,17 @@ namespace DMS.Rpc.kpi_item
                         RetailPrice = x.Item.RetailPrice,
                         StatusId = x.Item.StatusId,
                     },
+                    KpiItemContentKpiCriteriaItemMappings = x.KpiItemContentKpiCriteriaItemMappings.Select(p => new KpiItemContentKpiCriteriaItemMapping
+                    {
+                        KpiCriteriaItemId = p.Key,
+                        Value = p.Value,
+                    }).ToList(),
                 }).ToList();
+            KpiItem.KpiItemKpiCriteriaTotalMappings = KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings.Select(p => new KpiItemKpiCriteriaTotalMapping
+            {
+                KpiCriteriaTotalId = p.Key,
+                Value = p.Value
+            }).ToList();
             KpiItem.BaseLanguage = CurrentContext.Language;
             return KpiItem;
         }

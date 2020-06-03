@@ -21,22 +21,6 @@ namespace DMS.Rpc.kpi_item
         
         public string Phone { get; set; }
         
-        public long? PositionId { get; set; }
-        
-        public string Department { get; set; }
-        
-        public long? OrganizationId { get; set; }
-        
-        public long StatusId { get; set; }
-        
-        public string Avatar { get; set; }
-        
-        public long? ProvinceId { get; set; }
-        
-        public long? SexId { get; set; }
-        
-        public DateTime? Birthday { get; set; }
-        
 
         public KpiItem_AppUserDTO() {}
         public KpiItem_AppUserDTO(AppUser AppUser)
@@ -53,22 +37,6 @@ namespace DMS.Rpc.kpi_item
             this.Email = AppUser.Email;
             
             this.Phone = AppUser.Phone;
-            
-            this.PositionId = AppUser.PositionId;
-            
-            this.Department = AppUser.Department;
-            
-            this.OrganizationId = AppUser.OrganizationId;
-            
-            this.StatusId = AppUser.StatusId;
-            
-            this.Avatar = AppUser.Avatar;
-            
-            this.ProvinceId = AppUser.ProvinceId;
-            
-            this.SexId = AppUser.SexId;
-            
-            this.Birthday = AppUser.Birthday;
             
             this.Errors = AppUser.Errors;
         }
