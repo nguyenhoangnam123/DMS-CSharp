@@ -12,7 +12,7 @@ namespace DMS.Rpc.kpi_item
         public long KpiItemId { get; set; }
         public long ItemId { get; set; }
         public KpiItem_ItemDTO Item { get; set; }   
-        public List<KpiItem_KpiItemContentKpiCriteriaItemMappingDTO> KpiItemContentKpiCriteriaItemMappings { get; set; }
+        public Dictionary<long,long> KpiItemContentKpiCriteriaItemMappings { get; set; }
 
 
         public KpiItem_KpiItemContentDTO() {}
@@ -22,7 +22,7 @@ namespace DMS.Rpc.kpi_item
             this.KpiItemId = KpiItemContent.KpiItemId;
             this.ItemId = KpiItemContent.ItemId;
             this.Item = KpiItemContent.Item == null ? null : new KpiItem_ItemDTO(KpiItemContent.Item);
-            this.KpiItemContentKpiCriteriaItemMappings = KpiItemContent.KpiItemContentKpiCriteriaItemMappings?.Select(x => new KpiItem_KpiItemContentKpiCriteriaItemMappingDTO(x)).ToList();
+            this.KpiItemContentKpiCriteriaItemMappings = KpiItemContent.KpiItemContentKpiCriteriaItemMappings?.ToDictionary(x => x.KpiCriteriaItemId, y => y.Value);
             this.Errors = KpiItemContent.Errors;
         }
     }

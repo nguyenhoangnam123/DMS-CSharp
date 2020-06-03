@@ -115,10 +115,7 @@ namespace DMS.Rpc.kpi_item
             KpiItem_KpiItemDTO = new KpiItem_KpiItemDTO();
             KpiItem_KpiItemDTO.KpiCriteriaItems = KpiCriteriaItems.Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
             KpiItem_KpiItemDTO.KpiCriteriaTotals = KpiCriteriaTotals.Select(x => new KpiItem_KpiCriteriaTotalDTO(x)).ToList();
-            KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings = KpiCriteriaTotals.Select(t => new KpiItem_KpiItemKpiCriteriaTotalMappingDTO
-            {
-                KpiCriteriaTotalId = t.Id,
-            }).ToList();
+            KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings = KpiCriteriaTotals.ToDictionary(x => x.Id, y => 0L);
             return KpiItem_KpiItemDTO;
         }
 
