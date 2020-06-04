@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Helpers;
 using DMS.Enums;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DMS.Repositories
 {
@@ -17,7 +16,8 @@ namespace DMS.Repositories
         Task<int> Count(SurveyResultFilter SurveyResultFilter);
         Task<List<SurveyResult>> List(SurveyResultFilter SurveyResultFilter);
         Task<SurveyResult> Get(long Id);
-        Task<bool> BulkInsert(List<SurveyResult> SurveyResults);
+        Task<bool> Create(SurveyResult SurveyResult);
+        Task<bool> Delete(SurveyResult SurveyResult);
     }
     public class SurveyResultRepository : ISurveyResultRepository
     {
@@ -113,7 +113,7 @@ namespace DMS.Repositories
                     Id = q.Store.Id,
                     Code = q.Store.Code,
                     Name = q.Store.Name,
-                                  } : null,
+                } : null,
             }).ToListAsync();
             return SurveyResults;
         }
@@ -183,11 +183,13 @@ namespace DMS.Repositories
 
         public async Task<bool> Create(SurveyResult SurveyResult)
         {
+            SurveyResult.RowId = Guid.NewGuid();
             SurveyResultDAO SurveyResultDAO = new SurveyResultDAO();
             SurveyResultDAO.AppUserId = SurveyResult.AppUserId;
             SurveyResultDAO.StoreId = SurveyResult.StoreId;
             SurveyResultDAO.SurveyId = SurveyResult.SurveyId;
             SurveyResultDAO.Time = SurveyResult.Time;
+            SurveyResultDAO.RowId = SurveyResult.RowId;
             DataContext.SurveyResult.Add(SurveyResultDAO);
             await DataContext.SaveChangesAsync();
             SurveyResult.Id = SurveyResultDAO.Id;
@@ -195,19 +197,6 @@ namespace DMS.Repositories
             return true;
         }
 
-        public async Task<bool> Update(SurveyResult SurveyResult)
-        {
-            SurveyResultDAO SurveyResultDAO = DataContext.SurveyResult.Where(x => x.Id == SurveyResult.Id).FirstOrDefault();
-            if (SurveyResultDAO == null)
-                return false;
-            SurveyResultDAO.AppUserId = SurveyResult.AppUserId;
-            SurveyResultDAO.StoreId = SurveyResult.StoreId;
-            SurveyResultDAO.SurveyId = SurveyResult.SurveyId;
-            SurveyResultDAO.Time = SurveyResult.Time;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(SurveyResult);
-            return true;
-        }
 
         public async Task<bool> Delete(SurveyResult SurveyResult)
         {
@@ -217,7 +206,7 @@ namespace DMS.Repositories
 
         private async Task SaveReference(SurveyResult SurveyResult)
         {
-           
+
             List<SurveyResultSingleDAO> SurveyResultSingleDAOs = SurveyResult.SurveyResultSingles.Select(s => new SurveyResultSingleDAO
             {
                 SurveyResultId = SurveyResult.Id,
@@ -232,31 +221,9 @@ namespace DMS.Repositories
                 RowOptionId = s.RowOptionId,
             }).ToList();
 
-            await DataContext.SurveyResultSingle.Where(s => s.SurveyResultId == SurveyResult.Id).DeleteFromQueryAsync();
-            await DataContext.SurveyResultCell.Where(s => s.SurveyResultId == SurveyResult.Id).DeleteFromQueryAsync();
+    
             await DataContext.SurveyResultSingle.BulkInsertAsync(SurveyResultSingleDAOs);
             await DataContext.SurveyResultCell.BulkInsertAsync(SurveyResultCellDAOs);
-        }
-
-        public async Task<bool> BulkInsert(List<SurveyResult> SurveyResults)
-        {
-            SurveyResults.ForEach(sr => sr.RowId = Guid.NewGuid());
-            List<SurveyResultDAO> SurveyResultDAOs = SurveyResults.Select(sr => new SurveyResultDAO
-            {
-                AppUserId = sr.AppUserId,
-                RowId = sr.RowId,
-                StoreId = sr.StoreId,
-                SurveyId = sr.SurveyId,
-                Time = sr.Time,
-            }).ToList();
-            await DataContext.SurveyResult.BulkInsertAsync(SurveyResultDAOs);
-
-            foreach(SurveyResult SurveyResult in SurveyResults)
-            {
-                SurveyResult.Id = SurveyResultDAOs.Where(sr => sr.RowId == SurveyResult.RowId).Select(sr => sr.Id).FirstOrDefault();
-            }
-
-            return true;
         }
     }
 }

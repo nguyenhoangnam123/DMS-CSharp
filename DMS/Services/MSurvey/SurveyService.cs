@@ -9,6 +9,9 @@ using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
 using DMS.Enums;
+using Hangfire.Annotations;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace DMS.Services.MSurvey
 {
@@ -261,12 +264,65 @@ namespace DMS.Services.MSurvey
 
         public async Task<Survey> SaveForm(Survey Survey)
         {
+            SurveyResult SurveyResult = new SurveyResult();
+            SurveyResult.SurveyId = Survey.Id;
+            SurveyResult.AppUserId = CurrentContext.UserId;
+            SurveyResult.StoreId = Survey.StoreId;
+            SurveyResult.Time = Survey.AnswerAt;
+            SurveyResult.SurveyResultSingles = new List<SurveyResultSingle>();
+            SurveyResult.SurveyResultCells = new List<SurveyResultCell>();
             if (Survey.SurveyQuestions != null)
             {
                 foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
                 {
+                    if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id ||
+                        SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id)
+                    {
+                        foreach (SurveyOption SurveyOption in SurveyQuestion.SurveyOptions)
+                        {
+                            if (SurveyQuestion.ListResult.ContainsKey(SurveyOption.Id) && SurveyQuestion.ListResult[SurveyOption.Id])
+                            {
+                                SurveyResultSingle SurveyResultSingle = new SurveyResultSingle
+                                {
+                                    SurveyOptionId = SurveyOption.Id,
+                                    SurveyQuestionId = SurveyQuestion.Id,
+                                };
+                                SurveyResult.SurveyResultSingles.Add(SurveyResultSingle);
+                            }
+                        }
+                    }
+                    if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id ||
+                        SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
+                    {
+                        if (SurveyQuestion.SurveyOptions != null)
+                        {
+                            List<SurveyOption> Columns = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.COLUMN.Id).ToList();
+                            List<SurveyOption> Rows = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.ROW.Id).ToList();
+                            foreach (SurveyOption Row in Rows)
+                            {
+                                if (SurveyQuestion.TableResult.ContainsKey(Row.Id))
+                                {
+                                    Dictionary<long, bool> ColumnResult = SurveyQuestion.TableResult[Row.Id];
+                                    foreach (SurveyOption Column in Columns)
+                                    {
+                                        if (ColumnResult.ContainsKey(Column.Id) && ColumnResult[Column.Id])
+                                        {
+                                            SurveyResultCell SurveyResultCell = new SurveyResultCell
+                                            {
+                                                SurveyQuestionId = SurveyQuestion.Id,
+                                                ColumnOptionId = Column.Id,
+                                                RowOptionId = Row.Id,
+                                            };
+                                            SurveyResult.SurveyResultCells.Add(SurveyResultCell);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
+            await UOW.SurveyResultRepository.Create(SurveyResult);
             return await GetForm(Survey.Id);
         }
     }
