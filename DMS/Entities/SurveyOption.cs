@@ -12,6 +12,7 @@ namespace DMS.Entities
         public long SurveyQuestionId { get; set; }
         public long SurveyOptionTypeId { get; set; }
         public string Content { get; set; }
+        public bool Result { get; set; }
         public SurveyOptionType SurveyOptionType { get; set; }
 
         public bool Equals(SurveyOption other)

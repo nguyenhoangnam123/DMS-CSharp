@@ -15,7 +15,8 @@ namespace DMS.Rpc.survey
         public bool IsMandatory { get; set; }
         public Survey_SurveyQuestionTypeDTO SurveyQuestionType { get; set; }   
         public List<Survey_SurveyOptionDTO> SurveyOptions { get; set; }   
-        
+        public Dictionary<long, Dictionary<long, bool>> Table { get; set; }
+        public Dictionary<long, bool> Single { get; set; }
         public Survey_SurveyQuestionDTO() {}
         public Survey_SurveyQuestionDTO(SurveyQuestion SurveyQuestion)
         {

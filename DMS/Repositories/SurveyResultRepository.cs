@@ -17,7 +17,6 @@ namespace DMS.Repositories
         Task<List<SurveyResult>> List(SurveyResultFilter SurveyResultFilter);
         Task<SurveyResult> Get(long Id);
         Task<bool> Create(SurveyResult SurveyResult);
-        Task<bool> Update(SurveyResult SurveyResult);
         Task<bool> Delete(SurveyResult SurveyResult);
     }
     public class SurveyResultRepository : ISurveyResultRepository
@@ -114,7 +113,7 @@ namespace DMS.Repositories
                     Id = q.Store.Id,
                     Code = q.Store.Code,
                     Name = q.Store.Name,
-                                  } : null,
+                } : null,
             }).ToListAsync();
             return SurveyResults;
         }
@@ -184,11 +183,13 @@ namespace DMS.Repositories
 
         public async Task<bool> Create(SurveyResult SurveyResult)
         {
+            SurveyResult.RowId = Guid.NewGuid();
             SurveyResultDAO SurveyResultDAO = new SurveyResultDAO();
             SurveyResultDAO.AppUserId = SurveyResult.AppUserId;
             SurveyResultDAO.StoreId = SurveyResult.StoreId;
             SurveyResultDAO.SurveyId = SurveyResult.SurveyId;
             SurveyResultDAO.Time = SurveyResult.Time;
+            SurveyResultDAO.RowId = SurveyResult.RowId;
             DataContext.SurveyResult.Add(SurveyResultDAO);
             await DataContext.SaveChangesAsync();
             SurveyResult.Id = SurveyResultDAO.Id;
@@ -196,19 +197,6 @@ namespace DMS.Repositories
             return true;
         }
 
-        public async Task<bool> Update(SurveyResult SurveyResult)
-        {
-            SurveyResultDAO SurveyResultDAO = DataContext.SurveyResult.Where(x => x.Id == SurveyResult.Id).FirstOrDefault();
-            if (SurveyResultDAO == null)
-                return false;
-            SurveyResultDAO.AppUserId = SurveyResult.AppUserId;
-            SurveyResultDAO.StoreId = SurveyResult.StoreId;
-            SurveyResultDAO.SurveyId = SurveyResult.SurveyId;
-            SurveyResultDAO.Time = SurveyResult.Time;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(SurveyResult);
-            return true;
-        }
 
         public async Task<bool> Delete(SurveyResult SurveyResult)
         {
@@ -218,7 +206,7 @@ namespace DMS.Repositories
 
         private async Task SaveReference(SurveyResult SurveyResult)
         {
-           
+
             List<SurveyResultSingleDAO> SurveyResultSingleDAOs = SurveyResult.SurveyResultSingles.Select(s => new SurveyResultSingleDAO
             {
                 SurveyResultId = SurveyResult.Id,
@@ -233,11 +221,9 @@ namespace DMS.Repositories
                 RowOptionId = s.RowOptionId,
             }).ToList();
 
-            await DataContext.SurveyResultSingle.Where(s => s.SurveyResultId == SurveyResult.Id).DeleteFromQueryAsync();
-            await DataContext.SurveyResultCell.Where(s => s.SurveyResultId == SurveyResult.Id).DeleteFromQueryAsync();
+    
             await DataContext.SurveyResultSingle.BulkInsertAsync(SurveyResultSingleDAOs);
             await DataContext.SurveyResultCell.BulkInsertAsync(SurveyResultCellDAOs);
         }
-     
     }
 }

@@ -15,9 +15,13 @@ namespace DMS.Entities
         public DateTime? EndAt { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
+
+        public DateTime AnswerAt { get; set; }
+        public long StoreId { get; set; }
         public AppUser Creator { get; set; }
         public Status Status { get; set; }
         public List<SurveyQuestion> SurveyQuestions { get; set; }
+        
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
