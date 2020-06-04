@@ -25,10 +25,12 @@ namespace DMS.Services.MGeneralKpi
         public enum ErrorCode
         {
             IdNotExisted,
+            OrganizationEmpty,
             OrganizationIdNotExisted,
             EmployeeIdsEmpty,
             StatusNotExisted,
-            KpiPeriodIdNotExisted
+            KpiPeriodIdNotExisted,
+            KpiPeriodEmpty
         }
 
         private IUOW UOW;
@@ -58,14 +60,20 @@ namespace DMS.Services.MGeneralKpi
 
         private async Task<bool> ValidateOrganization(GeneralKpi GeneralKpi)
         {
-            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            if (GeneralKpi.OrganizationId == 0)
+                GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.Organization), ErrorCode.OrganizationEmpty);
+            else
             {
-                Id = new IdFilter { Equal = GeneralKpi.OrganizationId }
-            };
+                OrganizationFilter OrganizationFilter = new OrganizationFilter
+                {
+                    Id = new IdFilter { Equal = GeneralKpi.OrganizationId }
+                };
 
-            var count = await UOW.OrganizationRepository.Count(OrganizationFilter);
-            if(count == 0)
-                GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.Organization), ErrorCode.OrganizationIdNotExisted);
+                var count = await UOW.OrganizationRepository.Count(OrganizationFilter);
+                if (count == 0)
+                    GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.Organization), ErrorCode.OrganizationIdNotExisted);
+            }
+            
             return GeneralKpi.IsValidated;
         }
 
@@ -108,14 +116,20 @@ namespace DMS.Services.MGeneralKpi
 
         private async Task<bool> ValidateKpiPeriod(GeneralKpi GeneralKpi)
         {
-            KpiPeriodFilter KpiPeriodFilter = new KpiPeriodFilter
+            if(GeneralKpi.KpiPeriodId == 0)
+                GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.KpiPeriod), ErrorCode.KpiPeriodEmpty);
+            else
             {
-                Id = new IdFilter { Equal = GeneralKpi.KpiPeriodId }
-            };
+                KpiPeriodFilter KpiPeriodFilter = new KpiPeriodFilter
+                {
+                    Id = new IdFilter { Equal = GeneralKpi.KpiPeriodId }
+                };
 
-            int count = await UOW.KpiPeriodRepository.Count(KpiPeriodFilter);
-            if(count == 0)
-                GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.KpiPeriod), ErrorCode.KpiPeriodIdNotExisted);
+                int count = await UOW.KpiPeriodRepository.Count(KpiPeriodFilter);
+                if (count == 0)
+                    GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.KpiPeriod), ErrorCode.KpiPeriodIdNotExisted);
+            }
+            
             return GeneralKpi.IsValidated;
         }
 
