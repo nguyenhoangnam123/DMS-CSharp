@@ -20,6 +20,8 @@ namespace DMS.Services.MSurvey
         Task<Survey> Create(Survey Survey);
         Task<Survey> Update(Survey Survey);
         Task<Survey> Delete(Survey Survey);
+        Task<Survey> GetForm(long Id);
+        Task<Survey> SaveForm(Survey Survey);
         SurveyFilter ToFilter(SurveyFilter SurveyFilter);
     }
 
@@ -78,40 +80,6 @@ namespace DMS.Services.MSurvey
         public async Task<Survey> Get(long Id)
         {
             Survey Survey = await UOW.SurveyRepository.Get(Id);
-            if (Survey == null)
-                return null;
-            Survey.SurveyResults = new List<SurveyResult>();
-            foreach (var SurveyQuestion in Survey.SurveyQuestions)
-            {
-                if (SurveyQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id
-                    || SurveyQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id)
-                {
-                    List<SurveyResultSingle> SurveyResultSingles = SurveyQuestion.SurveyOptions.Where(x => x.SurveyQuestionId == SurveyQuestion.Id).Select(x => new SurveyResultSingle
-                    {
-                        SurveyQuestionId = SurveyQuestion.Id,
-                        SurveyOptionId = x.Id
-                    }).ToList();
-                    SurveyResult SurveyResult = new SurveyResult()
-                    {
-                        SurveyId = Id,
-                        SurveyResultSingles = SurveyResultSingles,
-                    };
-                }
-
-                if (SurveyQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
-                {
-                    List<SurveyResultCell> SurveyResultCell = SurveyQuestion.SurveyOptions.Where(x => x.SurveyQuestionId == SurveyQuestion.Id).Select(x => new SurveyResultCell
-                    {
-                        //SurveyQuestionId = SurveyQuestion.Id,
-                        //ColumnOptionId = x.c
-                    }).ToList();
-                    SurveyResult SurveyResult = new SurveyResult()
-                    {
-                        SurveyId = Id,
-                        //SurveyResultSingles = SurveyResultSingles,
-                    };
-                }
-            }
             return Survey;
         }
 
@@ -246,6 +214,60 @@ namespace DMS.Services.MSurvey
             }
             return filter;
         }
-       
+
+        public async Task<Survey> GetForm(long Id)
+        {
+            Survey Survey = await UOW.SurveyRepository.Get(Id);
+            if (Survey.SurveyQuestions != null)
+            {
+                foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
+                {
+                    if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id ||
+                        SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id)
+                    {
+                        SurveyQuestion.ListResult = new Dictionary<long, bool>();
+                        if (SurveyQuestion.SurveyOptions != null)
+                        {
+                            foreach (SurveyOption SurveyOption in SurveyQuestion.SurveyOptions)
+                            {
+                                SurveyQuestion.ListResult.Add(SurveyOption.Id, false);
+                            }
+                        }
+                    }
+                    if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id ||
+                        SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
+                    {
+                        SurveyQuestion.TableResult = new Dictionary<long, Dictionary<long, bool>>();
+                        if (SurveyQuestion.SurveyOptions != null)
+                        {
+                            List<SurveyOption> Columns = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.COLUMN.Id).ToList();
+                            List<SurveyOption> Rows = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.ROW.Id).ToList();
+                            SurveyQuestion.TableResult = new Dictionary<long, Dictionary<long, bool>>();
+                            foreach (SurveyOption Row in Rows)
+                            {
+                                Dictionary<long, bool> RowResult = new Dictionary<long, bool>();
+                                SurveyQuestion.TableResult.Add(Row.Id, RowResult);
+                                foreach (SurveyOption Column in Columns)
+                                {
+                                    RowResult.Add(Column.Id, false);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return Survey;
+        }
+
+        public async Task<Survey> SaveForm(Survey Survey)
+        {
+            if (Survey.SurveyQuestions != null)
+            {
+                foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
+                {
+                }
+            }
+            return await GetForm(Survey.Id);
+        }
     }
 }

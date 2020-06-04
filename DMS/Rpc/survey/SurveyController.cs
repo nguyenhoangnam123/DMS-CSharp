@@ -122,8 +122,25 @@ namespace DMS.Rpc.survey
                 return BadRequest(Survey_SurveyDTO);
         }
 
-        [Route(SurveyRoute.CreateSurveyResult), HttpPost]
-        public async Task<ActionResult<Survey_SurveyDTO>> CreateSurveyResult([FromBody] Survey_SurveyDTO Survey_SurveyDTO)
+        [Route(SurveyRoute.GetSurveyForm), HttpPost]
+        public async Task<ActionResult<Survey_SurveyDTO>> GetSurveyForm([FromBody] Survey_SurveyDTO Survey_SurveyDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Survey_SurveyDTO.Id))
+                return Forbid();
+
+            Survey Survey = await SurveyService.GetForm(Survey_SurveyDTO.Id);
+            Survey_SurveyDTO = new Survey_SurveyDTO(Survey);
+            if (Survey.IsValidated)
+                return Survey_SurveyDTO;
+            else
+                return BadRequest(Survey_SurveyDTO);
+        }
+
+        [Route(SurveyRoute.SaveSurveyForm), HttpPost]
+        public async Task<ActionResult<Survey_SurveyDTO>> SaveSurveyForm([FromBody] Survey_SurveyDTO Survey_SurveyDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);

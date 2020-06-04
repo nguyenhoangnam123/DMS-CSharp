@@ -13,6 +13,7 @@ namespace DMS.Entities
         public long AppUserId { get; set; }
         public long StoreId { get; set; }
         public DateTime Time { get; set; }
+        public Guid RowId { get; set; }
 
         public AppUser AppUser { get; set; }
         public Store Store { get; set; }

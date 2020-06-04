@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Helpers;
 using DMS.Enums;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DMS.Repositories
 {
@@ -16,9 +17,7 @@ namespace DMS.Repositories
         Task<int> Count(SurveyResultFilter SurveyResultFilter);
         Task<List<SurveyResult>> List(SurveyResultFilter SurveyResultFilter);
         Task<SurveyResult> Get(long Id);
-        Task<bool> Create(SurveyResult SurveyResult);
-        Task<bool> Update(SurveyResult SurveyResult);
-        Task<bool> Delete(SurveyResult SurveyResult);
+        Task<bool> BulkInsert(List<SurveyResult> SurveyResults);
     }
     public class SurveyResultRepository : ISurveyResultRepository
     {
@@ -238,6 +237,26 @@ namespace DMS.Repositories
             await DataContext.SurveyResultSingle.BulkInsertAsync(SurveyResultSingleDAOs);
             await DataContext.SurveyResultCell.BulkInsertAsync(SurveyResultCellDAOs);
         }
-     
+
+        public async Task<bool> BulkInsert(List<SurveyResult> SurveyResults)
+        {
+            SurveyResults.ForEach(sr => sr.RowId = Guid.NewGuid());
+            List<SurveyResultDAO> SurveyResultDAOs = SurveyResults.Select(sr => new SurveyResultDAO
+            {
+                AppUserId = sr.AppUserId,
+                RowId = sr.RowId,
+                StoreId = sr.StoreId,
+                SurveyId = sr.SurveyId,
+                Time = sr.Time,
+            }).ToList();
+            await DataContext.SurveyResult.BulkInsertAsync(SurveyResultDAOs);
+
+            foreach(SurveyResult SurveyResult in SurveyResults)
+            {
+                SurveyResult.Id = SurveyResultDAOs.Where(sr => sr.RowId == SurveyResult.RowId).Select(sr => sr.Id).FirstOrDefault();
+            }
+
+            return true;
+        }
     }
 }

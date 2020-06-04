@@ -262,12 +262,7 @@ namespace DMS.Repositories
                          Name = x.SurveyOptionType.Name,
                      },
                  }).ToListAsync();
-            foreach (SurveyQuestion surveyQuestion in Survey.SurveyQuestions)
-            {
-                surveyQuestion.SurveyOptions = SurveyOptions.Where(so => so.SurveyQuestionId == surveyQuestion.Id).ToList();
-                surveyQuestion.SurveyResultCells = new List<SurveyResultCell>();
-                surveyQuestion.SurveyResultSingles = new List<SurveyResultSingle>();
-            }
+            
             return Survey;
         }
 
@@ -283,6 +278,7 @@ namespace DMS.Repositories
             SurveyDAO.CreatorId = Survey.CreatorId;
             SurveyDAO.CreatedAt = StaticParams.DateTimeNow;
             SurveyDAO.UpdatedAt = StaticParams.DateTimeNow;
+            SurveyDAO.RowId = Guid.NewGuid();
             DataContext.Survey.Add(SurveyDAO);
             await DataContext.SaveChangesAsync();
             Survey.Id = SurveyDAO.Id;
