@@ -181,18 +181,22 @@ namespace DMS.Services.MStore
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.StoreTypeId), ErrorCode.StoreTypeEmpty);
             }
-            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = Store.StoreTypeId },
-                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
-                Selects = StoreTypeSelect.Id
-            };
+                StoreTypeFilter StoreTypeFilter = new StoreTypeFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = Store.StoreTypeId },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    Selects = StoreTypeSelect.Id
+                };
 
-            int count = await UOW.StoreTypeRepository.Count(StoreTypeFilter);
-            if (count == 0)
-                Store.AddError(nameof(StoreValidator), nameof(Store.StoreTypeId), ErrorCode.StoreTypeNotExisted);
+                int count = await UOW.StoreTypeRepository.Count(StoreTypeFilter);
+                if (count == 0)
+                    Store.AddError(nameof(StoreValidator), nameof(Store.StoreTypeId), ErrorCode.StoreTypeNotExisted);
+            }
+            
             return Store.IsValidated;
         }
         #endregion

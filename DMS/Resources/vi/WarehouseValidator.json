@@ -15,7 +15,8 @@
     "AddressOverLength": "Địa chỉ quá dài"
   },
   "Organization": {
-    "OrganizationNotExisted": "Đơn vị tổ chức không tồn tại"
+    "OrganizationNotExisted": "Đơn vị tổ chức không tồn tại",
+    "OrganizationEmpty": "Chưa chọn đơn vị tổ chức"
   },
   "District": {
     "DistrictNotExisted": "Quận/ Huyện không tồn tại"
@@ -30,6 +31,6 @@
     "StatusNotExisted": "Trạng thái không tồn tại"
   },
   "Warehouse": {
-    "WarehouseHasInventory":  "Kho đã có hàng tồn"
+    "WarehouseHasInventory":  "Kho đã có hàng tồn",
   } 
 }
