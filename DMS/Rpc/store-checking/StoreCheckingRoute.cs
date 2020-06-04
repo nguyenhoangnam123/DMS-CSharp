@@ -48,9 +48,11 @@ namespace DMS.Rpc.store_checking
 
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
-        public const string ListStore = Default + "/list-store";
         public const string CountStore = Default + "/count-store";
-
+        public const string ListStore = Default + "/list-store";
+        public const string CountProblem = Default + "/count-problem";
+        public const string ListProblem = Default + "/list-problem";
+        
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
             { nameof(StoreCheckingFilter.Longtitude), FieldType.DECIMAL },
@@ -64,10 +66,13 @@ namespace DMS.Rpc.store_checking
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListStore, } },
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListStore, } },
             { "Checkin", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListStore, 
-                Detail, Create, Update, CreateIndirectSalesOrder, CreateProblem, SaveImage, 
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListStore, 
+                Detail, Create, Update, CreateIndirectSalesOrder, CreateProblem, SaveImage,
+                CountItem, ListItem, CountStore, ListStore, CountProblem, ListProblem,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, } },
         };
     }

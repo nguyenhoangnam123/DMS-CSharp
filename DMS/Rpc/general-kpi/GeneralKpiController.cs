@@ -133,6 +133,7 @@ namespace DMS.Rpc.general_kpi
                     
                 });
             }
+            GeneralKpi_GeneralKpiDTO.GeneralCriterias = GeneralCriterias?.Select(x => new GeneralKpi_GeneralCriteriaDTO(x)).ToList();
             return GeneralKpi_GeneralKpiDTO;
         }
 

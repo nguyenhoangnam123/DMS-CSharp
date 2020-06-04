@@ -6,6 +6,7 @@ using Common;
 using DMS.Entities;
 using DMS;
 using DMS.Repositories;
+using DMS.Enums;
 
 namespace DMS.Services.MAlbum
 {
@@ -23,6 +24,9 @@ namespace DMS.Services.MAlbum
         public enum ErrorCode
         {
             IdNotExisted,
+            NameEmpty,
+            NameOverLength,
+            StatusNotExisted
         }
 
         private IUOW UOW;
@@ -50,8 +54,29 @@ namespace DMS.Services.MAlbum
             return count == 1;
         }
 
+        public async Task<bool> ValidateName(Album Album)
+        {
+            if(string.IsNullOrWhiteSpace(Album.Name))
+                Album.AddError(nameof(AlbumValidator), nameof(Album.Name), ErrorCode.NameEmpty);
+            else
+            {
+                if(Album.Name.Length > 255)
+                    Album.AddError(nameof(AlbumValidator), nameof(Album.Name), ErrorCode.NameOverLength);
+            }
+            return Album.IsValidated;
+        }
+
+        public async Task<bool> ValidateStatus(Album Album)
+        {
+            if (StatusEnum.ACTIVE.Id != Album.StatusId && StatusEnum.INACTIVE.Id != Album.StatusId)
+                Album.AddError(nameof(AlbumValidator), nameof(Album.Status), ErrorCode.StatusNotExisted);
+            return Album.IsValidated;
+        }
+
         public async Task<bool>Create(Album Album)
         {
+            await ValidateName(Album);
+            await ValidateStatus(Album);
             return Album.IsValidated;
         }
 
@@ -59,6 +84,8 @@ namespace DMS.Services.MAlbum
         {
             if (await ValidateId(Album))
             {
+                await ValidateName(Album);
+                await ValidateStatus(Album);
             }
             return Album.IsValidated;
         }
@@ -73,7 +100,11 @@ namespace DMS.Services.MAlbum
         
         public async Task<bool> BulkDelete(List<Album> Albums)
         {
-            return true;
+            foreach (Album Album in Albums)
+            {
+                await Delete(Album);
+            }
+            return Albums.All(st => st.IsValidated);
         }
         
         public async Task<bool> Import(List<Album> Albums)

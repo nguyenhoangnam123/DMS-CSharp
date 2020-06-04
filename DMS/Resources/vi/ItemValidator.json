@@ -15,6 +15,6 @@
     "ScanCodeOverLength": "ScanCode quá dài"
   },
   "ProductId": {
-    "ProductNotExisted":  "Chưa có sản phẩm"
+    "ProductNotExisted": "Sản phẩm không tồn tại"
   }
 }

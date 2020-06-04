@@ -565,13 +565,13 @@ namespace DMS.Rpc.product
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = ProductTypeSelect.ALL
+                Selects = ProductTypeSelect.ALL,
             });
             List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(new UnitOfMeasureFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = UnitOfMeasureSelect.ALL
+                Selects = UnitOfMeasureSelect.ALL,
             });
             List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(new UnitOfMeasureGroupingFilter
             {
@@ -861,37 +861,42 @@ namespace DMS.Rpc.product
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = ProductGroupingSelect.ALL
+                Selects = ProductGroupingSelect.ALL,
             });
             List<ProductType> ProductTypes = await ProductTypeService.List(new ProductTypeFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = ProductTypeSelect.ALL
+                Selects = ProductTypeSelect.ALL,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
             List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(new UnitOfMeasureFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = UnitOfMeasureSelect.ALL
+                Selects = UnitOfMeasureSelect.ALL,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id}
             });
             List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(new UnitOfMeasureGroupingFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = UnitOfMeasureGroupingSelect.ALL
+                Selects = UnitOfMeasureGroupingSelect.ALL,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
             List<Supplier> Suppliers = await SupplierService.List(new SupplierFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = SupplierSelect.ALL
+                Selects = SupplierSelect.ALL,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
             List<Brand> Brands = await BrandService.List(new BrandFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = BrandSelect.ALL
+                Selects = BrandSelect.ALL,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             MemoryStream MemoryStream = new MemoryStream();

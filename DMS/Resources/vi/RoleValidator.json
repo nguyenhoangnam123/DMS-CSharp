@@ -5,16 +5,17 @@
   "Code": {
     "CodeEmpty": "Chưa nhập Code",
     "CodeOverLength": "Code quá dài",
-    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
+    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt",
+    "FieldNotExisted":  "Trường không tồn tại"
   },
   "Name": {
-
+    "NameExisted": "Tên đã tồn tại"
   },
   "Status": {
-    "StatusNotExisted": "Chưa chọn trạng thái"
+    "StatusNotExisted": "Trạng thái không tồn tại"
   },
   "AppUser": {
-    "AppUserNotExisted": "Chưa chọn AppUser"
-  },
+    "AppUserNotExisted": "App người dùng không tồn tại"
+  }
 
 }

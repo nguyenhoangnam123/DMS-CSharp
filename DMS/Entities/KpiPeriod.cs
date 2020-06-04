@@ -11,7 +11,7 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public List<ItemSpecificKpi> ItemSpecificKpis { get; set; }
+        public List<KpiItem> ItemSpecificKpis { get; set; }
 
         public bool Equals(KpiPeriod other)
         {

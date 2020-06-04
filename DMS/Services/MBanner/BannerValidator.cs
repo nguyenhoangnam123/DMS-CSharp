@@ -6,6 +6,7 @@ using Common;
 using DMS.Entities;
 using DMS;
 using DMS.Repositories;
+using DMS.Enums;
 
 namespace DMS.Services.MBanner
 {
@@ -23,6 +24,10 @@ namespace DMS.Services.MBanner
         public enum ErrorCode
         {
             IdNotExisted,
+            TitleEmpty,
+            TitleOverLength,
+            PriorityInvalid,
+            StatusNotExisted
         }
 
         private IUOW UOW;
@@ -50,8 +55,37 @@ namespace DMS.Services.MBanner
             return count == 1;
         }
 
+        private async Task<bool> ValidateTitle(Banner Banner)
+        {
+            if(string.IsNullOrWhiteSpace(Banner.Title))
+                Banner.AddError(nameof(BannerValidator), nameof(Banner.Title), ErrorCode.TitleEmpty);
+            else
+            {
+                if(Banner.Title.Length > 255)
+                    Banner.AddError(nameof(BannerValidator), nameof(Banner.Title), ErrorCode.TitleOverLength);
+            }
+            return Banner.IsValidated;
+        }
+
+        private async Task<bool> ValidatePriority(Banner Banner)
+        {
+            if(Banner.Priority.HasValue && Banner.Priority <= 0)
+                Banner.AddError(nameof(BannerValidator), nameof(Banner.Priority), ErrorCode.PriorityInvalid);
+            return Banner.IsValidated;
+        }
+
+        public async Task<bool> ValidateStatus(Banner Banner)
+        {
+            if (StatusEnum.ACTIVE.Id != Banner.StatusId && StatusEnum.INACTIVE.Id != Banner.StatusId)
+                Banner.AddError(nameof(BannerValidator), nameof(Banner.Status), ErrorCode.StatusNotExisted);
+            return Banner.IsValidated;
+        }
+
         public async Task<bool>Create(Banner Banner)
         {
+            await ValidateTitle(Banner);
+            await ValidatePriority(Banner);
+            await ValidateStatus(Banner);
             return Banner.IsValidated;
         }
 
@@ -59,6 +93,9 @@ namespace DMS.Services.MBanner
         {
             if (await ValidateId(Banner))
             {
+                await ValidateTitle(Banner);
+                await ValidatePriority(Banner);
+                await ValidateStatus(Banner);
             }
             return Banner.IsValidated;
         }
@@ -73,7 +110,11 @@ namespace DMS.Services.MBanner
         
         public async Task<bool> BulkDelete(List<Banner> Banners)
         {
-            return true;
+            foreach (Banner Banner in Banners)
+            {
+                await Delete(Banner);
+            }
+            return Banners.All(st => st.IsValidated);
         }
         
         public async Task<bool> Import(List<Banner> Banners)

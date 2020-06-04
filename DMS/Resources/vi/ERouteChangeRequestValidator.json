@@ -3,14 +3,14 @@
     "IdNotExisted": "Id không tồn tại"
   },
   "ERoute": {
-    "ERouteNotExisted": "Chưa chọn Tuyến"
+    "ERouteNotExisted": "Tuyến không tồn tại"
   },
   "RequestState": {
     "RequestStateIsNotApproved": "Trạng thái yêu cầu tuyến không được chấp nhận",
     "ERouteChangeRequestInUsed": "Yêu cầu tuyến thay đổi đang sử dụng",
   },
   "Store": {
-    "StoreNotExisted": "Chưa chọn cửa hàng"
+    "StoreNotExisted": "Cửa hàng không tồn tại"
   },
   "ERouteChangeRequestContents": {
     "ERouteChangeRequestContentsEmpty": "Chưa nhập tuyến thay đổi"

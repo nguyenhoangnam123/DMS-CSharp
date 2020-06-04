@@ -6,5 +6,7 @@
     "TitleEmpty": "Chưa nhập tiêu đề",
     "TitleOverLength": "Tiêu đề quá dài"
   },
-
+  "Organization": {
+    "OrganizationIdNotExisted": "Mã tổ chức không tồn tại"
+  }
 }

@@ -38,10 +38,10 @@
     "DescriptionOverLength": "Mô tả quá dài"
   },
   "Staff": {
-    "StaffNotExisted": "Chưa chọn nhân viên"
+    "StaffNotExisted": "Nhân viên không tồn tại"
   },
   "Organization": {
-    "OrganizationNotExisted": "Chưa chọn đơn vị tổ chức"
+    "OrganizationNotExisted": "Đơn vị tổ chức không tồn tại"
   },
   "ResellerType": {
     "ResellerTypeNotExisted":  "Loại người bán chưa chọn"
@@ -54,6 +54,6 @@
       "NameExisted": "Tên của phiên bản sản phẩm đã tồn tại"
     },
     "Id": {
-      "ItemInUsed": "phiên bản sản phẩm đang được sử dụng"
+      "ItemInUsed": "Phiên bản sản phẩm đang được sử dụng"
     }
   }
