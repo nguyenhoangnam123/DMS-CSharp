@@ -13,24 +13,25 @@
     "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
   },
   "ProductType": {
-    "ProductTypeNotExisted": "Chưa chọn loại sản phẩm"
+    "ProductTypeEmpty": "Chưa chọn loại sản phẩm",
+    "ProductTypeNotExisted": "Loại sản phẩm không tồn tại"
   },
   "Supplier": {
-    "SupplierNotExisted": "Chưa chọn nhà cung cấp"
+    "SupplierNotExisted": "Nhà cung cấp không tồn tại"
   },
   "Brand": {
-    "BrandNotExisted": "Chưa chọn nhãn hiệu"
+    "BrandNotExisted": "Nhãn hiệu không tồn tại"
   },
   "TaxType": {
-    "TaxTypeEmpty": "Chưa nhập loại thuế",
-    "TaxTypeIdNotExisted": "Chưa chọn loại thuế"
+    "TaxTypeEmpty": "Chưa chọn thuế",
+    "TaxTypeIdNotExisted": "Thuế không tồn tại"
   },
   "UnitOfMeasure": {
-    "UnitOfMeasureNotExisted": "Chưa chọn đơn vị tính",
-    "UnitOfMeasureEmpty":  "Chưa nhập đơn vị tính "
+    "UnitOfMeasureNotExisted": "Đơn vị tính không tồn tại",
+    "UnitOfMeasureEmpty":  "Chưa chọn đơn vị tính "
   },
   "Status": {
-    "StatusNotExisted": "Chưa chọn trạng thái"
+    "StatusNotExisted": "Trạng thái không tồn tại"
   },
   "VariationGrouping": {
     "VariationGroupingExisted": "Nhóm phiên bản đã tồn tại"

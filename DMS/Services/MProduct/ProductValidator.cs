@@ -30,6 +30,7 @@ namespace DMS.Services.MProduct
             NameExisted,
             NameOverLength,
             ProductTypeNotExisted,
+            ProductTypeEmpty,
             SupplierNotExisted,
             BrandNotExisted,
             TaxTypeIdNotExisted,
@@ -114,49 +115,63 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateProductType(Product Product)
         {
-            ProductTypeFilter ProductTypeFilter = new ProductTypeFilter
+            if(Product.ProductTypeId == 0)
+                Product.AddError(nameof(ProductValidator), nameof(Product.ProductType), ErrorCode.ProductTypeEmpty);
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = Product.ProductTypeId },
-                Selects = ProductTypeSelect.Id
-            };
+                ProductTypeFilter ProductTypeFilter = new ProductTypeFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = Product.ProductTypeId },
+                    Selects = ProductTypeSelect.Id
+                };
 
-            int count = await UOW.ProductTypeRepository.Count(ProductTypeFilter);
-            if (count == 0)
-                Product.AddError(nameof(ProductValidator), nameof(Product.ProductType), ErrorCode.ProductTypeNotExisted);
+                int count = await UOW.ProductTypeRepository.Count(ProductTypeFilter);
+                if (count == 0)
+                    Product.AddError(nameof(ProductValidator), nameof(Product.ProductType), ErrorCode.ProductTypeNotExisted);
+            }
+            
             return Product.IsValidated;
         }
 
         private async Task<bool> ValidateSupplier(Product Product)
         {
-            SupplierFilter SupplierFilter = new SupplierFilter
+            if(Product.SupplierId != 0)
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = Product.SupplierId },
-                Selects = SupplierSelect.Id
-            };
+                SupplierFilter SupplierFilter = new SupplierFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = Product.SupplierId },
+                    Selects = SupplierSelect.Id
+                };
 
-            int count = await UOW.SupplierRepository.Count(SupplierFilter);
-            if (count == 0)
-                Product.AddError(nameof(ProductValidator), nameof(Product.Supplier), ErrorCode.SupplierNotExisted);
+                int count = await UOW.SupplierRepository.Count(SupplierFilter);
+                if (count == 0)
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Supplier), ErrorCode.SupplierNotExisted);
+            }
+            
             return Product.IsValidated;
         }
 
         private async Task<bool> ValidateBrand(Product Product)
         {
-            BrandFilter BrandFilter = new BrandFilter
+            if(Product.BrandId != 0)
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = Product.BrandId },
-                Selects = BrandSelect.Id
-            };
+                BrandFilter BrandFilter = new BrandFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = Product.BrandId },
+                    Selects = BrandSelect.Id
+                };
 
-            int count = await UOW.BrandRepository.Count(BrandFilter);
-            if (count == 0)
-                Product.AddError(nameof(ProductValidator), nameof(Product.Brand), ErrorCode.BrandNotExisted);
+                int count = await UOW.BrandRepository.Count(BrandFilter);
+                if (count == 0)
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Brand), ErrorCode.BrandNotExisted);
+            }
+            
             return Product.IsValidated;
         }
 
@@ -185,33 +200,43 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateUnitOfMeasure(Product Product)
         {
-            UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
+            if(Product.UnitOfMeasureId == 0)
+                Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasure), ErrorCode.UnitOfMeasureEmpty);
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = Product.UnitOfMeasureId },
-                Selects = UnitOfMeasureSelect.Id
-            };
+                UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = Product.UnitOfMeasureId },
+                    Selects = UnitOfMeasureSelect.Id
+                };
 
-            int count = await UOW.UnitOfMeasureRepository.Count(UnitOfMeasureFilter);
-            if (count == 0)
-                Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
+                int count = await UOW.UnitOfMeasureRepository.Count(UnitOfMeasureFilter);
+                if (count == 0)
+                    Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
+            }
+            
             return Product.IsValidated;
         }
 
         private async Task<bool> ValidateUnitOfMeasureGrouping(Product Product)
         {
-            UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter
+            if(Product.UnitOfMeasureGroupingId != 0)
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = Product.UnitOfMeasureGroupingId },
-                Selects = UnitOfMeasureGroupingSelect.Id
-            };
+                UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = Product.UnitOfMeasureGroupingId },
+                    Selects = UnitOfMeasureGroupingSelect.Id
+                };
 
-            int count = await UOW.UnitOfMeasureGroupingRepository.Count(UnitOfMeasureGroupingFilter);
-            if (count == 0)
-                Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
+                int count = await UOW.UnitOfMeasureGroupingRepository.Count(UnitOfMeasureGroupingFilter);
+                if (count == 0)
+                    Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
+            }
+            
             return Product.IsValidated;
         }
 
