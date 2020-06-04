@@ -51,7 +51,14 @@ namespace DMS.Repositories
             if (filter.Department != null)
                 query = query.Where(q => q.Department, filter.Department);
             if (filter.OrganizationId != null)
-                query = query.Where(q => q.OrganizationId, filter.OrganizationId);
+            {
+                if (filter.OrganizationId.Equal.HasValue)
+                {
+                    long OrganizationId = filter.OrganizationId.Equal.Value;
+                    OrganizationDAO OrganizationDAO =  DataContext.Organization.Where(o => o.Id == OrganizationId).FirstOrDefault();
+                    query = query.Where(q => q.Organization != null && q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+            }
             if (filter.ProvinceId != null)
                 query = query.Where(q => q.ProvinceId, filter.OrganizationId);
             if (filter.RoleId != null)
