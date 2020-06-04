@@ -31,6 +31,7 @@ namespace DMS.Services.MERoute
             NameEmpty,
             NameOverLength,
             SaleEmployeeNotExisted,
+            SaleEmployeeEmpty,
             ERouteTypeNotExisted,
             StatusNotExisted,
             StartDateEmpty,
@@ -115,18 +116,24 @@ namespace DMS.Services.MERoute
 
         private async Task<bool> ValidateSaleEmployee(ERoute ERoute)
         {
-            AppUserFilter AppUserFilter = new AppUserFilter
+            if(ERoute.SaleEmployeeId == 0)
+                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.SaleEmployee), ErrorCode.SaleEmployeeEmpty);
+            else
             {
-                Skip = 0,
-                Take = 1,
-                Selects = AppUserSelect.Id,
-                Id = new IdFilter { Equal = ERoute.SaleEmployeeId },
-                OrganizationId = new IdFilter()
-            };
+                AppUserFilter AppUserFilter = new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = 1,
+                    Selects = AppUserSelect.Id,
+                    Id = new IdFilter { Equal = ERoute.SaleEmployeeId },
+                    OrganizationId = new IdFilter()
+                };
 
-            int count = await UOW.AppUserRepository.Count(AppUserFilter);
-            if(count == 0)
-                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.SaleEmployee), ErrorCode.SaleEmployeeNotExisted);
+                int count = await UOW.AppUserRepository.Count(AppUserFilter);
+                if (count == 0)
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.SaleEmployee), ErrorCode.SaleEmployeeNotExisted);
+            }
+            
             return ERoute.IsValidated;
         }
 

@@ -101,18 +101,22 @@ namespace DMS.Services.MProductGrouping
 
         private async Task<bool> ValidateParent(ProductGrouping ProductGrouping)
         {
-            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter
+            if (ProductGrouping.ParentId.HasValue)
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = ProductGrouping.ParentId },
-                Selects = ProductGroupingSelect.Id
-            };
+                ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = ProductGrouping.ParentId },
+                    Selects = ProductGroupingSelect.Id
+                };
 
-            int count = await UOW.ProductGroupingRepository.Count(ProductGroupingFilter);
-            if (count == 0)
-                ProductGrouping.AddError(nameof(ProductGroupingValidator), nameof(ProductGrouping.ParentId), ErrorCode.ParentNotExisted);
-            return count != 0;
+                int count = await UOW.ProductGroupingRepository.Count(ProductGroupingFilter);
+                if (count == 0)
+                    ProductGrouping.AddError(nameof(ProductGroupingValidator), nameof(ProductGrouping.ParentId), ErrorCode.ParentNotExisted);
+            }
+
+            return ProductGrouping.IsValidated;
         }
 
         public async Task<bool> Create(ProductGrouping ProductGrouping)

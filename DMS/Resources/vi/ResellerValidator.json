@@ -38,13 +38,16 @@
     "DescriptionOverLength": "Mô tả quá dài"
   },
   "Staff": {
-    "StaffNotExisted": "Nhân viên không tồn tại"
+    "StaffNotExisted": "Nhân viên không tồn tại",
+    "StaffEmpty": "Chưa chọn nhân viên"
   },
   "Organization": {
-    "OrganizationNotExisted": "Đơn vị tổ chức không tồn tại"
+    "OrganizationNotExisted": "Đơn vị tổ chức không tồn tại",
+    "OrganizationEmpty": "Chưa chọn đơn vị tổ chức"
   },
   "ResellerType": {
-    "ResellerTypeNotExisted":  "Loại người bán chưa chọn"
+    "ResellerTypeNotExisted":  "Loại khách hàng không tồn tại",
+    "ResellerTypeEmpty":  "Chưa chọn loại khách hàng",
   }
   "Item": {
     "Code": {

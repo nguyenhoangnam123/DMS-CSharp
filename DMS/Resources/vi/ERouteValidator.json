@@ -12,7 +12,8 @@
     "NameOverLength": "Tên quá dài"
   },
   "SaleEmployee": {
-    "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại"
+    "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại",
+    "SaleEmployeeEmpty": "Chưa chọn nhân viên kinh"
   },
   "ERouteType": {
     "ERouteTypeNotExisted": "Loại tuyến không tồn tại"

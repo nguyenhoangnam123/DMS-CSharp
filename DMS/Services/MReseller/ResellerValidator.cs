@@ -38,8 +38,11 @@ namespace DMS.Services.MReseller
             DescriptionOverLength,
             StatusNotExisted,
             StaffNotExisted,
+            StaffEmpty,
             OrganizationNotExisted,
+            OrganizationEmpty,
             ResellerTypeNotExisted,
+            ResellerTypeEmpty,
             ResellerStatusNotExisted
         }
 
@@ -176,46 +179,64 @@ namespace DMS.Services.MReseller
 
         public async Task<bool> ValidateAppUser(Reseller Reseller)
         {
-            AppUserFilter AppUserFilter = new AppUserFilter
+            if(Reseller.StaffId == 0)
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Staff), ErrorCode.StaffEmpty);
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = Reseller.StaffId },
-                Selects = AppUserSelect.Id
-            };
-            int count = await UOW.AppUserRepository.Count(AppUserFilter);
-            if (count == 0)
-                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Staff), ErrorCode.StaffNotExisted);
+                AppUserFilter AppUserFilter = new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = Reseller.StaffId },
+                    Selects = AppUserSelect.Id
+                };
+                int count = await UOW.AppUserRepository.Count(AppUserFilter);
+                if (count == 0)
+                    Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Staff), ErrorCode.StaffNotExisted);
+            }
+            
             return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateOrganization(Reseller Reseller)
         {
-            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            if(Reseller.OrganizationId == 0)
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Organization), ErrorCode.OrganizationEmpty);
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = Reseller.OrganizationId },
-                Selects = OrganizationSelect.Id
-            };
-            int count = await UOW.OrganizationRepository.Count(OrganizationFilter);
-            if (count == 0)
-                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Organization), ErrorCode.OrganizationNotExisted);
+                OrganizationFilter OrganizationFilter = new OrganizationFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = Reseller.OrganizationId },
+                    Selects = OrganizationSelect.Id
+                };
+                int count = await UOW.OrganizationRepository.Count(OrganizationFilter);
+                if (count == 0)
+                    Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Organization), ErrorCode.OrganizationNotExisted);
+            }
+            
             return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateResellerType(Reseller Reseller)
         {
-            ResellerTypeFilter ResellerTypeFilter = new ResellerTypeFilter
+            if(Reseller.ResellerTypeId == 0)
+                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerType), ErrorCode.ResellerTypeEmpty);
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = Reseller.ResellerTypeId },
-                Selects = ResellerTypeSelect.Id
-            };
-            int count = await UOW.ResellerTypeRepository.Count(ResellerTypeFilter);
-            if (count == 0)
-                Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerType), ErrorCode.ResellerTypeNotExisted);
+                ResellerTypeFilter ResellerTypeFilter = new ResellerTypeFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = Reseller.ResellerTypeId },
+                    Selects = ResellerTypeSelect.Id
+                };
+                int count = await UOW.ResellerTypeRepository.Count(ResellerTypeFilter);
+                if (count == 0)
+                    Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerType), ErrorCode.ResellerTypeNotExisted);
+            }
+            
             return Reseller.IsValidated;
         }
 

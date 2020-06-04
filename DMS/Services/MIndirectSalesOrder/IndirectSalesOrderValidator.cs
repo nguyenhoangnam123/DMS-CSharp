@@ -26,7 +26,10 @@ namespace DMS.Services.MIndirectSalesOrder
             IdNotExisted,
             BuyerStoreNotExisted,
             SellerStoreNotExisted,
+            BuyerStoreEmpty,
+            SellerStoreEmpty,
             SaleEmployeeNotExisted,
+            SaleEmployeeEmpty,
             OrderDateEmpty,
             EditedPriceStatusNotExisted,
             PriceOutOfRange,
@@ -64,45 +67,62 @@ namespace DMS.Services.MIndirectSalesOrder
 
         private async Task<bool> ValidateStore(IndirectSalesOrder IndirectSalesOrder)
         {
-            StoreFilter StoreFilter = new StoreFilter
+            if(IndirectSalesOrder.BuyerStoreId == 0)
+                IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.BuyerStore), ErrorCode.BuyerStoreEmpty);
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = IndirectSalesOrder.BuyerStoreId } ,
-                Selects = StoreSelect.Id
-            };
+                StoreFilter StoreFilter = new StoreFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = IndirectSalesOrder.BuyerStoreId },
+                    Selects = StoreSelect.Id
+                };
 
-            int count = await UOW.StoreRepository.Count(StoreFilter);
-            if(count == 0)
-                IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.BuyerStore), ErrorCode.BuyerStoreNotExisted);
+                int count = await UOW.StoreRepository.Count(StoreFilter);
+                if (count == 0)
+                    IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.BuyerStore), ErrorCode.BuyerStoreNotExisted);
+            }
 
-            StoreFilter = new StoreFilter
+            if (IndirectSalesOrder.SellerStoreId == 0)
+                IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SellerStore), ErrorCode.SellerStoreEmpty);
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = IndirectSalesOrder.SellerStoreId } ,
-                Selects = StoreSelect.Id
-            };
+                StoreFilter StoreFilter = new StoreFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = IndirectSalesOrder.SellerStoreId },
+                    Selects = StoreSelect.Id
+                };
 
-            count = await UOW.StoreRepository.Count(StoreFilter);
-            if (count == 0)
-                IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SellerStore), ErrorCode.SellerStoreNotExisted);
+                int count = await UOW.StoreRepository.Count(StoreFilter);
+                if (count == 0)
+                    IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SellerStore), ErrorCode.SellerStoreNotExisted);
+            }
+            
             return IndirectSalesOrder.IsValidated;
         }
 
         private async Task<bool> ValidateEmployee(IndirectSalesOrder IndirectSalesOrder)
         {
-            AppUserFilter AppUserFilter = new AppUserFilter
+            if(IndirectSalesOrder.SaleEmployeeId == 0)
+                IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SaleEmployee), ErrorCode.SaleEmployeeEmpty);
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = IndirectSalesOrder.SaleEmployeeId },
-                Selects = AppUserSelect.Id
-            };
+                AppUserFilter AppUserFilter = new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = IndirectSalesOrder.SaleEmployeeId },
+                    Selects = AppUserSelect.Id
+                };
 
-            int count = await UOW.AppUserRepository.Count(AppUserFilter);
-            if(count == 0)
-                IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SaleEmployee), ErrorCode.SaleEmployeeNotExisted);
+                int count = await UOW.AppUserRepository.Count(AppUserFilter);
+                if (count == 0)
+                    IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SaleEmployee), ErrorCode.SaleEmployeeNotExisted);
+            }
+            
             return IndirectSalesOrder.IsValidated;
         }
 
