@@ -53,14 +53,14 @@ namespace DMS.Repositories
             foreach (PositionFilter PositionFilter in filter.OrFilter)
             {
                 IQueryable<PositionDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (PositionFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, PositionFilter.Id);
+                if (PositionFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, PositionFilter.Code);
+                if (PositionFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, PositionFilter.Name);
+                if (PositionFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, PositionFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

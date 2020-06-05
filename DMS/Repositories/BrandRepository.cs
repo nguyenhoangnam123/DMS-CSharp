@@ -58,18 +58,18 @@ namespace DMS.Repositories
             foreach (BrandFilter BrandFilter in filter.OrFilter)
             {
                 IQueryable<BrandDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Description != null)
-                    queryable = queryable.Where(q => q.Description, filter.Description);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.UpdateTime != null)
-                    queryable = queryable.Where(q => q.UpdatedAt, filter.UpdateTime);
+                if (BrandFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, BrandFilter.Id);
+                if (BrandFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, BrandFilter.Code);
+                if (BrandFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, BrandFilter.Name);
+                if (BrandFilter.Description != null)
+                    queryable = queryable.Where(q => q.Description, BrandFilter.Description);
+                if (BrandFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, BrandFilter.StatusId);
+                if (BrandFilter.UpdateTime != null)
+                    queryable = queryable.Where(q => q.UpdatedAt, BrandFilter.UpdateTime);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

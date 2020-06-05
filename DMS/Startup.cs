@@ -23,6 +23,8 @@ using Z.EntityFramework.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using DMS.Rpc;
 using Microsoft.AspNetCore.Http;
+using Hangfire;
+using DMS.Services;
 
 namespace DMS
 {
@@ -58,6 +60,7 @@ namespace DMS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            _ = DataEntity.ErrorResource;
             services.AddControllers().AddNewtonsoftJson();
             services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
             services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
@@ -72,7 +75,7 @@ namespace DMS
                 DataContext DataContext = new DataContext(optionsBuilder.Options);
                 return DataContext;
             };
-
+            
             services.Scan(scan => scan
              .FromAssemblyOf<IServiceScoped>()
                  .AddClasses(classes => classes.AssignableTo<IServiceScoped>())
@@ -127,7 +130,8 @@ namespace DMS
 
             Action onChange = () =>
             {
-
+                RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily);
+                RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily);
             };
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);
         }

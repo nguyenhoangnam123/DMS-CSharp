@@ -62,18 +62,18 @@ namespace DMS.Repositories
             foreach (GeneralKpiFilter GeneralKpiFilter in filter.OrFilter)
             {
                 IQueryable<GeneralKpiDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.OrganizationId != null)
-                    queryable = queryable.Where(q => q.OrganizationId, filter.OrganizationId);
-                if (filter.EmployeeId != null)
-                    queryable = queryable.Where(q => q.EmployeeId, filter.EmployeeId);
-                if (filter.KpiPeriodId != null)
-                    queryable = queryable.Where(q => q.KpiPeriodId, filter.KpiPeriodId);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.CreatorId != null)
-                    queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
+                if (GeneralKpiFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, GeneralKpiFilter.Id);
+                if (GeneralKpiFilter.OrganizationId != null)
+                    queryable = queryable.Where(q => q.OrganizationId, GeneralKpiFilter.OrganizationId);
+                if (GeneralKpiFilter.EmployeeId != null)
+                    queryable = queryable.Where(q => q.EmployeeId, GeneralKpiFilter.EmployeeId);
+                if (GeneralKpiFilter.KpiPeriodId != null)
+                    queryable = queryable.Where(q => q.KpiPeriodId, GeneralKpiFilter.KpiPeriodId);
+                if (GeneralKpiFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, GeneralKpiFilter.StatusId);
+                if (GeneralKpiFilter.CreatorId != null)
+                    queryable = queryable.Where(q => q.CreatorId, GeneralKpiFilter.CreatorId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -303,6 +303,31 @@ namespace DMS.Repositories
             if (GeneralKpi == null)
                 return null;
 
+            GeneralKpi.GeneralKpiCriteriaMappings = await DataContext.GeneralKpiCriteriaMapping
+                .Where(x => x.GeneralKpiId == Id)
+                .Select(x => new GeneralKpiCriteriaMapping
+                {
+                    GeneralKpiId = GeneralKpi.Id,
+                    GeneralCriteriaId = x.GeneralCriteriaId,
+                    M01 = x.M01,
+                    M02 = x.M02,
+                    M03 = x.M03,
+                    M04 = x.M04,
+                    M05 = x.M05,
+                    M06 = x.M06,
+                    M07 = x.M07,
+                    M08 = x.M08,
+                    M09 = x.M09,
+                    M10 = x.M10,
+                    M11 = x.M11,
+                    M12 = x.M12,
+                    Q01 = x.Q01,
+                    Q02 = x.Q02,
+                    Q03 = x.Q03,
+                    Q04 = x.Q04,
+                    Y01 = x.Y01,
+                    StatusId = x.StatusId
+                }).ToListAsync();
             return GeneralKpi;
         }
         public async Task<bool> Create(GeneralKpi GeneralKpi)

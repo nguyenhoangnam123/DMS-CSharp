@@ -47,14 +47,14 @@ namespace DMS.Repositories
             foreach (MenuFilter MenuFilter in filter.OrFilter)
             {
                 IQueryable<MenuDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Path != null)
-                    queryable = queryable.Where(q => q.Path, filter.Path);
+                if (MenuFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, MenuFilter.Id);
+                if (MenuFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, MenuFilter.Code);
+                if (MenuFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, MenuFilter.Name);
+                if (MenuFilter.Path != null)
+                    queryable = queryable.Where(q => q.Path, MenuFilter.Path);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

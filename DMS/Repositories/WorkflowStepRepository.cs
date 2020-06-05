@@ -55,16 +55,16 @@ namespace DMS.Repositories
             foreach (WorkflowStepFilter WorkflowStepFilter in filter.OrFilter)
             {
                 IQueryable<WorkflowStepDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.WorkflowDefinitionId != null)
-                    queryable = queryable.Where(q => q.WorkflowDefinitionId, filter.WorkflowDefinitionId);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.RoleId != null)
-                    queryable = queryable.Where(q => q.RoleId, filter.RoleId);
+                if (WorkflowStepFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, WorkflowStepFilter.Id);
+                if (WorkflowStepFilter.WorkflowDefinitionId != null)
+                    queryable = queryable.Where(q => q.WorkflowDefinitionId, WorkflowStepFilter.WorkflowDefinitionId);
+                if (WorkflowStepFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, WorkflowStepFilter.Code);
+                if (WorkflowStepFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, WorkflowStepFilter.Name);
+                if (WorkflowStepFilter.RoleId != null)
+                    queryable = queryable.Where(q => q.RoleId, WorkflowStepFilter.RoleId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

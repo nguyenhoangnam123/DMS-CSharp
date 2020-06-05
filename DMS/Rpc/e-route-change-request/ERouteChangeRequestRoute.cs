@@ -56,6 +56,9 @@ namespace DMS.Rpc.e_route_change_request
             { nameof(ERouteChangeRequestFilter.ERouteId), FieldType.ID },
             { nameof(ERouteChangeRequestFilter.CreatorId), FieldType.ID },
             { nameof(ERouteChangeRequestFilter.RequestStateId), FieldType.ID },
+            { nameof(StoreFilter.OrganizationId), FieldType.ID },
+            { nameof(StoreFilter.StoreGroupingId), FieldType.ID },
+            { nameof(StoreFilter.StoreTypeId), FieldType.ID },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

@@ -922,7 +922,7 @@ namespace DMS.Rpc.store
             DistrictFilter DistrictFilter = new DistrictFilter();
             DistrictFilter.Skip = 0;
             DistrictFilter.Take = 20;
-            DistrictFilter.OrderBy = DistrictOrder.Id;
+            DistrictFilter.OrderBy = DistrictOrder.Priority;
             DistrictFilter.OrderType = OrderType.ASC;
             DistrictFilter.Selects = DistrictSelect.ALL;
             DistrictFilter.Id = Store_DistrictFilterDTO.Id;
@@ -959,7 +959,7 @@ namespace DMS.Rpc.store
             ProvinceFilter ProvinceFilter = new ProvinceFilter();
             ProvinceFilter.Skip = 0;
             ProvinceFilter.Take = 20;
-            ProvinceFilter.OrderBy = ProvinceOrder.Id;
+            ProvinceFilter.OrderBy = ProvinceOrder.Priority;
             ProvinceFilter.OrderType = OrderType.ASC;
             ProvinceFilter.Selects = ProvinceSelect.ALL;
             ProvinceFilter.Id = Store_ProvinceFilterDTO.Id;
@@ -1014,7 +1014,7 @@ namespace DMS.Rpc.store
             WardFilter WardFilter = new WardFilter();
             WardFilter.Skip = 0;
             WardFilter.Take = 20;
-            WardFilter.OrderBy = WardOrder.Id;
+            WardFilter.OrderBy = WardOrder.Priority;
             WardFilter.OrderType = OrderType.ASC;
             WardFilter.Selects = WardSelect.ALL;
             WardFilter.Id = Store_WardFilterDTO.Id;
@@ -1048,7 +1048,7 @@ namespace DMS.Rpc.store
             DistrictFilter DistrictFilter = new DistrictFilter();
             DistrictFilter.Skip = 0;
             DistrictFilter.Take = 20;
-            DistrictFilter.OrderBy = DistrictOrder.Id;
+            DistrictFilter.OrderBy = DistrictOrder.Priority;
             DistrictFilter.OrderType = OrderType.ASC;
             DistrictFilter.Selects = DistrictSelect.ALL;
             DistrictFilter.Id = Store_DistrictFilterDTO.Id;
@@ -1119,7 +1119,7 @@ namespace DMS.Rpc.store
             ProvinceFilter ProvinceFilter = new ProvinceFilter();
             ProvinceFilter.Skip = 0;
             ProvinceFilter.Take = 20;
-            ProvinceFilter.OrderBy = ProvinceOrder.Id;
+            ProvinceFilter.OrderBy = ProvinceOrder.Priority;
             ProvinceFilter.OrderType = OrderType.ASC;
             ProvinceFilter.Selects = ProvinceSelect.ALL;
             ProvinceFilter.Id = Store_ProvinceFilterDTO.Id;
@@ -1190,7 +1190,7 @@ namespace DMS.Rpc.store
             WardFilter WardFilter = new WardFilter();
             WardFilter.Skip = 0;
             WardFilter.Take = 20;
-            WardFilter.OrderBy = WardOrder.Id;
+            WardFilter.OrderBy = WardOrder.Priority;
             WardFilter.OrderType = OrderType.ASC;
             WardFilter.Selects = WardSelect.ALL;
             WardFilter.Id = Store_WardFilterDTO.Id;

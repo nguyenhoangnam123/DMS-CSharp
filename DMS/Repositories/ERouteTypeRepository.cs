@@ -51,12 +51,12 @@ namespace DMS.Repositories
             foreach (ERouteTypeFilter ERouteTypeFilter in filter.OrFilter)
             {
                 IQueryable<ERouteTypeDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
+                if (ERouteTypeFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ERouteTypeFilter.Id);
+                if (ERouteTypeFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, ERouteTypeFilter.Code);
+                if (ERouteTypeFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, ERouteTypeFilter.Name);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

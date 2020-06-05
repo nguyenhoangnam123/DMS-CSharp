@@ -51,14 +51,14 @@ namespace DMS.Repositories
             foreach (ProvinceFilter ProvinceFilter in filter.OrFilter)
             {
                 IQueryable<ProvinceDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Priority != null)
-                    queryable = queryable.Where(q => q.Priority, filter.Priority);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (ProvinceFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ProvinceFilter.Id);
+                if (ProvinceFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, ProvinceFilter.Name);
+                if (ProvinceFilter.Priority != null)
+                    queryable = queryable.Where(q => q.Priority, ProvinceFilter.Priority);
+                if (ProvinceFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, ProvinceFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -81,7 +81,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Name);
                             break;
                         case ProvinceOrder.Priority:
-                            query = query.OrderBy(q => q.Priority);
+                            query = query.OrderBy(q => q.Priority == null).ThenBy(x => x.Priority);
                             break;
                         case ProvinceOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
@@ -101,7 +101,7 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Name);
                             break;
                         case ProvinceOrder.Priority:
-                            query = query.OrderByDescending(q => q.Priority);
+                            query = query.OrderByDescending(q => q.Priority == null).ThenByDescending(x => x.Priority);
                             break;
                         case ProvinceOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);

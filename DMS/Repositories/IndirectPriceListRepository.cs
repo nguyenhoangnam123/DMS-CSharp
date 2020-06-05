@@ -66,22 +66,22 @@ namespace DMS.Repositories
             foreach (IndirectPriceListFilter IndirectPriceListFilter in filter.OrFilter)
             {
                 IQueryable<IndirectPriceListDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.StartDate != null)
-                    queryable = queryable.Where(q => q.StartDate, filter.StartDate);
-                if (filter.EndDate != null)
-                    queryable = queryable.Where(q => q.EndDate, filter.EndDate);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.OrganizationId != null)
-                    queryable = queryable.Where(q => q.OrganizationId, filter.OrganizationId);
-                if (filter.IndirectPriceListTypeId != null)
-                    queryable = queryable.Where(q => q.IndirectPriceListTypeId, filter.IndirectPriceListTypeId);
+                if (IndirectPriceListFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, IndirectPriceListFilter.Id);
+                if (IndirectPriceListFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, IndirectPriceListFilter.Code);
+                if (IndirectPriceListFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, IndirectPriceListFilter.Name);
+                if (IndirectPriceListFilter.StartDate != null)
+                    queryable = queryable.Where(q => q.StartDate, IndirectPriceListFilter.StartDate);
+                if (IndirectPriceListFilter.EndDate != null)
+                    queryable = queryable.Where(q => q.EndDate, IndirectPriceListFilter.EndDate);
+                if (IndirectPriceListFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, IndirectPriceListFilter.StatusId);
+                if (IndirectPriceListFilter.OrganizationId != null)
+                    queryable = queryable.Where(q => q.OrganizationId, IndirectPriceListFilter.OrganizationId);
+                if (IndirectPriceListFilter.IndirectPriceListTypeId != null)
+                    queryable = queryable.Where(q => q.IndirectPriceListTypeId, IndirectPriceListFilter.IndirectPriceListTypeId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

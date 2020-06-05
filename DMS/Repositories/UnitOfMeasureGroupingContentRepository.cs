@@ -52,14 +52,14 @@ namespace DMS.Repositories
             foreach (UnitOfMeasureGroupingContentFilter UnitOfMeasureGroupingContentFilter in filter.OrFilter)
             {
                 IQueryable<UnitOfMeasureGroupingContentDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.UnitOfMeasureGroupingId != null)
-                    queryable = queryable.Where(q => q.UnitOfMeasureGroupingId, filter.UnitOfMeasureGroupingId);
-                if (filter.UnitOfMeasureId != null)
-                    queryable = queryable.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
-                if (filter.Factor != null)
-                    queryable = queryable.Where(q => q.Factor, filter.Factor);
+                if (UnitOfMeasureGroupingContentFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, UnitOfMeasureGroupingContentFilter.Id);
+                if (UnitOfMeasureGroupingContentFilter.UnitOfMeasureGroupingId != null)
+                    queryable = queryable.Where(q => q.UnitOfMeasureGroupingId, UnitOfMeasureGroupingContentFilter.UnitOfMeasureGroupingId);
+                if (UnitOfMeasureGroupingContentFilter.UnitOfMeasureId != null)
+                    queryable = queryable.Where(q => q.UnitOfMeasureId, UnitOfMeasureGroupingContentFilter.UnitOfMeasureId);
+                if (UnitOfMeasureGroupingContentFilter.Factor != null)
+                    queryable = queryable.Where(q => q.Factor, UnitOfMeasureGroupingContentFilter.Factor);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

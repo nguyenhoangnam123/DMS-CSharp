@@ -341,28 +341,6 @@ namespace DMS.Services.MProduct
             {
                 await UOW.Begin();
                 await UOW.ProductRepository.BulkMerge(Products);
-                //Lấy danh sách product để check the code lấy ra productId vừa mới thêm
-                var listProductInDB = (await UOW.ProductRepository.List(new ProductFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Selects = ProductSelect.ALL
-                }));
-                // Add reference ProductProductGroupingMapping
-                foreach (var Product in Products)
-                {
-                    var p = listProductInDB.Where(p => p.Code == Product.Code).FirstOrDefault();
-                    Product.Id = p != null ? p.Id : 0;
-                    if (Product.ProductProductGroupingMappings.Any())
-                    {
-                        foreach (var ProductProductGroupingMapping in Product.ProductProductGroupingMappings)
-                        {
-                            ProductProductGroupingMapping.ProductId = Product.Id;
-                            ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
-                        }
-                    }
-                }
-                await UOW.ProductProductGroupingMappingRepository.BulkMerge(ProductProductGroupingMappings);
                 await UOW.Commit();
                 await Logging.CreateAuditLog(Products, new { }, nameof(ProductService));
                 return Products;

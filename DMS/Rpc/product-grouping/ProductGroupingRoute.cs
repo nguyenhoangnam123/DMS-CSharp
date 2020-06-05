@@ -41,11 +41,6 @@ namespace DMS.Rpc.product_grouping
         public const string ListProduct = Default + "/list-product";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(ProductGroupingFilter.Code), FieldType.STRING },
-            { nameof(ProductGroupingFilter.Name), FieldType.STRING },
-            { nameof(ProductGroupingFilter.ParentId), FieldType.ID },
-            { nameof(ProductGroupingFilter.Path), FieldType.STRING },
-            { nameof(ProductGroupingFilter.Description), FieldType.STRING },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

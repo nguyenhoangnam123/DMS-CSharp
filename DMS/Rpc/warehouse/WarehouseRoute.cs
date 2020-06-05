@@ -55,14 +55,7 @@ namespace DMS.Rpc.warehouse
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(WarehouseFilter.Code), FieldType.STRING },
-            { nameof(WarehouseFilter.Name), FieldType.STRING },
-            { nameof(WarehouseFilter.Address), FieldType.STRING },
             { nameof(WarehouseFilter.OrganizationId), FieldType.ID },
-            { nameof(WarehouseFilter.ProvinceId), FieldType.ID },
-            { nameof(WarehouseFilter.DistrictId), FieldType.ID },
-            { nameof(WarehouseFilter.WardId), FieldType.ID },
-            { nameof(WarehouseFilter.StatusId), FieldType.ID },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

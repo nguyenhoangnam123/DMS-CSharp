@@ -63,22 +63,22 @@ namespace DMS.Repositories
             foreach (IndirectSalesOrderPromotionFilter IndirectSalesOrderPromotionFilter in filter.OrFilter)
             {
                 IQueryable<IndirectSalesOrderPromotionDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.IndirectSalesOrderId != null)
-                    queryable = queryable.Where(q => q.IndirectSalesOrderId, filter.IndirectSalesOrderId);
-                if (filter.ItemId != null)
-                    queryable = queryable.Where(q => q.ItemId, filter.ItemId);
-                if (filter.UnitOfMeasureId != null)
-                    queryable = queryable.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
-                if (filter.Quantity != null)
-                    queryable = queryable.Where(q => q.Quantity, filter.Quantity);
-                if (filter.PrimaryUnitOfMeasureId != null)
-                    queryable = queryable.Where(q => q.PrimaryUnitOfMeasureId, filter.PrimaryUnitOfMeasureId);
-                if (filter.RequestedQuantity != null)
-                    queryable = queryable.Where(q => q.RequestedQuantity, filter.RequestedQuantity);
-                if (filter.Note != null)
-                    queryable = queryable.Where(q => q.Note, filter.Note);
+                if (IndirectSalesOrderPromotionFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, IndirectSalesOrderPromotionFilter.Id);
+                if (IndirectSalesOrderPromotionFilter.IndirectSalesOrderId != null)
+                    queryable = queryable.Where(q => q.IndirectSalesOrderId, IndirectSalesOrderPromotionFilter.IndirectSalesOrderId);
+                if (IndirectSalesOrderPromotionFilter.ItemId != null)
+                    queryable = queryable.Where(q => q.ItemId, IndirectSalesOrderPromotionFilter.ItemId);
+                if (IndirectSalesOrderPromotionFilter.UnitOfMeasureId != null)
+                    queryable = queryable.Where(q => q.UnitOfMeasureId, IndirectSalesOrderPromotionFilter.UnitOfMeasureId);
+                if (IndirectSalesOrderPromotionFilter.Quantity != null)
+                    queryable = queryable.Where(q => q.Quantity, IndirectSalesOrderPromotionFilter.Quantity);
+                if (IndirectSalesOrderPromotionFilter.PrimaryUnitOfMeasureId != null)
+                    queryable = queryable.Where(q => q.PrimaryUnitOfMeasureId, IndirectSalesOrderPromotionFilter.PrimaryUnitOfMeasureId);
+                if (IndirectSalesOrderPromotionFilter.RequestedQuantity != null)
+                    queryable = queryable.Where(q => q.RequestedQuantity, IndirectSalesOrderPromotionFilter.RequestedQuantity);
+                if (IndirectSalesOrderPromotionFilter.Note != null)
+                    queryable = queryable.Where(q => q.Note, IndirectSalesOrderPromotionFilter.Note);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

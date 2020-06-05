@@ -86,6 +86,28 @@ namespace DMS.Rpc.general_kpi
             return new GeneralKpi_GeneralKpiDTO(GeneralKpi);
         }
 
+        [Route(GeneralKpiRoute.GetDraft), HttpPost]
+        public async Task<ActionResult<GeneralKpi_GeneralKpiDTO>> GetDraft([FromBody]GeneralKpi_GeneralKpiDTO GeneralKpi_GeneralKpiDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            List<GeneralCriteria> GeneralCriterias = await GeneralCriteriaService.List(new GeneralCriteriaFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = GeneralCriteriaSelect.ALL,
+            });
+            GeneralKpi_GeneralKpiDTO = new GeneralKpi_GeneralKpiDTO();
+            GeneralKpi_GeneralKpiDTO.GeneralCriterias = GeneralCriterias.Select(x => new GeneralKpi_GeneralCriteriaDTO(x)).ToList();
+            GeneralKpi_GeneralKpiDTO.GeneralKpiCriteriaMappings = GeneralCriterias.Select(x => new GeneralKpi_GeneralKpiCriteriaMappingDTO
+            {
+                GeneralCriteriaId = x.Id,
+                GeneralCriteria = new GeneralKpi_GeneralCriteriaDTO(x)
+            }).ToList();
+            return GeneralKpi_GeneralKpiDTO;
+        }
+
         [Route(GeneralKpiRoute.Create), HttpPost]
         public async Task<ActionResult<GeneralKpi_GeneralKpiDTO>> Create([FromBody] GeneralKpi_GeneralKpiDTO GeneralKpi_GeneralKpiDTO)
         {

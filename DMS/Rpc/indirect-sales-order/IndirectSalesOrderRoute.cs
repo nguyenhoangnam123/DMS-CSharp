@@ -60,23 +60,16 @@ namespace DMS.Rpc.indirect_sales_order
         public const string ListItem = Default + "/list-item";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(IndirectSalesOrderFilter.Code), FieldType.STRING },
             { nameof(IndirectSalesOrderFilter.BuyerStoreId), FieldType.ID },
-            { nameof(IndirectSalesOrderFilter.PhoneNumber), FieldType.STRING },
-            { nameof(IndirectSalesOrderFilter.StoreAddress), FieldType.STRING },
-            { nameof(IndirectSalesOrderFilter.DeliveryAddress), FieldType.STRING },
             { nameof(IndirectSalesOrderFilter.SellerStoreId), FieldType.ID },
             { nameof(IndirectSalesOrderFilter.SaleEmployeeId), FieldType.ID },
             { nameof(IndirectSalesOrderFilter.OrderDate), FieldType.DATE },
-            { nameof(IndirectSalesOrderFilter.DeliveryDate), FieldType.DATE },
             { nameof(IndirectSalesOrderFilter.RequestStateId), FieldType.ID },
-            { nameof(IndirectSalesOrderFilter.EditedPriceStatusId), FieldType.ID },
-            { nameof(IndirectSalesOrderFilter.Note), FieldType.STRING },
-            { nameof(IndirectSalesOrderFilter.SubTotal), FieldType.LONG },
-            { nameof(IndirectSalesOrderFilter.GeneralDiscountPercentage), FieldType.LONG },
-            { nameof(IndirectSalesOrderFilter.GeneralDiscountAmount), FieldType.LONG },
-            { nameof(IndirectSalesOrderFilter.TotalTaxAmount), FieldType.LONG },
             { nameof(IndirectSalesOrderFilter.Total), FieldType.LONG },
+            { nameof(ItemFilter.ProductGroupingId), FieldType.ID },
+            { nameof(ItemFilter.ProductTypeId), FieldType.ID },
+            { nameof(ItemFilter.SupplierId), FieldType.ID },
+            { nameof(ItemFilter.SalePrice), FieldType.LONG },
         };
 
 

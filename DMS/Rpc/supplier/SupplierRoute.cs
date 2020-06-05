@@ -42,20 +42,6 @@ namespace DMS.Rpc.supplier
         public const string SingleListWard = Default + "/single-list-ward";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(SupplierFilter.Code), FieldType.STRING },
-            { nameof(SupplierFilter.Name), FieldType.STRING },
-            { nameof(SupplierFilter.TaxCode), FieldType.STRING },
-            { nameof(SupplierFilter.Phone), FieldType.STRING },
-            { nameof(SupplierFilter.Email), FieldType.STRING },
-            { nameof(SupplierFilter.Address), FieldType.STRING },
-            { nameof(SupplierFilter.ProvinceId), FieldType.ID },
-            { nameof(SupplierFilter.DistrictId), FieldType.ID },
-            { nameof(SupplierFilter.WardId), FieldType.ID },
-            { nameof(SupplierFilter.OwnerName), FieldType.STRING },
-            { nameof(SupplierFilter.PersonInChargeId), FieldType.ID },
-            { nameof(SupplierFilter.StatusId), FieldType.ID },
-            { nameof(SupplierFilter.Description), FieldType.STRING },
-            { nameof(SupplierFilter.UpdatedTime), FieldType.DATE },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

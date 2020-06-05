@@ -63,20 +63,20 @@ namespace DMS.Repositories
             foreach (SurveyFilter SurveyFilter in filter.OrFilter)
             {
                 IQueryable<SurveyDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Title != null)
-                    queryable = queryable.Where(q => q.Title, filter.Title);
-                if (filter.Description != null)
-                    queryable = queryable.Where(q => q.Description, filter.Description);
-                if (filter.StartAt != null)
-                    queryable = queryable.Where(q => q.StartAt, filter.StartAt);
-                if (filter.EndAt != null)
-                    queryable = queryable.Where(q => q.EndAt, filter.EndAt);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.CreatorId != null)
-                    queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
+                if (SurveyFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, SurveyFilter.Id);
+                if (SurveyFilter.Title != null)
+                    queryable = queryable.Where(q => q.Title, SurveyFilter.Title);
+                if (SurveyFilter.Description != null)
+                    queryable = queryable.Where(q => q.Description, SurveyFilter.Description);
+                if (SurveyFilter.StartAt != null)
+                    queryable = queryable.Where(q => q.StartAt, SurveyFilter.StartAt);
+                if (SurveyFilter.EndAt != null)
+                    queryable = queryable.Where(q => q.EndAt, SurveyFilter.EndAt);
+                if (SurveyFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, SurveyFilter.StatusId);
+                if (SurveyFilter.CreatorId != null)
+                    queryable = queryable.Where(q => q.CreatorId, SurveyFilter.CreatorId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -262,7 +262,10 @@ namespace DMS.Repositories
                          Name = x.SurveyOptionType.Name,
                      },
                  }).ToListAsync();
-            
+            foreach (var SurveyQuestion in Survey.SurveyQuestions)
+            {
+                SurveyQuestion.SurveyOptions = SurveyOptions.Where(x => x.SurveyQuestionId == SurveyQuestion.Id).ToList();
+            }
             return Survey;
         }
 
@@ -305,6 +308,9 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Survey Survey)
         {
+            var SurveyQuestionIds = Survey.SurveyQuestions.Select(x => x.Id).ToList();
+            await DataContext.SurveyOption.Where(x => SurveyQuestionIds.Contains(x.SurveyQuestionId)).DeleteFromQueryAsync();
+            await DataContext.SurveyQuestion.Where(x => SurveyQuestionIds.Contains(x.Id)).DeleteFromQueryAsync();
             await DataContext.Survey.Where(x => x.Id == Survey.Id).UpdateFromQueryAsync(x => new SurveyDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }

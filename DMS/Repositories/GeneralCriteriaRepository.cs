@@ -51,12 +51,12 @@ namespace DMS.Repositories
             foreach (GeneralCriteriaFilter GeneralCriteriaFilter in filter.OrFilter)
             {
                 IQueryable<GeneralCriteriaDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
+                if (GeneralCriteriaFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, GeneralCriteriaFilter.Id);
+                if (GeneralCriteriaFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, GeneralCriteriaFilter.Code);
+                if (GeneralCriteriaFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, GeneralCriteriaFilter.Name);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

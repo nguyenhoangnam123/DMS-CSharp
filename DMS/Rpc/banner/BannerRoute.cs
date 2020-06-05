@@ -42,14 +42,6 @@ namespace DMS.Rpc.banner
 
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(BannerFilter.Id), FieldType.ID },
-            { nameof(BannerFilter.Code), FieldType.STRING },
-            { nameof(BannerFilter.Title), FieldType.STRING },
-            { nameof(BannerFilter.Priority), FieldType.LONG },
-            { nameof(BannerFilter.Content), FieldType.STRING },
-            { nameof(BannerFilter.CreatorId), FieldType.ID },
-            { nameof(BannerFilter.ImageId), FieldType.ID },
-            { nameof(BannerFilter.StatusId), FieldType.ID },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

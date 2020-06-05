@@ -25,8 +25,10 @@ namespace DMS.Services.MSurvey
             IdNotExisted,
             EndDateWrong,
             TitleEmpty,
-            StartDateWrong,
-            QuestionIsMandatory
+            StartDateEmpty,
+            QuestionIsMandatory,
+            ContentEmpty,
+            SurveyInUsed
         }
 
         private IUOW UOW;
@@ -62,6 +64,8 @@ namespace DMS.Services.MSurvey
                 foreach (var SurveyQuestion in Survey.SurveyQuestions)
                 {
                     if (SurveyQuestion.SurveyOptions == null) SurveyQuestion.SurveyOptions = new List<SurveyOption>();
+                    if(string.IsNullOrWhiteSpace(SurveyQuestion.Content))
+                        SurveyQuestion.AddError(nameof(SurveyValidator), nameof(SurveyQuestion.Content), ErrorCode.ContentEmpty);
                 }
             }
             return Survey.IsValidated;
@@ -76,11 +80,18 @@ namespace DMS.Services.MSurvey
             return Survey.IsValidated;
         }
 
-        private async Task<bool> ValidateStartDate(Survey Survey)
+        private async Task<bool> ValidateDate(Survey Survey)
         {
             if(Survey.StartAt == default(DateTime))
             {
-                Survey.AddError(nameof(SurveyValidator), nameof(Survey.StartAt), ErrorCode.StartDateWrong);
+                Survey.AddError(nameof(SurveyValidator), nameof(Survey.StartAt), ErrorCode.StartDateEmpty);
+            }
+            else
+            {
+                if (Survey.EndAt.HasValue && Survey.EndAt.Value < Survey.StartAt)
+                {
+                    Survey.AddError(nameof(SurveyValidator), nameof(Survey.EndAt), ErrorCode.EndDateWrong);
+                }
             }
             return Survey.IsValidated;
         }
@@ -105,11 +116,24 @@ namespace DMS.Services.MSurvey
             return Survey.IsValidated;
         }
 
+        private async Task<bool> CanDelete(Survey Survey)
+        {
+            SurveyResultFilter SurveyResultFilter = new SurveyResultFilter
+            {
+                SurveyId = new IdFilter { Equal = Survey.Id }
+            };
+
+            int count = await UOW.SurveyResultRepository.Count(SurveyResultFilter);
+            if(count > 0)
+                Survey.AddError(nameof(SurveyValidator), nameof(Survey.Id), ErrorCode.SurveyInUsed);
+            return Survey.IsValidated;
+        }
+
         public async Task<bool> Create(Survey Survey)
         {
             await ValidateSurveyQuestions(Survey);
             await ValidateTitle(Survey);
-            await ValidateStartDate(Survey);
+            await ValidateDate(Survey);
 
             return Survey.IsValidated;
         }
@@ -120,7 +144,7 @@ namespace DMS.Services.MSurvey
             {
                 await ValidateSurveyQuestions(Survey);
                 await ValidateTitle(Survey);
-                await ValidateStartDate(Survey);
+                await ValidateDate(Survey);
             }
             return Survey.IsValidated;
         }

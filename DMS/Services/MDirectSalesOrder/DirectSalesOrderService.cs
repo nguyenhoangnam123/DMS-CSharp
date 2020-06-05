@@ -300,7 +300,18 @@ namespace DMS.Services.MDirectSalesOrder
                     DirectSalesOrderContent.RequestedQuantity = DirectSalesOrderContent.Quantity * UOMGC.Factor.Value;
 
                     //giá tiền từng line = số lượng yc*đơn giá*(100-%chiết khấu)
-                    DirectSalesOrderContent.Amount = Convert.ToInt64((DirectSalesOrderContent.RequestedQuantity * DirectSalesOrderContent.Price) * ((100 - DirectSalesOrderContent.DiscountPercentage.Value) / 100));
+                    if (DirectSalesOrder.EditedPriceStatusId == Enums.EditedPriceStatusEnum.INACTIVE.Id)
+                    {
+                        //Trường hợp không sửa giá, giá bán = giá bán cơ sở của sản phẩm * hệ số quy đổi của đơn vị tính
+                        DirectSalesOrderContent.Price = Convert.ToInt64(item.SalePrice * UOMGC.Factor.Value);
+                        DirectSalesOrderContent.Amount = Convert.ToInt64((DirectSalesOrderContent.Quantity * DirectSalesOrderContent.Price) * ((100 - DirectSalesOrderContent.DiscountPercentage.Value) / 100));
+                    }
+                    else if (DirectSalesOrder.EditedPriceStatusId == Enums.EditedPriceStatusEnum.ACTIVE.Id)
+                    {
+                        //Trường hợp cho phép sửa giá, sử dụng giá bán do người dùng nhập
+                        DirectSalesOrderContent.Amount = Convert.ToInt64((DirectSalesOrderContent.Quantity * DirectSalesOrderContent.Price) * ((100 - DirectSalesOrderContent.DiscountPercentage.Value) / 100));
+                    }
+
                 }
 
                 //tổng trước chiết khấu

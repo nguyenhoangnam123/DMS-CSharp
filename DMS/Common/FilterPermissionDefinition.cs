@@ -19,15 +19,15 @@ namespace Common
                 {
                     case FieldType.ID:
                         if (string.IsNullOrWhiteSpace(value))
-                            Ids = new List<long>();
+                            Ids = null;
                         else
                             Ids = value.Split(";").Select(v => long.TryParse(v, out long l) ? l : 0).ToList();
                         break;
                     case FieldType.LONG:
                         if (string.IsNullOrWhiteSpace(value))
                         {
-                            StartLong = long.MinValue;
-                            EndLong = long.MaxValue;
+                            StartLong = null;
+                            EndLong = null;
                         }
                         else
                         {
@@ -41,8 +41,8 @@ namespace Common
                     case FieldType.DECIMAL:
                         if (string.IsNullOrWhiteSpace(value))
                         {
-                            StartDecimal = decimal.MinValue;
-                            EndDecimal = decimal.MaxValue;
+                            StartDecimal = null;
+                            EndDecimal = null;
                         }
                         else
                         {
@@ -56,8 +56,8 @@ namespace Common
                     case FieldType.DATE:
                         if (string.IsNullOrWhiteSpace(value))
                         {
-                            StartDate = DateTime.MinValue;
-                            EndDate = DateTime.MaxValue;
+                            StartDate = null;
+                            EndDate = null;
                         }
                         else
                         {
@@ -71,8 +71,8 @@ namespace Common
                     case FieldType.STRING:
                         if (string.IsNullOrWhiteSpace(value))
                         {
-                            PrefixString = string.Empty;
-                            SuffixString = string.Empty;
+                            PrefixString = null;
+                            SuffixString = null;
                         }
                         else
                         {

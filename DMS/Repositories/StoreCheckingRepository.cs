@@ -60,24 +60,24 @@ namespace DMS.Repositories
             foreach (StoreCheckingFilter StoreCheckingFilter in filter.OrFilter)
             {
                 IQueryable<StoreCheckingDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.StoreId != null)
-                    queryable = queryable.Where(q => q.StoreId, filter.StoreId);
-                if (filter.SaleEmployeeId != null)
-                    queryable = queryable.Where(q => q.SaleEmployeeId, filter.SaleEmployeeId);
-                if (filter.Longtitude != null)
-                    queryable = queryable.Where(q => q.Longtitude, filter.Longtitude);
-                if (filter.Latitude != null)
-                    queryable = queryable.Where(q => q.Latitude, filter.Latitude);
-                if (filter.CheckInAt != null)
-                    queryable = queryable.Where(q => q.CheckInAt, filter.CheckInAt);
-                if (filter.CheckOutAt != null)
-                    queryable = queryable.Where(q => q.CheckOutAt, filter.CheckOutAt);
-                if (filter.CountIndirectSalesOrder != null)
-                    queryable = queryable.Where(q => q.IndirectSalesOrderCounter, filter.CountIndirectSalesOrder);
-                if (filter.CountImage != null)
-                    queryable = queryable.Where(q => q.ImageCounter, filter.CountImage);
+                if (StoreCheckingFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, StoreCheckingFilter.Id);
+                if (StoreCheckingFilter.StoreId != null)
+                    queryable = queryable.Where(q => q.StoreId, StoreCheckingFilter.StoreId);
+                if (StoreCheckingFilter.SaleEmployeeId != null)
+                    queryable = queryable.Where(q => q.SaleEmployeeId, StoreCheckingFilter.SaleEmployeeId);
+                if (StoreCheckingFilter.Longtitude != null)
+                    queryable = queryable.Where(q => q.Longtitude, StoreCheckingFilter.Longtitude);
+                if (StoreCheckingFilter.Latitude != null)
+                    queryable = queryable.Where(q => q.Latitude, StoreCheckingFilter.Latitude);
+                if (StoreCheckingFilter.CheckInAt != null)
+                    queryable = queryable.Where(q => q.CheckInAt, StoreCheckingFilter.CheckInAt);
+                if (StoreCheckingFilter.CheckOutAt != null)
+                    queryable = queryable.Where(q => q.CheckOutAt, StoreCheckingFilter.CheckOutAt);
+                if (StoreCheckingFilter.CountIndirectSalesOrder != null)
+                    queryable = queryable.Where(q => q.IndirectSalesOrderCounter, StoreCheckingFilter.CountIndirectSalesOrder);
+                if (StoreCheckingFilter.CountImage != null)
+                    queryable = queryable.Where(q => q.ImageCounter, StoreCheckingFilter.CountImage);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

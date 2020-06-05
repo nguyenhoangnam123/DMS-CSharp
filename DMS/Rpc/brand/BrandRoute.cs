@@ -36,11 +36,6 @@ namespace DMS.Rpc.brand
         
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(BrandFilter.Id), FieldType.ID },
-            { nameof(BrandFilter.Code), FieldType.STRING },
-            { nameof(BrandFilter.Name), FieldType.STRING },
-            { nameof(BrandFilter.StatusId), FieldType.ID },
-            { nameof(BrandFilter.Description), FieldType.STRING },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
