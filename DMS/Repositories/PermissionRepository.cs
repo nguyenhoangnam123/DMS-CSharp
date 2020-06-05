@@ -203,22 +203,22 @@ namespace DMS.Repositories
 
             if (Permission == null)
                 return null;
-            Permission.PermissionFieldMappings = await DataContext.PermissionFieldMapping
-                .Where(x => x.PermissionId == Permission.Id)
-                .Select(x => new PermissionFieldMapping
-                {
-                    PermissionId = x.PermissionId,
-                    FieldId = x.FieldId,
-                    Value = x.Value,
-                    Field = new Field
-                    {
-                        Id = x.Field.Id,
-                        Name = x.Field.Name,
-                        Type = x.Field.Type,
-                        MenuId = x.Field.MenuId,
-                        IsDeleted = x.Field.IsDeleted,
-                    },
-                }).ToListAsync();
+            //Permission.PermissionFieldMappings = await DataContext.PermissionFieldMapping
+            //    .Where(x => x.PermissionId == Permission.Id)
+            //    .Select(x => new PermissionFieldMapping
+            //    {
+            //        PermissionId = x.PermissionId,
+            //        FieldId = x.FieldId,
+            //        Value = x.Value,
+            //        Field = new Field
+            //        {
+            //            Id = x.Field.Id,
+            //            Name = x.Field.Name,
+            //            Type = x.Field.Type,
+            //            MenuId = x.Field.MenuId,
+            //            IsDeleted = x.Field.IsDeleted,
+            //        },
+            //    }).ToListAsync();
             Permission.PermissionActionMappings = await DataContext.PermissionActionMapping
                 .Where(x => x.PermissionId == Permission.Id)
                 .Select(x => new PermissionActionMapping
@@ -301,9 +301,9 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Permission Permission)
         {
-            await DataContext.PermissionFieldMapping
-                .Where(x => x.PermissionId == Permission.Id)
-                .DeleteFromQueryAsync();
+            //await DataContext.PermissionFieldMapping
+            //    .Where(x => x.PermissionId == Permission.Id)
+            //    .DeleteFromQueryAsync();
             List<PermissionFieldMappingDAO> PermissionFieldMappingDAOs = new List<PermissionFieldMappingDAO>();
             if (Permission.PermissionFieldMappings != null)
             {
@@ -315,7 +315,7 @@ namespace DMS.Repositories
                     PermissionFieldMappingDAO.Value = PermissionFieldMapping.Value;
                     PermissionFieldMappingDAOs.Add(PermissionFieldMappingDAO);
                 }
-                await DataContext.PermissionFieldMapping.BulkMergeAsync(PermissionFieldMappingDAOs);
+                //await DataContext.PermissionFieldMapping.BulkMergeAsync(PermissionFieldMappingDAOs);
             }
             await DataContext.PermissionActionMapping
                 .Where(x => x.PermissionId == Permission.Id)

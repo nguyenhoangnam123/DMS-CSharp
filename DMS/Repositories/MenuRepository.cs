@@ -159,7 +159,6 @@ namespace DMS.Repositories
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    Type = x.Type,
                     MenuId = x.MenuId,
                     IsDeleted = x.IsDeleted,
                 }).ToListAsync();
