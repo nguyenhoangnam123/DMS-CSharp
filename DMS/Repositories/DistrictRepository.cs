@@ -85,7 +85,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Name);
                             break;
                         case DistrictOrder.Priority:
-                            query = query.OrderBy(q => q.Priority);
+                            query = query.OrderBy(q => q.Priority == null).ThenBy(x => x.Priority);
                             break;
                         case DistrictOrder.Province:
                             query = query.OrderBy(q => q.ProvinceId);
@@ -108,7 +108,7 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Name);
                             break;
                         case DistrictOrder.Priority:
-                            query = query.OrderByDescending(q => q.Priority);
+                            query = query.OrderByDescending(q => q.Priority == null).ThenByDescending(x => x.Priority);
                             break;
                         case DistrictOrder.Province:
                             query = query.OrderByDescending(q => q.ProvinceId);

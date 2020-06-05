@@ -104,7 +104,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Title);
                             break;
                         case BannerOrder.Priority:
-                            query = query.OrderBy(q => q.Priority);
+                            query = query.OrderBy(q => q.Priority == null).ThenBy(x => x.Priority);
                             break;
                         case BannerOrder.Content:
                             query = query.OrderBy(q => q.Content);
@@ -133,7 +133,7 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Title);
                             break;
                         case BannerOrder.Priority:
-                            query = query.OrderByDescending(q => q.Priority);
+                            query = query.OrderByDescending(q => q.Priority == null).ThenByDescending(x => x.Priority);
                             break;
                         case BannerOrder.Content:
                             query = query.OrderByDescending(q => q.Content);
