@@ -676,15 +676,19 @@ namespace DMS.Rpc.indirect_sales_order
             {
                 IndirectSalesOrder_UnitOfMeasureDTOs = Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(x => new IndirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
             }
-            IndirectSalesOrder_UnitOfMeasureDTOs.Add(new IndirectSalesOrder_UnitOfMeasureDTO
+            if(Product.UnitOfMeasure.StatusId == Enums.StatusEnum.ACTIVE.Id)
             {
-                Id = Product.UnitOfMeasure.Id,
-                Code = Product.UnitOfMeasure.Code,
-                Name = Product.UnitOfMeasure.Name,
-                Description = Product.UnitOfMeasure.Description,
-                StatusId = Product.UnitOfMeasure.StatusId,
-                Factor = 1
-            });
+                IndirectSalesOrder_UnitOfMeasureDTOs.Add(new IndirectSalesOrder_UnitOfMeasureDTO
+                {
+                    Id = Product.UnitOfMeasure.Id,
+                    Code = Product.UnitOfMeasure.Code,
+                    Name = Product.UnitOfMeasure.Name,
+                    Description = Product.UnitOfMeasure.Description,
+                    StatusId = Product.UnitOfMeasure.StatusId,
+                    Factor = 1
+                });
+            }
+            
             return IndirectSalesOrder_UnitOfMeasureDTOs;
         }
         
