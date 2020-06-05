@@ -53,20 +53,6 @@ namespace DMS.Rpc.reseller
         public const string ListStore = Default + "/list-store";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(ResellerFilter.Code), FieldType.STRING },
-            { nameof(ResellerFilter.Name), FieldType.STRING },
-            { nameof(ResellerFilter.Phone), FieldType.STRING },
-            { nameof(ResellerFilter.Email), FieldType.STRING },
-            { nameof(ResellerFilter.Address), FieldType.STRING },
-            { nameof(ResellerFilter.TaxCode), FieldType.STRING },
-            { nameof(ResellerFilter.CompanyName), FieldType.STRING },
-            { nameof(ResellerFilter.DeputyName), FieldType.STRING },
-            { nameof(ResellerFilter.Description), FieldType.STRING },
-            { nameof(ResellerFilter.OrganizationId), FieldType.ID },
-            { nameof(ResellerFilter.ResellerTypeId), FieldType.ID },
-            { nameof(ResellerFilter.ResellerStatusId), FieldType.ID },
-            { nameof(ResellerFilter.StaffId), FieldType.ID },
-            { nameof(ResellerFilter.StatusId), FieldType.ID },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

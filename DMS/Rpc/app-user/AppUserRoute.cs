@@ -31,19 +31,7 @@ namespace DMS.Rpc.app_user
         public const string ListRole = Default + "/list-role";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(AppUserFilter.Username), FieldType.STRING },
-            { nameof(AppUserFilter.Password), FieldType.STRING },
-            { nameof(AppUserFilter.DisplayName), FieldType.STRING },
-            { nameof(AppUserFilter.Address), FieldType.STRING },
-            { nameof(AppUserFilter.Email), FieldType.STRING },
-            { nameof(AppUserFilter.Phone), FieldType.STRING },
-            { nameof(AppUserFilter.Birthday), FieldType.DATE },
-            { nameof(AppUserFilter.PositionId), FieldType.ID },
-            { nameof(AppUserFilter.Department), FieldType.STRING },
             { nameof(AppUserFilter.OrganizationId), FieldType.ID },
-            { nameof(AppUserFilter.SexId), FieldType.ID },
-            { nameof(AppUserFilter.StatusId), FieldType.ID },
-            { nameof(AppUserFilter.ProvinceId), FieldType.ID },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

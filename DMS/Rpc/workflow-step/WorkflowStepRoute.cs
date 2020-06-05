@@ -31,11 +31,6 @@ namespace DMS.Rpc.workflow_step
 
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(WorkflowStepFilter.Id), FieldType.ID },
-            { nameof(WorkflowStepFilter.WorkflowDefinitionId), FieldType.ID },
-            { nameof(WorkflowStepFilter.Code), FieldType.STRING },
-            { nameof(WorkflowStepFilter.Name), FieldType.STRING },
-            { nameof(WorkflowStepFilter.RoleId), FieldType.ID },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

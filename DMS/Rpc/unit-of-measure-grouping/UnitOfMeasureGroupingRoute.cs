@@ -21,11 +21,6 @@ namespace DMS.Rpc.unit_of_measure_grouping
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(UnitOfMeasureGroupingFilter.Code), FieldType.STRING },
-            { nameof(UnitOfMeasureGroupingFilter.Name), FieldType.STRING },
-            { nameof(UnitOfMeasureGroupingFilter.Description), FieldType.STRING },
-            { nameof(UnitOfMeasureGroupingFilter.UnitOfMeasureId), FieldType.ID },
-            { nameof(UnitOfMeasureGroupingFilter.StatusId), FieldType.ID },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

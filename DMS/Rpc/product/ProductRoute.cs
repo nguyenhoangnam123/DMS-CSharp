@@ -79,21 +79,8 @@ namespace DMS.Rpc.product
         public const string CountInventory = Default + "/count-inventory";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(ProductFilter.Code), FieldType.STRING },
-            { nameof(ProductFilter.SupplierCode), FieldType.STRING },
-            { nameof(ProductFilter.Name), FieldType.STRING },
-            { nameof(ProductFilter.Description), FieldType.STRING },
-            { nameof(ProductFilter.ScanCode), FieldType.STRING },
             { nameof(ProductFilter.ProductTypeId), FieldType.ID },
-            { nameof(ProductFilter.SupplierId), FieldType.ID },
-            { nameof(ProductFilter.BrandId), FieldType.ID },
-            { nameof(ProductFilter.UnitOfMeasureId), FieldType.ID },
-            { nameof(ProductFilter.UnitOfMeasureGroupingId), FieldType.ID },
-            { nameof(ProductFilter.SalePrice), FieldType.DECIMAL },
-            { nameof(ProductFilter.RetailPrice), FieldType.DECIMAL },
-            { nameof(ProductFilter.TaxTypeId), FieldType.ID },
-            { nameof(ProductFilter.StatusId), FieldType.ID },
-            { nameof(ProductFilter.UsedVariationId), FieldType.ID },
+            { nameof(ProductFilter.ProductGroupingId), FieldType.ID },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

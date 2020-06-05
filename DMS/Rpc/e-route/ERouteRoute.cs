@@ -53,14 +53,13 @@ namespace DMS.Rpc.e_route
 
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(ERouteFilter.Code), FieldType.STRING },
-            { nameof(ERouteFilter.Name), FieldType.STRING },
+            { nameof(ERouteFilter.StoreId), FieldType.ID },
             { nameof(ERouteFilter.SaleEmployeeId), FieldType.ID },
-            { nameof(ERouteFilter.StartDate), FieldType.DATE },
-            { nameof(ERouteFilter.EndDate), FieldType.DATE },
+            { nameof(ERouteFilter.ERouteTypeId), FieldType.ID },
             { nameof(ERouteFilter.RequestStateId), FieldType.ID },
-            { nameof(ERouteFilter.StatusId), FieldType.ID },
-            { nameof(ERouteFilter.CreatorId), FieldType.ID },
+            { nameof(StoreFilter.OrganizationId), FieldType.ID },
+            { nameof(StoreFilter.StoreGroupingId), FieldType.ID },
+            { nameof(StoreFilter.StoreTypeId), FieldType.ID },
         };
 
 
