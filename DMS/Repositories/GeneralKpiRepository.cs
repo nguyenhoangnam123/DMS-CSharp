@@ -303,6 +303,31 @@ namespace DMS.Repositories
             if (GeneralKpi == null)
                 return null;
 
+            GeneralKpi.GeneralKpiCriteriaMappings = await DataContext.GeneralKpiCriteriaMapping
+                .Where(x => x.GeneralKpiId == Id)
+                .Select(x => new GeneralKpiCriteriaMapping
+                {
+                    GeneralKpiId = GeneralKpi.Id,
+                    GeneralCriteriaId = x.GeneralCriteriaId,
+                    M01 = x.M01,
+                    M02 = x.M02,
+                    M03 = x.M03,
+                    M04 = x.M04,
+                    M05 = x.M05,
+                    M06 = x.M06,
+                    M07 = x.M07,
+                    M08 = x.M08,
+                    M09 = x.M09,
+                    M10 = x.M10,
+                    M11 = x.M11,
+                    M12 = x.M12,
+                    Q01 = x.Q01,
+                    Q02 = x.Q02,
+                    Q03 = x.Q03,
+                    Q04 = x.Q04,
+                    Y01 = x.Y01,
+                    StatusId = x.StatusId
+                }).ToListAsync();
             return GeneralKpi;
         }
         public async Task<bool> Create(GeneralKpi GeneralKpi)
