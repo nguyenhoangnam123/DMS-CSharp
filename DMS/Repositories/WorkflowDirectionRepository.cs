@@ -55,16 +55,16 @@ namespace DMS.Repositories
             foreach (WorkflowDirectionFilter WorkflowDirectionFilter in filter.OrFilter)
             {
                 IQueryable<WorkflowDirectionDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.WorkflowDefinitionId != null)
-                    queryable = queryable.Where(q => q.WorkflowDefinitionId, filter.WorkflowDefinitionId);
-                if (filter.FromStepId != null)
-                    queryable = queryable.Where(q => q.FromStepId, filter.FromStepId);
-                if (filter.ToStepId != null)
-                    queryable = queryable.Where(q => q.ToStepId, filter.ToStepId);
-                if (filter.UpdatedAt != null)
-                    queryable = queryable.Where(q => q.UpdatedAt, filter.UpdatedAt);
+                if (WorkflowDirectionFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, WorkflowDirectionFilter.Id);
+                if (WorkflowDirectionFilter.WorkflowDefinitionId != null)
+                    queryable = queryable.Where(q => q.WorkflowDefinitionId, WorkflowDirectionFilter.WorkflowDefinitionId);
+                if (WorkflowDirectionFilter.FromStepId != null)
+                    queryable = queryable.Where(q => q.FromStepId, WorkflowDirectionFilter.FromStepId);
+                if (WorkflowDirectionFilter.ToStepId != null)
+                    queryable = queryable.Where(q => q.ToStepId, WorkflowDirectionFilter.ToStepId);
+                if (WorkflowDirectionFilter.UpdatedAt != null)
+                    queryable = queryable.Where(q => q.UpdatedAt, WorkflowDirectionFilter.UpdatedAt);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

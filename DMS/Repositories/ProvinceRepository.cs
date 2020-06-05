@@ -51,14 +51,14 @@ namespace DMS.Repositories
             foreach (ProvinceFilter ProvinceFilter in filter.OrFilter)
             {
                 IQueryable<ProvinceDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Priority != null)
-                    queryable = queryable.Where(q => q.Priority, filter.Priority);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (ProvinceFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ProvinceFilter.Id);
+                if (ProvinceFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, ProvinceFilter.Name);
+                if (ProvinceFilter.Priority != null)
+                    queryable = queryable.Where(q => q.Priority, ProvinceFilter.Priority);
+                if (ProvinceFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, ProvinceFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

@@ -56,22 +56,22 @@ namespace DMS.Repositories
             foreach (InventoryHistoryFilter InventoryHistoryFilter in filter.OrFilter)
             {
                 IQueryable<InventoryHistoryDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.InventoryId != null)
-                    queryable = queryable.Where(q => q.InventoryId, filter.InventoryId);
-                if (filter.OldSaleStock != null)
-                    queryable = queryable.Where(q => q.OldSaleStock, filter.OldSaleStock);
-                if (filter.OldAccountingStock != null)
-                    queryable = queryable.Where(q => q.OldAccountingStock, filter.OldAccountingStock);
-                if (filter.SaleStock != null)
-                    queryable = queryable.Where(q => q.SaleStock, filter.SaleStock);
-                if (filter.AccountingStock != null)
-                    queryable = queryable.Where(q => q.AccountingStock, filter.AccountingStock);
-                if (filter.AppUserId != null)
-                    queryable = queryable.Where(q => q.AppUserId, filter.AppUserId);
-                if (filter.UpdateTime != null)
-                    queryable = queryable.Where(q => q.UpdatedAt, filter.UpdateTime);
+                if (InventoryHistoryFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, InventoryHistoryFilter.Id);
+                if (InventoryHistoryFilter.InventoryId != null)
+                    queryable = queryable.Where(q => q.InventoryId, InventoryHistoryFilter.InventoryId);
+                if (InventoryHistoryFilter.OldSaleStock != null)
+                    queryable = queryable.Where(q => q.OldSaleStock, InventoryHistoryFilter.OldSaleStock);
+                if (InventoryHistoryFilter.OldAccountingStock != null)
+                    queryable = queryable.Where(q => q.OldAccountingStock, InventoryHistoryFilter.OldAccountingStock);
+                if (InventoryHistoryFilter.SaleStock != null)
+                    queryable = queryable.Where(q => q.SaleStock, InventoryHistoryFilter.SaleStock);
+                if (InventoryHistoryFilter.AccountingStock != null)
+                    queryable = queryable.Where(q => q.AccountingStock, InventoryHistoryFilter.AccountingStock);
+                if (InventoryHistoryFilter.AppUserId != null)
+                    queryable = queryable.Where(q => q.AppUserId, InventoryHistoryFilter.AppUserId);
+                if (InventoryHistoryFilter.UpdateTime != null)
+                    queryable = queryable.Where(q => q.UpdatedAt, InventoryHistoryFilter.UpdateTime);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

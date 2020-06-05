@@ -103,46 +103,46 @@ namespace DMS.Repositories
             foreach (ProductFilter ProductFilter in filter.OrFilter)
             {
                 IQueryable<ProductDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.SupplierCode != null)
-                    queryable = queryable.Where(q => q.SupplierCode, filter.SupplierCode);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Description != null)
-                    queryable = queryable.Where(q => q.Description, filter.Description);
-                if (filter.ScanCode != null)
-                    queryable = queryable.Where(q => q.ScanCode, filter.ScanCode);
-                if (filter.ProductTypeId != null)
-                    queryable = queryable.Where(q => q.ProductTypeId, filter.ProductTypeId);
-                if (filter.SupplierId != null)
-                    queryable = queryable.Where(q => q.SupplierId, filter.SupplierId);
-                if (filter.BrandId != null)
-                    queryable = queryable.Where(q => q.BrandId, filter.BrandId);
-                if (filter.UnitOfMeasureId != null)
-                    queryable = queryable.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
-                if (filter.UnitOfMeasureGroupingId != null)
-                    queryable = queryable.Where(q => q.UnitOfMeasureGroupingId, filter.UnitOfMeasureGroupingId);
-                if (filter.SalePrice != null)
-                    queryable = queryable.Where(q => q.SalePrice, filter.SalePrice);
-                if (filter.RetailPrice != null)
-                    queryable = queryable.Where(q => q.RetailPrice, filter.RetailPrice);
-                if (filter.TaxTypeId != null)
-                    queryable = queryable.Where(q => q.TaxTypeId, filter.TaxTypeId);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.OtherName != null)
-                    queryable = queryable.Where(q => q.OtherName, filter.OtherName);
-                if (filter.TechnicalName != null)
-                    queryable = queryable.Where(q => q.TechnicalName, filter.TechnicalName);
-                if (filter.Note != null)
-                    queryable = queryable.Where(q => q.Note, filter.Note);
-                if (filter.IsNew != null)
-                    queryable = queryable.Where(q => q.IsNew.Equals(filter.IsNew));
-                if (filter.UsedVariationId != null)
-                    queryable = queryable.Where(q => q.UsedVariationId, filter.UsedVariationId);
+                if (ProductFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ProductFilter.Id);
+                if (ProductFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, ProductFilter.Code);
+                if (ProductFilter.SupplierCode != null)
+                    queryable = queryable.Where(q => q.SupplierCode, ProductFilter.SupplierCode);
+                if (ProductFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, ProductFilter.Name);
+                if (ProductFilter.Description != null)
+                    queryable = queryable.Where(q => q.Description, ProductFilter.Description);
+                if (ProductFilter.ScanCode != null)
+                    queryable = queryable.Where(q => q.ScanCode, ProductFilter.ScanCode);
+                if (ProductFilter.ProductTypeId != null)
+                    queryable = queryable.Where(q => q.ProductTypeId, ProductFilter.ProductTypeId);
+                if (ProductFilter.SupplierId != null)
+                    queryable = queryable.Where(q => q.SupplierId, ProductFilter.SupplierId);
+                if (ProductFilter.BrandId != null)
+                    queryable = queryable.Where(q => q.BrandId, ProductFilter.BrandId);
+                if (ProductFilter.UnitOfMeasureId != null)
+                    queryable = queryable.Where(q => q.UnitOfMeasureId, ProductFilter.UnitOfMeasureId);
+                if (ProductFilter.UnitOfMeasureGroupingId != null)
+                    queryable = queryable.Where(q => q.UnitOfMeasureGroupingId, ProductFilter.UnitOfMeasureGroupingId);
+                if (ProductFilter.SalePrice != null)
+                    queryable = queryable.Where(q => q.SalePrice, ProductFilter.SalePrice);
+                if (ProductFilter.RetailPrice != null)
+                    queryable = queryable.Where(q => q.RetailPrice, ProductFilter.RetailPrice);
+                if (ProductFilter.TaxTypeId != null)
+                    queryable = queryable.Where(q => q.TaxTypeId, ProductFilter.TaxTypeId);
+                if (ProductFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, ProductFilter.StatusId);
+                if (ProductFilter.OtherName != null)
+                    queryable = queryable.Where(q => q.OtherName, ProductFilter.OtherName);
+                if (ProductFilter.TechnicalName != null)
+                    queryable = queryable.Where(q => q.TechnicalName, ProductFilter.TechnicalName);
+                if (ProductFilter.Note != null)
+                    queryable = queryable.Where(q => q.Note, ProductFilter.Note);
+                if (ProductFilter.IsNew != null)
+                    queryable = queryable.Where(q => q.IsNew.Equals(ProductFilter.IsNew));
+                if (ProductFilter.UsedVariationId != null)
+                    queryable = queryable.Where(q => q.UsedVariationId, ProductFilter.UsedVariationId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -747,12 +747,30 @@ namespace DMS.Repositories
             foreach (var Product in Products)
             {
                 long ProductId = ProductDAOs.Where(p => p.Code == Product.Code).Select(p => p.Id).FirstOrDefault();
+                if (Product.ProductProductGroupingMappings != null)
+                    Product.ProductProductGroupingMappings.ForEach(x => x.ProductId = ProductId);
+
                 if (Product.Items != null)
                     Product.Items.ForEach(i => i.ProductId = ProductId);
 
                 if (Product.VariationGroupings != null)
                     Product.VariationGroupings.ForEach(vg => vg.ProductId = ProductId);
             }
+            #region merge product grouping mapping
+            List<ProductProductGroupingMapping> ProductProductGroupingMappings = Products.SelectMany(p => p.ProductProductGroupingMappings).ToList();
+            List<ProductProductGroupingMappingDAO> ProductProductGroupingMappingDAOs = new List<ProductProductGroupingMappingDAO>();
+            foreach (ProductProductGroupingMapping ProductProductGroupingMapping in ProductProductGroupingMappings)
+            {
+                ProductProductGroupingMappingDAO ProductProductGroupingMappingDAO = new ProductProductGroupingMappingDAO
+                {
+                    ProductId = ProductProductGroupingMapping.ProductId,
+                    ProductGroupingId = ProductProductGroupingMapping.ProductGroupingId,
+                };
+                ProductProductGroupingMappingDAOs.Add(ProductProductGroupingMappingDAO);
+            }
+            await DataContext.ProductProductGroupingMapping.BulkMergeAsync(ProductProductGroupingMappingDAOs);
+
+            #endregion
             #region merge item
             List<Item> Items = Products.SelectMany(p => p.Items).ToList();
             List<ItemDAO> ItemDAOs = new List<ItemDAO>();

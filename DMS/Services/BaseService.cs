@@ -11,11 +11,14 @@ namespace DMS.Services
         {
             if (filter == null)
                 filter = new IdFilter();
-            if (filter.In == null)
-                filter.In = filterDefinition.Ids;
             else
-                filter.In.AddRange(filterDefinition.Ids);
-            filter.In = filter.In.Distinct().ToList();
+            {
+                if (filter.In == null)
+                    filter.In = filterDefinition.Ids;
+                else
+                    filter.In.AddRange(filterDefinition.Ids);
+                filter.In = filter.In.Distinct().ToList();
+            }
             return filter;
         }
 

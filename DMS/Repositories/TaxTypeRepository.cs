@@ -56,16 +56,16 @@ namespace DMS.Repositories
             foreach (TaxTypeFilter TaxTypeFilter in filter.OrFilter)
             {
                 IQueryable<TaxTypeDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Percentage != null)
-                    queryable = queryable.Where(q => q.Percentage, filter.Percentage);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (TaxTypeFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, TaxTypeFilter.Id);
+                if (TaxTypeFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, TaxTypeFilter.Code);
+                if (TaxTypeFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, TaxTypeFilter.Name);
+                if (TaxTypeFilter.Percentage != null)
+                    queryable = queryable.Where(q => q.Percentage, TaxTypeFilter.Percentage);
+                if (TaxTypeFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, TaxTypeFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

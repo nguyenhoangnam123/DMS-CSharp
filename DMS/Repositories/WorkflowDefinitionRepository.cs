@@ -68,26 +68,26 @@ namespace DMS.Repositories
             foreach (WorkflowDefinitionFilter WorkflowDefinitionFilter in filter.OrFilter)
             {
                 IQueryable<WorkflowDefinitionDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.CreatorId != null)
-                    queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
-                if (filter.ModifierId != null)
-                    queryable = queryable.Where(q => q.ModifierId, filter.ModifierId);
-                if (filter.WorkflowTypeId != null)
-                    queryable = queryable.Where(q => q.WorkflowTypeId, filter.WorkflowTypeId);
-                if (filter.StartDate != null)
-                    queryable = queryable.Where(q => q.StartDate, filter.StartDate);
-                if (filter.EndDate != null)
-                    queryable = queryable.Where(q => q.EndDate, filter.EndDate);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.UpdatedAt != null)
-                    queryable = queryable.Where(q => q.UpdatedAt, filter.UpdatedAt);
+                if (WorkflowDefinitionFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, WorkflowDefinitionFilter.Id);
+                if (WorkflowDefinitionFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, WorkflowDefinitionFilter.Code);
+                if (WorkflowDefinitionFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, WorkflowDefinitionFilter.Name);
+                if (WorkflowDefinitionFilter.CreatorId != null)
+                    queryable = queryable.Where(q => q.CreatorId, WorkflowDefinitionFilter.CreatorId);
+                if (WorkflowDefinitionFilter.ModifierId != null)
+                    queryable = queryable.Where(q => q.ModifierId, WorkflowDefinitionFilter.ModifierId);
+                if (WorkflowDefinitionFilter.WorkflowTypeId != null)
+                    queryable = queryable.Where(q => q.WorkflowTypeId, WorkflowDefinitionFilter.WorkflowTypeId);
+                if (WorkflowDefinitionFilter.StartDate != null)
+                    queryable = queryable.Where(q => q.StartDate, WorkflowDefinitionFilter.StartDate);
+                if (WorkflowDefinitionFilter.EndDate != null)
+                    queryable = queryable.Where(q => q.EndDate, WorkflowDefinitionFilter.EndDate);
+                if (WorkflowDefinitionFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, WorkflowDefinitionFilter.StatusId);
+                if (WorkflowDefinitionFilter.UpdatedAt != null)
+                    queryable = queryable.Where(q => q.UpdatedAt, WorkflowDefinitionFilter.UpdatedAt);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

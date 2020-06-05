@@ -51,12 +51,12 @@ namespace DMS.Repositories
             foreach (KpiCriteriaItemFilter KpiCriteriaItemFilter in filter.OrFilter)
             {
                 IQueryable<KpiCriteriaItemDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
+                if (KpiCriteriaItemFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, KpiCriteriaItemFilter.Id);
+                if (KpiCriteriaItemFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, KpiCriteriaItemFilter.Code);
+                if (KpiCriteriaItemFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, KpiCriteriaItemFilter.Name);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

@@ -333,9 +333,13 @@ namespace DMS.Services.MIndirectSalesOrder
                     {
                         //phân bổ chiết khấu chung = tổng chiết khấu chung * (tổng từng line/tổng trc chiết khấu)
                         IndirectSalesOrderContent.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount * (IndirectSalesOrderContent.Amount / IndirectSalesOrder.SubTotal);
-                        //thuê từng line = (tổng từng line - chiết khấu phân bổ) * % thuế
-                        IndirectSalesOrderContent.TaxAmount = Convert.ToInt64((IndirectSalesOrderContent.Amount - IndirectSalesOrderContent.GeneralDiscountAmount) * IndirectSalesOrderContent.TaxPercentage / 100);
                     }
+                }
+
+                foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
+                {
+                    //thuê từng line = (tổng từng line - chiết khấu phân bổ) * % thuế
+                    IndirectSalesOrderContent.TaxAmount = Convert.ToInt64((IndirectSalesOrderContent.Amount - (IndirectSalesOrderContent.GeneralDiscountAmount.HasValue ? IndirectSalesOrderContent.GeneralDiscountAmount.Value : 0)) * IndirectSalesOrderContent.TaxPercentage / 100);
                 }
                 IndirectSalesOrder.TotalTaxAmount = IndirectSalesOrder.IndirectSalesOrderContents.Sum(x => x.TaxAmount.Value);
                 IndirectSalesOrder.Total = IndirectSalesOrder.SubTotal - IndirectSalesOrder.GeneralDiscountAmount ?? 0 + IndirectSalesOrder.TotalTaxAmount;

@@ -79,38 +79,38 @@ namespace DMS.Repositories
             foreach (IndirectSalesOrderContentFilter IndirectSalesOrderContentFilter in filter.OrFilter)
             {
                 IQueryable<IndirectSalesOrderContentDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.IndirectSalesOrderId != null)
-                    queryable = queryable.Where(q => q.IndirectSalesOrderId, filter.IndirectSalesOrderId);
-                if (filter.ItemId != null)
-                    queryable = queryable.Where(q => q.ItemId, filter.ItemId);
-                if (filter.UnitOfMeasureId != null)
-                    queryable = queryable.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
-                if (filter.Quantity != null)
-                    queryable = queryable.Where(q => q.Quantity, filter.Quantity);
-                if (filter.PrimaryUnitOfMeasureId != null)
-                    queryable = queryable.Where(q => q.PrimaryUnitOfMeasureId, filter.PrimaryUnitOfMeasureId);
-                if (filter.RequestedQuantity != null)
-                    queryable = queryable.Where(q => q.RequestedQuantity, filter.RequestedQuantity);
-                if (filter.PrimaryPrice != null)
-                    queryable = queryable.Where(q => q.PrimaryPrice, filter.PrimaryPrice);
-                if (filter.SalePrice != null)
-                    queryable = queryable.Where(q => q.SalePrice, filter.SalePrice);
-                if (filter.DiscountPercentage != null)
-                    queryable = queryable.Where(q => q.DiscountPercentage, filter.DiscountPercentage);
-                if (filter.DiscountAmount != null)
-                    queryable = queryable.Where(q => q.DiscountAmount, filter.DiscountAmount);
-                if (filter.GeneralDiscountPercentage != null)
-                    queryable = queryable.Where(q => q.GeneralDiscountPercentage, filter.GeneralDiscountPercentage);
-                if (filter.GeneralDiscountAmount != null)
-                    queryable = queryable.Where(q => q.GeneralDiscountAmount, filter.GeneralDiscountAmount);
-                if (filter.Amount != null)
-                    queryable = queryable.Where(q => q.Amount, filter.Amount);
-                if (filter.TaxPercentage != null)
-                    queryable = queryable.Where(q => q.TaxPercentage, filter.TaxPercentage);
-                if (filter.TaxAmount != null)
-                    queryable = queryable.Where(q => q.TaxAmount, filter.TaxAmount);
+                if (IndirectSalesOrderContentFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, IndirectSalesOrderContentFilter.Id);
+                if (IndirectSalesOrderContentFilter.IndirectSalesOrderId != null)
+                    queryable = queryable.Where(q => q.IndirectSalesOrderId, IndirectSalesOrderContentFilter.IndirectSalesOrderId);
+                if (IndirectSalesOrderContentFilter.ItemId != null)
+                    queryable = queryable.Where(q => q.ItemId, IndirectSalesOrderContentFilter.ItemId);
+                if (IndirectSalesOrderContentFilter.UnitOfMeasureId != null)
+                    queryable = queryable.Where(q => q.UnitOfMeasureId, IndirectSalesOrderContentFilter.UnitOfMeasureId);
+                if (IndirectSalesOrderContentFilter.Quantity != null)
+                    queryable = queryable.Where(q => q.Quantity, IndirectSalesOrderContentFilter.Quantity);
+                if (IndirectSalesOrderContentFilter.PrimaryUnitOfMeasureId != null)
+                    queryable = queryable.Where(q => q.PrimaryUnitOfMeasureId, IndirectSalesOrderContentFilter.PrimaryUnitOfMeasureId);
+                if (IndirectSalesOrderContentFilter.RequestedQuantity != null)
+                    queryable = queryable.Where(q => q.RequestedQuantity, IndirectSalesOrderContentFilter.RequestedQuantity);
+                if (IndirectSalesOrderContentFilter.PrimaryPrice != null)
+                    queryable = queryable.Where(q => q.PrimaryPrice, IndirectSalesOrderContentFilter.PrimaryPrice);
+                if (IndirectSalesOrderContentFilter.SalePrice != null)
+                    queryable = queryable.Where(q => q.SalePrice, IndirectSalesOrderContentFilter.SalePrice);
+                if (IndirectSalesOrderContentFilter.DiscountPercentage != null)
+                    queryable = queryable.Where(q => q.DiscountPercentage, IndirectSalesOrderContentFilter.DiscountPercentage);
+                if (IndirectSalesOrderContentFilter.DiscountAmount != null)
+                    queryable = queryable.Where(q => q.DiscountAmount, IndirectSalesOrderContentFilter.DiscountAmount);
+                if (IndirectSalesOrderContentFilter.GeneralDiscountPercentage != null)
+                    queryable = queryable.Where(q => q.GeneralDiscountPercentage, IndirectSalesOrderContentFilter.GeneralDiscountPercentage);
+                if (IndirectSalesOrderContentFilter.GeneralDiscountAmount != null)
+                    queryable = queryable.Where(q => q.GeneralDiscountAmount, IndirectSalesOrderContentFilter.GeneralDiscountAmount);
+                if (IndirectSalesOrderContentFilter.Amount != null)
+                    queryable = queryable.Where(q => q.Amount, IndirectSalesOrderContentFilter.Amount);
+                if (IndirectSalesOrderContentFilter.TaxPercentage != null)
+                    queryable = queryable.Where(q => q.TaxPercentage, IndirectSalesOrderContentFilter.TaxPercentage);
+                if (IndirectSalesOrderContentFilter.TaxAmount != null)
+                    queryable = queryable.Where(q => q.TaxAmount, IndirectSalesOrderContentFilter.TaxAmount);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

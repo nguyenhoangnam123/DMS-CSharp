@@ -342,6 +342,18 @@ namespace DMS.Rpc.indirect_sales_order
                     TaxPercentage = x.TaxPercentage,
                     TaxAmount = x.TaxAmount,
                     Factor = x.Factor,
+                    Item = x.Item == null ? null : new Item 
+                    {
+                        Id = x.Item.Id,
+                        Code = x.Item.Code,
+                        Name = x.Item.Name,
+                        ProductId = x.Item.ProductId,
+                        RetailPrice = x.Item.RetailPrice,
+                        SalePrice = x.Item.SalePrice,
+                        SaleStock = x.Item.SaleStock,
+                        ScanCode = x.Item.ScanCode,
+                        StatusId = x.Item.StatusId,
+                    },
                     PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
                     {
                         Id = x.PrimaryUnitOfMeasure.Id,
@@ -664,15 +676,19 @@ namespace DMS.Rpc.indirect_sales_order
             {
                 IndirectSalesOrder_UnitOfMeasureDTOs = Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(x => new IndirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
             }
-            IndirectSalesOrder_UnitOfMeasureDTOs.Add(new IndirectSalesOrder_UnitOfMeasureDTO
+            if(Product.UnitOfMeasure.StatusId == Enums.StatusEnum.ACTIVE.Id)
             {
-                Id = Product.UnitOfMeasure.Id,
-                Code = Product.UnitOfMeasure.Code,
-                Name = Product.UnitOfMeasure.Name,
-                Description = Product.UnitOfMeasure.Description,
-                StatusId = Product.UnitOfMeasure.StatusId,
-                Factor = 1
-            });
+                IndirectSalesOrder_UnitOfMeasureDTOs.Add(new IndirectSalesOrder_UnitOfMeasureDTO
+                {
+                    Id = Product.UnitOfMeasure.Id,
+                    Code = Product.UnitOfMeasure.Code,
+                    Name = Product.UnitOfMeasure.Name,
+                    Description = Product.UnitOfMeasure.Description,
+                    StatusId = Product.UnitOfMeasure.StatusId,
+                    Factor = 1
+                });
+            }
+            
             return IndirectSalesOrder_UnitOfMeasureDTOs;
         }
         

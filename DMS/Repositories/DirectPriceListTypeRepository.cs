@@ -51,12 +51,12 @@ namespace DMS.Repositories
             foreach (DirectPriceListTypeFilter DirectPriceListTypeFilter in filter.OrFilter)
             {
                 IQueryable<DirectPriceListTypeDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
+                if (DirectPriceListTypeFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, DirectPriceListTypeFilter.Id);
+                if (DirectPriceListTypeFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, DirectPriceListTypeFilter.Code);
+                if (DirectPriceListTypeFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, DirectPriceListTypeFilter.Name);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

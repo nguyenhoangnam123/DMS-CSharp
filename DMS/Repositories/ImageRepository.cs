@@ -71,12 +71,12 @@ namespace DMS.Repositories
             foreach (ImageFilter ImageFilter in filter.OrFilter)
             {
                 IQueryable<ImageDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Url != null)
-                    queryable = queryable.Where(q => q.Url, filter.Url);
+                if (ImageFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ImageFilter.Id);
+                if (ImageFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, ImageFilter.Name);
+                if (ImageFilter.Url != null)
+                    queryable = queryable.Where(q => q.Url, ImageFilter.Url);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

@@ -52,12 +52,12 @@ namespace DMS.Repositories
             foreach (VariationGroupingFilter VariationGroupingFilter in filter.OrFilter)
             {
                 IQueryable<VariationGroupingDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.ProductId != null)
-                    queryable = queryable.Where(q => q.ProductId, filter.ProductId);
+                if (VariationGroupingFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, VariationGroupingFilter.Id);
+                if (VariationGroupingFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, VariationGroupingFilter.Name);
+                if (VariationGroupingFilter.ProductId != null)
+                    queryable = queryable.Where(q => q.ProductId, VariationGroupingFilter.ProductId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

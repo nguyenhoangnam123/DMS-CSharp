@@ -53,14 +53,14 @@ namespace DMS.Repositories
             foreach (NotificationFilter NotificationFilter in filter.OrFilter)
             {
                 IQueryable<NotificationDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Title != null)
-                    queryable = queryable.Where(q => q.Title, filter.Title);
-                if (filter.Content != null)
-                    queryable = queryable.Where(q => q.Content, filter.Content);
-                if (filter.OrganizationId != null)
-                    query = query.Where(q => q.OrganizationId, filter.OrganizationId);
+                if (NotificationFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, NotificationFilter.Id);
+                if (NotificationFilter.Title != null)
+                    queryable = queryable.Where(q => q.Title, NotificationFilter.Title);
+                if (NotificationFilter.Content != null)
+                    queryable = queryable.Where(q => q.Content, NotificationFilter.Content);
+                if (NotificationFilter.OrganizationId != null)
+                    query = query.Where(q => q.OrganizationId, NotificationFilter.OrganizationId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

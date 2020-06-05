@@ -56,16 +56,16 @@ namespace DMS.Repositories
             foreach (UnitOfMeasureFilter UnitOfMeasureFilter in filter.OrFilter)
             {
                 IQueryable<UnitOfMeasureDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Description != null)
-                    queryable = queryable.Where(q => q.Description, filter.Description);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (UnitOfMeasureFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, UnitOfMeasureFilter.Id);
+                if (UnitOfMeasureFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, UnitOfMeasureFilter.Code);
+                if (UnitOfMeasureFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, UnitOfMeasureFilter.Name);
+                if (UnitOfMeasureFilter.Description != null)
+                    queryable = queryable.Where(q => q.Description, UnitOfMeasureFilter.Description);
+                if (UnitOfMeasureFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, UnitOfMeasureFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

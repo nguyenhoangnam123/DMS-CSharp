@@ -46,12 +46,12 @@ namespace DMS.Repositories
             foreach (EditedPriceStatusFilter EditedPriceStatusFilter in filter.OrFilter)
             {
                 IQueryable<EditedPriceStatusDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
+                if (EditedPriceStatusFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, EditedPriceStatusFilter.Id);
+                if (EditedPriceStatusFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, EditedPriceStatusFilter.Code);
+                if (EditedPriceStatusFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, EditedPriceStatusFilter.Name);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

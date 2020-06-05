@@ -66,22 +66,22 @@ namespace DMS.Repositories
             foreach (BannerFilter BannerFilter in filter.OrFilter)
             {
                 IQueryable<BannerDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Title != null)
-                    queryable = queryable.Where(q => q.Title, filter.Title);
-                if (filter.Priority != null)
-                    queryable = queryable.Where(q => q.Priority, filter.Priority);
-                if (filter.Content != null)
-                    queryable = queryable.Where(q => q.Content, filter.Content);
-                if (filter.CreatorId != null)
-                    queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
-                if (filter.ImageId != null)
-                    queryable = queryable.Where(q => q.ImageId, filter.ImageId);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (BannerFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, BannerFilter.Id);
+                if (BannerFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, BannerFilter.Code);
+                if (BannerFilter.Title != null)
+                    queryable = queryable.Where(q => q.Title, BannerFilter.Title);
+                if (BannerFilter.Priority != null)
+                    queryable = queryable.Where(q => q.Priority, BannerFilter.Priority);
+                if (BannerFilter.Content != null)
+                    queryable = queryable.Where(q => q.Content, BannerFilter.Content);
+                if (BannerFilter.CreatorId != null)
+                    queryable = queryable.Where(q => q.CreatorId, BannerFilter.CreatorId);
+                if (BannerFilter.ImageId != null)
+                    queryable = queryable.Where(q => q.ImageId, BannerFilter.ImageId);
+                if (BannerFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, BannerFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

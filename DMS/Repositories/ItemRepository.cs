@@ -92,20 +92,20 @@ namespace DMS.Repositories
             foreach (ItemFilter ItemFilter in filter.OrFilter)
             {
                 IQueryable<ItemDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.ProductId != null)
-                    queryable = queryable.Where(q => q.ProductId, filter.ProductId);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.ScanCode != null)
-                    queryable = queryable.Where(q => q.ScanCode, filter.ScanCode);
-                if (filter.SalePrice != null)
-                    queryable = queryable.Where(q => q.SalePrice, filter.SalePrice);
-                if (filter.RetailPrice != null)
-                    queryable = queryable.Where(q => q.RetailPrice, filter.RetailPrice);
+                if (ItemFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ItemFilter.Id);
+                if (ItemFilter.ProductId != null)
+                    queryable = queryable.Where(q => q.ProductId, ItemFilter.ProductId);
+                if (ItemFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, ItemFilter.Code);
+                if (ItemFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, ItemFilter.Name);
+                if (ItemFilter.ScanCode != null)
+                    queryable = queryable.Where(q => q.ScanCode, ItemFilter.ScanCode);
+                if (ItemFilter.SalePrice != null)
+                    queryable = queryable.Where(q => q.SalePrice, ItemFilter.SalePrice);
+                if (ItemFilter.RetailPrice != null)
+                    queryable = queryable.Where(q => q.RetailPrice, ItemFilter.RetailPrice);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

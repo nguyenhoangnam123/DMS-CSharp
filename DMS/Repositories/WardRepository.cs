@@ -53,18 +53,18 @@ namespace DMS.Repositories
             foreach (WardFilter WardFilter in filter.OrFilter)
             {
                 IQueryable<WardDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Priority != null)
-                    queryable = queryable.Where(q => q.Priority, filter.Priority);
-                if (filter.DistrictId != null)
-                    queryable = queryable.Where(q => q.DistrictId, filter.DistrictId);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (WardFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, WardFilter.Id);
+                if (WardFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, WardFilter.Code);
+                if (WardFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, WardFilter.Name);
+                if (WardFilter.Priority != null)
+                    queryable = queryable.Where(q => q.Priority, WardFilter.Priority);
+                if (WardFilter.DistrictId != null)
+                    queryable = queryable.Where(q => q.DistrictId, WardFilter.DistrictId);
+                if (WardFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, WardFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

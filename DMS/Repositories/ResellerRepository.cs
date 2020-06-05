@@ -76,36 +76,36 @@ namespace DMS.Repositories
             foreach (ResellerFilter ResellerFilter in filter.OrFilter)
             {
                 IQueryable<ResellerDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Phone != null)
-                    queryable = queryable.Where(q => q.Phone, filter.Phone);
-                if (filter.Email != null)
-                    queryable = queryable.Where(q => q.Email, filter.Email);
-                if (filter.Address != null)
-                    queryable = queryable.Where(q => q.Address, filter.Address);
-                if (filter.TaxCode != null)
-                    queryable = queryable.Where(q => q.TaxCode, filter.TaxCode);
-                if (filter.CompanyName != null)
-                    queryable = queryable.Where(q => q.CompanyName, filter.CompanyName);
-                if (filter.DeputyName != null)
-                    queryable = queryable.Where(q => q.DeputyName, filter.DeputyName);
-                if (filter.Description != null)
-                    queryable = queryable.Where(q => q.Description, filter.Description);
-                if (filter.OrganizationId != null)
-                    queryable = queryable.Where(q => q.OrganizationId, filter.OrganizationId);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.ResellerTypeId != null)
-                    queryable = queryable.Where(q => q.ResellerTypeId, filter.ResellerTypeId);
-                if (filter.ResellerStatusId != null)
-                    queryable = queryable.Where(q => q.ResellerStatusId, filter.ResellerStatusId);
-                if (filter.StaffId != null)
-                    queryable = queryable.Where(q => q.StaffId, filter.StaffId);
+                if (ResellerFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ResellerFilter.Id);
+                if (ResellerFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, ResellerFilter.Code);
+                if (ResellerFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, ResellerFilter.Name);
+                if (ResellerFilter.Phone != null)
+                    queryable = queryable.Where(q => q.Phone, ResellerFilter.Phone);
+                if (ResellerFilter.Email != null)
+                    queryable = queryable.Where(q => q.Email, ResellerFilter.Email);
+                if (ResellerFilter.Address != null)
+                    queryable = queryable.Where(q => q.Address, ResellerFilter.Address);
+                if (ResellerFilter.TaxCode != null)
+                    queryable = queryable.Where(q => q.TaxCode, ResellerFilter.TaxCode);
+                if (ResellerFilter.CompanyName != null)
+                    queryable = queryable.Where(q => q.CompanyName, ResellerFilter.CompanyName);
+                if (ResellerFilter.DeputyName != null)
+                    queryable = queryable.Where(q => q.DeputyName, ResellerFilter.DeputyName);
+                if (ResellerFilter.Description != null)
+                    queryable = queryable.Where(q => q.Description, ResellerFilter.Description);
+                if (ResellerFilter.OrganizationId != null)
+                    queryable = queryable.Where(q => q.OrganizationId, ResellerFilter.OrganizationId);
+                if (ResellerFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, ResellerFilter.StatusId);
+                if (ResellerFilter.ResellerTypeId != null)
+                    queryable = queryable.Where(q => q.ResellerTypeId, ResellerFilter.ResellerTypeId);
+                if (ResellerFilter.ResellerStatusId != null)
+                    queryable = queryable.Where(q => q.ResellerStatusId, ResellerFilter.ResellerStatusId);
+                if (ResellerFilter.StaffId != null)
+                    queryable = queryable.Where(q => q.StaffId, ResellerFilter.StaffId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
