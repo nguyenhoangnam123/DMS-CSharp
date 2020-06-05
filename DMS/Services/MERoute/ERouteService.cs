@@ -226,24 +226,6 @@ namespace DMS.Services.MERoute
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
-                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleEmployeeId))
-                        subFilter.SaleEmployeeId = Map(subFilter.SaleEmployeeId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StartDate))
-                        subFilter.StartDate = Map(subFilter.StartDate, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.EndDate))
-                        subFilter.EndDate = Map(subFilter.EndDate, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.RequestStateId))
-                        subFilter.RequestStateId = Map(subFilter.RequestStateId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
-                        subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.CreatorId))
-                        subFilter.CreatorId = Map(subFilter.CreatorId, FilterPermissionDefinition);
                 }
             }
             return filter;

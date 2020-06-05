@@ -63,24 +63,27 @@ namespace DMS.Rpc
                 context.Fail();
                 return;
             }
-            //List<PermissionDAO> PermissionDAOs = await DataContext.Permission.AsNoTracking()
-            //    .Include(p => p.PermissionFieldMappings).ThenInclude(pf => pf.Field)
-            //    .Where(p => permissionIds.Contains(p.Id))
-            //    .ToListAsync();
-            //CurrentContext.RoleIds = PermissionDAOs.Select(p => p.RoleId).Distinct().ToList();
-            //CurrentContext.Filters = new Dictionary<long, List<FilterPermissionDefinition>>();
-            //foreach (PermissionDAO PermissionDAO in PermissionDAOs)
-            //{
-            //    List<FilterPermissionDefinition> FilterPermissionDefinitions = new List<FilterPermissionDefinition>();
-            //    CurrentContext.Filters.Add(PermissionDAO.Id, FilterPermissionDefinitions);
-            //    foreach (PermissionFieldMappingDAO PermissionFieldMappingDAO in PermissionDAO.PermissionFieldMappings)
-            //    {
-            //        FilterPermissionDefinition FilterPermissionDefinition = new FilterPermissionDefinition(PermissionFieldMappingDAO.Field.Name, PermissionFieldMappingDAO.Field.Type);
-            //        FilterPermissionDefinition.Value = PermissionFieldMappingDAO.Value;
-            //        FilterPermissionDefinitions.Add(FilterPermissionDefinition);
-            //    }
+            List<PermissionDAO> PermissionDAOs = await DataContext.Permission.AsNoTracking()
+                .Include(p => p.PermissionFields).ThenInclude(pf => pf.Field)
+                .Where(p => permissionIds.Contains(p.Id))
+                .ToListAsync();
+            CurrentContext.RoleIds = PermissionDAOs.Select(p => p.RoleId).Distinct().ToList();
+            CurrentContext.Filters = new Dictionary<long, List<FilterPermissionDefinition>>();
+            foreach (PermissionDAO PermissionDAO in PermissionDAOs)
+            {
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = new List<FilterPermissionDefinition>();
+                CurrentContext.Filters.Add(PermissionDAO.Id, FilterPermissionDefinitions);
+                foreach (PermissionFieldDAO PermissionFieldDAO in PermissionDAO.PermissionFields)
+                {
+                    FilterPermissionDefinition FilterPermissionDefinition = FilterPermissionDefinitions.Where(f => f.Name == PermissionFieldDAO.Field.Name).FirstOrDefault();
+                    if (FilterPermissionDefinition == null)
+                    {
+                        FilterPermissionDefinition = new FilterPermissionDefinition(PermissionFieldDAO.Field.Name, PermissionFieldDAO.Field.FieldTypeId, PermissionFieldDAO.PermissionOperatorId, PermissionFieldDAO.Value);
+                        FilterPermissionDefinitions.Add(FilterPermissionDefinition);
+                    }
+                }
 
-            //}
+            }
             context.Succeed(requirement);
         }
     }

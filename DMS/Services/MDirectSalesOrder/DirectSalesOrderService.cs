@@ -243,42 +243,6 @@ namespace DMS.Services.MDirectSalesOrder
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
-                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.BuyerStoreId))
-                        subFilter.BuyerStoreId = Map(subFilter.BuyerStoreId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StorePhone))
-                        subFilter.StorePhone = Map(subFilter.StorePhone, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StoreAddress))
-                        subFilter.StoreAddress = Map(subFilter.StoreAddress, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StoreDeliveryAddress))
-                        subFilter.StoreDeliveryAddress = Map(subFilter.StoreDeliveryAddress, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.TaxCode))
-                        subFilter.TaxCode = Map(subFilter.TaxCode, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleEmployeeId))
-                        subFilter.SaleEmployeeId = Map(subFilter.SaleEmployeeId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrderDate))
-                        subFilter.OrderDate = Map(subFilter.OrderDate, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.DeliveryDate))
-                        subFilter.DeliveryDate = Map(subFilter.DeliveryDate, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.EditedPriceStatusId))
-                        subFilter.EditedPriceStatusId = Map(subFilter.EditedPriceStatusId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Note))
-                        subFilter.Note = Map(subFilter.Note, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.SubTotal))
-                        subFilter.SubTotal = Map(subFilter.SubTotal, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.GeneralDiscountPercentage))
-                        subFilter.GeneralDiscountPercentage = Map(subFilter.GeneralDiscountPercentage, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.GeneralDiscountAmount))
-                        subFilter.GeneralDiscountAmount = Map(subFilter.GeneralDiscountAmount, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.TotalTaxAmount))
-                        subFilter.TotalTaxAmount = Map(subFilter.TotalTaxAmount, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Total))
-                        subFilter.Total = Map(subFilter.Total, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.RequestStateId))
-                        subFilter.RequestStateId = Map(subFilter.RequestStateId, FilterPermissionDefinition);
                 }
             }
             return filter;

@@ -84,16 +84,6 @@ namespace DMS.Services.MInventory
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.WarehouseId))
-                        subFilter.WarehouseId = Map(subFilter.WarehouseId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ItemId))
-                        subFilter.ItemId = Map(subFilter.ItemId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleStock))
-                        subFilter.SaleStock = Map(subFilter.SaleStock, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.AccountingStock))
-                        subFilter.AccountingStock = Map(subFilter.AccountingStock, FilterPermissionDefinition);
                 }
             }
             return filter;

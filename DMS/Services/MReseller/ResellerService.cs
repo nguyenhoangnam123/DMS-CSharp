@@ -221,36 +221,6 @@ namespace DMS.Services.MReseller
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
-                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Phone))
-                        subFilter.Phone = Map(subFilter.Phone, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Email))
-                        subFilter.Email = Map(subFilter.Email, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Address))
-                        subFilter.Address = Map(subFilter.Address, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.TaxCode))
-                        subFilter.TaxCode = Map(subFilter.TaxCode, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.CompanyName))
-                        subFilter.CompanyName = Map(subFilter.CompanyName, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.DeputyName))
-                        subFilter.DeputyName = Map(subFilter.DeputyName, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Description))
-                        subFilter.Description = Map(subFilter.Description, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
-                        subFilter.OrganizationId = Map(subFilter.OrganizationId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
-                        subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ResellerTypeId))
-                        subFilter.ResellerTypeId = Map(subFilter.ResellerTypeId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ResellerStatusId))
-                        subFilter.ResellerStatusId = Map(subFilter.ResellerStatusId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StaffId))
-                        subFilter.StaffId = Map(subFilter.StaffId, FilterPermissionDefinition);
                 }
             }
             return filter;

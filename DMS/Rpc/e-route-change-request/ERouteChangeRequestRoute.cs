@@ -51,14 +51,14 @@ namespace DMS.Rpc.e_route_change_request
 
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(ERouteChangeRequestFilter.ERouteId), FieldType.ID },
-            { nameof(ERouteChangeRequestFilter.CreatorId), FieldType.ID },
-            { nameof(ERouteChangeRequestFilter.RequestStateId), FieldType.ID },
-            { nameof(StoreFilter.OrganizationId), FieldType.ID },
-            { nameof(StoreFilter.StoreGroupingId), FieldType.ID },
-            { nameof(StoreFilter.StoreTypeId), FieldType.ID },
+            { nameof(ERouteChangeRequestFilter.ERouteId), FieldTypeEnum.ID.Id },
+            { nameof(ERouteChangeRequestFilter.CreatorId), FieldTypeEnum.ID.Id },
+            { nameof(ERouteChangeRequestFilter.RequestStateId), FieldTypeEnum.ID.Id },
+            { nameof(StoreFilter.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(StoreFilter.StoreGroupingId), FieldTypeEnum.ID.Id },
+            { nameof(StoreFilter.StoreTypeId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

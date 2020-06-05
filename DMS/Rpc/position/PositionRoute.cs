@@ -19,7 +19,7 @@ namespace DMS.Rpc.position
         public const string FilterListStatus = Default + "/filter-list-status";
         public const string SingleListStatus = Default + "/single-list-status";
 
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
 

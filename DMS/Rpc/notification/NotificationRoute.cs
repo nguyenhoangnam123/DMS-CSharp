@@ -35,12 +35,12 @@ namespace DMS.Rpc.notification
 
         public const string SingleListOrganization = Default + "/single-list-organization";
 
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(NotificationFilter.Id), FieldType.ID },
-            { nameof(NotificationFilter.Title), FieldType.STRING },
-            { nameof(NotificationFilter.Content), FieldType.STRING },
-            { nameof(NotificationFilter.OrganizationId), FieldType.ID },
+            { nameof(NotificationFilter.Id), FieldTypeEnum.ID.Id },
+            { nameof(NotificationFilter.Title), FieldTypeEnum.STRING.Id },
+            { nameof(NotificationFilter.Content), FieldTypeEnum.STRING.Id },
+            { nameof(NotificationFilter.OrganizationId), FieldTypeEnum.ID.Id },
         };
 
 

@@ -220,9 +220,9 @@ namespace DMS.Services.MAlbum
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
+                        subFilter.Id = FilterPermissionDefinition.IdFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
+                        subFilter.Name = FilterPermissionDefinition.StringFilter;
                 }
             }
             return filter;

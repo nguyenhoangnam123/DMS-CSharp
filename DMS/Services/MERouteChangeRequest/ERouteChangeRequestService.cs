@@ -226,14 +226,6 @@ namespace DMS.Services.MERouteChangeRequest
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ERouteId))
-                        subFilter.ERouteId = Map(subFilter.ERouteId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.CreatorId))
-                        subFilter.CreatorId = Map(subFilter.CreatorId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.RequestStateId))
-                        subFilter.RequestStateId = Map(subFilter.RequestStateId, FilterPermissionDefinition);
                 }
             }
             return filter;

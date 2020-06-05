@@ -201,18 +201,6 @@ namespace DMS.Services.MSurvey
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Title))
-                        subFilter.Title = Map(subFilter.Title, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Description))
-                        subFilter.Description = Map(subFilter.Description, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StartAt))
-                        subFilter.StartAt = Map(subFilter.StartAt, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.EndAt))
-                        subFilter.EndAt = Map(subFilter.EndAt, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
-                        subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
                 }
             }
             return filter;

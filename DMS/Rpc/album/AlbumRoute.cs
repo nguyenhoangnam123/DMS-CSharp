@@ -25,9 +25,9 @@ namespace DMS.Rpc.album
 
         public const string FilterListStatus = Default + "/filter-list-status";
         public const string SingleListStatus = Default + "/single-list-status";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(AlbumFilter.Name), FieldType.STRING },
+            { nameof(AlbumFilter.Name), FieldTypeEnum.STRING.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

@@ -29,15 +29,15 @@ namespace DMS.Rpc.app_user
         public const string SingleListRole = Default + "/single-list-role";
         public const string CountRole = Default + "/count-role";
         public const string ListRole = Default + "/list-role";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(AppUserFilter.OrganizationId), FieldType.ID },
+            { nameof(AppUserFilter.OrganizationId), FieldTypeEnum.ID.Id},
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master,Detail,Count,List,Get, 
+                Master,Detail,Count,List,Get,
                 FilterListPosition, FilterListOrganization, FilterListStatus,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, CountRole, ListRole}},
         };

@@ -227,14 +227,6 @@ namespace DMS.Services.MWorkflow
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.WorkflowDefinitionId))
-                        subFilter.WorkflowDefinitionId = Map(subFilter.WorkflowDefinitionId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.FromStepId))
-                        subFilter.FromStepId = Map(subFilter.FromStepId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ToStepId))
-                        subFilter.ToStepId = Map(subFilter.ToStepId, FilterPermissionDefinition);
                 }
             }
             return filter;

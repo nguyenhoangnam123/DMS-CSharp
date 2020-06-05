@@ -77,10 +77,10 @@ namespace DMS.Rpc.product
         public const string CountItem = Default + "/count-item";
         public const string ListInventory = Default + "/list-inventory";
         public const string CountInventory = Default + "/count-inventory";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(ProductFilter.ProductTypeId), FieldType.ID },
-            { nameof(ProductFilter.ProductGroupingId), FieldType.ID },
+            { nameof(ProductFilter.ProductTypeId), FieldTypeEnum.ID.Id },
+            { nameof(ProductFilter.ProductGroupingId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

@@ -89,26 +89,6 @@ namespace DMS.Services.MOrganization
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
-                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ParentId))
-                        subFilter.ParentId = Map(subFilter.ParentId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Path))
-                        subFilter.Path = Map(subFilter.Path, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Level))
-                        subFilter.Level = Map(subFilter.Level, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
-                        subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Phone))
-                        subFilter.Phone = Map(subFilter.Phone, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Address))
-                        subFilter.Address = Map(subFilter.Address, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Email))
-                        subFilter.Email = Map(subFilter.Email, FilterPermissionDefinition);
                 }
             }
             return filter;

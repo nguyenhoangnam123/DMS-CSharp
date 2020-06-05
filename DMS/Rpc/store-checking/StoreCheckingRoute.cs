@@ -53,14 +53,8 @@ namespace DMS.Rpc.store_checking
         public const string CountProblem = Default + "/count-problem";
         public const string ListProblem = Default + "/list-problem";
         
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(StoreCheckingFilter.Longtitude), FieldType.DECIMAL },
-            { nameof(StoreCheckingFilter.Latitude), FieldType.DECIMAL },
-            { nameof(StoreCheckingFilter.CheckInAt), FieldType.DATE },
-            { nameof(StoreCheckingFilter.CheckOutAt), FieldType.DATE },
-            { nameof(StoreCheckingFilter.CountIndirectSalesOrder), FieldType.LONG },
-            { nameof(StoreCheckingFilter.CountImage), FieldType.LONG },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

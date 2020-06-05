@@ -304,20 +304,6 @@ namespace DMS.Services.MProductGrouping
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
-                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Description))
-                        subFilter.Description = Map(subFilter.Description, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ParentId))
-                        subFilter.ParentId = Map(subFilter.ParentId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Path))
-                        subFilter.Path = Map(subFilter.Path, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Level))
-                        subFilter.Level = Map(subFilter.Level, FilterPermissionDefinition);
                 }
             }
             return filter;

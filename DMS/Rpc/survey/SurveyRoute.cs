@@ -29,27 +29,27 @@ namespace DMS.Rpc.survey
         public const string SingleListSurveyOptionType = Default + "/single-list-survey-option-type";
         public const string SingleListSurveyQuestionType = Default + "/single-list-survey-question-type";
 
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(SurveyFilter.Title), FieldType.STRING },
-            { nameof(SurveyFilter.Description), FieldType.STRING },
-            { nameof(SurveyFilter.StartAt), FieldType.DATE },
-            { nameof(SurveyFilter.EndAt), FieldType.DATE },
+            { nameof(SurveyFilter.Title), FieldTypeEnum.STRING.Id },
+            { nameof(SurveyFilter.Description), FieldTypeEnum.STRING.Id },
+            { nameof(SurveyFilter.StartAt), FieldTypeEnum.DATE.Id },
+            { nameof(SurveyFilter.EndAt), FieldTypeEnum.DATE.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, 
+            { "Tìm kiếm", new List<string> {
+                Master, Count, List, Get,
                 FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, } },
             { "Thêm", new List<string> {
-                Master, Count, List, Get, 
-                FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, 
-                Detail, Create, 
+                Master, Count, List, Get,
+                FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType,
+                Detail, Create,
                 SingleListAppUser, SingleListStatus, SingleListSurveyQuestionType, SingleListSurveyOptionType,  } },
-            { "Sửa", new List<string> { 
-                Master, Count, List, Get, 
-                FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, 
+            { "Sửa", new List<string> {
+                Master, Count, List, Get,
+                FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType,
                 Detail, Update,
                 SingleListAppUser, SingleListStatus, SingleListSurveyQuestionType, SingleListSurveyOptionType, } },
             { "Xoá", new List<string> {

@@ -217,19 +217,19 @@ namespace DMS.Services.MItem
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
+                        subFilter.Id = FilterPermissionDefinition.IdFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ProductId))
-                        subFilter.ProductId = Map(subFilter.ProductId, FilterPermissionDefinition);
+                        subFilter.ProductId = FilterPermissionDefinition.IdFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
-                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
+                        subFilter.Code = FilterPermissionDefinition.StringFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
+                        subFilter.Name = FilterPermissionDefinition.StringFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ScanCode))
-                        subFilter.ScanCode = Map(subFilter.ScanCode, FilterPermissionDefinition);
+                        subFilter.ScanCode = FilterPermissionDefinition.StringFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.SalePrice))
-                        subFilter.SalePrice = Map(subFilter.SalePrice, FilterPermissionDefinition);
+                        subFilter.SalePrice = FilterPermissionDefinition.DecimalFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.RetailPrice))
-                        subFilter.RetailPrice = Map(subFilter.RetailPrice, FilterPermissionDefinition);
+                        subFilter.RetailPrice = FilterPermissionDefinition.DecimalFilter;
                 }
             }
             return filter;

@@ -151,24 +151,6 @@ namespace DMS.Services.MStoreChecking
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StoreId))
-                        subFilter.StoreId = Map(subFilter.StoreId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleEmployeeId))
-                        subFilter.SaleEmployeeId = Map(subFilter.SaleEmployeeId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Longtitude))
-                        subFilter.Longtitude = Map(subFilter.Longtitude, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Latitude))
-                        subFilter.Latitude = Map(subFilter.Latitude, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.CheckInAt))
-                        subFilter.CheckInAt = Map(subFilter.CheckInAt, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.CheckOutAt))
-                        subFilter.CheckOutAt = Map(subFilter.CheckOutAt, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.CountIndirectSalesOrder))
-                        subFilter.CountIndirectSalesOrder = Map(subFilter.CountIndirectSalesOrder, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.CountImage))
-                        subFilter.CountImage = Map(subFilter.CountImage, FilterPermissionDefinition);
                 }
             }
             return filter;

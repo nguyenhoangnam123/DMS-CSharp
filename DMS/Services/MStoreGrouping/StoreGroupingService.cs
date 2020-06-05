@@ -310,20 +310,6 @@ namespace DMS.Services.MStoreGrouping
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
-                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ParentId))
-                        subFilter.ParentId = Map(subFilter.ParentId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Path))
-                        subFilter.Path = Map(subFilter.Path, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Level))
-                        subFilter.Level = Map(subFilter.Level, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
-                        subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
                 }
             }
             return filter;

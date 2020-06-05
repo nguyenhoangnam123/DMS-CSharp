@@ -228,13 +228,13 @@ namespace DMS.Services.MWorkflowStep
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
+                        subFilter.Id = FilterPermissionDefinition.IdFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.WorkflowDefinitionId))
-                        subFilter.WorkflowDefinitionId = Map(subFilter.WorkflowDefinitionId, FilterPermissionDefinition);
+                        subFilter.WorkflowDefinitionId = FilterPermissionDefinition.IdFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
+                        subFilter.Name = FilterPermissionDefinition.StringFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.RoleId))
-                        subFilter.RoleId = Map(subFilter.RoleId, FilterPermissionDefinition);
+                        subFilter.RoleId = FilterPermissionDefinition.IdFilter;
                 }
             }
             return filter;

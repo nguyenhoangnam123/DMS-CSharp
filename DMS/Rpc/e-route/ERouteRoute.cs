@@ -51,15 +51,15 @@ namespace DMS.Rpc.e_route
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
 
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(ERouteFilter.StoreId), FieldType.ID },
-            { nameof(ERouteFilter.SaleEmployeeId), FieldType.ID },
-            { nameof(ERouteFilter.ERouteTypeId), FieldType.ID },
-            { nameof(ERouteFilter.RequestStateId), FieldType.ID },
-            { nameof(StoreFilter.OrganizationId), FieldType.ID },
-            { nameof(StoreFilter.StoreGroupingId), FieldType.ID },
-            { nameof(StoreFilter.StoreTypeId), FieldType.ID },
+            { nameof(ERouteFilter.StoreId), FieldTypeEnum.ID.Id },
+            { nameof(ERouteFilter.SaleEmployeeId), FieldTypeEnum.ID.Id },
+            { nameof(ERouteFilter.ERouteTypeId), FieldTypeEnum.ID.Id },
+            { nameof(ERouteFilter.RequestStateId), FieldTypeEnum.ID.Id },
+            { nameof(StoreFilter.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(StoreFilter.StoreGroupingId), FieldTypeEnum.ID.Id },
+            { nameof(StoreFilter.StoreTypeId), FieldTypeEnum.ID.Id },
         };
 
 

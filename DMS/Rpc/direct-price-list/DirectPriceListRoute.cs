@@ -60,15 +60,15 @@ namespace DMS.Rpc.direct_price_list
         public const string ListStore = Default + "/list-store";
         public const string CountStoreType = Default + "/count-store-type";
         public const string ListStoreType = Default + "/list-store-type";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(DirectPriceListFilter.Code), FieldType.STRING },
-            { nameof(DirectPriceListFilter.Name), FieldType.STRING },
-            { nameof(DirectPriceListFilter.StartDate), FieldType.DATE },
-            { nameof(DirectPriceListFilter.EndDate), FieldType.DATE },
-            { nameof(DirectPriceListFilter.StatusId), FieldType.ID },
-            { nameof(DirectPriceListFilter.OrganizationId), FieldType.ID },
-            { nameof(DirectPriceListFilter.DirectPriceListTypeId), FieldType.ID },
+            { nameof(DirectPriceListFilter.Code), FieldTypeEnum.STRING.Id },
+            { nameof(DirectPriceListFilter.Name), FieldTypeEnum.STRING.Id },
+            { nameof(DirectPriceListFilter.StartDate), FieldTypeEnum.DATE.Id },
+            { nameof(DirectPriceListFilter.EndDate), FieldTypeEnum.DATE.Id },
+            { nameof(DirectPriceListFilter.StatusId), FieldTypeEnum.ID.Id },
+            { nameof(DirectPriceListFilter.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(DirectPriceListFilter.DirectPriceListTypeId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

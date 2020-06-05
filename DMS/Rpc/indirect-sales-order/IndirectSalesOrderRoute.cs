@@ -58,18 +58,18 @@ namespace DMS.Rpc.indirect_sales_order
         public const string ListStore = Default + "/list-store";
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(IndirectSalesOrderFilter.BuyerStoreId), FieldType.ID },
-            { nameof(IndirectSalesOrderFilter.SellerStoreId), FieldType.ID },
-            { nameof(IndirectSalesOrderFilter.SaleEmployeeId), FieldType.ID },
-            { nameof(IndirectSalesOrderFilter.OrderDate), FieldType.DATE },
-            { nameof(IndirectSalesOrderFilter.RequestStateId), FieldType.ID },
-            { nameof(IndirectSalesOrderFilter.Total), FieldType.LONG },
-            { nameof(ItemFilter.ProductGroupingId), FieldType.ID },
-            { nameof(ItemFilter.ProductTypeId), FieldType.ID },
-            { nameof(ItemFilter.SupplierId), FieldType.ID },
-            { nameof(ItemFilter.SalePrice), FieldType.LONG },
+            { nameof(IndirectSalesOrderFilter.BuyerStoreId), FieldTypeEnum.ID.Id },
+            { nameof(IndirectSalesOrderFilter.SellerStoreId), FieldTypeEnum.ID.Id },
+            { nameof(IndirectSalesOrderFilter.SaleEmployeeId), FieldTypeEnum.ID.Id },
+            { nameof(IndirectSalesOrderFilter.OrderDate), FieldTypeEnum.DATE.Id },
+            { nameof(IndirectSalesOrderFilter.RequestStateId), FieldTypeEnum.ID.Id },
+            { nameof(IndirectSalesOrderFilter.Total), FieldTypeEnum.LONG.Id },
+            { nameof(ItemFilter.ProductGroupingId), FieldTypeEnum.ID.Id },
+            { nameof(ItemFilter.ProductTypeId), FieldTypeEnum.ID.Id },
+            { nameof(ItemFilter.SupplierId), FieldTypeEnum.ID.Id },
+            { nameof(ItemFilter.SalePrice), FieldTypeEnum.LONG.Id },
         };
 
 

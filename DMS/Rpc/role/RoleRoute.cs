@@ -41,11 +41,11 @@ namespace DMS.Rpc.role
         public const string CountAppUser = Default + "/count-app-user";
         public const string ListAppUser = Default + "/list-app-user";
 
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(RoleFilter.Code), FieldType.STRING },
-            { nameof(RoleFilter.Name), FieldType.STRING },
-            { nameof(RoleFilter.StatusId), FieldType.ID },
+            { nameof(RoleFilter.Code), FieldTypeEnum.STRING.Id },
+            { nameof(RoleFilter.Name), FieldTypeEnum.STRING.Id },
+            { nameof(RoleFilter.StatusId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

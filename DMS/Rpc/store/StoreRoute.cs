@@ -60,11 +60,11 @@ namespace DMS.Rpc.store
 
         public const string ListReseller = Default + "/list-reseller";
         public const string CountReseller = Default + "/count-reseller";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(StoreFilter.OrganizationId), FieldType.ID },
-            { nameof(StoreFilter.StoreTypeId), FieldType.ID },
-            { nameof(StoreFilter.StoreGroupingId), FieldType.ID },
+            { nameof(StoreFilter.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(StoreFilter.StoreTypeId), FieldTypeEnum.ID.Id },
+            { nameof(StoreFilter.StoreGroupingId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

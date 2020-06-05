@@ -19,7 +19,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
 
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
 

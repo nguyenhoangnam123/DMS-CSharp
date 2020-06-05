@@ -42,7 +42,7 @@ namespace DMS.Rpc.store_grouping
 
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
 

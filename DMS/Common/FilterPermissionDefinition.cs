@@ -1,5 +1,7 @@
+using DMS.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,130 +11,123 @@ namespace Common
     public class FilterPermissionDefinition
     {
         public string Name { get; private set; }
-        public FieldType Type { get; set; }
-        public string Value
+        public long FieldTypeId { get; private set; }
+        public IdFilter IdFilter { get; private set; }
+        public DecimalFilter DecimalFilter { get; private set; }
+        public LongFilter LongFilter { get; private set; }
+        public DateFilter DateFilter { get; private set; }
+        public StringFilter StringFilter { get; private set; }
+
+        public FilterPermissionDefinition(string name, long FieldTypeId, long PermissionOperatorId, string value)
         {
-            set
+            this.Name = name;
+            this.FieldTypeId = FieldTypeId;
+            if (FieldTypeId == FieldTypeEnum.ID.Id)
             {
-                List<string> tmp;
-                switch (Type)
+                if (IdFilter == null) IdFilter = new IdFilter();
+                if (long.TryParse(value, out long result))
                 {
-                    case FieldType.ID:
-                        if (string.IsNullOrWhiteSpace(value))
-                            Ids = null;
-                        else
-                            Ids = value.Split(";").Select(v => long.TryParse(v, out long l) ? l : 0).ToList();
-                        break;
-                    case FieldType.LONG:
-                        if (string.IsNullOrWhiteSpace(value))
-                        {
-                            StartLong = null;
-                            EndLong = null;
-                        }
-                        else
-                        {
-                            tmp = value.Split(";").ToList();
-                            if (tmp.Count > 0)
-                                StartLong = long.TryParse(tmp[0], out long l0) ? l0 : long.MinValue;
-                            if (tmp.Count > 1)
-                                EndLong = long.TryParse(tmp[1], out long l1) ? l1 : long.MaxValue;
-                        } 
-                        break;
-                    case FieldType.DECIMAL:
-                        if (string.IsNullOrWhiteSpace(value))
-                        {
-                            StartDecimal = null;
-                            EndDecimal = null;
-                        }
-                        else
-                        {
-                            tmp = value.Split(";").ToList();
-                            if (tmp.Count > 0)
-                                StartDecimal = decimal.TryParse(tmp[0], out decimal db0) ? db0 : decimal.MinValue;
-                            if (tmp.Count > 1)
-                                EndDecimal = decimal.TryParse(tmp[1], out decimal db1) ? db1 : decimal.MaxValue;
-                        }
-                        break;
-                    case FieldType.DATE:
-                        if (string.IsNullOrWhiteSpace(value))
-                        {
-                            StartDate = null;
-                            EndDate = null;
-                        }
-                        else
-                        {
-                            tmp = value.Split(";").ToList();
-                            if (tmp.Count > 0)
-                                StartDate = DateTime.TryParse(tmp[0], out DateTime d0) ? d0 : DateTime.MinValue;
-                            if (tmp.Count > 1)
-                                EndDate = DateTime.TryParse(tmp[1], out DateTime d1) ? d1 : DateTime.MaxValue;
-                        }
-                        break;
-                    case FieldType.STRING:
-                        if (string.IsNullOrWhiteSpace(value))
-                        {
-                            PrefixString = null;
-                            SuffixString = null;
-                        }
-                        else
-                        {
-                            tmp = value.Split(";").ToList();
-                            if (tmp.Count > 0)
-                                PrefixString = tmp[0];
-                            if (tmp.Count > 1)
-                                SuffixString = tmp[1];
-                        }
-                        break;
+                    if (PermissionOperatorId == PermissionOperatorEnum.ID_EQ.Id)
+                        IdFilter.Equal = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.ID_NE.Id)
+                        IdFilter.NotEqual = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.ID_IN.Id)
+                    {
+                        if (IdFilter.In == null) IdFilter.In = new List<long>();
+                        IdFilter.In.Add(result);
+                    }
+                    if (PermissionOperatorId == PermissionOperatorEnum.ID_NI.Id)
+                    {
+                        if (IdFilter.NotIn == null) IdFilter.NotIn = new List<long>();
+                        IdFilter.NotIn.Add(result);
+                    }
+                }
+            }
+
+            if (FieldTypeId == FieldTypeEnum.STRING.Id)
+            {
+                if (StringFilter == null) StringFilter = new StringFilter();
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    string result = value;
+                    if (PermissionOperatorId == PermissionOperatorEnum.STRING_EQ.Id)
+                        StringFilter.Equal = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.STRING_NE.Id)
+                        StringFilter.NotEqual = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.STRING_SW.Id)
+                        StringFilter.StartWith = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.STRING_NSW.Id)
+                        StringFilter.NotStartWith = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.STRING_EW.Id)
+                        StringFilter.EndWith = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.STRING_NEW.Id)
+                        StringFilter.NotEndWith = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.STRING_CT.Id)
+                        StringFilter.Contain = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.STRING_NC.Id)
+                        StringFilter.NotContain = result;
+                }
+            }
+
+            if (FieldTypeId == FieldTypeEnum.LONG.Id)
+            {
+                if (LongFilter == null) LongFilter = new LongFilter();
+                if (long.TryParse(value, out long result))
+                {
+                    if (PermissionOperatorId == PermissionOperatorEnum.LONG_EQ.Id)
+                        LongFilter.Equal = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.LONG_NE.Id)
+                        LongFilter.NotEqual = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.LONG_GT.Id)
+                        if (LongFilter.Greater == null || LongFilter.Greater > result) LongFilter.Greater = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.LONG_GE.Id)
+                        if (LongFilter.GreaterEqual == null || LongFilter.GreaterEqual >= result) LongFilter.GreaterEqual = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.LONG_LT.Id)
+                        if (LongFilter.Less == null || LongFilter.Less < result) LongFilter.Less = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.LONG_LE.Id)
+                        if (LongFilter.LessEqual == null || LongFilter.LessEqual <= result) LongFilter.LessEqual = result;
+                }
+            }
+
+            if (FieldTypeId == FieldTypeEnum.DECIMAL.Id)
+            {
+                if (DecimalFilter == null) DecimalFilter = new DecimalFilter();
+                if (decimal.TryParse(value, out decimal result))
+                {
+                    if (PermissionOperatorId == PermissionOperatorEnum.DECIMAL_EQ.Id)
+                        DecimalFilter.Equal = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.DECIMAL_NE.Id)
+                        DecimalFilter.NotEqual = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.DECIMAL_GT.Id)
+                        if (DecimalFilter.Greater == null || DecimalFilter.Greater > result) DecimalFilter.Greater = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.DECIMAL_GE.Id)
+                        if (DecimalFilter.GreaterEqual == null || DecimalFilter.GreaterEqual >= result) DecimalFilter.GreaterEqual = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.DECIMAL_LT.Id)
+                        if (DecimalFilter.Less == null || DecimalFilter.Less < result) DecimalFilter.Less = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.DECIMAL_LE.Id)
+                        if (DecimalFilter.LessEqual == null || DecimalFilter.LessEqual <= result) DecimalFilter.LessEqual = result;
+                }
+            }
+
+            if (FieldTypeId == FieldTypeEnum.DATE.Id)
+            {
+                if (DateFilter == null) DateFilter = new DateFilter();
+                if (DateTime.TryParse(value, out DateTime result))
+                {
+                    if (PermissionOperatorId == PermissionOperatorEnum.DATE_EQ.Id)
+                        DateFilter.Equal = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.DATE_NE.Id)
+                        DateFilter.NotEqual = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.DATE_GT.Id)
+                        if (DateFilter.Greater == null || DateFilter.Greater > result) DateFilter.Greater = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.DATE_GE.Id)
+                        if (DateFilter.GreaterEqual == null || DateFilter.GreaterEqual >= result) DateFilter.GreaterEqual = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.DATE_LT.Id)
+                        if (DateFilter.Less == null || DateFilter.Less < result) DateFilter.Less = result;
+                    if (PermissionOperatorId == PermissionOperatorEnum.DATE_LE.Id)
+                        if (DateFilter.LessEqual == null || DateFilter.LessEqual <= result) DateFilter.LessEqual = result;
                 }
             }
         }
-        public List<long> Ids { get; private set; }
-        public string PrefixString { get; private set; }
-        public string SuffixString { get; private set; }
-        public long? StartLong { get; private set; }
-        public long? EndLong { get; private set; }
-        public decimal? StartDecimal { get; private set; }
-        public decimal? EndDecimal { get; private set; }
-        public DateTime? StartDate { get; private set; }
-        public DateTime? EndDate { get; private set; }
-
-        public FilterPermissionDefinition(string name, FieldType type)
-        {
-            this.Name = name;
-            this.Type = type;
-        }
-
-        public FilterPermissionDefinition(string name, string type)
-        {
-            this.Name = name;
-            switch (type)
-            {
-                case nameof(FieldType.ID):
-                    this.Type = FieldType.ID;
-                    break;
-                case nameof(FieldType.LONG):
-                    this.Type = FieldType.LONG;
-                    break;
-                case nameof(FieldType.DECIMAL):
-                    this.Type = FieldType.DECIMAL;
-                    break;
-                case nameof(FieldType.STRING):
-                    this.Type = FieldType.STRING;
-                    break;
-                case nameof(FieldType.DATE):
-                    this.Type = FieldType.DATE;
-                    break;
-            }
-        }
-    }
-
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum FieldType
-    {
-        ID = 1,
-        LONG = 2,
-        DECIMAL = 3,
-        STRING = 4,
-        DATE = 5,
     }
 }

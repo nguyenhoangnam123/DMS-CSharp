@@ -84,20 +84,6 @@ namespace DMS.Services.MInventoryHistoryHistory
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.InventoryId))
-                        subFilter.InventoryId = Map(subFilter.InventoryId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.OldSaleStock))
-                        subFilter.OldSaleStock = Map(subFilter.OldSaleStock, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleStock))
-                        subFilter.SaleStock = Map(subFilter.SaleStock, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.OldAccountingStock))
-                        subFilter.OldAccountingStock = Map(subFilter.OldAccountingStock, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.AccountingStock))
-                        subFilter.AccountingStock = Map(subFilter.AccountingStock, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
-                        subFilter.AppUserId = Map(subFilter.AppUserId, FilterPermissionDefinition);
                 }
             }
             return filter;

@@ -40,7 +40,7 @@ namespace DMS.Rpc.supplier
         public const string SingleListProvince = Default + "/single-list-province";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListWard = Default + "/single-list-ward";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
 

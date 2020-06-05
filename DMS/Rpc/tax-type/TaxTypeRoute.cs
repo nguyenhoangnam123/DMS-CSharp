@@ -31,7 +31,7 @@ namespace DMS.Rpc.tax_type
         public const string BulkDelete = Default + "/bulk-delete";
 
         public const string SingleListStatus = Default + "/single-list-status";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
 

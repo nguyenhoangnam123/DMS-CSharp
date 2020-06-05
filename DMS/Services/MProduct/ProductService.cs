@@ -445,45 +445,29 @@ namespace DMS.Services.MProduct
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
+                        subFilter.Id = FilterPermissionDefinition.IdFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
-                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
+                        subFilter.Code = FilterPermissionDefinition.StringFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.SupplierCode))
-                        subFilter.SupplierCode = Map(subFilter.SupplierCode, FilterPermissionDefinition);
+                        subFilter.SupplierCode = FilterPermissionDefinition.StringFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
+                        subFilter.Name = FilterPermissionDefinition.StringFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Description))
-                        subFilter.Description = Map(subFilter.Description, FilterPermissionDefinition);
+                        subFilter.Description = FilterPermissionDefinition.StringFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ScanCode))
-                        subFilter.ScanCode = Map(subFilter.ScanCode, FilterPermissionDefinition);
+                        subFilter.ScanCode = FilterPermissionDefinition.StringFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ERPCode))
-                        subFilter.ERPCode = Map(subFilter.ERPCode, FilterPermissionDefinition);
+                        subFilter.ERPCode = FilterPermissionDefinition.StringFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ProductTypeId))
-                        subFilter.ProductTypeId = Map(subFilter.ProductTypeId, FilterPermissionDefinition);
+                        subFilter.ProductTypeId = FilterPermissionDefinition.IdFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.SupplierId))
-                        subFilter.SupplierId = Map(subFilter.SupplierId, FilterPermissionDefinition);
+                        subFilter.SupplierId = FilterPermissionDefinition.IdFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.BrandId))
-                        subFilter.BrandId = Map(subFilter.BrandId, FilterPermissionDefinition);
+                        subFilter.BrandId = FilterPermissionDefinition.IdFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.UnitOfMeasureId))
-                        subFilter.UnitOfMeasureId = Map(subFilter.UnitOfMeasureId, FilterPermissionDefinition);
+                        subFilter.UnitOfMeasureId = FilterPermissionDefinition.IdFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.UnitOfMeasureGroupingId))
-                        subFilter.UnitOfMeasureGroupingId = Map(subFilter.UnitOfMeasureGroupingId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.SalePrice))
-                        subFilter.SalePrice = Map(subFilter.SalePrice, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.RetailPrice))
-                        subFilter.RetailPrice = Map(subFilter.RetailPrice, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.TaxTypeId))
-                        subFilter.TaxTypeId = Map(subFilter.TaxTypeId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
-                        subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.OtherName))
-                        subFilter.OtherName = Map(subFilter.OtherName, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.TechnicalName))
-                        subFilter.TechnicalName = Map(subFilter.TechnicalName, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Note))
-                        subFilter.Note = Map(subFilter.Note, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.UsedVariationId))
-                        subFilter.UsedVariationId = Map(subFilter.UsedVariationId, FilterPermissionDefinition);
+                        subFilter.UnitOfMeasureGroupingId = FilterPermissionDefinition.IdFilter;
                 }
             }
             return filter;

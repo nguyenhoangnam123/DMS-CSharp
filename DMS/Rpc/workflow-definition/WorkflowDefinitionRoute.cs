@@ -39,7 +39,7 @@ namespace DMS.Rpc.workflow_definition
         public const string CountDirection = Default + "/count-direction";
         public const string ListDirection = Default + "/list-direction";
 
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

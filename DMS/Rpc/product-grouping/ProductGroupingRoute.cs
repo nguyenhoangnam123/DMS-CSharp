@@ -39,7 +39,7 @@ namespace DMS.Rpc.product_grouping
 
         public const string CountProduct = Default + "/count-product";
         public const string ListProduct = Default + "/list-product";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
 

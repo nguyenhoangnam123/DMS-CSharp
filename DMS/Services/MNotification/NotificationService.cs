@@ -265,14 +265,6 @@ namespace DMS.Services.MNotification
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Title))
-                        subFilter.Title = Map(subFilter.Title, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Content))
-                        subFilter.Content = Map(subFilter.Content, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
-                        subFilter.OrganizationId = Map(subFilter.OrganizationId, FilterPermissionDefinition);
                 }
             }
             return filter;

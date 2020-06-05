@@ -48,14 +48,14 @@ namespace DMS.Rpc.general_kpi
 
         public const string CountAppUser = Default + "/count-app-user";
         public const string ListAppUser = Default + "/list-app-user";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(GeneralKpiFilter.Id), FieldType.ID },
-            { nameof(GeneralKpiFilter.OrganizationId), FieldType.ID },
-            { nameof(GeneralKpiFilter.EmployeeId), FieldType.ID },
-            { nameof(GeneralKpiFilter.KpiPeriodId), FieldType.ID },
-            { nameof(GeneralKpiFilter.StatusId), FieldType.ID },
-            { nameof(GeneralKpiFilter.CreatorId), FieldType.ID },
+            { nameof(GeneralKpiFilter.Id), FieldTypeEnum.ID.Id },
+            { nameof(GeneralKpiFilter.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(GeneralKpiFilter.EmployeeId), FieldTypeEnum.ID.Id },
+            { nameof(GeneralKpiFilter.KpiPeriodId), FieldTypeEnum.ID.Id },
+            { nameof(GeneralKpiFilter.StatusId), FieldTypeEnum.ID.Id },
+            { nameof(GeneralKpiFilter.CreatorId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

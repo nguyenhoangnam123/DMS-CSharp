@@ -219,18 +219,6 @@ namespace DMS.Services.MProblem
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StoreCheckingId))
-                        subFilter.StoreCheckingId = Map(subFilter.StoreCheckingId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StoreId))
-                        subFilter.StoreId = Map(subFilter.StoreId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ProblemTypeId))
-                        subFilter.ProblemTypeId = Map(subFilter.ProblemTypeId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.NoteAt))
-                        subFilter.NoteAt = Map(subFilter.NoteAt, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Content))
-                        subFilter.Content = Map(subFilter.Content, FilterPermissionDefinition);
                 }
             }
             return filter;

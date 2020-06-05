@@ -231,18 +231,6 @@ namespace DMS.Services.MGeneralKpi
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
-                        subFilter.OrganizationId = Map(subFilter.OrganizationId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.EmployeeId))
-                        subFilter.EmployeeId = Map(subFilter.EmployeeId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.KpiPeriodId))
-                        subFilter.KpiPeriodId = Map(subFilter.KpiPeriodId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
-                        subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.CreatorId))
-                        subFilter.CreatorId = Map(subFilter.CreatorId, FilterPermissionDefinition);
                 }
             }
             return filter;

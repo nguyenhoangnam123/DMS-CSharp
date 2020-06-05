@@ -25,7 +25,7 @@ namespace DMS.Rpc.workflow_direction
 
         public const string SingleListWorkflowStep = Default + "/single-list-workflow-step";
         public const string SingleListWorkflowDefinition = Default + "/single-list-workflow-definition";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
 

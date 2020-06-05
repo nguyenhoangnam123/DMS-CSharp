@@ -56,14 +56,14 @@ namespace DMS.Rpc.kpi_item
         public const string SingleListKpiCriteriaItem = Default + "/single-list-criteria-item";
         public const string SingleListKpiCriteriaTotal = Default + "/single-list-criteria-total";
 
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(KpiItemFilter.Id), FieldType.ID },
-            { nameof(KpiItemFilter.OrganizationId), FieldType.ID },
-            { nameof(KpiItemFilter.KpiPeriodId), FieldType.ID },
-            { nameof(KpiItemFilter.StatusId), FieldType.ID },
-            { nameof(KpiItemFilter.EmployeeId), FieldType.ID },
-            { nameof(KpiItemFilter.CreatorId), FieldType.ID },
+            { nameof(KpiItemFilter.Id), FieldTypeEnum.ID.Id },
+            { nameof(KpiItemFilter.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(KpiItemFilter.KpiPeriodId), FieldTypeEnum.ID.Id },
+            { nameof(KpiItemFilter.StatusId), FieldTypeEnum.ID.Id },
+            { nameof(KpiItemFilter.EmployeeId), FieldTypeEnum.ID.Id },
+            { nameof(KpiItemFilter.CreatorId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

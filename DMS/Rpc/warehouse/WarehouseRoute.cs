@@ -53,9 +53,9 @@ namespace DMS.Rpc.warehouse
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
         public const string SingleListProductTypeId = Default + "/single-list-product-grouping";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(WarehouseFilter.OrganizationId), FieldType.ID },
+            { nameof(WarehouseFilter.OrganizationId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

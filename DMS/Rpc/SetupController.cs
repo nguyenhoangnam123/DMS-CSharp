@@ -96,8 +96,8 @@ namespace DMS.Rpc
             {
                 MenuDAO Menu = Menus.Where(m => m.Code == type.Name).FirstOrDefault();
                 var value = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-                .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, FieldType>))
-                .Select(x => (Dictionary<string, FieldType>)x.GetValue(x))
+                .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, long>))
+                .Select(x => (Dictionary<string, long>)x.GetValue(x))
                 .FirstOrDefault();
                 if (value == null)
                     continue;
@@ -112,13 +112,14 @@ namespace DMS.Rpc
                         {
                             MenuId = Menu.Id,
                             Name = pair.Key,
+                            FieldTypeId = pair.Value,
                             IsDeleted = false,
                         };
-                        if (pair.Value == FieldType.ID)
                         fields.Add(field);
                     }
                     else
                     {
+                        field.FieldTypeId = pair.Value;
                         field.IsDeleted = false;
                     }
                 }

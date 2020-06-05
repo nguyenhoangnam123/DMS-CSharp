@@ -232,33 +232,7 @@ namespace DMS.Services.MBanner
 
         public BannerFilter ToFilter(BannerFilter filter)
         {
-            if (filter.OrFilter == null) filter.OrFilter = new List<BannerFilter>();
-            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
-            foreach (var currentFilter in CurrentContext.Filters)
-            {
-                BannerFilter subFilter = new BannerFilter();
-                filter.OrFilter.Add(subFilter);
-                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
-                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
-                {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
-                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Title))
-                        subFilter.Title = Map(subFilter.Title, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Priority))
-                        subFilter.Priority = Map(subFilter.Priority, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Content))
-                        subFilter.Content = Map(subFilter.Content, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.CreatorId))
-                        subFilter.CreatorId = Map(subFilter.CreatorId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ImageId))
-                        subFilter.ImageId = Map(subFilter.ImageId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
-                        subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
-                }
-            }
+            
             return filter;
         }
     }

@@ -57,25 +57,20 @@ namespace DMS.Rpc.direct_sales_order
         public const string ListStore = Default + "/list-store";
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(DirectSalesOrderFilter.Code), FieldType.STRING },
-            { nameof(DirectSalesOrderFilter.BuyerStoreId), FieldType.ID },
-            { nameof(DirectSalesOrderFilter.StorePhone), FieldType.STRING },
-            { nameof(DirectSalesOrderFilter.StoreAddress), FieldType.STRING },
-            { nameof(DirectSalesOrderFilter.StoreDeliveryAddress), FieldType.STRING },
-            { nameof(DirectSalesOrderFilter.TaxCode), FieldType.STRING },
-            { nameof(DirectSalesOrderFilter.SaleEmployeeId), FieldType.ID },
-            { nameof(DirectSalesOrderFilter.OrderDate), FieldType.DATE },
-            { nameof(DirectSalesOrderFilter.DeliveryDate), FieldType.DATE },
-            { nameof(DirectSalesOrderFilter.EditedPriceStatusId), FieldType.ID },
-            { nameof(DirectSalesOrderFilter.Note), FieldType.STRING },
-            { nameof(DirectSalesOrderFilter.SubTotal), FieldType.LONG },
-            { nameof(DirectSalesOrderFilter.GeneralDiscountPercentage), FieldType.DECIMAL },
-            { nameof(DirectSalesOrderFilter.GeneralDiscountAmount), FieldType.LONG },
-            { nameof(DirectSalesOrderFilter.TotalTaxAmount), FieldType.LONG },
-            { nameof(DirectSalesOrderFilter.Total), FieldType.LONG },
-            { nameof(DirectSalesOrderFilter.RequestStateId), FieldType.ID },
+            { nameof(DirectSalesOrderFilter.Code), FieldTypeEnum.STRING.Id },
+            { nameof(DirectSalesOrderFilter.BuyerStoreId), FieldTypeEnum.ID.Id },
+            { nameof(DirectSalesOrderFilter.StorePhone), FieldTypeEnum.STRING.Id },
+            { nameof(DirectSalesOrderFilter.StoreAddress), FieldTypeEnum.STRING.Id },
+            { nameof(DirectSalesOrderFilter.StoreDeliveryAddress), FieldTypeEnum.STRING.Id },
+            { nameof(DirectSalesOrderFilter.TaxCode), FieldTypeEnum.STRING.Id },
+            { nameof(DirectSalesOrderFilter.SaleEmployeeId), FieldTypeEnum.ID.Id },
+            { nameof(DirectSalesOrderFilter.OrderDate), FieldTypeEnum.DATE.Id },
+            { nameof(DirectSalesOrderFilter.DeliveryDate), FieldTypeEnum.DATE.Id },
+            { nameof(DirectSalesOrderFilter.EditedPriceStatusId), FieldTypeEnum.ID.Id },
+            { nameof(DirectSalesOrderFilter.Total), FieldTypeEnum.LONG.Id },
+            { nameof(DirectSalesOrderFilter.RequestStateId), FieldTypeEnum.ID.Id },
         };
 
 

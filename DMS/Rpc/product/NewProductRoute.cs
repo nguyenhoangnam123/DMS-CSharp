@@ -27,22 +27,19 @@ namespace DMS.Rpc.product
 
         public const string CountProduct = Default + "/count-product";
         public const string ListProduct = Default + "/list-product";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(ProductFilter.Code), FieldType.STRING },
-            { nameof(ProductFilter.SupplierCode), FieldType.STRING },
-            { nameof(ProductFilter.Name), FieldType.STRING },
-            { nameof(ProductFilter.Description), FieldType.STRING },
-            { nameof(ProductFilter.ScanCode), FieldType.STRING },
-            { nameof(ProductFilter.ProductTypeId), FieldType.ID },
-            { nameof(ProductFilter.SupplierId), FieldType.ID },
-            { nameof(ProductFilter.BrandId), FieldType.ID },
-            { nameof(ProductFilter.UnitOfMeasureId), FieldType.ID },
-            { nameof(ProductFilter.UnitOfMeasureGroupingId), FieldType.ID },
-            { nameof(ProductFilter.SalePrice), FieldType.DECIMAL },
-            { nameof(ProductFilter.RetailPrice), FieldType.DECIMAL },
-            { nameof(ProductFilter.TaxTypeId), FieldType.ID },
-            { nameof(ProductFilter.StatusId), FieldType.ID },
+            { nameof(ProductFilter.Code), FieldTypeEnum.STRING.Id },
+            { nameof(ProductFilter.SupplierCode), FieldTypeEnum.STRING.Id },
+            { nameof(ProductFilter.Name), FieldTypeEnum.STRING.Id },
+            { nameof(ProductFilter.Description), FieldTypeEnum.STRING.Id },
+            { nameof(ProductFilter.ScanCode), FieldTypeEnum.STRING.Id },
+            { nameof(ProductFilter.ProductTypeId), FieldTypeEnum.ID.Id },
+            { nameof(ProductFilter.SupplierId), FieldTypeEnum.ID.Id },
+            { nameof(ProductFilter.BrandId), FieldTypeEnum.ID.Id },
+            { nameof(ProductFilter.UnitOfMeasureId), FieldTypeEnum.ID.Id },
+            { nameof(ProductFilter.UnitOfMeasureGroupingId), FieldTypeEnum.ID.Id },
+            { nameof(ProductFilter.StatusId), FieldTypeEnum.ID.Id },
         };
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {

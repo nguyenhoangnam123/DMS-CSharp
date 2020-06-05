@@ -284,34 +284,6 @@ namespace DMS.Services.MSupplier
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = Map(subFilter.Id, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
-                        subFilter.Code = Map(subFilter.Code, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        subFilter.Name = Map(subFilter.Name, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.TaxCode))
-                        subFilter.TaxCode = Map(subFilter.TaxCode, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Phone))
-                        subFilter.Phone = Map(subFilter.Phone, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Email))
-                        subFilter.Email = Map(subFilter.Email, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Address))
-                        subFilter.Address = Map(subFilter.Address, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ProvinceId))
-                        subFilter.ProvinceId = Map(subFilter.ProvinceId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.DistrictId))
-                        subFilter.DistrictId = Map(subFilter.DistrictId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.WardId))
-                        subFilter.WardId = Map(subFilter.WardId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.OwnerName))
-                        subFilter.OwnerName = Map(subFilter.OwnerName, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.PersonInChargeId))
-                        subFilter.PersonInChargeId = Map(subFilter.PersonInChargeId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
-                        subFilter.StatusId = Map(subFilter.StatusId, FilterPermissionDefinition);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Description))
-                        subFilter.Description = Map(subFilter.Description, FilterPermissionDefinition);
                 }
             }
             return filter;

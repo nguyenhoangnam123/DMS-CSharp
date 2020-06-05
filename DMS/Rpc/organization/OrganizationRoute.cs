@@ -41,7 +41,7 @@ namespace DMS.Rpc.organization
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListAppUser = Default + "/single-list-app-user";
-        public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
 
