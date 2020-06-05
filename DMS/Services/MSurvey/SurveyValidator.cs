@@ -88,7 +88,7 @@ namespace DMS.Services.MSurvey
             }
             else
             {
-                if (Survey.EndAt.HasValue && Survey.EndAt.Value <= Survey.StartAt)
+                if (Survey.EndAt.HasValue && Survey.EndAt.Value < Survey.StartAt)
                 {
                     Survey.AddError(nameof(SurveyValidator), nameof(Survey.EndAt), ErrorCode.EndDateWrong);
                 }
