@@ -32,6 +32,7 @@ namespace DMS.Models
         public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
+        public virtual DbSet<FieldTypeDAO> FieldType { get; set; }
         public virtual DbSet<GeneralCriteriaDAO> GeneralCriteria { get; set; }
         public virtual DbSet<GeneralKpiDAO> GeneralKpi { get; set; }
         public virtual DbSet<GeneralKpiCriteriaMappingDAO> GeneralKpiCriteriaMapping { get; set; }
@@ -62,7 +63,8 @@ namespace DMS.Models
         public virtual DbSet<PageDAO> Page { get; set; }
         public virtual DbSet<PermissionDAO> Permission { get; set; }
         public virtual DbSet<PermissionActionMappingDAO> PermissionActionMapping { get; set; }
-        public virtual DbSet<PermissionFieldMappingDAO> PermissionFieldMapping { get; set; }
+        public virtual DbSet<PermissionFieldDAO> PermissionField { get; set; }
+        public virtual DbSet<PermissionOperatorDAO> PermissionOperator { get; set; }
         public virtual DbSet<PositionDAO> Position { get; set; }
         public virtual DbSet<ProblemDAO> Problem { get; set; }
         public virtual DbSet<ProblemImageMappingDAO> ProblemImageMapping { get; set; }
@@ -823,15 +825,32 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.Type)
-                    .IsRequired()
-                    .HasMaxLength(500);
+                entity.HasOne(d => d.FieldType)
+                    .WithMany(p => p.Fields)
+                    .HasForeignKey(d => d.FieldTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Field_FieldType");
 
                 entity.HasOne(d => d.Menu)
                     .WithMany(p => p.Fields)
                     .HasForeignKey(d => d.MenuId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PermissionField_Menu");
+            });
+
+            modelBuilder.Entity<FieldTypeDAO>(entity =>
+            {
+                entity.ToTable("FieldType", "PER");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<GeneralCriteriaDAO>(entity =>
@@ -1610,26 +1629,50 @@ namespace DMS.Models
                     .HasConstraintName("FK_ActionPermissionMapping_Permission");
             });
 
-            modelBuilder.Entity<PermissionFieldMappingDAO>(entity =>
+            modelBuilder.Entity<PermissionFieldDAO>(entity =>
             {
-                entity.HasKey(e => new { e.PermissionId, e.FieldId })
-                    .HasName("PK_PermissionData");
+                entity.ToTable("PermissionField", "PER");
 
-                entity.ToTable("PermissionFieldMapping", "PER");
-
-                entity.Property(e => e.Value).HasMaxLength(3000);
+                entity.Property(e => e.Value).HasMaxLength(500);
 
                 entity.HasOne(d => d.Field)
-                    .WithMany(p => p.PermissionFieldMappings)
+                    .WithMany(p => p.PermissionFields)
                     .HasForeignKey(d => d.FieldId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PermissionData_PermissionField");
+                    .HasConstraintName("FK_PermissionField_Field");
 
                 entity.HasOne(d => d.Permission)
-                    .WithMany(p => p.PermissionFieldMappings)
+                    .WithMany(p => p.PermissionFields)
                     .HasForeignKey(d => d.PermissionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PermissionData_Permission");
+                    .HasConstraintName("FK_PermissionField_Permission");
+
+                entity.HasOne(d => d.PermissionOperator)
+                    .WithMany(p => p.PermissionFields)
+                    .HasForeignKey(d => d.PermissionOperatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PermissionField_PermissionOperator");
+            });
+
+            modelBuilder.Entity<PermissionOperatorDAO>(entity =>
+            {
+                entity.ToTable("PermissionOperator", "PER");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.FieldType)
+                    .WithMany(p => p.PermissionOperators)
+                    .HasForeignKey(d => d.FieldTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PermissionOperator_FieldType");
             });
 
             modelBuilder.Entity<PositionDAO>(entity =>
@@ -2466,9 +2509,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.Description)
-                    .IsRequired()
-                    .HasMaxLength(500);
+                entity.Property(e => e.Description).HasMaxLength(500);
 
                 entity.Property(e => e.EndAt).HasColumnType("datetime");
 

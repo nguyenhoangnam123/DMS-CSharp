@@ -7,6 +7,7 @@ using Common;
 using DMS.Enums;
 using DMS.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -111,15 +112,14 @@ namespace DMS.Rpc
                         {
                             MenuId = Menu.Id,
                             Name = pair.Key,
-                            Type = pair.Value.ToString(),
                             IsDeleted = false,
                         };
+                        if (pair.Value == FieldType.ID)
                         fields.Add(field);
                     }
                     else
                     {
                         field.IsDeleted = false;
-                        field.Type = pair.Value.ToString();
                     }
                 }
             }
@@ -218,7 +218,6 @@ namespace DMS.Rpc
 
             DataContext.ActionPageMapping.Where(ap => ap.Action.IsDeleted || ap.Page.IsDeleted).DeleteFromQuery();
             DataContext.PermissionActionMapping.Where(ap => ap.Action.IsDeleted).DeleteFromQuery();
-            DataContext.PermissionFieldMapping.Where(pd => pd.Field.IsDeleted).DeleteFromQuery();
             DataContext.Action.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Page.Where(p => p.IsDeleted).DeleteFromQuery();
             DataContext.Field.Where(pf => pf.IsDeleted || pf.Menu.IsDeleted).DeleteFromQuery();
@@ -246,6 +245,7 @@ namespace DMS.Rpc
             InitWorkflowStateEnum();
             InitWorkflowTypeEnum();
             DataContext.SaveChanges();
+            InitPermissionEnum();
             return Ok();
         }
 
@@ -292,7 +292,6 @@ namespace DMS.Rpc
                 .Include(v => v.Fields)
                 .ToList();
             List<PermissionDAO> permissions = DataContext.Permission.AsNoTracking()
-                .Include(p => p.PermissionFieldMappings)
                 .Include(p => p.PermissionActionMappings)
                 .ToList();
             foreach (MenuDAO Menu in Menus)
@@ -309,7 +308,6 @@ namespace DMS.Rpc
                         MenuId = Menu.Id,
                         RoleId = Admin.Id,
                         StatusId = StatusEnum.ACTIVE.Id,
-                        PermissionFieldMappings = new List<PermissionFieldMappingDAO>(),
                         PermissionActionMappings = new List<PermissionActionMappingDAO>(),
                     };
                     permissions.Add(permission);
@@ -317,8 +315,6 @@ namespace DMS.Rpc
                 else
                 {
                     permission.StatusId = StatusEnum.ACTIVE.Id;
-                    if (permission.PermissionFieldMappings == null)
-                        permission.PermissionFieldMappings = new List<PermissionFieldMappingDAO>();
                     if (permission.PermissionActionMappings == null)
                         permission.PermissionActionMappings = new List<PermissionActionMappingDAO>();
                 }
@@ -337,36 +333,35 @@ namespace DMS.Rpc
                 }
                 foreach (FieldDAO field in Menu.Fields)
                 {
-                    PermissionFieldMappingDAO permissionFieldMapping = permission.PermissionFieldMappings
-                        .Where(pfm => pfm.FieldId == field.Id).FirstOrDefault();
-                    if (permissionFieldMapping == null)
-                    {
-                        permissionFieldMapping = new PermissionFieldMappingDAO
-                        {
-                            FieldId = field.Id
-                        };
-                        permission.PermissionFieldMappings.Add(permissionFieldMapping);
-                    }
+                    //PermissionFieldMappingDAO permissionFieldMapping = permission.PermissionFieldMappings
+                    //    .Where(pfm => pfm.FieldId == field.Id).FirstOrDefault();
+                    //if (permissionFieldMapping == null)
+                    //{
+                    //    permissionFieldMapping = new PermissionFieldMappingDAO
+                    //    {
+                    //        FieldId = field.Id
+                    //    };
+                    //    permission.PermissionFieldMappings.Add(permissionFieldMapping);
+                    //}
                 }
             }
             DataContext.Permission.BulkMerge(permissions);
             permissions.ForEach(p =>
             {
-                foreach (var field in p.PermissionFieldMappings)
-                {
-                    field.PermissionId = p.Id;
-                }
+                //foreach (var field in p.PermissionFieldMappings)
+                //{
+                //    field.PermissionId = p.Id;
+                //}
                 foreach (var action in p.PermissionActionMappings)
                 {
                     action.PermissionId = p.Id;
                 }
             });
-            List<PermissionFieldMappingDAO> permissionFieldMappings = permissions
-                .SelectMany(p => p.PermissionFieldMappings).ToList();
+           
             List<PermissionActionMappingDAO> permissionPageMappings = permissions
                 .SelectMany(p => p.PermissionActionMappings).ToList();
-            DataContext.PermissionFieldMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
-            DataContext.PermissionFieldMapping.BulkMerge(permissionFieldMappings);
+            //DataContext.PermissionFieldMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
+            //DataContext.PermissionFieldMapping.BulkMerge(permissionFieldMappings);
             DataContext.PermissionActionMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
             DataContext.PermissionActionMapping.BulkMerge(permissionPageMappings);
             return Ok();
@@ -829,25 +824,64 @@ namespace DMS.Rpc
         private void InitProblemType()
         {
             List<ProblemTypeDAO> list = DataContext.ProblemType.ToList();
-            if (!list.Any(pt => pt.Id == ProblemTypeEnum.COMPETITOR.Id))
+            foreach (var item in ProblemTypeEnum.List)
             {
-                DataContext.ProblemType.Add(new ProblemTypeDAO
+                if (!list.Any(pt => pt.Id == item.Id))
                 {
-                    Id = ProblemTypeEnum.COMPETITOR.Id,
-                    Code = ProblemTypeEnum.COMPETITOR.Code,
-                    Name = ProblemTypeEnum.COMPETITOR.Name,
-                });
+                    DataContext.ProblemType.Add(new ProblemTypeDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
             }
+        }
 
-            if (!list.Any(pt => pt.Id == ProblemTypeEnum.STORE.Id))
+        private void InitPermissionEnum()
+        {
+            List<FieldTypeDAO> FieldTypeDAOs = FieldTypeEnum.List.Select(item => new FieldTypeDAO
             {
-                DataContext.ProblemType.Add(new ProblemTypeDAO
-                {
-                    Id = ProblemTypeEnum.STORE.Id,
-                    Code = ProblemTypeEnum.STORE.Code,
-                    Name = ProblemTypeEnum.STORE.Name,
-                });
-            }
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.FieldType.BulkMerge(FieldTypeDAOs);
+            List<PermissionOperatorDAO> ID = PermissionOperatorEnum.PermissionOperatorEnumForID.Select(item => new PermissionOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                FieldTypeId = FieldTypeEnum.ID.Id,
+            }).ToList();
+            DataContext.PermissionOperator.BulkMerge(ID);
+
+            List<PermissionOperatorDAO> LONG = PermissionOperatorEnum.PermissionOperatorEnumForLONG.Select(item => new PermissionOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                FieldTypeId = FieldTypeEnum.LONG.Id,
+            }).ToList();
+            DataContext.PermissionOperator.BulkMerge(LONG);
+
+            List<PermissionOperatorDAO> DATE = PermissionOperatorEnum.PermissionOperatorEnumForDATE.Select(item => new PermissionOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                FieldTypeId = FieldTypeEnum.DATE.Id,
+            }).ToList();
+            DataContext.PermissionOperator.BulkMerge(DATE);
+
+            List<PermissionOperatorDAO> STRING = PermissionOperatorEnum.PermissionOperatorEnumForSTRING.Select(item => new PermissionOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                FieldTypeId = FieldTypeEnum.STRING.Id,
+            }).ToList();
+            DataContext.PermissionOperator.BulkMerge(STRING);
         }
     }
 }

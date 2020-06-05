@@ -3,21 +3,19 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
-    public partial class FieldDAO
+    public partial class PermissionOperatorDAO
     {
-        public FieldDAO()
+        public PermissionOperatorDAO()
         {
             PermissionFields = new HashSet<PermissionFieldDAO>();
         }
 
         public long Id { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public long FieldTypeId { get; set; }
-        public long MenuId { get; set; }
-        public bool IsDeleted { get; set; }
 
         public virtual FieldTypeDAO FieldType { get; set; }
-        public virtual MenuDAO Menu { get; set; }
         public virtual ICollection<PermissionFieldDAO> PermissionFields { get; set; }
     }
 }

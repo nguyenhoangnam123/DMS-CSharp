@@ -203,7 +203,6 @@ namespace DMS.Repositories
                         Id = f.Id,
                         MenuId = f.MenuId,
                         Name = f.Name,
-                        Type = f.Type,
                         IsDeleted = f.IsDeleted
                     }).ToList(),
                     Actions = x.Actions.Select(p => new Entities.Action
@@ -224,12 +223,7 @@ namespace DMS.Repositories
                     RoleId = x.RoleId,
                     MenuId = x.MenuId,
                     StatusId = x.StatusId,
-                    PermissionFieldMappings = x.PermissionFieldMappings.Select(pf => new PermissionFieldMapping
-                    {
-                        PermissionId = pf.PermissionId,
-                        FieldId = pf.FieldId,
-                        Value = pf.Value
-                    }).ToList(),
+                 
                     PermissionActionMappings = x.PermissionActionMappings.Select(pp => new PermissionActionMapping
                     {
                         PermissionId = pp.PermissionId,
@@ -273,7 +267,6 @@ namespace DMS.Repositories
         public async Task<bool> Delete(Role Role)
         {
             await DataContext.PermissionActionMapping.Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
-            await DataContext.PermissionFieldMapping.Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
             await DataContext.Permission.Where(x => x.RoleId == Role.Id).DeleteFromQueryAsync();
             await DataContext.Role.Where(x => x.Id == Role.Id).DeleteFromQueryAsync();
             return true;
@@ -321,8 +314,7 @@ namespace DMS.Repositories
                 await DataContext.AppUserRoleMapping.BulkMergeAsync(AppUserRoleMappingDAOs);
             }
 
-            await DataContext.PermissionFieldMapping
-               .Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
+       
             await DataContext.PermissionActionMapping
              .Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
             await DataContext.Permission
@@ -385,7 +377,6 @@ namespace DMS.Repositories
                         }
                     }
                 }
-                await DataContext.PermissionFieldMapping.BulkMergeAsync(PermissionFieldMappingDAOs);
                 await DataContext.PermissionActionMapping.BulkMergeAsync(PermissionActionMappingDAOs);
             }
         }
