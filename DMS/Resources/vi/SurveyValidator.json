@@ -1,11 +1,20 @@
 ﻿{
   "Id": {
-    "IdNotExisted": "Id không tồn tại"
+    "IdNotExisted": "Id không tồn tại",
+    "SurveyInUsed": "Bản khảo sát đã có câu trả lời"
   },
   "Title": {
-    "TitleEmpty":  "Chưa nhập tiêu đề"
+    "TitleEmpty": "Chưa nhập tiêu đề"
   },
   "StartAt": {
-    "StartDateWrong":  "Ngày bắt đầu sai"
+    "StartDateEmpty": "Chưa nhập ngày bắt đầu"
+  },
+  "EndAt": {
+    "EndDateWrong": "Ngày kết thúc không hợp lệ"
+  },
+  "SurveyQuestion": {
+    "Content": {
+      "ContentEmpty": "Chưa nhập nội dung câu hỏi"
+    }
   }
 }
