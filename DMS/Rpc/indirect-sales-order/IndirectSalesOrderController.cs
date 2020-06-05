@@ -342,6 +342,18 @@ namespace DMS.Rpc.indirect_sales_order
                     TaxPercentage = x.TaxPercentage,
                     TaxAmount = x.TaxAmount,
                     Factor = x.Factor,
+                    Item = x.Item == null ? null : new Item 
+                    {
+                        Id = x.Item.Id,
+                        Code = x.Item.Code,
+                        Name = x.Item.Name,
+                        ProductId = x.Item.ProductId,
+                        RetailPrice = x.Item.RetailPrice,
+                        SalePrice = x.Item.SalePrice,
+                        SaleStock = x.Item.SaleStock,
+                        ScanCode = x.Item.ScanCode,
+                        StatusId = x.Item.StatusId,
+                    },
                     PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
                     {
                         Id = x.PrimaryUnitOfMeasure.Id,
