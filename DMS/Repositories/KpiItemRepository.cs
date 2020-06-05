@@ -309,6 +309,7 @@ namespace DMS.Repositories
                     Id = x.Id,
                     KpiItemId = x.KpiItemId,
                     ItemId = x.ItemId,
+                    RowId = x.RowId,
                     Item = new Item
                     {
                         Id = x.Item.Id,
@@ -347,7 +348,10 @@ namespace DMS.Repositories
                         },
                     }
                 }).ToListAsync();
-
+            foreach (KpiItemContent KpiItemContent in KpiItem.KpiItemContents)
+            {
+                KpiItemContent.KpiItemContentKpiCriteriaItemMappings = KpiItemContentKpiItemCriteriaMappings.Where(x => x.KpiItemContentId == KpiItemContent.Id).ToList();
+            }
             KpiItem.KpiItemKpiCriteriaTotalMappings = await DataContext.KpiItemKpiCriteriaTotalMapping.AsNoTracking()
                 .Where(x => x.KpiItemId == KpiItem.Id)
                 .Select(x => new KpiItemKpiCriteriaTotalMapping
@@ -481,21 +485,49 @@ namespace DMS.Repositories
 
         private async Task SaveReference(KpiItem KpiItem)
         {
+            var KpiItemContentIds = KpiItem.KpiItemContents.Select(x => x.Id).ToList();
+            await DataContext.KpiItemContentKpiCriteriaItemMapping
+                .Where(x => KpiItemContentIds
+                .Contains(x.KpiCriteriaItemId))
+                .DeleteFromQueryAsync();
             await DataContext.KpiItemContent
-                .Where(x => x.KpiItemId == KpiItem.Id)
+                .Where(x => KpiItemContentIds.Contains(x.Id))
                 .DeleteFromQueryAsync();
             List<KpiItemContentDAO> KpiItemContentDAOs = new List<KpiItemContentDAO>();
+            List<KpiItemContentKpiCriteriaItemMappingDAO> KpiItemContentKpiCriteriaItemMappingDAOs = new List<KpiItemContentKpiCriteriaItemMappingDAO>();
             if (KpiItem.KpiItemContents != null)
             {
+                KpiItem.KpiItemContents.ForEach(x => x.RowId = Guid.NewGuid());
                 foreach (KpiItemContent KpiItemContent in KpiItem.KpiItemContents)
                 {
                     KpiItemContentDAO KpiItemContentDAO = new KpiItemContentDAO();
                     KpiItemContentDAO.Id = KpiItemContent.Id;
                     KpiItemContentDAO.KpiItemId = KpiItem.Id;
                     KpiItemContentDAO.ItemId = KpiItemContent.ItemId;
+                    KpiItemContentDAO.RowId = KpiItemContent.RowId;
                     KpiItemContentDAOs.Add(KpiItemContentDAO);
                 }
                 await DataContext.KpiItemContent.BulkMergeAsync(KpiItemContentDAOs);
+
+                foreach (KpiItemContent KpiItemContent in KpiItem.KpiItemContents)
+                {
+                    KpiItemContent.Id = KpiItemContentDAOs.Where(x => x.RowId == KpiItemContent.RowId).Select(x => x.Id).FirstOrDefault();
+                    if(KpiItemContent.KpiItemContentKpiCriteriaItemMappings != null)
+                    {
+                        foreach (KpiItemContentKpiCriteriaItemMapping KpiItemContentKpiCriteriaItemMapping in KpiItemContent.KpiItemContentKpiCriteriaItemMappings)
+                        {
+                            KpiItemContentKpiCriteriaItemMappingDAO KpiItemContentKpiCriteriaItemMappingDAO = new KpiItemContentKpiCriteriaItemMappingDAO
+                            {
+                                KpiItemContentId = KpiItemContent.Id,
+                                KpiCriteriaItemId = KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId,
+                                Value = KpiItemContentKpiCriteriaItemMapping.Value
+                            };
+                            KpiItemContentKpiCriteriaItemMappingDAOs.Add(KpiItemContentKpiCriteriaItemMappingDAO);
+                        }
+                    }
+                }
+
+                await DataContext.KpiItemContentKpiCriteriaItemMapping.BulkMergeAsync(KpiItemContentKpiCriteriaItemMappingDAOs);
             }
             await DataContext.KpiItemKpiCriteriaTotalMapping
                 .Where(x => x.KpiItemId == KpiItem.Id)

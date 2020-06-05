@@ -11,6 +11,7 @@ namespace DMS.Entities
         public long Id { get; set; }
         public long KpiItemId { get; set; }
         public long ItemId { get; set; }
+        public Guid RowId { get; set; }
         public Item Item { get; set; }
         public KpiItem KpiItem { get; set; }
         public List<KpiItemContentKpiCriteriaItemMapping> KpiItemContentKpiCriteriaItemMappings { get; set; }

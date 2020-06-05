@@ -31,6 +31,7 @@ namespace DMS.Services.MWarehouse
             NameOverLength,
             AddressOverLength,
             OrganizationNotExisted,
+            OrganizationEmpty,
             DistrictNotExisted,
             ProvinceNotExisted,
             WardNotExisted,
@@ -122,7 +123,9 @@ namespace DMS.Services.MWarehouse
 
         private async Task<bool> ValidateOrganizationId(Warehouse Warehouse)
         {
-            if (Warehouse.OrganizationId != 0)
+            if (Warehouse.OrganizationId == 0)
+                Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.OrganizationId), ErrorCode.OrganizationEmpty);
+            else
             {
                 OrganizationFilter OrganizationFilter = new OrganizationFilter
                 {
@@ -207,7 +210,7 @@ namespace DMS.Services.MWarehouse
             return Warehouse.IsValidated;
         }
 
-        public async Task<bool>Create(Warehouse Warehouse)
+        public async Task<bool> Create(Warehouse Warehouse)
         {
             await ValidateCode(Warehouse);
             await ValidateName(Warehouse);
@@ -247,14 +250,14 @@ namespace DMS.Services.MWarehouse
                 };
 
                 int count = await UOW.InventoryRepository.Count(filter);
-                if(count != 0)
+                if (count != 0)
                 {
                     Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.Status), ErrorCode.WarehouseHasInventory);
                 }
             }
             return Warehouse.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Warehouse> Warehouses)
         {
             foreach (var Warehouse in Warehouses)
@@ -263,7 +266,7 @@ namespace DMS.Services.MWarehouse
             }
             return Warehouses.All(st => st.IsValidated);
         }
-        
+
         public async Task<bool> Import(List<Warehouse> Warehouses)
         {
             return true;

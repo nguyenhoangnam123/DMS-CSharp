@@ -102,18 +102,22 @@ namespace DMS.Services.MStoreGrouping
 
         private async Task<bool> ValidateParent(StoreGrouping StoreGrouping)
         {
-            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter
+            if (StoreGrouping.ParentId.HasValue)
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = StoreGrouping.ParentId },
-                Selects = StoreGroupingSelect.Id
-            };
+                StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = StoreGrouping.ParentId },
+                    Selects = StoreGroupingSelect.Id
+                };
 
-            int count = await UOW.StoreGroupingRepository.Count(StoreGroupingFilter);
-            if (count == 0)
-                StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.ParentId), ErrorCode.ParentNotExisted);
-            return count != 0;
+                int count = await UOW.StoreGroupingRepository.Count(StoreGroupingFilter);
+                if (count == 0)
+                    StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.ParentId), ErrorCode.ParentNotExisted);
+            }
+
+            return StoreGrouping.IsValidated;
         }
 
         public async Task<bool> Create(StoreGrouping StoreGrouping)

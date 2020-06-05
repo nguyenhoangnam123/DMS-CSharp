@@ -24,8 +24,10 @@ namespace DMS.Services.MWorkflow
         {
             IdNotExisted,
             WorkflowDefinitionInUsed,
-            FromStepIdNotExisted,
-            ToStepIdNotExisted,
+            FromStepNotExisted,
+            FromStepEmpty,
+            ToStepNotExisted,
+            ToStepEmpty,
             SubjectMailForCreatorOverLength,
             SubjectMailForNextStepOverLength
         }
@@ -72,19 +74,38 @@ namespace DMS.Services.MWorkflow
 
         private async Task<bool> ValidateStep(WorkflowDirection WorkflowDirection)
         {
-            WorkflowStepFilter WorkflowStepFilter = new WorkflowStepFilter
+            if(WorkflowDirection.FromStepId == 0)
+                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.FromStep), ErrorCode.FromStepEmpty);
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { In = new List<long> { WorkflowDirection.FromStepId, WorkflowDirection.ToStepId } },
-                Selects = WorkflowStepSelect.Id
-            };
-
-            List<long> WorkflowStepIds = (await UOW.WorkflowStepRepository.List(WorkflowStepFilter)).Select(x => x.Id).ToList();
-            if(!WorkflowStepIds.Contains(WorkflowDirection.FromStepId))
-                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.FromStep), ErrorCode.FromStepIdNotExisted);
-            if (!WorkflowStepIds.Contains(WorkflowDirection.ToStepId))
-                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepIdNotExisted);
+                WorkflowStepFilter WorkflowStepFilter = new WorkflowStepFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal =  WorkflowDirection.FromStepId },
+                    WorkflowDefinitionId = new IdFilter { Equal = WorkflowDirection.WorkflowDefinitionId },
+                    Selects = WorkflowStepSelect.Id
+                };
+                int count = await UOW.WorkflowStepRepository.Count(WorkflowStepFilter);
+                if(count == 0)
+                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.FromStep), ErrorCode.FromStepNotExisted);
+            }
+            if (WorkflowDirection.ToStepId == 0)
+                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepEmpty);
+            else
+            {
+                WorkflowStepFilter WorkflowStepFilter = new WorkflowStepFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = WorkflowDirection.ToStepId },
+                    WorkflowDefinitionId = new IdFilter { Equal = WorkflowDirection.WorkflowDefinitionId },
+                    Selects = WorkflowStepSelect.Id
+                };
+                int count = await UOW.WorkflowStepRepository.Count(WorkflowStepFilter);
+                if (count == 0)
+                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepNotExisted);
+            }
             return WorkflowDirection.IsValidated;
         }
 

@@ -31,14 +31,8 @@ namespace DMS.Rpc.role
             this.Username = AppUser.Username;
             this.DisplayName = AppUser.DisplayName;
             this.Address = AppUser.Address;
-            this.Birthday = AppUser.Birthday;
             this.Email = AppUser.Email;
             this.Phone = AppUser.Phone;
-            this.PositionId = AppUser.PositionId;
-            this.Department = AppUser.Department;
-            this.OrganizationId = AppUser.OrganizationId;
-            this.SexId = AppUser.SexId;
-            this.StatusId = AppUser.StatusId;
             this.Errors = AppUser.Errors;
         }
     }
