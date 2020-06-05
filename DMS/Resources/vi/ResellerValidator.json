@@ -46,9 +46,9 @@
     "OrganizationEmpty": "Chưa chọn đơn vị tổ chức"
   },
   "ResellerType": {
-    "ResellerTypeNotExisted":  "Loại khách hàng không tồn tại",
-    "ResellerTypeEmpty":  "Chưa chọn loại khách hàng",
-  }
+    "ResellerTypeNotExisted": "Loại khách hàng không tồn tại",
+    "ResellerTypeEmpty": "Chưa chọn loại khách hàng",
+  },
   "Item": {
     "Code": {
       "CodeExisted": "Code của phiên bản sản phẩm đã tồn tại"
@@ -60,3 +60,4 @@
       "ItemInUsed": "Phiên bản sản phẩm đang được sử dụng"
     }
   }
+}
