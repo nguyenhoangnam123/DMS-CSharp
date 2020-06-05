@@ -249,7 +249,8 @@ namespace DMS.Rpc.role
                     },
                     PermissionFieldMappings = x.PermissionFieldMappings?.Select(pf => new PermissionFieldMapping
                     {
-                        FieldId = pf.FieldId
+                        FieldId = pf.FieldId,
+                        Value = pf.Value,
                     }).ToList(),
                     PermissionActionMappings = x.PermissionActionMappings?.Select(pp => new PermissionActionMapping
                     {
@@ -326,7 +327,8 @@ namespace DMS.Rpc.role
                 },
                 PermissionFieldMappings = Role_PermissionDTO.PermissionFieldMappings?.Select(pf => new PermissionFieldMapping
                 {
-                    FieldId = pf.FieldId
+                    FieldId = pf.FieldId,
+                    Value = pf.Value,
                 }).ToList(),
                 PermissionActionMappings = Role_PermissionDTO.PermissionActionMappings?.Select(pp => new PermissionActionMapping
                 {
