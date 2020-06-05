@@ -57,18 +57,18 @@ namespace DMS.Repositories
             foreach (ProblemFilter ProblemFilter in filter.OrFilter)
             {
                 IQueryable<ProblemDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.StoreCheckingId != null)
-                    queryable = queryable.Where(q => q.StoreCheckingId, filter.StoreCheckingId);
-                if (filter.StoreId != null)
-                    queryable = queryable.Where(q => q.StoreId, filter.StoreId);
-                if (filter.ProblemTypeId != null)
-                    queryable = queryable.Where(q => q.ProblemTypeId, filter.ProblemTypeId);
-                if (filter.NoteAt != null)
-                    queryable = queryable.Where(q => q.NoteAt, filter.NoteAt);
-                if (filter.Content != null)
-                    queryable = queryable.Where(q => q.Content, filter.Content);
+                if (ProblemFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ProblemFilter.Id);
+                if (ProblemFilter.StoreCheckingId != null)
+                    queryable = queryable.Where(q => q.StoreCheckingId, ProblemFilter.StoreCheckingId);
+                if (ProblemFilter.StoreId != null)
+                    queryable = queryable.Where(q => q.StoreId, ProblemFilter.StoreId);
+                if (ProblemFilter.ProblemTypeId != null)
+                    queryable = queryable.Where(q => q.ProblemTypeId, ProblemFilter.ProblemTypeId);
+                if (ProblemFilter.NoteAt != null)
+                    queryable = queryable.Where(q => q.NoteAt, ProblemFilter.NoteAt);
+                if (ProblemFilter.Content != null)
+                    queryable = queryable.Where(q => q.Content, ProblemFilter.Content);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

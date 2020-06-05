@@ -54,14 +54,14 @@ namespace DMS.Repositories
             foreach (StoreTypeFilter StoreTypeFilter in filter.OrFilter)
             {
                 IQueryable<StoreTypeDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (StoreTypeFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, StoreTypeFilter.Id);
+                if (StoreTypeFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, StoreTypeFilter.Code);
+                if (StoreTypeFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, StoreTypeFilter.Name);
+                if (StoreTypeFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, StoreTypeFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

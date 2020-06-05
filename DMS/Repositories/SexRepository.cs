@@ -46,12 +46,12 @@ namespace DMS.Repositories
             foreach (SexFilter SexFilter in filter.OrFilter)
             {
                 IQueryable<SexDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
+                if (SexFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, SexFilter.Id);
+                if (SexFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, SexFilter.Code);
+                if (SexFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, SexFilter.Name);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

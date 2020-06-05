@@ -58,18 +58,18 @@ namespace DMS.Repositories
             foreach (UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter in filter.OrFilter)
             {
                 IQueryable<UnitOfMeasureGroupingDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Description != null)
-                    queryable = queryable.Where(q => q.Description, filter.Description);
-                if (filter.UnitOfMeasureId != null)
-                    queryable = queryable.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (UnitOfMeasureGroupingFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, UnitOfMeasureGroupingFilter.Id);
+                if (UnitOfMeasureGroupingFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, UnitOfMeasureGroupingFilter.Code);
+                if (UnitOfMeasureGroupingFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, UnitOfMeasureGroupingFilter.Name);
+                if (UnitOfMeasureGroupingFilter.Description != null)
+                    queryable = queryable.Where(q => q.Description, UnitOfMeasureGroupingFilter.Description);
+                if (UnitOfMeasureGroupingFilter.UnitOfMeasureId != null)
+                    queryable = queryable.Where(q => q.UnitOfMeasureId, UnitOfMeasureGroupingFilter.UnitOfMeasureId);
+                if (UnitOfMeasureGroupingFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, UnitOfMeasureGroupingFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

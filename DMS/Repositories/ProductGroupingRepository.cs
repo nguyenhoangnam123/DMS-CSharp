@@ -58,18 +58,18 @@ namespace DMS.Repositories
             foreach (ProductGroupingFilter ProductGroupingFilter in filter.OrFilter)
             {
                 IQueryable<ProductGroupingDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.ParentId != null)
-                    queryable = queryable.Where(q => q.ParentId, filter.ParentId);
-                if (filter.Path != null)
-                    queryable = queryable.Where(q => q.Path, filter.Path);
-                if (filter.Description != null)
-                    queryable = queryable.Where(q => q.Description, filter.Description);
+                if (ProductGroupingFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ProductGroupingFilter.Id);
+                if (ProductGroupingFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, ProductGroupingFilter.Code);
+                if (ProductGroupingFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, ProductGroupingFilter.Name);
+                if (ProductGroupingFilter.ParentId != null)
+                    queryable = queryable.Where(q => q.ParentId, ProductGroupingFilter.ParentId);
+                if (ProductGroupingFilter.Path != null)
+                    queryable = queryable.Where(q => q.Path, ProductGroupingFilter.Path);
+                if (ProductGroupingFilter.Description != null)
+                    queryable = queryable.Where(q => q.Description, ProductGroupingFilter.Description);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

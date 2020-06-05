@@ -81,42 +81,42 @@ namespace DMS.Repositories
             foreach (IndirectSalesOrderFilter IndirectSalesOrderFilter in filter.OrFilter)
             {
                 IQueryable<IndirectSalesOrderDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.BuyerStoreId != null)
-                    queryable = queryable.Where(q => q.BuyerStoreId, filter.BuyerStoreId);
-                if (filter.PhoneNumber != null)
-                    queryable = queryable.Where(q => q.PhoneNumber, filter.PhoneNumber);
-                if (filter.StoreAddress != null)
-                    queryable = queryable.Where(q => q.StoreAddress, filter.StoreAddress);
-                if (filter.DeliveryAddress != null)
-                    queryable = queryable.Where(q => q.DeliveryAddress, filter.DeliveryAddress);
-                if (filter.SellerStoreId != null)
-                    queryable = queryable.Where(q => q.SellerStoreId, filter.SellerStoreId);
-                if (filter.SaleEmployeeId != null)
-                    queryable = queryable.Where(q => q.SaleEmployeeId, filter.SaleEmployeeId);
-                if (filter.OrderDate != null)
-                    queryable = queryable.Where(q => q.OrderDate, filter.OrderDate);
-                if (filter.DeliveryDate != null)
-                    queryable = queryable.Where(q => q.DeliveryDate, filter.DeliveryDate);
-                if (filter.EditedPriceStatusId != null)
-                    queryable = queryable.Where(q => q.EditedPriceStatusId, filter.EditedPriceStatusId);
-                if (filter.Note != null)
-                    queryable = queryable.Where(q => q.Note, filter.Note);
-                if (filter.RequestStateId != null)
-                    queryable = queryable.Where(q => q.RequestStateId, filter.RequestStateId);
-                if (filter.SubTotal != null)
-                    queryable = queryable.Where(q => q.SubTotal, filter.SubTotal);
-                if (filter.GeneralDiscountPercentage != null)
-                    queryable = queryable.Where(q => q.GeneralDiscountPercentage, filter.GeneralDiscountPercentage);
-                if (filter.GeneralDiscountAmount != null)
-                    queryable = queryable.Where(q => q.GeneralDiscountAmount, filter.GeneralDiscountAmount);
-                if (filter.TotalTaxAmount != null)
-                    queryable = queryable.Where(q => q.TotalTaxAmount, filter.TotalTaxAmount);
-                if (filter.Total != null)
-                    queryable = queryable.Where(q => q.Total, filter.Total);
+                if (IndirectSalesOrderFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, IndirectSalesOrderFilter.Id);
+                if (IndirectSalesOrderFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, IndirectSalesOrderFilter.Code);
+                if (IndirectSalesOrderFilter.BuyerStoreId != null)
+                    queryable = queryable.Where(q => q.BuyerStoreId, IndirectSalesOrderFilter.BuyerStoreId);
+                if (IndirectSalesOrderFilter.PhoneNumber != null)
+                    queryable = queryable.Where(q => q.PhoneNumber, IndirectSalesOrderFilter.PhoneNumber);
+                if (IndirectSalesOrderFilter.StoreAddress != null)
+                    queryable = queryable.Where(q => q.StoreAddress, IndirectSalesOrderFilter.StoreAddress);
+                if (IndirectSalesOrderFilter.DeliveryAddress != null)
+                    queryable = queryable.Where(q => q.DeliveryAddress, IndirectSalesOrderFilter.DeliveryAddress);
+                if (IndirectSalesOrderFilter.SellerStoreId != null)
+                    queryable = queryable.Where(q => q.SellerStoreId, IndirectSalesOrderFilter.SellerStoreId);
+                if (IndirectSalesOrderFilter.SaleEmployeeId != null)
+                    queryable = queryable.Where(q => q.SaleEmployeeId, IndirectSalesOrderFilter.SaleEmployeeId);
+                if (IndirectSalesOrderFilter.OrderDate != null)
+                    queryable = queryable.Where(q => q.OrderDate, IndirectSalesOrderFilter.OrderDate);
+                if (IndirectSalesOrderFilter.DeliveryDate != null)
+                    queryable = queryable.Where(q => q.DeliveryDate, IndirectSalesOrderFilter.DeliveryDate);
+                if (IndirectSalesOrderFilter.EditedPriceStatusId != null)
+                    queryable = queryable.Where(q => q.EditedPriceStatusId, IndirectSalesOrderFilter.EditedPriceStatusId);
+                if (IndirectSalesOrderFilter.Note != null)
+                    queryable = queryable.Where(q => q.Note, IndirectSalesOrderFilter.Note);
+                if (IndirectSalesOrderFilter.RequestStateId != null)
+                    queryable = queryable.Where(q => q.RequestStateId, IndirectSalesOrderFilter.RequestStateId);
+                if (IndirectSalesOrderFilter.SubTotal != null)
+                    queryable = queryable.Where(q => q.SubTotal, IndirectSalesOrderFilter.SubTotal);
+                if (IndirectSalesOrderFilter.GeneralDiscountPercentage != null)
+                    queryable = queryable.Where(q => q.GeneralDiscountPercentage, IndirectSalesOrderFilter.GeneralDiscountPercentage);
+                if (IndirectSalesOrderFilter.GeneralDiscountAmount != null)
+                    queryable = queryable.Where(q => q.GeneralDiscountAmount, IndirectSalesOrderFilter.GeneralDiscountAmount);
+                if (IndirectSalesOrderFilter.TotalTaxAmount != null)
+                    queryable = queryable.Where(q => q.TotalTaxAmount, IndirectSalesOrderFilter.TotalTaxAmount);
+                if (IndirectSalesOrderFilter.Total != null)
+                    queryable = queryable.Where(q => q.Total, IndirectSalesOrderFilter.Total);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -693,6 +693,8 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(IndirectSalesOrder IndirectSalesOrder)
         {
+            await DataContext.IndirectSalesOrderContent.Where(x => x.IndirectSalesOrderId == IndirectSalesOrder.Id).DeleteFromQueryAsync();
+            await DataContext.IndirectSalesOrderPromotion.Where(x => x.IndirectSalesOrderId == IndirectSalesOrder.Id).DeleteFromQueryAsync();
             await DataContext.IndirectSalesOrder.Where(x => x.Id == IndirectSalesOrder.Id).DeleteFromQueryAsync();
             return true;
         }

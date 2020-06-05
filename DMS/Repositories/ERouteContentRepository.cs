@@ -53,14 +53,14 @@ namespace DMS.Repositories
             foreach (ERouteContentFilter ERouteContentFilter in filter.OrFilter)
             {
                 IQueryable<ERouteContentDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.ERouteId != null)
-                    queryable = queryable.Where(q => q.ERouteId, filter.ERouteId);
-                if (filter.StoreId != null)
-                    queryable = queryable.Where(q => q.StoreId, filter.StoreId);
-                if (filter.OrderNumber != null)
-                    queryable = queryable.Where(q => q.OrderNumber, filter.OrderNumber);
+                if (ERouteContentFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ERouteContentFilter.Id);
+                if (ERouteContentFilter.ERouteId != null)
+                    queryable = queryable.Where(q => q.ERouteId, ERouteContentFilter.ERouteId);
+                if (ERouteContentFilter.StoreId != null)
+                    queryable = queryable.Where(q => q.StoreId, ERouteContentFilter.StoreId);
+                if (ERouteContentFilter.OrderNumber != null)
+                    queryable = queryable.Where(q => q.OrderNumber, ERouteContentFilter.OrderNumber);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

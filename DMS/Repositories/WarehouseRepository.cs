@@ -66,24 +66,24 @@ namespace DMS.Repositories
             foreach (WarehouseFilter WarehouseFilter in filter.OrFilter)
             {
                 IQueryable<WarehouseDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Address != null)
-                    queryable = queryable.Where(q => q.Address, filter.Address);
-                if (filter.OrganizationId != null)
-                    queryable = queryable.Where(q => q.OrganizationId, filter.OrganizationId);
-                if (filter.ProvinceId != null)
-                    queryable = queryable.Where(q => q.ProvinceId, filter.ProvinceId);
-                if (filter.DistrictId != null)
-                    queryable = queryable.Where(q => q.DistrictId, filter.DistrictId);
-                if (filter.WardId != null)
-                    queryable = queryable.Where(q => q.WardId, filter.WardId);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (WarehouseFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, WarehouseFilter.Id);
+                if (WarehouseFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, WarehouseFilter.Code);
+                if (WarehouseFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, WarehouseFilter.Name);
+                if (WarehouseFilter.Address != null)
+                    queryable = queryable.Where(q => q.Address, WarehouseFilter.Address);
+                if (WarehouseFilter.OrganizationId != null)
+                    queryable = queryable.Where(q => q.OrganizationId, WarehouseFilter.OrganizationId);
+                if (WarehouseFilter.ProvinceId != null)
+                    queryable = queryable.Where(q => q.ProvinceId, WarehouseFilter.ProvinceId);
+                if (WarehouseFilter.DistrictId != null)
+                    queryable = queryable.Where(q => q.DistrictId, WarehouseFilter.DistrictId);
+                if (WarehouseFilter.WardId != null)
+                    queryable = queryable.Where(q => q.WardId, WarehouseFilter.WardId);
+                if (WarehouseFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, WarehouseFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

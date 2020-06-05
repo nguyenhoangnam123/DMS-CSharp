@@ -51,12 +51,12 @@ namespace DMS.Repositories
             foreach (RequestStateFilter RequestStateFilter in filter.OrFilter)
             {
                 IQueryable<RequestStateDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
+                if (RequestStateFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, RequestStateFilter.Id);
+                if (RequestStateFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, RequestStateFilter.Code);
+                if (RequestStateFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, RequestStateFilter.Name);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

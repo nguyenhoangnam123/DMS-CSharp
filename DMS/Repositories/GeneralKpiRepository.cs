@@ -62,18 +62,18 @@ namespace DMS.Repositories
             foreach (GeneralKpiFilter GeneralKpiFilter in filter.OrFilter)
             {
                 IQueryable<GeneralKpiDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.OrganizationId != null)
-                    queryable = queryable.Where(q => q.OrganizationId, filter.OrganizationId);
-                if (filter.EmployeeId != null)
-                    queryable = queryable.Where(q => q.EmployeeId, filter.EmployeeId);
-                if (filter.KpiPeriodId != null)
-                    queryable = queryable.Where(q => q.KpiPeriodId, filter.KpiPeriodId);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.CreatorId != null)
-                    queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
+                if (GeneralKpiFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, GeneralKpiFilter.Id);
+                if (GeneralKpiFilter.OrganizationId != null)
+                    queryable = queryable.Where(q => q.OrganizationId, GeneralKpiFilter.OrganizationId);
+                if (GeneralKpiFilter.EmployeeId != null)
+                    queryable = queryable.Where(q => q.EmployeeId, GeneralKpiFilter.EmployeeId);
+                if (GeneralKpiFilter.KpiPeriodId != null)
+                    queryable = queryable.Where(q => q.KpiPeriodId, GeneralKpiFilter.KpiPeriodId);
+                if (GeneralKpiFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, GeneralKpiFilter.StatusId);
+                if (GeneralKpiFilter.CreatorId != null)
+                    queryable = queryable.Where(q => q.CreatorId, GeneralKpiFilter.CreatorId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

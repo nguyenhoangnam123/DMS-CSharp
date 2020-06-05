@@ -56,18 +56,18 @@ namespace DMS.Repositories
             foreach (PermissionFilter PermissionFilter in filter.OrFilter)
             {
                 IQueryable<PermissionDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.RoleId != null)
-                    queryable = queryable.Where(q => q.RoleId, filter.RoleId);
-                if (filter.MenuId != null)
-                    queryable = queryable.Where(q => q.MenuId, filter.MenuId);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (PermissionFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, PermissionFilter.Id);
+                if (PermissionFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, PermissionFilter.Code);
+                if (PermissionFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, PermissionFilter.Name);
+                if (PermissionFilter.RoleId != null)
+                    queryable = queryable.Where(q => q.RoleId, PermissionFilter.RoleId);
+                if (PermissionFilter.MenuId != null)
+                    queryable = queryable.Where(q => q.MenuId, PermissionFilter.MenuId);
+                if (PermissionFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, PermissionFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

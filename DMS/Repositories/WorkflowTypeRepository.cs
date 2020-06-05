@@ -46,12 +46,12 @@ namespace DMS.Repositories
             foreach (WorkflowTypeFilter WorkflowTypeFilter in filter.OrFilter)
             {
                 IQueryable<WorkflowTypeDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
+                if (WorkflowTypeFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, WorkflowTypeFilter.Id);
+                if (WorkflowTypeFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, WorkflowTypeFilter.Code);
+                if (WorkflowTypeFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, WorkflowTypeFilter.Name);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

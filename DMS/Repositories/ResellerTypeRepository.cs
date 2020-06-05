@@ -53,14 +53,14 @@ namespace DMS.Repositories
             foreach (ResellerTypeFilter ResellerTypeFilter in filter.OrFilter)
             {
                 IQueryable<ResellerTypeDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (ResellerTypeFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ResellerTypeFilter.Id);
+                if (ResellerTypeFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, ResellerTypeFilter.Code);
+                if (ResellerTypeFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, ResellerTypeFilter.Name);
+                if (ResellerTypeFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, ResellerTypeFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

@@ -56,12 +56,12 @@ namespace DMS.Repositories
             foreach (AlbumFilter AlbumFilter in filter.OrFilter)
             {
                 IQueryable<AlbumDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (AlbumFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, AlbumFilter.Id);
+                if (AlbumFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, AlbumFilter.Name);
+                if (AlbumFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, AlbumFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

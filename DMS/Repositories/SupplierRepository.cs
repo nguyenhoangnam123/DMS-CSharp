@@ -76,36 +76,36 @@ namespace DMS.Repositories
             foreach (SupplierFilter SupplierFilter in filter.OrFilter)
             {
                 IQueryable<SupplierDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.TaxCode != null)
-                    queryable = queryable.Where(q => q.TaxCode, filter.TaxCode);
-                if (filter.Phone != null)
-                    queryable = queryable.Where(q => q.Phone, filter.Phone);
-                if (filter.Email != null)
-                    queryable = queryable.Where(q => q.Email, filter.Email);
-                if (filter.Address != null)
-                    queryable = queryable.Where(q => q.Address, filter.Address);
-                if (filter.ProvinceId != null)
-                    queryable = queryable.Where(q => q.ProvinceId, filter.ProvinceId);
-                if (filter.DistrictId != null)
-                    queryable = queryable.Where(q => q.DistrictId, filter.DistrictId);
-                if (filter.WardId != null)
-                    queryable = queryable.Where(q => q.WardId, filter.WardId);
-                if (filter.OwnerName != null)
-                    queryable = queryable.Where(q => q.OwnerName, filter.OwnerName);
-                if (filter.PersonInChargeId != null)
-                    queryable = queryable.Where(q => q.PersonInChargeId, filter.PersonInChargeId);
-                if (filter.Description != null)
-                    queryable = queryable.Where(q => q.Description, filter.Description);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.UpdatedTime != null)
-                    queryable = queryable.Where(q => q.UpdatedAt, filter.UpdatedTime);
+                if (SupplierFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, SupplierFilter.Id);
+                if (SupplierFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, SupplierFilter.Code);
+                if (SupplierFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, SupplierFilter.Name);
+                if (SupplierFilter.TaxCode != null)
+                    queryable = queryable.Where(q => q.TaxCode, SupplierFilter.TaxCode);
+                if (SupplierFilter.Phone != null)
+                    queryable = queryable.Where(q => q.Phone, SupplierFilter.Phone);
+                if (SupplierFilter.Email != null)
+                    queryable = queryable.Where(q => q.Email, SupplierFilter.Email);
+                if (SupplierFilter.Address != null)
+                    queryable = queryable.Where(q => q.Address, SupplierFilter.Address);
+                if (SupplierFilter.ProvinceId != null)
+                    queryable = queryable.Where(q => q.ProvinceId, SupplierFilter.ProvinceId);
+                if (SupplierFilter.DistrictId != null)
+                    queryable = queryable.Where(q => q.DistrictId, SupplierFilter.DistrictId);
+                if (SupplierFilter.WardId != null)
+                    queryable = queryable.Where(q => q.WardId, SupplierFilter.WardId);
+                if (SupplierFilter.OwnerName != null)
+                    queryable = queryable.Where(q => q.OwnerName, SupplierFilter.OwnerName);
+                if (SupplierFilter.PersonInChargeId != null)
+                    queryable = queryable.Where(q => q.PersonInChargeId, SupplierFilter.PersonInChargeId);
+                if (SupplierFilter.Description != null)
+                    queryable = queryable.Where(q => q.Description, SupplierFilter.Description);
+                if (SupplierFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, SupplierFilter.StatusId);
+                if (SupplierFilter.UpdatedTime != null)
+                    queryable = queryable.Where(q => q.UpdatedAt, SupplierFilter.UpdatedTime);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

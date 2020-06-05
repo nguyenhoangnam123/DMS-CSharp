@@ -50,16 +50,16 @@ namespace DMS.Repositories
             foreach (InventoryFilter InventoryFilter in filter.OrFilter)
             {
                 IQueryable<InventoryDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.WarehouseId != null)
-                    queryable = queryable.Where(q => q.WarehouseId, filter.WarehouseId);
-                if (filter.ItemId != null)
-                    queryable = queryable.Where(q => q.ItemId, filter.ItemId);
-                if (filter.SaleStock != null)
-                    queryable = queryable.Where(q => q.SaleStock, filter.SaleStock);
-                if (filter.AccountingStock != null)
-                    queryable = queryable.Where(q => q.AccountingStock, filter.AccountingStock);
+                if (InventoryFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, InventoryFilter.Id);
+                if (InventoryFilter.WarehouseId != null)
+                    queryable = queryable.Where(q => q.WarehouseId, InventoryFilter.WarehouseId);
+                if (InventoryFilter.ItemId != null)
+                    queryable = queryable.Where(q => q.ItemId, InventoryFilter.ItemId);
+                if (InventoryFilter.SaleStock != null)
+                    queryable = queryable.Where(q => q.SaleStock, InventoryFilter.SaleStock);
+                if (InventoryFilter.AccountingStock != null)
+                    queryable = queryable.Where(q => q.AccountingStock, InventoryFilter.AccountingStock);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

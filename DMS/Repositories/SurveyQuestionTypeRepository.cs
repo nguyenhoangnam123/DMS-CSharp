@@ -46,12 +46,12 @@ namespace DMS.Repositories
             foreach (SurveyQuestionTypeFilter SurveyQuestionTypeFilter in filter.OrFilter)
             {
                 IQueryable<SurveyQuestionTypeDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
+                if (SurveyQuestionTypeFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, SurveyQuestionTypeFilter.Id);
+                if (SurveyQuestionTypeFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, SurveyQuestionTypeFilter.Code);
+                if (SurveyQuestionTypeFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, SurveyQuestionTypeFilter.Name);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

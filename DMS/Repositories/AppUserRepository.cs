@@ -83,31 +83,31 @@ namespace DMS.Repositories
             foreach (AppUserFilter AppUserFilter in filter.OrFilter)
             {
                 IQueryable<AppUserDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Username != null)
-                    queryable = queryable.Where(q => q.Username, filter.Username);
-                if (filter.DisplayName != null)
-                    queryable = queryable.Where(q => q.DisplayName, filter.DisplayName);
-                if (filter.Address != null)
-                    queryable = queryable.Where(q => q.Address, filter.Address);
-                if (filter.Email != null)
-                    queryable = queryable.Where(q => q.Email, filter.Email);
-                if (filter.Phone != null)
-                    queryable = queryable.Where(q => q.Phone, filter.Phone);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.SexId != null)
-                    queryable = queryable.Where(q => q.SexId, filter.SexId);
-                if (filter.Birthday != null)
-                    queryable = queryable.Where(q => q.Birthday, filter.Birthday);
-                if (filter.PositionId != null)
-                    queryable = queryable.Where(q => q.PositionId, filter.PositionId);
-                if (filter.Department != null)
-                    queryable = queryable.Where(q => q.Department, filter.Department);
-                if (filter.OrganizationId != null)
-                    queryable = queryable.Where(q => q.OrganizationId, filter.OrganizationId);
-                if (filter.ProvinceId != null)
+                if (AppUserFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, AppUserFilter.Id);
+                if (AppUserFilter.Username != null)
+                    queryable = queryable.Where(q => q.Username, AppUserFilter.Username);
+                if (AppUserFilter.DisplayName != null)
+                    queryable = queryable.Where(q => q.DisplayName, AppUserFilter.DisplayName);
+                if (AppUserFilter.Address != null)
+                    queryable = queryable.Where(q => q.Address, AppUserFilter.Address);
+                if (AppUserFilter.Email != null)
+                    queryable = queryable.Where(q => q.Email, AppUserFilter.Email);
+                if (AppUserFilter.Phone != null)
+                    queryable = queryable.Where(q => q.Phone, AppUserFilter.Phone);
+                if (AppUserFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, AppUserFilter.StatusId);
+                if (AppUserFilter.SexId != null)
+                    queryable = queryable.Where(q => q.SexId, AppUserFilter.SexId);
+                if (AppUserFilter.Birthday != null)
+                    queryable = queryable.Where(q => q.Birthday, AppUserFilter.Birthday);
+                if (AppUserFilter.PositionId != null)
+                    queryable = queryable.Where(q => q.PositionId, AppUserFilter.PositionId);
+                if (AppUserFilter.Department != null)
+                    queryable = queryable.Where(q => q.Department, AppUserFilter.Department);
+                if (AppUserFilter.OrganizationId != null)
+                    queryable = queryable.Where(q => q.OrganizationId, AppUserFilter.OrganizationId);
+                if (AppUserFilter.ProvinceId != null)
                     queryable = queryable.Where(q => q.ProvinceId, filter.ProvinceId);
                 initQuery = initQuery.Union(queryable);
             }

@@ -53,14 +53,14 @@ namespace DMS.Repositories
             foreach (RoleFilter RoleFilter in filter.OrFilter)
             {
                 IQueryable<RoleDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (RoleFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, RoleFilter.Id);
+                if (RoleFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, RoleFilter.Code);
+                if (RoleFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, RoleFilter.Name);
+                if (RoleFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, RoleFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

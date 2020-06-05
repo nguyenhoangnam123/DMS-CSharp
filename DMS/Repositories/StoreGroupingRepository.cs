@@ -60,20 +60,20 @@ namespace DMS.Repositories
             foreach (StoreGroupingFilter StoreGroupingFilter in filter.OrFilter)
             {
                 IQueryable<StoreGroupingDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.ParentId != null)
-                    queryable = queryable.Where(q => q.ParentId, filter.ParentId);
-                if (filter.Path != null)
-                    queryable = queryable.Where(q => q.Path, filter.Path);
-                if (filter.Level != null)
-                    queryable = queryable.Where(q => q.Level, filter.Level);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (StoreGroupingFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, StoreGroupingFilter.Id);
+                if (StoreGroupingFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, StoreGroupingFilter.Code);
+                if (StoreGroupingFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, StoreGroupingFilter.Name);
+                if (StoreGroupingFilter.ParentId != null)
+                    queryable = queryable.Where(q => q.ParentId, StoreGroupingFilter.ParentId);
+                if (StoreGroupingFilter.Path != null)
+                    queryable = queryable.Where(q => q.Path, StoreGroupingFilter.Path);
+                if (StoreGroupingFilter.Level != null)
+                    queryable = queryable.Where(q => q.Level, StoreGroupingFilter.Level);
+                if (StoreGroupingFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, StoreGroupingFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

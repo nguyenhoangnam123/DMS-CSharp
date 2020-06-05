@@ -83,14 +83,14 @@ namespace DMS.Repositories
             foreach (ERouteChangeRequestFilter ERouteChangeRequestFilter in filter.OrFilter)
             {
                 IQueryable<ERouteChangeRequestDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.ERouteId != null)
-                    queryable = queryable.Where(q => q.ERouteId, filter.ERouteId);
-                if (filter.CreatorId != null)
-                    queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
-                if (filter.RequestStateId != null)
-                    queryable = queryable.Where(q => q.RequestStateId, filter.RequestStateId);
+                if (ERouteChangeRequestFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ERouteChangeRequestFilter.Id);
+                if (ERouteChangeRequestFilter.ERouteId != null)
+                    queryable = queryable.Where(q => q.ERouteId, ERouteChangeRequestFilter.ERouteId);
+                if (ERouteChangeRequestFilter.CreatorId != null)
+                    queryable = queryable.Where(q => q.CreatorId, ERouteChangeRequestFilter.CreatorId);
+                if (ERouteChangeRequestFilter.RequestStateId != null)
+                    queryable = queryable.Where(q => q.RequestStateId, ERouteChangeRequestFilter.RequestStateId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

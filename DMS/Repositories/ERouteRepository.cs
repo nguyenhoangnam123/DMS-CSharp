@@ -81,26 +81,26 @@ namespace DMS.Repositories
             foreach (ERouteFilter ERouteFilter in filter.OrFilter)
             {
                 IQueryable<ERouteDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.SaleEmployeeId != null)
-                    queryable = queryable.Where(q => q.SaleEmployeeId, filter.SaleEmployeeId);
-                if (filter.StartDate != null)
-                    queryable = queryable.Where(q => q.StartDate, filter.StartDate);
-                if (filter.EndDate != null)
-                    queryable = queryable.Where(q => q.EndDate, filter.EndDate);
-                if (filter.ERouteTypeId != null)
-                    queryable = queryable.Where(q => q.ERouteTypeId, filter.ERouteTypeId);
-                if (filter.RequestStateId != null)
-                    queryable = queryable.Where(q => q.RequestStateId, filter.RequestStateId);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.CreatorId != null)
-                    queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
+                if (ERouteFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ERouteFilter.Id);
+                if (ERouteFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, ERouteFilter.Code);
+                if (ERouteFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, ERouteFilter.Name);
+                if (ERouteFilter.SaleEmployeeId != null)
+                    queryable = queryable.Where(q => q.SaleEmployeeId, ERouteFilter.SaleEmployeeId);
+                if (ERouteFilter.StartDate != null)
+                    queryable = queryable.Where(q => q.StartDate, ERouteFilter.StartDate);
+                if (ERouteFilter.EndDate != null)
+                    queryable = queryable.Where(q => q.EndDate, ERouteFilter.EndDate);
+                if (ERouteFilter.ERouteTypeId != null)
+                    queryable = queryable.Where(q => q.ERouteTypeId, ERouteFilter.ERouteTypeId);
+                if (ERouteFilter.RequestStateId != null)
+                    queryable = queryable.Where(q => q.RequestStateId, ERouteFilter.RequestStateId);
+                if (ERouteFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, ERouteFilter.StatusId);
+                if (ERouteFilter.CreatorId != null)
+                    queryable = queryable.Where(q => q.CreatorId, ERouteFilter.CreatorId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

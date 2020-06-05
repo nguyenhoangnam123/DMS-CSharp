@@ -90,50 +90,50 @@ namespace DMS.Repositories
             foreach (StoreFilter StoreFilter in filter.OrFilter)
             {
                 IQueryable<StoreDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.ParentStoreId != null)
-                    queryable = queryable.Where(q => q.ParentStoreId, filter.ParentStoreId);
-                if (filter.OrganizationId != null)
-                    queryable = queryable.Where(q => q.OrganizationId, filter.OrganizationId);
-                if (filter.StoreTypeId != null)
-                    queryable = queryable.Where(q => q.StoreTypeId, filter.StoreTypeId);
-                if (filter.StoreGroupingId != null)
-                    queryable = queryable.Where(q => q.StoreGroupingId, filter.StoreGroupingId);
-                if (filter.ResellerId != null)
-                    queryable = queryable.Where(q => q.ResellerId, filter.ResellerId);
-                if (filter.Telephone != null)
-                    queryable = queryable.Where(q => q.Telephone, filter.Telephone);
-                if (filter.ProvinceId != null)
-                    queryable = queryable.Where(q => q.ProvinceId, filter.ProvinceId);
-                if (filter.DistrictId != null)
-                    queryable = queryable.Where(q => q.DistrictId, filter.DistrictId);
-                if (filter.WardId != null)
-                    queryable = queryable.Where(q => q.WardId, filter.WardId);
-                if (filter.Address != null)
-                    queryable = queryable.Where(q => q.Address, filter.Address);
-                if (filter.DeliveryAddress != null)
-                    queryable = queryable.Where(q => q.DeliveryAddress, filter.DeliveryAddress);
-                if (filter.Latitude != null)
-                    queryable = queryable.Where(q => q.Latitude, filter.Latitude);
-                if (filter.Longitude != null)
-                    queryable = queryable.Where(q => q.Longitude, filter.Longitude);
-                if (filter.DeliveryLatitude != null)
-                    queryable = queryable.Where(q => q.DeliveryLatitude, filter.DeliveryLatitude);
-                if (filter.DeliveryLongitude != null)
-                    queryable = queryable.Where(q => q.DeliveryLongitude, filter.DeliveryLongitude);
-                if (filter.OwnerName != null)
-                    queryable = queryable.Where(q => q.OwnerName, filter.OwnerName);
-                if (filter.OwnerPhone != null)
-                    queryable = queryable.Where(q => q.OwnerPhone, filter.OwnerPhone);
-                if (filter.OwnerEmail != null)
-                    queryable = queryable.Where(q => q.OwnerEmail, filter.OwnerEmail);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
+                if (StoreFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, StoreFilter.Id);
+                if (StoreFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, StoreFilter.Code);
+                if (StoreFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, StoreFilter.Name);
+                if (StoreFilter.ParentStoreId != null)
+                    queryable = queryable.Where(q => q.ParentStoreId, StoreFilter.ParentStoreId);
+                if (StoreFilter.OrganizationId != null)
+                    queryable = queryable.Where(q => q.OrganizationId, StoreFilter.OrganizationId);
+                if (StoreFilter.StoreTypeId != null)
+                    queryable = queryable.Where(q => q.StoreTypeId, StoreFilter.StoreTypeId);
+                if (StoreFilter.StoreGroupingId != null)
+                    queryable = queryable.Where(q => q.StoreGroupingId, StoreFilter.StoreGroupingId);
+                if (StoreFilter.ResellerId != null)
+                    queryable = queryable.Where(q => q.ResellerId, StoreFilter.ResellerId);
+                if (StoreFilter.Telephone != null)
+                    queryable = queryable.Where(q => q.Telephone, StoreFilter.Telephone);
+                if (StoreFilter.ProvinceId != null)
+                    queryable = queryable.Where(q => q.ProvinceId, StoreFilter.ProvinceId);
+                if (StoreFilter.DistrictId != null)
+                    queryable = queryable.Where(q => q.DistrictId, StoreFilter.DistrictId);
+                if (StoreFilter.WardId != null)
+                    queryable = queryable.Where(q => q.WardId, StoreFilter.WardId);
+                if (StoreFilter.Address != null)
+                    queryable = queryable.Where(q => q.Address, StoreFilter.Address);
+                if (StoreFilter.DeliveryAddress != null)
+                    queryable = queryable.Where(q => q.DeliveryAddress, StoreFilter.DeliveryAddress);
+                if (StoreFilter.Latitude != null)
+                    queryable = queryable.Where(q => q.Latitude, StoreFilter.Latitude);
+                if (StoreFilter.Longitude != null)
+                    queryable = queryable.Where(q => q.Longitude, StoreFilter.Longitude);
+                if (StoreFilter.DeliveryLatitude != null)
+                    queryable = queryable.Where(q => q.DeliveryLatitude, StoreFilter.DeliveryLatitude);
+                if (StoreFilter.DeliveryLongitude != null)
+                    queryable = queryable.Where(q => q.DeliveryLongitude, StoreFilter.DeliveryLongitude);
+                if (StoreFilter.OwnerName != null)
+                    queryable = queryable.Where(q => q.OwnerName, StoreFilter.OwnerName);
+                if (StoreFilter.OwnerPhone != null)
+                    queryable = queryable.Where(q => q.OwnerPhone, StoreFilter.OwnerPhone);
+                if (StoreFilter.OwnerEmail != null)
+                    queryable = queryable.Where(q => q.OwnerEmail, StoreFilter.OwnerEmail);
+                if (StoreFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, StoreFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

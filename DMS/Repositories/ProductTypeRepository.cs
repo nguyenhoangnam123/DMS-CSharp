@@ -58,18 +58,18 @@ namespace DMS.Repositories
             foreach (ProductTypeFilter ProductTypeFilter in filter.OrFilter)
             {
                 IQueryable<ProductTypeDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.Description != null)
-                    queryable = queryable.Where(q => q.Description, filter.Description);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.UpdatedTime != null)
-                    queryable = queryable.Where(q => q.UpdatedAt, filter.UpdatedTime);
+                if (ProductTypeFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ProductTypeFilter.Id);
+                if (ProductTypeFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, ProductTypeFilter.Code);
+                if (ProductTypeFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, ProductTypeFilter.Name);
+                if (ProductTypeFilter.Description != null)
+                    queryable = queryable.Where(q => q.Description, ProductTypeFilter.Description);
+                if (ProductTypeFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, ProductTypeFilter.StatusId);
+                if (ProductTypeFilter.UpdatedTime != null)
+                    queryable = queryable.Where(q => q.UpdatedAt, ProductTypeFilter.UpdatedTime);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

@@ -46,12 +46,12 @@ namespace DMS.Repositories
             foreach (ProblemTypeFilter ProblemTypeFilter in filter.OrFilter)
             {
                 IQueryable<ProblemTypeDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
+                if (ProblemTypeFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ProblemTypeFilter.Id);
+                if (ProblemTypeFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, ProblemTypeFilter.Code);
+                if (ProblemTypeFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, ProblemTypeFilter.Name);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;

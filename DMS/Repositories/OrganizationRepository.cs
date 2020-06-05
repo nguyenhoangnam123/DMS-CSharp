@@ -61,26 +61,26 @@ namespace DMS.Repositories
             foreach (OrganizationFilter OrganizationFilter in filter.OrFilter)
             {
                 IQueryable<OrganizationDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.ParentId != null)
-                    queryable = queryable.Where(q => q.ParentId, filter.ParentId);
-                if (filter.Path != null)
-                    queryable = queryable.Where(q => q.Path, filter.Path);
-                if (filter.Level != null)
-                    queryable = queryable.Where(q => q.Level, filter.Level);
-                if (filter.StatusId != null)
-                    queryable = queryable.Where(q => q.StatusId, filter.StatusId);
-                if (filter.Phone != null)
-                    queryable = queryable.Where(q => q.Phone, filter.Phone);
-                if (filter.Email != null)
-                    queryable = queryable.Where(q => q.Email, filter.Email);
-                if (filter.Address != null)
-                    queryable = queryable.Where(q => q.Address, filter.Address);
+                if (OrganizationFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, OrganizationFilter.Id);
+                if (OrganizationFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, OrganizationFilter.Code);
+                if (OrganizationFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, OrganizationFilter.Name);
+                if (OrganizationFilter.ParentId != null)
+                    queryable = queryable.Where(q => q.ParentId, OrganizationFilter.ParentId);
+                if (OrganizationFilter.Path != null)
+                    queryable = queryable.Where(q => q.Path, OrganizationFilter.Path);
+                if (OrganizationFilter.Level != null)
+                    queryable = queryable.Where(q => q.Level, OrganizationFilter.Level);
+                if (OrganizationFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, OrganizationFilter.StatusId);
+                if (OrganizationFilter.Phone != null)
+                    queryable = queryable.Where(q => q.Phone, OrganizationFilter.Phone);
+                if (OrganizationFilter.Email != null)
+                    queryable = queryable.Where(q => q.Email, OrganizationFilter.Email);
+                if (OrganizationFilter.Address != null)
+                    queryable = queryable.Where(q => q.Address, OrganizationFilter.Address);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
