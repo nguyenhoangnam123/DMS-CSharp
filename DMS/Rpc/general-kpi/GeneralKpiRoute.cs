@@ -26,6 +26,7 @@ namespace DMS.Rpc.general_kpi
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string GetDraft = Default + "/get-draft";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
