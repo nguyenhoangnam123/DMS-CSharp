@@ -62,27 +62,9 @@ namespace DMS.Rpc.store
         public const string CountReseller = Default + "/count-reseller";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(StoreFilter.Code), FieldType.STRING },
-            { nameof(StoreFilter.Name), FieldType.STRING },
-            { nameof(StoreFilter.ParentStoreId), FieldType.ID },
             { nameof(StoreFilter.OrganizationId), FieldType.ID },
             { nameof(StoreFilter.StoreTypeId), FieldType.ID },
             { nameof(StoreFilter.StoreGroupingId), FieldType.ID },
-            { nameof(StoreFilter.ResellerId), FieldType.ID },
-            { nameof(StoreFilter.Telephone), FieldType.STRING },
-            { nameof(StoreFilter.ProvinceId), FieldType.ID },
-            { nameof(StoreFilter.DistrictId), FieldType.ID },
-            { nameof(StoreFilter.WardId), FieldType.ID },
-            { nameof(StoreFilter.Address), FieldType.STRING },
-            { nameof(StoreFilter.DeliveryAddress), FieldType.STRING },
-            { nameof(StoreFilter.Latitude), FieldType.DECIMAL },
-            { nameof(StoreFilter.Longitude), FieldType.DECIMAL },
-            { nameof(StoreFilter.DeliveryLatitude), FieldType.DECIMAL },
-            { nameof(StoreFilter.DeliveryLongitude), FieldType.DECIMAL },
-            { nameof(StoreFilter.OwnerName), FieldType.STRING },
-            { nameof(StoreFilter.OwnerPhone), FieldType.STRING },
-            { nameof(StoreFilter.OwnerEmail), FieldType.STRING },
-            { nameof(StoreFilter.StatusId), FieldType.ID },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

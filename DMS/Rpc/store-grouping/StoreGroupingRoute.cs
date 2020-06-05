@@ -44,12 +44,6 @@ namespace DMS.Rpc.store_grouping
         public const string ListStore = Default + "/list-store";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(StoreGroupingFilter.Code), FieldType.STRING },
-            { nameof(StoreGroupingFilter.Name), FieldType.STRING },
-            { nameof(StoreGroupingFilter.ParentId), FieldType.ID },
-            { nameof(StoreGroupingFilter.Path), FieldType.STRING },
-            { nameof(StoreGroupingFilter.Level), FieldType.LONG },
-            { nameof(StoreGroupingFilter.StatusId), FieldType.ID },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

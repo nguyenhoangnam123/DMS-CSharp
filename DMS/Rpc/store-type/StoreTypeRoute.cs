@@ -31,9 +31,6 @@ namespace DMS.Rpc.store_type
         public const string SingleListStatus = Default + "/single-list-status";
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(StoreTypeFilter.Code), FieldType.STRING },
-            { nameof(StoreTypeFilter.Name), FieldType.STRING },
-            { nameof(StoreTypeFilter.StatusId), FieldType.ID },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

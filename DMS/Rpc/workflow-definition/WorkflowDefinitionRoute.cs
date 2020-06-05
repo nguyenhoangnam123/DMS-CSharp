@@ -41,14 +41,6 @@ namespace DMS.Rpc.workflow_definition
 
         public static Dictionary<string, FieldType> Filters = new Dictionary<string, FieldType>
         {
-            { nameof(WorkflowDefinitionFilter.Id), FieldType.ID },
-            { nameof(WorkflowDefinitionFilter.Code), FieldType.STRING },
-            { nameof(WorkflowDefinitionFilter.Name), FieldType.STRING },
-            { nameof(WorkflowDefinitionFilter.WorkflowTypeId), FieldType.ID },
-            { nameof(WorkflowDefinitionFilter.StartDate), FieldType.DATE },
-            { nameof(WorkflowDefinitionFilter.EndDate), FieldType.DATE },
-            { nameof(WorkflowDefinitionFilter.StatusId), FieldType.ID },
-            { nameof(WorkflowDefinitionFilter.UpdatedAt), FieldType.DATE },
         };
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
