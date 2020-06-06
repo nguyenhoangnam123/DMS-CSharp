@@ -50,6 +50,7 @@ namespace DMS.Rpc
             string url = HttpContext.Request.Path.Value.ToLower().Substring(1);
             string TimeZone = HttpContext.Request.Headers["X-TimeZone"];
             string Language = HttpContext.Request.Headers["X-Language"];
+            CurrentContext.Token = HttpContext.Request.Cookies["Token"];
             CurrentContext.UserId = UserId;
             CurrentContext.TimeZone = int.TryParse(TimeZone, out int t) ? t : 0;
             CurrentContext.Language = Language ?? "vi";
