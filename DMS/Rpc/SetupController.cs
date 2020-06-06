@@ -205,8 +205,6 @@ namespace DMS.Rpc
         }
 
         [HttpGet, Route("rpc/dms/setup/init-route")]
-
-        [HttpGet, Route("rpc/dms/setup/init-route")]
         public ActionResult InitRoute()
         {
             List<Type> routeTypes = typeof(SetupController).Assembly.GetTypes()
