@@ -30,6 +30,7 @@ namespace DMS.Repositories
         IERouteRepository ERouteRepository { get; }
         IERouteTypeRepository ERouteTypeRepository { get; }
         IEventMessageRepository EventMessageRepository { get; }
+        IFieldRepository FieldRepository { get; }
         IGeneralCriteriaRepository GeneralCriteriaRepository { get; }
         IGeneralKpiRepository GeneralKpiRepository { get; }
         IImageRepository ImageRepository { get; }
@@ -49,6 +50,7 @@ namespace DMS.Repositories
         IMenuRepository MenuRepository { get; }
         INotificationRepository NotificationRepository { get; }
         IOrganizationRepository OrganizationRepository { get; }
+        IPermissionOperatorRepository PermissionOperatorRepository { get; }
         IPermissionRepository PermissionRepository { get; }
         IPositionRepository PositionRepository { get; }
         IProblemRepository ProblemRepository { get; }
@@ -115,6 +117,7 @@ namespace DMS.Repositories
         public IERouteContentRepository ERouteContentRepository { get; private set; }
         public IERouteRepository ERouteRepository { get; private set; }
         public IERouteTypeRepository ERouteTypeRepository { get; private set; }
+        public IFieldRepository FieldRepository { get; private set; }
         public IEventMessageRepository EventMessageRepository { get; private set; }
         public IGeneralCriteriaRepository GeneralCriteriaRepository { get; private set; }
         public IGeneralKpiRepository GeneralKpiRepository { get; private set; }
@@ -135,6 +138,7 @@ namespace DMS.Repositories
         public IMenuRepository MenuRepository { get; private set; }
         public INotificationRepository NotificationRepository { get; private set; }
         public IOrganizationRepository OrganizationRepository { get; private set; }
+        public IPermissionOperatorRepository PermissionOperatorRepository { get; private set; }
         public IPermissionRepository PermissionRepository { get; private set; }
         public IPositionRepository PositionRepository { get; private set; }
         public IProblemRepository ProblemRepository { get; private set; }
@@ -200,6 +204,7 @@ namespace DMS.Repositories
             ERouteContentRepository = new ERouteContentRepository(DataContext);
             ERouteRepository = new ERouteRepository(DataContext);
             ERouteTypeRepository = new ERouteTypeRepository(DataContext);
+            FieldRepository = new FieldRepository(DataContext);
             EventMessageRepository = new EventMessageRepository(DataContext);
             GeneralCriteriaRepository = new GeneralCriteriaRepository(DataContext);
             GeneralKpiRepository = new GeneralKpiRepository(DataContext);
@@ -220,6 +225,7 @@ namespace DMS.Repositories
             MenuRepository = new MenuRepository(DataContext);
             NotificationRepository = new NotificationRepository(DataContext);
             OrganizationRepository = new OrganizationRepository(DataContext);
+            PermissionOperatorRepository = new PermissionOperatorRepository(DataContext);
             PermissionRepository = new PermissionRepository(DataContext);
             PositionRepository = new PositionRepository(DataContext);
             ProblemRepository = new ProblemRepository(DataContext);

@@ -299,6 +299,42 @@ namespace DMS.Rpc.role
             return Role_WarehouseDTOs;
         }
 
+        [Route(RoleRoute.SingleListField), HttpPost]
+        public async Task<List<Role_FieldDTO>> SingleListField([FromBody] Role_FieldFilterDTO Role_FieldFilterDTO)
+        {
+            FieldFilter FieldFilter = new FieldFilter();
+            FieldFilter.Skip = 0;
+            FieldFilter.Take = 200;
+            FieldFilter.OrderBy = FieldOrder.Id;
+            FieldFilter.OrderType = OrderType.ASC;
+            FieldFilter.Selects = FieldSelect.ALL;
+            FieldFilter.Id = Role_FieldFilterDTO.Id;
+            FieldFilter.MenuId = Role_FieldFilterDTO.MenuId;
+            FieldFilter.Name = Role_FieldFilterDTO.Name;
+
+            List<Field> Fieldes = await FieldService.List(FieldFilter);
+            List<Role_FieldDTO> Role_FieldDTOs = Fieldes
+                .Select(x => new Role_FieldDTO(x)).ToList();
+            return Role_FieldDTOs;
+        }
+
+        [Route(RoleRoute.SingleListPermissionOperator), HttpPost]
+        public async Task<List<Role_PermissionOperatorDTO>> SingleListPermissionOperator([FromBody] Role_PermissionOperatorFilterDTO Role_PermissionOperatorFilterDTO)
+        {
+            PermissionOperatorFilter PermissionOperatorFilter = new PermissionOperatorFilter();
+            PermissionOperatorFilter.Skip = 0;
+            PermissionOperatorFilter.Take = 200;
+            PermissionOperatorFilter.Id = Role_PermissionOperatorFilterDTO.Id;
+            PermissionOperatorFilter.Code = Role_PermissionOperatorFilterDTO.Code;
+            PermissionOperatorFilter.Name = Role_PermissionOperatorFilterDTO.Name;
+            PermissionOperatorFilter.FieldTypeId = Role_PermissionOperatorFilterDTO.FieldTypeId;
+
+            List<PermissionOperator> PermissionOperatores = await PermissionOperatorService.List(PermissionOperatorFilter);
+            List<Role_PermissionOperatorDTO> Role_PermissionOperatorDTOs = PermissionOperatores
+                .Select(x => new Role_PermissionOperatorDTO(x)).ToList();
+            return Role_PermissionOperatorDTOs;
+        }
+
     }
 }
 

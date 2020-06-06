@@ -36,6 +36,8 @@ namespace DMS.Rpc.role
         public const string SingleListStoreType = Default + "/single-list-store-type";
         public const string SingleListSupplier = Default + "/single-list-supplier";
         public const string SingleListWarehouse = Default + "/single-list-warehouse";
+        public const string SingleListField = Default + "/single-list-field";
+        public const string SingleListPermissionOperator = Default + "/single-list-permission-operator";
 
         public const string CountAppUser = Default + "/count-app-user";
         public const string ListAppUser = Default + "/list-app-user";
