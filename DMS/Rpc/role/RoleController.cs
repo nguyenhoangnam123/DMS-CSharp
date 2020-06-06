@@ -294,9 +294,6 @@ namespace DMS.Rpc.role
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Role_PermissionDTO.Id))
-                return Forbid();
-
             Permission Permission = await PermissionService.Get(Role_PermissionDTO.Id);
             return new Role_PermissionDTO(Permission);
         }
