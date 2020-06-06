@@ -171,6 +171,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     Skip = 0,
                     Take = int.MaxValue,
                     Id = new IdFilter { In = Ids },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = UnitOfMeasureSelect.Id
                 };
 
@@ -193,6 +194,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     Skip = 0,
                     Take = int.MaxValue,
                     Id = new IdFilter { In = Ids },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = UnitOfMeasureSelect.Id
                 };
 
