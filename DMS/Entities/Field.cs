@@ -10,10 +10,11 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public string Type { get; set; }
+        public long FieldTypeId { get; set; }
         public long MenuId { get; set; }
         public bool IsDeleted { get; set; }
         public Menu Menu { get; set; }
+        public FieldType FieldType { get; set; }
 
         public bool Equals(Field other)
         {

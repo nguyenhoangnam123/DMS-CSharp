@@ -6,17 +6,20 @@ using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class PermissionFieldMapping : DataEntity, IEquatable<PermissionFieldMapping>
+    public class PermissionContent : DataEntity, IEquatable<PermissionContent>
     {
+        public long Id { get; set; }
         public long PermissionId { get; set; }
         public long FieldId { get; set; }
+        public long PermissionOperatorId { get; set; }
         public string Value { get; set; }
         public Field Field { get; set; }
-        public Permission Permission { get; set; }
+        public PermissionOperator PermissionOperator { get; set; }
 
-        public bool Equals(PermissionFieldMapping other)
+        public bool Equals(PermissionContent other)
         {
-            return true;
+            if (other == null) return false;
+            return other.Id == this.Id;
         }
         public override int GetHashCode()
         {

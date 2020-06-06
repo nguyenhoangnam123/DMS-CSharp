@@ -219,44 +219,6 @@ namespace DMS.Rpc.role
             Role.Code = Role_RoleDTO.Code;
             Role.Name = Role_RoleDTO.Name;
             Role.StatusId = Role_RoleDTO.StatusId;
-            Role.Permissions = Role_RoleDTO.Permissions?
-                .Select(x => new Permission
-                {
-                    Id = x.Id,
-                    Code = x.Code,
-                    Name = x.Name,
-                    RoleId = x.RoleId,
-                    MenuId = x.MenuId,
-                    StatusId = x.StatusId,
-                    Menu = new Menu
-                    {
-                        Id = x.Menu.Id,
-                        Code = x.Menu.Code,
-                        Name = x.Menu.Name,
-                        Path = x.Menu.Path,
-                        IsDeleted = x.Menu.IsDeleted,
-                        Fields = x.Menu.Fields?.Select(f => new Field
-                        {
-                            Id = f.Id,
-                            Name = f.Name,
-                            Type = f.Type,
-                        }).ToList(),
-                        Actions = x.Menu.Actions?.Select(p => new Entities.Action
-                        {
-                            Id = p.Id,
-                            Name = p.Name,
-                        }).ToList(),
-                    },
-                    PermissionFieldMappings = x.PermissionFieldMappings?.Select(pf => new PermissionFieldMapping
-                    {
-                        FieldId = pf.FieldId,
-                        Value = pf.Value,
-                    }).ToList(),
-                    PermissionActionMappings = x.PermissionActionMappings?.Select(pp => new PermissionActionMapping
-                    {
-                        ActionId = pp.ActionId,
-                    }).ToList(),
-                }).ToList();
             Role.AppUserRoleMappings = Role_RoleDTO.AppUserRoleMappings?
                 .Select(x => new AppUserRoleMapping
                 {
@@ -292,12 +254,54 @@ namespace DMS.Rpc.role
             return new Role_MenuDTO(Menu);
         }
 
+
+
         [Route(RoleRoute.CreatePermission), HttpPost]
         public async Task<ActionResult<Role_PermissionDTO>> CreatePermission([FromBody]Role_PermissionDTO Role_PermissionDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            Permission Permission = ConvertPermissionDTOToBO(Role_PermissionDTO);
+            Permission = await PermissionService.Create(Permission);
+            Role_PermissionDTO = new Role_PermissionDTO(Permission);
+            if (Permission.IsValidated)
+                return Role_PermissionDTO;
+            else
+                return BadRequest(Role_PermissionDTO);
+        }
+        [Route(RoleRoute.UpdatePermission), HttpPost]
+        public async Task<ActionResult<Role_PermissionDTO>> UpdatePermission([FromBody]Role_PermissionDTO Role_PermissionDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            Permission Permission = ConvertPermissionDTOToBO(Role_PermissionDTO);
+            Permission = await PermissionService.Create(Permission);
+            Role_PermissionDTO = new Role_PermissionDTO(Permission);
+            if (Permission.IsValidated)
+                return Role_PermissionDTO;
+            else
+                return BadRequest(Role_PermissionDTO);
+        }
+
+        [Route(RoleRoute.DeletePermission), HttpPost]
+        public async Task<ActionResult<Role_PermissionDTO>> DeletePermission([FromBody]Role_PermissionDTO Role_PermissionDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            Permission Permission = ConvertPermissionDTOToBO(Role_PermissionDTO);
+            Permission = await PermissionService.Create(Permission);
+            Role_PermissionDTO = new Role_PermissionDTO(Permission);
+            if (Permission.IsValidated)
+                return Role_PermissionDTO;
+            else
+                return BadRequest(Role_PermissionDTO);
+        }
+
+        public Permission ConvertPermissionDTOToBO(Role_PermissionDTO Role_PermissionDTO)
+        {
             Permission Permission = new Permission
             {
                 Id = Role_PermissionDTO.Id,
@@ -317,7 +321,7 @@ namespace DMS.Rpc.role
                     {
                         Id = f.Id,
                         Name = f.Name,
-                        Type = f.Type,
+                        FieldTypeId = f.FieldTypeId,
                     }).ToList(),
                     Actions = Role_PermissionDTO.Menu.Actions?.Select(p => new Entities.Action
                     {
@@ -325,8 +329,10 @@ namespace DMS.Rpc.role
                         Name = p.Name,
                     }).ToList(),
                 },
-                PermissionFieldMappings = Role_PermissionDTO.PermissionFieldMappings?.Select(pf => new PermissionFieldMapping
+                PermissionContents = Role_PermissionDTO.PermissionContents?.Select(pf => new PermissionContent
                 {
+                    Id = pf.Id,
+                    PermissionOperatorId = pf.PermissionOperatorId,
                     FieldId = pf.FieldId,
                     Value = pf.Value,
                 }).ToList(),
@@ -335,9 +341,7 @@ namespace DMS.Rpc.role
                     ActionId = pp.ActionId,
                 }).ToList(),
             };
-            Permission = await PermissionService.Create(Permission);
-
-            return new Role_PermissionDTO(Permission);
+            return Permission;
         }
 
         [Route(RoleRoute.SingleListAppUser), HttpPost]

@@ -5,13 +5,18 @@ using Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MRole
 {
     public interface IPermissionService : IServiceScoped
     {
+        Task<int> Count(PermissionFilter PermissionFilter);
+        Task<List<Permission>> List(PermissionFilter PermissionFilter);
         Task<Permission> Create(Permission Permission);
+        Task<Permission> Update(Permission Permission);
+        Task<Permission> Delete(Permission Permission);
     }
     public class PermissionService : IPermissionService
     {
@@ -23,6 +28,17 @@ namespace DMS.Services.MRole
             this.Logging = Logging;
         }
 
+        public async Task<int> Count(PermissionFilter PermissionFilter)
+        {
+            return await UOW.PermissionRepository.Count(PermissionFilter);
+        }
+
+        public async Task<List<Permission>> List(PermissionFilter PermissionFilter)
+        {
+            List<Permission> Permissions = await UOW.PermissionRepository.List(PermissionFilter);
+            return Permissions;
+        }
+
         public async Task<Permission> Create(Permission Permission)
         {
             try
@@ -32,11 +48,60 @@ namespace DMS.Services.MRole
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                     throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<Permission> Update(Permission Permission)
+        {
+            try
+            {
+                await UOW.PermissionRepository.Update(Permission);
+                return await UOW.PermissionRepository.Get(Permission.Id);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<Permission> Delete(Permission Permission)
+        {
+            try
+            {
+                await UOW.PermissionRepository.Delete(Permission);
+                return await UOW.PermissionRepository.Get(Permission.Id);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
+                    throw new MessageException(ex.InnerException);
+                }
             }
         }
     }

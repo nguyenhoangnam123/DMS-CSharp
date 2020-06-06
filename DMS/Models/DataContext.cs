@@ -63,7 +63,7 @@ namespace DMS.Models
         public virtual DbSet<PageDAO> Page { get; set; }
         public virtual DbSet<PermissionDAO> Permission { get; set; }
         public virtual DbSet<PermissionActionMappingDAO> PermissionActionMapping { get; set; }
-        public virtual DbSet<PermissionFieldDAO> PermissionField { get; set; }
+        public virtual DbSet<PermissionContentDAO> PermissionContent { get; set; }
         public virtual DbSet<PermissionOperatorDAO> PermissionOperator { get; set; }
         public virtual DbSet<PositionDAO> Position { get; set; }
         public virtual DbSet<ProblemDAO> Problem { get; set; }
@@ -1629,26 +1629,26 @@ namespace DMS.Models
                     .HasConstraintName("FK_ActionPermissionMapping_Permission");
             });
 
-            modelBuilder.Entity<PermissionFieldDAO>(entity =>
+            modelBuilder.Entity<PermissionContentDAO>(entity =>
             {
-                entity.ToTable("PermissionField", "PER");
+                entity.ToTable("PermissionContent", "PER");
 
                 entity.Property(e => e.Value).HasMaxLength(500);
 
                 entity.HasOne(d => d.Field)
-                    .WithMany(p => p.PermissionFields)
+                    .WithMany(p => p.PermissionContents)
                     .HasForeignKey(d => d.FieldId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PermissionField_Field");
 
                 entity.HasOne(d => d.Permission)
-                    .WithMany(p => p.PermissionFields)
+                    .WithMany(p => p.PermissionContents)
                     .HasForeignKey(d => d.PermissionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PermissionField_Permission");
 
                 entity.HasOne(d => d.PermissionOperator)
-                    .WithMany(p => p.PermissionFields)
+                    .WithMany(p => p.PermissionContents)
                     .HasForeignKey(d => d.PermissionOperatorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PermissionField_PermissionOperator");

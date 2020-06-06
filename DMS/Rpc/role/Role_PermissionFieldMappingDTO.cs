@@ -7,20 +7,25 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.role
 {
-    public class Role_PermissionFieldMappingDTO : DataDTO
+    public class Role_PermissionContentDTO : DataDTO
     {
+        public long Id { get; set; }
         public long PermissionId { get; set; }
+        public long PermissionOperatorId { get; set; }
         public long FieldId { get; set; }
         public string Value { get; set; }
         public Role_FieldDTO Field { get; set; }
+        public Role_PermissionOperatorDTO PermissionOperator { get; set; }
 
-        public Role_PermissionFieldMappingDTO() { }
-        public Role_PermissionFieldMappingDTO(PermissionFieldMapping PermissionFieldMapping)
+        public Role_PermissionContentDTO() { }
+        public Role_PermissionContentDTO(PermissionContent PermissionContent)
         {
-            this.PermissionId = PermissionFieldMapping.PermissionId;
-            this.FieldId = PermissionFieldMapping.FieldId;
-            this.Value = PermissionFieldMapping.Value;
-            this.Field = PermissionFieldMapping.Field == null ? null : new Role_FieldDTO(PermissionFieldMapping.Field);
+            this.Id = PermissionContent.Id;
+            this.PermissionOperatorId = PermissionContent.PermissionOperatorId;
+            this.PermissionId = PermissionContent.PermissionId;
+            this.FieldId = PermissionContent.FieldId;
+            this.Value = PermissionContent.Value;
+            this.Field = PermissionContent.Field == null ? null : new Role_FieldDTO(PermissionContent.Field);
         }
     }
 

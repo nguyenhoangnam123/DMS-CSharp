@@ -20,7 +20,6 @@ namespace DMS.Rpc.role
         public const string Delete = Default + "/delete";
         public const string AssignAppUser = Default + "/assign-app-user";
         public const string GetMenu = Default + "/get-menu";
-        public const string CreatePermission = Default + "/create-permission";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         
@@ -40,6 +39,13 @@ namespace DMS.Rpc.role
 
         public const string CountAppUser = Default + "/count-app-user";
         public const string ListAppUser = Default + "/list-app-user";
+        public const string CountPermission = Default + "/count-permission";
+
+        public const string ListPermission = Default + "/list-permission";
+        public const string GetPermission = Default + "/get-permission";
+        public const string CreatePermission = Default + "/create-permission";
+        public const string UpdatePermission = Default + "/update-permission";
+        public const string DeletePermission = Default + "/delete-permission";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {

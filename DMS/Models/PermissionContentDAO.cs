@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
-    public partial class PermissionFieldDAO
+    public partial class PermissionContentDAO
     {
         public long Id { get; set; }
         public long PermissionId { get; set; }

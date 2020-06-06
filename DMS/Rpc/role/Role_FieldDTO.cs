@@ -14,7 +14,7 @@ namespace DMS.Rpc.role
 
         public string Name { get; set; }
 
-        public string Type { get; set; }
+        public long FieldTypeId { get; set; }
 
         public long MenuId { get; set; }
 
@@ -29,7 +29,7 @@ namespace DMS.Rpc.role
 
             this.Name = Field.Name;
 
-            this.Type = Field.Type;
+            this.FieldTypeId = Field.FieldTypeId;
 
             this.MenuId = Field.MenuId;
 

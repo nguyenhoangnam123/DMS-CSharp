@@ -213,27 +213,6 @@ namespace DMS.Repositories
                         IsDeleted = p.IsDeleted
                     }).ToList()
                 }).ToListAsync();
-            Role.Permissions = await DataContext.Permission
-                .Where(x => x.RoleId == Role.Id)
-                .Select(x => new Permission
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Code = x.Code,
-                    RoleId = x.RoleId,
-                    MenuId = x.MenuId,
-                    StatusId = x.StatusId,
-                 
-                    PermissionActionMappings = x.PermissionActionMappings.Select(pp => new PermissionActionMapping
-                    {
-                        PermissionId = pp.PermissionId,
-                        ActionId = pp.ActionId,
-                    }).ToList()
-                }).ToListAsync();
-            Role.Permissions.ForEach(p =>
-            {
-                p.Menu = Menus.Where(m => m.Id == p.MenuId).FirstOrDefault();
-            });
             return Role;
         }
         public async Task<bool> Create(Role Role)
@@ -312,72 +291,6 @@ namespace DMS.Repositories
                     AppUserRoleMappingDAOs.Add(AppUserRoleMappingDAO);
                 }
                 await DataContext.AppUserRoleMapping.BulkMergeAsync(AppUserRoleMappingDAOs);
-            }
-
-       
-            await DataContext.PermissionActionMapping
-             .Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
-            await DataContext.Permission
-                .Where(x => x.RoleId == Role.Id).DeleteFromQueryAsync();
-
-            List<PermissionDAO> PermissionDAOs = new List<PermissionDAO>();
-            if (Role.Permissions != null)
-            {
-                foreach (Permission Permission in Role.Permissions)
-                {
-                    PermissionDAO PermissionDAO = new PermissionDAO();
-                    PermissionDAO.Id = Permission.Id;
-                    PermissionDAO.Code = Permission.Code;
-                    PermissionDAO.Name = Permission.Name;
-                    PermissionDAO.RoleId = Role.Id;
-                    PermissionDAO.MenuId = Permission.MenuId;
-                    PermissionDAO.StatusId = Permission.StatusId;
-
-                    PermissionDAOs.Add(PermissionDAO);
-                }
-                await DataContext.Permission.BulkMergeAsync(PermissionDAOs);
-                List<PermissionFieldMappingDAO> PermissionFieldMappingDAOs = new List<PermissionFieldMappingDAO>();
-                List<PermissionActionMappingDAO> PermissionActionMappingDAOs = new List<PermissionActionMappingDAO>();
-                foreach (Permission Permission in Role.Permissions)
-                {
-                    Permission.Id = PermissionDAOs.Where(p => p.Code == Permission.Code).Select(p => p.Id).FirstOrDefault();
-                    if (Permission.PermissionFieldMappings != null)
-                    {
-                        foreach (var PermissionFieldMapping in Permission.PermissionFieldMappings)
-                        {
-                            PermissionFieldMappingDAO PermissionFieldMappingDAO = PermissionFieldMappingDAOs
-                                .Where(pf => pf.PermissionId == Permission.Id && pf.FieldId == PermissionFieldMapping.FieldId).FirstOrDefault();
-                            if (PermissionFieldMappingDAO == null)
-                            {
-                                PermissionFieldMappingDAO = new PermissionFieldMappingDAO
-                                {
-                                    PermissionId = Permission.Id,
-                                    FieldId = PermissionFieldMapping.FieldId,
-                                    Value = PermissionFieldMapping.Value
-                                };
-                                PermissionFieldMappingDAOs.Add(PermissionFieldMappingDAO);
-                            }
-                        }
-                    }
-                    if (Permission.PermissionActionMappings != null)
-                    {
-                        foreach (var PermissionActionMapping in Permission.PermissionActionMappings)
-                        {
-                            PermissionActionMappingDAO PermissionActionMappingDAO = PermissionActionMappingDAOs
-                                .Where(pa => pa.PermissionId == Permission.Id && pa.ActionId == PermissionActionMapping.ActionId).FirstOrDefault();
-                            if (PermissionActionMappingDAO == null)
-                            {
-                                PermissionActionMappingDAO = new PermissionActionMappingDAO
-                                {
-                                    PermissionId = Permission.Id,
-                                    ActionId = PermissionActionMapping.ActionId,
-                                };
-                                PermissionActionMappingDAOs.Add(PermissionActionMappingDAO);
-                            }
-                        }
-                    }
-                }
-                await DataContext.PermissionActionMapping.BulkMergeAsync(PermissionActionMappingDAOs);
             }
         }
     }
