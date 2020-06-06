@@ -1,4 +1,8 @@
 ﻿using Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Enums
 {
@@ -8,5 +12,9 @@ namespace DMS.Enums
         public static GenericEnum APPROVING = new GenericEnum { Id = 2, Code = "APPROVING", Name = "Đang duyệt" };
         public static GenericEnum APPROVED = new GenericEnum { Id = 3, Code = "APPROVED", Name = "Đã duyệt" };
         public static GenericEnum REJECTED = new GenericEnum { Id = 4, Code = "REJECTED", Name = "Từ chối" };
+        public static List<GenericEnum> RequestStateEnumList = new List<GenericEnum>()
+        {
+            NEW, APPROVING, APPROVED, REJECTED
+        };
     }
 }
