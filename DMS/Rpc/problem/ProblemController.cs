@@ -564,8 +564,6 @@ namespace DMS.Rpc.problem
                         StoreChecking.Latitude,
                         StoreChecking.CheckInAt,
                         StoreChecking.CheckOutAt,
-                        StoreChecking.IndirectSalesOrderCounter,
-                        StoreChecking.ImageCounter,
                     });
                 }
                 excel.GenerateWorksheet("StoreChecking", StoreCheckingHeaders, StoreCheckingData);
@@ -853,8 +851,6 @@ namespace DMS.Rpc.problem
                         StoreChecking.Latitude,
                         StoreChecking.CheckInAt,
                         StoreChecking.CheckOutAt,
-                        StoreChecking.IndirectSalesOrderCounter,
-                        StoreChecking.ImageCounter,
                     });
                 }
                 excel.GenerateWorksheet("StoreChecking", StoreCheckingHeaders, StoreCheckingData);
@@ -989,8 +985,6 @@ namespace DMS.Rpc.problem
                 Latitude = Problem_ProblemDTO.StoreChecking.Latitude,
                 CheckInAt = Problem_ProblemDTO.StoreChecking.CheckInAt,
                 CheckOutAt = Problem_ProblemDTO.StoreChecking.CheckOutAt,
-                IndirectSalesOrderCounter = Problem_ProblemDTO.StoreChecking.IndirectSalesOrderCounter,
-                ImageCounter = Problem_ProblemDTO.StoreChecking.ImageCounter,
             };
             Problem.ProblemImageMappings = Problem_ProblemDTO.ProblemImageMappings?
                 .Select(x => new ProblemImageMapping
@@ -1050,7 +1044,6 @@ namespace DMS.Rpc.problem
             AppUserFilter.Department = Problem_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = Problem_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = Problem_AppUserFilterDTO.StatusId;
-            AppUserFilter.Avatar = Problem_AppUserFilterDTO.Avatar;
             AppUserFilter.ProvinceId = Problem_AppUserFilterDTO.ProvinceId;
             AppUserFilter.SexId = Problem_AppUserFilterDTO.SexId;
             AppUserFilter.Birthday = Problem_AppUserFilterDTO.Birthday;
@@ -1133,8 +1126,6 @@ namespace DMS.Rpc.problem
             StoreFilter.OwnerName = Problem_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = Problem_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Problem_StoreFilterDTO.OwnerEmail;
-            StoreFilter.TaxCode = Problem_StoreFilterDTO.TaxCode;
-            StoreFilter.LegalEntity = Problem_StoreFilterDTO.LegalEntity;
             StoreFilter.StatusId = Problem_StoreFilterDTO.StatusId;
 
             List<Store> Stores = await StoreService.List(StoreFilter);
@@ -1161,34 +1152,11 @@ namespace DMS.Rpc.problem
             StoreCheckingFilter.Latitude = Problem_StoreCheckingFilterDTO.Latitude;
             StoreCheckingFilter.CheckInAt = Problem_StoreCheckingFilterDTO.CheckInAt;
             StoreCheckingFilter.CheckOutAt = Problem_StoreCheckingFilterDTO.CheckOutAt;
-            StoreCheckingFilter.IndirectSalesOrderCounter = Problem_StoreCheckingFilterDTO.IndirectSalesOrderCounter;
-            StoreCheckingFilter.ImageCounter = Problem_StoreCheckingFilterDTO.ImageCounter;
 
             List<StoreChecking> StoreCheckings = await StoreCheckingService.List(StoreCheckingFilter);
             List<Problem_StoreCheckingDTO> Problem_StoreCheckingDTOs = StoreCheckings
                 .Select(x => new Problem_StoreCheckingDTO(x)).ToList();
             return Problem_StoreCheckingDTOs;
-        }
-        [Route(ProblemRoute.FilterListImage), HttpPost]
-        public async Task<List<Problem_ImageDTO>> FilterListImage([FromBody] Problem_ImageFilterDTO Problem_ImageFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ImageFilter ImageFilter = new ImageFilter();
-            ImageFilter.Skip = 0;
-            ImageFilter.Take = 20;
-            ImageFilter.OrderBy = ImageOrder.Id;
-            ImageFilter.OrderType = OrderType.ASC;
-            ImageFilter.Selects = ImageSelect.ALL;
-            ImageFilter.Id = Problem_ImageFilterDTO.Id;
-            ImageFilter.Name = Problem_ImageFilterDTO.Name;
-            ImageFilter.Url = Problem_ImageFilterDTO.Url;
-
-            List<Image> Images = await ImageService.List(ImageFilter);
-            List<Problem_ImageDTO> Problem_ImageDTOs = Images
-                .Select(x => new Problem_ImageDTO(x)).ToList();
-            return Problem_ImageDTOs;
         }
 
         [Route(ProblemRoute.SingleListAppUser), HttpPost]
@@ -1213,7 +1181,6 @@ namespace DMS.Rpc.problem
             AppUserFilter.Department = Problem_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = Problem_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = Problem_AppUserFilterDTO.StatusId;
-            AppUserFilter.Avatar = Problem_AppUserFilterDTO.Avatar;
             AppUserFilter.ProvinceId = Problem_AppUserFilterDTO.ProvinceId;
             AppUserFilter.SexId = Problem_AppUserFilterDTO.SexId;
             AppUserFilter.Birthday = Problem_AppUserFilterDTO.Birthday;
@@ -1296,8 +1263,6 @@ namespace DMS.Rpc.problem
             StoreFilter.OwnerName = Problem_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = Problem_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Problem_StoreFilterDTO.OwnerEmail;
-            StoreFilter.TaxCode = Problem_StoreFilterDTO.TaxCode;
-            StoreFilter.LegalEntity = Problem_StoreFilterDTO.LegalEntity;
             StoreFilter.StatusId = Problem_StoreFilterDTO.StatusId;
 
             List<Store> Stores = await StoreService.List(StoreFilter);
@@ -1324,70 +1289,11 @@ namespace DMS.Rpc.problem
             StoreCheckingFilter.Latitude = Problem_StoreCheckingFilterDTO.Latitude;
             StoreCheckingFilter.CheckInAt = Problem_StoreCheckingFilterDTO.CheckInAt;
             StoreCheckingFilter.CheckOutAt = Problem_StoreCheckingFilterDTO.CheckOutAt;
-            StoreCheckingFilter.IndirectSalesOrderCounter = Problem_StoreCheckingFilterDTO.IndirectSalesOrderCounter;
-            StoreCheckingFilter.ImageCounter = Problem_StoreCheckingFilterDTO.ImageCounter;
 
             List<StoreChecking> StoreCheckings = await StoreCheckingService.List(StoreCheckingFilter);
             List<Problem_StoreCheckingDTO> Problem_StoreCheckingDTOs = StoreCheckings
                 .Select(x => new Problem_StoreCheckingDTO(x)).ToList();
             return Problem_StoreCheckingDTOs;
-        }
-        [Route(ProblemRoute.SingleListImage), HttpPost]
-        public async Task<List<Problem_ImageDTO>> SingleListImage([FromBody] Problem_ImageFilterDTO Problem_ImageFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ImageFilter ImageFilter = new ImageFilter();
-            ImageFilter.Skip = 0;
-            ImageFilter.Take = 20;
-            ImageFilter.OrderBy = ImageOrder.Id;
-            ImageFilter.OrderType = OrderType.ASC;
-            ImageFilter.Selects = ImageSelect.ALL;
-            ImageFilter.Id = Problem_ImageFilterDTO.Id;
-            ImageFilter.Name = Problem_ImageFilterDTO.Name;
-            ImageFilter.Url = Problem_ImageFilterDTO.Url;
-
-            List<Image> Images = await ImageService.List(ImageFilter);
-            List<Problem_ImageDTO> Problem_ImageDTOs = Images
-                .Select(x => new Problem_ImageDTO(x)).ToList();
-            return Problem_ImageDTOs;
-        }
-
-        [Route(ProblemRoute.CountImage), HttpPost]
-        public async Task<long> CountImage([FromBody] Problem_ImageFilterDTO Problem_ImageFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ImageFilter ImageFilter = new ImageFilter();
-            ImageFilter.Id = Problem_ImageFilterDTO.Id;
-            ImageFilter.Name = Problem_ImageFilterDTO.Name;
-            ImageFilter.Url = Problem_ImageFilterDTO.Url;
-
-            return await ImageService.Count(ImageFilter);
-        }
-
-        [Route(ProblemRoute.ListImage), HttpPost]
-        public async Task<List<Problem_ImageDTO>> ListImage([FromBody] Problem_ImageFilterDTO Problem_ImageFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ImageFilter ImageFilter = new ImageFilter();
-            ImageFilter.Skip = Problem_ImageFilterDTO.Skip;
-            ImageFilter.Take = Problem_ImageFilterDTO.Take;
-            ImageFilter.OrderBy = ImageOrder.Id;
-            ImageFilter.OrderType = OrderType.ASC;
-            ImageFilter.Selects = ImageSelect.ALL;
-            ImageFilter.Id = Problem_ImageFilterDTO.Id;
-            ImageFilter.Name = Problem_ImageFilterDTO.Name;
-            ImageFilter.Url = Problem_ImageFilterDTO.Url;
-
-            List<Image> Images = await ImageService.List(ImageFilter);
-            List<Problem_ImageDTO> Problem_ImageDTOs = Images
-                .Select(x => new Problem_ImageDTO(x)).ToList();
-            return Problem_ImageDTOs;
         }
     }
 }

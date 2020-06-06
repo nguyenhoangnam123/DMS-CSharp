@@ -368,7 +368,7 @@ namespace DMS.Repositories
             ProblemDAO.StoreId = Problem.StoreId;
             ProblemDAO.CreatorId = Problem.CreatorId;
             ProblemDAO.ProblemTypeId = Problem.ProblemTypeId;
-            ProblemDAO.NoteAt = Problem.NoteAt;
+            ProblemDAO.NoteAt = StaticParams.DateTimeNow;
             ProblemDAO.CompletedAt = Problem.CompletedAt;
             ProblemDAO.Content = Problem.Content;
             ProblemDAO.ProblemStatusId = Problem.ProblemStatusId;
@@ -389,7 +389,6 @@ namespace DMS.Repositories
             ProblemDAO.StoreId = Problem.StoreId;
             ProblemDAO.CreatorId = Problem.CreatorId;
             ProblemDAO.ProblemTypeId = Problem.ProblemTypeId;
-            ProblemDAO.NoteAt = Problem.NoteAt;
             ProblemDAO.CompletedAt = Problem.CompletedAt;
             ProblemDAO.Content = Problem.Content;
             ProblemDAO.ProblemStatusId = Problem.ProblemStatusId;
@@ -400,6 +399,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Problem Problem)
         {
+            await DataContext.ProblemImageMapping.Where(x => x.ProblemId == Problem.Id).DeleteFromQueryAsync();
             await DataContext.Problem.Where(x => x.Id == Problem.Id).DeleteFromQueryAsync();
             return true;
         }
@@ -428,6 +428,7 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<Problem> Problems)
         {
             List<long> Ids = Problems.Select(x => x.Id).ToList();
+            await DataContext.ProblemImageMapping.Where(x => Ids.Contains(x.ProblemId)).DeleteFromQueryAsync();
             await DataContext.Problem
                 .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
             return true;

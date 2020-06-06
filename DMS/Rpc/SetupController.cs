@@ -238,6 +238,7 @@ namespace DMS.Rpc
             InitKpiCriteriaItemEnum();
             InitGeneralCriteriaEnum();
             InitProblemTypeEnum();
+            InitProblemStatusEnum();
             InitResellerStatusEnum();
             InitRequestStateEnum();
             InitStatusEnum();
@@ -594,6 +595,23 @@ namespace DMS.Rpc
                 if (!list.Any(pt => pt.Id == item.Id))
                 {
                     DataContext.ProblemType.Add(new ProblemTypeDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
+            }
+        }
+
+        private void InitProblemStatusEnum()
+        {
+            List<ProblemStatusDAO> list = DataContext.ProblemStatus.ToList();
+            foreach (var item in ProblemStatusEnum.ProblemStatusEnumList)
+            {
+                if (!list.Any(pt => pt.Id == item.Id))
+                {
+                    DataContext.ProblemStatus.Add(new ProblemStatusDAO
                     {
                         Id = item.Id,
                         Code = item.Code,
