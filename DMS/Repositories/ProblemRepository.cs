@@ -39,12 +39,18 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StoreCheckingId, filter.StoreCheckingId);
             if (filter.StoreId != null)
                 query = query.Where(q => q.StoreId, filter.StoreId);
+            if (filter.CreatorId != null)
+                query = query.Where(q => q.CreatorId, filter.CreatorId);
             if (filter.ProblemTypeId != null)
                 query = query.Where(q => q.ProblemTypeId, filter.ProblemTypeId);
             if (filter.NoteAt != null)
                 query = query.Where(q => q.NoteAt, filter.NoteAt);
+            if (filter.CompletedAt != null)
+                query = query.Where(q => q.CompletedAt, filter.CompletedAt);
             if (filter.Content != null)
                 query = query.Where(q => q.Content, filter.Content);
+            if (filter.ProblemStatusId != null)
+                query = query.Where(q => q.ProblemStatusId, filter.ProblemStatusId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -57,18 +63,24 @@ namespace DMS.Repositories
             foreach (ProblemFilter ProblemFilter in filter.OrFilter)
             {
                 IQueryable<ProblemDAO> queryable = query;
-                if (ProblemFilter.Id != null)
-                    queryable = queryable.Where(q => q.Id, ProblemFilter.Id);
-                if (ProblemFilter.StoreCheckingId != null)
-                    queryable = queryable.Where(q => q.StoreCheckingId, ProblemFilter.StoreCheckingId);
-                if (ProblemFilter.StoreId != null)
-                    queryable = queryable.Where(q => q.StoreId, ProblemFilter.StoreId);
-                if (ProblemFilter.ProblemTypeId != null)
-                    queryable = queryable.Where(q => q.ProblemTypeId, ProblemFilter.ProblemTypeId);
-                if (ProblemFilter.NoteAt != null)
-                    queryable = queryable.Where(q => q.NoteAt, ProblemFilter.NoteAt);
-                if (ProblemFilter.Content != null)
-                    queryable = queryable.Where(q => q.Content, ProblemFilter.Content);
+                if (filter.Id != null)
+                    queryable = queryable.Where(q => q.Id, filter.Id);
+                if (filter.StoreCheckingId != null)
+                    queryable = queryable.Where(q => q.StoreCheckingId, filter.StoreCheckingId);
+                if (filter.StoreId != null)
+                    queryable = queryable.Where(q => q.StoreId, filter.StoreId);
+                if (filter.CreatorId != null)
+                    queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
+                if (filter.ProblemTypeId != null)
+                    queryable = queryable.Where(q => q.ProblemTypeId, filter.ProblemTypeId);
+                if (filter.NoteAt != null)
+                    queryable = queryable.Where(q => q.NoteAt, filter.NoteAt);
+                if (filter.CompletedAt != null)
+                    queryable = queryable.Where(q => q.CompletedAt, filter.CompletedAt);
+                if (filter.Content != null)
+                    queryable = queryable.Where(q => q.Content, filter.Content);
+                if (filter.ProblemStatusId != null)
+                    queryable = queryable.Where(q => q.ProblemStatusId, filter.ProblemStatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -90,14 +102,23 @@ namespace DMS.Repositories
                         case ProblemOrder.Store:
                             query = query.OrderBy(q => q.StoreId);
                             break;
+                        case ProblemOrder.Creator:
+                            query = query.OrderBy(q => q.CreatorId);
+                            break;
                         case ProblemOrder.ProblemType:
                             query = query.OrderBy(q => q.ProblemTypeId);
                             break;
                         case ProblemOrder.NoteAt:
                             query = query.OrderBy(q => q.NoteAt);
                             break;
+                        case ProblemOrder.CompletedAt:
+                            query = query.OrderBy(q => q.CompletedAt);
+                            break;
                         case ProblemOrder.Content:
                             query = query.OrderBy(q => q.Content);
+                            break;
+                        case ProblemOrder.ProblemStatus:
+                            query = query.OrderBy(q => q.ProblemStatusId);
                             break;
                     }
                     break;
@@ -113,14 +134,23 @@ namespace DMS.Repositories
                         case ProblemOrder.Store:
                             query = query.OrderByDescending(q => q.StoreId);
                             break;
+                        case ProblemOrder.Creator:
+                            query = query.OrderByDescending(q => q.CreatorId);
+                            break;
                         case ProblemOrder.ProblemType:
                             query = query.OrderByDescending(q => q.ProblemTypeId);
                             break;
                         case ProblemOrder.NoteAt:
                             query = query.OrderByDescending(q => q.NoteAt);
                             break;
+                        case ProblemOrder.CompletedAt:
+                            query = query.OrderByDescending(q => q.CompletedAt);
+                            break;
                         case ProblemOrder.Content:
                             query = query.OrderByDescending(q => q.Content);
+                            break;
+                        case ProblemOrder.ProblemStatus:
+                            query = query.OrderByDescending(q => q.ProblemStatusId);
                             break;
                     }
                     break;
@@ -136,9 +166,35 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(ProblemSelect.Id) ? q.Id : default(long),
                 StoreCheckingId = filter.Selects.Contains(ProblemSelect.StoreChecking) ? q.StoreCheckingId : default(long?),
                 StoreId = filter.Selects.Contains(ProblemSelect.Store) ? q.StoreId : default(long),
+                CreatorId = filter.Selects.Contains(ProblemSelect.Creator) ? q.CreatorId : default(long),
                 ProblemTypeId = filter.Selects.Contains(ProblemSelect.ProblemType) ? q.ProblemTypeId : default(long),
                 NoteAt = filter.Selects.Contains(ProblemSelect.NoteAt) ? q.NoteAt : default(DateTime),
+                CompletedAt = filter.Selects.Contains(ProblemSelect.CompletedAt) ? q.CompletedAt : default(DateTime?),
                 Content = filter.Selects.Contains(ProblemSelect.Content) ? q.Content : default(string),
+                ProblemStatusId = filter.Selects.Contains(ProblemSelect.ProblemStatus) ? q.ProblemStatusId : default(long),
+                Creator = filter.Selects.Contains(ProblemSelect.Creator) && q.Creator != null ? new AppUser
+                {
+                    Id = q.Creator.Id,
+                    Username = q.Creator.Username,
+                    DisplayName = q.Creator.DisplayName,
+                    Address = q.Creator.Address,
+                    Email = q.Creator.Email,
+                    Phone = q.Creator.Phone,
+                    PositionId = q.Creator.PositionId,
+                    Department = q.Creator.Department,
+                    OrganizationId = q.Creator.OrganizationId,
+                    StatusId = q.Creator.StatusId,
+                    Avatar = q.Creator.Avatar,
+                    ProvinceId = q.Creator.ProvinceId,
+                    SexId = q.Creator.SexId,
+                    Birthday = q.Creator.Birthday,
+                } : null,
+                ProblemStatus = filter.Selects.Contains(ProblemSelect.ProblemStatus) && q.ProblemStatus != null ? new ProblemStatus
+                {
+                    Id = q.ProblemStatus.Id,
+                    Code = q.ProblemStatus.Code,
+                    Name = q.ProblemStatus.Name,
+                } : null,
                 ProblemType = filter.Selects.Contains(ProblemSelect.ProblemType) && q.ProblemType != null ? new ProblemType
                 {
                     Id = q.ProblemType.Id,
@@ -150,6 +206,27 @@ namespace DMS.Repositories
                     Id = q.Store.Id,
                     Code = q.Store.Code,
                     Name = q.Store.Name,
+                    ParentStoreId = q.Store.ParentStoreId,
+                    OrganizationId = q.Store.OrganizationId,
+                    StoreTypeId = q.Store.StoreTypeId,
+                    StoreGroupingId = q.Store.StoreGroupingId,
+                    ResellerId = q.Store.ResellerId,
+                    Telephone = q.Store.Telephone,
+                    ProvinceId = q.Store.ProvinceId,
+                    DistrictId = q.Store.DistrictId,
+                    WardId = q.Store.WardId,
+                    Address = q.Store.Address,
+                    DeliveryAddress = q.Store.DeliveryAddress,
+                    Latitude = q.Store.Latitude,
+                    Longitude = q.Store.Longitude,
+                    DeliveryLatitude = q.Store.DeliveryLatitude,
+                    DeliveryLongitude = q.Store.DeliveryLongitude,
+                    OwnerName = q.Store.OwnerName,
+                    OwnerPhone = q.Store.OwnerPhone,
+                    OwnerEmail = q.Store.OwnerEmail,
+                    TaxCode = q.Store.TaxCode,
+                    LegalEntity = q.Store.LegalEntity,
+                    StatusId = q.Store.StatusId,
                 } : null,
                 StoreChecking = filter.Selects.Contains(ProblemSelect.StoreChecking) && q.StoreChecking != null ? new StoreChecking
                 {
@@ -190,9 +267,35 @@ namespace DMS.Repositories
                 Id = x.Id,
                 StoreCheckingId = x.StoreCheckingId,
                 StoreId = x.StoreId,
+                CreatorId = x.CreatorId,
                 ProblemTypeId = x.ProblemTypeId,
                 NoteAt = x.NoteAt,
+                CompletedAt = x.CompletedAt,
                 Content = x.Content,
+                ProblemStatusId = x.ProblemStatusId,
+                Creator = x.Creator == null ? null : new AppUser
+                {
+                    Id = x.Creator.Id,
+                    Username = x.Creator.Username,
+                    DisplayName = x.Creator.DisplayName,
+                    Address = x.Creator.Address,
+                    Email = x.Creator.Email,
+                    Phone = x.Creator.Phone,
+                    PositionId = x.Creator.PositionId,
+                    Department = x.Creator.Department,
+                    OrganizationId = x.Creator.OrganizationId,
+                    StatusId = x.Creator.StatusId,
+                    Avatar = x.Creator.Avatar,
+                    ProvinceId = x.Creator.ProvinceId,
+                    SexId = x.Creator.SexId,
+                    Birthday = x.Creator.Birthday,
+                },
+                ProblemStatus = x.ProblemStatus == null ? null : new ProblemStatus
+                {
+                    Id = x.ProblemStatus.Id,
+                    Code = x.ProblemStatus.Code,
+                    Name = x.ProblemStatus.Name,
+                },
                 ProblemType = x.ProblemType == null ? null : new ProblemType
                 {
                     Id = x.ProblemType.Id,
@@ -204,6 +307,27 @@ namespace DMS.Repositories
                     Id = x.Store.Id,
                     Code = x.Store.Code,
                     Name = x.Store.Name,
+                    ParentStoreId = x.Store.ParentStoreId,
+                    OrganizationId = x.Store.OrganizationId,
+                    StoreTypeId = x.Store.StoreTypeId,
+                    StoreGroupingId = x.Store.StoreGroupingId,
+                    ResellerId = x.Store.ResellerId,
+                    Telephone = x.Store.Telephone,
+                    ProvinceId = x.Store.ProvinceId,
+                    DistrictId = x.Store.DistrictId,
+                    WardId = x.Store.WardId,
+                    Address = x.Store.Address,
+                    DeliveryAddress = x.Store.DeliveryAddress,
+                    Latitude = x.Store.Latitude,
+                    Longitude = x.Store.Longitude,
+                    DeliveryLatitude = x.Store.DeliveryLatitude,
+                    DeliveryLongitude = x.Store.DeliveryLongitude,
+                    OwnerName = x.Store.OwnerName,
+                    OwnerPhone = x.Store.OwnerPhone,
+                    OwnerEmail = x.Store.OwnerEmail,
+                    TaxCode = x.Store.TaxCode,
+                    LegalEntity = x.Store.LegalEntity,
+                    StatusId = x.Store.StatusId,
                 },
                 StoreChecking = x.StoreChecking == null ? null : new StoreChecking
                 {
@@ -242,9 +366,12 @@ namespace DMS.Repositories
             ProblemDAO.Id = Problem.Id;
             ProblemDAO.StoreCheckingId = Problem.StoreCheckingId;
             ProblemDAO.StoreId = Problem.StoreId;
+            ProblemDAO.CreatorId = Problem.CreatorId;
             ProblemDAO.ProblemTypeId = Problem.ProblemTypeId;
-            ProblemDAO.NoteAt = Problem.NoteAt;
+            ProblemDAO.NoteAt = StaticParams.DateTimeNow;
+            ProblemDAO.CompletedAt = Problem.CompletedAt;
             ProblemDAO.Content = Problem.Content;
+            ProblemDAO.ProblemStatusId = Problem.ProblemStatusId;
             DataContext.Problem.Add(ProblemDAO);
             await DataContext.SaveChangesAsync();
             Problem.Id = ProblemDAO.Id;
@@ -260,9 +387,11 @@ namespace DMS.Repositories
             ProblemDAO.Id = Problem.Id;
             ProblemDAO.StoreCheckingId = Problem.StoreCheckingId;
             ProblemDAO.StoreId = Problem.StoreId;
+            ProblemDAO.CreatorId = Problem.CreatorId;
             ProblemDAO.ProblemTypeId = Problem.ProblemTypeId;
-            ProblemDAO.NoteAt = Problem.NoteAt;
+            ProblemDAO.CompletedAt = Problem.CompletedAt;
             ProblemDAO.Content = Problem.Content;
+            ProblemDAO.ProblemStatusId = Problem.ProblemStatusId;
             await DataContext.SaveChangesAsync();
             await SaveReference(Problem);
             return true;
@@ -270,6 +399,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Problem Problem)
         {
+            await DataContext.ProblemImageMapping.Where(x => x.ProblemId == Problem.Id).DeleteFromQueryAsync();
             await DataContext.Problem.Where(x => x.Id == Problem.Id).DeleteFromQueryAsync();
             return true;
         }
@@ -283,9 +413,12 @@ namespace DMS.Repositories
                 ProblemDAO.Id = Problem.Id;
                 ProblemDAO.StoreCheckingId = Problem.StoreCheckingId;
                 ProblemDAO.StoreId = Problem.StoreId;
+                ProblemDAO.CreatorId = Problem.CreatorId;
                 ProblemDAO.ProblemTypeId = Problem.ProblemTypeId;
                 ProblemDAO.NoteAt = Problem.NoteAt;
+                ProblemDAO.CompletedAt = Problem.CompletedAt;
                 ProblemDAO.Content = Problem.Content;
+                ProblemDAO.ProblemStatusId = Problem.ProblemStatusId;
                 ProblemDAOs.Add(ProblemDAO);
             }
             await DataContext.BulkMergeAsync(ProblemDAOs);
@@ -295,6 +428,7 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<Problem> Problems)
         {
             List<long> Ids = Problems.Select(x => x.Id).ToList();
+            await DataContext.ProblemImageMapping.Where(x => Ids.Contains(x.ProblemId)).DeleteFromQueryAsync();
             await DataContext.Problem
                 .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
             return true;

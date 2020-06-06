@@ -91,6 +91,7 @@ namespace DMS.Services.MProblem
 
             try
             {
+                Problem.CreatorId = CurrentContext.UserId;
                 await UOW.Begin();
                 await UOW.ProblemRepository.Create(Problem);
                 await UOW.Commit();
@@ -219,6 +220,7 @@ namespace DMS.Services.MProblem
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
+                   
                 }
             }
             return filter;
