@@ -146,6 +146,14 @@ namespace Common
         public long FieldTypeId { get; set; }
     }
 
+    public class PermissionOperatorFilter : FilterEntity
+    {
+        public IdFilter Id { get; set; }
+        public StringFilter Code { get; set; }
+        public StringFilter Name { get; set; }
+        public IdFilter FieldTypeId { get; set; }
+    }
+
     public class FieldTypeEnum
     {
         public static GenericEnum ID = new GenericEnum { Id = 1, Code = "ID", Name = "ID" };

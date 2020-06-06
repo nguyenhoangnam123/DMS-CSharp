@@ -39,8 +39,8 @@ namespace DMS.Rpc.role
 
         public const string CountAppUser = Default + "/count-app-user";
         public const string ListAppUser = Default + "/list-app-user";
-        public const string CountPermission = Default + "/count-permission";
 
+        public const string CountPermission = Default + "/count-permission";
         public const string ListPermission = Default + "/list-permission";
         public const string GetPermission = Default + "/get-permission";
         public const string CreatePermission = Default + "/create-permission";
@@ -61,13 +61,13 @@ namespace DMS.Rpc.role
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse } },
             { "Thêm", new List<string> { 
-                Master, Count, List, Get,
+                Master, Count, List, Get, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, 
                 Detail, Create, GetMenu,
                 SingleListStatus } },
-            { "Sửa", new List<string> { 
-                Master, Count, List, Get,
+            { "Sửa", new List<string> {
+                Master, Count, List, Get, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse,
                 Detail, Update, GetMenu,
@@ -81,7 +81,7 @@ namespace DMS.Rpc.role
                 SingleListAppUser, SingleListMenu, SingleListStatus } },
              { "Tạo nhanh quyền", new List<string> {
                 Master, Count, List, Get,
-                Detail, CreatePermission, GetMenu,
+                Detail, CreatePermission, GetMenu, Master, Count, List, Get, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                 SingleListAppUser, SingleListMenu, SingleListStatus } },
             { "Xoá", new List<string> { 
                 Master, Count, List, Get,

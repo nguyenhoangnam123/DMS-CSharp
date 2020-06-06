@@ -30,7 +30,7 @@ namespace DMS.Entities
     {
         public IdFilter Id { get; set; }
         public StringFilter Name { get; set; }
-        public StringFilter Type { get; set; }
+        public IdFilter FieldTypeId { get; set; }
         public IdFilter MenuId { get; set; }
         public List<FieldFilter> OrFilter { get; set; }
         public FieldOrder OrderBy { get; set; }
@@ -42,7 +42,7 @@ namespace DMS.Entities
     {
         Id = 0,
         Name = 1,
-        Type = 2,
+        FieldType = 2,
         Menu = 3,
         IsDeleted = 4,
     }
@@ -53,7 +53,7 @@ namespace DMS.Entities
         ALL = E.ALL,
         Id = E._0,
         Name = E._1,
-        Type = E._2,
+        FieldType = E._2,
         Menu = E._3,
         IsDeleted = E._4,
     }

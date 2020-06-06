@@ -14,6 +14,7 @@ namespace DMS.Services.MRole
     {
         Task<int> Count(PermissionFilter PermissionFilter);
         Task<List<Permission>> List(PermissionFilter PermissionFilter);
+        Task<Permission> Get(long Id);
         Task<Permission> Create(Permission Permission);
         Task<Permission> Update(Permission Permission);
         Task<Permission> Delete(Permission Permission);
@@ -37,6 +38,27 @@ namespace DMS.Services.MRole
         {
             List<Permission> Permissions = await UOW.PermissionRepository.List(PermissionFilter);
             return Permissions;
+        }
+        public async Task<Permission> Get(long Id)
+        {
+            try
+            {
+                Permission Permission = await UOW.PermissionRepository.Get(Id);
+                return Permission;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
         }
 
         public async Task<Permission> Create(Permission Permission)
@@ -104,5 +126,7 @@ namespace DMS.Services.MRole
                 }
             }
         }
+
+        
     }
 }
