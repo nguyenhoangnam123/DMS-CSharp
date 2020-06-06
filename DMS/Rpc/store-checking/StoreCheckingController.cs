@@ -353,9 +353,17 @@ namespace DMS.Rpc.store_checking
                 Id = StoreChecking_ProblemDTO.Id,
                 Content = StoreChecking_ProblemDTO.Content,
                 NoteAt = StoreChecking_ProblemDTO.NoteAt,
+                CompletedAt = StoreChecking_ProblemDTO.CompletedAt,
                 ProblemTypeId = StoreChecking_ProblemDTO.ProblemTypeId,
+                ProblemStatusId = StoreChecking_ProblemDTO.ProblemStatusId,
                 StoreCheckingId = StoreChecking_ProblemDTO.StoreCheckingId,
+                CreatorId = StoreChecking_ProblemDTO.CreatorId,
                 StoreId = StoreChecking_ProblemDTO.StoreId,
+                ProblemImageMappings = StoreChecking_ProblemDTO.ProblemImageMappings?.Select(x => new ProblemImageMapping
+                {
+                    ImageId = x.ImageId,
+                    ProblemId = x.ProblemId
+                }).ToList()
             };
             Problem = await ProblemService.Create(Problem);
             if (Problem.IsValidated)
@@ -924,7 +932,12 @@ namespace DMS.Rpc.store_checking
             ProblemFilter ProblemFilter = new ProblemFilter();
             ProblemFilter.Id = StoreChecking_ProblemFilterDTO.Id;
             ProblemFilter.StoreCheckingId = StoreChecking_ProblemFilterDTO.StoreCheckingId;
+            ProblemFilter.CreatorId = StoreChecking_ProblemFilterDTO.CreatorId;
+            ProblemFilter.StoreId = StoreChecking_ProblemFilterDTO.StoreId;
+            ProblemFilter.NoteAt = StoreChecking_ProblemFilterDTO.NoteAt;
+            ProblemFilter.CompletedAt = StoreChecking_ProblemFilterDTO.CompletedAt;
             ProblemFilter.ProblemTypeId = StoreChecking_ProblemFilterDTO.ProblemTypeId;
+            ProblemFilter.ProblemStatusId = StoreChecking_ProblemFilterDTO.ProblemStatusId;
             return await ProblemService.Count(ProblemFilter);
         }
 
@@ -941,7 +954,12 @@ namespace DMS.Rpc.store_checking
             ProblemFilter.Selects = ProblemSelect.ALL;
             ProblemFilter.Id = StoreChecking_ProblemFilterDTO.Id;
             ProblemFilter.StoreCheckingId = StoreChecking_ProblemFilterDTO.StoreCheckingId;
+            ProblemFilter.CreatorId = StoreChecking_ProblemFilterDTO.CreatorId;
+            ProblemFilter.StoreId = StoreChecking_ProblemFilterDTO.StoreId;
+            ProblemFilter.NoteAt = StoreChecking_ProblemFilterDTO.NoteAt;
+            ProblemFilter.CompletedAt = StoreChecking_ProblemFilterDTO.CompletedAt;
             ProblemFilter.ProblemTypeId = StoreChecking_ProblemFilterDTO.ProblemTypeId;
+            ProblemFilter.ProblemStatusId = StoreChecking_ProblemFilterDTO.ProblemStatusId;
 
             List<Problem> Problems = await ProblemService.List(ProblemFilter);
             List<StoreChecking_ProblemDTO> StoreChecking_ProblemDTOs = Problems
