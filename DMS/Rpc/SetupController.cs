@@ -857,6 +857,15 @@ namespace DMS.Rpc
             }).ToList();
             DataContext.PermissionOperator.BulkMerge(ID);
 
+            List<PermissionOperatorDAO> STRING = PermissionOperatorEnum.PermissionOperatorEnumForSTRING.Select(item => new PermissionOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                FieldTypeId = FieldTypeEnum.STRING.Id,
+            }).ToList();
+            DataContext.PermissionOperator.BulkMerge(STRING);
+
             List<PermissionOperatorDAO> LONG = PermissionOperatorEnum.PermissionOperatorEnumForLONG.Select(item => new PermissionOperatorDAO
             {
                 Id = item.Id,
@@ -865,6 +874,16 @@ namespace DMS.Rpc
                 FieldTypeId = FieldTypeEnum.LONG.Id,
             }).ToList();
             DataContext.PermissionOperator.BulkMerge(LONG);
+
+
+            List<PermissionOperatorDAO> DECIMAL = PermissionOperatorEnum.PermissionOperatorEnumForDECIMAL.Select(item => new PermissionOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                FieldTypeId = FieldTypeEnum.DECIMAL.Id,
+            }).ToList();
+            DataContext.PermissionOperator.BulkMerge(DECIMAL);
 
             List<PermissionOperatorDAO> DATE = PermissionOperatorEnum.PermissionOperatorEnumForDATE.Select(item => new PermissionOperatorDAO
             {
@@ -875,14 +894,23 @@ namespace DMS.Rpc
             }).ToList();
             DataContext.PermissionOperator.BulkMerge(DATE);
 
-            List<PermissionOperatorDAO> STRING = PermissionOperatorEnum.PermissionOperatorEnumForSTRING.Select(item => new PermissionOperatorDAO
+            List<PermissionOperatorDAO> DOUBLE = PermissionOperatorEnum.PermissionOperatorEnumForDOUBLE.Select(item => new PermissionOperatorDAO
             {
                 Id = item.Id,
                 Code = item.Code,
                 Name = item.Name,
-                FieldTypeId = FieldTypeEnum.STRING.Id,
+                FieldTypeId = FieldTypeEnum.DOUBLE.Id,
             }).ToList();
-            DataContext.PermissionOperator.BulkMerge(STRING);
+            DataContext.PermissionOperator.BulkMerge(DOUBLE);
+
+            List<PermissionOperatorDAO> INT = PermissionOperatorEnum.PermissionOperatorEnumForINT.Select(item => new PermissionOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                FieldTypeId = FieldTypeEnum.INT.Id,
+            }).ToList();
+            DataContext.PermissionOperator.BulkMerge(INT);
         }
     }
 }
