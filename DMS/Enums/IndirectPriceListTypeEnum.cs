@@ -1,4 +1,5 @@
 ﻿using Common;
+using DMS.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,9 @@ namespace DMS.Enums
         public static GenericEnum STORETYPE = new GenericEnum { Id = 2, Code = "STORETYPE", Name = "Theo loại cửa hàng" };
         public static GenericEnum STOREGROUPING = new GenericEnum { Id = 3, Code = "STOREGROUPING", Name = "Theo nhóm cửa hàng" };
         public static GenericEnum DETAILS = new GenericEnum { Id = 4, Code = "DETAILS", Name = "Chọn cửa hàng" };
+        public static List<GenericEnum> IndirectPriceListTypeEnumList = new List<GenericEnum>()
+        {
+            ALLSTORE, STORETYPE, STOREGROUPING, DETAILS
+        };
     }
 }

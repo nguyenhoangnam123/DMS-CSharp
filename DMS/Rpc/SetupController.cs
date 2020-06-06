@@ -7,7 +7,6 @@ using Common;
 using DMS.Enums;
 using DMS.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -96,8 +95,8 @@ namespace DMS.Rpc
             {
                 MenuDAO Menu = Menus.Where(m => m.Code == type.Name).FirstOrDefault();
                 var value = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-                .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, long>))
-                .Select(x => (Dictionary<string, long>)x.GetValue(x))
+                .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, FieldType>))
+                .Select(x => (Dictionary<string, FieldType>)x.GetValue(x))
                 .FirstOrDefault();
                 if (value == null)
                     continue;
@@ -112,15 +111,15 @@ namespace DMS.Rpc
                         {
                             MenuId = Menu.Id,
                             Name = pair.Key,
-                            FieldTypeId = pair.Value,
+                            Type = pair.Value.ToString(),
                             IsDeleted = false,
                         };
                         fields.Add(field);
                     }
                     else
                     {
-                        field.FieldTypeId = pair.Value;
                         field.IsDeleted = false;
+                        field.Type = pair.Value.ToString();
                     }
                 }
             }
@@ -219,9 +218,9 @@ namespace DMS.Rpc
 
             DataContext.ActionPageMapping.Where(ap => ap.Action.IsDeleted || ap.Page.IsDeleted).DeleteFromQuery();
             DataContext.PermissionActionMapping.Where(ap => ap.Action.IsDeleted).DeleteFromQuery();
+            DataContext.PermissionFieldMapping.Where(pd => pd.Field.IsDeleted).DeleteFromQuery();
             DataContext.Action.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Page.Where(p => p.IsDeleted).DeleteFromQuery();
-            DataContext.PermissionContent.Where(f => f.Field.IsDeleted == true || f.Field.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Field.Where(pf => pf.IsDeleted || pf.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Permission.Where(p => p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Menu.Where(v => v.IsDeleted).DeleteFromQuery();
@@ -234,7 +233,7 @@ namespace DMS.Rpc
             InitDirectPriceListTypeEnum();
             InitIndirectPriceListTypeEnum();
             InitEditedPriceStatusEnum();
-            InitKpiICriteriaItemEnum();
+            InitItemSpecificCriteriaEnum();
             InitGeneralCriteriaEnum();
             InitProblemType();
             InitResellerStatusEnum();
@@ -247,7 +246,6 @@ namespace DMS.Rpc
             InitWorkflowStateEnum();
             InitWorkflowTypeEnum();
             DataContext.SaveChanges();
-            InitPermissionEnum();
             return Ok();
         }
 
@@ -291,8 +289,10 @@ namespace DMS.Rpc
 
             List<MenuDAO> Menus = DataContext.Menu.AsNoTracking()
                 .Include(v => v.Actions)
+                .Include(v => v.Fields)
                 .ToList();
             List<PermissionDAO> permissions = DataContext.Permission.AsNoTracking()
+                .Include(p => p.PermissionFieldMappings)
                 .Include(p => p.PermissionActionMappings)
                 .ToList();
             foreach (MenuDAO Menu in Menus)
@@ -309,6 +309,7 @@ namespace DMS.Rpc
                         MenuId = Menu.Id,
                         RoleId = Admin.Id,
                         StatusId = StatusEnum.ACTIVE.Id,
+                        PermissionFieldMappings = new List<PermissionFieldMappingDAO>(),
                         PermissionActionMappings = new List<PermissionActionMappingDAO>(),
                     };
                     permissions.Add(permission);
@@ -316,6 +317,8 @@ namespace DMS.Rpc
                 else
                 {
                     permission.StatusId = StatusEnum.ACTIVE.Id;
+                    if (permission.PermissionFieldMappings == null)
+                        permission.PermissionFieldMappings = new List<PermissionFieldMappingDAO>();
                     if (permission.PermissionActionMappings == null)
                         permission.PermissionActionMappings = new List<PermissionActionMappingDAO>();
                 }
@@ -332,20 +335,38 @@ namespace DMS.Rpc
                         permission.PermissionActionMappings.Add(PermissionActionMappingDAO);
                     }
                 }
-               
+                foreach (FieldDAO field in Menu.Fields)
+                {
+                    PermissionFieldMappingDAO permissionFieldMapping = permission.PermissionFieldMappings
+                        .Where(pfm => pfm.FieldId == field.Id).FirstOrDefault();
+                    if (permissionFieldMapping == null)
+                    {
+                        permissionFieldMapping = new PermissionFieldMappingDAO
+                        {
+                            FieldId = field.Id
+                        };
+                        permission.PermissionFieldMappings.Add(permissionFieldMapping);
+                    }
+                }
             }
             DataContext.Permission.BulkMerge(permissions);
             permissions.ForEach(p =>
             {
+                foreach (var field in p.PermissionFieldMappings)
+                {
+                    field.PermissionId = p.Id;
+                }
                 foreach (var action in p.PermissionActionMappings)
                 {
                     action.PermissionId = p.Id;
                 }
             });
-
+            List<PermissionFieldMappingDAO> permissionFieldMappings = permissions
+                .SelectMany(p => p.PermissionFieldMappings).ToList();
             List<PermissionActionMappingDAO> permissionPageMappings = permissions
                 .SelectMany(p => p.PermissionActionMappings).ToList();
-            DataContext.PermissionContent.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
+            DataContext.PermissionFieldMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
+            DataContext.PermissionFieldMapping.BulkMerge(permissionFieldMappings);
             DataContext.PermissionActionMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
             DataContext.PermissionActionMapping.BulkMerge(permissionPageMappings);
             return Ok();
@@ -354,35 +375,28 @@ namespace DMS.Rpc
         private void InitStatusEnum()
         {
             List<StatusDAO> statuses = DataContext.Status.ToList();
-            if (!statuses.Any(pt => pt.Id == StatusEnum.ACTIVE.Id))
+            foreach (var item in StatusEnum.StatusEnumList)
             {
-                DataContext.Status.Add(new StatusDAO
+                if (!statuses.Any(pt => pt.Id == item.Id))
                 {
-                    Id = StatusEnum.ACTIVE.Id,
-                    Code = StatusEnum.ACTIVE.Code,
-                    Name = StatusEnum.ACTIVE.Name,
-                });
-            }
-
-            if (!statuses.Any(pt => pt.Id == StatusEnum.INACTIVE.Id))
-            {
-                DataContext.Status.Add(new StatusDAO
-                {
-                    Id = StatusEnum.INACTIVE.Id,
-                    Code = StatusEnum.INACTIVE.Code,
-                    Name = StatusEnum.INACTIVE.Name,
-                });
+                    DataContext.Status.Add(new StatusDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
             }
         }
 
-        private void InitKpiICriteriaItemEnum()
+        private void InitItemSpecificCriteriaEnum()
         {
-            List<KpiCriteriaItemDAO> statuses = DataContext.KpiCriteriaItem.ToList();
+            List<ItemSpecificCriteriaDAO> statuses = DataContext.ItemSpecificCriteria.ToList();
             foreach (var item in ItemSpecificCriteriaEnum.ItemSpecificCriteriaEnumList)
             {
                 if (!statuses.Any(pt => pt.Id == item.Id))
                 {
-                    DataContext.KpiCriteriaItem.Add(new KpiCriteriaItemDAO
+                    DataContext.ItemSpecificCriteria.Add(new ItemSpecificCriteriaDAO
                     {
                         Id = item.Id,
                         Code = item.Code,
@@ -410,12 +424,12 @@ namespace DMS.Rpc
 
         private void InitTotalItemSpecificCriteriaEnum()
         {
-            List<KpiCriteriaTotalDAO> statuses = DataContext.KpiCriteriaTotal.ToList();
+            List<TotalItemSpecificCriteriaDAO> statuses = DataContext.TotalItemSpecificCriteria.ToList();
             foreach (var item in TotalItemSpecificCriteriaEnum.TotalItemSpecificCriteriaEnumList)
             {
                 if (!statuses.Any(pt => pt.Id == item.Id))
                 {
-                    DataContext.KpiCriteriaTotal.Add(new KpiCriteriaTotalDAO
+                    DataContext.TotalItemSpecificCriteria.Add(new TotalItemSpecificCriteriaDAO
                     {
                         Id = item.Id,
                         Code = item.Code,
@@ -443,372 +457,159 @@ namespace DMS.Rpc
         private void InitEditedPriceStatusEnum()
         {
             List<EditedPriceStatusDAO> statuses = DataContext.EditedPriceStatus.ToList();
-            if (!statuses.Any(pt => pt.Id == EditedPriceStatusEnum.ACTIVE.Id))
+            foreach (var item in EditedPriceStatusEnum.EditedPriceStatusEnumList)
             {
-                DataContext.EditedPriceStatus.Add(new EditedPriceStatusDAO
+                if (!statuses.Any(pt => pt.Id == item.Id))
                 {
-                    Id = EditedPriceStatusEnum.ACTIVE.Id,
-                    Code = EditedPriceStatusEnum.ACTIVE.Code,
-                    Name = EditedPriceStatusEnum.ACTIVE.Name,
-                });
-            }
-
-            if (!statuses.Any(pt => pt.Id == EditedPriceStatusEnum.INACTIVE.Id))
-            {
-                DataContext.EditedPriceStatus.Add(new EditedPriceStatusDAO
-                {
-                    Id = EditedPriceStatusEnum.INACTIVE.Id,
-                    Code = EditedPriceStatusEnum.INACTIVE.Code,
-                    Name = EditedPriceStatusEnum.INACTIVE.Name,
-                });
+                    DataContext.EditedPriceStatus.Add(new EditedPriceStatusDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
             }
         }
         private void InitResellerStatusEnum()
         {
             List<ResellerStatusDAO> resellerStatuses = DataContext.ResellerStatus.ToList();
-            if (!resellerStatuses.Any(pt => pt.Id == ResellerStatusEnum.NEW.Id))
+            foreach (var item in ResellerStatusEnum.ResellerStatusEnumList)
             {
-                DataContext.ResellerStatus.Add(new ResellerStatusDAO
+                if (!resellerStatuses.Any(pt => pt.Id == item.Id))
                 {
-                    Id = ResellerStatusEnum.NEW.Id,
-                    Code = ResellerStatusEnum.NEW.Code,
-                    Name = ResellerStatusEnum.NEW.Name,
-                });
-            }
-
-            if (!resellerStatuses.Any(pt => pt.Id == ResellerStatusEnum.PENDING.Id))
-            {
-                DataContext.ResellerStatus.Add(new ResellerStatusDAO
-                {
-                    Id = ResellerStatusEnum.PENDING.Id,
-                    Code = ResellerStatusEnum.PENDING.Code,
-                    Name = ResellerStatusEnum.PENDING.Name,
-                });
-            }
-
-            if (!resellerStatuses.Any(pt => pt.Id == ResellerStatusEnum.APPROVED.Id))
-            {
-                DataContext.ResellerStatus.Add(new ResellerStatusDAO
-                {
-                    Id = ResellerStatusEnum.APPROVED.Id,
-                    Code = ResellerStatusEnum.APPROVED.Code,
-                    Name = ResellerStatusEnum.APPROVED.Name,
-                });
-            }
-
-            if (!resellerStatuses.Any(pt => pt.Id == ResellerStatusEnum.REJECTED.Id))
-            {
-                DataContext.ResellerStatus.Add(new ResellerStatusDAO
-                {
-                    Id = ResellerStatusEnum.REJECTED.Id,
-                    Code = ResellerStatusEnum.REJECTED.Code,
-                    Name = ResellerStatusEnum.REJECTED.Name,
-                });
+                    DataContext.ResellerStatus.Add(new ResellerStatusDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
             }
         }
 
         private void InitRequestStateEnum()
         {
             List<RequestStateDAO> statuses = DataContext.RequestState.ToList();
-            if (!statuses.Any(pt => pt.Id == RequestStateEnum.NEW.Id))
+            foreach (var item in RequestStateEnum.RequestStateEnumList)
             {
-                DataContext.RequestState.Add(new RequestStateDAO
+                if (!statuses.Any(pt => pt.Id == item.Id))
                 {
-                    Id = RequestStateEnum.NEW.Id,
-                    Code = RequestStateEnum.NEW.Code,
-                    Name = RequestStateEnum.NEW.Name,
-                });
-            }
-
-            if (!statuses.Any(pt => pt.Id == RequestStateEnum.APPROVING.Id))
-            {
-                DataContext.RequestState.Add(new RequestStateDAO
-                {
-                    Id = RequestStateEnum.APPROVING.Id,
-                    Code = RequestStateEnum.APPROVING.Code,
-                    Name = RequestStateEnum.APPROVING.Name,
-                });
-            }
-
-            if (!statuses.Any(pt => pt.Id == RequestStateEnum.APPROVED.Id))
-            {
-                DataContext.RequestState.Add(new RequestStateDAO
-                {
-                    Id = RequestStateEnum.APPROVED.Id,
-                    Code = RequestStateEnum.APPROVED.Code,
-                    Name = RequestStateEnum.APPROVED.Name,
-                });
-            }
-
-            if (!statuses.Any(pt => pt.Id == RequestStateEnum.REJECTED.Id))
-            {
-                DataContext.RequestState.Add(new RequestStateDAO
-                {
-                    Id = RequestStateEnum.REJECTED.Id,
-                    Code = RequestStateEnum.REJECTED.Code,
-                    Name = RequestStateEnum.REJECTED.Name,
-                });
+                    DataContext.RequestState.Add(new RequestStateDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
             }
         }
 
         private void InitWorkflowStateEnum()
         {
             List<WorkflowStateDAO> list = DataContext.WorkflowState.ToList();
-            if (!list.Any(pt => pt.Id == WorkflowStateEnum.APPROVED.Id))
+            foreach (var item in WorkflowStateEnum.WorkflowStateEnumList)
             {
-                DataContext.WorkflowState.Add(new WorkflowStateDAO
+                if (!list.Any(pt => pt.Id == item.Id))
                 {
-                    Id = WorkflowStateEnum.APPROVED.Id,
-                    Code = WorkflowStateEnum.APPROVED.Code,
-                    Name = WorkflowStateEnum.APPROVED.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == WorkflowStateEnum.NEW.Id))
-            {
-                DataContext.WorkflowState.Add(new WorkflowStateDAO
-                {
-                    Id = WorkflowStateEnum.NEW.Id,
-                    Code = WorkflowStateEnum.NEW.Code,
-                    Name = WorkflowStateEnum.NEW.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == WorkflowStateEnum.PENDING.Id))
-            {
-                DataContext.WorkflowState.Add(new WorkflowStateDAO
-                {
-                    Id = WorkflowStateEnum.PENDING.Id,
-                    Code = WorkflowStateEnum.PENDING.Code,
-                    Name = WorkflowStateEnum.PENDING.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == WorkflowStateEnum.REJECTED.Id))
-            {
-                DataContext.WorkflowState.Add(new WorkflowStateDAO
-                {
-                    Id = WorkflowStateEnum.REJECTED.Id,
-                    Code = WorkflowStateEnum.REJECTED.Code,
-                    Name = WorkflowStateEnum.REJECTED.Name,
-                });
+                    DataContext.WorkflowState.Add(new WorkflowStateDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
             }
         }
 
         private void InitWorkflowTypeEnum()
         {
             List<WorkflowTypeDAO> list = DataContext.WorkflowType.ToList();
-            if (!list.Any(pt => pt.Id == WorkflowTypeEnum.ORDER.Id))
+            foreach (var item in WorkflowTypeEnum.WorkflowTypeEnumList)
             {
-                DataContext.WorkflowType.Add(new WorkflowTypeDAO
+                if (!list.Any(pt => pt.Id == item.Id))
                 {
-                    Id = WorkflowTypeEnum.ORDER.Id,
-                    Code = WorkflowTypeEnum.ORDER.Code,
-                    Name = WorkflowTypeEnum.ORDER.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == WorkflowTypeEnum.PRODUCT.Id))
-            {
-                DataContext.WorkflowType.Add(new WorkflowTypeDAO
-                {
-                    Id = WorkflowTypeEnum.PRODUCT.Id,
-                    Code = WorkflowTypeEnum.PRODUCT.Code,
-                    Name = WorkflowTypeEnum.PRODUCT.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == WorkflowTypeEnum.ROUTE.Id))
-            {
-                DataContext.WorkflowType.Add(new WorkflowTypeDAO
-                {
-                    Id = WorkflowTypeEnum.ROUTE.Id,
-                    Code = WorkflowTypeEnum.ROUTE.Code,
-                    Name = WorkflowTypeEnum.ROUTE.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == WorkflowTypeEnum.STORE.Id))
-            {
-                DataContext.WorkflowType.Add(new WorkflowTypeDAO
-                {
-                    Id = WorkflowTypeEnum.STORE.Id,
-                    Code = WorkflowTypeEnum.STORE.Code,
-                    Name = WorkflowTypeEnum.STORE.Name,
-                });
+                    DataContext.WorkflowType.Add(new WorkflowTypeDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
             }
         }
 
         private void InitIndirectPriceListTypeEnum()
         {
             List<IndirectPriceListTypeDAO> list = DataContext.IndirectPriceListType.ToList();
-            if (!list.Any(pt => pt.Id == IndirectPriceListTypeEnum.ALLSTORE.Id))
+            foreach (var item in IndirectPriceListTypeEnum.IndirectPriceListTypeEnumList)
             {
-                DataContext.IndirectPriceListType.Add(new IndirectPriceListTypeDAO
+                if (!list.Any(pt => pt.Id == item.Id))
                 {
-                    Id = IndirectPriceListTypeEnum.ALLSTORE.Id,
-                    Code = IndirectPriceListTypeEnum.ALLSTORE.Code,
-                    Name = IndirectPriceListTypeEnum.ALLSTORE.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == IndirectPriceListTypeEnum.DETAILS.Id))
-            {
-                DataContext.IndirectPriceListType.Add(new IndirectPriceListTypeDAO
-                {
-                    Id = IndirectPriceListTypeEnum.DETAILS.Id,
-                    Code = IndirectPriceListTypeEnum.DETAILS.Code,
-                    Name = IndirectPriceListTypeEnum.DETAILS.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == IndirectPriceListTypeEnum.STOREGROUPING.Id))
-            {
-                DataContext.IndirectPriceListType.Add(new IndirectPriceListTypeDAO
-                {
-                    Id = IndirectPriceListTypeEnum.STOREGROUPING.Id,
-                    Code = IndirectPriceListTypeEnum.STOREGROUPING.Code,
-                    Name = IndirectPriceListTypeEnum.STOREGROUPING.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == IndirectPriceListTypeEnum.STORETYPE.Id))
-            {
-                DataContext.IndirectPriceListType.Add(new IndirectPriceListTypeDAO
-                {
-                    Id = IndirectPriceListTypeEnum.STORETYPE.Id,
-                    Code = IndirectPriceListTypeEnum.STORETYPE.Code,
-                    Name = IndirectPriceListTypeEnum.STORETYPE.Name,
-                });
+                    DataContext.IndirectPriceListType.Add(new IndirectPriceListTypeDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
             }
         }
 
         private void InitDirectPriceListTypeEnum()
         {
             List<DirectPriceListTypeDAO> list = DataContext.DirectPriceListType.ToList();
-            if (!list.Any(pt => pt.Id == DirectPriceListTypeEnum.ALLSTORE.Id))
+            foreach (var item in DirectPriceListTypeEnum.DirectPriceListTypeEnumList)
             {
-                DataContext.DirectPriceListType.Add(new DirectPriceListTypeDAO
+                if (!list.Any(pt => pt.Id == item.Id))
                 {
-                    Id = DirectPriceListTypeEnum.ALLSTORE.Id,
-                    Code = DirectPriceListTypeEnum.ALLSTORE.Code,
-                    Name = DirectPriceListTypeEnum.ALLSTORE.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == DirectPriceListTypeEnum.DETAILS.Id))
-            {
-                DataContext.DirectPriceListType.Add(new DirectPriceListTypeDAO
-                {
-                    Id = DirectPriceListTypeEnum.DETAILS.Id,
-                    Code = DirectPriceListTypeEnum.DETAILS.Code,
-                    Name = DirectPriceListTypeEnum.DETAILS.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == DirectPriceListTypeEnum.STOREGROUPING.Id))
-            {
-                DataContext.DirectPriceListType.Add(new DirectPriceListTypeDAO
-                {
-                    Id = DirectPriceListTypeEnum.STOREGROUPING.Id,
-                    Code = DirectPriceListTypeEnum.STOREGROUPING.Code,
-                    Name = DirectPriceListTypeEnum.STOREGROUPING.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == DirectPriceListTypeEnum.STORETYPE.Id))
-            {
-                DataContext.DirectPriceListType.Add(new DirectPriceListTypeDAO
-                {
-                    Id = DirectPriceListTypeEnum.STORETYPE.Id,
-                    Code = DirectPriceListTypeEnum.STORETYPE.Code,
-                    Name = DirectPriceListTypeEnum.STORETYPE.Name,
-                });
+                    DataContext.DirectPriceListType.Add(new DirectPriceListTypeDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
             }
         }
 
         private void InitSurveyQuestionTypeEnum()
         {
             List<SurveyQuestionTypeDAO> list = DataContext.SurveyQuestionType.ToList();
-            if (!list.Any(pt => pt.Id == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id))
+            foreach (var item in SurveyQuestionTypeEnum.SurveyQuestionTypeEnumList)
             {
-                DataContext.SurveyQuestionType.Add(new SurveyQuestionTypeDAO
+                if (!list.Any(pt => pt.Id == item.Id))
                 {
-                    Id = SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id,
-                    Code = SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Code,
-                    Name = SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id))
-            {
-                DataContext.SurveyQuestionType.Add(new SurveyQuestionTypeDAO
-                {
-                    Id = SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id,
-                    Code = SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Code,
-                    Name = SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id))
-            {
-                DataContext.SurveyQuestionType.Add(new SurveyQuestionTypeDAO
-                {
-                    Id = SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id,
-                    Code = SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Code,
-                    Name = SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id))
-            {
-                DataContext.SurveyQuestionType.Add(new SurveyQuestionTypeDAO
-                {
-                    Id = SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id,
-                    Code = SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Code,
-                    Name = SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Name,
-                });
+                    DataContext.SurveyQuestionType.Add(new SurveyQuestionTypeDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
             }
         }
 
         private void InitSurveyOptionTypeEnum()
         {
             List<SurveyOptionTypeDAO> list = DataContext.SurveyOptionType.ToList();
-            if (!list.Any(pt => pt.Id == SurveyOptionTypeEnum.COLUMN.Id))
+            foreach (var item in SurveyOptionTypeEnum.SurveyOptionTypeEnumList)
             {
-                DataContext.SurveyOptionType.Add(new SurveyOptionTypeDAO
+                if (!list.Any(pt => pt.Id == item.Id))
                 {
-                    Id = SurveyOptionTypeEnum.COLUMN.Id,
-                    Code = SurveyOptionTypeEnum.COLUMN.Code,
-                    Name = SurveyOptionTypeEnum.COLUMN.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == SurveyOptionTypeEnum.ROW.Id))
-            {
-                DataContext.SurveyOptionType.Add(new SurveyOptionTypeDAO
-                {
-                    Id = SurveyOptionTypeEnum.ROW.Id,
-                    Code = SurveyOptionTypeEnum.ROW.Code,
-                    Name = SurveyOptionTypeEnum.ROW.Name,
-                });
-            }
-
-            if (!list.Any(pt => pt.Id == SurveyOptionTypeEnum.SINGLE.Id))
-            {
-                DataContext.SurveyOptionType.Add(new SurveyOptionTypeDAO
-                {
-                    Id = SurveyOptionTypeEnum.SINGLE.Id,
-                    Code = SurveyOptionTypeEnum.SINGLE.Code,
-                    Name = SurveyOptionTypeEnum.SINGLE.Name,
-                });
+                    DataContext.SurveyOptionType.Add(new SurveyOptionTypeDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
             }
         }
 
-        private void InitProblemType()
+        private void InitProblemTypeEnum()
         {
             List<ProblemTypeDAO> list = DataContext.ProblemType.ToList();
-            foreach (var item in ProblemTypeEnum.List)
+            foreach (var item in ProblemTypeEnum.ProblemTypeEnumList)
             {
                 if (!list.Any(pt => pt.Id == item.Id))
                 {
@@ -820,80 +621,6 @@ namespace DMS.Rpc
                     });
                 }
             }
-        }
-
-        private void InitPermissionEnum()
-        {
-            List<FieldTypeDAO> FieldTypeDAOs = FieldTypeEnum.List.Select(item => new FieldTypeDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.FieldType.BulkMerge(FieldTypeDAOs);
-            List<PermissionOperatorDAO> ID = PermissionOperatorEnum.PermissionOperatorEnumForID.Select(item => new PermissionOperatorDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                FieldTypeId = FieldTypeEnum.ID.Id,
-            }).ToList();
-            DataContext.PermissionOperator.BulkMerge(ID);
-
-            List<PermissionOperatorDAO> STRING = PermissionOperatorEnum.PermissionOperatorEnumForSTRING.Select(item => new PermissionOperatorDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                FieldTypeId = FieldTypeEnum.STRING.Id,
-            }).ToList();
-            DataContext.PermissionOperator.BulkMerge(STRING);
-
-            List<PermissionOperatorDAO> LONG = PermissionOperatorEnum.PermissionOperatorEnumForLONG.Select(item => new PermissionOperatorDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                FieldTypeId = FieldTypeEnum.LONG.Id,
-            }).ToList();
-            DataContext.PermissionOperator.BulkMerge(LONG);
-
-
-            List<PermissionOperatorDAO> DECIMAL = PermissionOperatorEnum.PermissionOperatorEnumForDECIMAL.Select(item => new PermissionOperatorDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                FieldTypeId = FieldTypeEnum.DECIMAL.Id,
-            }).ToList();
-            DataContext.PermissionOperator.BulkMerge(DECIMAL);
-
-            List<PermissionOperatorDAO> DATE = PermissionOperatorEnum.PermissionOperatorEnumForDATE.Select(item => new PermissionOperatorDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                FieldTypeId = FieldTypeEnum.DATE.Id,
-            }).ToList();
-            DataContext.PermissionOperator.BulkMerge(DATE);
-
-            List<PermissionOperatorDAO> DOUBLE = PermissionOperatorEnum.PermissionOperatorEnumForDOUBLE.Select(item => new PermissionOperatorDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                FieldTypeId = FieldTypeEnum.DOUBLE.Id,
-            }).ToList();
-            DataContext.PermissionOperator.BulkMerge(DOUBLE);
-
-            List<PermissionOperatorDAO> INT = PermissionOperatorEnum.PermissionOperatorEnumForINT.Select(item => new PermissionOperatorDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                FieldTypeId = FieldTypeEnum.INT.Id,
-            }).ToList();
-            DataContext.PermissionOperator.BulkMerge(INT);
         }
     }
 }
