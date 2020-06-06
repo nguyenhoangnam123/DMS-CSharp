@@ -6,43 +6,40 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MStatus
+namespace DMS.Services.MPermissionOperator
 {
-    public interface IStatusService : IServiceScoped
+    public interface IPermissionOperatorService : IServiceScoped
     {
-        Task<int> Count(StatusFilter StatusFilter);
-        Task<List<Status>> List(StatusFilter StatusFilter);
+        Task<int> Count(PermissionOperatorFilter PermissionOperatorFilter);
+        Task<List<PermissionOperator>> List(PermissionOperatorFilter PermissionOperatorFilter);
     }
 
-    public class FieldService : BaseService, IStatusService
+    public class PermissionOperatorService : BaseService, IPermissionOperatorService
     {
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IStatusValidator StatusValidator;
 
-        public FieldService(
+        public PermissionOperatorService(
             IUOW UOW,
             ILogging Logging,
-            ICurrentContext CurrentContext,
-            IStatusValidator StatusValidator
+            ICurrentContext CurrentContext
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.StatusValidator = StatusValidator;
         }
-        public async Task<int> Count(StatusFilter StatusFilter)
+        public async Task<int> Count(PermissionOperatorFilter PermissionOperatorFilter)
         {
             try
             {
-                int result = await UOW.StatusRepository.Count(StatusFilter);
+                int result = await UOW.PermissionOperatorRepository.Count(PermissionOperatorFilter);
                 return result;
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(FieldService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionOperatorService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -50,16 +47,16 @@ namespace DMS.Services.MStatus
             }
         }
 
-        public async Task<List<Status>> List(StatusFilter StatusFilter)
+        public async Task<List<PermissionOperator>> List(PermissionOperatorFilter PermissionOperatorFilter)
         {
             try
             {
-                List<Status> Statuss = await UOW.StatusRepository.List(StatusFilter);
-                return Statuss;
+                List<PermissionOperator> PermissionOperators = await UOW.PermissionOperatorRepository.List(PermissionOperatorFilter);
+                return PermissionOperators;
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(FieldService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionOperatorService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else

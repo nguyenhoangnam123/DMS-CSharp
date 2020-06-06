@@ -95,8 +95,8 @@ namespace DMS.Rpc
             {
                 MenuDAO Menu = Menus.Where(m => m.Code == type.Name).FirstOrDefault();
                 var value = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-                .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, FieldType>))
-                .Select(x => (Dictionary<string, FieldType>)x.GetValue(x))
+                .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, long>))
+                .Select(x => (Dictionary<string, long>)x.GetValue(x))
                 .FirstOrDefault();
                 if (value == null)
                     continue;
@@ -111,15 +111,15 @@ namespace DMS.Rpc
                         {
                             MenuId = Menu.Id,
                             Name = pair.Key,
-                            Type = pair.Value.ToString(),
+                            FieldTypeId = pair.Value,
                             IsDeleted = false,
                         };
                         fields.Add(field);
                     }
                     else
                     {
+                        field.FieldTypeId = pair.Value;
                         field.IsDeleted = false;
-                        field.Type = pair.Value.ToString();
                     }
                 }
             }
@@ -205,6 +205,8 @@ namespace DMS.Rpc
         }
 
         [HttpGet, Route("rpc/dms/setup/init-route")]
+
+        [HttpGet, Route("rpc/dms/setup/init-route")]
         public ActionResult InitRoute()
         {
             List<Type> routeTypes = typeof(SetupController).Assembly.GetTypes()
@@ -218,9 +220,9 @@ namespace DMS.Rpc
 
             DataContext.ActionPageMapping.Where(ap => ap.Action.IsDeleted || ap.Page.IsDeleted).DeleteFromQuery();
             DataContext.PermissionActionMapping.Where(ap => ap.Action.IsDeleted).DeleteFromQuery();
-            DataContext.PermissionFieldMapping.Where(pd => pd.Field.IsDeleted).DeleteFromQuery();
             DataContext.Action.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Page.Where(p => p.IsDeleted).DeleteFromQuery();
+            DataContext.PermissionContent.Where(f => f.Field.IsDeleted == true || f.Field.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Field.Where(pf => pf.IsDeleted || pf.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Permission.Where(p => p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Menu.Where(v => v.IsDeleted).DeleteFromQuery();
@@ -233,9 +235,9 @@ namespace DMS.Rpc
             InitDirectPriceListTypeEnum();
             InitIndirectPriceListTypeEnum();
             InitEditedPriceStatusEnum();
-            InitItemSpecificCriteriaEnum();
+            InitKpiCriteriaItemEnum();
             InitGeneralCriteriaEnum();
-            InitProblemType();
+            InitProblemTypeEnum();
             InitResellerStatusEnum();
             InitRequestStateEnum();
             InitStatusEnum();
@@ -248,6 +250,7 @@ namespace DMS.Rpc
             DataContext.SaveChanges();
             return Ok();
         }
+
 
         [HttpGet, Route("rpc/dms/setup/init-admin")]
         public ActionResult InitAdmin()
@@ -289,10 +292,8 @@ namespace DMS.Rpc
 
             List<MenuDAO> Menus = DataContext.Menu.AsNoTracking()
                 .Include(v => v.Actions)
-                .Include(v => v.Fields)
                 .ToList();
             List<PermissionDAO> permissions = DataContext.Permission.AsNoTracking()
-                .Include(p => p.PermissionFieldMappings)
                 .Include(p => p.PermissionActionMappings)
                 .ToList();
             foreach (MenuDAO Menu in Menus)
@@ -309,7 +310,6 @@ namespace DMS.Rpc
                         MenuId = Menu.Id,
                         RoleId = Admin.Id,
                         StatusId = StatusEnum.ACTIVE.Id,
-                        PermissionFieldMappings = new List<PermissionFieldMappingDAO>(),
                         PermissionActionMappings = new List<PermissionActionMappingDAO>(),
                     };
                     permissions.Add(permission);
@@ -317,8 +317,6 @@ namespace DMS.Rpc
                 else
                 {
                     permission.StatusId = StatusEnum.ACTIVE.Id;
-                    if (permission.PermissionFieldMappings == null)
-                        permission.PermissionFieldMappings = new List<PermissionFieldMappingDAO>();
                     if (permission.PermissionActionMappings == null)
                         permission.PermissionActionMappings = new List<PermissionActionMappingDAO>();
                 }
@@ -335,38 +333,20 @@ namespace DMS.Rpc
                         permission.PermissionActionMappings.Add(PermissionActionMappingDAO);
                     }
                 }
-                foreach (FieldDAO field in Menu.Fields)
-                {
-                    PermissionFieldMappingDAO permissionFieldMapping = permission.PermissionFieldMappings
-                        .Where(pfm => pfm.FieldId == field.Id).FirstOrDefault();
-                    if (permissionFieldMapping == null)
-                    {
-                        permissionFieldMapping = new PermissionFieldMappingDAO
-                        {
-                            FieldId = field.Id
-                        };
-                        permission.PermissionFieldMappings.Add(permissionFieldMapping);
-                    }
-                }
+
             }
             DataContext.Permission.BulkMerge(permissions);
             permissions.ForEach(p =>
             {
-                foreach (var field in p.PermissionFieldMappings)
-                {
-                    field.PermissionId = p.Id;
-                }
                 foreach (var action in p.PermissionActionMappings)
                 {
                     action.PermissionId = p.Id;
                 }
             });
-            List<PermissionFieldMappingDAO> permissionFieldMappings = permissions
-                .SelectMany(p => p.PermissionFieldMappings).ToList();
+
             List<PermissionActionMappingDAO> permissionPageMappings = permissions
                 .SelectMany(p => p.PermissionActionMappings).ToList();
-            DataContext.PermissionFieldMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
-            DataContext.PermissionFieldMapping.BulkMerge(permissionFieldMappings);
+            DataContext.PermissionContent.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
             DataContext.PermissionActionMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
             DataContext.PermissionActionMapping.BulkMerge(permissionPageMappings);
             return Ok();
@@ -389,14 +369,14 @@ namespace DMS.Rpc
             }
         }
 
-        private void InitItemSpecificCriteriaEnum()
+        private void InitKpiCriteriaItemEnum()
         {
-            List<ItemSpecificCriteriaDAO> statuses = DataContext.ItemSpecificCriteria.ToList();
-            foreach (var item in ItemSpecificCriteriaEnum.ItemSpecificCriteriaEnumList)
+            List<KpiCriteriaItemDAO> statuses = DataContext.KpiCriteriaItem.ToList();
+            foreach (var item in KpiCriteriaItemEnum.KpiCriteriaItemEnumList)
             {
                 if (!statuses.Any(pt => pt.Id == item.Id))
                 {
-                    DataContext.ItemSpecificCriteria.Add(new ItemSpecificCriteriaDAO
+                    DataContext.KpiCriteriaItem.Add(new KpiCriteriaItemDAO
                     {
                         Id = item.Id,
                         Code = item.Code,
@@ -424,12 +404,12 @@ namespace DMS.Rpc
 
         private void InitTotalItemSpecificCriteriaEnum()
         {
-            List<TotalItemSpecificCriteriaDAO> statuses = DataContext.TotalItemSpecificCriteria.ToList();
-            foreach (var item in TotalItemSpecificCriteriaEnum.TotalItemSpecificCriteriaEnumList)
+            List<KpiCriteriaTotalDAO> statuses = DataContext.KpiCriteriaTotal.ToList();
+            foreach (var item in KpiCriteriaTotalEnum.KpiCriteriaTotalEnumList)
             {
                 if (!statuses.Any(pt => pt.Id == item.Id))
                 {
-                    DataContext.TotalItemSpecificCriteria.Add(new TotalItemSpecificCriteriaDAO
+                    DataContext.KpiCriteriaTotal.Add(new KpiCriteriaTotalDAO
                     {
                         Id = item.Id,
                         Code = item.Code,

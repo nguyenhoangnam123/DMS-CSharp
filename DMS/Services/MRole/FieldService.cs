@@ -6,38 +6,35 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MStatus
+namespace DMS.Services.MField
 {
-    public interface IStatusService : IServiceScoped
+    public interface IFieldService : IServiceScoped
     {
-        Task<int> Count(StatusFilter StatusFilter);
-        Task<List<Status>> List(StatusFilter StatusFilter);
+        Task<int> Count(FieldFilter FieldFilter);
+        Task<List<Field>> List(FieldFilter FieldFilter);
     }
 
-    public class FieldService : BaseService, IStatusService
+    public class FieldService : BaseService, IFieldService
     {
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IStatusValidator StatusValidator;
 
         public FieldService(
             IUOW UOW,
             ILogging Logging,
-            ICurrentContext CurrentContext,
-            IStatusValidator StatusValidator
+            ICurrentContext CurrentContext
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.StatusValidator = StatusValidator;
         }
-        public async Task<int> Count(StatusFilter StatusFilter)
+        public async Task<int> Count(FieldFilter FieldFilter)
         {
             try
             {
-                int result = await UOW.StatusRepository.Count(StatusFilter);
+                int result = await UOW.FieldRepository.Count(FieldFilter);
                 return result;
             }
             catch (Exception ex)
@@ -50,12 +47,12 @@ namespace DMS.Services.MStatus
             }
         }
 
-        public async Task<List<Status>> List(StatusFilter StatusFilter)
+        public async Task<List<Field>> List(FieldFilter FieldFilter)
         {
             try
             {
-                List<Status> Statuss = await UOW.StatusRepository.List(StatusFilter);
-                return Statuss;
+                List<Field> Fields = await UOW.FieldRepository.List(FieldFilter);
+                return Fields;
             }
             catch (Exception ex)
             {

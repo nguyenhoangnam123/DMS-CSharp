@@ -24,6 +24,8 @@ using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MSupplier;
 using DMS.Services.MWarehouse;
+using DMS.Services.MField;
+using DMS.Services.MPermissionOperator;
 
 namespace DMS.Rpc.role
 {
@@ -45,6 +47,8 @@ namespace DMS.Rpc.role
         private IStoreTypeService StoreTypeService;
         private ISupplierService SupplierService;
         private IWarehouseService WarehouseService;
+        private IFieldService FieldService;
+        private IPermissionOperatorService PermissionOperatorService;
 
         public RoleController(
             IAppUserService AppUserService,
@@ -62,6 +66,8 @@ namespace DMS.Rpc.role
             IStoreTypeService StoreTypeService,
             ISupplierService SupplierService,
             IWarehouseService WarehouseService,
+            IFieldService FieldService,
+            IPermissionOperatorService PermissionOperatorService,
             IStatusService StatusService
         )
         {
@@ -80,7 +86,9 @@ namespace DMS.Rpc.role
             this.StoreTypeService = StoreTypeService;
             this.SupplierService = SupplierService;
             this.WarehouseService = WarehouseService;
+            this.FieldService = FieldService;
             this.StatusService = StatusService;
+            this.PermissionOperatorService = PermissionOperatorService;
         }
 
         [Route(RoleRoute.Count), HttpPost]
