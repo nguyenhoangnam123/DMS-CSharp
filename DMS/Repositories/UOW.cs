@@ -53,6 +53,7 @@ namespace DMS.Repositories
         IPositionRepository PositionRepository { get; }
         IProblemRepository ProblemRepository { get; }
         IProblemTypeRepository ProblemTypeRepository { get; }
+        IProblemStatusRepository ProblemStatusRepository { get; }
         IProductRepository ProductRepository { get; }
         IProductGroupingRepository ProductGroupingRepository { get; }
         IProductTypeRepository ProductTypeRepository { get; }
@@ -138,6 +139,7 @@ namespace DMS.Repositories
         public IPositionRepository PositionRepository { get; private set; }
         public IProblemRepository ProblemRepository { get; private set; }
         public IProblemTypeRepository ProblemTypeRepository { get; private set; }
+        public IProblemStatusRepository ProblemStatusRepository { get; private set; } 
         public IProductRepository ProductRepository { get; private set; }
         public IProductGroupingRepository ProductGroupingRepository { get; private set; }
         public IProductTypeRepository ProductTypeRepository { get; private set; }
@@ -222,6 +224,7 @@ namespace DMS.Repositories
             PositionRepository = new PositionRepository(DataContext);
             ProblemRepository = new ProblemRepository(DataContext);
             ProblemTypeRepository = new ProblemTypeRepository(DataContext);
+            ProblemStatusRepository = new ProblemStatusRepository(DataContext);
             ProductRepository = new ProductRepository(DataContext);
             ProductGroupingRepository = new ProductGroupingRepository(DataContext);
             ProductTypeRepository = new ProductTypeRepository(DataContext);

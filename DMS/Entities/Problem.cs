@@ -11,9 +11,14 @@ namespace DMS.Entities
         public long Id { get; set; }
         public long? StoreCheckingId { get; set; }
         public long StoreId { get; set; }
+        public long CreatorId { get; set; }
         public long ProblemTypeId { get; set; }
         public DateTime NoteAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
         public string Content { get; set; }
+        public long ProblemStatusId { get; set; }
+        public AppUser Creator { get; set; }
+        public ProblemStatus ProblemStatus { get; set; }
         public ProblemType ProblemType { get; set; }
         public Store Store { get; set; }
         public StoreChecking StoreChecking { get; set; }
@@ -34,9 +39,12 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public IdFilter StoreCheckingId { get; set; }
         public IdFilter StoreId { get; set; }
+        public IdFilter CreatorId { get; set; }
         public IdFilter ProblemTypeId { get; set; }
         public DateFilter NoteAt { get; set; }
+        public DateFilter CompletedAt { get; set; }
         public StringFilter Content { get; set; }
+        public IdFilter ProblemStatusId { get; set; }
         public List<ProblemFilter> OrFilter { get; set; }
         public ProblemOrder OrderBy {get; set;}
         public ProblemSelect Selects {get; set;}
@@ -48,9 +56,12 @@ namespace DMS.Entities
         Id = 0,
         StoreChecking = 1,
         Store = 2,
-        ProblemType = 3,
-        NoteAt = 4,
-        Content = 5,
+        Creator = 3,
+        ProblemType = 4,
+        NoteAt = 5,
+        CompletedAt = 6,
+        Content = 7,
+        ProblemStatus = 8,
     }
 
     [Flags]
@@ -60,8 +71,11 @@ namespace DMS.Entities
         Id = E._0,
         StoreChecking = E._1,
         Store = E._2,
-        ProblemType = E._3,
-        NoteAt = E._4,
-        Content = E._5,
+        Creator = E._3,
+        ProblemType = E._4,
+        NoteAt = E._5,
+        CompletedAt = E._6,
+        Content = E._7,
+        ProblemStatus = E._8,
     }
 }

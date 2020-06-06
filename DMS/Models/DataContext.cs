@@ -68,6 +68,7 @@ namespace DMS.Models
         public virtual DbSet<PositionDAO> Position { get; set; }
         public virtual DbSet<ProblemDAO> Problem { get; set; }
         public virtual DbSet<ProblemImageMappingDAO> ProblemImageMapping { get; set; }
+        public virtual DbSet<ProblemStatusDAO> ProblemStatus { get; set; }
         public virtual DbSet<ProblemTypeDAO> ProblemType { get; set; }
         public virtual DbSet<ProductDAO> Product { get; set; }
         public virtual DbSet<ProductGroupingDAO> ProductGrouping { get; set; }
@@ -1704,9 +1705,23 @@ namespace DMS.Models
 
             modelBuilder.Entity<ProblemDAO>(entity =>
             {
+                entity.Property(e => e.CompletedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.Content).HasMaxLength(4000);
 
                 entity.Property(e => e.NoteAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.Problems)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Problem_AppUser");
+
+                entity.HasOne(d => d.ProblemStatus)
+                    .WithMany(p => p.Problems)
+                    .HasForeignKey(d => d.ProblemStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Problem_ProblemStatus");
 
                 entity.HasOne(d => d.ProblemType)
                     .WithMany(p => p.Problems)
@@ -1741,6 +1756,19 @@ namespace DMS.Models
                     .HasForeignKey(d => d.ProblemId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProblemImageMapping_Problem");
+            });
+
+            modelBuilder.Entity<ProblemStatusDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<ProblemTypeDAO>(entity =>
