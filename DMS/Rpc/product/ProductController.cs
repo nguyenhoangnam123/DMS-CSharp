@@ -220,6 +220,18 @@ namespace DMS.Rpc.product
                 Take = int.MaxValue,
                 Selects = BrandSelect.ALL
             });
+            List<TaxType> TaxTypes = await TaxTypeService.List(new TaxTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = TaxTypeSelect.ALL
+            });
+            List<UsedVariation> UsedVariations = await UsedVariationService.List(new UsedVariationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = UsedVariationSelect.ALL
+            });
             List<VariationGrouping> VariationGroupings = await VariationGroupingService.List(new VariationGroupingFilter
             {
                 Skip = 0,
@@ -266,30 +278,33 @@ namespace DMS.Rpc.product
                 int OtherNameColumn = 11 + StartColumn;
                 //Tên kỹ thuật
                 int TechnicalNameColumn = 12 + StartColumn;
+                //Mã thuế
+                int TaxTypeCodeColumn = 13 + StartColumn;
                 //Mô tả
-                int DescriptionColumn = 13 + StartColumn;
+                int DescriptionColumn = 14 + StartColumn;
                 //Giá bánr
-                int RetailPriceColumn = 14 + StartColumn;
+                int RetailPriceColumn = 15 + StartColumn;
                 //Giá bán đề xuất
-                int SalePriceColumn = 15 + StartColumn;
+                int SalePriceColumn = 16 + StartColumn;
 
-                //Danh sách thuộc tính làm sau nhé
+                //Có tạo phiên bản
+                int UsedVariationCodeColumn = 17 + StartColumn;
                 //Thuộc tính 1
-                int Property1Column = 16 + StartColumn;
+                int Property1Column = 18 + StartColumn;
                 //Giá trị 1
-                int PropertyValue1Column = 17 + StartColumn;
+                int PropertyValue1Column = 19 + StartColumn;
                 //Thuộc tính 2
-                int Property2Column = 18 + StartColumn;
+                int Property2Column = 20 + StartColumn;
                 //Giá trị 2
-                int PropertyValue2Column = 19 + StartColumn;
+                int PropertyValue2Column = 21 + StartColumn;
                 //Thuộc tính 3
-                int Property3Column = 20 + StartColumn;
+                int Property3Column = 22 + StartColumn;
                 //Giá trị 3
-                int PropertyValue3Column = 21 + StartColumn;
+                int PropertyValue3Column = 23 + StartColumn;
                 //Thuộc tính 4
-                int Property4Column = 22 + StartColumn;
+                int Property4Column = 24 + StartColumn;
                 //Giá trị 4
-                int PropertyValue4Column = 23 + StartColumn;
+                int PropertyValue4Column = 25 + StartColumn;
                 #endregion
 
                 for (int i = StartRow; i <= ProductSheet.Dimension.End.Row; i++)
@@ -308,10 +323,12 @@ namespace DMS.Rpc.product
                     string BrandCodeValue = ProductSheet.Cells[i + StartRow, BrandCodeColumn].Value?.ToString();
                     string OtherNameValue = ProductSheet.Cells[i + StartRow, OtherNameColumn].Value?.ToString();
                     string TechnicalNameValue = ProductSheet.Cells[i + StartRow, TechnicalNameColumn].Value?.ToString();
+                    string TaxTypeCodeValue = ProductSheet.Cells[i + StartRow, TaxTypeCodeColumn].Value?.ToString();
                     string DescriptionValue = ProductSheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
                     string RetailPriceValue = ProductSheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
                     string SalePriceValue = ProductSheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
                     //Thuộc tính
+                    string UsedVariationCodeValue = ProductSheet.Cells[i + StartRow, UsedVariationCodeColumn].Value?.ToString();
                     string Property1Value = ProductSheet.Cells[i + StartRow, Property1Column].Value?.ToString();
                     string PropertyValue1Value = ProductSheet.Cells[i + StartRow, PropertyValue1Column].Value?.ToString();
                     string Property2Value = ProductSheet.Cells[i + StartRow, Property2Column].Value?.ToString();
@@ -337,133 +354,138 @@ namespace DMS.Rpc.product
                         }
                     }
 
-                    Product.ProductType = ProductTypes.Where(x => x.Code.Equals(ProductTypeCodeValue)).FirstOrDefault();
-                    Product.UnitOfMeasure = UnitOfMeasures.Where(x => x.Code.Equals(UoMCodeValue)).FirstOrDefault();
-                    Product.UnitOfMeasureGrouping = UnitOfMeasureGroupings.Where(x => x.Code.Equals(UoMGroupCodeValue)).FirstOrDefault();
-                    Product.Supplier = Suppliers.Where(x => x.Code.Equals(SupplierCodeValue)).FirstOrDefault();
-                    Product.Brand = Brands.Where(x => x.Code.Equals(BrandCodeValue)).FirstOrDefault();
+                    Product.ProductTypeId = ProductTypes.Where(x => x.Code.Equals(ProductTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.Equals(UoMCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    Product.UnitOfMeasureGroupingId = UnitOfMeasureGroupings.Where(x => x.Code.Equals(UoMGroupCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    Product.SupplierId = Suppliers.Where(x => x.Code.Equals(SupplierCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    Product.BrandId = Brands.Where(x => x.Code.Equals(BrandCodeValue)).Select(x => x.Id).FirstOrDefault();
 
                     Product.ERPCode = ERPCodeValue;
                     Product.ScanCode = ScanCodeValue;
 
                     Product.OtherName = OtherNameValue;
                     Product.TechnicalName = TechnicalNameValue;
+                    Product.TaxTypeId = TaxTypes.Where(x => x.Code.Equals(TaxTypeCodeValue.Trim())).Select(x => x.Id).FirstOrDefault();
+                    Product.UsedVariationId = UsedVariations.Where(x => x.Code.ToLower().Equals(UsedVariationCodeValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
                     Product.Description = DescriptionValue;
                     Product.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : decimal.Parse(RetailPriceValue);
                     Product.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : decimal.Parse(SalePriceValue);
 
-                    #region Variation
-                    if (!string.IsNullOrEmpty(Property1Value))
+                    if(Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
                     {
-                        Product.VariationGroupings = new List<VariationGrouping>();
-                        VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property1Value)).FirstOrDefault();
-                        if (VariationGrouping == null)
+                        #region Variation
+                        if (!string.IsNullOrEmpty(Property1Value))
                         {
-                            VariationGrouping = new VariationGrouping
+                            Product.VariationGroupings = new List<VariationGrouping>();
+                            VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property1Value)).FirstOrDefault();
+                            if (VariationGrouping == null)
                             {
-                                Name = Property1Value
-                            };
+                                VariationGrouping = new VariationGrouping
+                                {
+                                    Name = Property1Value
+                                };
+
+                            }
+                            VariationGrouping.Variations = new List<Variation>();
+                            var Values = PropertyValue1Value.Split(',');
+                            foreach (var Value in Values)
+                            {
+                                var splitValue = Value.Split('-');
+                                Variation Variation = new Variation
+                                {
+                                    Code = splitValue[0],
+                                    Name = splitValue[1]
+                                };
+                                VariationGrouping.Variations.Add(Variation);
+                            }
+                            Product.VariationGroupings.Add(VariationGrouping);
 
                         }
-                        VariationGrouping.Variations = new List<Variation>();
-                        var Values = PropertyValue1Value.Split(',');
-                        foreach (var Value in Values)
-                        {
-                            var splitValue = Value.Split('-');
-                            Variation Variation = new Variation
-                            {
-                                Code = splitValue[0],
-                                Name = splitValue[1]
-                            };
-                            VariationGrouping.Variations.Add(Variation);
-                        }
-                        Product.VariationGroupings.Add(VariationGrouping);
 
+                        if (!string.IsNullOrEmpty(Property2Value))
+                        {
+                            Product.VariationGroupings = new List<VariationGrouping>();
+                            VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property2Value)).FirstOrDefault();
+                            if (VariationGrouping == null)
+                            {
+                                VariationGrouping = new VariationGrouping
+                                {
+                                    Name = Property2Value
+                                };
+
+                            }
+                            VariationGrouping.Variations = new List<Variation>();
+                            var Values = PropertyValue2Value.Split(',');
+                            foreach (var Value in Values)
+                            {
+                                var splitValue = Value.Split('-');
+                                Variation Variation = new Variation
+                                {
+                                    Code = splitValue[0],
+                                    Name = splitValue[1]
+                                };
+                                VariationGrouping.Variations.Add(Variation);
+                            }
+                            Product.VariationGroupings.Add(VariationGrouping);
+
+                        }
+
+                        if (!string.IsNullOrEmpty(Property3Value))
+                        {
+                            Product.VariationGroupings = new List<VariationGrouping>();
+                            VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property3Value)).FirstOrDefault();
+                            if (VariationGrouping == null)
+                            {
+                                VariationGrouping = new VariationGrouping
+                                {
+                                    Name = Property3Value
+                                };
+
+                            }
+                            VariationGrouping.Variations = new List<Variation>();
+                            var Values = PropertyValue3Value.Split(',');
+                            foreach (var Value in Values)
+                            {
+                                var splitValue = Value.Split('-');
+                                Variation Variation = new Variation
+                                {
+                                    Code = splitValue[0],
+                                    Name = splitValue[1]
+                                };
+                                VariationGrouping.Variations.Add(Variation);
+                            }
+                            Product.VariationGroupings.Add(VariationGrouping);
+
+                        }
+
+                        if (!string.IsNullOrEmpty(Property4Value))
+                        {
+                            Product.VariationGroupings = new List<VariationGrouping>();
+                            VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property4Value)).FirstOrDefault();
+                            if (VariationGrouping == null)
+                            {
+                                VariationGrouping = new VariationGrouping
+                                {
+                                    Name = Property4Value
+                                };
+
+                            }
+                            VariationGrouping.Variations = new List<Variation>();
+                            var Values = PropertyValue4Value.Split(',');
+                            foreach (var Value in Values)
+                            {
+                                var splitValue = Value.Split('-');
+                                Variation Variation = new Variation
+                                {
+                                    Code = splitValue[0],
+                                    Name = splitValue[1]
+                                };
+                                VariationGrouping.Variations.Add(Variation);
+                            }
+                            Product.VariationGroupings.Add(VariationGrouping);
+                        }
+                        #endregion
                     }
-
-                    if (!string.IsNullOrEmpty(Property2Value))
-                    {
-                        Product.VariationGroupings = new List<VariationGrouping>();
-                        VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property2Value)).FirstOrDefault();
-                        if (VariationGrouping == null)
-                        {
-                            VariationGrouping = new VariationGrouping
-                            {
-                                Name = Property2Value
-                            };
-
-                        }
-                        VariationGrouping.Variations = new List<Variation>();
-                        var Values = PropertyValue2Value.Split(',');
-                        foreach (var Value in Values)
-                        {
-                            var splitValue = Value.Split('-');
-                            Variation Variation = new Variation
-                            {
-                                Code = splitValue[0],
-                                Name = splitValue[1]
-                            };
-                            VariationGrouping.Variations.Add(Variation);
-                        }
-                        Product.VariationGroupings.Add(VariationGrouping);
-
-                    }
-
-                    if (!string.IsNullOrEmpty(Property3Value))
-                    {
-                        Product.VariationGroupings = new List<VariationGrouping>();
-                        VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property3Value)).FirstOrDefault();
-                        if (VariationGrouping == null)
-                        {
-                            VariationGrouping = new VariationGrouping
-                            {
-                                Name = Property3Value
-                            };
-
-                        }
-                        VariationGrouping.Variations = new List<Variation>();
-                        var Values = PropertyValue3Value.Split(',');
-                        foreach (var Value in Values)
-                        {
-                            var splitValue = Value.Split('-');
-                            Variation Variation = new Variation
-                            {
-                                Code = splitValue[0],
-                                Name = splitValue[1]
-                            };
-                            VariationGrouping.Variations.Add(Variation);
-                        }
-                        Product.VariationGroupings.Add(VariationGrouping);
-
-                    }
-
-                    if (!string.IsNullOrEmpty(Property4Value))
-                    {
-                        Product.VariationGroupings = new List<VariationGrouping>();
-                        VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property4Value)).FirstOrDefault();
-                        if (VariationGrouping == null)
-                        {
-                            VariationGrouping = new VariationGrouping
-                            {
-                                Name = Property4Value
-                            };
-
-                        }
-                        VariationGrouping.Variations = new List<Variation>();
-                        var Values = PropertyValue4Value.Split(',');
-                        foreach (var Value in Values)
-                        {
-                            var splitValue = Value.Split('-');
-                            Variation Variation = new Variation
-                            {
-                                Code = splitValue[0],
-                                Name = splitValue[1]
-                            };
-                            VariationGrouping.Variations.Add(Variation);
-                        }
-                        Product.VariationGroupings.Add(VariationGrouping);
-                    }
-                    #endregion
                     Products.Add(Product);
                 }
                 #endregion
@@ -609,9 +631,11 @@ namespace DMS.Rpc.product
                         "Nhãn hiệu",
                         "Tên khác",
                         "Tên kỹ thuật",
+                        "% VAT*",
                         "Mô tả",
                         "Giá bán",
                         "Giá bán lẻ đề xuất",
+                        "Có tạo phiên bản*",
                         "Thuộc tính 1",
                         "Giá trị 1",
                         "Thuộc tính 2",
@@ -681,9 +705,11 @@ namespace DMS.Rpc.product
                         Product.Brand?.Name,
                         Product.OtherName,
                         Product.TechnicalName,
+                        Product.TaxType.Code,
                         Product.Description,
                         Product.SalePrice,
                         Product.RetailPrice,
+                        Product.UsedVariation.Code,
                         VariationGrouping1,
                         VariationValue1,
                         VariationGrouping2,

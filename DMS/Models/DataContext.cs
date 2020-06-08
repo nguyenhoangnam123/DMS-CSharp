@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DMS.Models
 {
@@ -57,6 +59,7 @@ namespace DMS.Models
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<NotificationDAO> Notification { get; set; }
+        public virtual DbSet<NotificationStatusDAO> NotificationStatus { get; set; }
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
         public virtual DbSet<PageDAO> Page { get; set; }
         public virtual DbSet<PermissionDAO> Permission { get; set; }
@@ -1516,10 +1519,29 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
+                entity.HasOne(d => d.NotificationStatus)
+                    .WithMany(p => p.Notifications)
+                    .HasForeignKey(d => d.NotificationStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Notification_NotificationStatus");
+
                 entity.HasOne(d => d.Organization)
                     .WithMany(p => p.Notifications)
                     .HasForeignKey(d => d.OrganizationId)
                     .HasConstraintName("FK_Notification_Organization");
+            });
+
+            modelBuilder.Entity<NotificationStatusDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<OrganizationDAO>(entity =>

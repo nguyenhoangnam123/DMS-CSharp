@@ -17,6 +17,7 @@ namespace DMS.Services.MNotification
         Task<List<Notification>> List(NotificationFilter NotificationFilter);
         Task<Notification> Get(long Id);
         Task<Notification> Create(Notification Notification);
+        Task<Notification> CreateDraft(Notification Notification);
         Task<Notification> Update(Notification Notification);
         Task<Notification> Delete(Notification Notification);
         Task<List<Notification>> BulkDelete(List<Notification> Notifications);
@@ -91,7 +92,7 @@ namespace DMS.Services.MNotification
 
             try
             {
-
+                Notification.NotificationStatusId = Enums.NotificationStatusEnum.SENT.Id;
                 await UOW.Begin();
                 await UOW.NotificationRepository.Create(Notification);
                 await UOW.Commit();
@@ -127,7 +128,7 @@ namespace DMS.Services.MNotification
                 {
                     var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
-                    List<NotificationUtils> NotificationUtilss = AppUserIds.Select(x => new NotificationUtils
+                    List<UserNotification> NotificationUtilss = AppUserIds.Select(x => new UserNotification
                     {
                         Content = Notification.Content,
                         Time = StaticParams.DateTimeNow,
@@ -138,6 +139,33 @@ namespace DMS.Services.MNotification
 
                     await SendNotification(NotificationUtilss);
                 }
+
+                await Logging.CreateAuditLog(Notification, new { }, nameof(NotificationService));
+                return await UOW.NotificationRepository.Get(Notification.Id);
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+        }
+
+        public async Task<Notification> CreateDraft(Notification Notification)
+        {
+            if (!await NotificationValidator.Create(Notification))
+                return Notification;
+
+            try
+            {
+                Notification.NotificationStatusId = Enums.NotificationStatusEnum.UNSEND.Id;
+
+                await UOW.Begin();
+                await UOW.NotificationRepository.Create(Notification);
+                await UOW.Commit();
 
                 await Logging.CreateAuditLog(Notification, new { }, nameof(NotificationService));
                 return await UOW.NotificationRepository.Get(Notification.Id);
@@ -268,7 +296,7 @@ namespace DMS.Services.MNotification
             return filter;
         }
 
-        private async Task<List<NotificationUtils>> SendNotification(List<NotificationUtils> NotificationUtilss)
+        private async Task<List<UserNotification>> SendNotification(List<UserNotification> NotificationUtilss)
         {
             RestClient restClient = new RestClient($"http://localhost:{Modules.Utils}");
             RestRequest restRequest = new RestRequest("/rpc/utils/notification/bulk-create");
@@ -280,7 +308,7 @@ namespace DMS.Services.MNotification
             restRequest.AddBody(NotificationUtilss);
             try
             {
-                var response = restClient.Execute<List<NotificationUtils>>(restRequest);
+                var response = restClient.Execute<List<UserNotification>>(restRequest);
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     return NotificationUtilss;
@@ -293,7 +321,7 @@ namespace DMS.Services.MNotification
             return null;
         }
 
-        public class NotificationUtils
+        public class UserNotification
         {
             public long Id { get; set; }
             public string Content { get; set; }

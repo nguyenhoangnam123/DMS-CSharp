@@ -24,7 +24,7 @@
   },
   "TaxType": {
     "TaxTypeEmpty": "Chưa chọn thuế",
-    "TaxTypeIdNotExisted": "Thuế không tồn tại"
+    "TaxTypeNotExisted": "Thuế không tồn tại"
   },
   "UnitOfMeasure": {
     "UnitOfMeasureNotExisted": "Đơn vị tính không tồn tại",

@@ -1,4 +1,7 @@
-﻿namespace DMS.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace DMS.Models
 {
     public partial class DirectPriceListItemMappingDAO
     {

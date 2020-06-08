@@ -27,7 +27,9 @@ namespace DMS.Services.MWorkflow
             ToStepNotExisted,
             ToStepEmpty,
             SubjectMailForCreatorOverLength,
-            SubjectMailForNextStepOverLength
+            SubjectMailForNextStepOverLength,
+            WorkflowDefinitionEmpty,
+            WorkflowDefinitionNotExisted
         }
 
         private IUOW UOW;
@@ -67,6 +69,24 @@ namespace DMS.Services.MWorkflow
             var count = await UOW.RequestWorkflowDefinitionMappingRepository.Count(RequestWorkflowDefinitionMappingFilter);
             if (count != 0)
                 WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.Id), ErrorCode.WorkflowDefinitionInUsed);
+            return WorkflowDirection.IsValidated;
+        }
+
+        private async Task<bool> ValidateWorkflowDirection(WorkflowDirection WorkflowDirection)
+        {
+            if(WorkflowDirection.WorkflowDefinitionId == 0)
+                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.WorkflowDefinition), ErrorCode.WorkflowDefinitionEmpty);
+            else 
+            {
+                WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
+                {
+                    Id = new IdFilter { Equal = WorkflowDirection.WorkflowDefinitionId }
+                };
+
+                int count = await UOW.WorkflowDefinitionRepository.Count(WorkflowDefinitionFilter);
+                if(count == 0)
+                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.WorkflowDefinition), ErrorCode.WorkflowDefinitionNotExisted);
+            }
             return WorkflowDirection.IsValidated;
         }
 
@@ -118,6 +138,7 @@ namespace DMS.Services.MWorkflow
 
         public async Task<bool> Create(WorkflowDirection WorkflowDirection)
         {
+            await ValidateWorkflowDirection(WorkflowDirection);
             await ValidateStep(WorkflowDirection);
             await ValidateSubjectMail(WorkflowDirection);
             return WorkflowDirection.IsValidated;
@@ -127,6 +148,7 @@ namespace DMS.Services.MWorkflow
         {
             if (await ValidateId(WorkflowDirection))
             {
+                await ValidateWorkflowDirection(WorkflowDirection);
                 await ValidateStep(WorkflowDirection);
                 await ValidateSubjectMail(WorkflowDirection);
             }
