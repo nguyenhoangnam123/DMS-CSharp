@@ -44,6 +44,11 @@ namespace DMS.Rpc.product
                 Master, Count, List, Get,
                 FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,
                 CountProduct, ListProduct} },
+            { "Thêm", new List<string> {
+                Master, Count, List, Get,
+                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,
+                Create,
+                CountProduct, ListProduct} },
             { "Xoá", new List<string> {
                 Master, Count, List, Get,
                 FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,

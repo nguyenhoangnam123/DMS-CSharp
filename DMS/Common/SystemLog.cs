@@ -1,6 +1,9 @@
-﻿namespace DMS.Entities
+﻿using Common;
+using System;
+
+namespace DMS.Entities
 {
-    public class SystemLog
+    public class SystemLog : DataEntity
     {
         public long Id { get; set; }
         public long? AppUserId { get; set; }
@@ -9,5 +12,6 @@
         public string ModuleName { get; set; }
         public string ClassName { get; set; }
         public string MethodName { get; set; }
+        public Guid RowId { get; set; }
     }
 }

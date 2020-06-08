@@ -3,13 +3,15 @@ using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace DMS.Handlers
 {
     public interface IRabbitManager
     {
-        void Publish<T>(T message, GenericEnum routeKey) where T : class;
+        void PublishList<T>(List<EventMessage<T>> message, GenericEnum routeKey) where T : DataEntity;
+        void PublishSingle<T>(EventMessage<T> message, GenericEnum routeKey) where T : DataEntity;
     }
     public class RabbitManager : IRabbitManager
     {
@@ -20,8 +22,7 @@ namespace DMS.Handlers
             _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 16);
         }
 
-        public void Publish<T>(T message, GenericEnum routeKey)
-            where T : class
+        public void PublishList<T>(List<EventMessage<T>> message, GenericEnum routeKey) where T : DataEntity
         {
             if (message == null)
                 return;
@@ -47,6 +48,15 @@ namespace DMS.Handlers
             {
                 _objectPool.Return(channel);
             }
+        }
+
+        public void PublishSingle<T>(EventMessage<T> message, GenericEnum routeKey) where T : DataEntity
+        {
+            if (message == null)
+                return;
+
+            List<EventMessage<T>> list = new List<EventMessage<T>> { message };
+            PublishList(list, routeKey);
         }
     }
 }

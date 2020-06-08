@@ -41,12 +41,11 @@ namespace Helpers
                 MethodName = methodName,
                 ModuleName = StaticParams.ModuleName,
                 NewData = JsonConvert.SerializeObject(newData),
-                Time = StaticParams.DateTimeNow
+                Time = StaticParams.DateTimeNow,
+                RowId = Guid.NewGuid(),
             };
-
-            RabbitManager.Publish(AuditLog, RoutingKeyEnum.AuditLog);
+            RabbitManager.PublishSingle(new EventMessage<AuditLog>(AuditLog, AuditLog.RowId), RoutingKeyEnum.AuditLogSend);
             return true;
-
         }
         public async Task<bool> CreateSystemLog(Exception ex, string className, [CallerMemberName] string methodName = "")
         {
@@ -58,10 +57,9 @@ namespace Helpers
                 ClassName = className,
                 MethodName = methodName,
                 ModuleName = StaticParams.ModuleName,
-                Exception = ex?.ToString()
+                Exception = ex.ToString()
             };
-
-            //RabbitManager.Publish(SystemLog, RoutingKeyEnum.SystemLog);
+            RabbitManager.PublishSingle(new EventMessage<SystemLog>(SystemLog, SystemLog.RowId), RoutingKeyEnum.SystemLogSend);
             return true;
         }
     }

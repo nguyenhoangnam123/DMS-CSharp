@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Mail
+    public class Mail : DataEntity
     {
         public long Id { get; set; }
         public List<string> Recipients { get; set; }

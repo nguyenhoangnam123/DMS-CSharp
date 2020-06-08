@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace DMS.Entities
+namespace Common
 {
-    public partial class AuditLog
+    public partial class AuditLog : DataEntity
     {
         public long Id { get; set; }
         public long? AppUserId { get; set; }
@@ -13,5 +13,6 @@ namespace DMS.Entities
         public string ClassName { get; set; }
         public string MethodName { get; set; }
         public DateTime Time { get; set; }
+        public Guid RowId { get; set; }
     }
 }
