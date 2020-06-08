@@ -236,6 +236,7 @@ namespace DMS.Rpc
             InitResellerStatusEnum();
             InitRequestStateEnum();
             InitStatusEnum();
+            InitNotificationStatusEnum();
             InitSurveyQuestionTypeEnum();
             InitSurveyOptionTypeEnum();
             InitUsedVariationEnum();
@@ -355,6 +356,23 @@ namespace DMS.Rpc
                 if (!statuses.Any(pt => pt.Id == item.Id))
                 {
                     DataContext.Status.Add(new StatusDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
+            }
+        }
+
+        private void InitNotificationStatusEnum()
+        {
+            List<NotificationStatusDAO> NotificationStatuses = DataContext.NotificationStatus.ToList();
+            foreach (var item in NotificationStatusEnum.NotificationStatusEnumList)
+            {
+                if (!NotificationStatuses.Any(pt => pt.Id == item.Id))
+                {
+                    DataContext.NotificationStatus.Add(new NotificationStatusDAO
                     {
                         Id = item.Id,
                         Code = item.Code,

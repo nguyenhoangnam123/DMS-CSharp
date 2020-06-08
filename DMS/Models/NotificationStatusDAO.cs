@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
-    public partial class SurveyOptionTypeDAO
+    public partial class NotificationStatusDAO
     {
-        public SurveyOptionTypeDAO()
+        public NotificationStatusDAO()
         {
-            SurveyOptions = new HashSet<SurveyOptionDAO>();
+            Notifications = new HashSet<NotificationDAO>();
         }
 
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<SurveyOptionDAO> SurveyOptions { get; set; }
+        public virtual ICollection<NotificationDAO> Notifications { get; set; }
     }
 }
