@@ -24,6 +24,10 @@ namespace DMS.Services.MRole
             IdNotExisted,
             CodeExisted,
             CodeNotExisted,
+            CodeEmpty,
+            CodeOverLength,
+            NameEmpty,
+            NameOverLength,
             NameExisted,
             StatusNotExisted,
             PageNotExisted,
@@ -58,19 +62,51 @@ namespace DMS.Services.MRole
 
         public async Task<bool> ValidateCode(Role Role)
         {
-            RoleFilter RoleFilter = new RoleFilter
+            if (string.IsNullOrWhiteSpace(Role.Code))
+                Role.AddError(nameof(RoleValidator), nameof(Role.Code), ErrorCode.CodeEmpty);
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { NotEqual = Role.Id },
-                Code = new StringFilter { Equal = Role.Code },
-                Selects = RoleSelect.Code
-            };
+                if (Role.Code.Length > 255)
+                    Role.AddError(nameof(RoleValidator), nameof(Role.Code), ErrorCode.CodeOverLength);
+                RoleFilter RoleFilter = new RoleFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { NotEqual = Role.Id },
+                    Code = new StringFilter { Equal = Role.Code },
+                    Selects = RoleSelect.Code
+                };
 
-            int count = await UOW.RoleRepository.Count(RoleFilter);
-            if (count != 0)
-                Role.AddError(nameof(RoleValidator), nameof(Role.Code), ErrorCode.CodeExisted);
-            return count == 1;
+                int count = await UOW.RoleRepository.Count(RoleFilter);
+                if (count != 0)
+                    Role.AddError(nameof(RoleValidator), nameof(Role.Code), ErrorCode.CodeExisted);
+            }
+            return Role.IsValidated;
+        }
+
+        public async Task<bool> ValidateName(Role Role)
+        {
+            if (string.IsNullOrWhiteSpace(Role.Name))
+                Role.AddError(nameof(RoleValidator), nameof(Role.Name), ErrorCode.NameEmpty);
+            else
+            {
+                if (Role.Name.Length > 255)
+                    Role.AddError(nameof(RoleValidator), nameof(Role.Name), ErrorCode.NameOverLength);
+                RoleFilter RoleFilter = new RoleFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { NotEqual = Role.Id },
+                    Name = new StringFilter { Equal = Role.Name },
+                    Selects = RoleSelect.Name
+                };
+
+                int count = await UOW.RoleRepository.Count(RoleFilter);
+                if (count != 0)
+                    Role.AddError(nameof(RoleValidator), nameof(Role.Name), ErrorCode.NameExisted);
+            }
+            return Role.IsValidated;
+
         }
 
         public async Task<bool> ValidateStatus(Role Role)
@@ -178,6 +214,7 @@ namespace DMS.Services.MRole
         public async Task<bool> Create(Role Role)
         {
             await ValidateCode(Role);
+            await ValidateName(Role);
             await ValidateStatus(Role);
             return Role.IsValidated;
         }
@@ -187,6 +224,7 @@ namespace DMS.Services.MRole
             if (await ValidateId(Role))
             {
                 await ValidateCode(Role);
+                await ValidateName(Role);
                 await ValidateStatus(Role);
             }
             return Role.IsValidated;
