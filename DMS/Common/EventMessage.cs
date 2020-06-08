@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 
-namespace DMS.Entities
+namespace Common
 {
     public class EventMessage<T> : DataEntity
     {

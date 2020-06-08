@@ -251,7 +251,7 @@ namespace DMS.Services.MWorkflow
                         Recipients = recipients,
                         Subject = CreateMailContent(WorkflowDirection.SubjectMailForCreator, Parameters),
                         Body = CreateMailContent(WorkflowDirection.BodyMailForCreator, Parameters),
-                        RowId = Guid.NewGuid()
+                        RowId = Guid.NewGuid(),
                     };
 
                     Mail MailForNextStep = new Mail
@@ -259,13 +259,14 @@ namespace DMS.Services.MWorkflow
                         Recipients = recipients,
                         Subject = CreateMailContent(WorkflowDirection.SubjectMailForNextStep, Parameters),
                         Body = CreateMailContent(WorkflowDirection.BodyMailForNextStep, Parameters),
-                        RowId = Guid.NewGuid()
+                        RowId = Guid.NewGuid(),
                     };
                     Mails.Add(MailForCreator);
                     Mails.Add(MailForNextStep);
                 }
-                Mails.Distinct();
-                RabbitManager.Publish(Mails, RoutingKeyEnum.SendMail);
+                Mails = Mails.Distinct().ToList();
+                List<EventMessage<Mail>> messages = Mails.Select(m => new EventMessage<Mail>(m, m.RowId)).ToList();
+                RabbitManager.PublishList(messages, RoutingKeyEnum.SendMail);
                 return true;
             }
 
@@ -314,7 +315,8 @@ namespace DMS.Services.MWorkflow
                         return true;
                     }
                 }
-                RabbitManager.Publish(Mails, RoutingKeyEnum.SendMail);
+                List<EventMessage<Mail>> messages = Mails.Select(m => new EventMessage<Mail>(m, m.RowId)).ToList();
+                RabbitManager.PublishList(messages, RoutingKeyEnum.SendMail);
             }
 
             return false;

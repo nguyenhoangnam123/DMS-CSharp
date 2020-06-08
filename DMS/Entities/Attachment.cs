@@ -1,8 +1,9 @@
-﻿using System.IO;
+﻿using Common;
+using System.IO;
 
 namespace DMS.Entities
 {
-    public class Attachment
+    public class Attachment : DataEntity
     {
         public long Id { get; set; }
         public string FileName { get; set; }
