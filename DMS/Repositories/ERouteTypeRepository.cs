@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -43,7 +42,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<ERouteTypeDAO> OrFilter(IQueryable<ERouteTypeDAO> query, ERouteTypeFilter filter)
+        private IQueryable<ERouteTypeDAO> OrFilter(IQueryable<ERouteTypeDAO> query, ERouteTypeFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -60,7 +59,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ERouteTypeDAO> DynamicOrder(IQueryable<ERouteTypeDAO> query, ERouteTypeFilter filter)
         {
@@ -173,7 +172,7 @@ namespace DMS.Repositories
             await DataContext.ERouteType.Where(x => x.Id == ERouteType.Id).DeleteFromQueryAsync();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<ERouteType> ERouteTypes)
         {
             List<ERouteTypeDAO> ERouteTypeDAOs = new List<ERouteTypeDAO>();
@@ -200,6 +199,6 @@ namespace DMS.Repositories
         private async Task SaveReference(ERouteType ERouteType)
         {
         }
-        
+
     }
 }

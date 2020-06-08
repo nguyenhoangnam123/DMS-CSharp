@@ -79,7 +79,7 @@ namespace DMS.Rpc.workflow_step
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(WorkflowStep_WorkflowStepDTO.Id))
                 return Forbid();
 
@@ -97,7 +97,7 @@ namespace DMS.Rpc.workflow_step
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(WorkflowStep_WorkflowStepDTO.Id))
                 return Forbid();
 
@@ -127,7 +127,7 @@ namespace DMS.Rpc.workflow_step
             else
                 return BadRequest(WorkflowStep_WorkflowStepDTO);
         }
-        
+
         [Route(WorkflowStepRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -147,7 +147,7 @@ namespace DMS.Rpc.workflow_step
                 return BadRequest(WorkflowSteps.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         [Route(WorkflowStepRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -192,7 +192,7 @@ namespace DMS.Rpc.workflow_step
                     string RoleIdValue = worksheet.Cells[i + StartRow, RoleIdColumn].Value?.ToString();
                     string SubjectMailForRejectValue = worksheet.Cells[i + StartRow, SubjectMailForRejectColumn].Value?.ToString();
                     string BodyMailForRejectValue = worksheet.Cells[i + StartRow, BodyMailForRejectColumn].Value?.ToString();
-                    
+
                     WorkflowStep WorkflowStep = new WorkflowStep();
                     WorkflowStep.Name = NameValue;
                     WorkflowStep.SubjectMailForReject = SubjectMailForRejectValue;
@@ -203,7 +203,7 @@ namespace DMS.Rpc.workflow_step
                     WorkflowDefinition WorkflowDefinition = WorkflowDefinitions.Where(x => x.Id.ToString() == WorkflowDefinitionIdValue).FirstOrDefault();
                     WorkflowStep.WorkflowDefinitionId = WorkflowDefinition == null ? 0 : WorkflowDefinition.Id;
                     WorkflowStep.WorkflowDefinition = WorkflowDefinition;
-                    
+
                     WorkflowSteps.Add(WorkflowStep);
                 }
             }
@@ -237,13 +237,13 @@ namespace DMS.Rpc.workflow_step
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(WorkflowStepRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] WorkflowStep_WorkflowStepFilterDTO WorkflowStep_WorkflowStepFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -256,7 +256,7 @@ namespace DMS.Rpc.workflow_step
 
                 var WorkflowStepHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "WorkflowDefinitionId",
                         "Name",
@@ -281,7 +281,7 @@ namespace DMS.Rpc.workflow_step
                 }
                 excel.GenerateWorksheet("WorkflowStep", WorkflowStepHeaders, WorkflowStepData);
                 #endregion
-                
+
                 #region Role
                 var RoleFilter = new RoleFilter();
                 RoleFilter.Selects = RoleSelect.ALL;
@@ -293,7 +293,7 @@ namespace DMS.Rpc.workflow_step
 
                 var RoleHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -325,7 +325,7 @@ namespace DMS.Rpc.workflow_step
 
                 var WorkflowDefinitionHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Name",
                         "WorkflowTypeId",
@@ -360,14 +360,14 @@ namespace DMS.Rpc.workflow_step
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
                 #region WorkflowStep
                 var WorkflowStepHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "WorkflowDefinitionId",
                         "Name",
@@ -379,7 +379,7 @@ namespace DMS.Rpc.workflow_step
                 List<object[]> WorkflowStepData = new List<object[]>();
                 excel.GenerateWorksheet("WorkflowStep", WorkflowStepHeaders, WorkflowStepData);
                 #endregion
-                
+
                 #region Role
                 var RoleFilter = new RoleFilter();
                 RoleFilter.Selects = RoleSelect.ALL;
@@ -391,7 +391,7 @@ namespace DMS.Rpc.workflow_step
 
                 var RoleHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -423,7 +423,7 @@ namespace DMS.Rpc.workflow_step
 
                 var WorkflowDefinitionHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Name",
                         "WorkflowTypeId",

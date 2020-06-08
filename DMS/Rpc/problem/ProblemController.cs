@@ -1,22 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MProblem;
 using DMS.Services.MAppUser;
+using DMS.Services.MImage;
+using DMS.Services.MProblem;
 using DMS.Services.MProblemStatus;
 using DMS.Services.MProblemType;
 using DMS.Services.MStore;
 using DMS.Services.MStoreChecking;
-using DMS.Services.MImage;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.problem
 {
@@ -95,7 +93,7 @@ namespace DMS.Rpc.problem
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Problem_ProblemDTO.Id))
                 return Forbid();
 
@@ -113,7 +111,7 @@ namespace DMS.Rpc.problem
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Problem_ProblemDTO.Id))
                 return Forbid();
 
@@ -143,7 +141,7 @@ namespace DMS.Rpc.problem
             else
                 return BadRequest(Problem_ProblemDTO);
         }
-        
+
         [Route(ProblemRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -161,7 +159,7 @@ namespace DMS.Rpc.problem
             Problems = await ProblemService.BulkDelete(Problems);
             return true;
         }
-        
+
         [Route(ProblemRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -233,7 +231,7 @@ namespace DMS.Rpc.problem
                     string CompletedAtValue = worksheet.Cells[i + StartRow, CompletedAtColumn].Value?.ToString();
                     string ContentValue = worksheet.Cells[i + StartRow, ContentColumn].Value?.ToString();
                     string ProblemStatusIdValue = worksheet.Cells[i + StartRow, ProblemStatusIdColumn].Value?.ToString();
-                    
+
                     Problem Problem = new Problem();
                     Problem.NoteAt = DateTime.TryParse(NoteAtValue, out DateTime NoteAt) ? NoteAt : DateTime.Now;
                     Problem.CompletedAt = DateTime.TryParse(CompletedAtValue, out DateTime CompletedAt) ? CompletedAt : DateTime.Now;
@@ -253,7 +251,7 @@ namespace DMS.Rpc.problem
                     StoreChecking StoreChecking = StoreCheckings.Where(x => x.Id.ToString() == StoreCheckingIdValue).FirstOrDefault();
                     Problem.StoreCheckingId = StoreChecking == null ? 0 : StoreChecking.Id;
                     Problem.StoreChecking = StoreChecking;
-                    
+
                     Problems.Add(Problem);
                 }
             }
@@ -293,13 +291,13 @@ namespace DMS.Rpc.problem
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(ProblemRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] Problem_ProblemFilterDTO Problem_ProblemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -312,7 +310,7 @@ namespace DMS.Rpc.problem
 
                 var ProblemHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "StoreCheckingId",
                         "StoreId",
@@ -343,7 +341,7 @@ namespace DMS.Rpc.problem
                 }
                 excel.GenerateWorksheet("Problem", ProblemHeaders, ProblemData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -355,7 +353,7 @@ namespace DMS.Rpc.problem
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "DisplayName",
@@ -407,7 +405,7 @@ namespace DMS.Rpc.problem
 
                 var ProblemStatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -437,7 +435,7 @@ namespace DMS.Rpc.problem
 
                 var ProblemTypeHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -467,7 +465,7 @@ namespace DMS.Rpc.problem
 
                 var StoreHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -539,7 +537,7 @@ namespace DMS.Rpc.problem
 
                 var StoreCheckingHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "StoreId",
                         "SaleEmployeeId",
@@ -579,7 +577,7 @@ namespace DMS.Rpc.problem
 
                 var ImageHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Name",
                         "Url",
@@ -608,14 +606,14 @@ namespace DMS.Rpc.problem
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
                 #region Problem
                 var ProblemHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "StoreCheckingId",
                         "StoreId",
@@ -630,7 +628,7 @@ namespace DMS.Rpc.problem
                 List<object[]> ProblemData = new List<object[]>();
                 excel.GenerateWorksheet("Problem", ProblemHeaders, ProblemData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -642,7 +640,7 @@ namespace DMS.Rpc.problem
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "DisplayName",
@@ -694,7 +692,7 @@ namespace DMS.Rpc.problem
 
                 var ProblemStatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -724,7 +722,7 @@ namespace DMS.Rpc.problem
 
                 var ProblemTypeHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -754,7 +752,7 @@ namespace DMS.Rpc.problem
 
                 var StoreHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -826,7 +824,7 @@ namespace DMS.Rpc.problem
 
                 var StoreCheckingHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "StoreId",
                         "SaleEmployeeId",
@@ -866,7 +864,7 @@ namespace DMS.Rpc.problem
 
                 var ImageHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Name",
                         "Url",

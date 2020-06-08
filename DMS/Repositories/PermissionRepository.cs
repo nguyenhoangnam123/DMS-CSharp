@@ -227,7 +227,7 @@ namespace DMS.Repositories
                         Name = x.PermissionOperator.Name,
                     },
                 }).ToListAsync();
-          
+
             Permission.PermissionActionMappings = await DataContext.PermissionActionMapping
                 .Where(x => x.PermissionId == Permission.Id)
                 .Select(x => new PermissionActionMapping

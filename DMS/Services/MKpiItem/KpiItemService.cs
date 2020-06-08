@@ -1,18 +1,16 @@
 using Common;
+using DMS.Entities;
+using DMS.Helpers;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
-using DMS.Helpers;
 
 namespace DMS.Services.MKpiItem
 {
-    public interface IKpiItemService :  IServiceScoped
+    public interface IKpiItemService : IServiceScoped
     {
         Task<int> Count(KpiItemFilter KpiItemFilter);
         Task<List<KpiItem>> List(KpiItemFilter KpiItemFilter);
@@ -84,7 +82,7 @@ namespace DMS.Services.MKpiItem
                 return null;
             return KpiItem;
         }
-       
+
         public async Task<KpiItem> Create(KpiItem KpiItem)
         {
             if (!await KpiItemValidator.Create(KpiItem))
@@ -195,7 +193,7 @@ namespace DMS.Services.MKpiItem
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<KpiItem>> Import(List<KpiItem> KpiItems)
         {
             if (!await KpiItemValidator.Import(KpiItems))
@@ -218,8 +216,8 @@ namespace DMS.Services.MKpiItem
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public KpiItemFilter ToFilter(KpiItemFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<KpiItemFilter>();

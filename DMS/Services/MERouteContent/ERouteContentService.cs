@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MERouteContent
 {
-    public interface IERouteContentService :  IServiceScoped
+    public interface IERouteContentService : IServiceScoped
     {
         Task<int> Count(ERouteContentFilter ERouteContentFilter);
         Task<List<ERouteContent>> List(ERouteContentFilter ERouteContentFilter);
@@ -83,7 +80,7 @@ namespace DMS.Services.MERouteContent
                 return null;
             return ERouteContent;
         }
-       
+
         public async Task<ERouteContent> Create(ERouteContent ERouteContent)
         {
             if (!await ERouteContentValidator.Create(ERouteContent))
@@ -183,7 +180,7 @@ namespace DMS.Services.MERouteContent
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<ERouteContent>> Import(List<ERouteContent> ERouteContents)
         {
             if (!await ERouteContentValidator.Import(ERouteContents))
@@ -206,8 +203,8 @@ namespace DMS.Services.MERouteContent
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public ERouteContentFilter ToFilter(ERouteContentFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ERouteContentFilter>();

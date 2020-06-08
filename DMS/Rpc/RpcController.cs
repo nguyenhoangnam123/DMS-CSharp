@@ -3,9 +3,7 @@ using DMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -14,7 +12,7 @@ using System.Threading.Tasks;
 namespace DMS.Rpc
 {
     [Authorize]
-    [Authorize(Policy ="Permission")]
+    [Authorize(Policy = "Permission")]
     public class RpcController : ControllerBase
     {
     }

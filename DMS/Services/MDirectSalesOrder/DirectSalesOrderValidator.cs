@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
-using DMS.Enums;
 
 namespace DMS.Services.MDirectSalesOrder
 {
@@ -117,7 +116,7 @@ namespace DMS.Services.MDirectSalesOrder
                         foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
                         {
                             var oldDataContent = oldData.DirectSalesOrderContents.Where(x => x.Id == DirectSalesOrderContent.Id).FirstOrDefault();
-                            if(oldDataContent != null)
+                            if (oldDataContent != null)
                             {
                                 if (DirectSalesOrderContent.Amount > 1.1 * oldDataContent.Amount || DirectSalesOrderContent.Amount < 0.9 * oldDataContent.Amount)
                                     DirectSalesOrderContent.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Amount), ErrorCode.PriceOutOfRange);
@@ -126,7 +125,7 @@ namespace DMS.Services.MDirectSalesOrder
                     }
                 }
             }
-            
+
             return DirectSalesOrder.IsValidated;
         }
 
@@ -201,10 +200,10 @@ namespace DMS.Services.MDirectSalesOrder
                 {
                     if (DirectSalesOrderContent.Quantity == 0)
                         DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Quantity), ErrorCode.QuantityEmpty);
-                    else if(DirectSalesOrderContent.Quantity < 0)
+                    else if (DirectSalesOrderContent.Quantity < 0)
                         DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Quantity), ErrorCode.QuantityInvalid);
                     var saleStockOfItem = SaleStockOfItems.Where(x => x.ItemId == DirectSalesOrderContent.ItemId).Select(x => x.SaleStock).FirstOrDefault();
-                    if(DirectSalesOrderContent.Quantity > saleStockOfItem)
+                    if (DirectSalesOrderContent.Quantity > saleStockOfItem)
                     {
                         DirectSalesOrderContent.Item.HasInventory = false;
                         DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Quantity), ErrorCode.InventoryHasntEnough);
@@ -231,7 +230,7 @@ namespace DMS.Services.MDirectSalesOrder
                 {
                     if (DirectSalesOrderPromotion.Quantity == 0)
                         DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.Quantity), ErrorCode.QuantityEmpty);
-                    else if(DirectSalesOrderPromotion.Quantity < 0)
+                    else if (DirectSalesOrderPromotion.Quantity < 0)
                         DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.Quantity), ErrorCode.QuantityInvalid);
                     var saleStockOfItem = SaleStockOfItems.Where(x => x.ItemId == DirectSalesOrderPromotion.ItemId).Select(x => x.SaleStock).FirstOrDefault();
                     if (DirectSalesOrderPromotion.Quantity > saleStockOfItem)
@@ -288,7 +287,7 @@ namespace DMS.Services.MDirectSalesOrder
             return DirectSalesOrder.IsValidated;
         }
 
-        public async Task<bool>Create(DirectSalesOrder DirectSalesOrder)
+        public async Task<bool> Create(DirectSalesOrder DirectSalesOrder)
         {
             await ValidateStore(DirectSalesOrder);
             await ValidateEmployee(DirectSalesOrder);
@@ -321,7 +320,7 @@ namespace DMS.Services.MDirectSalesOrder
             }
             return DirectSalesOrder.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<DirectSalesOrder> DirectSalesOrders)
         {
             foreach (DirectSalesOrder DirectSalesOrder in DirectSalesOrders)
@@ -330,7 +329,7 @@ namespace DMS.Services.MDirectSalesOrder
             }
             return DirectSalesOrders.All(st => st.IsValidated);
         }
-        
+
         public async Task<bool> Import(List<DirectSalesOrder> DirectSalesOrders)
         {
             return true;

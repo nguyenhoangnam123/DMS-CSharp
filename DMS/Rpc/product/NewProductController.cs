@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.product
 {
-    
+
 
     public class NewProductController : RpcController
     {

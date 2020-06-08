@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MIndirectPriceListType
 {
-    public interface IIndirectPriceListTypeService :  IServiceScoped
+    public interface IIndirectPriceListTypeService : IServiceScoped
     {
         Task<int> Count(IndirectPriceListTypeFilter IndirectPriceListTypeFilter);
         Task<List<IndirectPriceListType>> List(IndirectPriceListTypeFilter IndirectPriceListTypeFilter);
@@ -83,7 +80,7 @@ namespace DMS.Services.MIndirectPriceListType
                 return null;
             return IndirectPriceListType;
         }
-       
+
         public async Task<IndirectPriceListType> Create(IndirectPriceListType IndirectPriceListType)
         {
             if (!await IndirectPriceListTypeValidator.Create(IndirectPriceListType))
@@ -183,7 +180,7 @@ namespace DMS.Services.MIndirectPriceListType
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<IndirectPriceListType>> Import(List<IndirectPriceListType> IndirectPriceListTypes)
         {
             if (!await IndirectPriceListTypeValidator.Import(IndirectPriceListTypes))
@@ -206,8 +203,8 @@ namespace DMS.Services.MIndirectPriceListType
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public IndirectPriceListTypeFilter ToFilter(IndirectPriceListTypeFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<IndirectPriceListTypeFilter>();

@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -68,7 +68,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<ResellerDAO> OrFilter(IQueryable<ResellerDAO> query, ResellerFilter filter)
+        private IQueryable<ResellerDAO> OrFilter(IQueryable<ResellerDAO> query, ResellerFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -109,7 +109,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ResellerDAO> DynamicOrder(IQueryable<ResellerDAO> query, ResellerFilter filter)
         {
@@ -307,66 +307,66 @@ namespace DMS.Repositories
         {
             Reseller Reseller = await DataContext.Reseller.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new Reseller()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                Phone = x.Phone,
-                Email = x.Email,
-                Address = x.Address,
-                TaxCode = x.TaxCode,
-                CompanyName = x.CompanyName,
-                DeputyName = x.DeputyName,
-                Description = x.Description,
-                OrganizationId = x.OrganizationId,
-                StatusId = x.StatusId,
-                ResellerTypeId = x.ResellerTypeId,
-                ResellerStatusId = x.ResellerStatusId,
-                StaffId = x.StaffId,
-                Organization = x.Organization == null ? null : new Organization
                 {
-                    Id = x.Organization.Id,
-                    Code = x.Organization.Code,
-                    Name = x.Organization.Name,
-                    Address = x.Organization.Address,
-                    Email = x.Organization.Email,
-                    Level = x.Organization.Level,
-                    ParentId = x.Organization.ParentId,
-                    Path = x.Organization.Path,
-                    Phone = x.Organization.Phone,
-                    StatusId = x.Organization.StatusId
-                },
-                ResellerStatus = x.ResellerStatus == null ? null : new ResellerStatus
-                {
-                    Id = x.ResellerStatus.Id,
-                    Code = x.ResellerStatus.Code,
-                    Name = x.ResellerStatus.Name,
-                },
-                ResellerType = x.ResellerType == null ? null : new ResellerType
-                {
-                    Id = x.ResellerType.Id,
-                    Code = x.ResellerType.Code,
-                    Name = x.ResellerType.Name,
-                    StatusId = x.ResellerType.StatusId,
-                },
-                Staff = x.Staff == null ? null : new AppUser
-                {
-                    Id = x.Staff.Id,
-                    Username = x.Staff.Username,
-                    DisplayName = x.Staff.DisplayName,
-                    SexId = x.Staff.SexId,
-                    Address = x.Staff.Address,
-                    Email = x.Staff.Email,
-                    Phone = x.Staff.Phone,
-                    StatusId = x.Staff.StatusId,
-                },
-                Status = x.Status == null ? null : new Status
-                {
-                    Id = x.Status.Id,
-                    Code = x.Status.Code,
-                    Name = x.Status.Name,
-                },
-            }).FirstOrDefaultAsync();
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    Phone = x.Phone,
+                    Email = x.Email,
+                    Address = x.Address,
+                    TaxCode = x.TaxCode,
+                    CompanyName = x.CompanyName,
+                    DeputyName = x.DeputyName,
+                    Description = x.Description,
+                    OrganizationId = x.OrganizationId,
+                    StatusId = x.StatusId,
+                    ResellerTypeId = x.ResellerTypeId,
+                    ResellerStatusId = x.ResellerStatusId,
+                    StaffId = x.StaffId,
+                    Organization = x.Organization == null ? null : new Organization
+                    {
+                        Id = x.Organization.Id,
+                        Code = x.Organization.Code,
+                        Name = x.Organization.Name,
+                        Address = x.Organization.Address,
+                        Email = x.Organization.Email,
+                        Level = x.Organization.Level,
+                        ParentId = x.Organization.ParentId,
+                        Path = x.Organization.Path,
+                        Phone = x.Organization.Phone,
+                        StatusId = x.Organization.StatusId
+                    },
+                    ResellerStatus = x.ResellerStatus == null ? null : new ResellerStatus
+                    {
+                        Id = x.ResellerStatus.Id,
+                        Code = x.ResellerStatus.Code,
+                        Name = x.ResellerStatus.Name,
+                    },
+                    ResellerType = x.ResellerType == null ? null : new ResellerType
+                    {
+                        Id = x.ResellerType.Id,
+                        Code = x.ResellerType.Code,
+                        Name = x.ResellerType.Name,
+                        StatusId = x.ResellerType.StatusId,
+                    },
+                    Staff = x.Staff == null ? null : new AppUser
+                    {
+                        Id = x.Staff.Id,
+                        Username = x.Staff.Username,
+                        DisplayName = x.Staff.DisplayName,
+                        SexId = x.Staff.SexId,
+                        Address = x.Staff.Address,
+                        Email = x.Staff.Email,
+                        Phone = x.Staff.Phone,
+                        StatusId = x.Staff.StatusId,
+                    },
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
+                }).FirstOrDefaultAsync();
 
             if (Reseller == null)
                 return null;
@@ -431,7 +431,7 @@ namespace DMS.Repositories
             await DataContext.Reseller.Where(x => x.Id == Reseller.Id).UpdateFromQueryAsync(x => new ResellerDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Reseller> Resellers)
         {
             List<ResellerDAO> ResellerDAOs = new List<ResellerDAO>();
@@ -473,6 +473,6 @@ namespace DMS.Repositories
         private async Task SaveReference(Reseller Reseller)
         {
         }
-        
+
     }
 }

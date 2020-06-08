@@ -1,12 +1,10 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
-using DMS.Enums;
 
 namespace DMS.Services.MWarehouse
 {

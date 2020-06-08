@@ -1,8 +1,6 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
 
 namespace DMS.Rpc.position
 {
@@ -15,7 +13,7 @@ namespace DMS.Rpc.position
         public Position_StatusDTO Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public Position_PositionDTO() {}
+        public Position_PositionDTO() { }
         public Position_PositionDTO(Position Position)
         {
             this.Id = Position.Id;

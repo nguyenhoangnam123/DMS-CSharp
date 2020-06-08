@@ -1,10 +1,5 @@
-﻿using DMS.Enums;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Common
 {
@@ -131,7 +126,7 @@ namespace Common
         }
     }
 
-   
+
 
     public class FieldTypeEnum
     {
@@ -146,7 +141,7 @@ namespace Common
 
         public static List<GenericEnum> List = new List<GenericEnum>()
         {
-            ID, STRING, LONG, DECIMAL, DATE, 
+            ID, STRING, LONG, DECIMAL, DATE,
         };
     }
 

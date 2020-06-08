@@ -15,12 +15,8 @@ using DMS.Services.MStoreType;
 using DMS.Services.MSupplier;
 using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MUnitOfMeasureGrouping;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -122,7 +118,7 @@ namespace DMS.Rpc.indirect_sales_order
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(IndirectSalesOrder_IndirectSalesOrderDTO.Id))
                 return Forbid();
 
@@ -140,7 +136,7 @@ namespace DMS.Rpc.indirect_sales_order
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(IndirectSalesOrder_IndirectSalesOrderDTO.Id))
                 return Forbid();
 
@@ -206,7 +202,7 @@ namespace DMS.Rpc.indirect_sales_order
             else
                 return BadRequest(IndirectSalesOrder_IndirectSalesOrderDTO);
         }
-        
+
         private async Task<bool> HasPermission(long Id)
         {
             IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter();
@@ -342,7 +338,7 @@ namespace DMS.Rpc.indirect_sales_order
                     TaxPercentage = x.TaxPercentage,
                     TaxAmount = x.TaxAmount,
                     Factor = x.Factor,
-                    Item = x.Item == null ? null : new Item 
+                    Item = x.Item == null ? null : new Item
                     {
                         Id = x.Item.Id,
                         Code = x.Item.Code,
@@ -517,7 +513,7 @@ namespace DMS.Rpc.indirect_sales_order
                 .Select(x => new IndirectSalesOrder_AppUserDTO(x)).ToList();
             return IndirectSalesOrder_AppUserDTOs;
         }
-        
+
         [Route(IndirectSalesOrderRoute.FilterListUnitOfMeasure), HttpPost]
         public async Task<List<IndirectSalesOrder_UnitOfMeasureDTO>> FilterListUnitOfMeasure([FromBody] IndirectSalesOrder_UnitOfMeasureFilterDTO IndirectSalesOrder_UnitOfMeasureFilterDTO)
         {
@@ -541,7 +537,7 @@ namespace DMS.Rpc.indirect_sales_order
                 .Select(x => new IndirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
             return IndirectSalesOrder_UnitOfMeasureDTOs;
         }
-       
+
         [Route(IndirectSalesOrderRoute.FilterListItem), HttpPost]
         public async Task<List<IndirectSalesOrder_ItemDTO>> FilterListItem([FromBody] IndirectSalesOrder_ItemFilterDTO IndirectSalesOrder_ItemFilterDTO)
         {
@@ -662,7 +658,7 @@ namespace DMS.Rpc.indirect_sales_order
                 .Select(x => new IndirectSalesOrder_AppUserDTO(x)).ToList();
             return IndirectSalesOrder_AppUserDTOs;
         }
-       
+
         [Route(IndirectSalesOrderRoute.SingleListUnitOfMeasure), HttpPost]
         public async Task<List<IndirectSalesOrder_UnitOfMeasureDTO>> SingleListUnitOfMeasure([FromBody] IndirectSalesOrder_UnitOfMeasureFilterDTO IndirectSalesOrder_UnitOfMeasureFilterDTO)
         {
@@ -676,7 +672,7 @@ namespace DMS.Rpc.indirect_sales_order
             {
                 IndirectSalesOrder_UnitOfMeasureDTOs = Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(x => new IndirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
             }
-            if(Product.UnitOfMeasure.StatusId == Enums.StatusEnum.ACTIVE.Id)
+            if (Product.UnitOfMeasure.StatusId == Enums.StatusEnum.ACTIVE.Id)
             {
                 IndirectSalesOrder_UnitOfMeasureDTOs.Add(new IndirectSalesOrder_UnitOfMeasureDTO
                 {
@@ -688,10 +684,10 @@ namespace DMS.Rpc.indirect_sales_order
                     Factor = 1
                 });
             }
-            
+
             return IndirectSalesOrder_UnitOfMeasureDTOs;
         }
-        
+
         [Route(IndirectSalesOrderRoute.SingleListSupplier), HttpPost]
         public async Task<List<IndirectSalesOrder_SupplierDTO>> SingleListSupplier([FromBody] IndirectSalesOrder_SupplierFilterDTO Product_SupplierFilterDTO)
         {
@@ -985,7 +981,7 @@ namespace DMS.Rpc.indirect_sales_order
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = IndirectSalesOrder_ItemFilterDTO.SupplierId;
 
-            if(IndirectSalesOrder_ItemFilterDTO.StoreId != null && IndirectSalesOrder_ItemFilterDTO.StoreId.Equal.HasValue)
+            if (IndirectSalesOrder_ItemFilterDTO.StoreId != null && IndirectSalesOrder_ItemFilterDTO.StoreId.Equal.HasValue)
             {
                 List<Item> Items = await IndirectSalesOrderService.ListItem(ItemFilter, IndirectSalesOrder_ItemFilterDTO.StoreId.Equal.Value);
                 List<IndirectSalesOrder_ItemDTO> IndirectSalesOrder_ItemDTOs = Items

@@ -1,19 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Helpers;
+using DMS.Repositories;
 using Helpers;
+using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
-using RestSharp;
-using DMS.Helpers;
 
 namespace DMS.Services.MNotification
 {
-    public interface INotificationService :  IServiceScoped
+    public interface INotificationService : IServiceScoped
     {
         Task<int> Count(NotificationFilter NotificationFilter);
         Task<List<Notification>> List(NotificationFilter NotificationFilter);
@@ -85,7 +83,7 @@ namespace DMS.Services.MNotification
                 return null;
             return Notification;
         }
-       
+
         public async Task<Notification> Create(Notification Notification)
         {
             if (!await NotificationValidator.Create(Notification))
@@ -93,7 +91,7 @@ namespace DMS.Services.MNotification
 
             try
             {
-                
+
                 await UOW.Begin();
                 await UOW.NotificationRepository.Create(Notification);
                 await UOW.Commit();
@@ -125,7 +123,7 @@ namespace DMS.Services.MNotification
                     AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
                 }
 
-                if(AppUsers != null && AppUsers.Any())
+                if (AppUsers != null && AppUsers.Any())
                 {
                     var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
@@ -140,7 +138,7 @@ namespace DMS.Services.MNotification
 
                     await SendNotification(NotificationUtilss);
                 }
-                
+
                 await Logging.CreateAuditLog(Notification, new { }, nameof(NotificationService));
                 return await UOW.NotificationRepository.Get(Notification.Id);
             }
@@ -229,7 +227,7 @@ namespace DMS.Services.MNotification
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Notification>> Import(List<Notification> Notifications)
         {
             if (!await NotificationValidator.Import(Notifications))
@@ -252,8 +250,8 @@ namespace DMS.Services.MNotification
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public NotificationFilter ToFilter(NotificationFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<NotificationFilter>();

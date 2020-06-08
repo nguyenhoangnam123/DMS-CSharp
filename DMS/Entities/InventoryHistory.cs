@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class InventoryHistory : DataEntity,  IEquatable<InventoryHistory>
+    public class InventoryHistory : DataEntity, IEquatable<InventoryHistory>
     {
         public long Id { get; set; }
         public long InventoryId { get; set; }
@@ -40,8 +40,8 @@ namespace DMS.Entities
         public IdFilter AppUserId { get; set; }
         public DateFilter UpdateTime { get; set; }
         public List<InventoryHistoryFilter> OrFilter { get; set; }
-        public InventoryHistoryOrder OrderBy {get; set;}
-        public InventoryHistorySelect Selects {get; set;}
+        public InventoryHistoryOrder OrderBy { get; set; }
+        public InventoryHistorySelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -58,7 +58,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum InventoryHistorySelect:long
+    public enum InventoryHistorySelect : long
     {
         ALL = E.ALL,
         Id = E._0,

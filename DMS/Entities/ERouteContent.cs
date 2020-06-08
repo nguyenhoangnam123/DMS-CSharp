@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class ERouteContent : DataEntity,  IEquatable<ERouteContent>
+    public class ERouteContent : DataEntity, IEquatable<ERouteContent>
     {
         public long Id { get; set; }
         public long ERouteId { get; set; }
@@ -43,8 +43,8 @@ namespace DMS.Entities
         public IdFilter StoreId { get; set; }
         public LongFilter OrderNumber { get; set; }
         public List<ERouteContentFilter> OrFilter { get; set; }
-        public ERouteContentOrder OrderBy {get; set;}
-        public ERouteContentSelect Selects {get; set;}
+        public ERouteContentOrder OrderBy { get; set; }
+        public ERouteContentSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -68,7 +68,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum ERouteContentSelect:long
+    public enum ERouteContentSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

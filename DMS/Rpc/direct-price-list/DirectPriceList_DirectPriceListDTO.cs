@@ -1,8 +1,8 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.direct_price_list
 {
@@ -25,7 +25,7 @@ namespace DMS.Rpc.direct_price_list
         public List<DirectPriceList_DirectPriceListStoreTypeMappingDTO> DirectPriceListStoreTypeMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public DirectPriceList_DirectPriceListDTO() {}
+        public DirectPriceList_DirectPriceListDTO() { }
         public DirectPriceList_DirectPriceListDTO(DirectPriceList DirectPriceList)
         {
             this.Id = DirectPriceList.Id;

@@ -1,12 +1,11 @@
+using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
-using DMS.Enums;
 
 namespace DMS.Services.MERouteChangeRequest
 {
@@ -58,11 +57,11 @@ namespace DMS.Services.MERouteChangeRequest
         private async Task<bool> ValidateERoute(ERouteChangeRequest ERouteChangeRequest)
         {
             ERoute ERoute = await UOW.ERouteRepository.Get(ERouteChangeRequest.ERouteId);
-            if(ERoute == null)
+            if (ERoute == null)
                 ERouteChangeRequest.AddError(nameof(ERouteChangeRequestValidator), nameof(ERouteChangeRequest.ERoute), ErrorCode.ERouteNotExisted);
             else
             {
-                if(ERoute.RequestStateId != RequestStateEnum.APPROVED.Id)
+                if (ERoute.RequestStateId != RequestStateEnum.APPROVED.Id)
                     ERouteChangeRequest.AddError(nameof(ERouteChangeRequestValidator), nameof(ERoute.RequestState), ErrorCode.RequestStateIsNotApproved);
             }
             return ERouteChangeRequest.IsValidated;

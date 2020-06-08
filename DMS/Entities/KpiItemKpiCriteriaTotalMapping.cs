@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
 using Common;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System;
 
 namespace DMS.Entities
 {
-    public class KpiItemKpiCriteriaTotalMapping : DataEntity,  IEquatable<KpiItemKpiCriteriaTotalMapping>
+    public class KpiItemKpiCriteriaTotalMapping : DataEntity, IEquatable<KpiItemKpiCriteriaTotalMapping>
     {
         public long KpiItemId { get; set; }
         public long KpiCriteriaTotalId { get; set; }

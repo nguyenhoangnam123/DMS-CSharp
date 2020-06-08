@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.product_grouping
@@ -31,10 +28,10 @@ namespace DMS.Rpc.product_grouping
         public ProductGrouping_SupplierDTO Supplier { get; set; }
         public ProductGrouping_BrandDTO Brand { get; set; }
         public ProductGrouping_UnitOfMeasureDTO UnitOfMeasure { get; set; }
-        public ProductGrouping_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping { get;set; }
+        public ProductGrouping_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping { get; set; }
         public ProductGrouping_TaxTypeDTO TaxType { get; set; }
         public ProductGrouping_StatusDTO Status { get; set; }
-        public ProductGrouping_ProductDTO() {}
+        public ProductGrouping_ProductDTO() { }
         public ProductGrouping_ProductDTO(Product Product)
         {
             this.Id = Product.Id;

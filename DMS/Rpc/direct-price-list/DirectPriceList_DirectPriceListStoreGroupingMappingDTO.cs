@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.direct_price_list
@@ -10,9 +7,9 @@ namespace DMS.Rpc.direct_price_list
     {
         public long DirectPriceListId { get; set; }
         public long StoreGroupingId { get; set; }
-        public DirectPriceList_StoreGroupingDTO StoreGrouping { get; set; }   
-        
-        public DirectPriceList_DirectPriceListStoreGroupingMappingDTO() {}
+        public DirectPriceList_StoreGroupingDTO StoreGrouping { get; set; }
+
+        public DirectPriceList_DirectPriceListStoreGroupingMappingDTO() { }
         public DirectPriceList_DirectPriceListStoreGroupingMappingDTO(DirectPriceListStoreGroupingMapping DirectPriceListStoreGroupingMapping)
         {
             this.DirectPriceListId = DirectPriceListStoreGroupingMapping.DirectPriceListId;
@@ -24,11 +21,11 @@ namespace DMS.Rpc.direct_price_list
 
     public class DirectPriceList_DirectPriceListStoreGroupingMappingFilterDTO : FilterDTO
     {
-        
+
         public IdFilter DirectPriceListId { get; set; }
-        
+
         public IdFilter StoreGroupingId { get; set; }
-        
+
         public DirectPriceListStoreGroupingMappingOrder OrderBy { get; set; }
     }
 }

@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.indirect_sales_order
@@ -17,11 +14,11 @@ namespace DMS.Rpc.indirect_sales_order
         public long RequestedQuantity { get; set; }
         public string Note { get; set; }
         public long? Factor { get; set; }
-        public IndirectSalesOrder_ItemDTO Item { get; set; }   
-        public IndirectSalesOrder_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }   
-        public IndirectSalesOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }   
-        
-        public IndirectSalesOrder_IndirectSalesOrderPromotionDTO() {}
+        public IndirectSalesOrder_ItemDTO Item { get; set; }
+        public IndirectSalesOrder_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }
+        public IndirectSalesOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+
+        public IndirectSalesOrder_IndirectSalesOrderPromotionDTO() { }
         public IndirectSalesOrder_IndirectSalesOrderPromotionDTO(IndirectSalesOrderPromotion IndirectSalesOrderPromotion)
         {
             this.Id = IndirectSalesOrderPromotion.Id;
@@ -42,23 +39,23 @@ namespace DMS.Rpc.indirect_sales_order
 
     public class IndirectSalesOrder_IndirectSalesOrderPromotionFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public IdFilter IndirectSalesOrderId { get; set; }
-        
+
         public IdFilter ItemId { get; set; }
-        
+
         public IdFilter UnitOfMeasureId { get; set; }
-        
+
         public LongFilter Quantity { get; set; }
-        
+
         public IdFilter PrimaryUnitOfMeasureId { get; set; }
-        
+
         public LongFilter RequestedQuantity { get; set; }
-        
+
         public StringFilter Note { get; set; }
-        
+
         public IndirectSalesOrderPromotionOrder OrderBy { get; set; }
     }
 }

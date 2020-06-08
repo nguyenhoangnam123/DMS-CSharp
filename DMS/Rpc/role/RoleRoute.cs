@@ -1,9 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DMS.Rpc.role
 {
@@ -22,7 +19,7 @@ namespace DMS.Rpc.role
         public const string GetMenu = Default + "/get-menu";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
-        
+
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListMenu = Default + "/single-list-menu";
         public const string SingleListBrand = Default + "/single-list-brand";
@@ -58,11 +55,11 @@ namespace DMS.Rpc.role
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, 
+            { "Tìm kiếm", new List<string> {
+                Master, Count, List, Get,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator,  } },
-            { "Thêm", new List<string> { 
+            { "Thêm", new List<string> {
                 Master, Count, List, Get, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator,
@@ -86,11 +83,11 @@ namespace DMS.Rpc.role
                 Detail, CreatePermission, GetMenu, Master, Count, List, Get, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                  SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, } },
-            { "Xoá", new List<string> { 
+            { "Xoá", new List<string> {
                 Master, Count, List, Get,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator,
-                Detail, Delete, 
+                Detail, Delete,
                  } },
         };
     }

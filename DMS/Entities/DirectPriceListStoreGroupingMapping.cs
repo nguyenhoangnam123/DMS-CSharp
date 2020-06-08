@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class DirectPriceListStoreGroupingMapping : DataEntity,  IEquatable<DirectPriceListStoreGroupingMapping>
+    public class DirectPriceListStoreGroupingMapping : DataEntity, IEquatable<DirectPriceListStoreGroupingMapping>
     {
         public long DirectPriceListId { get; set; }
         public long StoreGroupingId { get; set; }
@@ -28,8 +28,8 @@ namespace DMS.Entities
         public IdFilter DirectPriceListId { get; set; }
         public IdFilter StoreGroupingId { get; set; }
         public List<DirectPriceListStoreGroupingMappingFilter> OrFilter { get; set; }
-        public DirectPriceListStoreGroupingMappingOrder OrderBy {get; set;}
-        public DirectPriceListStoreGroupingMappingSelect Selects {get; set;}
+        public DirectPriceListStoreGroupingMappingOrder OrderBy { get; set; }
+        public DirectPriceListStoreGroupingMappingSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -40,7 +40,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum DirectPriceListStoreGroupingMappingSelect:long
+    public enum DirectPriceListStoreGroupingMappingSelect : long
     {
         ALL = E.ALL,
         DirectPriceList = E._0,

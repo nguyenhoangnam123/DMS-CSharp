@@ -1,17 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MUnitOfMeasure;
-using DMS.Services.MStatus;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.unit_of_measure
 {
@@ -37,28 +25,28 @@ namespace DMS.Rpc.unit_of_measure
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
+            { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, } },
             { "Thêm", new List<string> {
                 Master, Count, List, Get,
-                Detail, Create,  
+                Detail, Create,
                 SingleListStatus, } },
             { "Sửa", new List<string> {
                 Master, Count, List, Get,
-                Detail, Update,  
+                Detail, Update,
                 SingleListStatus, } },
             { "Xoá", new List<string> {
-                Master, Count, List, Get, 
-                Detail, Delete,  
+                Master, Count, List, Get,
+                Detail, Delete,
                 SingleListStatus, } },
-            { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, 
+            { "Xoá nhiều", new List<string> {
+                Master, Count, List, Get,
                 BulkDelete } },
-            { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, 
+            { "Xuất excel", new List<string> {
+                Master, Count, List, Get,
                 Export } },
-            { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, 
+            { "Nhập excel", new List<string> {
+                Master, Count, List, Get,
                 Import } },
         };
     }

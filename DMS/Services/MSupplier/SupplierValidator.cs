@@ -99,7 +99,7 @@ namespace DMS.Services.MSupplier
             }
             else
             {
-                if(Supplier.Name.Length > 255)
+                if (Supplier.Name.Length > 255)
                     Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameOverLength);
                 SupplierFilter SupplierFilter = new SupplierFilter
                 {
@@ -114,7 +114,7 @@ namespace DMS.Services.MSupplier
                 if (count != 0)
                     Supplier.AddError(nameof(SupplierValidator), nameof(Supplier.Name), ErrorCode.NameExisted);
             }
-            
+
             return Supplier.IsValidated;
         }
 
@@ -178,7 +178,7 @@ namespace DMS.Services.MSupplier
 
         private async Task<bool> ValidatePersonInCharge(Supplier Supplier)
         {
-            if(Supplier.PersonInChargeId != 0)
+            if (Supplier.PersonInChargeId != 0)
             {
                 AppUserFilter AppUserFilter = new AppUserFilter
                 {

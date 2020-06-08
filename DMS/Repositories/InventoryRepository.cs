@@ -1,11 +1,11 @@
-﻿using DMS.Entities;
+﻿using Common;
+using DMS.Entities;
 using DMS.Models;
-using Common;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace DMS.Repositories
 {

@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MRequestState
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MRequestState
             return count == 1;
         }
 
-        public async Task<bool>Create(RequestState RequestState)
+        public async Task<bool> Create(RequestState RequestState)
         {
             return RequestState.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MRequestState
             }
             return RequestState.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<RequestState> RequestStates)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<RequestState> RequestStates)
         {
             return true;

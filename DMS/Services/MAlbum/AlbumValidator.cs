@@ -1,12 +1,10 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
-using DMS.Enums;
 
 namespace DMS.Services.MAlbum
 {
@@ -56,11 +54,11 @@ namespace DMS.Services.MAlbum
 
         public async Task<bool> ValidateName(Album Album)
         {
-            if(string.IsNullOrWhiteSpace(Album.Name))
+            if (string.IsNullOrWhiteSpace(Album.Name))
                 Album.AddError(nameof(AlbumValidator), nameof(Album.Name), ErrorCode.NameEmpty);
             else
             {
-                if(Album.Name.Length > 255)
+                if (Album.Name.Length > 255)
                     Album.AddError(nameof(AlbumValidator), nameof(Album.Name), ErrorCode.NameOverLength);
             }
             return Album.IsValidated;
@@ -73,7 +71,7 @@ namespace DMS.Services.MAlbum
             return Album.IsValidated;
         }
 
-        public async Task<bool>Create(Album Album)
+        public async Task<bool> Create(Album Album)
         {
             await ValidateName(Album);
             await ValidateStatus(Album);
@@ -97,7 +95,7 @@ namespace DMS.Services.MAlbum
             }
             return Album.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Album> Albums)
         {
             foreach (Album Album in Albums)
@@ -106,7 +104,7 @@ namespace DMS.Services.MAlbum
             }
             return Albums.All(st => st.IsValidated);
         }
-        
+
         public async Task<bool> Import(List<Album> Albums)
         {
             return true;

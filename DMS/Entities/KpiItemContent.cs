@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class KpiItemContent : DataEntity,  IEquatable<KpiItemContent>
+    public class KpiItemContent : DataEntity, IEquatable<KpiItemContent>
     {
         public long Id { get; set; }
         public long KpiItemId { get; set; }
@@ -31,8 +31,8 @@ namespace DMS.Entities
         public IdFilter ItemSpecificKpiId { get; set; }
         public IdFilter ItemId { get; set; }
         public List<ItemSpecificKpiContentFilter> OrFilter { get; set; }
-        public ItemSpecificKpiContentOrder OrderBy {get; set;}
-        public ItemSpecificKpiContentSelect Selects {get; set;}
+        public ItemSpecificKpiContentOrder OrderBy { get; set; }
+        public ItemSpecificKpiContentSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -44,7 +44,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum ItemSpecificKpiContentSelect:long
+    public enum ItemSpecificKpiContentSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

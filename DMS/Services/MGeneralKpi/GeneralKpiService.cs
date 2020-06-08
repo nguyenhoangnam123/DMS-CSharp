@@ -1,18 +1,16 @@
 using Common;
+using DMS.Entities;
+using DMS.Helpers;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
-using DMS.Helpers;
 
 namespace DMS.Services.MGeneralKpi
 {
-    public interface IGeneralKpiService :  IServiceScoped
+    public interface IGeneralKpiService : IServiceScoped
     {
         Task<int> Count(GeneralKpiFilter GeneralKpiFilter);
         Task<List<GeneralKpi>> List(GeneralKpiFilter GeneralKpiFilter);
@@ -84,7 +82,7 @@ namespace DMS.Services.MGeneralKpi
                 return null;
             return GeneralKpi;
         }
-       
+
         public async Task<GeneralKpi> Create(GeneralKpi GeneralKpi)
         {
             if (!await GeneralKpiValidator.Create(GeneralKpi))
@@ -195,7 +193,7 @@ namespace DMS.Services.MGeneralKpi
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<GeneralKpi>> Import(List<GeneralKpi> GeneralKpis)
         {
             if (!await GeneralKpiValidator.Import(GeneralKpis))
@@ -218,8 +216,8 @@ namespace DMS.Services.MGeneralKpi
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public GeneralKpiFilter ToFilter(GeneralKpiFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<GeneralKpiFilter>();

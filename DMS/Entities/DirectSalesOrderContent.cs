@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class DirectSalesOrderContent : DataEntity,  IEquatable<DirectSalesOrderContent>
+    public class DirectSalesOrderContent : DataEntity, IEquatable<DirectSalesOrderContent>
     {
         public long Id { get; set; }
         public long DirectSalesOrderId { get; set; }
@@ -28,7 +28,7 @@ namespace DMS.Entities
         public Item Item { get; set; }
         public UnitOfMeasure PrimaryUnitOfMeasure { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
-        
+
         public bool Equals(DirectSalesOrderContent other)
         {
             return other != null && Id == other.Id;
@@ -58,8 +58,8 @@ namespace DMS.Entities
         public LongFilter TaxAmount { get; set; }
         public LongFilter Amount { get; set; }
         public List<DirectSalesOrderContentFilter> OrFilter { get; set; }
-        public DirectSalesOrderContentOrder OrderBy {get; set;}
-        public DirectSalesOrderContentSelect Selects {get; set;}
+        public DirectSalesOrderContentOrder OrderBy { get; set; }
+        public DirectSalesOrderContentSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -84,7 +84,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum DirectSalesOrderContentSelect:long
+    public enum DirectSalesOrderContentSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MSex
 {
-    public interface ISexService :  IServiceScoped
+    public interface ISexService : IServiceScoped
     {
         Task<int> Count(SexFilter SexFilter);
         Task<List<Sex>> List(SexFilter SexFilter);

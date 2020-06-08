@@ -1,19 +1,5 @@
-﻿using System;
+﻿using Common;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MBanner;
-using DMS.Services.MAppUser;
-using DMS.Services.MImage;
-using DMS.Services.MStatus;
 
 namespace DMS.Rpc.banner
 {
@@ -46,50 +32,50 @@ namespace DMS.Rpc.banner
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> 
+            { "Tìm kiếm", new List<string>
             {
                 Master,
-                Detail,Count,List,Get, 
+                Detail,Count,List,Get,
                 FilterListAppUser, FilterListStatus}
             },
-            { "Thêm mới", new List<string> 
+            { "Thêm mới", new List<string>
             {
-                Master, 
-                Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Create, 
+                Master,
+                Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Create,
                 SingleListAppUser, SingleListAppUser, SingleListStatus}
             },
-            { "Sửa", new List<string> 
-            { 
-                Master, 
-                Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Update, 
+            { "Sửa", new List<string>
+            {
+                Master,
+                Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Update,
                 SingleListAppUser, SingleListAppUser, SingleListStatus}
             },
             { "Lưu ảnh", new List<string>
             {
                 SaveImage}
             },
-            { "Xoá", new List<string> 
-            { 
-                Master, 
-                Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Delete, 
+            { "Xoá", new List<string>
+            {
+                Master,
+                Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Delete,
                 SingleListAppUser, SingleListAppUser, SingleListStatus}
             },
-            { "Xoá nhiều", new List<string> 
+            { "Xoá nhiều", new List<string>
             {
                 Master,
-                Detail,Count,List,Get, BulkDelete, 
+                Detail,Count,List,Get, BulkDelete,
                 FilterListAppUser, FilterListStatus}
             },
-            { "Xuất excel", new List<string> 
+            { "Xuất excel", new List<string>
             {
                 Master,
-                Detail,Count,List,Get, Export, 
+                Detail,Count,List,Get, Export,
                 FilterListAppUser, FilterListStatus}
             },
-            { "Nhập excel", new List<string> 
+            { "Nhập excel", new List<string>
             {
                 Master,
-                Detail,Count,List,Get, ExportTemplate, Import, 
+                Detail,Count,List,Get, ExportTemplate, Import,
                 FilterListAppUser, FilterListStatus}
             },
         };

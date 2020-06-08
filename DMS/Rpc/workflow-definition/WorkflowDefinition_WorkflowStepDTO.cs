@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.workflow_definition
@@ -15,9 +12,9 @@ namespace DMS.Rpc.workflow_definition
         public long RoleId { get; set; }
         public string SubjectMailForReject { get; set; }
         public string BodyMailForReject { get; set; }
-        public WorkflowDefinition_RoleDTO Role { get; set; }   
-        
-        public WorkflowDefinition_WorkflowStepDTO() {}
+        public WorkflowDefinition_RoleDTO Role { get; set; }
+
+        public WorkflowDefinition_WorkflowStepDTO() { }
         public WorkflowDefinition_WorkflowStepDTO(WorkflowStep WorkflowStep)
         {
             this.Id = WorkflowStep.Id;
@@ -34,20 +31,20 @@ namespace DMS.Rpc.workflow_definition
 
     public class WorkflowDefinition_WorkflowStepFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public IdFilter WorkflowDefinitionId { get; set; }
-        
+
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
-        
+
         public IdFilter RoleId { get; set; }
-        
+
         public StringFilter SubjectMailForReject { get; set; }
-        
+
         public StringFilter BodyMailForReject { get; set; }
-        
+
         public WorkflowStepOrder OrderBy { get; set; }
     }
 }

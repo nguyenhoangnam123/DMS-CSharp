@@ -1,12 +1,11 @@
+using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
-using DMS.Enums;
 
 namespace DMS.Services.MERoute
 {
@@ -72,7 +71,7 @@ namespace DMS.Services.MERoute
             {
                 ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Code), ErrorCode.CodeEmpty);
             }
-            else if(ERoute.Code.Length > 255)
+            else if (ERoute.Code.Length > 255)
             {
                 ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Code), ErrorCode.CodeOverLength);
             }
@@ -116,7 +115,7 @@ namespace DMS.Services.MERoute
 
         private async Task<bool> ValidateSaleEmployee(ERoute ERoute)
         {
-            if(ERoute.SaleEmployeeId == 0)
+            if (ERoute.SaleEmployeeId == 0)
                 ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.SaleEmployee), ErrorCode.SaleEmployeeEmpty);
             else
             {
@@ -133,7 +132,7 @@ namespace DMS.Services.MERoute
                 if (count == 0)
                     ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.SaleEmployee), ErrorCode.SaleEmployeeNotExisted);
             }
-            
+
             return ERoute.IsValidated;
         }
 
@@ -158,9 +157,9 @@ namespace DMS.Services.MERoute
         {
             if (ERoute.ERouteTypeId.HasValue)
             {
-                if(ERoute.ERouteTypeId == ERouteTypeEnum.PERMANENT.Id)
+                if (ERoute.ERouteTypeId == ERouteTypeEnum.PERMANENT.Id)
                 {
-                    if(ERoute.StartDate == default(DateTime))
+                    if (ERoute.StartDate == default(DateTime))
                         ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.StartDate), ErrorCode.StartDateEmpty);
                 }
 
@@ -168,7 +167,7 @@ namespace DMS.Services.MERoute
                 {
                     if (ERoute.StartDate == default(DateTime))
                         ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.StartDate), ErrorCode.StartDateEmpty);
-                    if(ERoute.EndDate == null || ERoute.EndDate == default(DateTime))
+                    if (ERoute.EndDate == null || ERoute.EndDate == default(DateTime))
                         ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.EndDate), ErrorCode.EndDateEmpty);
                 }
             }
@@ -178,7 +177,7 @@ namespace DMS.Services.MERoute
 
         private async Task<bool> ValidateStore(ERoute ERoute)
         {
-            if(ERoute.ERouteContents != null && ERoute.ERouteContents.Any())
+            if (ERoute.ERouteContents != null && ERoute.ERouteContents.Any())
             {
                 var IdsStore = ERoute.ERouteContents.Select(x => x.StoreId).ToList();
 
@@ -194,7 +193,7 @@ namespace DMS.Services.MERoute
                 var listIdsNotExisted = IdsStore.Except(IdsInDB);
                 foreach (var ERouteContent in ERoute.ERouteContents)
                 {
-                    if(listIdsNotExisted.Contains(ERouteContent.StoreId))
+                    if (listIdsNotExisted.Contains(ERouteContent.StoreId))
                         ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreNotExisted);
                 }
             }
@@ -205,7 +204,7 @@ namespace DMS.Services.MERoute
             return ERoute.IsValidated;
         }
 
-        public async Task<bool>Create(ERoute ERoute)
+        public async Task<bool> Create(ERoute ERoute)
         {
             await ValidateCode(ERoute);
             await ValidateName(ERoute);
@@ -236,12 +235,12 @@ namespace DMS.Services.MERoute
         {
             if (await ValidateId(ERoute))
             {
-                if(ERoute.RequestStateId != RequestStateEnum.NEW.Id)
+                if (ERoute.RequestStateId != RequestStateEnum.NEW.Id)
                     ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.RequestState), ErrorCode.ERouteInUsed);
             }
             return ERoute.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<ERoute> ERoutes)
         {
             foreach (ERoute ERoute in ERoutes)
@@ -250,7 +249,7 @@ namespace DMS.Services.MERoute
             }
             return ERoutes.All(st => st.IsValidated);
         }
-        
+
         public async Task<bool> Import(List<ERoute> ERoutes)
         {
             return true;

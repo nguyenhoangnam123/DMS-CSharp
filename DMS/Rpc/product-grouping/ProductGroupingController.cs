@@ -1,16 +1,14 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Services.MProduct;
+using DMS.Services.MProductGrouping;
+using Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DMS.Entities;
-using DMS.Services.MProductGrouping;
-using DMS.Services.MProduct;
-using DMS.Enums;
 
 namespace DMS.Rpc.product_grouping
 {
@@ -74,7 +72,7 @@ namespace DMS.Rpc.product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(ProductGrouping_ProductGroupingDTO.Id))
                 return Forbid();
 
@@ -92,7 +90,7 @@ namespace DMS.Rpc.product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(ProductGrouping_ProductGroupingDTO.Id))
                 return Forbid();
 
@@ -128,7 +126,7 @@ namespace DMS.Rpc.product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -155,7 +153,7 @@ namespace DMS.Rpc.product_grouping
                 FileDownloadName = DataFile.Name ?? "File export.xlsx",
             };
         }
-        
+
         [Route(ProductGroupingRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -268,9 +266,9 @@ namespace DMS.Rpc.product_grouping
             ProductGroupingFilter.Take = 99999;
             ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
             ProductGroupingFilter.OrderType = OrderType.ASC;
-            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code 
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
                 | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
- 
+
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
             List<ProductGrouping_ProductGroupingDTO> ProductGrouping_ProductGroupingDTOs = ProductGroupings
                 .Select(x => new ProductGrouping_ProductGroupingDTO(x)).ToList();

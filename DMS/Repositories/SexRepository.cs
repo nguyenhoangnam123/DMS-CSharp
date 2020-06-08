@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -38,7 +37,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<SexDAO> OrFilter(IQueryable<SexDAO> query, SexFilter filter)
+        private IQueryable<SexDAO> OrFilter(IQueryable<SexDAO> query, SexFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -55,7 +54,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<SexDAO> DynamicOrder(IQueryable<SexDAO> query, SexFilter filter)
         {

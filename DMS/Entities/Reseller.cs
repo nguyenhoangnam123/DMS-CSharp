@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using Common;
+﻿using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Reseller : DataEntity,  IEquatable<Reseller>
+    public class Reseller : DataEntity, IEquatable<Reseller>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -57,8 +57,8 @@ namespace DMS.Entities
         public IdFilter ResellerStatusId { get; set; }
         public IdFilter StaffId { get; set; }
         public List<ResellerFilter> OrFilter { get; set; }
-        public ResellerOrder OrderBy {get; set;}
-        public ResellerSelect Selects {get; set;}
+        public ResellerOrder OrderBy { get; set; }
+        public ResellerSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -82,7 +82,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum ResellerSelect:long
+    public enum ResellerSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

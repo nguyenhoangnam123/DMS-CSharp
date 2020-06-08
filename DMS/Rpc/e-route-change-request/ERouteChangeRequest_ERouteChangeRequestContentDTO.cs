@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.e_route_change_request
@@ -23,9 +20,9 @@ namespace DMS.Rpc.e_route_change_request
         public bool Week2 { get; set; }
         public bool Week3 { get; set; }
         public bool Week4 { get; set; }
-        public ERouteChangeRequest_StoreDTO Store { get; set; }   
-        
-        public ERouteChangeRequest_ERouteChangeRequestContentDTO() {}
+        public ERouteChangeRequest_StoreDTO Store { get; set; }
+
+        public ERouteChangeRequest_ERouteChangeRequestContentDTO() { }
         public ERouteChangeRequest_ERouteChangeRequestContentDTO(ERouteChangeRequestContent ERouteChangeRequestContent)
         {
             this.Id = ERouteChangeRequestContent.Id;
@@ -50,15 +47,15 @@ namespace DMS.Rpc.e_route_change_request
 
     public class ERouteChangeRequest_ERouteChangeRequestContentFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public IdFilter ERouteChangeRequestId { get; set; }
-        
+
         public IdFilter StoreId { get; set; }
-        
+
         public LongFilter OrderNumber { get; set; }
-        
+
         public ERouteChangeRequestContentOrder OrderBy { get; set; }
     }
 }

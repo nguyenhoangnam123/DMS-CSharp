@@ -149,18 +149,18 @@ namespace DMS.Repositories
         {
             StoreType StoreType = await DataContext.StoreType.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new StoreType()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                StatusId = x.StatusId,
-                Status = x.Status == null ? null : new Status
                 {
-                    Id = x.Status.Id,
-                    Code = x.Status.Code,
-                    Name = x.Status.Name,
-                },
-            }).FirstOrDefaultAsync();
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    StatusId = x.StatusId,
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
+                }).FirstOrDefaultAsync();
 
             if (StoreType == null)
                 return null;

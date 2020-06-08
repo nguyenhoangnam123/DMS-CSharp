@@ -1,23 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MWarehouse;
-using DMS.Services.MDistrict;
-using DMS.Services.MOrganization;
-using DMS.Services.MProvince;
-using DMS.Services.MStatus;
-using DMS.Services.MWard;
-using DMS.Services.MInventory;
-using DMS.Services.MItem;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.warehouse
 {
@@ -62,7 +45,7 @@ namespace DMS.Rpc.warehouse
         {
             { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, GetPreview,
-                FilterListOrganization, FilterListStatus,  
+                FilterListOrganization, FilterListStatus,
                 CountHistory, ListHistory,
                 } },
             { "Thêm", new List<string> {
@@ -78,7 +61,7 @@ namespace DMS.Rpc.warehouse
             { "Xoá", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
-                Detail, Delete, 
+                Detail, Delete,
                 } },
             { "Xoá nhiều", new List<string> {
                 Master, Count, List, Get, GetPreview,

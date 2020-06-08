@@ -1,10 +1,8 @@
 using Common;
 using DMS.Entities;
-using DMS.Helpers;
 using DMS.Models;
 using Helpers;
 using Microsoft.EntityFrameworkCore;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +37,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.Url != null)
                 query = query.Where(q => q.Url, filter.Url);
-            if(filter.AlbumId != null)
+            if (filter.AlbumId != null)
             {
                 if (filter.AlbumId.Equal.HasValue)
                 {
@@ -151,11 +149,11 @@ namespace DMS.Repositories
         {
             Image Image = await DataContext.Image.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new Image()
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Url = x.Url,
-            }).FirstOrDefaultAsync();
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Url = x.Url,
+                }).FirstOrDefaultAsync();
 
             if (Image == null)
                 return null;

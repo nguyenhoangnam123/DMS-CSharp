@@ -1,21 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MERouteChangeRequest;
-using DMS.Services.MAppUser;
-using DMS.Services.MERoute;
-using DMS.Services.MRequestState;
-using DMS.Services.MERouteChangeRequestContent;
-using DMS.Services.MStore;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.e_route_change_request
 {
@@ -63,26 +48,26 @@ namespace DMS.Rpc.e_route_change_request
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
+            { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore,FilterListERouteType, } },
 
-            { "Thêm", new List<string> { 
+            { "Thêm", new List<string> {
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Create, GetDraft,
                 SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent, SingleListERouteType, SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore, } },
 
-            { "Sửa", new List<string> { 
+            { "Sửa", new List<string> {
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Update,
                 SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent, SingleListERouteType,  SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore,  } },
 
-            { "Xoá", new List<string> { 
+            { "Xoá", new List<string> {
                 Master, Count, List, Get,  FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Delete, } },
 
-            { "Xoá nhiều", new List<string> { 
+            { "Xoá nhiều", new List<string> {
                 Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 BulkDelete } },
 

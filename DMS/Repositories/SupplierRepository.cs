@@ -303,62 +303,62 @@ namespace DMS.Repositories
         {
             Supplier Supplier = await DataContext.Supplier.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new Supplier()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                TaxCode = x.TaxCode,
-                Phone = x.Phone,
-                Email = x.Email,
-                Address = x.Address,
-                ProvinceId = x.ProvinceId,
-                DistrictId = x.DistrictId,
-                WardId = x.WardId,
-                OwnerName = x.OwnerName,
-                PersonInChargeId = x.PersonInChargeId,
-                Description = x.Description,
-                StatusId = x.StatusId,
-                UpdatedTime = x.UpdatedAt,
-                District = x.District == null ? null : new District
                 {
-                    Id = x.District.Id,
-                    Name = x.District.Name,
-                    Priority = x.District.Priority,
-                    ProvinceId = x.District.ProvinceId,
-                    StatusId = x.District.StatusId,
-                },
-                PersonInCharge = x.PersonInCharge == null ? null : new AppUser
-                {
-                    Id = x.PersonInCharge.Id,
-                    DisplayName = x.PersonInCharge.DisplayName,
-                    Address = x.PersonInCharge.Address,
-                    Phone = x.PersonInCharge.Phone,
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    TaxCode = x.TaxCode,
+                    Phone = x.Phone,
                     Email = x.Email,
-                    SexId = x.PersonInCharge.SexId,
-                    StatusId = x.StatusId
-                },
-                Province = x.Province == null ? null : new Province
-                {
-                    Id = x.Province.Id,
-                    Name = x.Province.Name,
-                    Priority = x.Province.Priority,
-                    StatusId = x.Province.StatusId,
-                },
-                Status = x.Status == null ? null : new Status
-                {
-                    Id = x.Status.Id,
-                    Code = x.Status.Code,
-                    Name = x.Status.Name,
-                },
-                Ward = x.Ward == null ? null : new Ward
-                {
-                    Id = x.Ward.Id,
-                    Name = x.Ward.Name,
-                    Priority = x.Ward.Priority,
-                    DistrictId = x.Ward.DistrictId,
-                    StatusId = x.Ward.StatusId,
-                },
-            }).FirstOrDefaultAsync();
+                    Address = x.Address,
+                    ProvinceId = x.ProvinceId,
+                    DistrictId = x.DistrictId,
+                    WardId = x.WardId,
+                    OwnerName = x.OwnerName,
+                    PersonInChargeId = x.PersonInChargeId,
+                    Description = x.Description,
+                    StatusId = x.StatusId,
+                    UpdatedTime = x.UpdatedAt,
+                    District = x.District == null ? null : new District
+                    {
+                        Id = x.District.Id,
+                        Name = x.District.Name,
+                        Priority = x.District.Priority,
+                        ProvinceId = x.District.ProvinceId,
+                        StatusId = x.District.StatusId,
+                    },
+                    PersonInCharge = x.PersonInCharge == null ? null : new AppUser
+                    {
+                        Id = x.PersonInCharge.Id,
+                        DisplayName = x.PersonInCharge.DisplayName,
+                        Address = x.PersonInCharge.Address,
+                        Phone = x.PersonInCharge.Phone,
+                        Email = x.Email,
+                        SexId = x.PersonInCharge.SexId,
+                        StatusId = x.StatusId
+                    },
+                    Province = x.Province == null ? null : new Province
+                    {
+                        Id = x.Province.Id,
+                        Name = x.Province.Name,
+                        Priority = x.Province.Priority,
+                        StatusId = x.Province.StatusId,
+                    },
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
+                    Ward = x.Ward == null ? null : new Ward
+                    {
+                        Id = x.Ward.Id,
+                        Name = x.Ward.Name,
+                        Priority = x.Ward.Priority,
+                        DistrictId = x.Ward.DistrictId,
+                        StatusId = x.Ward.StatusId,
+                    },
+                }).FirstOrDefaultAsync();
 
             if (Supplier == null)
                 return null;

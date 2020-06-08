@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MKpiCriteriaItem
 {
-    public interface IKpiCriteriaItemService :  IServiceScoped
+    public interface IKpiCriteriaItemService : IServiceScoped
     {
         Task<int> Count(KpiCriteriaItemFilter KpiCriteriaItemFilter);
         Task<List<KpiCriteriaItem>> List(KpiCriteriaItemFilter KpiCriteriaItemFilter);
@@ -83,7 +80,7 @@ namespace DMS.Services.MKpiCriteriaItem
                 return null;
             return KpiCriteriaItem;
         }
-       
+
         public async Task<KpiCriteriaItem> Create(KpiCriteriaItem KpiCriteriaItem)
         {
             if (!await KpiCriteriaItemValidator.Create(KpiCriteriaItem))
@@ -183,7 +180,7 @@ namespace DMS.Services.MKpiCriteriaItem
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<KpiCriteriaItem>> Import(List<KpiCriteriaItem> KpiCriteriaItems)
         {
             if (!await KpiCriteriaItemValidator.Import(KpiCriteriaItems))
@@ -206,8 +203,8 @@ namespace DMS.Services.MKpiCriteriaItem
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public KpiCriteriaItemFilter ToFilter(KpiCriteriaItemFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<KpiCriteriaItemFilter>();

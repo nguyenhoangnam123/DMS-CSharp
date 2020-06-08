@@ -1,19 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
+using DMS.Services.MImage;
 using Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
-using DMS.Services.MImage;
 //using SixLabors.ImageSharp;
 
 namespace DMS.Services.MBanner
 {
-    public interface IBannerService :  IServiceScoped
+    public interface IBannerService : IServiceScoped
     {
         Task<int> Count(BannerFilter BannerFilter);
         Task<List<Banner>> List(BannerFilter BannerFilter);
@@ -88,7 +86,7 @@ namespace DMS.Services.MBanner
                 return null;
             return Banner;
         }
-       
+
         public async Task<Banner> Create(Banner Banner)
         {
             if (!await BannerValidator.Create(Banner))
@@ -191,7 +189,7 @@ namespace DMS.Services.MBanner
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Banner>> Import(List<Banner> Banners)
         {
             if (!await BannerValidator.Import(Banners))
@@ -232,7 +230,7 @@ namespace DMS.Services.MBanner
 
         public BannerFilter ToFilter(BannerFilter filter)
         {
-            
+
             return filter;
         }
     }

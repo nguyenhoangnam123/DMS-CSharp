@@ -1,11 +1,9 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
 
 namespace DMS.Services.MWorkflow
 {
@@ -74,7 +72,7 @@ namespace DMS.Services.MWorkflow
 
         private async Task<bool> ValidateStep(WorkflowDirection WorkflowDirection)
         {
-            if(WorkflowDirection.FromStepId == 0)
+            if (WorkflowDirection.FromStepId == 0)
                 WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.FromStep), ErrorCode.FromStepEmpty);
             else
             {
@@ -82,12 +80,12 @@ namespace DMS.Services.MWorkflow
                 {
                     Skip = 0,
                     Take = 10,
-                    Id = new IdFilter { Equal =  WorkflowDirection.FromStepId },
+                    Id = new IdFilter { Equal = WorkflowDirection.FromStepId },
                     WorkflowDefinitionId = new IdFilter { Equal = WorkflowDirection.WorkflowDefinitionId },
                     Selects = WorkflowStepSelect.Id
                 };
                 int count = await UOW.WorkflowStepRepository.Count(WorkflowStepFilter);
-                if(count == 0)
+                if (count == 0)
                     WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.FromStep), ErrorCode.FromStepNotExisted);
             }
             if (WorkflowDirection.ToStepId == 0)
@@ -118,7 +116,7 @@ namespace DMS.Services.MWorkflow
             return WorkflowDirection.IsValidated;
         }
 
-        public async Task<bool>Create(WorkflowDirection WorkflowDirection)
+        public async Task<bool> Create(WorkflowDirection WorkflowDirection)
         {
             await ValidateStep(WorkflowDirection);
             await ValidateSubjectMail(WorkflowDirection);
@@ -143,7 +141,7 @@ namespace DMS.Services.MWorkflow
             }
             return WorkflowDirection.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<WorkflowDirection> WorkflowDirections)
         {
             foreach (WorkflowDirection WorkflowDirection in WorkflowDirections)
@@ -152,7 +150,7 @@ namespace DMS.Services.MWorkflow
             }
             return WorkflowDirections.All(st => st.IsValidated);
         }
-        
+
         public async Task<bool> Import(List<WorkflowDirection> WorkflowDirections)
         {
             return true;

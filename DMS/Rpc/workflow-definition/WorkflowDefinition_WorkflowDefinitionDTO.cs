@@ -1,8 +1,8 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.workflow_definition
 {
@@ -26,7 +26,7 @@ namespace DMS.Rpc.workflow_definition
         public List<WorkflowDefinition_WorkflowStepDTO> WorkflowSteps { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public WorkflowDefinition_WorkflowDefinitionDTO() {}
+        public WorkflowDefinition_WorkflowDefinitionDTO() { }
         public WorkflowDefinition_WorkflowDefinitionDTO(WorkflowDefinition WorkflowDefinition)
         {
             this.Id = WorkflowDefinition.Id;

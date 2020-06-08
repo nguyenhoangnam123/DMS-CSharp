@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MKpiPeriod
 {
-    public interface IKpiPeriodService :  IServiceScoped
+    public interface IKpiPeriodService : IServiceScoped
     {
         Task<int> Count(KpiPeriodFilter KpiPeriodFilter);
         Task<List<KpiPeriod>> List(KpiPeriodFilter KpiPeriodFilter);

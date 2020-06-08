@@ -1,8 +1,8 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.problem
 {
@@ -23,7 +23,7 @@ namespace DMS.Rpc.problem
         public Problem_StoreDTO Store { get; set; }
         public Problem_StoreCheckingDTO StoreChecking { get; set; }
         public List<Problem_ProblemImageMappingDTO> ProblemImageMappings { get; set; }
-        public Problem_ProblemDTO() {}
+        public Problem_ProblemDTO() { }
         public Problem_ProblemDTO(Problem Problem)
         {
             this.Id = Problem.Id;

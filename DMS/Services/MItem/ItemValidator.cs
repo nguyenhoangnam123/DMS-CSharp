@@ -72,7 +72,7 @@ namespace DMS.Services.MItem
             {
                 Item.AddError(nameof(ItemValidator), nameof(Item.Code), ErrorCode.CodeEmpty);
             }
-            else if(Item.Code.Length > 4000)
+            else if (Item.Code.Length > 4000)
             {
                 Item.AddError(nameof(ItemValidator), nameof(Item.Code), ErrorCode.CodeOverLength);
             }

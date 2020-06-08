@@ -1,27 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
+using DMS.Enums;
+using DMS.Services.MAppUser;
+using DMS.Services.MOrganization;
 using DMS.Services.MReseller;
 using DMS.Services.MResellerStatus;
 using DMS.Services.MResellerType;
-using DMS.Services.MAppUser;
-using DMS.Enums;
-using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
 using DMS.Services.MStore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.reseller
 {
-  
+
 
     public class ResellerController : RpcController
     {
@@ -98,7 +96,7 @@ namespace DMS.Rpc.reseller
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Reseller_ResellerDTO.Id))
                 return Forbid();
 
@@ -123,7 +121,7 @@ namespace DMS.Rpc.reseller
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Reseller_ResellerDTO.Id))
                 return Forbid();
 
@@ -210,7 +208,7 @@ namespace DMS.Rpc.reseller
             else
                 return BadRequest(Reseller_ResellerDTO);
         }
-        
+
         [Route(ResellerRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -230,7 +228,7 @@ namespace DMS.Rpc.reseller
                 return BadRequest(Resellers.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         [Route(ResellerRoute.Import), HttpPost]
         public async Task<ActionResult<List<Reseller_ResellerDTO>>> Import(IFormFile file)
         {
@@ -269,7 +267,7 @@ namespace DMS.Rpc.reseller
                 Selects = ResellerTypeSelect.ALL
             };
             List<ResellerType> ResellerTypes = await ResellerTypeService.List(ResellerTypeFilter);
-            
+
             List<Reseller> Resellers = new List<Reseller>();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
@@ -310,7 +308,7 @@ namespace DMS.Rpc.reseller
                     string ResellerStatusCodeValue = worksheet.Cells[i + StartRow, ResellerStatusCodeColumn].Value?.ToString();
                     string StatusCodeValue = worksheet.Cells[i + StartRow, StatusCodeColumn].Value?.ToString();
 
-                    Reseller Reseller = new Reseller() 
+                    Reseller Reseller = new Reseller()
                     {
                         Code = CodeValue,
                         Name = NameValue,
@@ -334,8 +332,8 @@ namespace DMS.Rpc.reseller
                 .Select(c => new Reseller_ResellerDTO(c)).ToList();
             return Reseller_ResellerDTOs;
         }
-        
-        
+
+
         [Route(ResellerRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] Reseller_ResellerFilterDTO Reseller_ResellerFilterDTO)
         {
@@ -354,7 +352,7 @@ namespace DMS.Rpc.reseller
             {
                 var ResellerHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Mã khách hàng",
                         "Tên khách hàng",
                         "Số điện thoại",
@@ -565,7 +563,7 @@ namespace DMS.Rpc.reseller
                 .Select(x => new Reseller_ResellerTypeDTO(x)).ToList();
             return Reseller_ResellerTypeDTOs;
         }
-        
+
         [Route(ResellerRoute.SingleListStatus), HttpPost]
         public async Task<List<Reseller_StatusDTO>> SingleListStatus([FromBody] Reseller_StatusFilterDTO Reseller_StatusFilterDTO)
         {

@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MProblem
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MProblem
             return count == 1;
         }
 
-        public async Task<bool>Create(Problem Problem)
+        public async Task<bool> Create(Problem Problem)
         {
             return Problem.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MProblem
             }
             return Problem.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Problem> Problems)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Problem> Problems)
         {
             return true;

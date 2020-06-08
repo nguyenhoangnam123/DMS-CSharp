@@ -196,7 +196,7 @@ namespace DMS.Services.MStore
                 if (count == 0)
                     Store.AddError(nameof(StoreValidator), nameof(Store.StoreTypeId), ErrorCode.StoreTypeNotExisted);
             }
-            
+
             return Store.IsValidated;
         }
         #endregion

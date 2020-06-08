@@ -421,7 +421,7 @@ namespace DMS.Repositories
                     DistrictId = q.Ward.DistrictId,
                     StatusId = q.Ward.StatusId,
                 } : null,
-                StoreImageMappings = filter.Selects.Contains(StoreSelect.StoreImageMappings) &&  q.StoreImageMappings != null ? q.StoreImageMappings.Skip(0).Take(1).Select(x => new StoreImageMapping
+                StoreImageMappings = filter.Selects.Contains(StoreSelect.StoreImageMappings) && q.StoreImageMappings != null ? q.StoreImageMappings.Skip(0).Take(1).Select(x => new StoreImageMapping
                 {
                     StoreId = x.StoreId,
                     ImageId = x.ImageId,
@@ -457,133 +457,133 @@ namespace DMS.Repositories
         {
             Store Store = await DataContext.Store.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new Store()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                ParentStoreId = x.ParentStoreId,
-                OrganizationId = x.OrganizationId,
-                StoreTypeId = x.StoreTypeId,
-                StoreGroupingId = x.StoreGroupingId,
-                Telephone = x.Telephone,
-                ResellerId = x.ResellerId,
-                ProvinceId = x.ProvinceId,
-                DistrictId = x.DistrictId,
-                WardId = x.WardId,
-                Address = x.Address,
-                DeliveryAddress = x.DeliveryAddress,
-                Latitude = x.Latitude,
-                Longitude = x.Longitude,
-                DeliveryLatitude = x.DeliveryLatitude,
-                DeliveryLongitude = x.DeliveryLongitude,
-                OwnerName = x.OwnerName,
-                OwnerPhone = x.OwnerPhone,
-                OwnerEmail = x.OwnerEmail,
-                TaxCode = x.TaxCode,
-                LegalEntity = x.LegalEntity,
-                StatusId = x.StatusId,
-                RowId = x.RowId,
-                District = x.District == null ? null : new District
                 {
-                    Id = x.District.Id,
-                    Name = x.District.Name,
-                    Priority = x.District.Priority,
-                    ProvinceId = x.District.ProvinceId,
-                    StatusId = x.District.StatusId,
-                },
-                Organization = x.Organization == null ? null : new Organization
-                {
-                    Id = x.Organization.Id,
-                    Code = x.Organization.Code,
-                    Name = x.Organization.Name,
-                    ParentId = x.Organization.ParentId,
-                    Path = x.Organization.Path,
-                    Level = x.Organization.Level,
-                    StatusId = x.Organization.StatusId,
-                    Phone = x.Organization.Phone,
-                    Address = x.Organization.Address,
-                    Email = x.Organization.Email,
-                },
-                ParentStore = x.ParentStore == null ? null : new Store
-                {
-                    Id = x.ParentStore.Id,
-                    Code = x.ParentStore.Code,
-                    Name = x.ParentStore.Name,
-                    ParentStoreId = x.ParentStore.ParentStoreId,
-                    OrganizationId = x.ParentStore.OrganizationId,
-                    StoreTypeId = x.ParentStore.StoreTypeId,
-                    StoreGroupingId = x.ParentStore.StoreGroupingId,
-                    Telephone = x.ParentStore.Telephone,
-                    ProvinceId = x.ParentStore.ProvinceId,
-                    DistrictId = x.ParentStore.DistrictId,
-                    WardId = x.ParentStore.WardId,
-                    Address = x.ParentStore.Address,
-                    DeliveryAddress = x.ParentStore.DeliveryAddress,
-                    Latitude = x.ParentStore.Latitude,
-                    Longitude = x.ParentStore.Longitude,
-                    OwnerName = x.ParentStore.OwnerName,
-                    OwnerPhone = x.ParentStore.OwnerPhone,
-                    OwnerEmail = x.ParentStore.OwnerEmail,
-                    TaxCode = x.ParentStore.TaxCode,
-                    LegalEntity = x.ParentStore.LegalEntity,
-                    StatusId = x.ParentStore.StatusId,
-                },
-                Province = x.Province == null ? null : new Province
-                {
-                    Id = x.Province.Id,
-                    Name = x.Province.Name,
-                    Priority = x.Province.Priority,
-                    StatusId = x.Province.StatusId,
-                },
-                Reseller = x.Reseller == null ? null : new Reseller
-                {
-                    Id = x.Reseller.Id,
-                    Name = x.Reseller.Name,
-                    Code = x.Reseller.Code,
-                    Email = x.Reseller.Email,
-                    Phone = x.Reseller.Phone,
-                    CompanyName = x.Reseller.CompanyName,
-                    DeputyName = x.Reseller.DeputyName,
-                    Address = x.Reseller.Address,
-                    Description = x.Reseller.Description,
-                    OrganizationId = x.Reseller.OrganizationId,
-                    ResellerStatusId = x.Reseller.ResellerStatusId,
-                    ResellerTypeId = x.Reseller.ResellerTypeId,
-                    StaffId = x.Reseller.StaffId,
-                    TaxCode = x.Reseller.TaxCode,
-                    StatusId = x.Reseller.StatusId,
-                },
-                Status = x.Status == null ? null : new Status
-                {
-                    Id = x.Status.Id,
-                    Code = x.Status.Code,
-                    Name = x.Status.Name,
-                },
-                StoreGrouping = x.StoreGrouping == null ? null : new StoreGrouping
-                {
-                    Id = x.StoreGrouping.Id,
-                    Code = x.StoreGrouping.Code,
-                    Name = x.StoreGrouping.Name,
-                    ParentId = x.StoreGrouping.ParentId,
-                    Path = x.StoreGrouping.Path,
-                    Level = x.StoreGrouping.Level,
-                },
-                StoreType = x.StoreType == null ? null : new StoreType
-                {
-                    Id = x.StoreType.Id,
-                    Code = x.StoreType.Code,
-                    Name = x.StoreType.Name,
-                    StatusId = x.StoreType.StatusId,
-                },
-                Ward = x.Ward == null ? null : new Ward
-                {
-                    Id = x.Ward.Id,
-                    Name = x.Ward.Name,
-                    Priority = x.Ward.Priority,
-                    DistrictId = x.Ward.DistrictId,
-                    StatusId = x.Ward.StatusId,
-                },
-            }).FirstOrDefaultAsync();
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    ParentStoreId = x.ParentStoreId,
+                    OrganizationId = x.OrganizationId,
+                    StoreTypeId = x.StoreTypeId,
+                    StoreGroupingId = x.StoreGroupingId,
+                    Telephone = x.Telephone,
+                    ResellerId = x.ResellerId,
+                    ProvinceId = x.ProvinceId,
+                    DistrictId = x.DistrictId,
+                    WardId = x.WardId,
+                    Address = x.Address,
+                    DeliveryAddress = x.DeliveryAddress,
+                    Latitude = x.Latitude,
+                    Longitude = x.Longitude,
+                    DeliveryLatitude = x.DeliveryLatitude,
+                    DeliveryLongitude = x.DeliveryLongitude,
+                    OwnerName = x.OwnerName,
+                    OwnerPhone = x.OwnerPhone,
+                    OwnerEmail = x.OwnerEmail,
+                    TaxCode = x.TaxCode,
+                    LegalEntity = x.LegalEntity,
+                    StatusId = x.StatusId,
+                    RowId = x.RowId,
+                    District = x.District == null ? null : new District
+                    {
+                        Id = x.District.Id,
+                        Name = x.District.Name,
+                        Priority = x.District.Priority,
+                        ProvinceId = x.District.ProvinceId,
+                        StatusId = x.District.StatusId,
+                    },
+                    Organization = x.Organization == null ? null : new Organization
+                    {
+                        Id = x.Organization.Id,
+                        Code = x.Organization.Code,
+                        Name = x.Organization.Name,
+                        ParentId = x.Organization.ParentId,
+                        Path = x.Organization.Path,
+                        Level = x.Organization.Level,
+                        StatusId = x.Organization.StatusId,
+                        Phone = x.Organization.Phone,
+                        Address = x.Organization.Address,
+                        Email = x.Organization.Email,
+                    },
+                    ParentStore = x.ParentStore == null ? null : new Store
+                    {
+                        Id = x.ParentStore.Id,
+                        Code = x.ParentStore.Code,
+                        Name = x.ParentStore.Name,
+                        ParentStoreId = x.ParentStore.ParentStoreId,
+                        OrganizationId = x.ParentStore.OrganizationId,
+                        StoreTypeId = x.ParentStore.StoreTypeId,
+                        StoreGroupingId = x.ParentStore.StoreGroupingId,
+                        Telephone = x.ParentStore.Telephone,
+                        ProvinceId = x.ParentStore.ProvinceId,
+                        DistrictId = x.ParentStore.DistrictId,
+                        WardId = x.ParentStore.WardId,
+                        Address = x.ParentStore.Address,
+                        DeliveryAddress = x.ParentStore.DeliveryAddress,
+                        Latitude = x.ParentStore.Latitude,
+                        Longitude = x.ParentStore.Longitude,
+                        OwnerName = x.ParentStore.OwnerName,
+                        OwnerPhone = x.ParentStore.OwnerPhone,
+                        OwnerEmail = x.ParentStore.OwnerEmail,
+                        TaxCode = x.ParentStore.TaxCode,
+                        LegalEntity = x.ParentStore.LegalEntity,
+                        StatusId = x.ParentStore.StatusId,
+                    },
+                    Province = x.Province == null ? null : new Province
+                    {
+                        Id = x.Province.Id,
+                        Name = x.Province.Name,
+                        Priority = x.Province.Priority,
+                        StatusId = x.Province.StatusId,
+                    },
+                    Reseller = x.Reseller == null ? null : new Reseller
+                    {
+                        Id = x.Reseller.Id,
+                        Name = x.Reseller.Name,
+                        Code = x.Reseller.Code,
+                        Email = x.Reseller.Email,
+                        Phone = x.Reseller.Phone,
+                        CompanyName = x.Reseller.CompanyName,
+                        DeputyName = x.Reseller.DeputyName,
+                        Address = x.Reseller.Address,
+                        Description = x.Reseller.Description,
+                        OrganizationId = x.Reseller.OrganizationId,
+                        ResellerStatusId = x.Reseller.ResellerStatusId,
+                        ResellerTypeId = x.Reseller.ResellerTypeId,
+                        StaffId = x.Reseller.StaffId,
+                        TaxCode = x.Reseller.TaxCode,
+                        StatusId = x.Reseller.StatusId,
+                    },
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
+                    StoreGrouping = x.StoreGrouping == null ? null : new StoreGrouping
+                    {
+                        Id = x.StoreGrouping.Id,
+                        Code = x.StoreGrouping.Code,
+                        Name = x.StoreGrouping.Name,
+                        ParentId = x.StoreGrouping.ParentId,
+                        Path = x.StoreGrouping.Path,
+                        Level = x.StoreGrouping.Level,
+                    },
+                    StoreType = x.StoreType == null ? null : new StoreType
+                    {
+                        Id = x.StoreType.Id,
+                        Code = x.StoreType.Code,
+                        Name = x.StoreType.Name,
+                        StatusId = x.StoreType.StatusId,
+                    },
+                    Ward = x.Ward == null ? null : new Ward
+                    {
+                        Id = x.Ward.Id,
+                        Name = x.Ward.Name,
+                        Priority = x.Ward.Priority,
+                        DistrictId = x.Ward.DistrictId,
+                        StatusId = x.Ward.StatusId,
+                    },
+                }).FirstOrDefaultAsync();
 
             if (Store == null)
                 return null;
@@ -734,7 +734,7 @@ namespace DMS.Repositories
         {
             await DataContext.StoreImageMapping.Where(x => x.StoreId == Store.Id).DeleteFromQueryAsync();
             List<StoreImageMappingDAO> StoreImageMappingDAOs = new List<StoreImageMappingDAO>();
-            if(Store.StoreImageMappings != null)
+            if (Store.StoreImageMappings != null)
             {
                 foreach (StoreImageMapping StoreImageMapping in Store.StoreImageMappings)
                 {

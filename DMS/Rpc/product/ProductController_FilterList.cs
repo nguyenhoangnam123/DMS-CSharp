@@ -1,31 +1,10 @@
 ﻿using Common;
 using DMS.Entities;
-using DMS.Enums;
-using DMS.Services.MBrand;
-using DMS.Services.MImage;
-using DMS.Services.MItem;
-using DMS.Services.MProduct;
-using DMS.Services.MProductGrouping;
-using DMS.Services.MProductType;
-using DMS.Services.MStatus;
-using DMS.Services.MSupplier;
-using DMS.Services.MTaxType;
-using DMS.Services.MUnitOfMeasure;
-using DMS.Services.MUnitOfMeasureGrouping;
-using DMS.Services.MVariationGrouping;
-using Helpers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using System.IO;
-using System;
-using System.Data;
-using Microsoft.AspNetCore.Hosting;
-using DMS.Services.MInventory;
-using DMS.Services.MUsedVariation;
 
 namespace DMS.Rpc.product
 {
@@ -115,5 +94,5 @@ namespace DMS.Rpc.product
                 .Select(x => new Product_ProductGroupingDTO(x)).ToList();
             return Product_ProductGroupingDTOs;
         }
-    }   
+    }
 }

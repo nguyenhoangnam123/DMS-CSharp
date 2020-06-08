@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MSurveyResult
 {
@@ -55,7 +51,7 @@ namespace DMS.Services.MSurveyResult
 
             return SurveyResult.IsValidated;
         }
-     
+
         public async Task<bool> Delete(SurveyResult SurveyResult)
         {
             if (await ValidateId(SurveyResult))

@@ -1,11 +1,10 @@
+using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
 
 namespace DMS.Services.MSurvey
 {
@@ -64,7 +63,7 @@ namespace DMS.Services.MSurvey
                 foreach (var SurveyQuestion in Survey.SurveyQuestions)
                 {
                     if (SurveyQuestion.SurveyOptions == null) SurveyQuestion.SurveyOptions = new List<SurveyOption>();
-                    if(string.IsNullOrWhiteSpace(SurveyQuestion.Content))
+                    if (string.IsNullOrWhiteSpace(SurveyQuestion.Content))
                         SurveyQuestion.AddError(nameof(SurveyValidator), nameof(SurveyQuestion.Content), ErrorCode.ContentEmpty);
                 }
             }
@@ -82,7 +81,7 @@ namespace DMS.Services.MSurvey
 
         private async Task<bool> ValidateDate(Survey Survey)
         {
-            if(Survey.StartAt == default(DateTime))
+            if (Survey.StartAt == default(DateTime))
             {
                 Survey.AddError(nameof(SurveyValidator), nameof(Survey.StartAt), ErrorCode.StartDateEmpty);
             }
@@ -101,13 +100,13 @@ namespace DMS.Services.MSurvey
             var MandatoryQuestions = Survey.SurveyQuestions.Where(x => x.IsMandatory).ToList();
             foreach (var MandatoryQuestion in MandatoryQuestions)
             {
-                if(MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id
+                if (MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id
                 || MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id)
                 {
                     if (MandatoryQuestion.SurveyOptions.All(x => x.Result == false))
                         MandatoryQuestion.AddError(nameof(SurveyValidator), nameof(MandatoryQuestion.IsMandatory), ErrorCode.QuestionIsMandatory);
                 }
-                else if(MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id
+                else if (MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id
                 || MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
                 {
 
@@ -124,7 +123,7 @@ namespace DMS.Services.MSurvey
             };
 
             int count = await UOW.SurveyResultRepository.Count(SurveyResultFilter);
-            if(count > 0)
+            if (count > 0)
                 Survey.AddError(nameof(SurveyValidator), nameof(Survey.Id), ErrorCode.SurveyInUsed);
             return Survey.IsValidated;
         }

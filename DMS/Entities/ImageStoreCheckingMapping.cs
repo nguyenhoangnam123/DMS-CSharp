@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class StoreCheckingImageMapping : DataEntity,  IEquatable<StoreCheckingImageMapping>
+    public class StoreCheckingImageMapping : DataEntity, IEquatable<StoreCheckingImageMapping>
     {
         public long ImageId { get; set; }
         public long StoreCheckingId { get; set; }
@@ -39,8 +39,8 @@ namespace DMS.Entities
         public IdFilter SaleEmployeeId { get; set; }
         public DateFilter ShootingAt { get; set; }
         public List<ImageStoreCheckingMappingFilter> OrFilter { get; set; }
-        public ImageStoreCheckingMappingOrder OrderBy {get; set;}
-        public ImageStoreCheckingMappingSelect Selects {get; set;}
+        public ImageStoreCheckingMappingOrder OrderBy { get; set; }
+        public ImageStoreCheckingMappingSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -55,7 +55,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum ImageStoreCheckingMappingSelect:long
+    public enum ImageStoreCheckingMappingSelect : long
     {
         ALL = E.ALL,
         Image = E._0,

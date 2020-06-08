@@ -1,23 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MIndirectPriceList;
 using DMS.Services.MIndirectPriceListType;
+using DMS.Services.MItem;
 using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
-using DMS.Services.MItem;
-using DMS.Services.MStoreGrouping;
 using DMS.Services.MStore;
+using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.indirect_price_list
 {
@@ -99,7 +97,7 @@ namespace DMS.Rpc.indirect_price_list
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(IndirectPriceList_IndirectPriceListDTO.Id))
                 return Forbid();
 
@@ -117,7 +115,7 @@ namespace DMS.Rpc.indirect_price_list
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(IndirectPriceList_IndirectPriceListDTO.Id))
                 return Forbid();
 
@@ -147,7 +145,7 @@ namespace DMS.Rpc.indirect_price_list
             else
                 return BadRequest(IndirectPriceList_IndirectPriceListDTO);
         }
-        
+
         [Route(IndirectPriceListRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -167,8 +165,8 @@ namespace DMS.Rpc.indirect_price_list
                 return BadRequest(IndirectPriceLists.Where(x => !x.IsValidated));
 
             return true;
-        }   
-        
+        }
+
         [Route(IndirectPriceListRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -213,7 +211,7 @@ namespace DMS.Rpc.indirect_price_list
                     string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
                     string OrganizationIdValue = worksheet.Cells[i + StartRow, OrganizationIdColumn].Value?.ToString();
                     string IndirectPriceListTypeIdValue = worksheet.Cells[i + StartRow, IndirectPriceListTypeIdColumn].Value?.ToString();
-                    
+
                     IndirectPriceList IndirectPriceList = new IndirectPriceList();
                     IndirectPriceList.Code = CodeValue;
                     IndirectPriceList.Name = NameValue;
@@ -223,7 +221,7 @@ namespace DMS.Rpc.indirect_price_list
                     Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
                     IndirectPriceList.StatusId = Status == null ? 0 : Status.Id;
                     IndirectPriceList.Status = Status;
-                    
+
                     IndirectPriceLists.Add(IndirectPriceList);
                 }
             }
@@ -257,13 +255,13 @@ namespace DMS.Rpc.indirect_price_list
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(IndirectPriceListRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] IndirectPriceList_IndirectPriceListFilterDTO IndirectPriceList_IndirectPriceListFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -276,7 +274,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var IndirectPriceListHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -301,7 +299,7 @@ namespace DMS.Rpc.indirect_price_list
                 }
                 excel.GenerateWorksheet("IndirectPriceList", IndirectPriceListHeaders, IndirectPriceListData);
                 #endregion
-                
+
                 #region IndirectPriceListType
                 var IndirectPriceListTypeFilter = new IndirectPriceListTypeFilter();
                 IndirectPriceListTypeFilter.Selects = IndirectPriceListTypeSelect.ALL;
@@ -313,7 +311,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var IndirectPriceListTypeHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -343,7 +341,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var OrganizationHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -387,7 +385,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -417,7 +415,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var ItemHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "ProductId",
                         "Code",
@@ -457,7 +455,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var StoreGroupingHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -495,7 +493,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var StoreHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -565,7 +563,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var StoreTypeHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -596,14 +594,14 @@ namespace DMS.Rpc.indirect_price_list
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
                 #region IndirectPriceList
                 var IndirectPriceListHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -615,7 +613,7 @@ namespace DMS.Rpc.indirect_price_list
                 List<object[]> IndirectPriceListData = new List<object[]>();
                 excel.GenerateWorksheet("IndirectPriceList", IndirectPriceListHeaders, IndirectPriceListData);
                 #endregion
-                
+
                 #region IndirectPriceListType
                 var IndirectPriceListTypeFilter = new IndirectPriceListTypeFilter();
                 IndirectPriceListTypeFilter.Selects = IndirectPriceListTypeSelect.ALL;
@@ -627,7 +625,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var IndirectPriceListTypeHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -657,7 +655,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var OrganizationHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -701,7 +699,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -731,7 +729,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var ItemHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "ProductId",
                         "Code",
@@ -771,7 +769,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var StoreGroupingHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -809,7 +807,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var StoreHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -879,7 +877,7 @@ namespace DMS.Rpc.indirect_price_list
 
                 var StoreTypeHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",

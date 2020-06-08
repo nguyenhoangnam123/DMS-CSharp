@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MResellerStatus
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MResellerStatus
             return count == 1;
         }
 
-        public async Task<bool>Create(ResellerStatus ResellerStatus)
+        public async Task<bool> Create(ResellerStatus ResellerStatus)
         {
             return ResellerStatus.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MResellerStatus
             }
             return ResellerStatus.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<ResellerStatus> ResellerStatuses)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<ResellerStatus> ResellerStatuses)
         {
             return true;

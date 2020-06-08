@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
-using DMS.Enums;
 
 namespace DMS.Repositories
 {
@@ -221,7 +219,7 @@ namespace DMS.Repositories
                 RowOptionId = s.RowOptionId,
             }).ToList();
 
-    
+
             await DataContext.SurveyResultSingle.BulkInsertAsync(SurveyResultSingleDAOs);
             await DataContext.SurveyResultCell.BulkInsertAsync(SurveyResultCellDAOs);
         }

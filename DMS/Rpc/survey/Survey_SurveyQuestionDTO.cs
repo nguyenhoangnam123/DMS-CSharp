@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.survey
 {
@@ -13,11 +12,11 @@ namespace DMS.Rpc.survey
         public string Content { get; set; }
         public long SurveyQuestionTypeId { get; set; }
         public bool IsMandatory { get; set; }
-        public Survey_SurveyQuestionTypeDTO SurveyQuestionType { get; set; }   
-        public List<Survey_SurveyOptionDTO> SurveyOptions { get; set; }   
+        public Survey_SurveyQuestionTypeDTO SurveyQuestionType { get; set; }
+        public List<Survey_SurveyOptionDTO> SurveyOptions { get; set; }
         public Dictionary<long, Dictionary<long, bool>> Table { get; set; }
         public Dictionary<long, bool> Single { get; set; }
-        public Survey_SurveyQuestionDTO() {}
+        public Survey_SurveyQuestionDTO() { }
         public Survey_SurveyQuestionDTO(SurveyQuestion SurveyQuestion)
         {
             this.Id = SurveyQuestion.Id;
@@ -33,15 +32,15 @@ namespace DMS.Rpc.survey
 
     public class Survey_SurveyQuestionFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public IdFilter SurveyId { get; set; }
-        
+
         public StringFilter Content { get; set; }
-        
+
         public IdFilter SurveyQuestionTypeId { get; set; }
-        
+
         public SurveyQuestionOrder OrderBy { get; set; }
     }
 }

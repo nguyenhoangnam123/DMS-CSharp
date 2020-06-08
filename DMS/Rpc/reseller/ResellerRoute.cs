@@ -1,21 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MReseller;
-using DMS.Services.MOrganization;
-using DMS.Services.MResellerStatus;
-using DMS.Services.MResellerType;
-using DMS.Services.MAppUser;
-using DMS.Services.MStatus;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.reseller
 {
@@ -61,21 +45,21 @@ namespace DMS.Rpc.reseller
                 Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus, } },
 
             { "Thêm", new List<string> {
-                Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus, 
-                Detail, Create,  
+                Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
+                Detail, Create,
                 SingleListOrganization, SingleListResellerStatus, SingleListResellerType, SingleListAppUser, SingleListStatus, CountStore, ListStore } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus, 
-                Detail, Update,  
+                Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
+                Detail, Update,
                 SingleListOrganization, SingleListResellerStatus, SingleListResellerType, SingleListAppUser, SingleListStatus, CountStore, ListStore } },
 
             { "Xoá", new List<string> {
                 Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
-                Detail, Delete, 
+                Detail, Delete,
                 SingleListOrganization, SingleListResellerStatus, SingleListResellerType, SingleListAppUser, SingleListStatus, CountStore, ListStore } },
 
-            { "Xoá nhiều", new List<string> { 
+            { "Xoá nhiều", new List<string> {
                 Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
                 BulkDelete } },
 
@@ -83,7 +67,7 @@ namespace DMS.Rpc.reseller
                 Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
                 Export } },
 
-            { "Nhập excel", new List<string> { 
+            { "Nhập excel", new List<string> {
                 Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
                 ExportTemplate, Import } },
         };

@@ -1,8 +1,6 @@
 using Common;
-using Microsoft.Extensions.Configuration;
-using System.Threading.Tasks;
 using DMS.Models;
-using DMS.Repositories;
+using System.Threading.Tasks;
 
 namespace DMS.Repositories
 {
@@ -143,7 +141,7 @@ namespace DMS.Repositories
         public IPositionRepository PositionRepository { get; private set; }
         public IProblemRepository ProblemRepository { get; private set; }
         public IProblemTypeRepository ProblemTypeRepository { get; private set; }
-        public IProblemStatusRepository ProblemStatusRepository { get; private set; } 
+        public IProblemStatusRepository ProblemStatusRepository { get; private set; }
         public IProductRepository ProductRepository { get; private set; }
         public IProductGroupingRepository ProductGroupingRepository { get; private set; }
         public IProductTypeRepository ProductTypeRepository { get; private set; }
@@ -168,7 +166,7 @@ namespace DMS.Repositories
         public ISurveyRepository SurveyRepository { get; private set; }
         public ISurveyResultRepository SurveyResultRepository { get; private set; }
         public ITaxTypeRepository TaxTypeRepository { get; private set; }
-        
+
         public IUnitOfMeasureRepository UnitOfMeasureRepository { get; private set; }
         public IUnitOfMeasureGroupingContentRepository UnitOfMeasureGroupingContentRepository { get; private set; }
         public IUnitOfMeasureGroupingRepository UnitOfMeasureGroupingRepository { get; private set; }

@@ -1,12 +1,11 @@
-﻿using DMS.Entities;
+﻿using Common;
+using DMS.Entities;
 using DMS.Models;
-using System;
-using Common;
+using Helpers;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -55,14 +54,14 @@ namespace DMS.Repositories
                 if (filter.StoreTypeId.Equal.HasValue)
                 {
                     StoreTypeDAO StoreTypeDAO = DataContext.StoreType.Where(x => x.Id == filter.StoreTypeId.Equal.Value).FirstOrDefault();
-                    if(StoreTypeDAO != null && StoreTypeDAO.StatusId == Enums.StatusEnum.ACTIVE.Id)
+                    if (StoreTypeDAO != null && StoreTypeDAO.StatusId == Enums.StatusEnum.ACTIVE.Id)
                         query = from q in query
                                 join st in DataContext.IndirectPriceListStoreTypeMapping on q.IndirectPriceListId equals st.IndirectPriceListId
                                 where st.StoreTypeId == StoreTypeDAO.Id
                                 select q;
                 }
             }
-                
+
             if (filter.StoreId != null)
             {
                 if (filter.StoreId.Equal.HasValue)
@@ -106,7 +105,7 @@ namespace DMS.Repositories
             List<IndirectPriceListItemMapping> IndirectPriceListItemMappings = await IndirectPriceListItemMappingDAOs.Select(x => new IndirectPriceListItemMapping
             {
                 IndirectPriceListId = x.IndirectPriceListId,
-                ItemId =x.ItemId,
+                ItemId = x.ItemId,
                 Price = x.Price,
                 IndirectPriceList = new IndirectPriceList
                 {

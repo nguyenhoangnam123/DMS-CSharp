@@ -1,13 +1,10 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
-using DMS.Services.MAppUser;
-using DMS.Enums;
 
 namespace DMS.Services.MGeneralKpi
 {
@@ -73,13 +70,13 @@ namespace DMS.Services.MGeneralKpi
                 if (count == 0)
                     GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.Organization), ErrorCode.OrganizationIdNotExisted);
             }
-            
+
             return GeneralKpi.IsValidated;
         }
 
         private async Task<bool> ValidateEmployees(GeneralKpi GeneralKpi)
         {
-            if(GeneralKpi.EmployeeIds == null || !GeneralKpi.EmployeeIds.Any())
+            if (GeneralKpi.EmployeeIds == null || !GeneralKpi.EmployeeIds.Any())
                 GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.EmployeeIds), ErrorCode.EmployeeIdsEmpty);
             else
             {
@@ -95,14 +92,14 @@ namespace DMS.Services.MGeneralKpi
                 var EmployeeIdsInDB = (await UOW.AppUserRepository.List(AppUserFilter)).Select(x => x.Id).ToList();
                 var listIdsNotExisted = GeneralKpi.EmployeeIds.Except(EmployeeIdsInDB).ToList();
 
-                if(listIdsNotExisted != null && listIdsNotExisted.Any())
+                if (listIdsNotExisted != null && listIdsNotExisted.Any())
                 {
                     foreach (var Id in listIdsNotExisted)
                     {
                         GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.EmployeeIds), ErrorCode.IdNotExisted);
                     }
                 }
-                
+
             }
             return GeneralKpi.IsValidated;
         }
@@ -116,7 +113,7 @@ namespace DMS.Services.MGeneralKpi
 
         private async Task<bool> ValidateKpiPeriod(GeneralKpi GeneralKpi)
         {
-            if(GeneralKpi.KpiPeriodId == 0)
+            if (GeneralKpi.KpiPeriodId == 0)
                 GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.KpiPeriod), ErrorCode.KpiPeriodEmpty);
             else
             {
@@ -129,11 +126,11 @@ namespace DMS.Services.MGeneralKpi
                 if (count == 0)
                     GeneralKpi.AddError(nameof(GeneralKpiValidator), nameof(GeneralKpi.KpiPeriod), ErrorCode.KpiPeriodIdNotExisted);
             }
-            
+
             return GeneralKpi.IsValidated;
         }
 
-        public async Task<bool>Create(GeneralKpi GeneralKpi)
+        public async Task<bool> Create(GeneralKpi GeneralKpi)
         {
             await ValidateOrganization(GeneralKpi);
             await ValidateEmployees(GeneralKpi);
@@ -160,12 +157,12 @@ namespace DMS.Services.MGeneralKpi
             }
             return GeneralKpi.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<GeneralKpi> GeneralKpis)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<GeneralKpi> GeneralKpis)
         {
             return true;

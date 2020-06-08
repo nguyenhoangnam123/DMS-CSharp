@@ -1,8 +1,8 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.e_route_change_request
 {
@@ -53,27 +53,27 @@ namespace DMS.Rpc.e_route_change_request
 
     public class ERouteChangeRequest_ERouteFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public StringFilter Code { get; set; }
-        
+
         public StringFilter Name { get; set; }
-        
+
         public IdFilter SaleEmployeeId { get; set; }
-        
+
         public DateFilter StartDate { get; set; }
-        
+
         public DateFilter EndDate { get; set; }
-        
+
         public IdFilter ERouteTypeId { get; set; }
-        
+
         public IdFilter RequestStateId { get; set; }
-        
+
         public IdFilter StatusId { get; set; }
-        
+
         public IdFilter CreatorId { get; set; }
-        
+
         public ERouteOrder OrderBy { get; set; }
     }
 }

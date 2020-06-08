@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -50,7 +50,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<ERouteChangeRequestContentDAO> OrFilter(IQueryable<ERouteChangeRequestContentDAO> query, ERouteChangeRequestContentFilter filter)
+        private IQueryable<ERouteChangeRequestContentDAO> OrFilter(IQueryable<ERouteChangeRequestContentDAO> query, ERouteChangeRequestContentFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -69,7 +69,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ERouteChangeRequestContentDAO> DynamicOrder(IQueryable<ERouteChangeRequestContentDAO> query, ERouteChangeRequestContentFilter filter)
         {
@@ -377,7 +377,7 @@ namespace DMS.Repositories
             await DataContext.ERouteChangeRequestContent.Where(x => x.Id == ERouteChangeRequestContent.Id).UpdateFromQueryAsync(x => new ERouteChangeRequestContentDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<ERouteChangeRequestContent> ERouteChangeRequestContents)
         {
             List<ERouteChangeRequestContentDAO> ERouteChangeRequestContentDAOs = new List<ERouteChangeRequestContentDAO>();
@@ -419,6 +419,6 @@ namespace DMS.Repositories
         private async Task SaveReference(ERouteChangeRequestContent ERouteChangeRequestContent)
         {
         }
-        
+
     }
 }

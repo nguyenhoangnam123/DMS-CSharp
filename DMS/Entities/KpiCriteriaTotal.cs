@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class KpiCriteriaTotal : DataEntity,  IEquatable<KpiCriteriaTotal>
+    public class KpiCriteriaTotal : DataEntity, IEquatable<KpiCriteriaTotal>
     {
         public long Id { get; set; }
         public string Code { get; set; }

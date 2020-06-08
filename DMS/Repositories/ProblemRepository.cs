@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -55,7 +55,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<ProblemDAO> OrFilter(IQueryable<ProblemDAO> query, ProblemFilter filter)
+        private IQueryable<ProblemDAO> OrFilter(IQueryable<ProblemDAO> query, ProblemFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -84,7 +84,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ProblemDAO> DynamicOrder(IQueryable<ProblemDAO> query, ProblemFilter filter)
         {
@@ -403,7 +403,7 @@ namespace DMS.Repositories
             await DataContext.Problem.Where(x => x.Id == Problem.Id).DeleteFromQueryAsync();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Problem> Problems)
         {
             List<ProblemDAO> ProblemDAOs = new List<ProblemDAO>();
@@ -452,6 +452,6 @@ namespace DMS.Repositories
                 await DataContext.ProblemImageMapping.BulkMergeAsync(ProblemImageMappingDAOs);
             }
         }
-        
+
     }
 }

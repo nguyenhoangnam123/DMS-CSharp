@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MPosition
 {
-    public interface IPositionService :  IServiceScoped
+    public interface IPositionService : IServiceScoped
     {
         Task<int> Count(PositionFilter PositionFilter);
         Task<List<Position>> List(PositionFilter PositionFilter);

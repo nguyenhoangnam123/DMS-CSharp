@@ -1,8 +1,8 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.e_route
 {
@@ -26,7 +26,7 @@ namespace DMS.Rpc.e_route
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public List<ERoute_ERouteContentDTO> ERouteContents { get; set; }
-        public ERoute_ERouteDTO() {}
+        public ERoute_ERouteDTO() { }
         public ERoute_ERouteDTO(ERoute ERoute)
         {
             this.Id = ERoute.Id;

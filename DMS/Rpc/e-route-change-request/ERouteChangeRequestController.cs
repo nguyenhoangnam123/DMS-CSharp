@@ -1,26 +1,20 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Services.MAppUser;
+using DMS.Services.MERoute;
+using DMS.Services.MERouteChangeRequest;
+using DMS.Services.MERouteChangeRequestContent;
+using DMS.Services.MERouteType;
+using DMS.Services.MOrganization;
+using DMS.Services.MRequestState;
+using DMS.Services.MStore;
+using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreType;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MERouteChangeRequest;
-using DMS.Services.MAppUser;
-using DMS.Services.MERoute;
-using DMS.Services.MRequestState;
-using DMS.Services.MERouteChangeRequestContent;
-using DMS.Services.MStore;
-using DMS.Enums;
-using DMS.Services.MStoreType;
-using DMS.Services.MStoreGrouping;
-using DMS.Services.MOrganization;
-using DMS.Services.MERouteType;
 
 namespace DMS.Rpc.e_route_change_request
 {
@@ -109,7 +103,7 @@ namespace DMS.Rpc.e_route_change_request
                 throw new BindException(ModelState);
 
             ERoute ERoute = await ERouteService.Get(ERouteChangeRequest_ERouteChangeRequestDTO.ERouteId);
-            if (ERoute == null) 
+            if (ERoute == null)
                 return null;
             ERouteChangeRequest_ERouteChangeRequestDTO = new ERouteChangeRequest_ERouteChangeRequestDTO
             {
@@ -168,7 +162,7 @@ namespace DMS.Rpc.e_route_change_request
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(ERouteChangeRequest_ERouteChangeRequestDTO.Id))
                 return Forbid();
 
@@ -186,7 +180,7 @@ namespace DMS.Rpc.e_route_change_request
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(ERouteChangeRequest_ERouteChangeRequestDTO.Id))
                 return Forbid();
 
@@ -216,7 +210,7 @@ namespace DMS.Rpc.e_route_change_request
             else
                 return BadRequest(ERouteChangeRequest_ERouteChangeRequestDTO);
         }
-        
+
         [Route(ERouteChangeRequestRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -236,7 +230,7 @@ namespace DMS.Rpc.e_route_change_request
                 return BadRequest(ERouteChangeRequests.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         private async Task<bool> HasPermission(long Id)
         {
             ERouteChangeRequestFilter ERouteChangeRequestFilter = new ERouteChangeRequestFilter();

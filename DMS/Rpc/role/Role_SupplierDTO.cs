@@ -1,9 +1,5 @@
 ﻿using Common;
 using DMS.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DMS.Rpc.role
 {
@@ -18,7 +14,7 @@ namespace DMS.Rpc.role
         public string Address { get; set; }
         public string OwnerName { get; set; }
         public string Description { get; set; }
-     
+
         public Role_SupplierDTO() { }
         public Role_SupplierDTO(Supplier Supplier)
         {

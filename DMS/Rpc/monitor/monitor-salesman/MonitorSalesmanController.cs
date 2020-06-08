@@ -92,9 +92,9 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         {
             DateTime CheckIn = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.Date ?? StaticParams.DateTimeNow.Date;
 
-                        var query = from ap in DataContext.AppUser
+            var query = from ap in DataContext.AppUser
                         join sc in DataContext.StoreChecking on ap.Id equals sc.SaleEmployeeId
-                        where sc.CheckOutAt.HasValue && sc.CheckOutAt.Value.Date == CheckIn 
+                        where sc.CheckOutAt.HasValue && sc.CheckOutAt.Value.Date == CheckIn
                         select new MonitorSalesman_SaleEmployeeDTO
                         {
                             SaleEmployeeId = ap.Id,

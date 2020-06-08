@@ -1,7 +1,5 @@
 ﻿using Common;
-using DMS.Entities;
 using DMS.Models;
-using DMS.Repositories;
 using Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -65,7 +63,7 @@ namespace DMS.Handlers
                 // handle the received message  
                 try
                 {
-                    _= HandleMessage(routingKey, content);
+                    _ = HandleMessage(routingKey, content);
                     _channel.BasicAck(ea.DeliveryTag, false);
                 }
                 catch (Exception e)

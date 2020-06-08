@@ -266,7 +266,7 @@ namespace DMS.Rpc.warehouse
             Warehouse Warehouse = await WarehouseService.Get(WarehouseId);
             if (Warehouse == null)
                 return null;
-         
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {

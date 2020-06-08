@@ -1,14 +1,14 @@
 ﻿using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Handlers;
 using DMS.Repositories;
+using HandlebarsDotNet;
+using Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DMS.Entities;
-using DMS.Enums;
-using Helpers;
-using HandlebarsDotNet;
-using DMS.Handlers;
 
 namespace DMS.Services.MWorkflow
 {
@@ -85,13 +85,13 @@ namespace DMS.Services.MWorkflow
             if (WorkflowDefinition.WorkflowSteps == null)
             {
                 bool ShouldInit = false;
-                foreach(WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
                 {
                     if (!WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id))
                     {
                         if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
                             ShouldInit = true;
-                    }    
+                    }
                 }
                 if (ShouldInit == false)
                     return false;

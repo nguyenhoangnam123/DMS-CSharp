@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MWorkflow
 {
-    public interface IWorkflowParameterService :  IServiceScoped
+    public interface IWorkflowParameterService : IServiceScoped
     {
         Task<int> Count(WorkflowParameterFilter WorkflowParameterFilter);
         Task<List<WorkflowParameter>> List(WorkflowParameterFilter WorkflowParameterFilter);
@@ -83,7 +80,7 @@ namespace DMS.Services.MWorkflow
                 return null;
             return WorkflowParameter;
         }
-       
+
         public async Task<WorkflowParameter> Create(WorkflowParameter WorkflowParameter)
         {
             if (!await WorkflowParameterValidator.Create(WorkflowParameter))
@@ -183,7 +180,7 @@ namespace DMS.Services.MWorkflow
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<WorkflowParameter>> Import(List<WorkflowParameter> WorkflowParameters)
         {
             if (!await WorkflowParameterValidator.Import(WorkflowParameters))
@@ -206,8 +203,8 @@ namespace DMS.Services.MWorkflow
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public WorkflowParameterFilter ToFilter(WorkflowParameterFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<WorkflowParameterFilter>();
@@ -219,7 +216,7 @@ namespace DMS.Services.MWorkflow
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    
+
                 }
             }
             return filter;

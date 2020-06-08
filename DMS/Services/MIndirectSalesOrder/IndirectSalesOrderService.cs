@@ -1,19 +1,17 @@
 ﻿using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Repositories;
+using DMS.Services.MWorkflow;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
-using DMS.Enums;
-using DMS.Services.MWorkflow;
 
 namespace DMS.Services.MIndirectSalesOrder
 {
-    public interface IIndirectSalesOrderService :  IServiceScoped
+    public interface IIndirectSalesOrderService : IServiceScoped
     {
         Task<int> Count(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<List<IndirectSalesOrder>> List(IndirectSalesOrderFilter IndirectSalesOrderFilter);
@@ -119,7 +117,7 @@ namespace DMS.Services.MIndirectSalesOrder
             }
             return IndirectSalesOrder;
         }
-       
+
         public async Task<IndirectSalesOrder> Create(IndirectSalesOrder IndirectSalesOrder)
         {
             if (!await IndirectSalesOrderValidator.Create(IndirectSalesOrder))
@@ -226,7 +224,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<IndirectSalesOrder>> Import(List<IndirectSalesOrder> IndirectSalesOrders)
         {
             if (!await IndirectSalesOrderValidator.Import(IndirectSalesOrders))
@@ -249,8 +247,8 @@ namespace DMS.Services.MIndirectSalesOrder
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public IndirectSalesOrderFilter ToFilter(IndirectSalesOrderFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<IndirectSalesOrderFilter>();
@@ -270,7 +268,7 @@ namespace DMS.Services.MIndirectSalesOrder
         private async Task<IndirectSalesOrder> Calculator(IndirectSalesOrder IndirectSalesOrder)
         {
             //sản phẩm bán
-            if(IndirectSalesOrder.IndirectSalesOrderContents != null)
+            if (IndirectSalesOrder.IndirectSalesOrderContents != null)
             {
                 foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                 {
@@ -344,7 +342,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     IndirectSalesOrderPromotion.RequestedQuantity = IndirectSalesOrderPromotion.Quantity * UOMGC.Factor.Value;
                 }
             }
-            
+
             return IndirectSalesOrder;
         }
 
@@ -354,7 +352,7 @@ namespace DMS.Services.MIndirectSalesOrder
             var OrganizationIds = CurrrentUser.Organization.Path.Split('.').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => long.Parse(x)).OrderByDescending(x => x).ToList();
             var Store = await UOW.StoreRepository.Get(StoreId);
             var ItemIds = Items.Select(x => x.Id).ToList();
-            Dictionary<long,long> result = new Dictionary<long, long>();
+            Dictionary<long, long> result = new Dictionary<long, long>();
             IndirectPriceListItemMappingFilter IndirectPriceListItemMappingFilter = new IndirectPriceListItemMappingFilter
             {
                 ItemId = new IdFilter { In = ItemIds },
@@ -432,7 +430,7 @@ namespace DMS.Services.MIndirectSalesOrder
 
             foreach (var ItemId in ItemIds)
             {
-                if(result[ItemId] == long.MaxValue)
+                if (result[ItemId] == long.MaxValue)
                 {
                     result[ItemId] = Convert.ToInt64(Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice).FirstOrDefault());
                 }

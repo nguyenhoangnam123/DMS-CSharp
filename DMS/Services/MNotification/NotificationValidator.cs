@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MNotification
 {
@@ -61,7 +58,7 @@ namespace DMS.Services.MNotification
             }
             else
             {
-                if(Notification.Title.Length > 255)
+                if (Notification.Title.Length > 255)
                 {
                     Notification.AddError(nameof(NotificationValidator), nameof(Notification.Title), ErrorCode.TitleOverLength);
                 }
@@ -71,7 +68,7 @@ namespace DMS.Services.MNotification
 
         public async Task<bool> ValidateOrganization(Notification Notification)
         {
-            if(Notification.OrganizationId != null && Notification.OrganizationId != 0)
+            if (Notification.OrganizationId != null && Notification.OrganizationId != 0)
             {
                 OrganizationFilter OrganizationFilter = new OrganizationFilter
                 {
@@ -79,13 +76,13 @@ namespace DMS.Services.MNotification
                 };
                 int count = await UOW.OrganizationRepository.Count(OrganizationFilter);
 
-                if(count == 0)
+                if (count == 0)
                     Notification.AddError(nameof(NotificationValidator), nameof(Notification.Organization), ErrorCode.OrganizationIdNotExisted);
             }
             return Notification.IsValidated;
         }
 
-        public async Task<bool>Create(Notification Notification)
+        public async Task<bool> Create(Notification Notification)
         {
             await ValidateTitle(Notification);
             return Notification.IsValidated;
@@ -106,12 +103,12 @@ namespace DMS.Services.MNotification
             }
             return Notification.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Notification> Notifications)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Notification> Notifications)
         {
             return true;

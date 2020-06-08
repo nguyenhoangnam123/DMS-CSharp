@@ -1,8 +1,6 @@
 ﻿using Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DMS.Rpc.Monitor.monitor_salesman
 {
@@ -35,7 +33,7 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         public decimal Latitude { get; set; }
     }
 
-    public class MonitorSalesman_MonitorSalesmanFilterDTO: FilterDTO
+    public class MonitorSalesman_MonitorSalesmanFilterDTO : FilterDTO
     {
         public IdFilter OrganizationId { get; set; }
         public IdFilter AppUserId { get; set; }

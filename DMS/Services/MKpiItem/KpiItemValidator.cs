@@ -1,12 +1,10 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
-using DMS.Enums;
 
 namespace DMS.Services.MKpiItem
 {
@@ -48,7 +46,7 @@ namespace DMS.Services.MKpiItem
                 Skip = 0,
                 Take = 10,
                 Id = new IdFilter { Equal = KpiItem.Id },
-                Selects = KpiItemSelect .Id
+                Selects = KpiItemSelect.Id
             };
 
             int count = await UOW.KpiItemRepository.Count(KpiItemFilter);
@@ -122,7 +120,7 @@ namespace DMS.Services.MKpiItem
 
         private async Task<bool> ValidateItem(KpiItem KpiItem)
         {
-            if(KpiItem.KpiItemContents == null || !KpiItem.KpiItemContents.Any())
+            if (KpiItem.KpiItemContents == null || !KpiItem.KpiItemContents.Any())
                 KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.KpiItemContents), ErrorCode.KpiItemContentsEmpty);
             else
             {
@@ -137,7 +135,7 @@ namespace DMS.Services.MKpiItem
 
                 var ItemIdsInDB = (await UOW.ItemRepository.List(ItemFilter)).Select(x => x.Id).ToList();
                 var ItemIdsNotExisted = ItemIds.Except(ItemIdsInDB).ToList();
-                if(ItemIdsNotExisted != null && ItemIdsNotExisted.Any())
+                if (ItemIdsNotExisted != null && ItemIdsNotExisted.Any())
                 {
                     foreach (var Id in ItemIdsNotExisted)
                     {
@@ -148,7 +146,7 @@ namespace DMS.Services.MKpiItem
             return KpiItem.IsValidated;
         }
 
-        public async Task<bool>Create(KpiItem KpiItem)
+        public async Task<bool> Create(KpiItem KpiItem)
         {
             await ValidateOrganization(KpiItem);
             await ValidateEmployees(KpiItem);
@@ -175,12 +173,12 @@ namespace DMS.Services.MKpiItem
             }
             return KpiItem.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<KpiItem> KpiItems)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<KpiItem> KpiItems)
         {
             return true;

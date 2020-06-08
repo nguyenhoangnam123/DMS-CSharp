@@ -1,8 +1,8 @@
 ﻿using Common;
 using DMS.Entities;
-using DMS.Enums;
 using DMS.Services.MBrand;
 using DMS.Services.MImage;
+using DMS.Services.MInventory;
 using DMS.Services.MItem;
 using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
@@ -12,24 +12,22 @@ using DMS.Services.MSupplier;
 using DMS.Services.MTaxType;
 using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MUnitOfMeasureGrouping;
+using DMS.Services.MUsedVariation;
 using DMS.Services.MVariationGrouping;
-using Helpers;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.IO;
-using System;
-using System.Data;
-using Microsoft.AspNetCore.Hosting;
-using DMS.Services.MInventory;
-using DMS.Services.MUsedVariation;
 
 namespace DMS.Rpc.product
 {
-   
+
     public partial class ProductController : RpcController
     {
         private readonly IWebHostEnvironment _env;
@@ -135,7 +133,7 @@ namespace DMS.Rpc.product
                 return Forbid();
 
             Product Product = ConvertDTOToEntity(Product_ProductDTO);
-            
+
             Product = await ProductService.Create(Product);
             Product_ProductDTO = new Product_ProductDTO(Product);
             if (Product.IsValidated)
@@ -875,7 +873,7 @@ namespace DMS.Rpc.product
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = UnitOfMeasureSelect.ALL,
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id}
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
             List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(new UnitOfMeasureGroupingFilter
             {
@@ -1007,7 +1005,7 @@ namespace DMS.Rpc.product
 
             List<Product> Products = await ProductService.List(ProductFilter);
             Products = await ProductService.BulkDelete(Products);
-            if(Products.Any(x => !x.IsValidated))
+            if (Products.Any(x => !x.IsValidated))
                 return BadRequest(Products.Where(x => !x.IsValidated));
             return true;
         }
@@ -1036,7 +1034,7 @@ namespace DMS.Rpc.product
             return Ok(product_ImageDTO);
         }
 
-        [Route(ProductRoute.SaveItemImage),HttpPost]
+        [Route(ProductRoute.SaveItemImage), HttpPost]
         public async Task<ActionResult<Product_ImageDTO>> SaveItemImage(IFormFile file)
         {
             if (!ModelState.IsValid)
@@ -1222,8 +1220,8 @@ namespace DMS.Rpc.product
         private ProductFilter ConvertFilterDTOToFilterEntity(Product_ProductFilterDTO Product_ProductFilterDTO)
         {
             ProductFilter ProductFilter = new ProductFilter();
-            ProductFilter.Selects = ProductSelect.Code | ProductSelect.Name 
-                | ProductSelect.Id | ProductSelect.ProductProductGroupingMapping 
+            ProductFilter.Selects = ProductSelect.Code | ProductSelect.Name
+                | ProductSelect.Id | ProductSelect.ProductProductGroupingMapping
                 | ProductSelect.ProductType | ProductSelect.Supplier
                 | ProductSelect.Status | ProductSelect.UsedVariation;
             ProductFilter.Skip = Product_ProductFilterDTO.Skip;
@@ -1254,7 +1252,7 @@ namespace DMS.Rpc.product
             ProductFilter.UsedVariationId = Product_ProductFilterDTO.UsedVariationId;
             return ProductFilter;
         }
-   
+
         [Route(ProductRoute.CountProductGrouping), HttpPost]
         public async Task<long> CountProductGrouping([FromBody] Product_ProductGroupingFilterDTO Product_ProductGroupingFilterDTO)
         {

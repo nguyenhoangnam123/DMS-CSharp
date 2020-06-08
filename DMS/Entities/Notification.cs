@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Notification : DataEntity,  IEquatable<Notification>
+    public class Notification : DataEntity, IEquatable<Notification>
     {
         public long Id { get; set; }
         public string Title { get; set; }
@@ -30,8 +30,8 @@ namespace DMS.Entities
         public StringFilter Content { get; set; }
         public IdFilter OrganizationId { get; set; }
         public List<NotificationFilter> OrFilter { get; set; }
-        public NotificationOrder OrderBy {get; set;}
-        public NotificationSelect Selects {get; set;}
+        public NotificationOrder OrderBy { get; set; }
+        public NotificationSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -44,7 +44,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum NotificationSelect:long
+    public enum NotificationSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MWorkflow
 {
-    public interface IWorkflowTypeService :  IServiceScoped
+    public interface IWorkflowTypeService : IServiceScoped
     {
         Task<int> Count(WorkflowTypeFilter WorkflowTypeFilter);
         Task<List<WorkflowType>> List(WorkflowTypeFilter WorkflowTypeFilter);
@@ -74,6 +71,6 @@ namespace DMS.Services.MWorkflow
                 return null;
             return WorkflowType;
         }
-      
+
     }
 }

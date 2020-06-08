@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MSex
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MSex
             return count == 1;
         }
 
-        public async Task<bool>Create(Sex Sex)
+        public async Task<bool> Create(Sex Sex)
         {
             return Sex.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MSex
             }
             return Sex.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Sex> Sexes)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Sex> Sexes)
         {
             return true;

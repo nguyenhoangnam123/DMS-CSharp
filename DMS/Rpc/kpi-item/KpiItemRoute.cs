@@ -1,21 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MKpiItem;
-using DMS.Services.MAppUser;
-using DMS.Services.MKpiPeriod;
-using DMS.Services.MOrganization;
-using DMS.Services.MStatus;
-using DMS.Services.MItem;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.kpi_item
 {
@@ -35,8 +20,8 @@ namespace DMS.Rpc.kpi_item
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
-        
-        
+
+
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListKpiPeriod = Default + "/filter-list-kpi-period";
         public const string FilterListOrganization = Default + "/filter-list-organization";
@@ -46,7 +31,7 @@ namespace DMS.Rpc.kpi_item
         public const string FilterListKpiCriteriaItem = Default + "/filter-list-criteria-item";
         public const string FilterListKpiCriteriaTotal = Default + "/filter-list-criteria-total";
 
-        
+
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListKpiPeriod = Default + "/single-list-kpi-period";
         public const string SingleListOrganization = Default + "/single-list-organization";
@@ -68,40 +53,40 @@ namespace DMS.Rpc.kpi_item
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, 
+            { "Tìm kiếm", new List<string> {
+                Master, Count, List, Get,
                 FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, } },
 
-            { "Thêm", new List<string> { 
-                Master, Count, List, Get, 
+            { "Thêm", new List<string> {
+                Master, Count, List, Get,
                 FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
                 Detail, Create, GetDraft,
                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, } },
 
-            { "Sửa", new List<string> { 
-                Master, Count, List, Get,  
+            { "Sửa", new List<string> {
+                Master, Count, List, Get,
                 FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
                 Detail, Update, GetDraft,
                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, } },
 
-            { "Xoá", new List<string> { 
-                Master, Count, List, Get,  
+            { "Xoá", new List<string> {
+                Master, Count, List, Get,
                 FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
-                Detail, Delete, 
+                Detail, Delete,
                  SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, } },
 
-            { "Xoá nhiều", new List<string> { 
+            { "Xoá nhiều", new List<string> {
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
                 BulkDelete } },
 
-            { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, 
+            { "Xuất excel", new List<string> {
+                Master, Count, List, Get,
                 FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
                 Export } },
 
-            { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, 
+            { "Nhập excel", new List<string> {
+                Master, Count, List, Get,
                 FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
                 ExportTemplate, Import } },
         };

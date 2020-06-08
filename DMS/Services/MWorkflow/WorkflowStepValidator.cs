@@ -1,12 +1,9 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
-using DMS.Enums;
 
 namespace DMS.Services.MWorkflowStep
 {
@@ -111,14 +108,14 @@ namespace DMS.Services.MWorkflowStep
             };
 
             var count = await UOW.RoleRepository.Count(RoleFilter);
-            if(count == 0)
+            if (count == 0)
                 WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.Role), ErrorCode.RoleNotExisted);
             return WorkflowStep.IsValidated;
         }
 
         private async Task<bool> ValidateSubjectMail(WorkflowStep WorkflowStep)
         {
-            if(!string.IsNullOrWhiteSpace(WorkflowStep.SubjectMailForReject) && WorkflowStep.SubjectMailForReject.Length > 255)
+            if (!string.IsNullOrWhiteSpace(WorkflowStep.SubjectMailForReject) && WorkflowStep.SubjectMailForReject.Length > 255)
                 WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.SubjectMailForReject), ErrorCode.SubjectMailForRejectOverLength);
             return WorkflowStep.IsValidated;
         }
@@ -131,12 +128,12 @@ namespace DMS.Services.MWorkflowStep
             };
 
             var count = await UOW.RequestWorkflowStepMappingRepository.Count(RequestWorkflowStepMappingFilter);
-            if(count != 0)
+            if (count != 0)
                 WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.Id), ErrorCode.WorkflowStepInUsed);
             return WorkflowStep.IsValidated;
         }
 
-        public async Task<bool>Create(WorkflowStep WorkflowStep)
+        public async Task<bool> Create(WorkflowStep WorkflowStep)
         {
             await ValidateCode(WorkflowStep);
             await ValidateName(WorkflowStep);
@@ -165,7 +162,7 @@ namespace DMS.Services.MWorkflowStep
             }
             return WorkflowStep.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<WorkflowStep> WorkflowSteps)
         {
             foreach (WorkflowStep WorkflowStep in WorkflowSteps)
@@ -174,7 +171,7 @@ namespace DMS.Services.MWorkflowStep
             }
             return WorkflowSteps.All(st => st.IsValidated);
         }
-        
+
         public async Task<bool> Import(List<WorkflowStep> WorkflowSteps)
         {
             return true;

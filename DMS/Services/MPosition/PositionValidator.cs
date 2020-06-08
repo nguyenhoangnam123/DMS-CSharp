@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MPosition
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MPosition
             return count == 1;
         }
 
-        public async Task<bool>Create(Position Position)
+        public async Task<bool> Create(Position Position)
         {
             return Position.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MPosition
             }
             return Position.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Position> Positions)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Position> Positions)
         {
             return true;

@@ -601,7 +601,7 @@ namespace DMS.Repositories
                 }).ToListAsync();
 
             var ItemIds = Product.Items.Select(x => x.Id).ToList();
-            List<ItemImageMapping> ItemImageMappings = await DataContext.ItemImageMapping.Where(x => ItemIds.Contains(x.ItemId)).Select(x => new ItemImageMapping 
+            List<ItemImageMapping> ItemImageMappings = await DataContext.ItemImageMapping.Where(x => ItemIds.Contains(x.ItemId)).Select(x => new ItemImageMapping
             {
                 ImageId = x.ImageId,
                 ItemId = x.ItemId,
@@ -895,11 +895,11 @@ namespace DMS.Repositories
                     }
                 }
                 await DataContext.Item.BulkMergeAsync(ItemDAOs);
-                foreach(ItemDAO ItemDAO in ItemDAOs)
+                foreach (ItemDAO ItemDAO in ItemDAOs)
                 {
                     Item Item = Product.Items.Where(i => i.Code == ItemDAO.Code).FirstOrDefault();
                     Item.Id = ItemDAO.Id;
-                }    
+                }
             }
             await DataContext.ProductImageMapping
                 .Where(x => x.ProductId == Product.Id)

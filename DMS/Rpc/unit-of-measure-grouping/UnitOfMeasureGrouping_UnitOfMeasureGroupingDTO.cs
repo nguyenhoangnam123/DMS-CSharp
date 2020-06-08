@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.unit_of_measure_grouping
 {
@@ -17,7 +16,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
         public UnitOfMeasureGrouping_StatusDTO Status { get; set; }
         public UnitOfMeasureGrouping_UnitOfMeasureDTO UnitOfMeasure { get; set; }
         public List<UnitOfMeasureGrouping_UnitOfMeasureGroupingContentDTO> UnitOfMeasureGroupingContents { get; set; }
-        public UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO() {}
+        public UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO() { }
         public UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
             this.Id = UnitOfMeasureGrouping.Id;

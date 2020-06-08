@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MGeneralCriteria
 {
-    public interface IGeneralCriteriaService :  IServiceScoped
+    public interface IGeneralCriteriaService : IServiceScoped
     {
         Task<int> Count(GeneralCriteriaFilter GeneralCriteriaFilter);
         Task<List<GeneralCriteria>> List(GeneralCriteriaFilter GeneralCriteriaFilter);
@@ -83,7 +80,7 @@ namespace DMS.Services.MGeneralCriteria
                 return null;
             return GeneralCriteria;
         }
-       
+
         public async Task<GeneralCriteria> Create(GeneralCriteria GeneralCriteria)
         {
             if (!await GeneralCriteriaValidator.Create(GeneralCriteria))
@@ -183,7 +180,7 @@ namespace DMS.Services.MGeneralCriteria
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<GeneralCriteria>> Import(List<GeneralCriteria> GeneralCriterias)
         {
             if (!await GeneralCriteriaValidator.Import(GeneralCriterias))
@@ -206,8 +203,8 @@ namespace DMS.Services.MGeneralCriteria
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public GeneralCriteriaFilter ToFilter(GeneralCriteriaFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<GeneralCriteriaFilter>();

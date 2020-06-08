@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.notification
@@ -13,7 +10,7 @@ namespace DMS.Rpc.notification
         public string Content { get; set; }
         public long? OrganizationId { get; set; }
         public Notification_OrganizationDTO Organization { get; set; }
-        public Notification_NotificationDTO() {}
+        public Notification_NotificationDTO() { }
         public Notification_NotificationDTO(Notification Notification)
         {
             this.Id = Notification.Id;

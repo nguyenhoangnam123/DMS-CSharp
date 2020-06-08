@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Repositories
 {
-    public interface IRequestWorkflowDefinitionMappingRepository 
+    public interface IRequestWorkflowDefinitionMappingRepository
     {
         Task<long> Count(RequestWorkflowDefinitionMappingFilter filter);
         Task<List<RequestWorkflowDefinitionMapping>> List(RequestWorkflowDefinitionMappingFilter filter);
@@ -66,7 +66,7 @@ namespace DMS.Repositories
                     WorkflowDefinitionId = RequestWorkflowDefinitionMapping.WorkflowDefinitionId,
                 };
                 DataContext.RequestWorkflowDefinitionMapping.Add(RequestWorkflowDefinitionMappingDAO);
-            }   
+            }
             else
             {
                 RequestWorkflowDefinitionMappingDAO.RequestStateId = RequestWorkflowDefinitionMapping.RequestStateId;

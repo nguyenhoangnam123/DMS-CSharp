@@ -1,9 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DMS.Rpc.product
 {
@@ -44,7 +41,7 @@ namespace DMS.Rpc.product
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, 
+                Master, Count, List, Get,
                 FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,
                 CountProduct, ListProduct} },
             { "Xoá", new List<string> {

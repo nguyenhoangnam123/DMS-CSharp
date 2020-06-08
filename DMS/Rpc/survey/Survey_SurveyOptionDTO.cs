@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.survey
@@ -12,9 +9,9 @@ namespace DMS.Rpc.survey
         public long SurveyId { get; set; }
         public string Content { get; set; }
         public long SurveyOptionTypeId { get; set; }
-        public Survey_SurveyOptionTypeDTO SurveyOptionType { get; set; }   
-        
-        public Survey_SurveyOptionDTO() {}
+        public Survey_SurveyOptionTypeDTO SurveyOptionType { get; set; }
+
+        public Survey_SurveyOptionDTO() { }
         public Survey_SurveyOptionDTO(SurveyOption SurveyOption)
         {
             this.Id = SurveyOption.Id;
@@ -27,15 +24,15 @@ namespace DMS.Rpc.survey
 
     public class Survey_SurveyOptionFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public IdFilter SurveyId { get; set; }
-        
+
         public StringFilter Content { get; set; }
-        
+
         public IdFilter SurveyOptionTypeId { get; set; }
-        
+
         public SurveyOptionOrder OrderBy { get; set; }
     }
 }

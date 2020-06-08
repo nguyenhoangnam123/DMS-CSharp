@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class EditedPriceStatus : DataEntity,  IEquatable<EditedPriceStatus>
+    public class EditedPriceStatus : DataEntity, IEquatable<EditedPriceStatus>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -28,8 +28,8 @@ namespace DMS.Entities
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public List<EditedPriceStatusFilter> OrFilter { get; set; }
-        public EditedPriceStatusOrder OrderBy {get; set;}
-        public EditedPriceStatusSelect Selects {get; set;}
+        public EditedPriceStatusOrder OrderBy { get; set; }
+        public EditedPriceStatusSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -41,7 +41,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum EditedPriceStatusSelect:long
+    public enum EditedPriceStatusSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

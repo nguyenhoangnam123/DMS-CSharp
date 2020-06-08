@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -75,7 +75,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<ERouteChangeRequestDAO> OrFilter(IQueryable<ERouteChangeRequestDAO> query, ERouteChangeRequestFilter filter)
+        private IQueryable<ERouteChangeRequestDAO> OrFilter(IQueryable<ERouteChangeRequestDAO> query, ERouteChangeRequestFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -94,7 +94,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ERouteChangeRequestDAO> DynamicOrder(IQueryable<ERouteChangeRequestDAO> query, ERouteChangeRequestFilter filter)
         {
@@ -291,7 +291,7 @@ namespace DMS.Repositories
                         Code = x.ERoute.Status.Code,
                         Name = x.ERoute.Status.Name,
                     },
-                    
+
                 },
                 RequestState = x.RequestState == null ? null : new RequestState
                 {
@@ -391,7 +391,7 @@ namespace DMS.Repositories
             await DataContext.ERouteChangeRequest.Where(x => x.Id == ERouteChangeRequest.Id).UpdateFromQueryAsync(x => new ERouteChangeRequestDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<ERouteChangeRequest> ERouteChangeRequests)
         {
             List<ERouteChangeRequestDAO> ERouteChangeRequestDAOs = new List<ERouteChangeRequestDAO>();
@@ -478,6 +478,6 @@ namespace DMS.Repositories
                 await DataContext.ERouteChangeRequestContent.BulkMergeAsync(ERouteChangeRequestContentDAOs);
             }
         }
-        
+
     }
 }

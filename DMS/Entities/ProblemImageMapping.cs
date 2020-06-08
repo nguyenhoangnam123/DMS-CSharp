@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class ProblemImageMapping : DataEntity,  IEquatable<ProblemImageMapping>
+    public class ProblemImageMapping : DataEntity, IEquatable<ProblemImageMapping>
     {
         public long ProblemId { get; set; }
         public long ImageId { get; set; }
@@ -28,8 +28,8 @@ namespace DMS.Entities
         public IdFilter ProblemId { get; set; }
         public IdFilter ImageId { get; set; }
         public List<ProblemImageMappingFilter> OrFilter { get; set; }
-        public ProblemImageMappingOrder OrderBy {get; set;}
-        public ProblemImageMappingSelect Selects {get; set;}
+        public ProblemImageMappingOrder OrderBy { get; set; }
+        public ProblemImageMappingSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -40,7 +40,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum ProblemImageMappingSelect:long
+    public enum ProblemImageMappingSelect : long
     {
         ALL = E.ALL,
         Problem = E._0,

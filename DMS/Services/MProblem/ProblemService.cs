@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MProblem
 {
-    public interface IProblemService :  IServiceScoped
+    public interface IProblemService : IServiceScoped
     {
         Task<int> Count(ProblemFilter ProblemFilter);
         Task<List<Problem>> List(ProblemFilter ProblemFilter);
@@ -83,7 +80,7 @@ namespace DMS.Services.MProblem
                 return null;
             return Problem;
         }
-       
+
         public async Task<Problem> Create(Problem Problem)
         {
             if (!await ProblemValidator.Create(Problem))
@@ -184,7 +181,7 @@ namespace DMS.Services.MProblem
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Problem>> Import(List<Problem> Problems)
         {
             if (!await ProblemValidator.Import(Problems))
@@ -207,8 +204,8 @@ namespace DMS.Services.MProblem
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public ProblemFilter ToFilter(ProblemFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ProblemFilter>();
@@ -220,7 +217,7 @@ namespace DMS.Services.MProblem
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                   
+
                 }
             }
             return filter;

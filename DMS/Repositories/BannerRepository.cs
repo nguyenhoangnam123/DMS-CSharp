@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -58,7 +58,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<BannerDAO> OrFilter(IQueryable<BannerDAO> query, BannerFilter filter)
+        private IQueryable<BannerDAO> OrFilter(IQueryable<BannerDAO> query, BannerFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -85,7 +85,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<BannerDAO> DynamicOrder(IQueryable<BannerDAO> query, BannerFilter filter)
         {
@@ -313,7 +313,7 @@ namespace DMS.Repositories
             await DataContext.Banner.Where(x => x.Id == Banner.Id).UpdateFromQueryAsync(x => new BannerDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Banner> Banners)
         {
             List<BannerDAO> BannerDAOs = new List<BannerDAO>();
@@ -348,6 +348,6 @@ namespace DMS.Repositories
         private async Task SaveReference(Banner Banner)
         {
         }
-        
+
     }
 }

@@ -1,16 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MResellerType;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.reseller_type
 {
@@ -45,21 +34,21 @@ namespace DMS.Rpc.reseller_type
                 Detail, Create,
                 SingleListStatus, } },
 
-            { "Sửa", new List<string> { 
+            { "Sửa", new List<string> {
                 Master, Count, List, Get, FilterListStatus,
-                Detail, Update, 
+                Detail, Update,
                 SingleListStatus, } },
 
             { "Xoá", new List<string> {
                 Master, Count, List, Get, FilterListStatus,
-                Detail, Delete, 
+                Detail, Delete,
                 SingleListStatus, } },
 
-            { "Xoá nhiều", new List<string> { 
+            { "Xoá nhiều", new List<string> {
                 Master, Count, List, Get, FilterListStatus,
                 BulkDelete } },
 
-            { "Xuất excel", new List<string> { 
+            { "Xuất excel", new List<string> {
                 Master, Count, List, Get, FilterListStatus,
                 Export } },
 

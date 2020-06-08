@@ -1,18 +1,16 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
+using DMS.Services.MImage;
 using Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
-using DMS.Services.MImage;
 
 namespace DMS.Services.MStoreChecking
 {
-    public interface IStoreCheckingService :  IServiceScoped
+    public interface IStoreCheckingService : IServiceScoped
     {
         Task<int> Count(StoreCheckingFilter StoreCheckingFilter);
         Task<List<StoreChecking>> List(StoreCheckingFilter StoreCheckingFilter);
@@ -85,7 +83,7 @@ namespace DMS.Services.MStoreChecking
                 return null;
             return StoreChecking;
         }
-       
+
         public async Task<StoreChecking> Create(StoreChecking StoreChecking)
         {
             if (!await StoreCheckingValidator.Create(StoreChecking))

@@ -174,23 +174,23 @@ namespace DMS.Repositories
         {
             ProductGrouping ProductGrouping = await DataContext.ProductGrouping.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new ProductGrouping()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                ParentId = x.ParentId,
-                Path = x.Path,
-                Description = x.Description,
-                Parent = x.Parent == null ? null : new ProductGrouping
                 {
-                    Id = x.Parent.Id,
-                    Code = x.Parent.Code,
-                    Name = x.Parent.Name,
-                    ParentId = x.Parent.ParentId,
-                    Path = x.Parent.Path,
-                    Description = x.Parent.Description,
-                },
-            }).FirstOrDefaultAsync();
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    ParentId = x.ParentId,
+                    Path = x.Path,
+                    Description = x.Description,
+                    Parent = x.Parent == null ? null : new ProductGrouping
+                    {
+                        Id = x.Parent.Id,
+                        Code = x.Parent.Code,
+                        Name = x.Parent.Name,
+                        ParentId = x.Parent.ParentId,
+                        Path = x.Parent.Path,
+                        Description = x.Parent.Description,
+                    },
+                }).FirstOrDefaultAsync();
 
             if (ProductGrouping == null)
                 return null;

@@ -1,22 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MIndirectSalesOrder;
-using DMS.Services.MStore;
-using DMS.Services.MEditedPriceStatus;
-using DMS.Services.MRequestState;
-using DMS.Services.MAppUser;
-using DMS.Services.MItem;
-using DMS.Services.MUnitOfMeasure;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.indirect_sales_order
 {

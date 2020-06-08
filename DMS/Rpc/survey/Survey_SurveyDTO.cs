@@ -1,8 +1,8 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.survey
 {
@@ -21,7 +21,7 @@ namespace DMS.Rpc.survey
         public DateTime UpdatedAt { get; set; }
         public Survey_AppUserDTO Creator { get; set; }
         public Survey_StatusDTO Status { get; set; }
-        public Survey_SurveyDTO() {}
+        public Survey_SurveyDTO() { }
         public Survey_SurveyDTO(Survey Survey)
         {
             this.Id = Survey.Id;

@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -58,7 +58,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<IndirectPriceListDAO> OrFilter(IQueryable<IndirectPriceListDAO> query, IndirectPriceListFilter filter)
+        private IQueryable<IndirectPriceListDAO> OrFilter(IQueryable<IndirectPriceListDAO> query, IndirectPriceListFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -85,7 +85,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<IndirectPriceListDAO> DynamicOrder(IQueryable<IndirectPriceListDAO> query, IndirectPriceListFilter filter)
         {
@@ -393,7 +393,7 @@ namespace DMS.Repositories
             await DataContext.IndirectPriceList.Where(x => x.Id == IndirectPriceList.Id).UpdateFromQueryAsync(x => new IndirectPriceListDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<IndirectPriceList> IndirectPriceLists)
         {
             List<IndirectPriceListDAO> IndirectPriceListDAOs = new List<IndirectPriceListDAO>();
@@ -489,6 +489,6 @@ namespace DMS.Repositories
                 await DataContext.IndirectPriceListStoreTypeMapping.BulkMergeAsync(IndirectPriceListStoreTypeMappingDAOs);
             }
         }
-        
+
     }
 }

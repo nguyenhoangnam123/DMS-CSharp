@@ -1,17 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MProductGrouping;
-using DMS.Services.MProduct;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.product_grouping
 {
@@ -45,36 +33,36 @@ namespace DMS.Rpc.product_grouping
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
+            { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, FilterListProductGrouping, FilterListProduct, } },
 
             { "Thêm", new List<string> {
-                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct, 
-                Detail, Create, 
-                SingleListProductGrouping, SingleListProduct, 
+                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,
+                Detail, Create,
+                SingleListProductGrouping, SingleListProduct,
                 CountProduct, ListProduct, } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct, 
-                Detail, Update,  
+                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,
+                Detail, Update,
                 SingleListProductGrouping, SingleListProduct,
                 CountProduct, ListProduct,} },
 
-            { "Xoá", new List<string> { 
+            { "Xoá", new List<string> {
                 Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,
-                Detail, Delete, 
+                Detail, Delete,
                 SingleListProductGrouping, SingleListProduct, } },
 
             { "Xoá nhiều", new List<string> {
                 Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,
                 BulkDelete } },
 
-            { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct, 
+            { "Xuất excel", new List<string> {
+                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,
                 Export } },
 
             { "Nhập excel", new List<string> {
-                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct, 
+                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,
                 ExportTemplate, Import } },
         };
     }

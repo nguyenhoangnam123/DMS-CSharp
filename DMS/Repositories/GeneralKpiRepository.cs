@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -54,7 +54,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<GeneralKpiDAO> OrFilter(IQueryable<GeneralKpiDAO> query, GeneralKpiFilter filter)
+        private IQueryable<GeneralKpiDAO> OrFilter(IQueryable<GeneralKpiDAO> query, GeneralKpiFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -77,7 +77,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<GeneralKpiDAO> DynamicOrder(IQueryable<GeneralKpiDAO> query, GeneralKpiFilter filter)
         {
@@ -397,7 +397,7 @@ namespace DMS.Repositories
             foreach (var GeneralKpi in GeneralKpis)
             {
                 GeneralKpi.Id = GeneralKpiDAOs.Where(x => x.RowId == GeneralKpi.RowId).Select(x => x.Id).FirstOrDefault();
-                if(GeneralKpi.GeneralKpiCriteriaMappings != null && GeneralKpi.GeneralKpiCriteriaMappings.Any())
+                if (GeneralKpi.GeneralKpiCriteriaMappings != null && GeneralKpi.GeneralKpiCriteriaMappings.Any())
                 {
                     var list = GeneralKpi.GeneralKpiCriteriaMappings.Select(x => new GeneralKpiCriteriaMappingDAO
                     {
@@ -443,7 +443,7 @@ namespace DMS.Repositories
         private async Task SaveReference(GeneralKpi GeneralKpi)
         {
             await DataContext.GeneralKpiCriteriaMapping.Where(x => x.GeneralKpiId == GeneralKpi.Id).DeleteFromQueryAsync();
-            if(GeneralKpi.GeneralKpiCriteriaMappings != null)
+            if (GeneralKpi.GeneralKpiCriteriaMappings != null)
             {
                 List<GeneralKpiCriteriaMappingDAO> GeneralKpiCriteriaMappingDAOs = new List<GeneralKpiCriteriaMappingDAO>();
                 foreach (var GeneralKpiCriteriaMapping in GeneralKpi.GeneralKpiCriteriaMappings)
@@ -476,6 +476,6 @@ namespace DMS.Repositories
                 await DataContext.GeneralKpiCriteriaMapping.BulkMergeAsync(GeneralKpiCriteriaMappingDAOs);
             }
         }
-        
+
     }
 }

@@ -1,14 +1,11 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.indirect_sales_order
 {
     public class IndirectSalesOrder_ItemDTO : DataDTO
     {
-        
+
         public long Id { get; set; }
         public long ProductId { get; set; }
         public string Code { get; set; }
@@ -19,7 +16,7 @@ namespace DMS.Rpc.indirect_sales_order
         public long SaleStock { get; set; }
         public long StatusId { get; set; }
         public IndirectSalesOrder_ProductDTO Product { get; set; }
-        public IndirectSalesOrder_ItemDTO() {}
+        public IndirectSalesOrder_ItemDTO() { }
         public IndirectSalesOrder_ItemDTO(Item Item)
         {
             this.Id = Item.Id;

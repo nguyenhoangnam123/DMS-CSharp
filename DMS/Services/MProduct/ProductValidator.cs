@@ -115,7 +115,7 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateProductType(Product Product)
         {
-            if(Product.ProductTypeId == 0)
+            if (Product.ProductTypeId == 0)
                 Product.AddError(nameof(ProductValidator), nameof(Product.ProductType), ErrorCode.ProductTypeEmpty);
             else
             {
@@ -131,13 +131,13 @@ namespace DMS.Services.MProduct
                 if (count == 0)
                     Product.AddError(nameof(ProductValidator), nameof(Product.ProductType), ErrorCode.ProductTypeNotExisted);
             }
-            
+
             return Product.IsValidated;
         }
 
         private async Task<bool> ValidateSupplier(Product Product)
         {
-            if(Product.SupplierId != 0)
+            if (Product.SupplierId != 0)
             {
                 SupplierFilter SupplierFilter = new SupplierFilter
                 {
@@ -151,13 +151,13 @@ namespace DMS.Services.MProduct
                 if (count == 0)
                     Product.AddError(nameof(ProductValidator), nameof(Product.Supplier), ErrorCode.SupplierNotExisted);
             }
-            
+
             return Product.IsValidated;
         }
 
         private async Task<bool> ValidateBrand(Product Product)
         {
-            if(Product.BrandId != 0)
+            if (Product.BrandId != 0)
             {
                 BrandFilter BrandFilter = new BrandFilter
                 {
@@ -171,7 +171,7 @@ namespace DMS.Services.MProduct
                 if (count == 0)
                     Product.AddError(nameof(ProductValidator), nameof(Product.Brand), ErrorCode.BrandNotExisted);
             }
-            
+
             return Product.IsValidated;
         }
 
@@ -200,7 +200,7 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateUnitOfMeasure(Product Product)
         {
-            if(Product.UnitOfMeasureId == 0)
+            if (Product.UnitOfMeasureId == 0)
                 Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasure), ErrorCode.UnitOfMeasureEmpty);
             else
             {
@@ -216,13 +216,13 @@ namespace DMS.Services.MProduct
                 if (count == 0)
                     Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
             }
-            
+
             return Product.IsValidated;
         }
 
         private async Task<bool> ValidateUnitOfMeasureGrouping(Product Product)
         {
-            if(Product.UnitOfMeasureGroupingId != 0)
+            if (Product.UnitOfMeasureGroupingId != 0)
             {
                 UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter
                 {
@@ -236,7 +236,7 @@ namespace DMS.Services.MProduct
                 if (count == 0)
                     Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
             }
-            
+
             return Product.IsValidated;
         }
 
@@ -399,7 +399,7 @@ namespace DMS.Services.MProduct
             };
             var count4 = await UOW.DirectSalesOrderPromotionRepository.Count(DirectSalesOrderPromotionFilter);
 
-            if(count1 == 0 && count2 == 0 && count3 == 0 && count4 == 0)
+            if (count1 == 0 && count2 == 0 && count3 == 0 && count4 == 0)
                 return Product.IsValidated;
             else
                 Product.AddError(nameof(ProductValidator), nameof(Product.Id), ErrorCode.ProductInUsed);

@@ -1,19 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MNotification;
 using DMS.Services.MAppUser;
+using DMS.Services.MNotification;
 using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.notification
 {
@@ -83,7 +81,7 @@ namespace DMS.Rpc.notification
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Notification_NotificationDTO.Id))
                 return Forbid();
 
@@ -101,7 +99,7 @@ namespace DMS.Rpc.notification
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Notification_NotificationDTO.Id))
                 return Forbid();
 
@@ -131,7 +129,7 @@ namespace DMS.Rpc.notification
             else
                 return BadRequest(Notification_NotificationDTO);
         }
-        
+
         [Route(NotificationRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -151,7 +149,7 @@ namespace DMS.Rpc.notification
                 return BadRequest(Notifications.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         [Route(NotificationRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -192,11 +190,11 @@ namespace DMS.Rpc.notification
                     string TitleValue = worksheet.Cells[i + StartRow, TitleColumn].Value?.ToString();
                     string ContentValue = worksheet.Cells[i + StartRow, ContentColumn].Value?.ToString();
                     string OrganizationIdValue = worksheet.Cells[i + StartRow, OrganizationIdColumn].Value?.ToString();
-                    
+
                     Notification Notification = new Notification();
                     Notification.Title = TitleValue;
                     Notification.Content = ContentValue;
-                    
+
                     Notifications.Add(Notification);
                 }
             }
@@ -224,13 +222,13 @@ namespace DMS.Rpc.notification
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(NotificationRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] Notification_NotificationFilterDTO Notification_NotificationFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -243,7 +241,7 @@ namespace DMS.Rpc.notification
 
                 var NotificationHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Title",
                         "Content",
@@ -264,7 +262,7 @@ namespace DMS.Rpc.notification
                 }
                 excel.GenerateWorksheet("Notification", NotificationHeaders, NotificationData);
                 #endregion
-                
+
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", "Notification.xlsx");
@@ -275,14 +273,14 @@ namespace DMS.Rpc.notification
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
                 #region Notification
                 var NotificationHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Title",
                         "Content",
@@ -294,7 +292,7 @@ namespace DMS.Rpc.notification
                 List<object[]> NotificationData = new List<object[]>();
                 excel.GenerateWorksheet("Notification", NotificationHeaders, NotificationData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -306,7 +304,7 @@ namespace DMS.Rpc.notification
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "Password",
@@ -359,7 +357,7 @@ namespace DMS.Rpc.notification
 
                 var OrganizationHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -403,7 +401,7 @@ namespace DMS.Rpc.notification
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",

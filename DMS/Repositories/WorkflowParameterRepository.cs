@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -45,7 +44,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<WorkflowParameterDAO> OrFilter(IQueryable<WorkflowParameterDAO> query, WorkflowParameterFilter filter)
+        private IQueryable<WorkflowParameterDAO> OrFilter(IQueryable<WorkflowParameterDAO> query, WorkflowParameterFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -64,7 +63,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<WorkflowParameterDAO> DynamicOrder(IQueryable<WorkflowParameterDAO> query, WorkflowParameterFilter filter)
         {
@@ -209,7 +208,7 @@ namespace DMS.Repositories
             await DataContext.WorkflowParameter.Where(x => x.Id == WorkflowParameter.Id).DeleteFromQueryAsync();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<WorkflowParameter> WorkflowParameters)
         {
             List<WorkflowParameterDAO> WorkflowParameterDAOs = new List<WorkflowParameterDAO>();
@@ -237,6 +236,6 @@ namespace DMS.Repositories
         private async Task SaveReference(WorkflowParameter WorkflowParameter)
         {
         }
-        
+
     }
 }
