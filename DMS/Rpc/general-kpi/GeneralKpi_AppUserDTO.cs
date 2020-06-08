@@ -27,7 +27,6 @@ namespace DMS.Rpc.general_kpi
 
         public long StatusId { get; set; }
 
-        public string Avatar { get; set; }
 
         public long? ProvinceId { get; set; }
 
@@ -60,7 +59,6 @@ namespace DMS.Rpc.general_kpi
 
             this.StatusId = AppUser.StatusId;
 
-            this.Avatar = AppUser.Avatar;
 
             this.ProvinceId = AppUser.ProvinceId;
 

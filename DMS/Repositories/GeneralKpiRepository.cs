@@ -326,7 +326,19 @@ namespace DMS.Repositories
                     Q03 = x.Q03,
                     Q04 = x.Q04,
                     Y01 = x.Y01,
-                    StatusId = x.StatusId
+                    StatusId = x.StatusId,
+                    GeneralCriteria = new GeneralCriteria
+                    {
+                        Id = x.GeneralCriteria.Id,
+                        Code = x.GeneralCriteria.Code,
+                        Name = x.GeneralCriteria.Name,
+                    },
+                    Status = new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    }
                 }).ToListAsync();
             return GeneralKpi;
         }
