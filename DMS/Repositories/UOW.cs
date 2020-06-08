@@ -47,6 +47,7 @@ namespace DMS.Repositories
         IInventoryHistoryRepository InventoryHistoryRepository { get; }
         IMenuRepository MenuRepository { get; }
         INotificationRepository NotificationRepository { get; }
+        INotificationStatusRepository NotificationStatusRepository { get; }
         IOrganizationRepository OrganizationRepository { get; }
         IPermissionOperatorRepository PermissionOperatorRepository { get; }
         IPermissionRepository PermissionRepository { get; }
@@ -135,6 +136,7 @@ namespace DMS.Repositories
         public IKpiPeriodRepository KpiPeriodRepository { get; private set; }
         public IMenuRepository MenuRepository { get; private set; }
         public INotificationRepository NotificationRepository { get; private set; }
+        public INotificationStatusRepository NotificationStatusRepository { get; private set; }
         public IOrganizationRepository OrganizationRepository { get; private set; }
         public IPermissionOperatorRepository PermissionOperatorRepository { get; private set; }
         public IPermissionRepository PermissionRepository { get; private set; }
@@ -222,6 +224,7 @@ namespace DMS.Repositories
             KpiPeriodRepository = new KpiPeriodRepository(DataContext);
             MenuRepository = new MenuRepository(DataContext);
             NotificationRepository = new NotificationRepository(DataContext);
+            NotificationStatusRepository = new NotificationStatusRepository(DataContext);
             OrganizationRepository = new OrganizationRepository(DataContext);
             PermissionOperatorRepository = new PermissionOperatorRepository(DataContext);
             PermissionRepository = new PermissionRepository(DataContext);
