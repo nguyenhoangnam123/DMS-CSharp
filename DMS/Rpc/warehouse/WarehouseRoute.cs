@@ -62,31 +62,28 @@ namespace DMS.Rpc.warehouse
         {
             { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, GetPreview,
-                FilterListOrganization, FilterListStatus,
-                SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
+                FilterListOrganization, FilterListStatus,  
+                CountHistory, ListHistory,
+                } },
             { "Thêm", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
-                Detail, Create, 
+                Detail, Create, ImportInventory, ExportInventory, ExportTemplate, CountHistory, ListHistory,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Sửa", new List<string> {
                 Master, Count, List, Get,GetPreview,
                 FilterListOrganization, FilterListStatus,
-                Detail, Update,
+                Detail, Update, ImportInventory, ExportInventory, ExportTemplate,  CountHistory, ListHistory,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Xoá", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
                 Detail, Delete, 
-                SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
+                } },
             { "Xoá nhiều", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
                 BulkDelete } },
-            { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, GetPreview,
-                FilterListOrganization, FilterListStatus,
-                ExportTemplate, } },
         };
     }
 }

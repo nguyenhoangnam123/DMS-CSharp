@@ -131,28 +131,7 @@ namespace Common
         }
     }
 
-    public class FieldType : DataEntity
-    {
-        public long Id { get; set; }
-        public string Code { get; set; }
-        public string Name { get; set; }
-    }
-
-    public class PermissionOperator : DataEntity
-    {
-        public long Id { get; set; }
-        public string Code { get; set; }
-        public string Name { get; set; }
-        public long FieldTypeId { get; set; }
-    }
-
-    public class PermissionOperatorFilter : FilterEntity
-    {
-        public IdFilter Id { get; set; }
-        public StringFilter Code { get; set; }
-        public StringFilter Name { get; set; }
-        public IdFilter FieldTypeId { get; set; }
-    }
+   
 
     public class FieldTypeEnum
     {
@@ -161,13 +140,13 @@ namespace Common
         public static GenericEnum LONG = new GenericEnum { Id = 3, Code = "LONG", Name = "LONG" };
         public static GenericEnum DECIMAL = new GenericEnum { Id = 4, Code = "DECIMAL", Name = "DATE" };
         public static GenericEnum DATE = new GenericEnum { Id = 5, Code = "DATE", Name = "DATE" };
-        public static GenericEnum DOUBLE = new GenericEnum { Id = 6, Code = "DOUBLE", Name = "DOUBLE" };
-        public static GenericEnum INT = new GenericEnum { Id = 7, Code = "INT", Name = "INT" };
+        //public static GenericEnum DOUBLE = new GenericEnum { Id = 6, Code = "DOUBLE", Name = "DOUBLE" };
+        //public static GenericEnum INT = new GenericEnum { Id = 7, Code = "INT", Name = "INT" };
 
 
         public static List<GenericEnum> List = new List<GenericEnum>()
         {
-            ID, STRING, LONG, DECIMAL, DATE, DOUBLE, INT,
+            ID, STRING, LONG, DECIMAL, DATE, 
         };
     }
 

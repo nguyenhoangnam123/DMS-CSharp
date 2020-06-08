@@ -47,6 +47,16 @@ namespace DMS.Rpc.product
                 Master, Count, List, Get, 
                 FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,
                 CountProduct, ListProduct} },
+            { "Xoá", new List<string> {
+                Master, Count, List, Get,
+                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,
+                Delete, BulkDelete,
+                CountProduct, ListProduct} },
+             { "Xoá nhiều", new List<string> {
+                Master, Count, List, Get,
+                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,
+                BulkDelete,
+                CountProduct, ListProduct} },
         };
     }
 }

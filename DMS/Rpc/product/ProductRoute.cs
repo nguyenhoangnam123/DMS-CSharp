@@ -92,7 +92,7 @@ namespace DMS.Rpc.product
             { "Thêm", new List<string> { 
                 Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure, 
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping, 
-                Detail, Create, SaveImage,
+                Detail, Create, SaveImage, SaveItemImage,
                 CountItem, ListItem,
                 SingleListBrand, SingleListProductType, SingleListStatus, SingleListSupplier, SingleListTaxType, SingleListUnitOfMeasure, SingleListUnitOfMeasureGrouping,
                 SingleListUsedVariation, SingleListItem, SingleListImage, SingleListProductGrouping,  } },
@@ -100,7 +100,7 @@ namespace DMS.Rpc.product
             { "Sửa", new List<string> { 
                 Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure, 
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping,  
-                Detail, Update, SaveImage,
+                Detail, Update, SaveImage, SaveItemImage,
                 CountItem, ListItem,
                 SingleListBrand, SingleListProductType, SingleListStatus, SingleListSupplier, SingleListTaxType, SingleListUnitOfMeasure, SingleListUnitOfMeasureGrouping, 
                 SingleListUsedVariation, SingleListItem, SingleListImage, SingleListProductGrouping,  } },

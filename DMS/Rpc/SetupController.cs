@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Common;
+using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
 using Microsoft.AspNetCore.Http;
@@ -233,8 +234,6 @@ namespace DMS.Rpc
             InitDirectPriceListTypeEnum();
             InitIndirectPriceListTypeEnum();
             InitEditedPriceStatusEnum();
-            InitKpiCriteriaItemEnum();
-            InitGeneralCriteriaEnum();
             InitProblemTypeEnum();
             InitProblemStatusEnum();
             InitResellerStatusEnum();
@@ -242,14 +241,14 @@ namespace DMS.Rpc
             InitStatusEnum();
             InitSurveyQuestionTypeEnum();
             InitSurveyOptionTypeEnum();
-            InitTotalItemSpecificCriteriaEnum();
             InitUsedVariationEnum();
             InitWorkflowStateEnum();
             InitWorkflowTypeEnum();
             DataContext.SaveChanges();
+            InitKpiEnum();
+            InitPermissionEnum();
             return Ok();
         }
-
 
         [HttpGet, Route("rpc/dms/setup/init-admin")]
         public ActionResult InitAdmin()
@@ -368,55 +367,41 @@ namespace DMS.Rpc
             }
         }
 
-        private void InitKpiCriteriaItemEnum()
+        private void InitKpiEnum()
         {
-            List<KpiCriteriaItemDAO> statuses = DataContext.KpiCriteriaItem.ToList();
-            foreach (var item in KpiCriteriaItemEnum.KpiCriteriaItemEnumList)
+            List<KpiCriteriaItemDAO> KpiCriteriaItemDAOs = KpiCriteriaItemEnum.KpiCriteriaItemEnumList.Select(item => new KpiCriteriaItemDAO
             {
-                if (!statuses.Any(pt => pt.Id == item.Id))
-                {
-                    DataContext.KpiCriteriaItem.Add(new KpiCriteriaItemDAO
-                    {
-                        Id = item.Id,
-                        Code = item.Code,
-                        Name = item.Name,
-                    });
-                }
-            }
-        }
-        private void InitGeneralCriteriaEnum()
-        {
-            List<GeneralCriteriaDAO> statuses = DataContext.GeneralCriteria.ToList();
-            foreach (var item in GeneralCriteriaEnum.KpiCriteriaEnumList)
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.KpiCriteriaItem.BulkMerge(KpiCriteriaItemDAOs);
+
+            List<KpiPeriodDAO> KpiPeriodDAOs = KpiPeriodEnum.KpiPeriodEnumList.Select(item => new KpiPeriodDAO
             {
-                if (!statuses.Any(pt => pt.Id == item.Id))
-                {
-                    DataContext.GeneralCriteria.Add(new GeneralCriteriaDAO
-                    {
-                        Id = item.Id,
-                        Code = item.Code,
-                        Name = item.Name,
-                    });
-                }
-            }
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.KpiPeriod.BulkMerge(KpiPeriodDAOs);
+
+            List<GeneralCriteriaDAO> GeneralCriteriaDAOs = GeneralCriteriaEnum.KpiCriteriaEnumList.Select(item => new GeneralCriteriaDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.GeneralCriteria.BulkMerge(GeneralCriteriaDAOs);
+
+            List<KpiCriteriaTotalDAO> KpiCriteriaTotalDAOs = KpiCriteriaTotalEnum.KpiCriteriaTotalEnumList.Select(item => new KpiCriteriaTotalDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.KpiCriteriaTotal.BulkMerge(KpiCriteriaTotalDAOs);
         }
 
-        private void InitTotalItemSpecificCriteriaEnum()
-        {
-            List<KpiCriteriaTotalDAO> statuses = DataContext.KpiCriteriaTotal.ToList();
-            foreach (var item in KpiCriteriaTotalEnum.KpiCriteriaTotalEnumList)
-            {
-                if (!statuses.Any(pt => pt.Id == item.Id))
-                {
-                    DataContext.KpiCriteriaTotal.Add(new KpiCriteriaTotalDAO
-                    {
-                        Id = item.Id,
-                        Code = item.Code,
-                        Name = item.Name,
-                    });
-                }
-            }
-        }
         private void InitUsedVariationEnum()
         {
             List<UsedVariationDAO> statuses = DataContext.UsedVariation.ToList();
@@ -617,6 +602,80 @@ namespace DMS.Rpc
                     });
                 }
             }
+        }
+
+        private void InitPermissionEnum()
+        {
+            List<FieldTypeDAO> FieldTypeDAOs = FieldTypeEnum.List.Select(item => new FieldTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.FieldType.BulkMerge(FieldTypeDAOs);
+            List<PermissionOperatorDAO> ID = PermissionOperatorEnum.PermissionOperatorEnumForID.Select(item => new PermissionOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                FieldTypeId = FieldTypeEnum.ID.Id,
+            }).ToList();
+            DataContext.PermissionOperator.BulkMerge(ID);
+
+            List<PermissionOperatorDAO> STRING = PermissionOperatorEnum.PermissionOperatorEnumForSTRING.Select(item => new PermissionOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                FieldTypeId = FieldTypeEnum.STRING.Id,
+            }).ToList();
+            DataContext.PermissionOperator.BulkMerge(STRING);
+
+            List<PermissionOperatorDAO> LONG = PermissionOperatorEnum.PermissionOperatorEnumForLONG.Select(item => new PermissionOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                FieldTypeId = FieldTypeEnum.LONG.Id,
+            }).ToList();
+            DataContext.PermissionOperator.BulkMerge(LONG);
+
+
+            List<PermissionOperatorDAO> DECIMAL = PermissionOperatorEnum.PermissionOperatorEnumForDECIMAL.Select(item => new PermissionOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                FieldTypeId = FieldTypeEnum.DECIMAL.Id,
+            }).ToList();
+            DataContext.PermissionOperator.BulkMerge(DECIMAL);
+
+            List<PermissionOperatorDAO> DATE = PermissionOperatorEnum.PermissionOperatorEnumForDATE.Select(item => new PermissionOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                FieldTypeId = FieldTypeEnum.DATE.Id,
+            }).ToList();
+            DataContext.PermissionOperator.BulkMerge(DATE);
+
+            //List<PermissionOperatorDAO> DOUBLE = PermissionOperatorEnum.PermissionOperatorEnumForDOUBLE.Select(item => new PermissionOperatorDAO
+            //{
+            //    Id = item.Id,
+            //    Code = item.Code,
+            //    Name = item.Name,
+            //    FieldTypeId = FieldTypeEnum.DOUBLE.Id,
+            //}).ToList();
+            //DataContext.PermissionOperator.BulkMerge(DOUBLE);
+
+            //List<PermissionOperatorDAO> INT = PermissionOperatorEnum.PermissionOperatorEnumForINT.Select(item => new PermissionOperatorDAO
+            //{
+            //    Id = item.Id,
+            //    Code = item.Code,
+            //    Name = item.Name,
+            //    FieldTypeId = FieldTypeEnum.INT.Id,
+            //}).ToList();
+            //DataContext.PermissionOperator.BulkMerge(INT);
         }
     }
 }
