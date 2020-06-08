@@ -340,11 +340,11 @@ namespace DMS.Rpc
                 }
             });
 
-            List<PermissionActionMappingDAO> permissionPageMappings = permissions
+            List<PermissionActionMappingDAO> PermissionActionMappingDAOs = permissions
                 .SelectMany(p => p.PermissionActionMappings).ToList();
             DataContext.PermissionContent.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
             DataContext.PermissionActionMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
-            DataContext.PermissionActionMapping.BulkMerge(permissionPageMappings);
+            DataContext.PermissionActionMapping.BulkMerge(PermissionActionMappingDAOs);
             return Ok();
         }
 

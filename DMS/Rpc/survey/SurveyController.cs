@@ -125,8 +125,8 @@ namespace DMS.Rpc.survey
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Survey_SurveyDTO.Id))
-                return Forbid();
+            //if (!await HasPermission(Survey_SurveyDTO.Id))
+            //    return Forbid();
 
             Survey Survey = await SurveyService.GetForm(Survey_SurveyDTO.Id);
             Survey_SurveyDTO = new Survey_SurveyDTO(Survey);

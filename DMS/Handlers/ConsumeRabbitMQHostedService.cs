@@ -40,14 +40,14 @@ namespace DMS.Handlers
 
         private void Init()
         {
-            Handlers.Add(new AppUserHandler());
-            Handlers.Add(new DistrictHandler());
-            Handlers.Add(new OrganizationHandler());
-            Handlers.Add(new PositionHandler());
-            Handlers.Add(new ProvinceHandler());
-            Handlers.Add(new DistrictHandler());
-            Handlers.Add(new RoleHandler());
-            Handlers.Add(new WardHandler());
+            List<Type> handlerTypes = typeof(ConsumeRabbitMQHostedService).Assembly.GetTypes()
+                .Where(x => typeof(Handler).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract)
+                .ToList();
+            foreach (Type type in handlerTypes)
+            {
+                Handler handler = (Handler)Activator.CreateInstance(type);
+                Handlers.Add(handler);
+            }
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)

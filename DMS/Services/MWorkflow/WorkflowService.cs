@@ -318,7 +318,6 @@ namespace DMS.Services.MWorkflow
                 List<EventMessage<Mail>> messages = Mails.Select(m => new EventMessage<Mail>(m, m.RowId)).ToList();
                 RabbitManager.PublishList(messages, RoutingKeyEnum.SendMail);
             }
-
             return false;
         }
 
