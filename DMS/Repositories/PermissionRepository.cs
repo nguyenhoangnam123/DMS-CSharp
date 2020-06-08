@@ -247,7 +247,6 @@ namespace DMS.Repositories
         public async Task<bool> Create(Permission Permission)
         {
             PermissionDAO PermissionDAO = new PermissionDAO();
-            PermissionDAO.Id = Permission.Id;
             PermissionDAO.Code = Permission.Code;
             PermissionDAO.Name = Permission.Name;
             PermissionDAO.RoleId = Permission.RoleId;
