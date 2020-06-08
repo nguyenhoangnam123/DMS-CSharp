@@ -357,13 +357,6 @@ namespace DMS.Repositories
                     Name = q.UnitOfMeasureGrouping.Name,
                     UnitOfMeasureId = q.UnitOfMeasureGrouping.UnitOfMeasureId,
                     StatusId = q.UnitOfMeasureGrouping.StatusId,
-                    UnitOfMeasureGroupingContents = q.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(x => new UnitOfMeasureGroupingContent
-                    {
-                        Id = x.Id,
-                        UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
-                        UnitOfMeasureId = x.UnitOfMeasureId,
-                        Factor = x.Factor
-                    }).ToList()
                 } : null,
                 UsedVariation = filter.Selects.Contains(ProductSelect.UsedVariation) && q.UsedVariation != null ? new UsedVariation
                 {
@@ -409,6 +402,31 @@ namespace DMS.Repositories
                     };
                     Product.ProductImageMappings.Add(ProductImageMapping);
                 }
+            }
+
+            var UnitOfMeasureGroupingIds = Products.Select(x => x.UnitOfMeasureGroupingId).ToList();
+            var UnitOfMeasureGroupingContents = DataContext.UnitOfMeasureGroupingContent
+                .Include(x => x.UnitOfMeasure)
+                .Where(x => UnitOfMeasureGroupingIds.Contains(x.UnitOfMeasureGroupingId)).ToList();
+            foreach (var Product in Products)
+            {
+                Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents = UnitOfMeasureGroupingContents
+                    .Where(x => x.UnitOfMeasureGroupingId == Product.UnitOfMeasureGroupingId)
+                    .Select(x => new UnitOfMeasureGroupingContent
+                    {
+                        Id = x.Id,
+                        UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
+                        UnitOfMeasureId = x.UnitOfMeasureId,
+                        Factor = x.Factor,
+                        UnitOfMeasure = new UnitOfMeasure
+                        {
+                            Id = x.UnitOfMeasure.Id,
+                            Code = x.UnitOfMeasure.Code,
+                            Name = x.UnitOfMeasure.Name,
+                            Description = x.UnitOfMeasure.Description,
+                            StatusId = x.UnitOfMeasure.StatusId,
+                        }
+                    }).ToList();
             }
             return Products;
         }
