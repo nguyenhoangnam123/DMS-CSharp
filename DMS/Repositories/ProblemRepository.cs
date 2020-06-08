@@ -371,7 +371,7 @@ namespace DMS.Repositories
             ProblemDAO.NoteAt = StaticParams.DateTimeNow;
             ProblemDAO.CompletedAt = Problem.CompletedAt;
             ProblemDAO.Content = Problem.Content;
-            ProblemDAO.ProblemStatusId = Problem.ProblemStatusId;
+            ProblemDAO.ProblemStatusId = Enums.ProblemStatusEnum.WAITING.Id;
             DataContext.Problem.Add(ProblemDAO);
             await DataContext.SaveChangesAsync();
             Problem.Id = ProblemDAO.Id;

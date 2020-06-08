@@ -119,10 +119,10 @@ namespace DMS.Services.MWarehouse
             return Warehouse.IsValidated;
         }
 
-        private async Task<bool> ValidateOrganizationId(Warehouse Warehouse)
+        private async Task<bool> ValidateOrganization(Warehouse Warehouse)
         {
             if (Warehouse.OrganizationId == 0)
-                Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.OrganizationId), ErrorCode.OrganizationEmpty);
+                Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.Organization), ErrorCode.OrganizationEmpty);
             else
             {
                 OrganizationFilter OrganizationFilter = new OrganizationFilter
@@ -142,7 +142,7 @@ namespace DMS.Services.MWarehouse
         }
 
         #region Province + District + Ward
-        private async Task<bool> ValidateProvinceId(Warehouse Warehouse)
+        private async Task<bool> ValidateProvince(Warehouse Warehouse)
         {
             if (Warehouse.ProvinceId != 0)
             {
@@ -157,11 +157,11 @@ namespace DMS.Services.MWarehouse
 
                 int count = await UOW.ProvinceRepository.Count(ProvinceFilter);
                 if (count == 0)
-                    Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.ProvinceId), ErrorCode.ProvinceNotExisted);
+                    Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.Province), ErrorCode.ProvinceNotExisted);
             }
             return Warehouse.IsValidated;
         }
-        private async Task<bool> ValidateDistrictId(Warehouse Warehouse)
+        private async Task<bool> ValidateDistrict(Warehouse Warehouse)
         {
             if (Warehouse.DistrictId != 0)
             {
@@ -176,11 +176,11 @@ namespace DMS.Services.MWarehouse
 
                 int count = await UOW.DistrictRepository.Count(DistrictFilter);
                 if (count == 0)
-                    Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.DistrictId), ErrorCode.DistrictNotExisted);
+                    Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.District), ErrorCode.DistrictNotExisted);
             }
             return Warehouse.IsValidated;
         }
-        private async Task<bool> ValidateWardId(Warehouse Warehouse)
+        private async Task<bool> ValidateWard(Warehouse Warehouse)
         {
             if (Warehouse.WardId != 0)
             {
@@ -195,7 +195,7 @@ namespace DMS.Services.MWarehouse
 
                 int count = await UOW.WardRepository.Count(WardFilter);
                 if (count == 0)
-                    Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.WardId), ErrorCode.WardNotExisted);
+                    Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.Ward), ErrorCode.WardNotExisted);
             }
             return Warehouse.IsValidated;
         }
@@ -213,10 +213,10 @@ namespace DMS.Services.MWarehouse
             await ValidateCode(Warehouse);
             await ValidateName(Warehouse);
             await ValidateAddress(Warehouse);
-            await ValidateOrganizationId(Warehouse);
-            await ValidateProvinceId(Warehouse);
-            await ValidateDistrictId(Warehouse);
-            await ValidateWardId(Warehouse);
+            await ValidateOrganization(Warehouse);
+            await ValidateProvince(Warehouse);
+            await ValidateDistrict(Warehouse);
+            await ValidateWard(Warehouse);
             await ValidateStatusId(Warehouse);
             return Warehouse.IsValidated;
         }
@@ -228,10 +228,10 @@ namespace DMS.Services.MWarehouse
                 await ValidateCode(Warehouse);
                 await ValidateName(Warehouse);
                 await ValidateAddress(Warehouse);
-                await ValidateOrganizationId(Warehouse);
-                await ValidateProvinceId(Warehouse);
-                await ValidateDistrictId(Warehouse);
-                await ValidateWardId(Warehouse);
+                await ValidateOrganization(Warehouse);
+                await ValidateProvince(Warehouse);
+                await ValidateDistrict(Warehouse);
+                await ValidateWard(Warehouse);
                 await ValidateStatusId(Warehouse);
             }
             return Warehouse.IsValidated;
