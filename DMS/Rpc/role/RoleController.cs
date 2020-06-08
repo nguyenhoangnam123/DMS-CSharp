@@ -314,7 +314,7 @@ namespace DMS.Rpc.role
                 throw new BindException(ModelState);
 
             Permission Permission = ConvertPermissionDTOToBO(Role_PermissionDTO);
-            Permission = await PermissionService.Create(Permission);
+            Permission = await PermissionService.Update(Permission);
             Role_PermissionDTO = new Role_PermissionDTO(Permission);
             if (Permission.IsValidated)
                 return Role_PermissionDTO;
@@ -328,7 +328,7 @@ namespace DMS.Rpc.role
                 throw new BindException(ModelState);
 
             Permission Permission = ConvertPermissionDTOToBO(Role_PermissionDTO);
-            Permission = await PermissionService.Create(Permission);
+            Permission = await PermissionService.Delete(Permission);
             Role_PermissionDTO = new Role_PermissionDTO(Permission);
             if (Permission.IsValidated)
                 return Role_PermissionDTO;
