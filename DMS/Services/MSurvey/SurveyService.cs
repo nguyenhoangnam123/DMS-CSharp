@@ -196,6 +196,8 @@ namespace DMS.Services.MSurvey
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = FilterPermissionDefinition.IdFilter;
                 }
             }
             return filter;
