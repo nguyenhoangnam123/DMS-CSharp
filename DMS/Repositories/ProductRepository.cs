@@ -405,11 +405,12 @@ namespace DMS.Repositories
             }
 
             var UnitOfMeasureGroupingIds = Products.Select(x => x.UnitOfMeasureGroupingId).ToList();
-            var UnitOfMeasureGroupingContents = DataContext.UnitOfMeasureGroupingContent
+            var UnitOfMeasureGroupingContents = await DataContext.UnitOfMeasureGroupingContent
                 .Include(x => x.UnitOfMeasure)
-                .Where(x => UnitOfMeasureGroupingIds.Contains(x.UnitOfMeasureGroupingId)).ToList();
+                .Where(x => UnitOfMeasureGroupingIds.Contains(x.UnitOfMeasureGroupingId)).ToListAsync();
             foreach (var Product in Products)
             {
+                if (Product.UnitOfMeasureGrouping == null) Product.UnitOfMeasureGrouping = new UnitOfMeasureGrouping();
                 Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents = UnitOfMeasureGroupingContents
                     .Where(x => x.UnitOfMeasureGroupingId == Product.UnitOfMeasureGroupingId)
                     .Select(x => new UnitOfMeasureGroupingContent
@@ -418,7 +419,7 @@ namespace DMS.Repositories
                         UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
                         UnitOfMeasureId = x.UnitOfMeasureId,
                         Factor = x.Factor,
-                        UnitOfMeasure = new UnitOfMeasure
+                        UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
                         {
                             Id = x.UnitOfMeasure.Id,
                             Code = x.UnitOfMeasure.Code,
