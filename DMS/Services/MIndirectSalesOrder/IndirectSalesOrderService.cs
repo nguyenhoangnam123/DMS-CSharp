@@ -268,8 +268,9 @@ namespace DMS.Services.MIndirectSalesOrder
         private async Task<IndirectSalesOrder> Calculator(IndirectSalesOrder IndirectSalesOrder)
         {
             var ProductIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.Item.ProductId).ToList();
-            ProductIds.AddRange(IndirectSalesOrder.IndirectSalesOrderPromotions.Select(x => x.Item.ProductId).ToList());
-            ProductIds.Distinct();
+            if (IndirectSalesOrder.IndirectSalesOrderPromotions != null)
+                ProductIds.AddRange(IndirectSalesOrder.IndirectSalesOrderPromotions.Select(x => x.Item.ProductId).ToList());
+            ProductIds = ProductIds.Distinct().ToList();
 
             var Items = await UOW.ItemRepository.List(new ItemFilter
             {
