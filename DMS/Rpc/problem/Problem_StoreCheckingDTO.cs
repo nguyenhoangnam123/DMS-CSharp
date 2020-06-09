@@ -4,7 +4,7 @@ using System;
 
 namespace DMS.Rpc.problem
 {
-    public class MonitorStoreProblem_StoreCheckingDTO : DataDTO
+    public class Problem_StoreCheckingDTO : DataDTO
     {
 
         public long Id { get; set; }
@@ -26,8 +26,8 @@ namespace DMS.Rpc.problem
         public long? ImageCounter { get; set; }
 
 
-        public MonitorStoreProblem_StoreCheckingDTO() { }
-        public MonitorStoreProblem_StoreCheckingDTO(StoreChecking StoreChecking)
+        public Problem_StoreCheckingDTO() { }
+        public Problem_StoreCheckingDTO(StoreChecking StoreChecking)
         {
 
             this.Id = StoreChecking.Id;

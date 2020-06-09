@@ -3,7 +3,7 @@ using DMS.Entities;
 
 namespace DMS.Rpc.problem
 {
-    public class MonitorStoreProblem_ProblemStatusDTO : DataDTO
+    public class Problem_ProblemStatusDTO : DataDTO
     {
 
         public long Id { get; set; }
@@ -13,8 +13,8 @@ namespace DMS.Rpc.problem
         public string Name { get; set; }
 
 
-        public MonitorStoreProblem_ProblemStatusDTO() { }
-        public MonitorStoreProblem_ProblemStatusDTO(ProblemStatus ProblemStatus)
+        public Problem_ProblemStatusDTO() { }
+        public Problem_ProblemStatusDTO(ProblemStatus ProblemStatus)
         {
 
             this.Id = ProblemStatus.Id;

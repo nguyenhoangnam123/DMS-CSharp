@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace DMS.Rpc.problem
 {
-    public class MonitorStoreProblem_ProblemDTO : DataDTO
+    public class Problem_ProblemDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -18,15 +18,15 @@ namespace DMS.Rpc.problem
         public DateTime? CompletedAt { get; set; }
         public string Content { get; set; }
         public long ProblemStatusId { get; set; }
-        public MonitorStoreProblem_AppUserDTO Creator { get; set; }
-        public MonitorStoreProblem_ProblemStatusDTO ProblemStatus { get; set; }
-        public MonitorStoreProblem_ProblemTypeDTO ProblemType { get; set; }
-        public MonitorStoreProblem_StoreDTO Store { get; set; }
-        public MonitorStoreProblem_StoreCheckingDTO StoreChecking { get; set; }
-        public List<MonitorStoreProblem_ProblemImageMappingDTO> ProblemImageMappings { get; set; }
-        public List<MonitorStoreProblem_ProblemHistoryDTO> ProblemHistorys { get; set; }
-        public MonitorStoreProblem_ProblemDTO() { }
-        public MonitorStoreProblem_ProblemDTO(Problem Problem)
+        public Problem_AppUserDTO Creator { get; set; }
+        public Problem_ProblemStatusDTO ProblemStatus { get; set; }
+        public Problem_ProblemTypeDTO ProblemType { get; set; }
+        public Problem_StoreDTO Store { get; set; }
+        public Problem_StoreCheckingDTO StoreChecking { get; set; }
+        public List<Problem_ProblemImageMappingDTO> ProblemImageMappings { get; set; }
+        public List<Problem_ProblemHistoryDTO> ProblemHistorys { get; set; }
+        public Problem_ProblemDTO() { }
+        public Problem_ProblemDTO(Problem Problem)
         {
             this.Id = Problem.Id;
             this.Code = Problem.Code;
@@ -38,13 +38,13 @@ namespace DMS.Rpc.problem
             this.CompletedAt = Problem.CompletedAt;
             this.Content = Problem.Content;
             this.ProblemStatusId = Problem.ProblemStatusId;
-            this.Creator = Problem.Creator == null ? null : new MonitorStoreProblem_AppUserDTO(Problem.Creator);
-            this.ProblemStatus = Problem.ProblemStatus == null ? null : new MonitorStoreProblem_ProblemStatusDTO(Problem.ProblemStatus);
-            this.ProblemType = Problem.ProblemType == null ? null : new MonitorStoreProblem_ProblemTypeDTO(Problem.ProblemType);
-            this.Store = Problem.Store == null ? null : new MonitorStoreProblem_StoreDTO(Problem.Store);
-            this.StoreChecking = Problem.StoreChecking == null ? null : new MonitorStoreProblem_StoreCheckingDTO(Problem.StoreChecking);
-            this.ProblemImageMappings = Problem.ProblemImageMappings?.Select(x => new MonitorStoreProblem_ProblemImageMappingDTO(x)).ToList();
-            this.ProblemHistorys = Problem.ProblemHistorys?.Select(x => new MonitorStoreProblem_ProblemHistoryDTO(x)).ToList();
+            this.Creator = Problem.Creator == null ? null : new Problem_AppUserDTO(Problem.Creator);
+            this.ProblemStatus = Problem.ProblemStatus == null ? null : new Problem_ProblemStatusDTO(Problem.ProblemStatus);
+            this.ProblemType = Problem.ProblemType == null ? null : new Problem_ProblemTypeDTO(Problem.ProblemType);
+            this.Store = Problem.Store == null ? null : new Problem_StoreDTO(Problem.Store);
+            this.StoreChecking = Problem.StoreChecking == null ? null : new Problem_StoreCheckingDTO(Problem.StoreChecking);
+            this.ProblemImageMappings = Problem.ProblemImageMappings?.Select(x => new Problem_ProblemImageMappingDTO(x)).ToList();
+            this.ProblemHistorys = Problem.ProblemHistorys?.Select(x => new Problem_ProblemHistoryDTO(x)).ToList();
             this.Errors = Problem.Errors;
         }
     }

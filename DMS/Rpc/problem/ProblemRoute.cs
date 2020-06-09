@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DMS.Rpc.problem
 {
-    public class MonitorStoreProblemRoute : Root
+    public class ProblemRoute : Root
     {
         public const string Master = Module + "/problem/problem-master";
         public const string Detail = Module + "/problem/problem-detail";
