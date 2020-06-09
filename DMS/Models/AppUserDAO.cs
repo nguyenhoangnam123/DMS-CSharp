@@ -19,6 +19,7 @@ namespace DMS.Models
             InventoryHistories = new HashSet<InventoryHistoryDAO>();
             KpiItemCreators = new HashSet<KpiItemDAO>();
             KpiItemEmployees = new HashSet<KpiItemDAO>();
+            ProblemHistories = new HashSet<ProblemHistoryDAO>();
             Problems = new HashSet<ProblemDAO>();
             RequestWorkflowStepMappings = new HashSet<RequestWorkflowStepMappingDAO>();
             Resellers = new HashSet<ResellerDAO>();
@@ -67,6 +68,7 @@ namespace DMS.Models
         public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItemCreators { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItemEmployees { get; set; }
+        public virtual ICollection<ProblemHistoryDAO> ProblemHistories { get; set; }
         public virtual ICollection<ProblemDAO> Problems { get; set; }
         public virtual ICollection<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappings { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }

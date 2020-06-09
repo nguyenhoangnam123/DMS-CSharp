@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DMS.Rpc.problem
+namespace DMS.Rpc.monitor_store_problems
 {
     public class MonitorStoreProblem_ProblemDTO : DataDTO
     {
@@ -49,10 +49,11 @@ namespace DMS.Rpc.problem
         }
     }
 
-    public class Problem_ProblemFilterDTO : FilterDTO
+    public class MonitorStoreProblem_ProblemFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public IdFilter StoreCheckingId { get; set; }
         public IdFilter StoreId { get; set; }
         public IdFilter CreatorId { get; set; }

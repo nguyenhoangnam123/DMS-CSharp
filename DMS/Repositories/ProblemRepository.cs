@@ -35,6 +35,8 @@ namespace DMS.Repositories
                 return query.Where(q => false);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
+            if (filter.Code != null)
+                query = query.Where(q => q.Code, filter.Code);
             if (filter.StoreCheckingId != null)
                 query = query.Where(q => q.StoreCheckingId, filter.StoreCheckingId);
             if (filter.StoreId != null)
@@ -51,6 +53,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Content, filter.Content);
             if (filter.ProblemStatusId != null)
                 query = query.Where(q => q.ProblemStatusId, filter.ProblemStatusId);
+            if (filter.OrganizationId != null)
+                query = query.Where(q => q.Creator.OrganizationId, filter.OrganizationId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -67,6 +71,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, filter.Id);
                 if (filter.StoreCheckingId != null)
                     queryable = queryable.Where(q => q.StoreCheckingId, filter.StoreCheckingId);
+                if (filter.Code != null)
+                    queryable = queryable.Where(q => q.Code, filter.Code);
                 if (filter.StoreId != null)
                     queryable = queryable.Where(q => q.StoreId, filter.StoreId);
                 if (filter.CreatorId != null)
@@ -95,6 +101,9 @@ namespace DMS.Repositories
                     {
                         case ProblemOrder.Id:
                             query = query.OrderBy(q => q.Id);
+                            break;
+                        case ProblemOrder.Code:
+                            query = query.OrderBy(q => q.Code);
                             break;
                         case ProblemOrder.StoreChecking:
                             query = query.OrderBy(q => q.StoreCheckingId);
@@ -127,6 +136,9 @@ namespace DMS.Repositories
                     {
                         case ProblemOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
+                            break;
+                        case ProblemOrder.Code:
+                            query = query.OrderByDescending(q => q.Code);
                             break;
                         case ProblemOrder.StoreChecking:
                             query = query.OrderByDescending(q => q.StoreCheckingId);
@@ -164,6 +176,7 @@ namespace DMS.Repositories
             List<Problem> Problems = await query.Select(q => new Problem()
             {
                 Id = filter.Selects.Contains(ProblemSelect.Id) ? q.Id : default(long),
+                Code = filter.Selects.Contains(ProblemSelect.Code) ? q.Code : default(string),
                 StoreCheckingId = filter.Selects.Contains(ProblemSelect.StoreChecking) ? q.StoreCheckingId : default(long?),
                 StoreId = filter.Selects.Contains(ProblemSelect.Store) ? q.StoreId : default(long),
                 CreatorId = filter.Selects.Contains(ProblemSelect.Creator) ? q.CreatorId : default(long),
@@ -265,6 +278,7 @@ namespace DMS.Repositories
             .Where(x => x.Id == Id).Select(x => new Problem()
             {
                 Id = x.Id,
+                Code = x.Code,
                 StoreCheckingId = x.StoreCheckingId,
                 StoreId = x.StoreId,
                 CreatorId = x.CreatorId,
@@ -364,6 +378,7 @@ namespace DMS.Repositories
         {
             ProblemDAO ProblemDAO = new ProblemDAO();
             ProblemDAO.Id = Problem.Id;
+            ProblemDAO.Code = Problem.Code;
             ProblemDAO.StoreCheckingId = Problem.StoreCheckingId;
             ProblemDAO.StoreId = Problem.StoreId;
             ProblemDAO.CreatorId = Problem.CreatorId;
@@ -385,6 +400,7 @@ namespace DMS.Repositories
             if (ProblemDAO == null)
                 return false;
             ProblemDAO.Id = Problem.Id;
+            ProblemDAO.Code = Problem.Code;
             ProblemDAO.StoreCheckingId = Problem.StoreCheckingId;
             ProblemDAO.StoreId = Problem.StoreId;
             ProblemDAO.CreatorId = Problem.CreatorId;
@@ -411,6 +427,7 @@ namespace DMS.Repositories
             {
                 ProblemDAO ProblemDAO = new ProblemDAO();
                 ProblemDAO.Id = Problem.Id;
+                ProblemDAO.Code = Problem.Code;
                 ProblemDAO.StoreCheckingId = Problem.StoreCheckingId;
                 ProblemDAO.StoreId = Problem.StoreId;
                 ProblemDAO.CreatorId = Problem.CreatorId;
@@ -450,6 +467,23 @@ namespace DMS.Repositories
                     ProblemImageMappingDAOs.Add(ProblemImageMappingDAO);
                 }
                 await DataContext.ProblemImageMapping.BulkMergeAsync(ProblemImageMappingDAOs);
+            }
+
+            await DataContext.ProblemHistory.Where(x => x.ProblemId == Problem.Id).DeleteFromQueryAsync();
+
+            List<ProblemHistoryDAO> ProblemHistoryDAOs = new List<ProblemHistoryDAO>();
+            if(Problem.ProblemHistorys != null)
+            {
+                foreach (ProblemHistory ProblemHistory in Problem.ProblemHistorys)
+                {
+                    ProblemHistoryDAO ProblemHistoryDAO = new ProblemHistoryDAO();
+                    ProblemHistoryDAO.ProblemId = Problem.Id;
+                    ProblemHistoryDAO.ModifierId = ProblemHistory.ModifierId;
+                    ProblemHistoryDAO.ProblemStatusId = ProblemHistory.ProblemStatusId;
+                    ProblemHistoryDAO.Time = ProblemHistory.Time;
+                    ProblemHistoryDAOs.Add(ProblemHistoryDAO);
+                }
+                await DataContext.ProblemHistory.BulkMergeAsync(ProblemHistoryDAOs);
             }
         }
 
