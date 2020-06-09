@@ -62,13 +62,12 @@ namespace DMS.Rpc.kpi_item
 
         public IdFilter StatusId { get; set; }
 
-        public StringFilter Avatar { get; set; }
-
         public IdFilter ProvinceId { get; set; }
 
         public IdFilter SexId { get; set; }
 
         public DateFilter Birthday { get; set; }
+        public IdFilter KpiPeriodId { get; set; }
 
         public AppUserOrder OrderBy { get; set; }
     }

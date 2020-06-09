@@ -21,7 +21,6 @@ namespace DMS.Rpc.kpi_item
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
 
-
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListKpiPeriod = Default + "/filter-list-kpi-period";
         public const string FilterListOrganization = Default + "/filter-list-organization";
@@ -30,7 +29,6 @@ namespace DMS.Rpc.kpi_item
         public const string FilterListItem = Default + "/filter-list-item";
         public const string FilterListKpiCriteriaItem = Default + "/filter-list-criteria-item";
         public const string FilterListKpiCriteriaTotal = Default + "/filter-list-criteria-total";
-
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListKpiPeriod = Default + "/single-list-kpi-period";
@@ -41,6 +39,8 @@ namespace DMS.Rpc.kpi_item
         public const string SingleListKpiCriteriaItem = Default + "/single-list-criteria-item";
         public const string SingleListKpiCriteriaTotal = Default + "/single-list-criteria-total";
 
+        public const string CountAppUser = Default + "/count-app-user";
+        public const string ListAppUser = Default + "/list-app-user";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(KpiItemFilter.Id), FieldTypeEnum.ID.Id },
@@ -58,13 +58,13 @@ namespace DMS.Rpc.kpi_item
                 FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, } },
 
             { "Thêm", new List<string> {
-                Master, Count, List, Get,
+                Master, Count, List, Get, CountAppUser, ListAppUser,
                 FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
                 Detail, Create, GetDraft,
                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get,
+                Master, Count, List, Get, CountAppUser, ListAppUser,
                 FilterListAppUser, FilterListKpiPeriod, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal,
                 Detail, Update, GetDraft,
                 SingleListAppUser, SingleListKpiPeriod, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, } },
