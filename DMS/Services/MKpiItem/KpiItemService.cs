@@ -20,6 +20,8 @@ namespace DMS.Services.MKpiItem
         Task<KpiItem> Delete(KpiItem KpiItem);
         Task<List<KpiItem>> BulkDelete(List<KpiItem> KpiItems);
         Task<List<KpiItem>> Import(List<KpiItem> KpiItems);
+        Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiPeriodId);
+        Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiPeriodId);
         KpiItemFilter ToFilter(KpiItemFilter KpiItemFilter);
     }
 
@@ -216,6 +218,77 @@ namespace DMS.Services.MKpiItem
                 else
                     throw new MessageException(ex.InnerException);
             }
+        }
+
+        public async Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiPeriodId)
+        {
+            try
+            {
+                KpiItemFilter KpiItemFilter = new KpiItemFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    KpiPeriodId = KpiPeriodId,
+                    Selects = KpiItemSelect.Id | KpiItemSelect.Employee
+                };
+
+                var KpiItems = await UOW.KpiItemRepository.List(KpiItemFilter);
+                var AppUserIds = KpiItems.Select(x => x.EmployeeId).ToList();
+                AppUserFilter = new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter { NotIn = AppUserIds },
+                    Selects = AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email
+                };
+
+                var AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
+                return AppUsers;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+
+        }
+
+        public async Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiPeriodId)
+        {
+            try
+            {
+                KpiItemFilter KpiItemFilter = new KpiItemFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    KpiPeriodId = KpiPeriodId,
+                    Selects = KpiItemSelect.Id | KpiItemSelect.Employee
+                };
+
+                var KpiItems = await UOW.KpiItemRepository.List(KpiItemFilter);
+                var AppUserIds = KpiItems.Select(x => x.EmployeeId).ToList();
+                AppUserFilter = new AppUserFilter
+                {
+                    Id = new IdFilter { NotIn = AppUserIds },
+                };
+
+                var count = await UOW.AppUserRepository.Count(AppUserFilter);
+                return count;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+
         }
 
         public KpiItemFilter ToFilter(KpiItemFilter filter)
