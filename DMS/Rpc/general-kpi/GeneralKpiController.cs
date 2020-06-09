@@ -1051,10 +1051,9 @@ namespace DMS.Rpc.general_kpi
             AppUserFilter.Email = GeneralKpi_AppUserFilterDTO.Email;
             AppUserFilter.Phone = GeneralKpi_AppUserFilterDTO.Phone;
             AppUserFilter.OrganizationId = GeneralKpi_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.KpiPeriod = GeneralKpi_AppUserFilterDTO.KpiPeriod;
             AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
-            return await AppUserService.Count(AppUserFilter);
+            return await GeneralKpiService.CountAppUser(AppUserFilter, GeneralKpi_AppUserFilterDTO.KpiPeriodId);
         }
         [Route(GeneralKpiRoute.ListAppUser), HttpPost]
         public async Task<List<GeneralKpi_AppUserDTO>> ListAppUser([FromBody] GeneralKpi_AppUserFilterDTO GeneralKpi_AppUserFilterDTO)
@@ -1071,10 +1070,9 @@ namespace DMS.Rpc.general_kpi
             AppUserFilter.Email = GeneralKpi_AppUserFilterDTO.Email;
             AppUserFilter.OrganizationId = GeneralKpi_AppUserFilterDTO.OrganizationId;
             AppUserFilter.Phone = GeneralKpi_AppUserFilterDTO.Phone;
-            AppUserFilter.KpiPeriod = GeneralKpi_AppUserFilterDTO.KpiPeriod;
             AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<AppUser> AppUsers = await GeneralKpiService.ListAppUser(AppUserFilter, GeneralKpi_AppUserFilterDTO.KpiPeriodId);
             List<GeneralKpi_AppUserDTO> GeneralKpi_AppUserDTOs = AppUsers
                 .Select(x => new GeneralKpi_AppUserDTO(x)).ToList();
             return GeneralKpi_AppUserDTOs;

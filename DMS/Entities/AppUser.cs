@@ -60,7 +60,6 @@ namespace DMS.Entities
         public IdFilter RoleId { get; set; }
         public IdFilter ProvinceId { get; set; }
         public DateFilter Birthday { get; set; }
-        public IdFilter KpiPeriod { get; set; }
         public List<AppUserFilter> OrFilter { get; set; }
         public AppUserOrder OrderBy { get; set; }
         public AppUserSelect Selects { get; set; }
