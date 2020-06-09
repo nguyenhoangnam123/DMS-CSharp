@@ -325,6 +325,7 @@ namespace DMS.Rpc.survey
             Survey.StartAt = Survey_SurveyDTO.StartAt;
             Survey.EndAt = Survey_SurveyDTO.EndAt;
             Survey.StatusId = Survey_SurveyDTO.StatusId;
+            Survey.StoreId = Survey_SurveyDTO.StoreId;
             Survey.SurveyQuestions = Survey_SurveyDTO.SurveyQuestions?
                 .Select(x => new SurveyQuestion
                 {
