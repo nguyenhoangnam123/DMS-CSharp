@@ -384,6 +384,7 @@ namespace DMS.Repositories
             SupplierDAO.StatusId = Supplier.StatusId;
             SupplierDAO.CreatedAt = StaticParams.DateTimeNow;
             SupplierDAO.UpdatedAt = StaticParams.DateTimeNow;
+            SupplierDAO.Used = false;
             DataContext.Supplier.Add(SupplierDAO);
             await DataContext.SaveChangesAsync();
             Supplier.Id = SupplierDAO.Id;

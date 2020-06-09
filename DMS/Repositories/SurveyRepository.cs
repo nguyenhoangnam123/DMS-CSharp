@@ -281,6 +281,7 @@ namespace DMS.Repositories
             SurveyDAO.CreatedAt = StaticParams.DateTimeNow;
             SurveyDAO.UpdatedAt = StaticParams.DateTimeNow;
             SurveyDAO.RowId = Guid.NewGuid();
+            SurveyDAO.Used = false;
             DataContext.Survey.Add(SurveyDAO);
             await DataContext.SaveChangesAsync();
             Survey.Id = SurveyDAO.Id;

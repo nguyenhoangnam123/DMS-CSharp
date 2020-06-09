@@ -171,6 +171,7 @@ namespace DMS.Repositories
             AlbumDAO.StatusId = Album.StatusId;
             AlbumDAO.CreatedAt = StaticParams.DateTimeNow;
             AlbumDAO.UpdatedAt = StaticParams.DateTimeNow;
+            AlbumDAO.Used = false;
             DataContext.Album.Add(AlbumDAO);
             await DataContext.SaveChangesAsync();
             Album.Id = AlbumDAO.Id;

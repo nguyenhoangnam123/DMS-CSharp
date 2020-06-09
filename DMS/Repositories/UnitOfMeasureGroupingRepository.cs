@@ -247,6 +247,7 @@ namespace DMS.Repositories
             UnitOfMeasureGroupingDAO.StatusId = UnitOfMeasureGrouping.StatusId;
             UnitOfMeasureGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
             UnitOfMeasureGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
+            UnitOfMeasureGroupingDAO.Used = false;
             DataContext.UnitOfMeasureGrouping.Add(UnitOfMeasureGroupingDAO);
             await DataContext.SaveChangesAsync();
             UnitOfMeasureGrouping.Id = UnitOfMeasureGroupingDAO.Id;

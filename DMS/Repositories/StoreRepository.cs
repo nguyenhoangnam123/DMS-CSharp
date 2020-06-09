@@ -632,6 +632,7 @@ namespace DMS.Repositories
             StoreDAO.RowId = Store.RowId;
             StoreDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
+            StoreDAO.Used = false;
             DataContext.Store.Add(StoreDAO);
             await DataContext.SaveChangesAsync();
             Store.Id = StoreDAO.Id;

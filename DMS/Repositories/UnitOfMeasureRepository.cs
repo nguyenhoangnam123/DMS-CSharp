@@ -188,6 +188,7 @@ namespace DMS.Repositories
             UnitOfMeasureDAO.StatusId = UnitOfMeasure.StatusId;
             UnitOfMeasureDAO.CreatedAt = StaticParams.DateTimeNow;
             UnitOfMeasureDAO.UpdatedAt = StaticParams.DateTimeNow;
+            UnitOfMeasureDAO.Used = false;
             DataContext.UnitOfMeasure.Add(UnitOfMeasureDAO);
             await DataContext.SaveChangesAsync();
             UnitOfMeasure.Id = UnitOfMeasureDAO.Id;

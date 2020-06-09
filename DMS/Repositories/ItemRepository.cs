@@ -408,6 +408,7 @@ namespace DMS.Repositories
             ItemDAO.RetailPrice = Item.RetailPrice;
             ItemDAO.CreatedAt = StaticParams.DateTimeNow;
             ItemDAO.UpdatedAt = StaticParams.DateTimeNow;
+            ItemDAO.Used = false;
             DataContext.Item.Add(ItemDAO);
             await DataContext.SaveChangesAsync();
             Item.Id = ItemDAO.Id;

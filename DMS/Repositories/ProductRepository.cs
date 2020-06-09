@@ -664,6 +664,7 @@ namespace DMS.Repositories
             ProductDAO.UsedVariationId = Product.UsedVariationId;
             ProductDAO.CreatedAt = StaticParams.DateTimeNow;
             ProductDAO.UpdatedAt = StaticParams.DateTimeNow;
+            ProductDAO.Used = false;
             DataContext.Product.Add(ProductDAO);
             await DataContext.SaveChangesAsync();
             Product.Id = ProductDAO.Id;
@@ -895,7 +896,8 @@ namespace DMS.Repositories
                             StatusId = Item.StatusId,
                             CreatedAt = StaticParams.DateTimeNow,
                             UpdatedAt = StaticParams.DateTimeNow,
-                            DeletedAt = null
+                            DeletedAt = null,
+                            Used = false,
                         };
                         ItemDAOs.Add(ItemDAO);
                     }

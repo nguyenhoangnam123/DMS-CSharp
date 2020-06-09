@@ -22,6 +22,7 @@ namespace DMS.Models
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
         public Guid RowId { get; set; }
+        public bool Used { get; set; }
 
         public virtual AppUserDAO Creator { get; set; }
         public virtual StatusDAO Status { get; set; }
