@@ -242,7 +242,7 @@ namespace DMS.Services.MWarehouse
                     Inventory.Id = 0;
                     Inventory.WarehouseId = Warehouse.Id;
                     Inventory.ItemId = item.Id;
-                    Inventory.SaleStock = 0;
+                    Inventory.SaleStock = 0;    
                     Inventory.AccountingStock = 0;
                     Warehouse.Inventories.Add(Inventory);
                 }
