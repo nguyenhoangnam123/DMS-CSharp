@@ -22,6 +22,7 @@ namespace DMS.Rpc.role
             this.FieldId = PermissionContent.FieldId;
             this.Value = PermissionContent.Value;
             this.Field = PermissionContent.Field == null ? null : new Role_FieldDTO(PermissionContent.Field);
+            this.PermissionOperator = PermissionContent.PermissionOperator == null ? null : new Role_PermissionOperatorDTO(PermissionContent.PermissionOperator);
             this.Errors = PermissionContent.Errors;
         }
     }
