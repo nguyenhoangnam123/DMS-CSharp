@@ -252,7 +252,7 @@ namespace DMS.Services.MSurvey
             SurveyResult.SurveyId = Survey.Id;
             SurveyResult.AppUserId = CurrentContext.UserId;
             SurveyResult.StoreId = Survey.StoreId;
-            SurveyResult.Time = Survey.AnswerAt;
+            SurveyResult.Time = StaticParams.DateTimeNow;
             SurveyResult.SurveyResultSingles = new List<SurveyResultSingle>();
             SurveyResult.SurveyResultCells = new List<SurveyResultCell>();
             if (Survey.SurveyQuestions != null)

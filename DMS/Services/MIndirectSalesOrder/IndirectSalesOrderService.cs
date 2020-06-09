@@ -142,11 +142,17 @@ namespace DMS.Services.MIndirectSalesOrder
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
+
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -267,7 +273,9 @@ namespace DMS.Services.MIndirectSalesOrder
 
         private async Task<IndirectSalesOrder> Calculator(IndirectSalesOrder IndirectSalesOrder)
         {
-            var ProductIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.Item.ProductId).ToList();
+            var ProductIds = new List<long>();
+            if (IndirectSalesOrder.IndirectSalesOrderContents != null)
+                IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.Item.ProductId).ToList();
             if (IndirectSalesOrder.IndirectSalesOrderPromotions != null)
                 ProductIds.AddRange(IndirectSalesOrder.IndirectSalesOrderPromotions.Select(x => x.Item.ProductId).ToList());
             ProductIds = ProductIds.Distinct().ToList();
