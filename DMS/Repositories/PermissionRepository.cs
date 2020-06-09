@@ -277,6 +277,8 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Permission Permission)
         {
+            await DataContext.PermissionContent.Where(x => x.PermissionId == Permission.Id).DeleteFromQueryAsync();
+            await DataContext.PermissionActionMapping.Where(x => x.PermissionId == Permission.Id).DeleteFromQueryAsync();
             await DataContext.Permission.Where(x => x.Id == Permission.Id).DeleteFromQueryAsync();
             return true;
         }

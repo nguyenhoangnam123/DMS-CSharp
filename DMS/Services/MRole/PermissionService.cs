@@ -118,7 +118,7 @@ namespace DMS.Services.MRole
             try
             {
                 await UOW.PermissionRepository.Delete(Permission);
-                return await UOW.PermissionRepository.Get(Permission.Id);
+                return Permission;
             }
             catch (Exception ex)
             {
