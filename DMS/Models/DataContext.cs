@@ -2699,7 +2699,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<SurveyResultCellDAO>(entity =>
             {
-                entity.HasKey(e => new { e.SurveyResultId, e.SurveyQuestionId })
+                entity.HasKey(e => new { e.SurveyResultId, e.SurveyQuestionId, e.RowOptionId, e.ColumnOptionId })
                     .HasName("PK_SurveyResultTable");
 
                 entity.HasOne(d => d.ColumnOption)
@@ -2729,7 +2729,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<SurveyResultSingleDAO>(entity =>
             {
-                entity.HasKey(e => new { e.SurveyResultId, e.SurveyQuestionId })
+                entity.HasKey(e => new { e.SurveyResultId, e.SurveyQuestionId, e.SurveyOptionId })
                     .HasName("PK_SurveyResultSingle_1");
 
                 entity.HasOne(d => d.SurveyOption)
