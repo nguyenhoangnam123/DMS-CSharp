@@ -9,7 +9,7 @@ using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
 
-namespace DMS.Services.MProblemHistory
+namespace DMS.Services.MProblem
 {
     public interface IProblemHistoryService :  IServiceScoped
     {
@@ -24,19 +24,16 @@ namespace DMS.Services.MProblemHistory
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IProblemHistoryValidator ProblemHistoryValidator;
 
         public ProblemHistoryService(
             IUOW UOW,
             ILogging Logging,
-            ICurrentContext CurrentContext,
-            IProblemHistoryValidator ProblemHistoryValidator
+            ICurrentContext CurrentContext
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.ProblemHistoryValidator = ProblemHistoryValidator;
         }
         public async Task<int> Count(ProblemHistoryFilter ProblemHistoryFilter)
         {

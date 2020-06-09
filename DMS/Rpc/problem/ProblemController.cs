@@ -3,8 +3,6 @@ using DMS.Entities;
 using DMS.Services.MAppUser;
 using DMS.Services.MImage;
 using DMS.Services.MProblem;
-using DMS.Services.MProblemStatus;
-using DMS.Services.MProblemType;
 using DMS.Services.MStore;
 using DMS.Services.MStoreChecking;
 using Microsoft.AspNetCore.Http;

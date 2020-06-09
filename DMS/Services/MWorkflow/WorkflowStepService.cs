@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MWorkflowStep
+namespace DMS.Services.MWorkflow
 {
     public interface IWorkflowStepService : IServiceScoped
     {

@@ -4,13 +4,12 @@ using DMS.Enums;
 using DMS.Services.MAppUser;
 using DMS.Services.MERoute;
 using DMS.Services.MERouteChangeRequest;
-using DMS.Services.MERouteChangeRequestContent;
 using DMS.Services.MERouteType;
 using DMS.Services.MOrganization;
-using DMS.Services.MRequestState;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
+using DMS.Services.MWorkflow;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +24,6 @@ namespace DMS.Rpc.e_route_change_request
         private IERouteTypeService ERouteTypeService;
         private IOrganizationService OrganizationService;
         private IRequestStateService RequestStateService;
-        private IERouteChangeRequestContentService ERouteChangeRequestContentService;
         private IStoreService StoreService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
@@ -37,7 +35,6 @@ namespace DMS.Rpc.e_route_change_request
             IERouteTypeService ERouteTypeService,
             IOrganizationService OrganizationService,
             IRequestStateService RequestStateService,
-            IERouteChangeRequestContentService ERouteChangeRequestContentService,
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
@@ -50,7 +47,6 @@ namespace DMS.Rpc.e_route_change_request
             this.ERouteTypeService = ERouteTypeService;
             this.OrganizationService = OrganizationService;
             this.RequestStateService = RequestStateService;
-            this.ERouteChangeRequestContentService = ERouteChangeRequestContentService;
             this.StoreService = StoreService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
@@ -632,25 +628,7 @@ namespace DMS.Rpc.e_route_change_request
                 .Select(x => new ERouteChangeRequest_StoreTypeDTO(x)).ToList();
             return ERouteChangeRequest_StoreTypeDTOs;
         }
-        [Route(ERouteChangeRequestRoute.SingleListERouteChangeRequestContent), HttpPost]
-        public async Task<List<ERouteChangeRequest_ERouteChangeRequestContentDTO>> SingleListERouteChangeRequestContent([FromBody] ERouteChangeRequest_ERouteChangeRequestContentFilterDTO ERouteChangeRequest_ERouteChangeRequestContentFilterDTO)
-        {
-            ERouteChangeRequestContentFilter ERouteChangeRequestContentFilter = new ERouteChangeRequestContentFilter();
-            ERouteChangeRequestContentFilter.Skip = 0;
-            ERouteChangeRequestContentFilter.Take = 20;
-            ERouteChangeRequestContentFilter.OrderBy = ERouteChangeRequestContentOrder.Id;
-            ERouteChangeRequestContentFilter.OrderType = OrderType.ASC;
-            ERouteChangeRequestContentFilter.Selects = ERouteChangeRequestContentSelect.ALL;
-            ERouteChangeRequestContentFilter.Id = ERouteChangeRequest_ERouteChangeRequestContentFilterDTO.Id;
-            ERouteChangeRequestContentFilter.ERouteChangeRequestId = ERouteChangeRequest_ERouteChangeRequestContentFilterDTO.ERouteChangeRequestId;
-            ERouteChangeRequestContentFilter.StoreId = ERouteChangeRequest_ERouteChangeRequestContentFilterDTO.StoreId;
-            ERouteChangeRequestContentFilter.OrderNumber = ERouteChangeRequest_ERouteChangeRequestContentFilterDTO.OrderNumber;
-
-            List<ERouteChangeRequestContent> ERouteChangeRequestContents = await ERouteChangeRequestContentService.List(ERouteChangeRequestContentFilter);
-            List<ERouteChangeRequest_ERouteChangeRequestContentDTO> ERouteChangeRequest_ERouteChangeRequestContentDTOs = ERouteChangeRequestContents
-                .Select(x => new ERouteChangeRequest_ERouteChangeRequestContentDTO(x)).ToList();
-            return ERouteChangeRequest_ERouteChangeRequestContentDTOs;
-        }
+      
         [Route(ERouteChangeRequestRoute.SingleListStore), HttpPost]
         public async Task<List<ERouteChangeRequest_StoreDTO>> SingleListStore([FromBody] ERouteChangeRequest_StoreFilterDTO ERouteChangeRequest_StoreFilterDTO)
         {

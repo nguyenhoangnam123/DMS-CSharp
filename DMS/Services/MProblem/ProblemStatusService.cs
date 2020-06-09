@@ -6,21 +6,21 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MUsedVariation
+namespace DMS.Services.MProblem
 {
-    public interface IUsedVariationService : IServiceScoped
+    public interface IProblemStatusService : IServiceScoped
     {
-        Task<int> Count(UsedVariationFilter UsedVariationFilter);
-        Task<List<UsedVariation>> List(UsedVariationFilter UsedVariationFilter);
+        Task<int> Count(ProblemStatusFilter ProblemStatusFilter);
+        Task<List<ProblemStatus>> List(ProblemStatusFilter ProblemStatusFilter);
     }
 
-    public class UsedVariationService : BaseService, IUsedVariationService
+    public class ProblemStatusService : BaseService, IProblemStatusService
     {
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
 
-        public UsedVariationService(
+        public ProblemStatusService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext
@@ -30,16 +30,16 @@ namespace DMS.Services.MUsedVariation
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
         }
-        public async Task<int> Count(UsedVariationFilter UsedVariationFilter)
+        public async Task<int> Count(ProblemStatusFilter ProblemStatusFilter)
         {
             try
             {
-                int result = await UOW.UsedVariationRepository.Count(UsedVariationFilter);
+                int result = await UOW.ProblemStatusRepository.Count(ProblemStatusFilter);
                 return result;
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(UsedVariationService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemStatusService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
@@ -47,16 +47,16 @@ namespace DMS.Services.MUsedVariation
             }
         }
 
-        public async Task<List<UsedVariation>> List(UsedVariationFilter UsedVariationFilter)
+        public async Task<List<ProblemStatus>> List(ProblemStatusFilter ProblemStatusFilter)
         {
             try
             {
-                List<UsedVariation> UsedVariations = await UOW.UsedVariationRepository.List(UsedVariationFilter);
-                return UsedVariations;
+                List<ProblemStatus> ProblemStatuss = await UOW.ProblemStatusRepository.List(ProblemStatusFilter);
+                return ProblemStatuss;
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(UsedVariationService));
+                await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemStatusService));
                 if (ex.InnerException == null)
                     throw new MessageException(ex);
                 else
