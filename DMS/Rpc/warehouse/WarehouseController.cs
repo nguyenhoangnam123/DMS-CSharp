@@ -199,13 +199,13 @@ namespace DMS.Rpc.warehouse
         }
 
         [Route(WarehouseRoute.ImportInventory), HttpPost]
-        public async Task<ActionResult<List<Warehouse_InventoryDTO>>> ImportInventory([FromBody] Warehouse_InventoryDTO Warehouse_InventoryDTO, IFormFile file)
+        public async Task<ActionResult<List<Warehouse_InventoryDTO>>> ImportInventory([FromForm] long WarehouseId,[FromForm] IFormFile file)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            Warehouse Warehouse = await WarehouseService.Get(Warehouse_InventoryDTO.WarehouseId);
+            Warehouse Warehouse = await WarehouseService.Get(WarehouseId);
             if (Warehouse == null)
-                return BadRequest(Warehouse_InventoryDTO);
+                return BadRequest(WarehouseId);
 
             ItemFilter ItemFilter = new ItemFilter
             {
@@ -242,10 +242,13 @@ namespace DMS.Rpc.warehouse
                     string SaleStockValue = worksheet.Cells[i + StartRow, SaleStockColumn].Value?.ToString();
                     string AccountingStockValue = worksheet.Cells[i + StartRow, AccountingStockColumn].Value?.ToString();
 
+                    var InventoryItem = Items.Where(x => x.Code == ItemCodeValue).FirstOrDefault();
+
                     Inventory Inventory = new Inventory();
                     Inventory.SaleStock = string.IsNullOrEmpty(SaleStockValue) ? 0 : long.Parse(SaleStockValue);
                     Inventory.AccountingStock = string.IsNullOrEmpty(AccountingStockValue) ? 0 : long.Parse(AccountingStockValue);
                     Inventory.ItemId = Inventory.Item == null ? 0 : Inventory.Item.Id;
+                    Inventory.ItemId = InventoryItem == null ? 0 : InventoryItem.Id;
                     Inventory.WarehouseId = Warehouse.Id;
 
                     Warehouse.Inventories.Add(Inventory);
