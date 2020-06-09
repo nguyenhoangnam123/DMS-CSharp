@@ -230,7 +230,6 @@ namespace DMS.Services.MSurvey
                         {
                             List<SurveyOption> Columns = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.COLUMN.Id).ToList();
                             List<SurveyOption> Rows = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.ROW.Id).ToList();
-                            SurveyQuestion.TableResult = new Dictionary<long, Dictionary<long, bool>>();
                             foreach (SurveyOption Row in Rows)
                             {
                                 Dictionary<long, bool> RowResult = new Dictionary<long, bool>();

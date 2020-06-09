@@ -14,8 +14,8 @@ namespace DMS.Rpc.survey
         public bool IsMandatory { get; set; }
         public Survey_SurveyQuestionTypeDTO SurveyQuestionType { get; set; }
         public List<Survey_SurveyOptionDTO> SurveyOptions { get; set; }
-        public Dictionary<long, Dictionary<long, bool>> Table { get; set; }
-        public Dictionary<long, bool> Single { get; set; }
+        public Dictionary<long, Dictionary<long, bool>> TableResult { get; set; }
+        public Dictionary<long, bool> ListResult { get; set; }
         public Survey_SurveyQuestionDTO() { }
         public Survey_SurveyQuestionDTO(SurveyQuestion SurveyQuestion)
         {
@@ -24,6 +24,8 @@ namespace DMS.Rpc.survey
             this.Content = SurveyQuestion.Content;
             this.SurveyQuestionTypeId = SurveyQuestion.SurveyQuestionTypeId;
             this.IsMandatory = SurveyQuestion.IsMandatory;
+            this.TableResult = SurveyQuestion.TableResult;
+            this.ListResult = SurveyQuestion.ListResult;
             this.SurveyQuestionType = SurveyQuestion.SurveyQuestionType == null ? null : new Survey_SurveyQuestionTypeDTO(SurveyQuestion.SurveyQuestionType);
             this.SurveyOptions = SurveyQuestion.SurveyOptions?.Select(so => new Survey_SurveyOptionDTO(so)).ToList();
             this.Errors = SurveyQuestion.Errors;

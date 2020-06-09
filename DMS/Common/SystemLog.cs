@@ -12,6 +12,7 @@ namespace DMS.Entities
         public string ModuleName { get; set; }
         public string ClassName { get; set; }
         public string MethodName { get; set; }
+        public DateTime Time { get; set; }
         public Guid RowId { get; set; }
     }
 }

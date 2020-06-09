@@ -7,10 +7,12 @@ namespace DMS.Models
     {
         public ProblemDAO()
         {
+            ProblemHistories = new HashSet<ProblemHistoryDAO>();
             ProblemImageMappings = new HashSet<ProblemImageMappingDAO>();
         }
 
         public long Id { get; set; }
+        public string Code { get; set; }
         public long? StoreCheckingId { get; set; }
         public long StoreId { get; set; }
         public long CreatorId { get; set; }
@@ -25,6 +27,7 @@ namespace DMS.Models
         public virtual ProblemTypeDAO ProblemType { get; set; }
         public virtual StoreDAO Store { get; set; }
         public virtual StoreCheckingDAO StoreChecking { get; set; }
+        public virtual ICollection<ProblemHistoryDAO> ProblemHistories { get; set; }
         public virtual ICollection<ProblemImageMappingDAO> ProblemImageMappings { get; set; }
     }
 }
