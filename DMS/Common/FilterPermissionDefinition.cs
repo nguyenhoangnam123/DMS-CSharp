@@ -131,28 +131,7 @@ namespace Common
         }
     }
 
-    public class FieldType : DataEntity
-    {
-        public long Id { get; set; }
-        public string Code { get; set; }
-        public string Name { get; set; }
-    }
-
-    public class PermissionOperator : DataEntity
-    {
-        public long Id { get; set; }
-        public string Code { get; set; }
-        public string Name { get; set; }
-        public long FieldTypeId { get; set; }
-    }
-
-    public class PermissionOperatorFilter : FilterEntity
-    {
-        public IdFilter Id { get; set; }
-        public StringFilter Code { get; set; }
-        public StringFilter Name { get; set; }
-        public IdFilter FieldTypeId { get; set; }
-    }
+   
 
     public class FieldTypeEnum
     {
