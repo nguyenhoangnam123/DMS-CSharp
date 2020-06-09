@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Repositories;
 using DMS.Services.MImage;
 using Helpers;
@@ -91,8 +92,22 @@ namespace DMS.Services.MStoreChecking
 
             try
             {
+                DateTime Now = StaticParams.DateTimeNow;
                 StoreChecking.CheckInAt = StaticParams.DateTimeNow;
                 StoreChecking.SaleEmployeeId = CurrentContext.UserId;
+                ERouteFilter ERouteFilter = new ERouteFilter
+                {
+                    SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                    StartDate = new DateFilter { LessEqual = Now },
+                    EndDate = new DateFilter { GreaterEqual = Now },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = ERouteSelect.ALL,
+                };
+                List<ERoute> ERoutes = await UOW.ERouteRepository.List(ERouteFilter);
+                //TODO
+                StoreChecking.Planned = true;
                 await UOW.Begin();
                 await UOW.StoreCheckingRepository.Create(StoreChecking);
                 await UOW.Commit();

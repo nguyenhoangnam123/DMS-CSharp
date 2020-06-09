@@ -352,6 +352,7 @@ namespace DMS.Repositories
             StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
             StoreCheckingDAO.IndirectSalesOrderCounter = StoreChecking.CountIndirectSalesOrder;
             StoreCheckingDAO.ImageCounter = StoreChecking.CountImage;
+            StoreCheckingDAO.Planned = StoreChecking.Planned;
             DataContext.StoreChecking.Add(StoreCheckingDAO);
             await DataContext.SaveChangesAsync();
             StoreChecking.Id = StoreCheckingDAO.Id;
