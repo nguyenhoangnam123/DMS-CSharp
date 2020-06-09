@@ -71,6 +71,8 @@ namespace DMS.Services.MPermission
                     Take = 10,
                     Id = new IdFilter { NotEqual = Permission.Id },
                     Code = new StringFilter { Equal = Permission.Code },
+                    MenuId = new IdFilter { Equal = Permission.MenuId },
+                    RoleId = new IdFilter { Equal = Permission.RoleId },
                     Selects = PermissionSelect.Code
                 };
 
@@ -95,6 +97,8 @@ namespace DMS.Services.MPermission
                     Take = 10,
                     Id = new IdFilter { NotEqual = Permission.Id },
                     Name = new StringFilter { Equal = Permission.Name },
+                    MenuId = new IdFilter { Equal = Permission.MenuId },
+                    RoleId = new IdFilter { Equal = Permission.RoleId },
                     Selects = PermissionSelect.Name
                 };
 
@@ -206,7 +210,8 @@ namespace DMS.Services.MPermission
                     }
                     else
                     {
-                        PermissionOperator PermissionOperator = PermissionOperators.Where(po => po.FieldTypeId == Field.FieldTypeId).FirstOrDefault();
+                        PermissionOperator PermissionOperator = PermissionOperators
+                            .Where(po => po.FieldTypeId == Field.FieldTypeId && po.Id == PermissionContent.PermissionOperatorId).FirstOrDefault();
                         if (PermissionOperator == null)
                             PermissionContent.AddError(nameof(PermissionValidator), nameof(PermissionContent.PermissionOperator), ErrorCode.PermissionOperatorNotExisted);
                     }

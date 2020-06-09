@@ -88,7 +88,7 @@ namespace DMS.Services.MRole
 
         public async Task<Permission> Update(Permission Permission)
         {
-            if (!await PermissionValidator.Create(Permission))
+            if (!await PermissionValidator.Update(Permission))
                 return Permission;
             try
             {
@@ -112,7 +112,7 @@ namespace DMS.Services.MRole
 
         public async Task<Permission> Delete(Permission Permission)
         {
-            if (!await PermissionValidator.Create(Permission))
+            if (!await PermissionValidator.Delete(Permission))
                 return Permission;
 
             try
