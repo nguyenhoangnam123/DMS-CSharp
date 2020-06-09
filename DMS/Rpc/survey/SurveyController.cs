@@ -146,7 +146,7 @@ namespace DMS.Rpc.survey
                 return Forbid();
 
             Survey Survey = ConvertDTOToEntity(Survey_SurveyDTO);
-            //Survey = await SurveyService.CreateSurveyResult(Survey);
+            Survey = await SurveyService.SaveForm(Survey);
             Survey_SurveyDTO = new Survey_SurveyDTO(Survey);
             if (Survey.IsValidated)
                 return Survey_SurveyDTO;
@@ -345,6 +345,8 @@ namespace DMS.Rpc.survey
                         SurveyOptionTypeId = x.SurveyOptionTypeId,
                         SurveyQuestionId = x.SurveyOptionTypeId
                     }).ToList(),
+                    TableResult = x.TableResult,
+                    ListResult = x.ListResult,
                 }).ToList();
             Survey.BaseLanguage = CurrentContext.Language;
             return Survey;
