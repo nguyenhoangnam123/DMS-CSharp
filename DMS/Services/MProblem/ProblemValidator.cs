@@ -20,6 +20,8 @@ namespace DMS.Services.MProblem
         public enum ErrorCode
         {
             IdNotExisted,
+            ProblemTypeEmpty,
+            ProblemTypeNotExisted,
         }
 
         private IUOW UOW;
@@ -47,8 +49,21 @@ namespace DMS.Services.MProblem
             return count == 1;
         }
 
+        private async Task<bool> ValidateProblemType(Problem Problem)
+        {
+            if(Problem.ProblemTypeId == 0)
+                Problem.AddError(nameof(ProblemValidator), nameof(Problem.ProblemType), ErrorCode.ProblemTypeEmpty);
+            else
+            {
+                if(Problem.ProblemTypeId != Enums.ProblemTypeEnum.COMPETITOR.Id && Problem.ProblemTypeId != Enums.ProblemTypeEnum.STORE.Id)
+                    Problem.AddError(nameof(ProblemValidator), nameof(Problem.ProblemType), ErrorCode.ProblemTypeNotExisted);
+            }
+            return Problem.IsValidated;
+        }
+
         public async Task<bool> Create(Problem Problem)
         {
+            await ValidateProblemType(Problem);
             return Problem.IsValidated;
         }
 

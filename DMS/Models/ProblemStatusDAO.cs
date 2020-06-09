@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public ProblemStatusDAO()
         {
+            ProblemHistories = new HashSet<ProblemHistoryDAO>();
             Problems = new HashSet<ProblemDAO>();
         }
 
@@ -14,6 +15,7 @@ namespace DMS.Models
         public string Code { get; set; }
         public string Name { get; set; }
 
+        public virtual ICollection<ProblemHistoryDAO> ProblemHistories { get; set; }
         public virtual ICollection<ProblemDAO> Problems { get; set; }
     }
 }

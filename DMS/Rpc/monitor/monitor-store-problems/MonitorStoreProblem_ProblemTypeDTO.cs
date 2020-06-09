@@ -1,7 +1,7 @@
 using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.problem
+namespace DMS.Rpc.monitor_store_problems
 {
     public class MonitorStoreProblem_ProblemTypeDTO : DataDTO
     {
@@ -27,7 +27,7 @@ namespace DMS.Rpc.problem
         }
     }
 
-    public class Problem_ProblemTypeFilterDTO : FilterDTO
+    public class MonitorStoreProblem_ProblemTypeFilterDTO : FilterDTO
     {
 
         public IdFilter Id { get; set; }
