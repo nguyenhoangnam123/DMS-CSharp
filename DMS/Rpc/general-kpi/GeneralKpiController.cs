@@ -1051,6 +1051,7 @@ namespace DMS.Rpc.general_kpi
             AppUserFilter.Email = GeneralKpi_AppUserFilterDTO.Email;
             AppUserFilter.Phone = GeneralKpi_AppUserFilterDTO.Phone;
             AppUserFilter.OrganizationId = GeneralKpi_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.KpiPeriod = GeneralKpi_AppUserFilterDTO.KpiPeriod;
             AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
             return await AppUserService.Count(AppUserFilter);
@@ -1070,6 +1071,7 @@ namespace DMS.Rpc.general_kpi
             AppUserFilter.Email = GeneralKpi_AppUserFilterDTO.Email;
             AppUserFilter.OrganizationId = GeneralKpi_AppUserFilterDTO.OrganizationId;
             AppUserFilter.Phone = GeneralKpi_AppUserFilterDTO.Phone;
+            AppUserFilter.KpiPeriod = GeneralKpi_AppUserFilterDTO.KpiPeriod;
             AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);

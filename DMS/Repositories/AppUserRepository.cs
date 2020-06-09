@@ -70,6 +70,16 @@ namespace DMS.Repositories
                             select q;
                 }
             }
+            if(filter.KpiPeriod != null)
+            {
+                if (filter.KpiPeriod.Equal.HasValue)
+                {
+                    query = from q in query
+                            join k in DataContext.GeneralKpi on q.Id !equals k.EmployeeId
+                            where k.KpiPeriodId == filter.KpiPeriod.Equal.Value
+                            select q;
+                }
+            }
             query = OrFilter(query, filter);
             return query;
         }
