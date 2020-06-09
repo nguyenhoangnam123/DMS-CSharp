@@ -3,18 +3,18 @@ using DMS.Entities;
 
 namespace DMS.Rpc.problem
 {
-    public class MonitorStoreProblem_ProblemImageMappingDTO : DataDTO
+    public class Problem_ProblemImageMappingDTO : DataDTO
     {
         public long ProblemId { get; set; }
         public long ImageId { get; set; }
-        public MonitorStoreProblem_ImageDTO Image { get; set; }
+        public Problem_ImageDTO Image { get; set; }
 
-        public MonitorStoreProblem_ProblemImageMappingDTO() { }
-        public MonitorStoreProblem_ProblemImageMappingDTO(ProblemImageMapping ProblemImageMapping)
+        public Problem_ProblemImageMappingDTO() { }
+        public Problem_ProblemImageMappingDTO(ProblemImageMapping ProblemImageMapping)
         {
             this.ProblemId = ProblemImageMapping.ProblemId;
             this.ImageId = ProblemImageMapping.ImageId;
-            this.Image = ProblemImageMapping.Image == null ? null : new MonitorStoreProblem_ImageDTO(ProblemImageMapping.Image);
+            this.Image = ProblemImageMapping.Image == null ? null : new Problem_ImageDTO(ProblemImageMapping.Image);
             this.Errors = ProblemImageMapping.Errors;
         }
     }

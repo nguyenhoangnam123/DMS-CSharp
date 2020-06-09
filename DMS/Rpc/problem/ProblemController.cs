@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.problem
 {
-    public class MonitorStoreProblemController : RpcController
+    public class ProblemController : RpcController
     {
         private IAppUserService AppUserService;
         private IProblemStatusService ProblemStatusService;
@@ -28,7 +28,7 @@ namespace DMS.Rpc.problem
         private IImageService ImageService;
         private IProblemService ProblemService;
         private ICurrentContext CurrentContext;
-        public MonitorStoreProblemController(
+        public ProblemController(
             IAppUserService AppUserService,
             IProblemStatusService ProblemStatusService,
             IProblemTypeService ProblemTypeService,
@@ -49,7 +49,7 @@ namespace DMS.Rpc.problem
             this.CurrentContext = CurrentContext;
         }
 
-        [Route(MonitorStoreProblemRoute.Count), HttpPost]
+        [Route(ProblemRoute.Count), HttpPost]
         public async Task<ActionResult<int>> Count([FromBody] Problem_ProblemFilterDTO Problem_ProblemFilterDTO)
         {
             if (!ModelState.IsValid)
@@ -61,8 +61,8 @@ namespace DMS.Rpc.problem
             return count;
         }
 
-        [Route(MonitorStoreProblemRoute.List), HttpPost]
-        public async Task<ActionResult<List<MonitorStoreProblem_ProblemDTO>>> List([FromBody] Problem_ProblemFilterDTO Problem_ProblemFilterDTO)
+        [Route(ProblemRoute.List), HttpPost]
+        public async Task<ActionResult<List<Problem_ProblemDTO>>> List([FromBody] Problem_ProblemFilterDTO Problem_ProblemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -70,13 +70,13 @@ namespace DMS.Rpc.problem
             ProblemFilter ProblemFilter = ConvertFilterDTOToFilterEntity(Problem_ProblemFilterDTO);
             ProblemFilter = ProblemService.ToFilter(ProblemFilter);
             List<Problem> Problems = await ProblemService.List(ProblemFilter);
-            List<MonitorStoreProblem_ProblemDTO> Problem_ProblemDTOs = Problems
-                .Select(c => new MonitorStoreProblem_ProblemDTO(c)).ToList();
+            List<Problem_ProblemDTO> Problem_ProblemDTOs = Problems
+                .Select(c => new Problem_ProblemDTO(c)).ToList();
             return Problem_ProblemDTOs;
         }
 
-        [Route(MonitorStoreProblemRoute.Get), HttpPost]
-        public async Task<ActionResult<MonitorStoreProblem_ProblemDTO>> Get([FromBody]MonitorStoreProblem_ProblemDTO Problem_ProblemDTO)
+        [Route(ProblemRoute.Get), HttpPost]
+        public async Task<ActionResult<Problem_ProblemDTO>> Get([FromBody]Problem_ProblemDTO Problem_ProblemDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -85,11 +85,11 @@ namespace DMS.Rpc.problem
                 return Forbid();
 
             Problem Problem = await ProblemService.Get(Problem_ProblemDTO.Id);
-            return new MonitorStoreProblem_ProblemDTO(Problem);
+            return new Problem_ProblemDTO(Problem);
         }
 
-        [Route(MonitorStoreProblemRoute.Create), HttpPost]
-        public async Task<ActionResult<MonitorStoreProblem_ProblemDTO>> Create([FromBody] MonitorStoreProblem_ProblemDTO Problem_ProblemDTO)
+        [Route(ProblemRoute.Create), HttpPost]
+        public async Task<ActionResult<Problem_ProblemDTO>> Create([FromBody] Problem_ProblemDTO Problem_ProblemDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -99,15 +99,15 @@ namespace DMS.Rpc.problem
 
             Problem Problem = ConvertDTOToEntity(Problem_ProblemDTO);
             Problem = await ProblemService.Create(Problem);
-            Problem_ProblemDTO = new MonitorStoreProblem_ProblemDTO(Problem);
+            Problem_ProblemDTO = new Problem_ProblemDTO(Problem);
             if (Problem.IsValidated)
                 return Problem_ProblemDTO;
             else
                 return BadRequest(Problem_ProblemDTO);
         }
 
-        [Route(MonitorStoreProblemRoute.Update), HttpPost]
-        public async Task<ActionResult<MonitorStoreProblem_ProblemDTO>> Update([FromBody] MonitorStoreProblem_ProblemDTO Problem_ProblemDTO)
+        [Route(ProblemRoute.Update), HttpPost]
+        public async Task<ActionResult<Problem_ProblemDTO>> Update([FromBody] Problem_ProblemDTO Problem_ProblemDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -117,7 +117,7 @@ namespace DMS.Rpc.problem
 
             Problem Problem = ConvertDTOToEntity(Problem_ProblemDTO);
             Problem = await ProblemService.Update(Problem);
-            Problem_ProblemDTO = new MonitorStoreProblem_ProblemDTO(Problem);
+            Problem_ProblemDTO = new Problem_ProblemDTO(Problem);
             if (Problem.IsValidated)
                 return Problem_ProblemDTO;
             else
@@ -125,8 +125,8 @@ namespace DMS.Rpc.problem
         }
 
         [HttpPost]
-        [Route(MonitorStoreProblemRoute.SaveImage)]
-        public async Task<ActionResult<MonitorStoreProblem_ImageDTO>> SaveImage(IFormFile file)
+        [Route(ProblemRoute.SaveImage)]
+        public async Task<ActionResult<Problem_ImageDTO>> SaveImage(IFormFile file)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -140,7 +140,7 @@ namespace DMS.Rpc.problem
             Image = await ProblemService.SaveImage(Image);
             if (Image == null)
                 return BadRequest();
-            MonitorStoreProblem_ImageDTO Problem_ImageDTO = new MonitorStoreProblem_ImageDTO
+            Problem_ImageDTO Problem_ImageDTO = new Problem_ImageDTO
             {
                 Id = Image.Id,
                 Name = Image.Name,
@@ -149,8 +149,8 @@ namespace DMS.Rpc.problem
             return Ok(Problem_ImageDTO);
         }
 
-        [Route(MonitorStoreProblemRoute.Delete), HttpPost]
-        public async Task<ActionResult<MonitorStoreProblem_ProblemDTO>> Delete([FromBody] MonitorStoreProblem_ProblemDTO Problem_ProblemDTO)
+        [Route(ProblemRoute.Delete), HttpPost]
+        public async Task<ActionResult<Problem_ProblemDTO>> Delete([FromBody] Problem_ProblemDTO Problem_ProblemDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -160,7 +160,7 @@ namespace DMS.Rpc.problem
 
             Problem Problem = ConvertDTOToEntity(Problem_ProblemDTO);
             Problem = await ProblemService.Delete(Problem);
-            Problem_ProblemDTO = new MonitorStoreProblem_ProblemDTO(Problem);
+            Problem_ProblemDTO = new Problem_ProblemDTO(Problem);
             if (Problem.IsValidated)
                 return Problem_ProblemDTO;
             else
@@ -185,7 +185,7 @@ namespace DMS.Rpc.problem
             return true;
         }
 
-        private Problem ConvertDTOToEntity(MonitorStoreProblem_ProblemDTO Problem_ProblemDTO)
+        private Problem ConvertDTOToEntity(Problem_ProblemDTO Problem_ProblemDTO)
         {
             Problem Problem = new Problem();
             Problem.Id = Problem_ProblemDTO.Id;
@@ -301,8 +301,8 @@ namespace DMS.Rpc.problem
             return ProblemFilter;
         }
 
-        [Route(MonitorStoreProblemRoute.FilterListAppUser), HttpPost]
-        public async Task<List<MonitorStoreProblem_AppUserDTO>> FilterListAppUser([FromBody] Problem_AppUserFilterDTO Problem_AppUserFilterDTO)
+        [Route(ProblemRoute.FilterListAppUser), HttpPost]
+        public async Task<List<Problem_AppUserDTO>> FilterListAppUser([FromBody] Problem_AppUserFilterDTO Problem_AppUserFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -328,12 +328,12 @@ namespace DMS.Rpc.problem
             AppUserFilter.Birthday = Problem_AppUserFilterDTO.Birthday;
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-            List<MonitorStoreProblem_AppUserDTO> Problem_AppUserDTOs = AppUsers
-                .Select(x => new MonitorStoreProblem_AppUserDTO(x)).ToList();
+            List<Problem_AppUserDTO> Problem_AppUserDTOs = AppUsers
+                .Select(x => new Problem_AppUserDTO(x)).ToList();
             return Problem_AppUserDTOs;
         }
-        [Route(MonitorStoreProblemRoute.FilterListProblemStatus), HttpPost]
-        public async Task<List<MonitorStoreProblem_ProblemStatusDTO>> FilterListProblemStatus([FromBody] Problem_ProblemStatusFilterDTO Problem_ProblemStatusFilterDTO)
+        [Route(ProblemRoute.FilterListProblemStatus), HttpPost]
+        public async Task<List<Problem_ProblemStatusDTO>> FilterListProblemStatus([FromBody] Problem_ProblemStatusFilterDTO Problem_ProblemStatusFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -349,12 +349,12 @@ namespace DMS.Rpc.problem
             ProblemStatusFilter.Name = Problem_ProblemStatusFilterDTO.Name;
 
             List<ProblemStatus> ProblemStatuses = await ProblemStatusService.List(ProblemStatusFilter);
-            List<MonitorStoreProblem_ProblemStatusDTO> Problem_ProblemStatusDTOs = ProblemStatuses
-                .Select(x => new MonitorStoreProblem_ProblemStatusDTO(x)).ToList();
+            List<Problem_ProblemStatusDTO> Problem_ProblemStatusDTOs = ProblemStatuses
+                .Select(x => new Problem_ProblemStatusDTO(x)).ToList();
             return Problem_ProblemStatusDTOs;
         }
-        [Route(MonitorStoreProblemRoute.FilterListProblemType), HttpPost]
-        public async Task<List<MonitorStoreProblem_ProblemTypeDTO>> FilterListProblemType([FromBody] Problem_ProblemTypeFilterDTO Problem_ProblemTypeFilterDTO)
+        [Route(ProblemRoute.FilterListProblemType), HttpPost]
+        public async Task<List<Problem_ProblemTypeDTO>> FilterListProblemType([FromBody] Problem_ProblemTypeFilterDTO Problem_ProblemTypeFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -368,12 +368,12 @@ namespace DMS.Rpc.problem
             ProblemTypeFilter.Selects = ProblemTypeSelect.ALL;
 
             List<ProblemType> ProblemTypes = await ProblemTypeService.List(ProblemTypeFilter);
-            List<MonitorStoreProblem_ProblemTypeDTO> Problem_ProblemTypeDTOs = ProblemTypes
-                .Select(x => new MonitorStoreProblem_ProblemTypeDTO(x)).ToList();
+            List<Problem_ProblemTypeDTO> Problem_ProblemTypeDTOs = ProblemTypes
+                .Select(x => new Problem_ProblemTypeDTO(x)).ToList();
             return Problem_ProblemTypeDTOs;
         }
-        [Route(MonitorStoreProblemRoute.FilterListStore), HttpPost]
-        public async Task<List<MonitorStoreProblem_StoreDTO>> FilterListStore([FromBody] Problem_StoreFilterDTO Problem_StoreFilterDTO)
+        [Route(ProblemRoute.FilterListStore), HttpPost]
+        public async Task<List<Problem_StoreDTO>> FilterListStore([FromBody] Problem_StoreFilterDTO Problem_StoreFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -408,12 +408,12 @@ namespace DMS.Rpc.problem
             StoreFilter.StatusId = Problem_StoreFilterDTO.StatusId;
 
             List<Store> Stores = await StoreService.List(StoreFilter);
-            List<MonitorStoreProblem_StoreDTO> Problem_StoreDTOs = Stores
-                .Select(x => new MonitorStoreProblem_StoreDTO(x)).ToList();
+            List<Problem_StoreDTO> Problem_StoreDTOs = Stores
+                .Select(x => new Problem_StoreDTO(x)).ToList();
             return Problem_StoreDTOs;
         }
-        [Route(MonitorStoreProblemRoute.FilterListStoreChecking), HttpPost]
-        public async Task<List<MonitorStoreProblem_StoreCheckingDTO>> FilterListStoreChecking([FromBody] Problem_StoreCheckingFilterDTO Problem_StoreCheckingFilterDTO)
+        [Route(ProblemRoute.FilterListStoreChecking), HttpPost]
+        public async Task<List<Problem_StoreCheckingDTO>> FilterListStoreChecking([FromBody] Problem_StoreCheckingFilterDTO Problem_StoreCheckingFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -433,13 +433,13 @@ namespace DMS.Rpc.problem
             StoreCheckingFilter.CheckOutAt = Problem_StoreCheckingFilterDTO.CheckOutAt;
 
             List<StoreChecking> StoreCheckings = await StoreCheckingService.List(StoreCheckingFilter);
-            List<MonitorStoreProblem_StoreCheckingDTO> Problem_StoreCheckingDTOs = StoreCheckings
-                .Select(x => new MonitorStoreProblem_StoreCheckingDTO(x)).ToList();
+            List<Problem_StoreCheckingDTO> Problem_StoreCheckingDTOs = StoreCheckings
+                .Select(x => new Problem_StoreCheckingDTO(x)).ToList();
             return Problem_StoreCheckingDTOs;
         }
 
-        [Route(MonitorStoreProblemRoute.SingleListAppUser), HttpPost]
-        public async Task<List<MonitorStoreProblem_AppUserDTO>> SingleListAppUser([FromBody] Problem_AppUserFilterDTO Problem_AppUserFilterDTO)
+        [Route(ProblemRoute.SingleListAppUser), HttpPost]
+        public async Task<List<Problem_AppUserDTO>> SingleListAppUser([FromBody] Problem_AppUserFilterDTO Problem_AppUserFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -465,12 +465,12 @@ namespace DMS.Rpc.problem
             AppUserFilter.Birthday = Problem_AppUserFilterDTO.Birthday;
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-            List<MonitorStoreProblem_AppUserDTO> Problem_AppUserDTOs = AppUsers
-                .Select(x => new MonitorStoreProblem_AppUserDTO(x)).ToList();
+            List<Problem_AppUserDTO> Problem_AppUserDTOs = AppUsers
+                .Select(x => new Problem_AppUserDTO(x)).ToList();
             return Problem_AppUserDTOs;
         }
-        [Route(MonitorStoreProblemRoute.SingleListProblemStatus), HttpPost]
-        public async Task<List<MonitorStoreProblem_ProblemStatusDTO>> SingleListProblemStatus([FromBody] Problem_ProblemStatusFilterDTO Problem_ProblemStatusFilterDTO)
+        [Route(ProblemRoute.SingleListProblemStatus), HttpPost]
+        public async Task<List<Problem_ProblemStatusDTO>> SingleListProblemStatus([FromBody] Problem_ProblemStatusFilterDTO Problem_ProblemStatusFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -486,12 +486,12 @@ namespace DMS.Rpc.problem
             ProblemStatusFilter.Name = Problem_ProblemStatusFilterDTO.Name;
 
             List<ProblemStatus> ProblemStatuses = await ProblemStatusService.List(ProblemStatusFilter);
-            List<MonitorStoreProblem_ProblemStatusDTO> Problem_ProblemStatusDTOs = ProblemStatuses
-                .Select(x => new MonitorStoreProblem_ProblemStatusDTO(x)).ToList();
+            List<Problem_ProblemStatusDTO> Problem_ProblemStatusDTOs = ProblemStatuses
+                .Select(x => new Problem_ProblemStatusDTO(x)).ToList();
             return Problem_ProblemStatusDTOs;
         }
-        [Route(MonitorStoreProblemRoute.SingleListProblemType), HttpPost]
-        public async Task<List<MonitorStoreProblem_ProblemTypeDTO>> SingleListProblemType([FromBody] Problem_ProblemTypeFilterDTO Problem_ProblemTypeFilterDTO)
+        [Route(ProblemRoute.SingleListProblemType), HttpPost]
+        public async Task<List<Problem_ProblemTypeDTO>> SingleListProblemType([FromBody] Problem_ProblemTypeFilterDTO Problem_ProblemTypeFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -505,12 +505,12 @@ namespace DMS.Rpc.problem
             ProblemTypeFilter.Selects = ProblemTypeSelect.ALL;
 
             List<ProblemType> ProblemTypes = await ProblemTypeService.List(ProblemTypeFilter);
-            List<MonitorStoreProblem_ProblemTypeDTO> Problem_ProblemTypeDTOs = ProblemTypes
-                .Select(x => new MonitorStoreProblem_ProblemTypeDTO(x)).ToList();
+            List<Problem_ProblemTypeDTO> Problem_ProblemTypeDTOs = ProblemTypes
+                .Select(x => new Problem_ProblemTypeDTO(x)).ToList();
             return Problem_ProblemTypeDTOs;
         }
-        [Route(MonitorStoreProblemRoute.SingleListStore), HttpPost]
-        public async Task<List<MonitorStoreProblem_StoreDTO>> SingleListStore([FromBody] Problem_StoreFilterDTO Problem_StoreFilterDTO)
+        [Route(ProblemRoute.SingleListStore), HttpPost]
+        public async Task<List<Problem_StoreDTO>> SingleListStore([FromBody] Problem_StoreFilterDTO Problem_StoreFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -545,12 +545,12 @@ namespace DMS.Rpc.problem
             StoreFilter.StatusId = Problem_StoreFilterDTO.StatusId;
 
             List<Store> Stores = await StoreService.List(StoreFilter);
-            List<MonitorStoreProblem_StoreDTO> Problem_StoreDTOs = Stores
-                .Select(x => new MonitorStoreProblem_StoreDTO(x)).ToList();
+            List<Problem_StoreDTO> Problem_StoreDTOs = Stores
+                .Select(x => new Problem_StoreDTO(x)).ToList();
             return Problem_StoreDTOs;
         }
-        [Route(MonitorStoreProblemRoute.SingleListStoreChecking), HttpPost]
-        public async Task<List<MonitorStoreProblem_StoreCheckingDTO>> SingleListStoreChecking([FromBody] Problem_StoreCheckingFilterDTO Problem_StoreCheckingFilterDTO)
+        [Route(ProblemRoute.SingleListStoreChecking), HttpPost]
+        public async Task<List<Problem_StoreCheckingDTO>> SingleListStoreChecking([FromBody] Problem_StoreCheckingFilterDTO Problem_StoreCheckingFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -570,8 +570,8 @@ namespace DMS.Rpc.problem
             StoreCheckingFilter.CheckOutAt = Problem_StoreCheckingFilterDTO.CheckOutAt;
 
             List<StoreChecking> StoreCheckings = await StoreCheckingService.List(StoreCheckingFilter);
-            List<MonitorStoreProblem_StoreCheckingDTO> Problem_StoreCheckingDTOs = StoreCheckings
-                .Select(x => new MonitorStoreProblem_StoreCheckingDTO(x)).ToList();
+            List<Problem_StoreCheckingDTO> Problem_StoreCheckingDTOs = StoreCheckings
+                .Select(x => new Problem_StoreCheckingDTO(x)).ToList();
             return Problem_StoreCheckingDTOs;
         }
     }

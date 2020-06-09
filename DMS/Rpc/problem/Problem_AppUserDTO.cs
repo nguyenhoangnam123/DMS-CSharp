@@ -4,7 +4,7 @@ using System;
 
 namespace DMS.Rpc.problem
 {
-    public class MonitorStoreProblem_AppUserDTO : DataDTO
+    public class Problem_AppUserDTO : DataDTO
     {
 
         public long Id { get; set; }
@@ -36,8 +36,8 @@ namespace DMS.Rpc.problem
         public DateTime? Birthday { get; set; }
 
 
-        public MonitorStoreProblem_AppUserDTO() { }
-        public MonitorStoreProblem_AppUserDTO(AppUser AppUser)
+        public Problem_AppUserDTO() { }
+        public Problem_AppUserDTO(AppUser AppUser)
         {
 
             this.Id = AppUser.Id;
