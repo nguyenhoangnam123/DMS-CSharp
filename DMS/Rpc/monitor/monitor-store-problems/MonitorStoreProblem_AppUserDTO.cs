@@ -2,7 +2,7 @@ using Common;
 using DMS.Entities;
 using System;
 
-namespace DMS.Rpc.problem
+namespace DMS.Rpc.monitor_store_problems
 {
     public class MonitorStoreProblem_AppUserDTO : DataDTO
     {
@@ -72,7 +72,7 @@ namespace DMS.Rpc.problem
         }
     }
 
-    public class Problem_AppUserFilterDTO : FilterDTO
+    public class MonitorStoreProblem_AppUserFilterDTO : FilterDTO
     {
 
         public IdFilter Id { get; set; }
