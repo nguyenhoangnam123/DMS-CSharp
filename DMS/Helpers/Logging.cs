@@ -21,7 +21,7 @@ namespace Helpers
         private ICurrentContext CurrentContext;
         private IRabbitManager RabbitManager;
         private IUOW UOW;
-        public Logging(IConfiguration Configuration,
+        public Logging(
             ICurrentContext CurrentContext,
             IRabbitManager RabbitManager,
             IUOW UOW)
@@ -40,6 +40,7 @@ namespace Helpers
                 ClassName = className,
                 MethodName = methodName,
                 ModuleName = StaticParams.ModuleName,
+                OldData = JsonConvert.SerializeObject(oldData),
                 NewData = JsonConvert.SerializeObject(newData),
                 Time = StaticParams.DateTimeNow,
                 RowId = Guid.NewGuid(),
@@ -57,7 +58,8 @@ namespace Helpers
                 ClassName = className,
                 MethodName = methodName,
                 ModuleName = StaticParams.ModuleName,
-                Exception = ex.ToString()
+                Exception = ex.ToString(),
+                Time = StaticParams.DateTimeNow,
             };
             RabbitManager.PublishSingle(new EventMessage<SystemLog>(SystemLog, SystemLog.RowId), RoutingKeyEnum.SystemLogSend);
             return true;
