@@ -665,7 +665,11 @@ namespace DMS.Rpc.indirect_sales_order
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            var Product = await ProductService.Get(IndirectSalesOrder_UnitOfMeasureFilterDTO.ProductId.Equal ?? 0);
+            var Product = (await ProductService.List(new ProductFilter
+            {
+                Id = IndirectSalesOrder_UnitOfMeasureFilterDTO.ProductId,
+                Selects = ProductSelect.UnitOfMeasure | ProductSelect.UnitOfMeasureGrouping
+            })).FirstOrDefault();
 
             List<IndirectSalesOrder_UnitOfMeasureDTO> IndirectSalesOrder_UnitOfMeasureDTOs = new List<IndirectSalesOrder_UnitOfMeasureDTO>();
             if (Product.UnitOfMeasureGrouping != null && Product.UnitOfMeasureGrouping.StatusId == Enums.StatusEnum.ACTIVE.Id)
