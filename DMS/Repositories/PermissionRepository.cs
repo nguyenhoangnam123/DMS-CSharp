@@ -227,7 +227,7 @@ namespace DMS.Repositories
                         Name = x.PermissionOperator.Name,
                     },
                 }).ToListAsync();
-          
+
             Permission.PermissionActionMappings = await DataContext.PermissionActionMapping
                 .Where(x => x.PermissionId == Permission.Id)
                 .Select(x => new PermissionActionMapping
@@ -247,7 +247,6 @@ namespace DMS.Repositories
         public async Task<bool> Create(Permission Permission)
         {
             PermissionDAO PermissionDAO = new PermissionDAO();
-            PermissionDAO.Id = Permission.Id;
             PermissionDAO.Code = Permission.Code;
             PermissionDAO.Name = Permission.Name;
             PermissionDAO.RoleId = Permission.RoleId;
@@ -278,6 +277,8 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Permission Permission)
         {
+            await DataContext.PermissionContent.Where(x => x.PermissionId == Permission.Id).DeleteFromQueryAsync();
+            await DataContext.PermissionActionMapping.Where(x => x.PermissionId == Permission.Id).DeleteFromQueryAsync();
             await DataContext.Permission.Where(x => x.Id == Permission.Id).DeleteFromQueryAsync();
             return true;
         }

@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MSurvey
 {
-    public interface ISurveyOptionTypeService :  IServiceScoped
+    public interface ISurveyOptionTypeService : IServiceScoped
     {
         Task<int> Count(SurveyOptionTypeFilter SurveyOptionTypeFilter);
         Task<List<SurveyOptionType>> List(SurveyOptionTypeFilter SurveyOptionTypeFilter);

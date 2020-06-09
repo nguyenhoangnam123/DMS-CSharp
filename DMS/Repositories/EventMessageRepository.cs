@@ -1,12 +1,12 @@
-﻿using DMS.Entities;
+﻿using Common;
+using DMS.Entities;
 using DMS.Models;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
-using Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace DMS.Repositories
 {
@@ -123,7 +123,7 @@ namespace DMS.Repositories
                 RowId = e.RowId,
                 EntityName = e.EntityName,
                 Content = JsonConvert.DeserializeObject<T>(e.Content)
-        }).FirstOrDefaultAsync();
+            }).FirstOrDefaultAsync();
 
             if (eventMessage == null)
                 return null;

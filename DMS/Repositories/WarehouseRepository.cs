@@ -1,14 +1,13 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
-using DMS.Enums;
-using Microsoft.CodeAnalysis.Operations;
 
 namespace DMS.Repositories
 {
@@ -277,6 +276,7 @@ namespace DMS.Repositories
                 return null;
             List<Item> Items = await DataContext.Item.AsNoTracking()
                 .Where(i => i.DeletedAt == null && i.StatusId == StatusEnum.ACTIVE.Id)
+                .Where(i => i.Product.StatusId == StatusEnum.ACTIVE.Id && i.Product.DeletedAt == null)
                 .Select(x => new Item
                 {
                     Id = x.Id,
@@ -313,7 +313,7 @@ namespace DMS.Repositories
                     SaleStock = x.SaleStock,
                     AccountingStock = x.AccountingStock,
                 }).ToListAsync();
-            foreach(Item Item in Items)
+            foreach (Item Item in Items)
             {
                 Inventory Inventory = Warehouse.Inventories.Where(i => i.ItemId == Item.Id).FirstOrDefault();
                 if (Inventory == null)

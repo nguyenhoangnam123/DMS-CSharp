@@ -143,13 +143,13 @@ namespace DMS.Repositories
         {
             Menu Menu = await DataContext.Menu.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new Menu()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                Path = x.Path,
-                IsDeleted = x.IsDeleted,
-            }).FirstOrDefaultAsync();
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    Path = x.Path,
+                    IsDeleted = x.IsDeleted,
+                }).FirstOrDefaultAsync();
 
             if (Menu == null)
                 return null;

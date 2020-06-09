@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MResellerType
 {
-    public interface IResellerTypeService :  IServiceScoped
+    public interface IResellerTypeService : IServiceScoped
     {
         Task<int> Count(ResellerTypeFilter ResellerTypeFilter);
         Task<List<ResellerType>> List(ResellerTypeFilter ResellerTypeFilter);
@@ -82,7 +79,7 @@ namespace DMS.Services.MResellerType
                 return null;
             return ResellerType;
         }
-       
+
         public async Task<ResellerType> Create(ResellerType ResellerType)
         {
             if (!await ResellerTypeValidator.Create(ResellerType))
@@ -182,7 +179,7 @@ namespace DMS.Services.MResellerType
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<ResellerType>> Import(List<ResellerType> ResellerTypes)
         {
             if (!await ResellerTypeValidator.Import(ResellerTypes))
@@ -205,6 +202,6 @@ namespace DMS.Services.MResellerType
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
+        }
     }
 }

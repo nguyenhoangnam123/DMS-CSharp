@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class SurveyQuestion : DataEntity,  IEquatable<SurveyQuestion>
+    public class SurveyQuestion : DataEntity, IEquatable<SurveyQuestion>
     {
         public long Id { get; set; }
         public long SurveyId { get; set; }
@@ -37,8 +37,8 @@ namespace DMS.Entities
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<SurveyQuestionFilter> OrFilter { get; set; }
-        public SurveyQuestionOrder OrderBy {get; set;}
-        public SurveyQuestionSelect Selects {get; set;}
+        public SurveyQuestionOrder OrderBy { get; set; }
+        public SurveyQuestionSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -54,7 +54,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum SurveyQuestionSelect:long
+    public enum SurveyQuestionSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

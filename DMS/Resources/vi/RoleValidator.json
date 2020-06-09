@@ -3,19 +3,38 @@
     "IdNotExisted": "Id không tồn tại"
   },
   "Code": {
-    "CodeEmpty": "Chưa nhập Code",
-    "CodeOverLength": "Code quá dài",
-    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt",
-    "FieldNotExisted":  "Trường không tồn tại"
+    "CodeEmpty": "Chưa nhập mã vai trò",
+    "CodeOverLength": "Mã vai trò quá dài",
+    "CodeExisted": "Mã vai trò đã được sử dụng",
+    "CodeHasSpecialCharacter": "Mã chứa kí tự đặc biệt"
+  },
+  "Field": {
+    "Name": {
+      "FieldNotExisted": "Trường không tồn tại"
+    }
+  },
+  "Menu": {
+    "Code": {
+      "CodeNotExisted": "Code không tồn tại"
+    }
+  },
+  "Permission": {
+    "Code": {
+      "CodeNotExisted": "Code không tồn tại"
+    }
   },
   "Name": {
-    "NameExisted": "Tên đã tồn tại"
+    "NameExisted": "Tên đã tồn tại",
+    "NameEmpty": "Chưa nhập tên vai trò",
+    "NameOverLength": "Tên vai trò quá dài"
   },
   "Status": {
-    "StatusNotExisted": "Trạng thái không tồn tại"
+    "StatusNotExisted": "Chưa chọn trạng thái"
+  },
+  "Page": {
+    "PageNotExisted": "Trang không tồn tại"
   },
   "AppUser": {
-    "AppUserNotExisted": "App người dùng không tồn tại"
+    "AppUserNotExisted": "Chưa chọn AppUser"
   }
-
 }

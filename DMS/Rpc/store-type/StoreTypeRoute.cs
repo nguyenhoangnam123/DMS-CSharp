@@ -1,17 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MStoreType;
-using DMS.Services.MStatus;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.store_type
 {
@@ -35,22 +23,22 @@ namespace DMS.Rpc.store_type
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
+            { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, } },
-            { "Thêm", new List<string> { 
-                Master, Count, List, Get, 
-                Detail, Create,  
+            { "Thêm", new List<string> {
+                Master, Count, List, Get,
+                Detail, Create,
                 SingleListStatus, } },
-            { "Sửa", new List<string> { 
-                Master, Count, List, Get, 
-                Detail, Update,  
+            { "Sửa", new List<string> {
+                Master, Count, List, Get,
+                Detail, Update,
                 SingleListStatus, } },
-            { "Xoá", new List<string> { 
-                Master, Count, List, Get, 
-                Detail, Delete,  
+            { "Xoá", new List<string> {
+                Master, Count, List, Get,
+                Detail, Delete,
                 SingleListStatus, } },
-            { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, 
+            { "Xoá nhiều", new List<string> {
+                Master, Count, List, Get,
                 BulkDelete } },
         };
     }

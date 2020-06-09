@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MAlbum
 {
-    public interface IAlbumService :  IServiceScoped
+    public interface IAlbumService : IServiceScoped
     {
         Task<int> Count(AlbumFilter AlbumFilter);
         Task<List<Album>> List(AlbumFilter AlbumFilter);
@@ -83,7 +80,7 @@ namespace DMS.Services.MAlbum
                 return null;
             return Album;
         }
-       
+
         public async Task<Album> Create(Album Album)
         {
             if (!await AlbumValidator.Create(Album))
@@ -183,7 +180,7 @@ namespace DMS.Services.MAlbum
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<Album>> Import(List<Album> Albums)
         {
             if (!await AlbumValidator.Import(Albums))
@@ -206,8 +203,8 @@ namespace DMS.Services.MAlbum
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public AlbumFilter ToFilter(AlbumFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<AlbumFilter>();

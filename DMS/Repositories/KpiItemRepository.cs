@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -54,7 +54,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<KpiItemDAO> OrFilter(IQueryable<KpiItemDAO> query, KpiItemFilter filter)
+        private IQueryable<KpiItemDAO> OrFilter(IQueryable<KpiItemDAO> query, KpiItemFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -77,7 +77,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<KpiItemDAO> DynamicOrder(IQueryable<KpiItemDAO> query, KpiItemFilter filter)
         {
@@ -414,7 +414,7 @@ namespace DMS.Repositories
             await DataContext.KpiItem.Where(x => x.Id == KpiItem.Id).UpdateFromQueryAsync(x => new KpiItemDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<KpiItem> KpiItems)
         {
             List<KpiItemDAO> KpiItemDAOs = new List<KpiItemDAO>();
@@ -439,7 +439,7 @@ namespace DMS.Repositories
             foreach (var KpiItem in KpiItems)
             {
                 KpiItem.Id = KpiItemDAOs.Where(x => x.RowId == KpiItem.RowId).Select(x => x.Id).FirstOrDefault();
-                if(KpiItem.KpiItemContents != null && KpiItem.KpiItemContents.Any())
+                if (KpiItem.KpiItemContents != null && KpiItem.KpiItemContents.Any())
                 {
                     var listContent = KpiItem.KpiItemContents.Select(x => new KpiItemContentDAO
                     {
@@ -448,13 +448,13 @@ namespace DMS.Repositories
                     }).ToList();
                     KpiItemContentDAOs.AddRange(listContent);
                 }
-                
+
             }
 
             var KpiItemKpiCriteriaTotalMappingDAOs = new List<KpiItemKpiCriteriaTotalMappingDAO>();
             foreach (var KpiItem in KpiItems)
             {
-                if(KpiItem.KpiItemKpiCriteriaTotalMappings != null && KpiItem.KpiItemKpiCriteriaTotalMappings.Any())
+                if (KpiItem.KpiItemKpiCriteriaTotalMappings != null && KpiItem.KpiItemKpiCriteriaTotalMappings.Any())
                 {
                     var listTotal = KpiItem.KpiItemKpiCriteriaTotalMappings.Select(x => new KpiItemKpiCriteriaTotalMappingDAO
                     {
@@ -464,7 +464,7 @@ namespace DMS.Repositories
                     }).ToList();
                     KpiItemKpiCriteriaTotalMappingDAOs.AddRange(listTotal);
                 }
-                
+
             }
 
             await DataContext.KpiItemContent.BulkMergeAsync(KpiItemContentDAOs);
@@ -512,7 +512,7 @@ namespace DMS.Repositories
                 foreach (KpiItemContent KpiItemContent in KpiItem.KpiItemContents)
                 {
                     KpiItemContent.Id = KpiItemContentDAOs.Where(x => x.RowId == KpiItemContent.RowId).Select(x => x.Id).FirstOrDefault();
-                    if(KpiItemContent.KpiItemContentKpiCriteriaItemMappings != null)
+                    if (KpiItemContent.KpiItemContentKpiCriteriaItemMappings != null)
                     {
                         foreach (KpiItemContentKpiCriteriaItemMapping KpiItemContentKpiCriteriaItemMapping in KpiItemContent.KpiItemContentKpiCriteriaItemMappings)
                         {
@@ -546,6 +546,6 @@ namespace DMS.Repositories
                 await DataContext.KpiItemKpiCriteriaTotalMapping.BulkMergeAsync(KpiItemKpiCriteriaTotalMappingDAOs);
             }
         }
-        
+
     }
 }

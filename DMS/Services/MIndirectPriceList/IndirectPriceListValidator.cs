@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MIndirectPriceList
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MIndirectPriceList
             return count == 1;
         }
 
-        public async Task<bool>Create(IndirectPriceList IndirectPriceList)
+        public async Task<bool> Create(IndirectPriceList IndirectPriceList)
         {
             return IndirectPriceList.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MIndirectPriceList
             }
             return IndirectPriceList.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<IndirectPriceList> IndirectPriceLists)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<IndirectPriceList> IndirectPriceLists)
         {
             return true;

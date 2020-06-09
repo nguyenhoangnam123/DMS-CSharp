@@ -2,8 +2,8 @@ using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
-using DMS.Services.MEditedPriceStatus;
 using DMS.Services.MDirectSalesOrder;
+using DMS.Services.MEditedPriceStatus;
 using DMS.Services.MItem;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.direct_sales_order
 {
-   
+
 
     public class DirectSalesOrderController : RpcController
     {
@@ -116,7 +116,7 @@ namespace DMS.Rpc.direct_sales_order
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(DirectSalesOrder_DirectSalesOrderDTO.Id))
                 return Forbid();
 
@@ -134,7 +134,7 @@ namespace DMS.Rpc.direct_sales_order
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(DirectSalesOrder_DirectSalesOrderDTO.Id))
                 return Forbid();
 
@@ -164,7 +164,7 @@ namespace DMS.Rpc.direct_sales_order
             else
                 return BadRequest(DirectSalesOrder_DirectSalesOrderDTO);
         }
-        
+
         [Route(DirectSalesOrderRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -184,7 +184,7 @@ namespace DMS.Rpc.direct_sales_order
                 return BadRequest(DirectSalesOrders.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         [Route(DirectSalesOrderRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -267,7 +267,7 @@ namespace DMS.Rpc.direct_sales_order
                     string TotalTaxAmountValue = worksheet.Cells[i + StartRow, TotalTaxAmountColumn].Value?.ToString();
                     string TotalValue = worksheet.Cells[i + StartRow, TotalColumn].Value?.ToString();
                     string RequestStateIdValue = worksheet.Cells[i + StartRow, RequestStateIdColumn].Value?.ToString();
-                    
+
                     DirectSalesOrder DirectSalesOrder = new DirectSalesOrder();
                     DirectSalesOrder.Code = CodeValue;
                     DirectSalesOrder.StorePhone = StorePhoneValue;
@@ -294,7 +294,7 @@ namespace DMS.Rpc.direct_sales_order
                     AppUser SaleEmployee = SaleEmployees.Where(x => x.Id.ToString() == SaleEmployeeIdValue).FirstOrDefault();
                     DirectSalesOrder.SaleEmployeeId = SaleEmployee == null ? 0 : SaleEmployee.Id;
                     DirectSalesOrder.SaleEmployee = SaleEmployee;
-                    
+
                     DirectSalesOrders.Add(DirectSalesOrder);
                 }
             }
@@ -352,13 +352,13 @@ namespace DMS.Rpc.direct_sales_order
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(DirectSalesOrderRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] DirectSalesOrder_DirectSalesOrderFilterDTO DirectSalesOrder_DirectSalesOrderFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -371,7 +371,7 @@ namespace DMS.Rpc.direct_sales_order
 
                 var DirectSalesOrderHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "BuyerStoreId",
@@ -420,7 +420,7 @@ namespace DMS.Rpc.direct_sales_order
                 }
                 excel.GenerateWorksheet("DirectSalesOrder", DirectSalesOrderHeaders, DirectSalesOrderData);
                 #endregion
-                
+
                 #region Store
                 var StoreFilter = new StoreFilter();
                 StoreFilter.Selects = StoreSelect.ALL;
@@ -432,7 +432,7 @@ namespace DMS.Rpc.direct_sales_order
 
                 var StoreHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -502,7 +502,7 @@ namespace DMS.Rpc.direct_sales_order
 
                 var EditedPriceStatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -532,7 +532,7 @@ namespace DMS.Rpc.direct_sales_order
 
                 var RequestStateHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -562,7 +562,7 @@ namespace DMS.Rpc.direct_sales_order
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "Password",
@@ -614,14 +614,14 @@ namespace DMS.Rpc.direct_sales_order
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
                 #region DirectSalesOrder
                 var DirectSalesOrderHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "BuyerStoreId",
@@ -645,7 +645,7 @@ namespace DMS.Rpc.direct_sales_order
                 List<object[]> DirectSalesOrderData = new List<object[]>();
                 excel.GenerateWorksheet("DirectSalesOrder", DirectSalesOrderHeaders, DirectSalesOrderData);
                 #endregion
-                
+
                 #region Store
                 var StoreFilter = new StoreFilter();
                 StoreFilter.Selects = StoreSelect.ALL;
@@ -657,7 +657,7 @@ namespace DMS.Rpc.direct_sales_order
 
                 var StoreHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -727,7 +727,7 @@ namespace DMS.Rpc.direct_sales_order
 
                 var EditedPriceStatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -757,7 +757,7 @@ namespace DMS.Rpc.direct_sales_order
 
                 var RequestStateHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -787,7 +787,7 @@ namespace DMS.Rpc.direct_sales_order
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "Password",
@@ -1060,7 +1060,7 @@ namespace DMS.Rpc.direct_sales_order
                 .Select(x => new DirectSalesOrder_AppUserDTO(x)).ToList();
             return DirectSalesOrder_AppUserDTOs;
         }
-        
+
         [Route(DirectSalesOrderRoute.FilterListUnitOfMeasure), HttpPost]
         public async Task<List<DirectSalesOrder_UnitOfMeasureDTO>> FilterListUnitOfMeasure([FromBody] DirectSalesOrder_UnitOfMeasureFilterDTO DirectSalesOrder_UnitOfMeasureFilterDTO)
         {
@@ -1081,7 +1081,7 @@ namespace DMS.Rpc.direct_sales_order
                 .Select(x => new DirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
             return DirectSalesOrder_UnitOfMeasureDTOs;
         }
-       
+
         [Route(DirectSalesOrderRoute.FilterListItem), HttpPost]
         public async Task<List<DirectSalesOrder_ItemDTO>> FilterListItem([FromBody] DirectSalesOrder_ItemFilterDTO DirectSalesOrder_ItemFilterDTO)
         {
@@ -1208,7 +1208,7 @@ namespace DMS.Rpc.direct_sales_order
                 .Select(x => new DirectSalesOrder_AppUserDTO(x)).ToList();
             return DirectSalesOrder_AppUserDTOs;
         }
-       
+
         [Route(DirectSalesOrderRoute.SingleListUnitOfMeasure), HttpPost]
         public async Task<List<DirectSalesOrder_UnitOfMeasureDTO>> SingleListUnitOfMeasure([FromBody] DirectSalesOrder_UnitOfMeasureFilterDTO DirectSalesOrder_UnitOfMeasureFilterDTO)
         {
@@ -1229,7 +1229,7 @@ namespace DMS.Rpc.direct_sales_order
                 .Select(x => new DirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
             return DirectSalesOrder_UnitOfMeasureDTOs;
         }
-       
+
         [Route(DirectSalesOrderRoute.SingleListSupplier), HttpPost]
         public async Task<List<DirectSalesOrder_SupplierDTO>> SingleListSupplier([FromBody] DirectSalesOrder_SupplierFilterDTO Product_SupplierFilterDTO)
         {

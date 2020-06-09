@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.indirect_price_list
@@ -11,9 +8,9 @@ namespace DMS.Rpc.indirect_price_list
         public long IndirectPriceListId { get; set; }
         public long ItemId { get; set; }
         public long Price { get; set; }
-        public IndirectPriceList_ItemDTO Item { get; set; }   
-        
-        public IndirectPriceList_IndirectPriceListItemMappingDTO() {}
+        public IndirectPriceList_ItemDTO Item { get; set; }
+
+        public IndirectPriceList_IndirectPriceListItemMappingDTO() { }
         public IndirectPriceList_IndirectPriceListItemMappingDTO(IndirectPriceListItemMapping IndirectPriceListItemMapping)
         {
             this.IndirectPriceListId = IndirectPriceListItemMapping.IndirectPriceListId;
@@ -26,13 +23,13 @@ namespace DMS.Rpc.indirect_price_list
 
     public class IndirectPriceList_IndirectPriceListItemMappingFilterDTO : FilterDTO
     {
-        
+
         public IdFilter IndirectPriceListId { get; set; }
-        
+
         public IdFilter ItemId { get; set; }
-        
+
         public LongFilter Price { get; set; }
-        
+
         public IndirectPriceListItemMappingOrder OrderBy { get; set; }
     }
 }

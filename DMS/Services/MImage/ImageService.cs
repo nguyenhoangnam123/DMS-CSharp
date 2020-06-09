@@ -3,12 +3,9 @@ using DMS.Entities;
 using DMS.Helpers;
 using DMS.Repositories;
 using Helpers;
-using OfficeOpenXml;
 using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MImage

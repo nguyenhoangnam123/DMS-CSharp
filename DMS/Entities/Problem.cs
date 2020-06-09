@@ -1,14 +1,15 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Problem : DataEntity,  IEquatable<Problem>
+    public class Problem : DataEntity, IEquatable<Problem>
     {
         public long Id { get; set; }
+        public string Code { get; set; }
         public long? StoreCheckingId { get; set; }
         public long StoreId { get; set; }
         public long CreatorId { get; set; }
@@ -23,7 +24,7 @@ namespace DMS.Entities
         public Store Store { get; set; }
         public StoreChecking StoreChecking { get; set; }
         public List<ProblemImageMapping> ProblemImageMappings { get; set; }
-
+        public List<ProblemHistory> ProblemHistorys { get; set; }
         public bool Equals(Problem other)
         {
             return other != null && Id == other.Id;
@@ -37,6 +38,8 @@ namespace DMS.Entities
     public class ProblemFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
+        public StringFilter Code { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public IdFilter StoreCheckingId { get; set; }
         public IdFilter StoreId { get; set; }
         public IdFilter CreatorId { get; set; }
@@ -46,8 +49,8 @@ namespace DMS.Entities
         public StringFilter Content { get; set; }
         public IdFilter ProblemStatusId { get; set; }
         public List<ProblemFilter> OrFilter { get; set; }
-        public ProblemOrder OrderBy {get; set;}
-        public ProblemSelect Selects {get; set;}
+        public ProblemOrder OrderBy { get; set; }
+        public ProblemSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -62,10 +65,11 @@ namespace DMS.Entities
         CompletedAt = 6,
         Content = 7,
         ProblemStatus = 8,
+        Code = 9,
     }
 
     [Flags]
-    public enum ProblemSelect:long
+    public enum ProblemSelect : long
     {
         ALL = E.ALL,
         Id = E._0,
@@ -77,5 +81,6 @@ namespace DMS.Entities
         CompletedAt = E._6,
         Content = E._7,
         ProblemStatus = E._8,
+        Code = E._9,
     }
 }

@@ -1,23 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MKpiItem;
 using DMS.Services.MAppUser;
-using DMS.Services.MKpiPeriod;
-using DMS.Services.MOrganization;
-using DMS.Services.MStatus;
 using DMS.Services.MItem;
 using DMS.Services.MKpiCriteriaItem;
 using DMS.Services.MKpiCriteriaTotal;
+using DMS.Services.MKpiItem;
+using DMS.Services.MKpiPeriod;
+using DMS.Services.MOrganization;
+using DMS.Services.MStatus;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.kpi_item
 {
@@ -1203,6 +1201,42 @@ namespace DMS.Rpc.kpi_item
             return KpiItem_ItemDTOs;
         }
 
+        [Route(KpiItemRoute.CountAppUser), HttpPost]
+        public async Task<long> CountAppUser([FromBody] KpiItem_AppUserFilterDTO KpiItem_AppUserFilterDTO)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Id = KpiItem_AppUserFilterDTO.Id;
+            AppUserFilter.Username = KpiItem_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = KpiItem_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Email = KpiItem_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = KpiItem_AppUserFilterDTO.Phone;
+            AppUserFilter.OrganizationId = KpiItem_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            return await KpiItemService.CountAppUser(AppUserFilter, KpiItem_AppUserFilterDTO.KpiPeriodId);
+        }
+        [Route(KpiItemRoute.ListAppUser), HttpPost]
+        public async Task<List<KpiItem_AppUserDTO>> ListAppUser([FromBody] KpiItem_AppUserFilterDTO KpiItem_AppUserFilterDTO)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = KpiItem_AppUserFilterDTO.Skip;
+            AppUserFilter.Take = KpiItem_AppUserFilterDTO.Take;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = KpiItem_AppUserFilterDTO.Id;
+            AppUserFilter.Username = KpiItem_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = KpiItem_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Email = KpiItem_AppUserFilterDTO.Email;
+            AppUserFilter.OrganizationId = KpiItem_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.Phone = KpiItem_AppUserFilterDTO.Phone;
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<AppUser> AppUsers = await KpiItemService.ListAppUser(AppUserFilter, KpiItem_AppUserFilterDTO.KpiPeriodId);
+            List<KpiItem_AppUserDTO> KpiItem_AppUserDTOs = AppUsers
+                .Select(x => new KpiItem_AppUserDTO(x)).ToList();
+            return KpiItem_AppUserDTOs;
+        }
     }
 }
 

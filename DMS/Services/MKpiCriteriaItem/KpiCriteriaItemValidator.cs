@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MKpiCriteriaItem
 {
@@ -41,7 +38,7 @@ namespace DMS.Services.MKpiCriteriaItem
                 Skip = 0,
                 Take = 10,
                 Id = new IdFilter { Equal = KpiCriteriaItem.Id },
-                Selects = KpiCriteriaItemSelect .Id
+                Selects = KpiCriteriaItemSelect.Id
             };
 
             int count = await UOW.KpiCriteriaItemRepository.Count(KpiCriteriaItemFilter);
@@ -50,7 +47,7 @@ namespace DMS.Services.MKpiCriteriaItem
             return count == 1;
         }
 
-        public async Task<bool>Create(KpiCriteriaItem KpiCriteriaItem)
+        public async Task<bool> Create(KpiCriteriaItem KpiCriteriaItem)
         {
             return KpiCriteriaItem.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MKpiCriteriaItem
             }
             return KpiCriteriaItem.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<KpiCriteriaItem> KpiCriteriaItems)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<KpiCriteriaItem> KpiCriteriaItems)
         {
             return true;

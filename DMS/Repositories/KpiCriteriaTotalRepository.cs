@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -38,7 +37,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<KpiCriteriaTotalDAO> OrFilter(IQueryable<KpiCriteriaTotalDAO> query, KpiCriteriaTotalFilter filter)
+        private IQueryable<KpiCriteriaTotalDAO> OrFilter(IQueryable<KpiCriteriaTotalDAO> query, KpiCriteriaTotalFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -55,7 +54,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<KpiCriteriaTotalDAO> DynamicOrder(IQueryable<KpiCriteriaTotalDAO> query, KpiCriteriaTotalFilter filter)
         {
@@ -168,7 +167,7 @@ namespace DMS.Repositories
             await DataContext.KpiCriteriaTotal.Where(x => x.Id == KpiCriteriaTotal.Id).DeleteFromQueryAsync();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<KpiCriteriaTotal> KpiCriteriaTotals)
         {
             List<KpiCriteriaTotalDAO> KpiCriteriaTotalDAOs = new List<KpiCriteriaTotalDAO>();
@@ -195,6 +194,6 @@ namespace DMS.Repositories
         private async Task SaveReference(KpiCriteriaTotal KpiCriteriaTotal)
         {
         }
-        
+
     }
 }

@@ -1,14 +1,15 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.problem
 {
     public class Problem_ProblemDTO : DataDTO
     {
         public long Id { get; set; }
+        public string Code { get; set; }
         public long? StoreCheckingId { get; set; }
         public long StoreId { get; set; }
         public long CreatorId { get; set; }
@@ -23,10 +24,12 @@ namespace DMS.Rpc.problem
         public Problem_StoreDTO Store { get; set; }
         public Problem_StoreCheckingDTO StoreChecking { get; set; }
         public List<Problem_ProblemImageMappingDTO> ProblemImageMappings { get; set; }
-        public Problem_ProblemDTO() {}
+        public List<Problem_ProblemHistoryDTO> ProblemHistorys { get; set; }
+        public Problem_ProblemDTO() { }
         public Problem_ProblemDTO(Problem Problem)
         {
             this.Id = Problem.Id;
+            this.Code = Problem.Code;
             this.StoreCheckingId = Problem.StoreCheckingId;
             this.StoreId = Problem.StoreId;
             this.CreatorId = Problem.CreatorId;
@@ -41,6 +44,7 @@ namespace DMS.Rpc.problem
             this.Store = Problem.Store == null ? null : new Problem_StoreDTO(Problem.Store);
             this.StoreChecking = Problem.StoreChecking == null ? null : new Problem_StoreCheckingDTO(Problem.StoreChecking);
             this.ProblemImageMappings = Problem.ProblemImageMappings?.Select(x => new Problem_ProblemImageMappingDTO(x)).ToList();
+            this.ProblemHistorys = Problem.ProblemHistorys?.Select(x => new Problem_ProblemHistoryDTO(x)).ToList();
             this.Errors = Problem.Errors;
         }
     }
@@ -48,6 +52,7 @@ namespace DMS.Rpc.problem
     public class Problem_ProblemFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
+        public StringFilter Code { get; set; }
         public IdFilter StoreCheckingId { get; set; }
         public IdFilter StoreId { get; set; }
         public IdFilter CreatorId { get; set; }

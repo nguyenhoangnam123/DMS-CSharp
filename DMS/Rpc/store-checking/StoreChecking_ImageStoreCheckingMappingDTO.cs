@@ -1,8 +1,6 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
 
 namespace DMS.Rpc.store_checking
 {
@@ -14,12 +12,12 @@ namespace DMS.Rpc.store_checking
         public long StoreId { get; set; }
         public long SaleEmployeeId { get; set; }
         public DateTime ShootingAt { get; set; }
-        public StoreChecking_AlbumDTO Album { get; set; }   
-        public StoreChecking_AppUserDTO SaleEmployee { get; set; }   
-        public StoreChecking_ImageDTO Image { get; set; }   
-        public StoreChecking_StoreDTO Store { get; set; }   
-        
-        public StoreChecking_ImageStoreCheckingMappingDTO() {}
+        public StoreChecking_AlbumDTO Album { get; set; }
+        public StoreChecking_AppUserDTO SaleEmployee { get; set; }
+        public StoreChecking_ImageDTO Image { get; set; }
+        public StoreChecking_StoreDTO Store { get; set; }
+
+        public StoreChecking_ImageStoreCheckingMappingDTO() { }
         public StoreChecking_ImageStoreCheckingMappingDTO(StoreCheckingImageMapping ImageStoreCheckingMapping)
         {
             this.ImageId = ImageStoreCheckingMapping.ImageId;
@@ -38,19 +36,19 @@ namespace DMS.Rpc.store_checking
 
     public class StoreChecking_ImageStoreCheckingMappingFilterDTO : FilterDTO
     {
-        
+
         public IdFilter ImageId { get; set; }
-        
+
         public IdFilter StoreCheckingId { get; set; }
-        
+
         public IdFilter AlbumId { get; set; }
-        
+
         public IdFilter StoreId { get; set; }
-        
+
         public IdFilter SaleEmployeeId { get; set; }
-        
+
         public DateFilter ShootingAt { get; set; }
-        
+
         public ImageStoreCheckingMappingOrder OrderBy { get; set; }
     }
 }

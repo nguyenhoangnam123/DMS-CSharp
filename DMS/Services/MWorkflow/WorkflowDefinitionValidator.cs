@@ -1,12 +1,10 @@
-using System;
+using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
-using DMS.Enums;
 
 namespace DMS.Services.MWorkflow
 {
@@ -106,7 +104,7 @@ namespace DMS.Services.MWorkflow
 
         private async Task<bool> ValidateWorkflowType(WorkflowDefinition WorkflowDefinition)
         {
-            if(WorkflowDefinition.WorkflowTypeId == 0)
+            if (WorkflowDefinition.WorkflowTypeId == 0)
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.WorkflowType), ErrorCode.WorkflowTypeEmpty);
             else if (WorkflowDefinition.WorkflowTypeId != Enums.WorkflowTypeEnum.ORDER.Id && WorkflowDefinition.WorkflowTypeId != Enums.WorkflowTypeEnum.PRODUCT.Id &&
                 WorkflowDefinition.WorkflowTypeId != Enums.WorkflowTypeEnum.ROUTE.Id && WorkflowDefinition.WorkflowTypeId != Enums.WorkflowTypeEnum.STORE.Id)
@@ -131,12 +129,12 @@ namespace DMS.Services.MWorkflow
             };
 
             var count = await UOW.RequestWorkflowDefinitionMappingRepository.Count(RequestWorkflowDefinitionMappingFilter);
-            if(count != 0)
+            if (count != 0)
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Id), ErrorCode.WorkflowDefinitionInUsed);
             return WorkflowDefinition.IsValidated;
         }
 
-        public async Task<bool>Create(WorkflowDefinition WorkflowDefinition)
+        public async Task<bool> Create(WorkflowDefinition WorkflowDefinition)
         {
             await ValidateCode(WorkflowDefinition);
             await ValidateName(WorkflowDefinition);
@@ -165,7 +163,7 @@ namespace DMS.Services.MWorkflow
             }
             return WorkflowDefinition.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<WorkflowDefinition> WorkflowDefinitions)
         {
             foreach (WorkflowDefinition WorkflowDefinition in WorkflowDefinitions)
@@ -174,7 +172,7 @@ namespace DMS.Services.MWorkflow
             }
             return WorkflowDefinitions.All(st => st.IsValidated);
         }
-        
+
         public async Task<bool> Import(List<WorkflowDefinition> WorkflowDefinitions)
         {
             return true;

@@ -1,25 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MResellerType;
 using DMS.Services.MStatus;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.reseller_type
 {
-   
+
 
     public class ResellerTypeController : RpcController
     {
-        private IResellerTypeService ResellerTypeService; 
+        private IResellerTypeService ResellerTypeService;
         private IStatusService StatusService;
         private ICurrentContext CurrentContext;
         public ResellerTypeController(
@@ -75,7 +73,7 @@ namespace DMS.Rpc.reseller_type
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(ResellerType_ResellerTypeDTO.Id))
                 return Forbid();
 
@@ -93,7 +91,7 @@ namespace DMS.Rpc.reseller_type
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(ResellerType_ResellerTypeDTO.Id))
                 return Forbid();
 
@@ -123,7 +121,7 @@ namespace DMS.Rpc.reseller_type
             else
                 return BadRequest(ResellerType_ResellerTypeDTO);
         }
-        
+
         [Route(ResellerTypeRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -142,7 +140,7 @@ namespace DMS.Rpc.reseller_type
                 return BadRequest(ResellerTypes.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         [Route(ResellerTypeRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -171,7 +169,7 @@ namespace DMS.Rpc.reseller_type
                     string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
                     string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
                     string DeteledAtValue = worksheet.Cells[i + StartRow, DeteledAtColumn].Value?.ToString();
-                    
+
                     ResellerType ResellerType = new ResellerType();
                     ResellerType.Code = CodeValue;
                     ResellerType.Name = NameValue;
@@ -204,7 +202,7 @@ namespace DMS.Rpc.reseller_type
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(ResellerTypeRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] ResellerType_ResellerTypeFilterDTO ResellerType_ResellerTypeFilterDTO)
         {
@@ -221,7 +219,7 @@ namespace DMS.Rpc.reseller_type
             {
                 var ResellerTypeHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",

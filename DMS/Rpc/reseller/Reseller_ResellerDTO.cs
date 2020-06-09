@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.reseller
@@ -27,7 +24,7 @@ namespace DMS.Rpc.reseller
         public Reseller_ResellerStatusDTO ResellerStatus { get; set; }
         public Reseller_ResellerTypeDTO ResellerType { get; set; }
         public Reseller_AppUserDTO Staff { get; set; }
-        public Reseller_ResellerDTO() {}
+        public Reseller_ResellerDTO() { }
         public Reseller_ResellerDTO(Reseller Reseller)
         {
             this.Id = Reseller.Id;

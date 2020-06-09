@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MERouteChangeRequestContent
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MERouteChangeRequestContent
             return count == 1;
         }
 
-        public async Task<bool>Create(ERouteChangeRequestContent ERouteChangeRequestContent)
+        public async Task<bool> Create(ERouteChangeRequestContent ERouteChangeRequestContent)
         {
             return ERouteChangeRequestContent.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MERouteChangeRequestContent
             }
             return ERouteChangeRequestContent.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<ERouteChangeRequestContent> ERouteChangeRequestContents)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<ERouteChangeRequestContent> ERouteChangeRequestContents)
         {
             return true;

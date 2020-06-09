@@ -1,8 +1,8 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.e_route_change_request
 {
@@ -18,7 +18,7 @@ namespace DMS.Rpc.e_route_change_request
         public List<ERouteChangeRequest_ERouteChangeRequestContentDTO> ERouteChangeRequestContents { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public ERouteChangeRequest_ERouteChangeRequestDTO() {}
+        public ERouteChangeRequest_ERouteChangeRequestDTO() { }
         public ERouteChangeRequest_ERouteChangeRequestDTO(ERouteChangeRequest ERouteChangeRequest)
         {
             this.Id = ERouteChangeRequest.Id;

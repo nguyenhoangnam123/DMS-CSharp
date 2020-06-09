@@ -1,7 +1,6 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
-using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -55,7 +54,7 @@ namespace DMS.Repositories
                 if (filter.OrganizationId.Equal.HasValue)
                 {
                     long OrganizationId = filter.OrganizationId.Equal.Value;
-                    OrganizationDAO OrganizationDAO =  DataContext.Organization.Where(o => o.Id == OrganizationId).FirstOrDefault();
+                    OrganizationDAO OrganizationDAO = DataContext.Organization.Where(o => o.Id == OrganizationId).FirstOrDefault();
                     query = query.Where(q => q.Organization != null && q.Organization.Path.StartsWith(OrganizationDAO.Path));
                 }
             }

@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MProblem
 {
@@ -23,6 +20,8 @@ namespace DMS.Services.MProblem
         public enum ErrorCode
         {
             IdNotExisted,
+            ProblemTypeEmpty,
+            ProblemTypeNotExisted,
         }
 
         private IUOW UOW;
@@ -50,8 +49,21 @@ namespace DMS.Services.MProblem
             return count == 1;
         }
 
-        public async Task<bool>Create(Problem Problem)
+        private async Task<bool> ValidateProblemType(Problem Problem)
         {
+            if(Problem.ProblemTypeId == 0)
+                Problem.AddError(nameof(ProblemValidator), nameof(Problem.ProblemType), ErrorCode.ProblemTypeEmpty);
+            else
+            {
+                if(Problem.ProblemTypeId != Enums.ProblemTypeEnum.COMPETITOR.Id && Problem.ProblemTypeId != Enums.ProblemTypeEnum.STORE.Id)
+                    Problem.AddError(nameof(ProblemValidator), nameof(Problem.ProblemType), ErrorCode.ProblemTypeNotExisted);
+            }
+            return Problem.IsValidated;
+        }
+
+        public async Task<bool> Create(Problem Problem)
+        {
+            await ValidateProblemType(Problem);
             return Problem.IsValidated;
         }
 
@@ -70,12 +82,12 @@ namespace DMS.Services.MProblem
             }
             return Problem.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Problem> Problems)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<Problem> Problems)
         {
             return true;

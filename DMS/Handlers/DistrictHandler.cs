@@ -1,7 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Models;
-using DMS.Repositories;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;

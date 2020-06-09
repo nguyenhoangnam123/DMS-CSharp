@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class DirectSalesOrderPromotion : DataEntity,  IEquatable<DirectSalesOrderPromotion>
+    public class DirectSalesOrderPromotion : DataEntity, IEquatable<DirectSalesOrderPromotion>
     {
         public long Id { get; set; }
         public long DirectSalesOrderId { get; set; }
@@ -44,8 +44,8 @@ namespace DMS.Entities
         public LongFilter RequestedQuantity { get; set; }
         public StringFilter Note { get; set; }
         public List<DirectSalesOrderPromotionFilter> OrFilter { get; set; }
-        public DirectSalesOrderPromotionOrder OrderBy {get; set;}
-        public DirectSalesOrderPromotionSelect Selects {get; set;}
+        public DirectSalesOrderPromotionOrder OrderBy { get; set; }
+        public DirectSalesOrderPromotionSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -62,7 +62,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum DirectSalesOrderPromotionSelect:long
+    public enum DirectSalesOrderPromotionSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

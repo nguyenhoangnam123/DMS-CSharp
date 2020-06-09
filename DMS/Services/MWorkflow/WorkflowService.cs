@@ -1,14 +1,14 @@
 ﻿using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Handlers;
 using DMS.Repositories;
+using HandlebarsDotNet;
+using Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DMS.Entities;
-using DMS.Enums;
-using Helpers;
-using HandlebarsDotNet;
-using DMS.Handlers;
 
 namespace DMS.Services.MWorkflow
 {
@@ -85,13 +85,13 @@ namespace DMS.Services.MWorkflow
             if (WorkflowDefinition.WorkflowSteps == null)
             {
                 bool ShouldInit = false;
-                foreach(WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
+                foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
                 {
                     if (!WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id))
                     {
                         if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
                             ShouldInit = true;
-                    }    
+                    }
                 }
                 if (ShouldInit == false)
                     return false;
@@ -251,7 +251,7 @@ namespace DMS.Services.MWorkflow
                         Recipients = recipients,
                         Subject = CreateMailContent(WorkflowDirection.SubjectMailForCreator, Parameters),
                         Body = CreateMailContent(WorkflowDirection.BodyMailForCreator, Parameters),
-                        RowId = Guid.NewGuid()
+                        RowId = Guid.NewGuid(),
                     };
 
                     Mail MailForNextStep = new Mail
@@ -259,13 +259,14 @@ namespace DMS.Services.MWorkflow
                         Recipients = recipients,
                         Subject = CreateMailContent(WorkflowDirection.SubjectMailForNextStep, Parameters),
                         Body = CreateMailContent(WorkflowDirection.BodyMailForNextStep, Parameters),
-                        RowId = Guid.NewGuid()
+                        RowId = Guid.NewGuid(),
                     };
                     Mails.Add(MailForCreator);
                     Mails.Add(MailForNextStep);
                 }
-                Mails.Distinct();
-                RabbitManager.Publish(Mails, RoutingKeyEnum.SendMail);
+                Mails = Mails.Distinct().ToList();
+                List<EventMessage<Mail>> messages = Mails.Select(m => new EventMessage<Mail>(m, m.RowId)).ToList();
+                RabbitManager.PublishList(messages, RoutingKeyEnum.SendMail);
                 return true;
             }
 
@@ -314,9 +315,9 @@ namespace DMS.Services.MWorkflow
                         return true;
                     }
                 }
-                RabbitManager.Publish(Mails, RoutingKeyEnum.SendMail);
+                List<EventMessage<Mail>> messages = Mails.Select(m => new EventMessage<Mail>(m, m.RowId)).ToList();
+                RabbitManager.PublishList(messages, RoutingKeyEnum.SendMail);
             }
-
             return false;
         }
 

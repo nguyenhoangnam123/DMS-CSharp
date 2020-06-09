@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MKpiPeriod
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MKpiPeriod
             return count == 1;
         }
 
-        public async Task<bool>Create(KpiPeriod KpiPeriod)
+        public async Task<bool> Create(KpiPeriod KpiPeriod)
         {
             return KpiPeriod.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MKpiPeriod
             }
             return KpiPeriod.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<KpiPeriod> KpiPeriods)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<KpiPeriod> KpiPeriods)
         {
             return true;

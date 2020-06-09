@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -43,7 +42,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<IndirectPriceListTypeDAO> OrFilter(IQueryable<IndirectPriceListTypeDAO> query, IndirectPriceListTypeFilter filter)
+        private IQueryable<IndirectPriceListTypeDAO> OrFilter(IQueryable<IndirectPriceListTypeDAO> query, IndirectPriceListTypeFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -60,7 +59,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<IndirectPriceListTypeDAO> DynamicOrder(IQueryable<IndirectPriceListTypeDAO> query, IndirectPriceListTypeFilter filter)
         {
@@ -173,7 +172,7 @@ namespace DMS.Repositories
             await DataContext.IndirectPriceListType.Where(x => x.Id == IndirectPriceListType.Id).DeleteFromQueryAsync();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<IndirectPriceListType> IndirectPriceListTypes)
         {
             List<IndirectPriceListTypeDAO> IndirectPriceListTypeDAOs = new List<IndirectPriceListTypeDAO>();
@@ -200,6 +199,6 @@ namespace DMS.Repositories
         private async Task SaveReference(IndirectPriceListType IndirectPriceListType)
         {
         }
-        
+
     }
 }

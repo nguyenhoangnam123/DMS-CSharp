@@ -1,8 +1,8 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.store_checking
 {
@@ -20,7 +20,7 @@ namespace DMS.Rpc.store_checking
         public StoreChecking_AppUserDTO SaleEmployee { get; set; }
         public StoreChecking_StoreDTO Store { get; set; }
         public List<StoreChecking_ImageStoreCheckingMappingDTO> ImageStoreCheckingMappings { get; set; }
-        public StoreChecking_StoreCheckingDTO() {}
+        public StoreChecking_StoreCheckingDTO() { }
         public StoreChecking_StoreCheckingDTO(StoreChecking StoreChecking)
         {
             this.Id = StoreChecking.Id;

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -52,7 +51,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<StoreCheckingDAO> OrFilter(IQueryable<StoreCheckingDAO> query, StoreCheckingFilter filter)
+        private IQueryable<StoreCheckingDAO> OrFilter(IQueryable<StoreCheckingDAO> query, StoreCheckingFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -81,7 +80,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<StoreCheckingDAO> DynamicOrder(IQueryable<StoreCheckingDAO> query, StoreCheckingFilter filter)
         {
@@ -353,6 +352,7 @@ namespace DMS.Repositories
             StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
             StoreCheckingDAO.IndirectSalesOrderCounter = StoreChecking.CountIndirectSalesOrder;
             StoreCheckingDAO.ImageCounter = StoreChecking.CountImage;
+            StoreCheckingDAO.Planned = StoreChecking.Planned;
             DataContext.StoreChecking.Add(StoreCheckingDAO);
             await DataContext.SaveChangesAsync();
             StoreChecking.Id = StoreCheckingDAO.Id;
@@ -378,7 +378,7 @@ namespace DMS.Repositories
             await SaveReference(StoreChecking);
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<StoreChecking> StoreCheckings)
         {
             List<StoreCheckingDAO> StoreCheckingDAOs = new List<StoreCheckingDAO>();

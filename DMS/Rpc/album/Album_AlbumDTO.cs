@@ -1,8 +1,6 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
 
 namespace DMS.Rpc.album
 {
@@ -14,7 +12,7 @@ namespace DMS.Rpc.album
         public Album_StatusDTO Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public Album_AlbumDTO() {}
+        public Album_AlbumDTO() { }
         public Album_AlbumDTO(Album Album)
         {
             this.Id = Album.Id;

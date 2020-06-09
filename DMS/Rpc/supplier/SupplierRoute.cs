@@ -1,21 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MSupplier;
-using DMS.Services.MDistrict;
-using DMS.Services.MAppUser;
-using DMS.Services.MProvince;
-using DMS.Services.MStatus;
-using DMS.Services.MWard;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.supplier
 {
@@ -46,21 +30,21 @@ namespace DMS.Rpc.supplier
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
+            { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, FilterListStatus} },
-            { "Thêm", new List<string> { 
+            { "Thêm", new List<string> {
                 Master, Count, List, Get, FilterListStatus,
-                Detail, Create,  
+                Detail, Create,
                 SingleListDistrict, SingleListProvince, SingleListStatus, SingleListWard, } },
-            { "Sửa", new List<string> { 
+            { "Sửa", new List<string> {
                 Master, Count, List, Get, FilterListStatus,
-                Detail, Update,  
+                Detail, Update,
                 SingleListDistrict, SingleListProvince, SingleListStatus, SingleListWard, } },
-            { "Xoá", new List<string> { 
+            { "Xoá", new List<string> {
                 Master, Count, List, Get, FilterListStatus,
-                Detail, Delete,  
+                Detail, Delete,
                 SingleListDistrict, SingleListProvince, SingleListStatus, SingleListWard, } },
-            { "Xoá nhiều", new List<string> { 
+            { "Xoá nhiều", new List<string> {
                 Master, Count, List, Get, FilterListStatus,
                 BulkDelete } },
         };

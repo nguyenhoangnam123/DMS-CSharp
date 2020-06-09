@@ -2,7 +2,6 @@
 using DMS.Entities;
 using DMS.Services.MStatus;
 using DMS.Services.MUnitOfMeasure;
-using Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
@@ -145,7 +144,7 @@ namespace DMS.Rpc.unit_of_measure
                 int CodeColumn = 0 + StartColumn;
                 int NameColumn = 1 + StartColumn;
 
-               
+
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
                     // Lấy thông tin từng dòng
@@ -157,7 +156,7 @@ namespace DMS.Rpc.unit_of_measure
                     UnitOfMeasure UnitOfMeasure = new UnitOfMeasure();
                     UnitOfMeasure.Code = CodeValue;
                     UnitOfMeasure.Name = NameValue;
-                   
+
                     UnitOfMeasures.Add(UnitOfMeasure);
                 }
                 UnitOfMeasures = await UnitOfMeasureService.BulkMerge(UnitOfMeasures);

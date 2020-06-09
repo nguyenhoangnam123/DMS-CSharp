@@ -1,24 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MStore;
-using DMS.Services.MDistrict;
-using DMS.Services.MOrganization;
-using DMS.Services.MProvince;
-using DMS.Services.MReseller;
-using DMS.Services.MStatus;
-using DMS.Services.MStoreGrouping;
-using DMS.Services.MStoreType;
-using DMS.Services.MWard;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.store
 {
@@ -69,26 +51,26 @@ namespace DMS.Rpc.store
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
+            { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore } },
-            { "Thêm", new List<string> { 
+            { "Thêm", new List<string> {
                 Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, Create, SaveImage,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore} },
-            { "Sửa", new List<string> { 
+            { "Sửa", new List<string> {
                 Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, Update, SaveImage,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore} },
-            { "Xoá", new List<string> { 
+            { "Xoá", new List<string> {
                 Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Delete, } },
-            { "Xoá nhiều", new List<string> { 
+            { "Xoá nhiều", new List<string> {
                 Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, BulkDelete } },
-            { "Xuất excel", new List<string> { 
+            { "Xuất excel", new List<string> {
                 Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, Export } },
-            { "Nhập excel", new List<string> { 
+            { "Nhập excel", new List<string> {
                 Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, ExportTemplate, Import } },
         };

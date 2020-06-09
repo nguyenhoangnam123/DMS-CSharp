@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -48,7 +48,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<AlbumDAO> OrFilter(IQueryable<AlbumDAO> query, AlbumFilter filter)
+        private IQueryable<AlbumDAO> OrFilter(IQueryable<AlbumDAO> query, AlbumFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -65,7 +65,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<AlbumDAO> DynamicOrder(IQueryable<AlbumDAO> query, AlbumFilter filter)
         {
@@ -197,7 +197,7 @@ namespace DMS.Repositories
             await DataContext.Album.Where(x => x.Id == Album.Id).UpdateFromQueryAsync(x => new AlbumDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Album> Albums)
         {
             List<AlbumDAO> AlbumDAOs = new List<AlbumDAO>();
@@ -227,6 +227,6 @@ namespace DMS.Repositories
         private async Task SaveReference(Album Album)
         {
         }
-        
+
     }
 }

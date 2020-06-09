@@ -1,18 +1,16 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
+using DMS.Services.MStore;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
-using DMS.Services.MStore;
 
 namespace DMS.Services.MERouteChangeRequest
 {
-    public interface IERouteChangeRequestService :  IServiceScoped
+    public interface IERouteChangeRequestService : IServiceScoped
     {
         Task<int> Count(ERouteChangeRequestFilter ERouteChangeRequestFilter);
         Task<List<ERouteChangeRequest>> List(ERouteChangeRequestFilter ERouteChangeRequestFilter);
@@ -88,7 +86,7 @@ namespace DMS.Services.MERouteChangeRequest
                 return null;
             return ERouteChangeRequest;
         }
-       
+
         public async Task<ERouteChangeRequest> Create(ERouteChangeRequest ERouteChangeRequest)
         {
             if (!await ERouteChangeRequestValidator.Create(ERouteChangeRequest))
@@ -190,7 +188,7 @@ namespace DMS.Services.MERouteChangeRequest
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<ERouteChangeRequest>> Import(List<ERouteChangeRequest> ERouteChangeRequests)
         {
             if (!await ERouteChangeRequestValidator.Import(ERouteChangeRequests))
@@ -213,8 +211,8 @@ namespace DMS.Services.MERouteChangeRequest
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public ERouteChangeRequestFilter ToFilter(ERouteChangeRequestFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ERouteChangeRequestFilter>();

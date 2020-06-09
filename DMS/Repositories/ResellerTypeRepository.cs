@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -45,7 +45,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<ResellerTypeDAO> OrFilter(IQueryable<ResellerTypeDAO> query, ResellerTypeFilter filter)
+        private IQueryable<ResellerTypeDAO> OrFilter(IQueryable<ResellerTypeDAO> query, ResellerTypeFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -64,7 +64,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ResellerTypeDAO> DynamicOrder(IQueryable<ResellerTypeDAO> query, ResellerTypeFilter filter)
         {
@@ -142,12 +142,12 @@ namespace DMS.Repositories
         {
             ResellerType ResellerType = await DataContext.ResellerType.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new ResellerType()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                StatusId = x.StatusId,
-            }).FirstOrDefaultAsync();
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    StatusId = x.StatusId,
+                }).FirstOrDefaultAsync();
 
             if (ResellerType == null)
                 return null;
@@ -190,7 +190,7 @@ namespace DMS.Repositories
             await DataContext.ResellerType.Where(x => x.Id == ResellerType.Id).UpdateFromQueryAsync(x => new ResellerTypeDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<ResellerType> ResellerTypes)
         {
             List<ResellerTypeDAO> ResellerTypeDAOs = new List<ResellerTypeDAO>();
@@ -221,6 +221,6 @@ namespace DMS.Repositories
         private async Task SaveReference(ResellerType ResellerType)
         {
         }
-        
+
     }
 }

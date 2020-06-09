@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MUsedVariation
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MUsedVariation
             return count == 1;
         }
 
-        public async Task<bool>Create(UsedVariation UsedVariation)
+        public async Task<bool> Create(UsedVariation UsedVariation)
         {
             return UsedVariation.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MUsedVariation
             }
             return UsedVariation.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<UsedVariation> UsedVariations)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<UsedVariation> UsedVariations)
         {
             return true;

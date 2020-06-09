@@ -59,6 +59,7 @@ namespace DMS.Models
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<NotificationDAO> Notification { get; set; }
+        public virtual DbSet<NotificationStatusDAO> NotificationStatus { get; set; }
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
         public virtual DbSet<PageDAO> Page { get; set; }
         public virtual DbSet<PermissionDAO> Permission { get; set; }
@@ -67,6 +68,7 @@ namespace DMS.Models
         public virtual DbSet<PermissionOperatorDAO> PermissionOperator { get; set; }
         public virtual DbSet<PositionDAO> Position { get; set; }
         public virtual DbSet<ProblemDAO> Problem { get; set; }
+        public virtual DbSet<ProblemHistoryDAO> ProblemHistory { get; set; }
         public virtual DbSet<ProblemImageMappingDAO> ProblemImageMapping { get; set; }
         public virtual DbSet<ProblemStatusDAO> ProblemStatus { get; set; }
         public virtual DbSet<ProblemTypeDAO> ProblemType { get; set; }
@@ -1518,10 +1520,29 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
+                entity.HasOne(d => d.NotificationStatus)
+                    .WithMany(p => p.Notifications)
+                    .HasForeignKey(d => d.NotificationStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Notification_NotificationStatus");
+
                 entity.HasOne(d => d.Organization)
                     .WithMany(p => p.Notifications)
                     .HasForeignKey(d => d.OrganizationId)
                     .HasConstraintName("FK_Notification_Organization");
+            });
+
+            modelBuilder.Entity<NotificationStatusDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<OrganizationDAO>(entity =>
@@ -1640,19 +1661,19 @@ namespace DMS.Models
                     .WithMany(p => p.PermissionContents)
                     .HasForeignKey(d => d.FieldId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PermissionField_Field");
+                    .HasConstraintName("FK_PermissionContent_Field");
 
                 entity.HasOne(d => d.Permission)
                     .WithMany(p => p.PermissionContents)
                     .HasForeignKey(d => d.PermissionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PermissionField_Permission");
+                    .HasConstraintName("FK_PermissionContent_Permission");
 
                 entity.HasOne(d => d.PermissionOperator)
                     .WithMany(p => p.PermissionContents)
                     .HasForeignKey(d => d.PermissionOperatorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PermissionField_PermissionOperator");
+                    .HasConstraintName("FK_PermissionContent_PermissionOperator");
             });
 
             modelBuilder.Entity<PermissionOperatorDAO>(entity =>
@@ -1705,6 +1726,10 @@ namespace DMS.Models
 
             modelBuilder.Entity<ProblemDAO>(entity =>
             {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
                 entity.Property(e => e.CompletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Content).HasMaxLength(4000);
@@ -1739,6 +1764,29 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StoreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Problem_Store");
+            });
+
+            modelBuilder.Entity<ProblemHistoryDAO>(entity =>
+            {
+                entity.Property(e => e.Time).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Modifier)
+                    .WithMany(p => p.ProblemHistories)
+                    .HasForeignKey(d => d.ModifierId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProblemHistory_AppUser");
+
+                entity.HasOne(d => d.Problem)
+                    .WithMany(p => p.ProblemHistories)
+                    .HasForeignKey(d => d.ProblemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProblemHistory_Problem");
+
+                entity.HasOne(d => d.ProblemStatus)
+                    .WithMany(p => p.ProblemHistories)
+                    .HasForeignKey(d => d.ProblemStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProblemHistory_ProblemStatus");
             });
 
             modelBuilder.Entity<ProblemImageMappingDAO>(entity =>
@@ -2651,7 +2699,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<SurveyResultCellDAO>(entity =>
             {
-                entity.HasKey(e => new { e.SurveyResultId, e.SurveyQuestionId })
+                entity.HasKey(e => new { e.SurveyResultId, e.SurveyQuestionId, e.RowOptionId, e.ColumnOptionId })
                     .HasName("PK_SurveyResultTable");
 
                 entity.HasOne(d => d.ColumnOption)
@@ -2681,7 +2729,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<SurveyResultSingleDAO>(entity =>
             {
-                entity.HasKey(e => new { e.SurveyResultId, e.SurveyQuestionId })
+                entity.HasKey(e => new { e.SurveyResultId, e.SurveyQuestionId, e.SurveyOptionId })
                     .HasName("PK_SurveyResultSingle_1");
 
                 entity.HasOne(d => d.SurveyOption)

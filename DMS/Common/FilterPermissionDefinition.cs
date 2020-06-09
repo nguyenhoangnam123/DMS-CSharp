@@ -1,10 +1,5 @@
-﻿using DMS.Enums;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Common
 {
@@ -131,8 +126,6 @@ namespace Common
         }
     }
 
-   
-
     public class FieldTypeEnum
     {
         public static GenericEnum ID = new GenericEnum { Id = 1, Code = "ID", Name = "ID" };
@@ -140,13 +133,10 @@ namespace Common
         public static GenericEnum LONG = new GenericEnum { Id = 3, Code = "LONG", Name = "LONG" };
         public static GenericEnum DECIMAL = new GenericEnum { Id = 4, Code = "DECIMAL", Name = "DATE" };
         public static GenericEnum DATE = new GenericEnum { Id = 5, Code = "DATE", Name = "DATE" };
-        public static GenericEnum DOUBLE = new GenericEnum { Id = 6, Code = "DOUBLE", Name = "DOUBLE" };
-        public static GenericEnum INT = new GenericEnum { Id = 7, Code = "INT", Name = "INT" };
-
 
         public static List<GenericEnum> List = new List<GenericEnum>()
         {
-            ID, STRING, LONG, DECIMAL, DATE, DOUBLE, INT,
+            ID, STRING, LONG, DECIMAL, DATE,
         };
     }
 
@@ -187,19 +177,6 @@ namespace Common
         public static GenericEnum DATE_NE = new GenericEnum { Id = 505, Code = "DATE_NE", Name = "!=" };
         public static GenericEnum DATE_EQ = new GenericEnum { Id = 506, Code = "DATE_EQ", Name = "=" };
 
-        public static GenericEnum DOUBLE_GT = new GenericEnum { Id = 601, Code = "DOUBLE_GT", Name = ">" };
-        public static GenericEnum DOUBLE_GE = new GenericEnum { Id = 602, Code = "DOUBLE_GE", Name = ">=" };
-        public static GenericEnum DOUBLE_LT = new GenericEnum { Id = 603, Code = "DOUBLE_LT", Name = "<" };
-        public static GenericEnum DOUBLE_LE = new GenericEnum { Id = 604, Code = "DOUBLE_LE", Name = "<=" };
-        public static GenericEnum DOUBLE_NE = new GenericEnum { Id = 605, Code = "DOUBLE_NE", Name = "!=" };
-        public static GenericEnum DOUBLE_EQ = new GenericEnum { Id = 606, Code = "DOUBLE_EQ", Name = "=" };
-
-        public static GenericEnum INT_GT = new GenericEnum { Id = 701, Code = "INT_GT", Name = ">" };
-        public static GenericEnum INT_GE = new GenericEnum { Id = 702, Code = "INT_GE", Name = ">=" };
-        public static GenericEnum INT_LT = new GenericEnum { Id = 703, Code = "INT_LT", Name = "<" };
-        public static GenericEnum INT_LE = new GenericEnum { Id = 704, Code = "INT_LE", Name = "<=" };
-        public static GenericEnum INT_NE = new GenericEnum { Id = 705, Code = "INT_NE", Name = "!=" };
-        public static GenericEnum INT_EQ = new GenericEnum { Id = 706, Code = "INT_EQ", Name = "=" };
 
         public static List<GenericEnum> PermissionOperatorEnumForID = new List<GenericEnum>()
         {
@@ -226,14 +203,5 @@ namespace Common
             DATE_GT, DATE_GE, DATE_LT, DATE_LE, DATE_NE, DATE_EQ,
         };
 
-        public static List<GenericEnum> PermissionOperatorEnumForDOUBLE = new List<GenericEnum>()
-        {
-            DOUBLE_GT, DOUBLE_GE, DOUBLE_LT, DOUBLE_LE, DOUBLE_NE, DOUBLE_EQ,
-        };
-
-        public static List<GenericEnum> PermissionOperatorEnumForINT = new List<GenericEnum>()
-        {
-            INT_GT, INT_GE, INT_LT, INT_LE, INT_NE, INT_EQ,
-        };
     }
 }

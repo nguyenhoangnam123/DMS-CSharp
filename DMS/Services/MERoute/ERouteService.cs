@@ -1,19 +1,16 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
+using DMS.Services.MStore;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
-using DMS.Services.MStore;
-using DMS.Enums;
 
 namespace DMS.Services.MERoute
 {
-    public interface IERouteService :  IServiceScoped
+    public interface IERouteService : IServiceScoped
     {
         Task<int> Count(ERouteFilter ERouteFilter);
         Task<List<ERoute>> List(ERouteFilter ERouteFilter);
@@ -90,7 +87,7 @@ namespace DMS.Services.MERoute
                 return null;
             return ERoute;
         }
-       
+
         public async Task<ERoute> Create(ERoute ERoute)
         {
             if (!await ERouteValidator.Create(ERoute))
@@ -190,7 +187,7 @@ namespace DMS.Services.MERoute
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<ERoute>> Import(List<ERoute> ERoutes)
         {
             if (!await ERouteValidator.Import(ERoutes))
@@ -213,8 +210,8 @@ namespace DMS.Services.MERoute
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public ERouteFilter ToFilter(ERouteFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ERouteFilter>();
@@ -238,13 +235,13 @@ namespace DMS.Services.MERoute
             ERouteContentFilter ERouteContentFilter = new ERouteContentFilter
             {
                 StoreId = new IdFilter { In = StoreIds },
-                Skip =0,
+                Skip = 0,
                 Take = int.MaxValue,
                 Selects = ERouteContentSelect.Id | ERouteContentSelect.Store,
             };
 
-            List<ERouteContent> ERouteContents =  await UOW.ERouteContentRepository.List(ERouteContentFilter);
-            foreach(Store Store in Stores)
+            List<ERouteContent> ERouteContents = await UOW.ERouteContentRepository.List(ERouteContentFilter);
+            foreach (Store Store in Stores)
             {
                 Store.HasEroute = ERouteContents.Where(e => e.StoreId == Store.Id).Count() > 0;
             }

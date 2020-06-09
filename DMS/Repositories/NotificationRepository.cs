@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -45,7 +44,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<NotificationDAO> OrFilter(IQueryable<NotificationDAO> query, NotificationFilter filter)
+        private IQueryable<NotificationDAO> OrFilter(IQueryable<NotificationDAO> query, NotificationFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -64,7 +63,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<NotificationDAO> DynamicOrder(IQueryable<NotificationDAO> query, NotificationFilter filter)
         {
@@ -156,7 +155,8 @@ namespace DMS.Repositories
                 Title = x.Title,
                 Content = x.Content,
                 OrganizationId = x.OrganizationId,
-                Organization = new Organization{
+                Organization = new Organization
+                {
                     Id = x.Organization.Id,
                     Code = x.Organization.Code,
                     Name = x.Organization.Name,
@@ -203,7 +203,7 @@ namespace DMS.Repositories
             await DataContext.Notification.Where(x => x.Id == Notification.Id).DeleteFromQueryAsync();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<Notification> Notifications)
         {
             List<NotificationDAO> NotificationDAOs = new List<NotificationDAO>();
@@ -231,6 +231,6 @@ namespace DMS.Repositories
         private async Task SaveReference(Notification Notification)
         {
         }
-        
+
     }
 }

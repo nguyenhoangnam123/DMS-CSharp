@@ -1,20 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MStoreChecking;
-using DMS.Services.MAppUser;
-using DMS.Services.MStore;
-using DMS.Services.MAlbum;
-using DMS.Services.MImage;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.store_checking
 {
@@ -52,19 +37,19 @@ namespace DMS.Rpc.store_checking
         public const string ListStore = Default + "/list-store";
         public const string CountProblem = Default + "/count-problem";
         public const string ListProblem = Default + "/list-problem";
-        
+
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, 
+            { "Tìm kiếm", new List<string> {
+                Master, Count, List, Get,
                 FilterListAppUser, FilterListStore, } },
-            { "Checkin", new List<string> { 
-                Master, Count, List, Get, 
-                FilterListAppUser, FilterListStore, 
+            { "Checkin", new List<string> {
+                Master, Count, List, Get,
+                FilterListAppUser, FilterListStore,
                 Detail, Create, Update, CreateIndirectSalesOrder, CreateProblem, SaveImage,
                 CountItem, ListItem, CountStore, ListStore, CountProblem, ListProblem,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, } },

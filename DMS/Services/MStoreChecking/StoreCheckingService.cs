@@ -1,18 +1,17 @@
 using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Repositories;
+using DMS.Services.MImage;
 using Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
-using DMS.Services.MImage;
 
 namespace DMS.Services.MStoreChecking
 {
-    public interface IStoreCheckingService :  IServiceScoped
+    public interface IStoreCheckingService : IServiceScoped
     {
         Task<int> Count(StoreCheckingFilter StoreCheckingFilter);
         Task<List<StoreChecking>> List(StoreCheckingFilter StoreCheckingFilter);
@@ -85,7 +84,7 @@ namespace DMS.Services.MStoreChecking
                 return null;
             return StoreChecking;
         }
-       
+
         public async Task<StoreChecking> Create(StoreChecking StoreChecking)
         {
             if (!await StoreCheckingValidator.Create(StoreChecking))
@@ -93,8 +92,22 @@ namespace DMS.Services.MStoreChecking
 
             try
             {
+                DateTime Now = StaticParams.DateTimeNow;
                 StoreChecking.CheckInAt = StaticParams.DateTimeNow;
                 StoreChecking.SaleEmployeeId = CurrentContext.UserId;
+                ERouteFilter ERouteFilter = new ERouteFilter
+                {
+                    SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                    StartDate = new DateFilter { LessEqual = Now },
+                    EndDate = new DateFilter { GreaterEqual = Now },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = ERouteSelect.ALL,
+                };
+                List<ERoute> ERoutes = await UOW.ERouteRepository.List(ERouteFilter);
+                //TODO
+                StoreChecking.Planned = true;
                 await UOW.Begin();
                 await UOW.StoreCheckingRepository.Create(StoreChecking);
                 await UOW.Commit();

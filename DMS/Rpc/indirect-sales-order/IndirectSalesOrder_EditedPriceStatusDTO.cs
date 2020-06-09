@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.indirect_sales_order
@@ -11,7 +8,7 @@ namespace DMS.Rpc.indirect_sales_order
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public IndirectSalesOrder_EditedPriceStatusDTO() {}
+        public IndirectSalesOrder_EditedPriceStatusDTO() { }
         public IndirectSalesOrder_EditedPriceStatusDTO(EditedPriceStatus EditedPriceStatus)
         {
             this.Id = EditedPriceStatus.Id;

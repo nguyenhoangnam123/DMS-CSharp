@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class GeneralKpi : DataEntity,  IEquatable<GeneralKpi>
+    public class GeneralKpi : DataEntity, IEquatable<GeneralKpi>
     {
         public long Id { get; set; }
         public long OrganizationId { get; set; }
@@ -45,8 +45,8 @@ namespace DMS.Entities
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<GeneralKpiFilter> OrFilter { get; set; }
-        public GeneralKpiOrder OrderBy {get; set;}
-        public GeneralKpiSelect Selects {get; set;}
+        public GeneralKpiOrder OrderBy { get; set; }
+        public GeneralKpiSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -63,7 +63,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum GeneralKpiSelect:long
+    public enum GeneralKpiSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

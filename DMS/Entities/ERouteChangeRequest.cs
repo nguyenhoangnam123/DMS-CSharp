@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class ERouteChangeRequest : DataEntity,  IEquatable<ERouteChangeRequest>
+    public class ERouteChangeRequest : DataEntity, IEquatable<ERouteChangeRequest>
     {
         public long Id { get; set; }
         public long ERouteId { get; set; }
@@ -46,8 +46,8 @@ namespace DMS.Entities
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<ERouteChangeRequestFilter> OrFilter { get; set; }
-        public ERouteChangeRequestOrder OrderBy {get; set;}
-        public ERouteChangeRequestSelect Selects {get; set;}
+        public ERouteChangeRequestOrder OrderBy { get; set; }
+        public ERouteChangeRequestSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -62,7 +62,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum ERouteChangeRequestSelect:long
+    public enum ERouteChangeRequestSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

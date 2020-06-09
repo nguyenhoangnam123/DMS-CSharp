@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MEditedPriceStatus
 {
-    public interface IEditedPriceStatusService :  IServiceScoped
+    public interface IEditedPriceStatusService : IServiceScoped
     {
         Task<int> Count(EditedPriceStatusFilter EditedPriceStatusFilter);
         Task<List<EditedPriceStatus>> List(EditedPriceStatusFilter EditedPriceStatusFilter);
@@ -78,7 +75,7 @@ namespace DMS.Services.MEditedPriceStatus
                 return null;
             return EditedPriceStatus;
         }
-       
+
         public EditedPriceStatusFilter ToFilter(EditedPriceStatusFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<EditedPriceStatusFilter>();

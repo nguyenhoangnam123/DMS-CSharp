@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -43,7 +42,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<ResellerStatusDAO> OrFilter(IQueryable<ResellerStatusDAO> query, ResellerStatusFilter filter)
+        private IQueryable<ResellerStatusDAO> OrFilter(IQueryable<ResellerStatusDAO> query, ResellerStatusFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -60,7 +59,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ResellerStatusDAO> DynamicOrder(IQueryable<ResellerStatusDAO> query, ResellerStatusFilter filter)
         {
@@ -131,11 +130,11 @@ namespace DMS.Repositories
         {
             ResellerStatus ResellerStatus = await DataContext.ResellerStatus.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new ResellerStatus()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-            }).FirstOrDefaultAsync();
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                }).FirstOrDefaultAsync();
 
             if (ResellerStatus == null)
                 return null;
@@ -173,7 +172,7 @@ namespace DMS.Repositories
             await DataContext.ResellerStatus.Where(x => x.Id == ResellerStatus.Id).DeleteFromQueryAsync();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<ResellerStatus> ResellerStatuses)
         {
             List<ResellerStatusDAO> ResellerStatusDAOs = new List<ResellerStatusDAO>();
@@ -200,6 +199,6 @@ namespace DMS.Repositories
         private async Task SaveReference(ResellerStatus ResellerStatus)
         {
         }
-        
+
     }
 }

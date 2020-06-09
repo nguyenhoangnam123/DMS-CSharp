@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -58,7 +58,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.CreatorId != null)
                 query = query.Where(q => q.CreatorId, filter.CreatorId);
-            if(filter.StoreId != null)
+            if (filter.StoreId != null)
             {
                 if (filter.StoreId.Equal.HasValue)
                 {
@@ -73,7 +73,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<ERouteDAO> OrFilter(IQueryable<ERouteDAO> query, ERouteFilter filter)
+        private IQueryable<ERouteDAO> OrFilter(IQueryable<ERouteDAO> query, ERouteFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -104,7 +104,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ERouteDAO> DynamicOrder(IQueryable<ERouteDAO> query, ERouteFilter filter)
         {
@@ -412,7 +412,7 @@ namespace DMS.Repositories
             await DataContext.ERoute.Where(x => x.Id == ERoute.Id).UpdateFromQueryAsync(x => new ERouteDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<ERoute> ERoutes)
         {
             List<ERouteDAO> ERouteDAOs = new List<ERouteDAO>();

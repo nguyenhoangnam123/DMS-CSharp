@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MERouteType
 {
-    public interface IERouteTypeService :  IServiceScoped
+    public interface IERouteTypeService : IServiceScoped
     {
         Task<int> Count(ERouteTypeFilter ERouteTypeFilter);
         Task<List<ERouteType>> List(ERouteTypeFilter ERouteTypeFilter);
@@ -83,7 +80,7 @@ namespace DMS.Services.MERouteType
                 return null;
             return ERouteType;
         }
-       
+
         public async Task<ERouteType> Create(ERouteType ERouteType)
         {
             if (!await ERouteTypeValidator.Create(ERouteType))
@@ -183,7 +180,7 @@ namespace DMS.Services.MERouteType
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<ERouteType>> Import(List<ERouteType> ERouteTypes)
         {
             if (!await ERouteTypeValidator.Import(ERouteTypes))
@@ -206,8 +203,8 @@ namespace DMS.Services.MERouteType
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public ERouteTypeFilter ToFilter(ERouteTypeFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ERouteTypeFilter>();

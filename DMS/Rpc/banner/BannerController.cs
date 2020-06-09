@@ -1,23 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MBanner;
 using DMS.Services.MAppUser;
+using DMS.Services.MBanner;
 using DMS.Services.MImage;
 using DMS.Services.MStatus;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.banner
 {
-    
+
 
     public class BannerController : RpcController
     {
@@ -85,7 +83,7 @@ namespace DMS.Rpc.banner
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Banner_BannerDTO.Id))
                 return Forbid();
 
@@ -103,7 +101,7 @@ namespace DMS.Rpc.banner
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Banner_BannerDTO.Id))
                 return Forbid();
 
@@ -133,7 +131,7 @@ namespace DMS.Rpc.banner
             else
                 return BadRequest(Banner_BannerDTO);
         }
-        
+
         [Route(BannerRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -153,7 +151,7 @@ namespace DMS.Rpc.banner
                 return BadRequest(Banners.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         [Route(BannerRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -209,7 +207,7 @@ namespace DMS.Rpc.banner
                     string CreatorIdValue = worksheet.Cells[i + StartRow, CreatorIdColumn].Value?.ToString();
                     string ImageIdValue = worksheet.Cells[i + StartRow, ImageIdColumn].Value?.ToString();
                     string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    
+
                     Banner Banner = new Banner();
                     Banner.Code = CodeValue;
                     Banner.Title = TitleValue;
@@ -224,7 +222,7 @@ namespace DMS.Rpc.banner
                     Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
                     Banner.StatusId = Status == null ? 0 : Status.Id;
                     Banner.Status = Status;
-                    
+
                     Banners.Add(Banner);
                 }
             }
@@ -262,13 +260,13 @@ namespace DMS.Rpc.banner
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(BannerRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] Banner_BannerFilterDTO Banner_BannerFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -281,7 +279,7 @@ namespace DMS.Rpc.banner
 
                 var BannerHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Title",
@@ -310,7 +308,7 @@ namespace DMS.Rpc.banner
                 }
                 excel.GenerateWorksheet("Banner", BannerHeaders, BannerData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -322,7 +320,7 @@ namespace DMS.Rpc.banner
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "Password",
@@ -375,7 +373,7 @@ namespace DMS.Rpc.banner
 
                 var ImageHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Name",
                         "Url",
@@ -405,7 +403,7 @@ namespace DMS.Rpc.banner
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -434,14 +432,14 @@ namespace DMS.Rpc.banner
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
                 #region Banner
                 var BannerHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Title",
@@ -455,7 +453,7 @@ namespace DMS.Rpc.banner
                 List<object[]> BannerData = new List<object[]>();
                 excel.GenerateWorksheet("Banner", BannerHeaders, BannerData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -467,7 +465,7 @@ namespace DMS.Rpc.banner
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "Password",
@@ -520,7 +518,7 @@ namespace DMS.Rpc.banner
 
                 var ImageHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Name",
                         "Url",
@@ -550,7 +548,7 @@ namespace DMS.Rpc.banner
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -713,7 +711,7 @@ namespace DMS.Rpc.banner
                 .Select(x => new Banner_AppUserDTO(x)).ToList();
             return Banner_AppUserDTOs;
         }
-    
+
         [Route(BannerRoute.FilterListStatus), HttpPost]
         public async Task<List<Banner_StatusDTO>> FilterListStatus([FromBody] Banner_StatusFilterDTO Banner_StatusFilterDTO)
         {
@@ -765,7 +763,7 @@ namespace DMS.Rpc.banner
                 .Select(x => new Banner_AppUserDTO(x)).ToList();
             return Banner_AppUserDTOs;
         }
-    
+
         [Route(BannerRoute.SingleListStatus), HttpPost]
         public async Task<List<Banner_StatusDTO>> SingleListStatus([FromBody] Banner_StatusFilterDTO Banner_StatusFilterDTO)
         {

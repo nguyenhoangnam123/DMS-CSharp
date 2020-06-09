@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MProblemStatus
 {
-    public interface IProblemStatusService :  IServiceScoped
+    public interface IProblemStatusService : IServiceScoped
     {
         Task<int> Count(ProblemStatusFilter ProblemStatusFilter);
         Task<List<ProblemStatus>> List(ProblemStatusFilter ProblemStatusFilter);
@@ -83,7 +80,7 @@ namespace DMS.Services.MProblemStatus
                 return null;
             return ProblemStatus;
         }
-       
+
         public async Task<ProblemStatus> Create(ProblemStatus ProblemStatus)
         {
             if (!await ProblemStatusValidator.Create(ProblemStatus))
@@ -183,7 +180,7 @@ namespace DMS.Services.MProblemStatus
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<ProblemStatus>> Import(List<ProblemStatus> ProblemStatuses)
         {
             if (!await ProblemStatusValidator.Import(ProblemStatuses))
@@ -206,8 +203,8 @@ namespace DMS.Services.MProblemStatus
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public ProblemStatusFilter ToFilter(ProblemStatusFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ProblemStatusFilter>();
@@ -219,7 +216,7 @@ namespace DMS.Services.MProblemStatus
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    
+
                 }
             }
             return filter;

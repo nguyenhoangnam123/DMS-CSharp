@@ -275,7 +275,7 @@ namespace DMS.Services.MStoreGrouping
                 worksheet.Cells[1, ParentIdColumn].Value = nameof(StoreGrouping.ParentId);
                 worksheet.Cells[1, PathColumn].Value = nameof(StoreGrouping.Path);
                 worksheet.Cells[1, LevelColumn].Value = nameof(StoreGrouping.Level);
-                
+
 
                 for (int i = 0; i < StoreGroupings.Count; i++)
                 {
@@ -286,7 +286,7 @@ namespace DMS.Services.MStoreGrouping
                     worksheet.Cells[i + StartRow, ParentIdColumn].Value = StoreGrouping.ParentId;
                     worksheet.Cells[i + StartRow, PathColumn].Value = StoreGrouping.Path;
                     worksheet.Cells[i + StartRow, LevelColumn].Value = StoreGrouping.Level;
-                    
+
                 }
                 excelPackage.Save();
             }

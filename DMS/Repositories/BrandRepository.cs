@@ -171,20 +171,20 @@ namespace DMS.Repositories
         {
             Brand Brand = await DataContext.Brand.AsNoTracking()
                 .Where(x => x.Id == Id).Select(x => new Brand()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-                Description = x.Description,
-                StatusId = x.StatusId,
-                UpdateTime = x.UpdatedAt,
-                Status = x.Status == null ? null : new Status
                 {
-                    Id = x.Status.Id,
-                    Code = x.Status.Code,
-                    Name = x.Status.Name,
-                },
-            }).FirstOrDefaultAsync();
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    Description = x.Description,
+                    StatusId = x.StatusId,
+                    UpdateTime = x.UpdatedAt,
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
+                }).FirstOrDefaultAsync();
 
             if (Brand == null)
                 return null;

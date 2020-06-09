@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MUsedVariation
 {
-    public interface IUsedVariationService :  IServiceScoped
+    public interface IUsedVariationService : IServiceScoped
     {
         Task<int> Count(UsedVariationFilter UsedVariationFilter);
         Task<List<UsedVariation>> List(UsedVariationFilter UsedVariationFilter);

@@ -1,8 +1,6 @@
 using Common;
-using Microsoft.Extensions.Configuration;
-using System.Threading.Tasks;
 using DMS.Models;
-using DMS.Repositories;
+using System.Threading.Tasks;
 
 namespace DMS.Repositories
 {
@@ -49,11 +47,13 @@ namespace DMS.Repositories
         IInventoryHistoryRepository InventoryHistoryRepository { get; }
         IMenuRepository MenuRepository { get; }
         INotificationRepository NotificationRepository { get; }
+        INotificationStatusRepository NotificationStatusRepository { get; }
         IOrganizationRepository OrganizationRepository { get; }
         IPermissionOperatorRepository PermissionOperatorRepository { get; }
         IPermissionRepository PermissionRepository { get; }
         IPositionRepository PositionRepository { get; }
         IProblemRepository ProblemRepository { get; }
+        IProblemHistoryRepository ProblemHistoryRepository { get; }
         IProblemTypeRepository ProblemTypeRepository { get; }
         IProblemStatusRepository ProblemStatusRepository { get; }
         IProductRepository ProductRepository { get; }
@@ -137,13 +137,15 @@ namespace DMS.Repositories
         public IKpiPeriodRepository KpiPeriodRepository { get; private set; }
         public IMenuRepository MenuRepository { get; private set; }
         public INotificationRepository NotificationRepository { get; private set; }
+        public INotificationStatusRepository NotificationStatusRepository { get; private set; }
         public IOrganizationRepository OrganizationRepository { get; private set; }
         public IPermissionOperatorRepository PermissionOperatorRepository { get; private set; }
         public IPermissionRepository PermissionRepository { get; private set; }
         public IPositionRepository PositionRepository { get; private set; }
         public IProblemRepository ProblemRepository { get; private set; }
+        public IProblemHistoryRepository ProblemHistoryRepository { get; private set; }
         public IProblemTypeRepository ProblemTypeRepository { get; private set; }
-        public IProblemStatusRepository ProblemStatusRepository { get; private set; } 
+        public IProblemStatusRepository ProblemStatusRepository { get; private set; }
         public IProductRepository ProductRepository { get; private set; }
         public IProductGroupingRepository ProductGroupingRepository { get; private set; }
         public IProductTypeRepository ProductTypeRepository { get; private set; }
@@ -168,7 +170,7 @@ namespace DMS.Repositories
         public ISurveyRepository SurveyRepository { get; private set; }
         public ISurveyResultRepository SurveyResultRepository { get; private set; }
         public ITaxTypeRepository TaxTypeRepository { get; private set; }
-        
+
         public IUnitOfMeasureRepository UnitOfMeasureRepository { get; private set; }
         public IUnitOfMeasureGroupingContentRepository UnitOfMeasureGroupingContentRepository { get; private set; }
         public IUnitOfMeasureGroupingRepository UnitOfMeasureGroupingRepository { get; private set; }
@@ -224,12 +226,14 @@ namespace DMS.Repositories
             KpiPeriodRepository = new KpiPeriodRepository(DataContext);
             MenuRepository = new MenuRepository(DataContext);
             NotificationRepository = new NotificationRepository(DataContext);
+            NotificationStatusRepository = new NotificationStatusRepository(DataContext);
             OrganizationRepository = new OrganizationRepository(DataContext);
             PermissionOperatorRepository = new PermissionOperatorRepository(DataContext);
             PermissionRepository = new PermissionRepository(DataContext);
             PositionRepository = new PositionRepository(DataContext);
             ProblemRepository = new ProblemRepository(DataContext);
             ProblemTypeRepository = new ProblemTypeRepository(DataContext);
+            ProblemHistoryRepository = new ProblemHistoryRepository(DataContext);
             ProblemStatusRepository = new ProblemStatusRepository(DataContext);
             ProductRepository = new ProductRepository(DataContext);
             ProductGroupingRepository = new ProductGroupingRepository(DataContext);

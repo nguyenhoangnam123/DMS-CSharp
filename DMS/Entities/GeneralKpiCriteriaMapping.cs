@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class GeneralKpiCriteriaMapping : DataEntity,  IEquatable<GeneralKpiCriteriaMapping>
+    public class GeneralKpiCriteriaMapping : DataEntity, IEquatable<GeneralKpiCriteriaMapping>
     {
         public long GeneralKpiId { get; set; }
         public long GeneralCriteriaId { get; set; }
@@ -65,8 +65,8 @@ namespace DMS.Entities
         public LongFilter Y01 { get; set; }
         public IdFilter StatusId { get; set; }
         public List<GeneralKpiCriteriaMappingFilter> OrFilter { get; set; }
-        public GeneralKpiCriteriaMappingOrder OrderBy {get; set;}
-        public GeneralKpiCriteriaMappingSelect Selects {get; set;}
+        public GeneralKpiCriteriaMappingOrder OrderBy { get; set; }
+        public GeneralKpiCriteriaMappingSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -95,7 +95,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum GeneralKpiCriteriaMappingSelect:long
+    public enum GeneralKpiCriteriaMappingSelect : long
     {
         ALL = E.ALL,
         GeneralKpi = E._0,

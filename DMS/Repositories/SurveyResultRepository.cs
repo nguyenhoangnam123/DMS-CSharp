@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
-using DMS.Enums;
 
 namespace DMS.Repositories
 {
@@ -206,22 +204,36 @@ namespace DMS.Repositories
 
         private async Task SaveReference(SurveyResult SurveyResult)
         {
+            List<SurveyResultSingleDAO> SurveyResultSingleDAOs = SurveyResult.SurveyResultSingles
+                .Select(s => new
+                {
+                    SurveyResultId = SurveyResult.Id,
+                    s.SurveyOptionId,
+                    s.SurveyQuestionId,
+                }).Distinct()
+                .Select(s => new SurveyResultSingleDAO
+                {
+                    SurveyResultId = s.SurveyResultId,
+                    SurveyOptionId = s.SurveyOptionId,
+                    SurveyQuestionId = s.SurveyQuestionId,
+                }).ToList();
+            List<SurveyResultCellDAO> SurveyResultCellDAOs = SurveyResult.SurveyResultCells
+                 .Select(s => new
+                 {
+                     SurveyResultId = SurveyResult.Id,
+                     s.SurveyQuestionId,
+                     s.ColumnOptionId,
+                     s.RowOptionId,
+                 }).Distinct()
+                .Select(s => new SurveyResultCellDAO
+                {
+                    SurveyResultId = s.SurveyResultId,
+                    SurveyQuestionId = s.SurveyQuestionId,
+                    ColumnOptionId = s.ColumnOptionId,
+                    RowOptionId = s.RowOptionId,
+                }).ToList();
 
-            List<SurveyResultSingleDAO> SurveyResultSingleDAOs = SurveyResult.SurveyResultSingles.Select(s => new SurveyResultSingleDAO
-            {
-                SurveyResultId = SurveyResult.Id,
-                SurveyOptionId = s.SurveyOptionId,
-                SurveyQuestionId = s.SurveyQuestionId,
-            }).ToList();
-            List<SurveyResultCellDAO> SurveyResultCellDAOs = SurveyResult.SurveyResultCells.Select(s => new SurveyResultCellDAO
-            {
-                SurveyResultId = SurveyResult.Id,
-                SurveyQuestionId = s.SurveyQuestionId,
-                ColumnOptionId = s.ColumnOptionId,
-                RowOptionId = s.RowOptionId,
-            }).ToList();
 
-    
             await DataContext.SurveyResultSingle.BulkInsertAsync(SurveyResultSingleDAOs);
             await DataContext.SurveyResultCell.BulkInsertAsync(SurveyResultCellDAOs);
         }

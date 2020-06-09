@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
+﻿using Common;
 using DMS.Entities;
-using DMS.Services.MSurvey;
 using DMS.Enums;
 using DMS.Services.MAppUser;
 using DMS.Services.MStatus;
+using DMS.Services.MSurvey;
 using DMS.Services.MSurveyResult;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.survey
 {
@@ -128,8 +125,8 @@ namespace DMS.Rpc.survey
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Survey_SurveyDTO.Id))
-                return Forbid();
+            //if (!await HasPermission(Survey_SurveyDTO.Id))
+            //    return Forbid();
 
             Survey Survey = await SurveyService.GetForm(Survey_SurveyDTO.Id);
             Survey_SurveyDTO = new Survey_SurveyDTO(Survey);
@@ -149,7 +146,7 @@ namespace DMS.Rpc.survey
                 return Forbid();
 
             Survey Survey = ConvertDTOToEntity(Survey_SurveyDTO);
-            //Survey = await SurveyService.CreateSurveyResult(Survey);
+            Survey = await SurveyService.SaveForm(Survey);
             Survey_SurveyDTO = new Survey_SurveyDTO(Survey);
             if (Survey.IsValidated)
                 return Survey_SurveyDTO;
@@ -328,6 +325,7 @@ namespace DMS.Rpc.survey
             Survey.StartAt = Survey_SurveyDTO.StartAt;
             Survey.EndAt = Survey_SurveyDTO.EndAt;
             Survey.StatusId = Survey_SurveyDTO.StatusId;
+            Survey.StoreId = Survey_SurveyDTO.StoreId;
             Survey.SurveyQuestions = Survey_SurveyDTO.SurveyQuestions?
                 .Select(x => new SurveyQuestion
                 {
@@ -348,6 +346,8 @@ namespace DMS.Rpc.survey
                         SurveyOptionTypeId = x.SurveyOptionTypeId,
                         SurveyQuestionId = x.SurveyOptionTypeId
                     }).ToList(),
+                    TableResult = x.TableResult,
+                    ListResult = x.ListResult,
                 }).ToList();
             Survey.BaseLanguage = CurrentContext.Language;
             return Survey;

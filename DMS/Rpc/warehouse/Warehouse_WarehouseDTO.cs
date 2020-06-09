@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.warehouse
 {
@@ -23,7 +22,7 @@ namespace DMS.Rpc.warehouse
         public Warehouse_StatusDTO Status { get; set; }
         public Warehouse_WardDTO Ward { get; set; }
         public List<Warehouse_InventoryDTO> Inventories { get; set; }
-        public Warehouse_WarehouseDTO() {}
+        public Warehouse_WarehouseDTO() { }
         public Warehouse_WarehouseDTO(Warehouse Warehouse)
         {
             this.Id = Warehouse.Id;

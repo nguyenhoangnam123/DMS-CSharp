@@ -357,13 +357,6 @@ namespace DMS.Repositories
                     Name = q.UnitOfMeasureGrouping.Name,
                     UnitOfMeasureId = q.UnitOfMeasureGrouping.UnitOfMeasureId,
                     StatusId = q.UnitOfMeasureGrouping.StatusId,
-                    UnitOfMeasureGroupingContents = q.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(x => new UnitOfMeasureGroupingContent
-                    {
-                        Id = x.Id,
-                        UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
-                        UnitOfMeasureId = x.UnitOfMeasureId,
-                        Factor = x.Factor
-                    }).ToList()
                 } : null,
                 UsedVariation = filter.Selects.Contains(ProductSelect.UsedVariation) && q.UsedVariation != null ? new UsedVariation
                 {
@@ -409,6 +402,32 @@ namespace DMS.Repositories
                     };
                     Product.ProductImageMappings.Add(ProductImageMapping);
                 }
+            }
+
+            var UnitOfMeasureGroupingIds = Products.Select(x => x.UnitOfMeasureGroupingId).ToList();
+            var UnitOfMeasureGroupingContents = await DataContext.UnitOfMeasureGroupingContent
+                .Include(x => x.UnitOfMeasure)
+                .Where(x => UnitOfMeasureGroupingIds.Contains(x.UnitOfMeasureGroupingId)).ToListAsync();
+            foreach (var Product in Products)
+            {
+                if (Product.UnitOfMeasureGrouping == null) Product.UnitOfMeasureGrouping = new UnitOfMeasureGrouping();
+                Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents = UnitOfMeasureGroupingContents
+                    .Where(x => x.UnitOfMeasureGroupingId == Product.UnitOfMeasureGroupingId)
+                    .Select(x => new UnitOfMeasureGroupingContent
+                    {
+                        Id = x.Id,
+                        UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
+                        UnitOfMeasureId = x.UnitOfMeasureId,
+                        Factor = x.Factor,
+                        UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
+                        {
+                            Id = x.UnitOfMeasure.Id,
+                            Code = x.UnitOfMeasure.Code,
+                            Name = x.UnitOfMeasure.Name,
+                            Description = x.UnitOfMeasure.Description,
+                            StatusId = x.UnitOfMeasure.StatusId,
+                        }
+                    }).ToList();
             }
             return Products;
         }
@@ -601,7 +620,7 @@ namespace DMS.Repositories
                 }).ToListAsync();
 
             var ItemIds = Product.Items.Select(x => x.Id).ToList();
-            List<ItemImageMapping> ItemImageMappings = await DataContext.ItemImageMapping.Where(x => ItemIds.Contains(x.ItemId)).Select(x => new ItemImageMapping 
+            List<ItemImageMapping> ItemImageMappings = await DataContext.ItemImageMapping.Where(x => ItemIds.Contains(x.ItemId)).Select(x => new ItemImageMapping
             {
                 ImageId = x.ImageId,
                 ItemId = x.ItemId,
@@ -895,11 +914,11 @@ namespace DMS.Repositories
                     }
                 }
                 await DataContext.Item.BulkMergeAsync(ItemDAOs);
-                foreach(ItemDAO ItemDAO in ItemDAOs)
+                foreach (ItemDAO ItemDAO in ItemDAOs)
                 {
                     Item Item = Product.Items.Where(i => i.Code == ItemDAO.Code).FirstOrDefault();
                     Item.Id = ItemDAO.Id;
-                }    
+                }
             }
             await DataContext.ProductImageMapping
                 .Where(x => x.ProductId == Product.Id)

@@ -1,8 +1,8 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.workflow_direction
 {
@@ -21,7 +21,7 @@ namespace DMS.Rpc.workflow_direction
         public WorkflowDirection_WorkflowStepDTO ToStep { get; set; }
         public WorkflowDirection_WorkflowDefinitionDTO WorkflowDefinition { get; set; }
         public List<WorkflowDirection_WorkflowParameterDTO> WorkflowParameters { get; set; }
-        public WorkflowDirection_WorkflowDirectionDTO() {}
+        public WorkflowDirection_WorkflowDirectionDTO() { }
         public WorkflowDirection_WorkflowDirectionDTO(WorkflowDirection WorkflowDirection)
         {
             this.Id = WorkflowDirection.Id;

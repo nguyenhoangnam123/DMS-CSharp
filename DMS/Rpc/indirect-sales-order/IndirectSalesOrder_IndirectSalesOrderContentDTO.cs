@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.indirect_sales_order
@@ -26,10 +23,10 @@ namespace DMS.Rpc.indirect_sales_order
         public long? TaxAmount { get; set; }
         public long? Factor { get; set; }
         public IndirectSalesOrder_ItemDTO Item { get; set; }
-        public IndirectSalesOrder_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }   
-        public IndirectSalesOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }   
-        
-        public IndirectSalesOrder_IndirectSalesOrderContentDTO() {}
+        public IndirectSalesOrder_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }
+        public IndirectSalesOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+
+        public IndirectSalesOrder_IndirectSalesOrderContentDTO() { }
         public IndirectSalesOrder_IndirectSalesOrderContentDTO(IndirectSalesOrderContent IndirectSalesOrderContent)
         {
             this.Id = IndirectSalesOrderContent.Id;
@@ -58,37 +55,37 @@ namespace DMS.Rpc.indirect_sales_order
 
     public class IndirectSalesOrder_IndirectSalesOrderContentFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public IdFilter IndirectSalesOrderId { get; set; }
-        
+
         public IdFilter ItemId { get; set; }
-        
+
         public IdFilter UnitOfMeasureId { get; set; }
-        
+
         public LongFilter Quantity { get; set; }
-        
+
         public IdFilter PrimaryUnitOfMeasureId { get; set; }
-        
+
         public LongFilter RequestedQuantity { get; set; }
         public LongFilter PrimaryPrice { get; set; }
         public LongFilter SalePrice { get; set; }
-        
+
         public DecimalFilter DiscountPercentage { get; set; }
-        
+
         public LongFilter DiscountAmount { get; set; }
-        
+
         public DecimalFilter GeneralDiscountPercentage { get; set; }
-        
+
         public LongFilter GeneralDiscountAmount { get; set; }
-        
+
         public LongFilter Amount { get; set; }
-        
+
         public DecimalFilter TaxPercentage { get; set; }
-        
+
         public LongFilter TaxAmount { get; set; }
-        
+
         public IndirectSalesOrderContentOrder OrderBy { get; set; }
     }
 }

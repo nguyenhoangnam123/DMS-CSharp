@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Inventory : DataEntity,  IEquatable<Inventory>
+    public class Inventory : DataEntity, IEquatable<Inventory>
     {
         public long Id { get; set; }
         public long WarehouseId { get; set; }
@@ -36,8 +36,8 @@ namespace DMS.Entities
         public LongFilter SaleStock { get; set; }
         public LongFilter AccountingStock { get; set; }
         public List<InventoryFilter> OrFilter { get; set; }
-        public InventoryOrder OrderBy {get; set;}
-        public InventorySelect Selects {get; set;}
+        public InventoryOrder OrderBy { get; set; }
+        public InventorySelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -52,7 +52,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum InventorySelect:long
+    public enum InventorySelect : long
     {
         ALL = E.ALL,
         Id = E._0,

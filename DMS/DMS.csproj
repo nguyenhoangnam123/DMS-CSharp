@@ -45,7 +45,6 @@
 
   <ItemGroup>
     <Folder Include="Rpc\monitor\monitor-store-images\" />
-    <Folder Include="Rpc\monitor\monitor-store-problems\" />
     <Folder Include="Rpc\monitor\monitor-store-competitors\" />
   </ItemGroup>
 </Project>

@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.banner
 {
@@ -21,7 +20,7 @@ namespace DMS.Rpc.banner
         public Banner_StatusDTO Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public Banner_BannerDTO() {}
+        public Banner_BannerDTO() { }
         public Banner_BannerDTO(Banner Banner)
         {
             this.Id = Banner.Id;

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Common;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DMS.Entities
 {
-    public class Attachment
+    public class Attachment : DataEntity
     {
         public long Id { get; set; }
         public string FileName { get; set; }

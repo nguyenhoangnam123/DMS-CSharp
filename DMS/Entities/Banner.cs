@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Banner : DataEntity,  IEquatable<Banner>
+    public class Banner : DataEntity, IEquatable<Banner>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -45,8 +45,8 @@ namespace DMS.Entities
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<BannerFilter> OrFilter { get; set; }
-        public BannerOrder OrderBy {get; set;}
-        public BannerSelect Selects {get; set;}
+        public BannerOrder OrderBy { get; set; }
+        public BannerSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -65,7 +65,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum BannerSelect:long
+    public enum BannerSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

@@ -1,13 +1,11 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MWarehouse
 {
@@ -244,7 +242,7 @@ namespace DMS.Services.MWarehouse
                     Inventory.Id = 0;
                     Inventory.WarehouseId = Warehouse.Id;
                     Inventory.ItemId = item.Id;
-                    Inventory.SaleStock = 0;
+                    Inventory.SaleStock = 0;    
                     Inventory.AccountingStock = 0;
                     Warehouse.Inventories.Add(Inventory);
                 }
@@ -254,7 +252,7 @@ namespace DMS.Services.MWarehouse
             {
                 foreach (Inventory inventory in Warehouse.Inventories)
                 {
-                    if (inventory.InventoryHistories == null ) inventory.InventoryHistories = new List<InventoryHistory>();
+                    if (inventory.InventoryHistories == null) inventory.InventoryHistories = new List<InventoryHistory>();
                     Inventory ExistedInventory = ExistedWarehouse.Inventories.Where(i => i.ItemId == inventory.Id).FirstOrDefault();
                     if (ExistedInventory == null)
                     {
@@ -274,7 +272,7 @@ namespace DMS.Services.MWarehouse
                             InventoryHistory.AccountingStock = inventory.AccountingStock;
                             InventoryHistory.AppUserId = CurrentContext.UserId;
                             inventory.InventoryHistories.Add(InventoryHistory);
-                        }    
+                        }
                     }
                 }
             }

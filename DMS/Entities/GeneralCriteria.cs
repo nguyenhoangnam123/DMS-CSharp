@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class GeneralCriteria : DataEntity,  IEquatable<GeneralCriteria>
+    public class GeneralCriteria : DataEntity, IEquatable<GeneralCriteria>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -29,8 +29,8 @@ namespace DMS.Entities
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public List<GeneralCriteriaFilter> OrFilter { get; set; }
-        public GeneralCriteriaOrder OrderBy {get; set;}
-        public GeneralCriteriaSelect Selects {get; set;}
+        public GeneralCriteriaOrder OrderBy { get; set; }
+        public GeneralCriteriaSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -42,7 +42,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum GeneralCriteriaSelect:long
+    public enum GeneralCriteriaSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

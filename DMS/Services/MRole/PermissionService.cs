@@ -1,11 +1,10 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Repositories;
+using DMS.Services.MPermission;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MRole
@@ -22,10 +21,12 @@ namespace DMS.Services.MRole
     public class PermissionService : IPermissionService
     {
         private IUOW UOW;
+        private IPermissionValidator PermissionValidator;
         private ILogging Logging;
-        public PermissionService(IUOW UOW, ILogging Logging)
+        public PermissionService(IUOW UOW, IPermissionValidator PermissionValidator, ILogging Logging)
         {
             this.UOW = UOW;
+            this.PermissionValidator = PermissionValidator;
             this.Logging = Logging;
         }
 
@@ -63,6 +64,8 @@ namespace DMS.Services.MRole
 
         public async Task<Permission> Create(Permission Permission)
         {
+            if (!await PermissionValidator.Create(Permission))
+                return Permission;
             try
             {
                 await UOW.PermissionRepository.Create(Permission);
@@ -85,6 +88,8 @@ namespace DMS.Services.MRole
 
         public async Task<Permission> Update(Permission Permission)
         {
+            if (!await PermissionValidator.Update(Permission))
+                return Permission;
             try
             {
                 await UOW.PermissionRepository.Update(Permission);
@@ -107,10 +112,13 @@ namespace DMS.Services.MRole
 
         public async Task<Permission> Delete(Permission Permission)
         {
+            if (!await PermissionValidator.Delete(Permission))
+                return Permission;
+
             try
             {
                 await UOW.PermissionRepository.Delete(Permission);
-                return await UOW.PermissionRepository.Get(Permission.Id);
+                return Permission;
             }
             catch (Exception ex)
             {
@@ -126,7 +134,5 @@ namespace DMS.Services.MRole
                 }
             }
         }
-
-        
     }
 }

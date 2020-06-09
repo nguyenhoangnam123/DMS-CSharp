@@ -1,18 +1,16 @@
 using Common;
+using DMS.Entities;
+using DMS.Helpers;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
-using DMS.Helpers;
 
 namespace DMS.Services.MGeneralKpi
 {
-    public interface IGeneralKpiService :  IServiceScoped
+    public interface IGeneralKpiService : IServiceScoped
     {
         Task<int> Count(GeneralKpiFilter GeneralKpiFilter);
         Task<List<GeneralKpi>> List(GeneralKpiFilter GeneralKpiFilter);
@@ -22,6 +20,8 @@ namespace DMS.Services.MGeneralKpi
         Task<GeneralKpi> Delete(GeneralKpi GeneralKpi);
         Task<List<GeneralKpi>> BulkDelete(List<GeneralKpi> GeneralKpis);
         Task<List<GeneralKpi>> Import(List<GeneralKpi> GeneralKpis);
+        Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiPeriodId);
+        Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiPeriodId);
         GeneralKpiFilter ToFilter(GeneralKpiFilter GeneralKpiFilter);
     }
 
@@ -84,7 +84,7 @@ namespace DMS.Services.MGeneralKpi
                 return null;
             return GeneralKpi;
         }
-       
+
         public async Task<GeneralKpi> Create(GeneralKpi GeneralKpi)
         {
             if (!await GeneralKpiValidator.Create(GeneralKpi))
@@ -195,7 +195,7 @@ namespace DMS.Services.MGeneralKpi
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<GeneralKpi>> Import(List<GeneralKpi> GeneralKpis)
         {
             if (!await GeneralKpiValidator.Import(GeneralKpis))
@@ -218,8 +218,79 @@ namespace DMS.Services.MGeneralKpi
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
+        public async Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiPeriodId)
+        {
+            try
+            {
+                GeneralKpiFilter GeneralKpiFilter = new GeneralKpiFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    KpiPeriodId = KpiPeriodId,
+                    Selects = GeneralKpiSelect.Id | GeneralKpiSelect.Employee
+                };
+
+                var GeneralKpis = await UOW.GeneralKpiRepository.List(GeneralKpiFilter);
+                var AppUserIds = GeneralKpis.Select(x => x.EmployeeId).ToList();
+                AppUserFilter = new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter { NotIn = AppUserIds },
+                    Selects = AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email
+                };
+
+                var AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
+                return AppUsers;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(GeneralKpiService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+            
+        }
+
+        public async Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiPeriodId)
+        {
+            try
+            {
+                GeneralKpiFilter GeneralKpiFilter = new GeneralKpiFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    KpiPeriodId = KpiPeriodId,
+                    Selects = GeneralKpiSelect.Id | GeneralKpiSelect.Employee
+                };
+
+                var GeneralKpis = await UOW.GeneralKpiRepository.List(GeneralKpiFilter);
+                var AppUserIds = GeneralKpis.Select(x => x.EmployeeId).ToList();
+                AppUserFilter = new AppUserFilter
+                {
+                    Id = new IdFilter { NotIn = AppUserIds },
+                };
+
+                var count = await UOW.AppUserRepository.Count(AppUserFilter);
+                return count;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(GeneralKpiService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+
+        }
+
         public GeneralKpiFilter ToFilter(GeneralKpiFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<GeneralKpiFilter>();

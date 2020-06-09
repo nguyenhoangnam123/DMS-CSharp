@@ -1,5 +1,4 @@
 using Common;
-using DMS.Entities;
 using System.Collections.Generic;
 
 namespace DMS.Rpc.unit_of_measure_grouping
@@ -25,22 +24,22 @@ namespace DMS.Rpc.unit_of_measure_grouping
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
+            { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get } },
-            { "Thêm", new List<string> { 
+            { "Thêm", new List<string> {
                 Master, Count, List, Get,
-                Detail, Create, 
+                Detail, Create,
                 SingleListStatus, SingleListUnitOfMeasure, } },
             { "Sửa", new List<string> {
-                Master, Count, List, Get, 
+                Master, Count, List, Get,
                 Detail, Update,
                 SingleListStatus, SingleListUnitOfMeasure, } },
             { "Xoá", new List<string> {
-                Master, Count, List, Get, 
-                Detail, Delete,  
+                Master, Count, List, Get,
+                Detail, Delete,
                 SingleListStatus, SingleListUnitOfMeasure, } },
-            { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, 
+            { "Xoá nhiều", new List<string> {
+                Master, Count, List, Get,
                 BulkDelete } },
         };
     }

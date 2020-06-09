@@ -1,8 +1,8 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.indirect_sales_order
 {
@@ -33,7 +33,7 @@ namespace DMS.Rpc.indirect_sales_order
         public IndirectSalesOrder_StoreDTO SellerStore { get; set; }
         public List<IndirectSalesOrder_IndirectSalesOrderContentDTO> IndirectSalesOrderContents { get; set; }
         public List<IndirectSalesOrder_IndirectSalesOrderPromotionDTO> IndirectSalesOrderPromotions { get; set; }
-        public IndirectSalesOrder_IndirectSalesOrderDTO() {}
+        public IndirectSalesOrder_IndirectSalesOrderDTO() { }
         public IndirectSalesOrder_IndirectSalesOrderDTO(IndirectSalesOrder IndirectSalesOrder)
         {
             this.Id = IndirectSalesOrder.Id;

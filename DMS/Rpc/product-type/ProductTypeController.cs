@@ -2,8 +2,6 @@ using Common;
 using DMS.Entities;
 using DMS.Services.MProductType;
 using DMS.Services.MStatus;
-using Helpers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.product_type
 {
-    
+
 
     public class ProductTypeController : RpcController
     {

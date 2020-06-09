@@ -1,8 +1,6 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
 
 namespace DMS.Rpc.workflow_definition
 {
@@ -17,10 +15,10 @@ namespace DMS.Rpc.workflow_definition
         public string BodyMailForCreator { get; set; }
         public string BodyMailForNextStep { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public WorkflowDefinition_WorkflowStepDTO FromStep { get; set; }   
-        public WorkflowDefinition_WorkflowStepDTO ToStep { get; set; }   
-        
-        public WorkflowDefinition_WorkflowDirectionDTO() {}
+        public WorkflowDefinition_WorkflowStepDTO FromStep { get; set; }
+        public WorkflowDefinition_WorkflowStepDTO ToStep { get; set; }
+
+        public WorkflowDefinition_WorkflowDirectionDTO() { }
         public WorkflowDefinition_WorkflowDirectionDTO(WorkflowDirection WorkflowDirection)
         {
             this.Id = WorkflowDirection.Id;
@@ -40,21 +38,21 @@ namespace DMS.Rpc.workflow_definition
 
     public class WorkflowDefinition_WorkflowDirectionFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public IdFilter WorkflowDefinitionId { get; set; }
-        
+
         public IdFilter FromStepId { get; set; }
-        
+
         public IdFilter ToStepId { get; set; }
-        
+
         public StringFilter SubjectMailForCreator { get; set; }
-        
+
         public StringFilter SubjectMailForNextStep { get; set; }
-        
+
         public StringFilter BodyMailForCreator { get; set; }
-        
+
         public StringFilter BodyMailForNextStep { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public WorkflowDirectionOrder OrderBy { get; set; }

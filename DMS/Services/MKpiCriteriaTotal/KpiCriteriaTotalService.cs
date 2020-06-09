@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MKpiCriteriaTotal
 {
-    public interface IKpiCriteriaTotalService :  IServiceScoped
+    public interface IKpiCriteriaTotalService : IServiceScoped
     {
         Task<int> Count(KpiCriteriaTotalFilter KpiCriteriaTotalFilter);
         Task<List<KpiCriteriaTotal>> List(KpiCriteriaTotalFilter KpiCriteriaTotalFilter);

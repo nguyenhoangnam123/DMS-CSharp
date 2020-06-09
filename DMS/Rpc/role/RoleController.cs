@@ -2,30 +2,26 @@
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
-using DMS.Services.MMenu;
-using DMS.Services.MRole;
-using DMS.Services.MStatus;
-using System.IO;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System;
 using DMS.Services.MBrand;
+using DMS.Services.MField;
+using DMS.Services.MMenu;
 using DMS.Services.MOrganization;
+using DMS.Services.MPermissionOperator;
 using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
 using DMS.Services.MReseller;
+using DMS.Services.MRole;
+using DMS.Services.MStatus;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MSupplier;
 using DMS.Services.MWarehouse;
-using DMS.Services.MField;
-using DMS.Services.MPermissionOperator;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.role
 {
@@ -268,6 +264,7 @@ namespace DMS.Rpc.role
             PermissionFilter PermissionFilter = new PermissionFilter();
             PermissionFilter.Id = Role_PermissionFilterDTO.Id;
             PermissionFilter.RoleId = Role_PermissionFilterDTO.RoleId;
+            PermissionFilter.MenuId = Role_PermissionFilterDTO.MenuId;
 
             return await PermissionService.Count(PermissionFilter);
         }
@@ -282,6 +279,7 @@ namespace DMS.Rpc.role
             PermissionFilter.Selects = PermissionSelect.ALL;
             PermissionFilter.Id = Role_PermissionFilterDTO.Id;
             PermissionFilter.RoleId = Role_PermissionFilterDTO.RoleId;
+            PermissionFilter.MenuId = Role_PermissionFilterDTO.MenuId;
 
             List<Permission> Permissions = await PermissionService.List(PermissionFilter);
             List<Role_PermissionDTO> Role_PermissionDTOs = Permissions
@@ -318,7 +316,7 @@ namespace DMS.Rpc.role
                 throw new BindException(ModelState);
 
             Permission Permission = ConvertPermissionDTOToBO(Role_PermissionDTO);
-            Permission = await PermissionService.Create(Permission);
+            Permission = await PermissionService.Update(Permission);
             Role_PermissionDTO = new Role_PermissionDTO(Permission);
             if (Permission.IsValidated)
                 return Role_PermissionDTO;
@@ -332,7 +330,7 @@ namespace DMS.Rpc.role
                 throw new BindException(ModelState);
 
             Permission Permission = ConvertPermissionDTOToBO(Role_PermissionDTO);
-            Permission = await PermissionService.Create(Permission);
+            Permission = await PermissionService.Delete(Permission);
             Role_PermissionDTO = new Role_PermissionDTO(Permission);
             if (Permission.IsValidated)
                 return Role_PermissionDTO;

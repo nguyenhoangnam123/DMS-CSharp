@@ -12,7 +12,10 @@ namespace DMS.Entities
         public string Title { get; set; }
         public string Content { get; set; }
         public long? OrganizationId { get; set; }
+        public long NotificationStatusId { get; set; }
+        public NotificationStatus NotificationStatus { get; set; }
         public Organization Organization { get; set; }
+
         public bool Equals(Notification other)
         {
             return other != null && Id == other.Id;
@@ -29,6 +32,7 @@ namespace DMS.Entities
         public StringFilter Title { get; set; }
         public StringFilter Content { get; set; }
         public IdFilter OrganizationId { get; set; }
+        public IdFilter NotificationStatusId { get; set; }
         public List<NotificationFilter> OrFilter { get; set; }
         public NotificationOrder OrderBy {get; set;}
         public NotificationSelect Selects {get; set;}
@@ -41,6 +45,7 @@ namespace DMS.Entities
         Title = 1,
         Content = 2,
         Organization = 3,
+        NotificationStatus = 4,
     }
 
     [Flags]
@@ -51,5 +56,6 @@ namespace DMS.Entities
         Title = E._1,
         Content = E._2,
         Organization = E._3,
+        NotificationStatus = E._4,
     }
 }

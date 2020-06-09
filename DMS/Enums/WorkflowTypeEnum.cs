@@ -1,10 +1,5 @@
-﻿using System;
+﻿using Common;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Common;
-using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace DMS.Enums
 {

@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -24,7 +24,7 @@ namespace DMS.Repositories
             this.DataContext = DataContext;
         }
 
-        public async Task<long> Count(RequestWorkflowStepMappingFilter filter) 
+        public async Task<long> Count(RequestWorkflowStepMappingFilter filter)
         {
             IQueryable<RequestWorkflowStepMappingDAO> query = DataContext.RequestWorkflowStepMapping.AsNoTracking();
             if (filter.RequestId != null)

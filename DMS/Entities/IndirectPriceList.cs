@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class IndirectPriceList : DataEntity,  IEquatable<IndirectPriceList>
+    public class IndirectPriceList : DataEntity, IEquatable<IndirectPriceList>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -49,8 +49,8 @@ namespace DMS.Entities
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<IndirectPriceListFilter> OrFilter { get; set; }
-        public IndirectPriceListOrder OrderBy {get; set;}
-        public IndirectPriceListSelect Selects {get; set;}
+        public IndirectPriceListOrder OrderBy { get; set; }
+        public IndirectPriceListSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -69,7 +69,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum IndirectPriceListSelect:long
+    public enum IndirectPriceListSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

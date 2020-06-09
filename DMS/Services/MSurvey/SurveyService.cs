@@ -1,17 +1,12 @@
 using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
-using DMS.Enums;
-using Hangfire.Annotations;
-using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace DMS.Services.MSurvey
 {
@@ -201,6 +196,8 @@ namespace DMS.Services.MSurvey
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = FilterPermissionDefinition.IdFilter;
                 }
             }
             return filter;
@@ -233,7 +230,6 @@ namespace DMS.Services.MSurvey
                         {
                             List<SurveyOption> Columns = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.COLUMN.Id).ToList();
                             List<SurveyOption> Rows = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.ROW.Id).ToList();
-                            SurveyQuestion.TableResult = new Dictionary<long, Dictionary<long, bool>>();
                             foreach (SurveyOption Row in Rows)
                             {
                                 Dictionary<long, bool> RowResult = new Dictionary<long, bool>();
@@ -256,7 +252,7 @@ namespace DMS.Services.MSurvey
             SurveyResult.SurveyId = Survey.Id;
             SurveyResult.AppUserId = CurrentContext.UserId;
             SurveyResult.StoreId = Survey.StoreId;
-            SurveyResult.Time = Survey.AnswerAt;
+            SurveyResult.Time = StaticParams.DateTimeNow;
             SurveyResult.SurveyResultSingles = new List<SurveyResultSingle>();
             SurveyResult.SurveyResultCells = new List<SurveyResultCell>();
             if (Survey.SurveyQuestions != null)

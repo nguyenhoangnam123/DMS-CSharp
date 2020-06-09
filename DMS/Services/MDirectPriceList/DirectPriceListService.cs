@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MDirectPriceList
 {
-    public interface IDirectPriceListService :  IServiceScoped
+    public interface IDirectPriceListService : IServiceScoped
     {
         Task<int> Count(DirectPriceListFilter DirectPriceListFilter);
         Task<List<DirectPriceList>> List(DirectPriceListFilter DirectPriceListFilter);
@@ -83,7 +80,7 @@ namespace DMS.Services.MDirectPriceList
                 return null;
             return DirectPriceList;
         }
-       
+
         public async Task<DirectPriceList> Create(DirectPriceList DirectPriceList)
         {
             if (!await DirectPriceListValidator.Create(DirectPriceList))
@@ -183,7 +180,7 @@ namespace DMS.Services.MDirectPriceList
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<DirectPriceList>> Import(List<DirectPriceList> DirectPriceLists)
         {
             if (!await DirectPriceListValidator.Import(DirectPriceLists))
@@ -206,8 +203,8 @@ namespace DMS.Services.MDirectPriceList
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public DirectPriceListFilter ToFilter(DirectPriceListFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<DirectPriceListFilter>();
@@ -219,7 +216,7 @@ namespace DMS.Services.MDirectPriceList
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    
+
                 }
             }
             return filter;

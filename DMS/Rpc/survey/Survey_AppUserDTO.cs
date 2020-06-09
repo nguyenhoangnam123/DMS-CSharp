@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.survey
@@ -12,7 +9,7 @@ namespace DMS.Rpc.survey
         public string Username { get; set; }
         public string DisplayName { get; set; }
 
-        public Survey_AppUserDTO() {}
+        public Survey_AppUserDTO() { }
         public Survey_AppUserDTO(AppUser AppUser)
         {
             this.Id = AppUser.Id;
@@ -24,9 +21,9 @@ namespace DMS.Rpc.survey
 
     public class Survey_AppUserFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public StringFilter Username { get; set; }
         public StringFilter DisplayName { get; set; }
         public AppUserOrder OrderBy { get; set; }

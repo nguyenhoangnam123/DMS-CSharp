@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Common;
+using DMS.Entities;
+using DMS.Enums;
+using DMS.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
-using DMS.Enums;
 
 namespace DMS.Services.MIndirectSalesOrder
 {
@@ -67,7 +66,7 @@ namespace DMS.Services.MIndirectSalesOrder
 
         private async Task<bool> ValidateStore(IndirectSalesOrder IndirectSalesOrder)
         {
-            if(IndirectSalesOrder.BuyerStoreId == 0)
+            if (IndirectSalesOrder.BuyerStoreId == 0)
                 IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.BuyerStore), ErrorCode.BuyerStoreEmpty);
             else
             {
@@ -102,13 +101,13 @@ namespace DMS.Services.MIndirectSalesOrder
                 if (count == 0)
                     IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SellerStore), ErrorCode.SellerStoreNotExisted);
             }
-            
+
             return IndirectSalesOrder.IsValidated;
         }
 
         private async Task<bool> ValidateEmployee(IndirectSalesOrder IndirectSalesOrder)
         {
-            if(IndirectSalesOrder.SaleEmployeeId == 0)
+            if (IndirectSalesOrder.SaleEmployeeId == 0)
                 IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SaleEmployee), ErrorCode.SaleEmployeeEmpty);
             else
             {
@@ -125,13 +124,13 @@ namespace DMS.Services.MIndirectSalesOrder
                 if (count == 0)
                     IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SaleEmployee), ErrorCode.SaleEmployeeNotExisted);
             }
-            
+
             return IndirectSalesOrder.IsValidated;
         }
 
         private async Task<bool> ValidateOrderDate(IndirectSalesOrder IndirectSalesOrder)
         {
-            if(IndirectSalesOrder.OrderDate == default(DateTime))
+            if (IndirectSalesOrder.OrderDate == default(DateTime))
                 IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.OrderDate), ErrorCode.OrderDateEmpty);
             return IndirectSalesOrder.IsValidated;
         }
@@ -165,7 +164,7 @@ namespace DMS.Services.MIndirectSalesOrder
         }
         private async Task<bool> ValidateUOM(IndirectSalesOrder IndirectSalesOrder)
         {
-            if(IndirectSalesOrder.IndirectSalesOrderContents != null)
+            if (IndirectSalesOrder.IndirectSalesOrderContents != null)
             {
                 //validate đơn vị tính sản phẩm bán
                 var Ids = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.UnitOfMeasureId).ToList();
@@ -187,8 +186,8 @@ namespace DMS.Services.MIndirectSalesOrder
                         IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
                 }
             }
-            
-            if(IndirectSalesOrder.IndirectSalesOrderPromotions != null)
+
+            if (IndirectSalesOrder.IndirectSalesOrderPromotions != null)
             {
                 //validate đơn vị tính sản phẩm khuyến mãi
                 var Ids = IndirectSalesOrder.IndirectSalesOrderPromotions.Select(x => x.UnitOfMeasureId).ToList();
@@ -216,11 +215,11 @@ namespace DMS.Services.MIndirectSalesOrder
 
         private async Task<bool> ValidateQuantity(IndirectSalesOrder IndirectSalesOrder)
         {
-            if(IndirectSalesOrder.IndirectSalesOrderContents != null)
+            if (IndirectSalesOrder.IndirectSalesOrderContents != null)
             {
                 foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                 {
-                    if(IndirectSalesOrderContent.Quantity <= 0)
+                    if (IndirectSalesOrderContent.Quantity <= 0)
                         IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Quantity), ErrorCode.QuantityEmpty);
                 }
             }
@@ -254,9 +253,9 @@ namespace DMS.Services.MIndirectSalesOrder
                 var listIdsNotExisted = Ids.Except(listIdsInDB);
                 foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                 {
-                    if(listIdsNotExisted.Contains(IndirectSalesOrderContent.ItemId))
+                    if (listIdsNotExisted.Contains(IndirectSalesOrderContent.ItemId))
                         IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Item), ErrorCode.ItemNotExisted);
-                    else if(IndirectSalesOrderContent.Quantity <= 0)
+                    else if (IndirectSalesOrderContent.Quantity <= 0)
                     {
                         IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Quantity), ErrorCode.QuantityInvalid);
                     }
@@ -290,7 +289,7 @@ namespace DMS.Services.MIndirectSalesOrder
             return IndirectSalesOrder.IsValidated;
         }
 
-        public async Task<bool>Create(IndirectSalesOrder IndirectSalesOrder)
+        public async Task<bool> Create(IndirectSalesOrder IndirectSalesOrder)
         {
             await ValidateStore(IndirectSalesOrder);
             await ValidateEmployee(IndirectSalesOrder);
@@ -322,7 +321,7 @@ namespace DMS.Services.MIndirectSalesOrder
             }
             return IndirectSalesOrder.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<IndirectSalesOrder> IndirectSalesOrders)
         {
             foreach (IndirectSalesOrder IndirectSalesOrder in IndirectSalesOrders)
@@ -331,7 +330,7 @@ namespace DMS.Services.MIndirectSalesOrder
             }
             return IndirectSalesOrders.All(st => st.IsValidated);
         }
-        
+
         public async Task<bool> Import(List<IndirectSalesOrder> IndirectSalesOrders)
         {
             return true;

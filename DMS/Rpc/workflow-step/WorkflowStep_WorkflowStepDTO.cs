@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.workflow_step
 {
@@ -18,7 +17,7 @@ namespace DMS.Rpc.workflow_step
         public WorkflowStep_RoleDTO Role { get; set; }
         public WorkflowStep_WorkflowDefinitionDTO WorkflowDefinition { get; set; }
         public List<WorkflowStep_WorkflowParameterDTO> WorkflowParameters { get; set; }
-        public WorkflowStep_WorkflowStepDTO() {}
+        public WorkflowStep_WorkflowStepDTO() { }
         public WorkflowStep_WorkflowStepDTO(WorkflowStep WorkflowStep)
         {
             this.Id = WorkflowStep.Id;

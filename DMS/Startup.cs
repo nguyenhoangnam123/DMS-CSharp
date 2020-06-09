@@ -1,9 +1,14 @@
 using Common;
 using DMS.Handlers;
 using DMS.Models;
+using DMS.Rpc;
+using DMS.Services;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,19 +17,14 @@ using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using RabbitMQ.Client;
 using OfficeOpenXml;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Winton.Extensions.Configuration.Consul;
 using Z.EntityFramework.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using DMS.Rpc;
-using Microsoft.AspNetCore.Http;
-using Hangfire;
-using DMS.Services;
 
 namespace DMS
 {
@@ -66,6 +66,7 @@ namespace DMS
             services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
             services.AddSingleton<IRabbitManager, RabbitManager>();
             services.AddHostedService<ConsumeRabbitMQHostedService>();
+
             services.AddDbContext<DataContext>(options =>
               options.UseSqlServer(Configuration.GetConnectionString("DataContext")));
             EntityFrameworkManager.ContextFactory = context =>
@@ -75,7 +76,7 @@ namespace DMS
                 DataContext DataContext = new DataContext(optionsBuilder.Options);
                 return DataContext;
             };
-            
+
             services.Scan(scan => scan
              .FromAssemblyOf<IServiceScoped>()
                  .AddClasses(classes => classes.AssignableTo<IServiceScoped>())

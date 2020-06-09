@@ -1,12 +1,12 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -47,7 +47,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<WorkflowDirectionDAO> OrFilter(IQueryable<WorkflowDirectionDAO> query, WorkflowDirectionFilter filter)
+        private IQueryable<WorkflowDirectionDAO> OrFilter(IQueryable<WorkflowDirectionDAO> query, WorkflowDirectionFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -68,7 +68,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<WorkflowDirectionDAO> DynamicOrder(IQueryable<WorkflowDirectionDAO> query, WorkflowDirectionFilter filter)
         {
@@ -274,7 +274,7 @@ namespace DMS.Repositories
             await DataContext.WorkflowDirection.Where(x => x.Id == WorkflowDirection.Id).DeleteFromQueryAsync();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<WorkflowDirection> WorkflowDirections)
         {
             List<WorkflowDirectionDAO> WorkflowDirectionDAOs = new List<WorkflowDirectionDAO>();
@@ -308,6 +308,6 @@ namespace DMS.Repositories
         private async Task SaveReference(WorkflowDirection WorkflowDirection)
         {
         }
-        
+
     }
 }

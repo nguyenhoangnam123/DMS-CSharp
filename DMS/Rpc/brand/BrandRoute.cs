@@ -1,17 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MBrand;
-using DMS.Services.MStatus;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.brand
 {
@@ -30,10 +18,10 @@ namespace DMS.Rpc.brand
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
-        
+
         public const string FilterListStatus = Default + "/filter-list-status";
         public const string SingleListStatus = Default + "/single-list-status";
-        
+
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };

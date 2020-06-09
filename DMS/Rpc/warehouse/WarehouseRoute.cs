@@ -1,23 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MWarehouse;
-using DMS.Services.MDistrict;
-using DMS.Services.MOrganization;
-using DMS.Services.MProvince;
-using DMS.Services.MStatus;
-using DMS.Services.MWard;
-using DMS.Services.MInventory;
-using DMS.Services.MItem;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.warehouse
 {
@@ -63,30 +46,27 @@ namespace DMS.Rpc.warehouse
             { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
-                SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
+                CountHistory, ListHistory,
+                } },
             { "Thêm", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
-                Detail, Create, 
+                Detail, Create, ImportInventory, ExportInventory, ExportTemplate, CountHistory, ListHistory,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Sửa", new List<string> {
                 Master, Count, List, Get,GetPreview,
                 FilterListOrganization, FilterListStatus,
-                Detail, Update,
+                Detail, Update, ImportInventory, ExportInventory, ExportTemplate,  CountHistory, ListHistory,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Xoá", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
-                Detail, Delete, 
-                SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
+                Detail, Delete,
+                } },
             { "Xoá nhiều", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
                 BulkDelete } },
-            { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, GetPreview,
-                FilterListOrganization, FilterListStatus,
-                ExportTemplate, } },
         };
     }
 }

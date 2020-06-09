@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Album : DataEntity,  IEquatable<Album>
+    public class Album : DataEntity, IEquatable<Album>
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -33,8 +33,8 @@ namespace DMS.Entities
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<AlbumFilter> OrFilter { get; set; }
-        public AlbumOrder OrderBy {get; set;}
-        public AlbumSelect Selects {get; set;}
+        public AlbumOrder OrderBy { get; set; }
+        public AlbumSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -48,7 +48,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum AlbumSelect:long
+    public enum AlbumSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

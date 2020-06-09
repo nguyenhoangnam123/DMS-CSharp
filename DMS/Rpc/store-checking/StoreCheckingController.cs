@@ -1,30 +1,25 @@
-        using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MStoreChecking;
+using DMS.Enums;
 using DMS.Services.MAlbum;
 using DMS.Services.MAppUser;
-using DMS.Services.MImage;
-using DMS.Services.MStore;
-using DMS.Enums;
-using DMS.Services.MStoreGrouping;
-using DMS.Services.MStoreType;
 using DMS.Services.MERoute;
-using DMS.Services.MTaxType;
-using DMS.Services.MProduct;
-using DMS.Services.MItem;
 using DMS.Services.MIndirectSalesOrder;
+using DMS.Services.MItem;
 using DMS.Services.MProblem;
 using DMS.Services.MProblemType;
+using DMS.Services.MProduct;
+using DMS.Services.MStore;
+using DMS.Services.MStoreChecking;
+using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreType;
+using DMS.Services.MTaxType;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.store_checking
 {
@@ -121,7 +116,7 @@ namespace DMS.Rpc.store_checking
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(StoreChecking_StoreCheckingDTO.Id))
                 return Forbid();
 
@@ -139,7 +134,7 @@ namespace DMS.Rpc.store_checking
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(StoreChecking_StoreCheckingDTO.Id))
                 return Forbid();
 

@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Position : DataEntity,  IEquatable<Position>
+    public class Position : DataEntity, IEquatable<Position>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -37,8 +37,8 @@ namespace DMS.Entities
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<PositionFilter> OrFilter { get; set; }
-        public PositionOrder OrderBy {get; set;}
-        public PositionSelect Selects {get; set;}
+        public PositionOrder OrderBy { get; set; }
+        public PositionSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -53,7 +53,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum PositionSelect:long
+    public enum PositionSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

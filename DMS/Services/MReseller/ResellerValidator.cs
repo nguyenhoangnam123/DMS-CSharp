@@ -1,11 +1,10 @@
+using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
-using DMS.Entities;
-using DMS;
-using DMS.Repositories;
 
 namespace DMS.Services.MReseller
 {
@@ -179,7 +178,7 @@ namespace DMS.Services.MReseller
 
         public async Task<bool> ValidateAppUser(Reseller Reseller)
         {
-            if(Reseller.StaffId == 0)
+            if (Reseller.StaffId == 0)
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Staff), ErrorCode.StaffEmpty);
             else
             {
@@ -194,13 +193,13 @@ namespace DMS.Services.MReseller
                 if (count == 0)
                     Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Staff), ErrorCode.StaffNotExisted);
             }
-            
+
             return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateOrganization(Reseller Reseller)
         {
-            if(Reseller.OrganizationId == 0)
+            if (Reseller.OrganizationId == 0)
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Organization), ErrorCode.OrganizationEmpty);
             else
             {
@@ -215,13 +214,13 @@ namespace DMS.Services.MReseller
                 if (count == 0)
                     Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.Organization), ErrorCode.OrganizationNotExisted);
             }
-            
+
             return Reseller.IsValidated;
         }
 
         public async Task<bool> ValidateResellerType(Reseller Reseller)
         {
-            if(Reseller.ResellerTypeId == 0)
+            if (Reseller.ResellerTypeId == 0)
                 Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerType), ErrorCode.ResellerTypeEmpty);
             else
             {
@@ -236,7 +235,7 @@ namespace DMS.Services.MReseller
                 if (count == 0)
                     Reseller.AddError(nameof(ResellerValidator), nameof(Reseller.ResellerType), ErrorCode.ResellerTypeNotExisted);
             }
-            
+
             return Reseller.IsValidated;
         }
 
@@ -270,7 +269,7 @@ namespace DMS.Services.MReseller
             return Reseller.IsValidated;
         }
 
-        public async Task<bool>Create(Reseller Reseller)
+        public async Task<bool> Create(Reseller Reseller)
         {
             await ValidateCode(Reseller);
             await ValidateName(Reseller);
@@ -318,7 +317,7 @@ namespace DMS.Services.MReseller
             }
             return Reseller.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<Reseller> Resellers)
         {
             ResellerFilter ResellerFilter = new ResellerFilter
@@ -338,7 +337,7 @@ namespace DMS.Services.MReseller
             }
             return false;
         }
-        
+
         public async Task<bool> Import(List<Reseller> Resellers)
         {
             var listCodeInDB = (await UOW.ResellerRepository.List(new ResellerFilter

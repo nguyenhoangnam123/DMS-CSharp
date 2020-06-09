@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Repositories
 {
-    public interface IRequestWorkflowParameterMappingRepository 
+    public interface IRequestWorkflowParameterMappingRepository
     {
         Task<List<RequestWorkflowParameterMapping>> List(Guid RequestId);
         Task<bool> BulkMerge(Guid RequestId, List<RequestWorkflowParameterMapping> RequestWorkflowParameterMappings);

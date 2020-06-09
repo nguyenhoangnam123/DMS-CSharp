@@ -1,23 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MIndirectPriceList;
-using DMS.Services.MIndirectPriceListType;
-using DMS.Services.MOrganization;
-using DMS.Services.MStatus;
-using DMS.Services.MItem;
-using DMS.Services.MStoreGrouping;
-using DMS.Services.MStore;
-using DMS.Services.MStoreType;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.indirect_price_list
 {
@@ -74,7 +57,7 @@ namespace DMS.Rpc.indirect_price_list
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
+            { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, FilterListIndirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, } },
 
             { "Thêm", new List<string> {
@@ -83,25 +66,25 @@ namespace DMS.Rpc.indirect_price_list
                 SingleListIndirectPriceListType, SingleListOrganization, SingleListStatus, SingleListItem, SingleListStoreGrouping, SingleListStore, SingleListStoreType, } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get,  FilterListIndirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, 
-                Detail, Update,  
+                Master, Count, List, Get,  FilterListIndirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                Detail, Update,
                 SingleListIndirectPriceListType, SingleListOrganization, SingleListStatus, SingleListItem, SingleListStoreGrouping, SingleListStore, SingleListStoreType, } },
 
             { "Xoá", new List<string> {
-                Master, Count, List, Get,  FilterListIndirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, 
-                Detail, Delete, 
+                Master, Count, List, Get,  FilterListIndirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                Detail, Delete,
                 SingleListIndirectPriceListType, SingleListOrganization, SingleListStatus, SingleListItem, SingleListStoreGrouping, SingleListStore, SingleListStoreType, } },
 
-            { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, FilterListIndirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, 
+            { "Xoá nhiều", new List<string> {
+                Master, Count, List, Get, FilterListIndirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 BulkDelete } },
 
-            { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, FilterListIndirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, 
+            { "Xuất excel", new List<string> {
+                Master, Count, List, Get, FilterListIndirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 Export } },
 
-            { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, FilterListIndirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, 
+            { "Nhập excel", new List<string> {
+                Master, Count, List, Get, FilterListIndirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 ExportTemplate, Import } },
         };
     }

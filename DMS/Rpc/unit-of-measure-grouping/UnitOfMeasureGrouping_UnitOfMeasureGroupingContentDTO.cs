@@ -1,7 +1,4 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
 
 namespace DMS.Rpc.unit_of_measure_grouping
@@ -12,9 +9,9 @@ namespace DMS.Rpc.unit_of_measure_grouping
         public long UnitOfMeasureGroupingId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long? Factor { get; set; }
-        public UnitOfMeasureGrouping_UnitOfMeasureDTO UnitOfMeasure { get; set; }   
-        
-        public UnitOfMeasureGrouping_UnitOfMeasureGroupingContentDTO() {}
+        public UnitOfMeasureGrouping_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+
+        public UnitOfMeasureGrouping_UnitOfMeasureGroupingContentDTO() { }
         public UnitOfMeasureGrouping_UnitOfMeasureGroupingContentDTO(UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent)
         {
             this.Id = UnitOfMeasureGroupingContent.Id;
@@ -28,15 +25,15 @@ namespace DMS.Rpc.unit_of_measure_grouping
 
     public class UnitOfMeasureGrouping_UnitOfMeasureGroupingContentFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public IdFilter UnitOfMeasureGroupingId { get; set; }
-        
+
         public IdFilter UnitOfMeasureId { get; set; }
-        
+
         public LongFilter Factor { get; set; }
-        
+
         public UnitOfMeasureGroupingContentOrder OrderBy { get; set; }
     }
 }

@@ -153,7 +153,7 @@ namespace DMS.Services.MStoreGrouping
                 };
 
                 var count = await UOW.StoreRepository.Count(StoreFilter);
-                if(count > 0)
+                if (count > 0)
                     StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Id), ErrorCode.StoreGroupingInUsed);
             }
             return StoreGrouping.IsValidated;

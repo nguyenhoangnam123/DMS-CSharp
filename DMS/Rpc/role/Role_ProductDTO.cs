@@ -1,9 +1,5 @@
 ﻿using Common;
 using DMS.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DMS.Rpc.role
 {
@@ -18,7 +14,7 @@ namespace DMS.Rpc.role
         public string ScanCode { get; set; }
         public string OtherName { get; set; }
         public string TechnicalName { get; set; }
-      
+
         public Role_ProductDTO() { }
         public Role_ProductDTO(Product Product)
         {

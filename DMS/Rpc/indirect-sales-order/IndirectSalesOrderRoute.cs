@@ -1,22 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MIndirectSalesOrder;
-using DMS.Services.MStore;
-using DMS.Services.MEditedPriceStatus;
-using DMS.Services.MRequestState;
-using DMS.Services.MAppUser;
-using DMS.Services.MItem;
-using DMS.Services.MUnitOfMeasure;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.indirect_sales_order
 {
@@ -33,6 +17,7 @@ namespace DMS.Rpc.indirect_sales_order
         public const string Delete = Default + "/delete";
         public const string Approve = Default + "/approve";
         public const string Reject = Default + "/reject";
+        public const string Export = Default + "/export";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListItem = Default + "/filter-list-item";
@@ -95,6 +80,11 @@ namespace DMS.Rpc.indirect_sales_order
                 Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure,
                 Detail, Delete,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure,  } },
+
+            { "Xuất excel", new List<string> {
+                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,
+                Export } },
+
         };
     }
 }

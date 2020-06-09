@@ -1,8 +1,7 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.warehouse
 {
@@ -13,10 +12,10 @@ namespace DMS.Rpc.warehouse
         public long ItemId { get; set; }
         public long SaleStock { get; set; }
         public long AccountingStock { get; set; }
-        public Warehouse_ItemDTO Item { get; set; }   
+        public Warehouse_ItemDTO Item { get; set; }
         public List<Warehouse_InventoryHistoryDTO> InventoryHistories { get; set; }
-        
-        public Warehouse_InventoryDTO() {}
+
+        public Warehouse_InventoryDTO() { }
         public Warehouse_InventoryDTO(Inventory Inventory)
         {
             this.Id = Inventory.Id;
@@ -32,17 +31,17 @@ namespace DMS.Rpc.warehouse
 
     public class Warehouse_InventoryFilterDTO : FilterDTO
     {
-        
+
         public IdFilter Id { get; set; }
-        
+
         public IdFilter WarehouseId { get; set; }
-        
+
         public IdFilter ItemId { get; set; }
-        
+
         public LongFilter SaleStock { get; set; }
-        
+
         public LongFilter AccountingStock { get; set; }
-        
+
         public InventoryOrder OrderBy { get; set; }
     }
 }

@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
 using DMS.Entities;
-using DMS;
 using DMS.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MEditedPriceStatus
 {
@@ -50,7 +47,7 @@ namespace DMS.Services.MEditedPriceStatus
             return count == 1;
         }
 
-        public async Task<bool>Create(EditedPriceStatus EditedPriceStatus)
+        public async Task<bool> Create(EditedPriceStatus EditedPriceStatus)
         {
             return EditedPriceStatus.IsValidated;
         }
@@ -70,12 +67,12 @@ namespace DMS.Services.MEditedPriceStatus
             }
             return EditedPriceStatus.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<EditedPriceStatus> EditedPriceStatuses)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<EditedPriceStatus> EditedPriceStatuses)
         {
             return true;

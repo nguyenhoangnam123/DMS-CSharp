@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class IndirectSalesOrderContent : DataEntity,  IEquatable<IndirectSalesOrderContent>
+    public class IndirectSalesOrderContent : DataEntity, IEquatable<IndirectSalesOrderContent>
     {
         public long Id { get; set; }
         public long IndirectSalesOrderId { get; set; }
@@ -60,8 +60,8 @@ namespace DMS.Entities
         public DecimalFilter TaxPercentage { get; set; }
         public LongFilter TaxAmount { get; set; }
         public List<IndirectSalesOrderContentFilter> OrFilter { get; set; }
-        public IndirectSalesOrderContentOrder OrderBy {get; set;}
-        public IndirectSalesOrderContentSelect Selects {get; set;}
+        public IndirectSalesOrderContentOrder OrderBy { get; set; }
+        public IndirectSalesOrderContentSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -86,7 +86,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum IndirectSalesOrderContentSelect:long
+    public enum IndirectSalesOrderContentSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

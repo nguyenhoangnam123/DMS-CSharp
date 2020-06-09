@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -73,7 +72,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<IndirectSalesOrderDAO> OrFilter(IQueryable<IndirectSalesOrderDAO> query, IndirectSalesOrderFilter filter)
+        private IQueryable<IndirectSalesOrderDAO> OrFilter(IQueryable<IndirectSalesOrderDAO> query, IndirectSalesOrderFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -120,7 +119,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<IndirectSalesOrderDAO> DynamicOrder(IQueryable<IndirectSalesOrderDAO> query, IndirectSalesOrderFilter filter)
         {
@@ -698,7 +697,7 @@ namespace DMS.Repositories
             await DataContext.IndirectSalesOrder.Where(x => x.Id == IndirectSalesOrder.Id).DeleteFromQueryAsync();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<IndirectSalesOrder> IndirectSalesOrders)
         {
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = new List<IndirectSalesOrderDAO>();
@@ -793,6 +792,6 @@ namespace DMS.Repositories
                 await DataContext.IndirectSalesOrderPromotion.BulkMergeAsync(IndirectSalesOrderPromotionDAOs);
             }
         }
-        
+
     }
 }

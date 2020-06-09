@@ -1,17 +1,15 @@
 ﻿using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MDirectSalesOrder
 {
-    public interface IDirectSalesOrderService :  IServiceScoped
+    public interface IDirectSalesOrderService : IServiceScoped
     {
         Task<int> Count(DirectSalesOrderFilter DirectSalesOrderFilter);
         Task<List<DirectSalesOrder>> List(DirectSalesOrderFilter DirectSalesOrderFilter);
@@ -103,7 +101,7 @@ namespace DMS.Services.MDirectSalesOrder
                 return null;
             return DirectSalesOrder;
         }
-       
+
         public async Task<DirectSalesOrder> Create(DirectSalesOrder DirectSalesOrder)
         {
             if (!await DirectSalesOrderValidator.Create(DirectSalesOrder))
@@ -207,7 +205,7 @@ namespace DMS.Services.MDirectSalesOrder
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<DirectSalesOrder>> Import(List<DirectSalesOrder> DirectSalesOrders)
         {
             if (!await DirectSalesOrderValidator.Import(DirectSalesOrders))
@@ -230,8 +228,8 @@ namespace DMS.Services.MDirectSalesOrder
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public DirectSalesOrderFilter ToFilter(DirectSalesOrderFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<DirectSalesOrderFilter>();
@@ -315,7 +313,7 @@ namespace DMS.Services.MDirectSalesOrder
                 }
 
             }
-            
+
             return DirectSalesOrder;
         }
 

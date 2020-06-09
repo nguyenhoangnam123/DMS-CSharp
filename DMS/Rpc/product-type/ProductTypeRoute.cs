@@ -1,17 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MProductType;
-using DMS.Services.MStatus;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.product_type
 {
@@ -40,23 +28,23 @@ namespace DMS.Rpc.product_type
             { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, FilterListStatus, } },
 
-            { "Thêm", new List<string> { 
-                Master, Count, List, Get, FilterListStatus, 
-                Detail, Create, 
+            { "Thêm", new List<string> {
+                Master, Count, List, Get, FilterListStatus,
+                Detail, Create,
                 SingleListStatus, } },
 
-            { "Sửa", new List<string> { 
-                Master, Count, List, Get, FilterListStatus, 
-                Detail, Update, 
+            { "Sửa", new List<string> {
+                Master, Count, List, Get, FilterListStatus,
+                Detail, Update,
                 SingleListStatus, } },
 
-            { "Xoá", new List<string> { 
-                Master, Count, List, Get, FilterListStatus, 
-                Detail, Delete, 
+            { "Xoá", new List<string> {
+                Master, Count, List, Get, FilterListStatus,
+                Detail, Delete,
                 SingleListStatus, } },
 
-            { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, FilterListStatus, 
+            { "Xoá nhiều", new List<string> {
+                Master, Count, List, Get, FilterListStatus,
                 BulkDelete } },
 
         };

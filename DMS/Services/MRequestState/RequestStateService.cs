@@ -1,17 +1,14 @@
 using Common;
+using DMS.Entities;
+using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
-using DMS.Entities;
 
 namespace DMS.Services.MRequestState
 {
-    public interface IRequestStateService :  IServiceScoped
+    public interface IRequestStateService : IServiceScoped
     {
         Task<int> Count(RequestStateFilter RequestStateFilter);
         Task<List<RequestState>> List(RequestStateFilter RequestStateFilter);
@@ -83,7 +80,7 @@ namespace DMS.Services.MRequestState
                 return null;
             return RequestState;
         }
-       
+
         public async Task<RequestState> Create(RequestState RequestState)
         {
             if (!await RequestStateValidator.Create(RequestState))
@@ -183,7 +180,7 @@ namespace DMS.Services.MRequestState
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<RequestState>> Import(List<RequestState> RequestStates)
         {
             if (!await RequestStateValidator.Import(RequestStates))
@@ -206,8 +203,8 @@ namespace DMS.Services.MRequestState
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+
         public RequestStateFilter ToFilter(RequestStateFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<RequestStateFilter>();

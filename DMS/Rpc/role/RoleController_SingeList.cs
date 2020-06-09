@@ -1,29 +1,10 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
-using DMS.Services.MAppUser;
-using DMS.Services.MMenu;
-using DMS.Services.MRole;
-using DMS.Services.MStatus;
-using System.IO;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
-using DMS.Services.MBrand;
-using DMS.Services.MOrganization;
-using DMS.Services.MProduct;
-using DMS.Services.MProductGrouping;
-using DMS.Services.MProductType;
-using DMS.Services.MReseller;
-using DMS.Services.MStore;
-using DMS.Services.MStoreGrouping;
-using DMS.Services.MStoreType;
-using DMS.Services.MSupplier;
-using DMS.Services.MWarehouse;
 
 namespace DMS.Rpc.role
 {

@@ -1,8 +1,5 @@
 ﻿using Common;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DMS.Enums
 {
@@ -21,6 +18,6 @@ namespace DMS.Enums
         {
             TOTAL_INDIRECT_OUTPUT_OF_KEY_ITEM, TOTAL_INDIRECT_SALES_OF_KEY_ITEM, TOTALINDIRECTORDERSOFKEYITEM, TOTALINDIRECTSTORESOFKEYITEM,
             TOTALDIRECTOUTPUTOFKEYITEM, TOTALDIRECTSALESOFKEYITEM, TOTALDIRECTORDERSOFKEYITEM, TOTALDIRECTSTORESOFKEYITEM
-        }; 
+        };
     }
 }

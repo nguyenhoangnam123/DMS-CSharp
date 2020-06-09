@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
 
 namespace DMS.Repositories
 {
@@ -43,7 +42,7 @@ namespace DMS.Repositories
             return query;
         }
 
-         private IQueryable<ProblemStatusDAO> OrFilter(IQueryable<ProblemStatusDAO> query, ProblemStatusFilter filter)
+        private IQueryable<ProblemStatusDAO> OrFilter(IQueryable<ProblemStatusDAO> query, ProblemStatusFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -60,7 +59,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ProblemStatusDAO> DynamicOrder(IQueryable<ProblemStatusDAO> query, ProblemStatusFilter filter)
         {
@@ -173,7 +172,7 @@ namespace DMS.Repositories
             await DataContext.ProblemStatus.Where(x => x.Id == ProblemStatus.Id).DeleteFromQueryAsync();
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<ProblemStatus> ProblemStatuses)
         {
             List<ProblemStatusDAO> ProblemStatusDAOs = new List<ProblemStatusDAO>();
@@ -200,6 +199,6 @@ namespace DMS.Repositories
         private async Task SaveReference(ProblemStatus ProblemStatus)
         {
         }
-        
+
     }
 }

@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class Sex : DataEntity,  IEquatable<Sex>
+    public class Sex : DataEntity, IEquatable<Sex>
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -28,8 +28,8 @@ namespace DMS.Entities
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public List<SexFilter> OrFilter { get; set; }
-        public SexOrder OrderBy {get; set;}
-        public SexSelect Selects {get; set;}
+        public SexOrder OrderBy { get; set; }
+        public SexSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -42,7 +42,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum SexSelect:long
+    public enum SexSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class WorkflowParameter : DataEntity,  IEquatable<WorkflowParameter>
+    public class WorkflowParameter : DataEntity, IEquatable<WorkflowParameter>
     {
         public long Id { get; set; }
         public long WorkflowDefinitionId { get; set; }
@@ -31,8 +31,8 @@ namespace DMS.Entities
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public List<WorkflowParameterFilter> OrFilter { get; set; }
-        public WorkflowParameterOrder OrderBy {get; set;}
-        public WorkflowParameterSelect Selects {get; set;}
+        public WorkflowParameterOrder OrderBy { get; set; }
+        public WorkflowParameterSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -45,7 +45,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum WorkflowParameterSelect:long
+    public enum WorkflowParameterSelect : long
     {
         ALL = E.ALL,
         Id = E._0,

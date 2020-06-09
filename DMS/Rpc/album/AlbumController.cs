@@ -1,17 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common;
-using Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MAlbum;
 using DMS.Services.MStatus;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.album
 {
@@ -75,7 +73,7 @@ namespace DMS.Rpc.album
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Album_AlbumDTO.Id))
                 return Forbid();
 
@@ -93,7 +91,7 @@ namespace DMS.Rpc.album
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(Album_AlbumDTO.Id))
                 return Forbid();
 
@@ -123,7 +121,7 @@ namespace DMS.Rpc.album
             else
                 return BadRequest(Album_AlbumDTO);
         }
-        
+
         [Route(AlbumRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -143,7 +141,7 @@ namespace DMS.Rpc.album
                 return BadRequest(Albums.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         [Route(AlbumRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -175,13 +173,13 @@ namespace DMS.Rpc.album
                     string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
                     string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
                     string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    
+
                     Album Album = new Album();
                     Album.Name = NameValue;
                     Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
                     Album.StatusId = Status == null ? 0 : Status.Id;
                     Album.Status = Status;
-                    
+
                     Albums.Add(Album);
                 }
             }
@@ -209,13 +207,13 @@ namespace DMS.Rpc.album
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(AlbumRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] Album_AlbumFilterDTO Album_AlbumFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -228,7 +226,7 @@ namespace DMS.Rpc.album
 
                 var AlbumHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Name",
                         "StatusId",
@@ -247,7 +245,7 @@ namespace DMS.Rpc.album
                 }
                 excel.GenerateWorksheet("Album", AlbumHeaders, AlbumData);
                 #endregion
-                
+
                 #region Status
                 var StatusFilter = new StatusFilter();
                 StatusFilter.Selects = StatusSelect.ALL;
@@ -259,7 +257,7 @@ namespace DMS.Rpc.album
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -288,14 +286,14 @@ namespace DMS.Rpc.album
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
                 #region Album
                 var AlbumHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Name",
                         "StatusId",
@@ -304,7 +302,7 @@ namespace DMS.Rpc.album
                 List<object[]> AlbumData = new List<object[]>();
                 excel.GenerateWorksheet("Album", AlbumHeaders, AlbumData);
                 #endregion
-                
+
                 #region Status
                 var StatusFilter = new StatusFilter();
                 StatusFilter.Selects = StatusSelect.ALL;
@@ -316,7 +314,7 @@ namespace DMS.Rpc.album
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",

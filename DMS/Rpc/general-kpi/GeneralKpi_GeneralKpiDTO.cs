@@ -1,8 +1,8 @@
 using Common;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using DMS.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.general_kpi
 {
@@ -24,7 +24,7 @@ namespace DMS.Rpc.general_kpi
         public List<GeneralKpi_GeneralKpiCriteriaMappingDTO> GeneralKpiCriteriaMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public GeneralKpi_GeneralKpiDTO() {}
+        public GeneralKpi_GeneralKpiDTO() { }
         public GeneralKpi_GeneralKpiDTO(GeneralKpi GeneralKpi)
         {
             this.Id = GeneralKpi.Id;

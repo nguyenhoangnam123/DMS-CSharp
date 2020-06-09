@@ -2,7 +2,6 @@ using Common;
 using DMS.Entities;
 using DMS.Services.MWorkflow;
 using DMS.Services.MWorkflowStep;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using System;
@@ -76,7 +75,7 @@ namespace DMS.Rpc.workflow_direction
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(WorkflowDirection_WorkflowDirectionDTO.Id))
                 return Forbid();
 
@@ -94,7 +93,7 @@ namespace DMS.Rpc.workflow_direction
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(WorkflowDirection_WorkflowDirectionDTO.Id))
                 return Forbid();
 
@@ -124,13 +123,13 @@ namespace DMS.Rpc.workflow_direction
             else
                 return BadRequest(WorkflowDirection_WorkflowDirectionDTO);
         }
-        
+
         [Route(WorkflowDirectionRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] WorkflowDirection_WorkflowDirectionFilterDTO WorkflowDirection_WorkflowDirectionFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -143,7 +142,7 @@ namespace DMS.Rpc.workflow_direction
 
                 var WorkflowDirectionHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "WorkflowDefinitionId",
                         "FromStepId",
@@ -172,7 +171,7 @@ namespace DMS.Rpc.workflow_direction
                 }
                 excel.GenerateWorksheet("WorkflowDirection", WorkflowDirectionHeaders, WorkflowDirectionData);
                 #endregion
-                
+
                 #region WorkflowStep
                 var WorkflowStepFilter = new WorkflowStepFilter();
                 WorkflowStepFilter.Selects = WorkflowStepSelect.ALL;
@@ -184,7 +183,7 @@ namespace DMS.Rpc.workflow_direction
 
                 var WorkflowStepHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "WorkflowDefinitionId",
                         "Name",
@@ -220,7 +219,7 @@ namespace DMS.Rpc.workflow_direction
 
                 var WorkflowDefinitionHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Name",
                         "WorkflowTypeId",
