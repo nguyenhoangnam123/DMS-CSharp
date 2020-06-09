@@ -264,6 +264,7 @@ namespace DMS.Rpc.role
             PermissionFilter PermissionFilter = new PermissionFilter();
             PermissionFilter.Id = Role_PermissionFilterDTO.Id;
             PermissionFilter.RoleId = Role_PermissionFilterDTO.RoleId;
+            PermissionFilter.MenuId = Role_PermissionFilterDTO.MenuId;
 
             return await PermissionService.Count(PermissionFilter);
         }
@@ -278,6 +279,7 @@ namespace DMS.Rpc.role
             PermissionFilter.Selects = PermissionSelect.ALL;
             PermissionFilter.Id = Role_PermissionFilterDTO.Id;
             PermissionFilter.RoleId = Role_PermissionFilterDTO.RoleId;
+            PermissionFilter.MenuId = Role_PermissionFilterDTO.MenuId;
 
             List<Permission> Permissions = await PermissionService.List(PermissionFilter);
             List<Role_PermissionDTO> Role_PermissionDTOs = Permissions
