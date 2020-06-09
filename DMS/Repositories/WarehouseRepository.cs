@@ -276,6 +276,7 @@ namespace DMS.Repositories
                 return null;
             List<Item> Items = await DataContext.Item.AsNoTracking()
                 .Where(i => i.DeletedAt == null && i.StatusId == StatusEnum.ACTIVE.Id)
+                .Where(i => i.Product.StatusId == StatusEnum.ACTIVE.Id && i.Product.DeletedAt == null)
                 .Select(x => new Item
                 {
                     Id = x.Id,
