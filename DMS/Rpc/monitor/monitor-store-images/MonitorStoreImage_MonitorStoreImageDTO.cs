@@ -23,10 +23,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
     public class MonitorStoreImage_StoreCheckingDTO : DataDTO
     {
+        public long Id { get; set; }
         public DateTime Date { get; set; }
         public string StoreName { get; set; }
-        public long ImageCounter { get { return Image == null ? 0 : Image.Count; } }
-        internal HashSet<long> Image { get; set; }
+        public long ImageCounter { get; set; }
     }
 
     public class MonitorStoreImage_MonitorStoreImageFilterDTO : FilterDTO 

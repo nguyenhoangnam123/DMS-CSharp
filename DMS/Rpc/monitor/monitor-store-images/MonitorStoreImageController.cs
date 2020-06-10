@@ -142,21 +142,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
             long? StoreId = MonitorStoreImage_MonitorStoreImageFilterDTO.StoreId?.Equal;
             long? HasImage = MonitorStoreImage_MonitorStoreImageFilterDTO.HasImage?.Equal;
             long? HasOrder = MonitorStoreImage_MonitorStoreImageFilterDTO.HasOrder?.Equal;
-            AppUserDAO AppUserDAO = null;
-            if (SaleEmployeeId != null)
-            {
-                AppUserDAO = await DataContext.AppUser.Where(x => x.Id == SaleEmployeeId.Value).FirstOrDefaultAsync();
-            }
-            OrganizationDAO OrganizationDAO = null;
-            if (OrganizationId != null)
-            {
-                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == OrganizationId.Value).FirstOrDefaultAsync();
-            }
-            StoreDAO StoreDAO = null;
-            if (StoreId != null)
-            {
-                StoreDAO = await DataContext.Store.Where(o => o.Id == StoreId.Value).FirstOrDefaultAsync();
-            }
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
                     MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value;
@@ -171,9 +156,9 @@ namespace DMS.Rpc.monitor.monitor_store_images
             var query = from sc in DataContext.StoreChecking
                         join s in DataContext.Store on sc.StoreId equals s.Id
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                        (OrganizationDAO == null || s.OrganizationId == OrganizationId.Value) &&
-                        (AppUserDAO == null || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        (StoreDAO == null || sc.StoreId == StoreId.Value) &&
+                        (OrganizationId.HasValue == false || s.OrganizationId == OrganizationId.Value) &&
+                        (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
+                        (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                         (
                             HasImage == null ||
                             (HasImage.Value == 0 && sc.ImageCounter == 0) ||
@@ -190,7 +175,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
         }
 
         [Route(MonitorStoreImageRoute.List), HttpPost]
-        public async Task<List<MonitorStoreImage_MonitorStoreImageDTO>> List(MonitorStoreImage_MonitorStoreImageFilterDTO MonitorStoreImage_MonitorStoreImageFilterDTO)
+        public async Task<List<MonitorStoreImage_MonitorStoreImageDTO>> List([FromBody] MonitorStoreImage_MonitorStoreImageFilterDTO MonitorStoreImage_MonitorStoreImageFilterDTO)
         {
             long? OrganizationId = MonitorStoreImage_MonitorStoreImageFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorStoreImage_MonitorStoreImageFilterDTO.SaleEmployeeId?.Equal;
@@ -239,9 +224,17 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 Take = int.MaxValue,
                 SaleEmployeeId = new IdFilter { In = SaleEmployeeIds },
                 CheckOutAt = new DateFilter { GreaterEqual = Start, LessEqual = End },
-                Selects = StoreCheckingSelect.Id | StoreCheckingSelect.Store | StoreCheckingSelect.SaleEmployee | StoreCheckingSelect.CountImage | StoreCheckingSelect.CountIndirectSalesOrder
+                Selects = StoreCheckingSelect.Id | StoreCheckingSelect.Store | StoreCheckingSelect.SaleEmployee | StoreCheckingSelect.CountImage
             });
 
+            List<long> OrganizationIds = SalesEmployees.Where(x => x.OrganizationId.HasValue).Select(x => x.OrganizationId.Value).ToList();
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Id | OrganizationSelect.Name,
+                Id = new IdFilter { In = OrganizationIds }
+            });
             //build
             List<MonitorStoreImage_SaleEmployeeDTO> MonitorStoreImage_SaleEmployeeDTOs = new List<MonitorStoreImage_SaleEmployeeDTO>();
             foreach (var SalesEmployee in SalesEmployees)
@@ -253,27 +246,43 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     SaleEmployeeId = SalesEmployee.Id,
                     OrganizationName = SalesEmployee.Organization.Name
                 };
-                MonitorStoreImage_SaleEmployeeDTO.StoreCheckings = StoreCheckings.Where(x => x.SaleEmployeeId == SalesEmployee.Id).Select(x => new MonitorStoreImage_StoreCheckingDTO
+                MonitorStoreImage_SaleEmployeeDTO.StoreCheckings = StoreCheckings.OrderBy(x => x.CheckOutAt).Where(x => x.SaleEmployeeId == SalesEmployee.Id).Select(x => new MonitorStoreImage_StoreCheckingDTO
                 {
+                    Id = x.Id,
                     Date = x.CheckOutAt.Value.Date,
                     StoreName = x.Store.Name,
+                    ImageCounter = x.CountImage ?? 0
                 }).ToList();
 
                 MonitorStoreImage_SaleEmployeeDTOs.Add(MonitorStoreImage_SaleEmployeeDTO);
             }
 
             List<MonitorStoreImage_MonitorStoreImageDTO> MonitorStoreImage_MonitorStoreImageDTOs = new List<MonitorStoreImage_MonitorStoreImageDTO>();
-            //foreach (Organization Organization in Organizations)
-            //{
-            //    MonitorStoreImage_MonitorStoreImageDTO MonitorStoreImage_MonitorStoreImageDTO = new MonitorStoreImage_MonitorStoreImageDTO()
-            //    {
-            //        OrganizationName = Organization.Name,
-            //        SaleEmployees = MonitorStoreImage_SaleEmployeeDTOs.Where(x => x.OrganizationName.Equals(Organization.Name)).ToList()
-            //    };
-            //    MonitorStoreImage_MonitorStoreImageDTOs.Add(MonitorStoreImage_MonitorStoreImageDTO);
-            //}
+            foreach (Organization Organization in Organizations)
+            {
+                MonitorStoreImage_MonitorStoreImageDTO MonitorStoreImage_MonitorStoreImageDTO = new MonitorStoreImage_MonitorStoreImageDTO()
+                {
+                    OrganizationName = Organization.Name,
+                    SaleEmployees = MonitorStoreImage_SaleEmployeeDTOs.Where(x => x.OrganizationName.Equals(Organization.Name)).ToList()
+                };
+                MonitorStoreImage_MonitorStoreImageDTOs.Add(MonitorStoreImage_MonitorStoreImageDTO);
+            }
 
             return MonitorStoreImage_MonitorStoreImageDTOs;
+        }
+
+        public async Task<StoreChecking> Get([FromBody] MonitorStoreImage_StoreCheckingDTO MonitorStoreImage_StoreCheckingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreChecking StoreChecking = new StoreChecking
+            {
+                Id = MonitorStoreImage_StoreCheckingDTO.Id
+            };
+
+            StoreChecking = await StoreCheckingService.Get(StoreChecking.Id);
+            return StoreChecking;
         }
     }
 }
