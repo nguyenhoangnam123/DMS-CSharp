@@ -371,6 +371,7 @@ namespace DMS.Repositories
             ERouteDAO.Name = ERoute.Name;
             ERouteDAO.SaleEmployeeId = ERoute.SaleEmployeeId;
             ERouteDAO.StartDate = ERoute.StartDate;
+            ERouteDAO.RealStartDate = ERoute.RealStartDate;
             ERouteDAO.EndDate = ERoute.EndDate;
             ERouteDAO.ERouteTypeId = ERoute.ERouteTypeId;
             ERouteDAO.RequestStateId = ERoute.RequestStateId;
@@ -449,10 +450,15 @@ namespace DMS.Repositories
 
         private async Task SaveReference(ERoute ERoute)
         {
+            var ERouteContentIds = await DataContext.ERouteContent
+                .Where(x => x.ERouteId == ERoute.Id).Select(x => x.Id).ToListAsync();
+            await DataContext.ERouteContentDay
+                .Where(x => ERouteContentIds.Contains(x.ERouteContentId)).DeleteFromQueryAsync();
             await DataContext.ERouteContent
                 .Where(x => x.ERouteId == ERoute.Id).DeleteFromQueryAsync();
             if (ERoute.ERouteContents != null)
             {
+                ERoute.ERouteContents.ForEach(x => x.RowId = Guid.NewGuid());
                 List<ERouteContentDAO> ERouteContentDAOs = new List<ERouteContentDAO>();
                 foreach (ERouteContent ERouteContent in ERoute.ERouteContents)
                 {
@@ -472,10 +478,168 @@ namespace DMS.Repositories
                     ERouteContentDAO.Week2 = ERouteContent.Week2;
                     ERouteContentDAO.Week3 = ERouteContent.Week3;
                     ERouteContentDAO.Week4 = ERouteContent.Week4;
+                    ERouteContentDAO.RowId = ERouteContent.RowId;
                     ERouteContentDAOs.Add(ERouteContentDAO);
                 }
                 await DataContext.ERouteContent.BulkMergeAsync(ERouteContentDAOs);
+
+                List<ERouteContentDayDAO> ERouteContentDayDAOs = new List<ERouteContentDayDAO>();
+                foreach (ERouteContent ERouteContent in ERoute.ERouteContents)
+                {
+                    ERouteContent.Id = ERouteContentDAOs.Where(x => x.RowId == ERouteContent.RowId).Select(x => x.Id).FirstOrDefault();
+                    List<ERouteContentDay> ERouteContentDays = await BuildERouteContentDays(ERouteContent);
+                    List<ERouteContentDayDAO> eRouteContentDayDAOs = ERouteContentDays.Select(x => new ERouteContentDayDAO
+                    {
+                        ERouteContentId = x.ERouteContentId,
+                        Planned = x.Planned,
+                        OrderDay = x.OrderDay
+                    }).ToList();
+                    ERouteContentDayDAOs.AddRange(eRouteContentDayDAOs);
+                }
+
+                await DataContext.ERouteContentDay.BulkMergeAsync(ERouteContentDayDAOs);
             }
+        }
+
+        private async Task<List<ERouteContentDay>> BuildERouteContentDays(ERouteContent ERouteContent)
+        {
+            List<ERouteContentDay> ERouteContentDays = new List<ERouteContentDay>();
+            for (int i = 0; i < 28; i++)
+            {
+                ERouteContentDays.Add(new ERouteContentDay
+                {
+                    ERouteContentId = ERouteContent.Id,
+                    OrderDay = i,
+                    Planned = false
+                });
+            }
+            
+            if (ERouteContent.Week1)
+            {
+                if (ERouteContent.Monday)
+                {
+                    ERouteContentDays[0].Planned = true;
+                }
+                if (ERouteContent.Tuesday)
+                {
+                    ERouteContentDays[1].Planned = true;
+                }
+                if (ERouteContent.Wednesday)
+                {
+                    ERouteContentDays[2].Planned = true;
+                }
+                if (ERouteContent.Thursday)
+                {
+                    ERouteContentDays[3].Planned = true;
+                }
+                if (ERouteContent.Friday)
+                {
+                    ERouteContentDays[4].Planned = true;
+                }
+                if (ERouteContent.Saturday)
+                {
+                    ERouteContentDays[5].Planned = true;
+                }
+                if (ERouteContent.Sunday)
+                {
+                    ERouteContentDays[6].Planned = true;
+                }
+            }
+            if (ERouteContent.Week2)
+            {
+                if (ERouteContent.Monday)
+                {
+                    ERouteContentDays[7].Planned = true;
+                }
+                if (ERouteContent.Tuesday)
+                {
+                    ERouteContentDays[8].Planned = true;
+                }
+                if (ERouteContent.Wednesday)
+                {
+                    ERouteContentDays[9].Planned = true;
+                }
+                if (ERouteContent.Thursday)
+                {
+                    ERouteContentDays[10].Planned = true;
+                }
+                if (ERouteContent.Friday)
+                {
+                    ERouteContentDays[11].Planned = true;
+                }
+                if (ERouteContent.Saturday)
+                {
+                    ERouteContentDays[12].Planned = true;
+                }
+                if (ERouteContent.Sunday)
+                {
+                    ERouteContentDays[13].Planned = true;
+                }
+            }
+            if (ERouteContent.Week3)
+            {
+                if (ERouteContent.Monday)
+                {
+                    ERouteContentDays[14].Planned = true;
+                }
+                if (ERouteContent.Tuesday)
+                {
+                    ERouteContentDays[15].Planned = true;
+                }
+                if (ERouteContent.Wednesday)
+                {
+                    ERouteContentDays[16].Planned = true;
+                }
+                if (ERouteContent.Thursday)
+                {
+                    ERouteContentDays[17].Planned = true;
+                }
+                if (ERouteContent.Friday)
+                {
+                    ERouteContentDays[18].Planned = true;
+                }
+                if (ERouteContent.Saturday)
+                {
+                    ERouteContentDays[19].Planned = true;
+                }
+                if (ERouteContent.Sunday)
+                {
+                    ERouteContentDays[20].Planned = true;
+                }
+            }
+            if (ERouteContent.Week4)
+            {
+                if (ERouteContent.Monday)
+                {
+                    ERouteContentDays[21].Planned = true;
+                }
+                if (ERouteContent.Tuesday)
+                {
+                    ERouteContentDays[22].Planned = true;
+                }
+                if (ERouteContent.Wednesday)
+                {
+                    ERouteContentDays[23].Planned = true;
+                }
+                if (ERouteContent.Thursday)
+                {
+                    ERouteContentDays[24].Planned = true;
+                }
+                if (ERouteContent.Friday)
+                {
+                    ERouteContentDays[25].Planned = true;
+                }
+                if (ERouteContent.Saturday)
+                {
+                    ERouteContentDays[26].Planned = true;
+                }
+                if (ERouteContent.Sunday)
+                {
+                    ERouteContentDays[27].Planned = true;
+                }
+            }
+            
+            return ERouteContentDays;
         }
     }
 }

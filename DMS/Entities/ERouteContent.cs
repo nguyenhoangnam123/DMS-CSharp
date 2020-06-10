@@ -23,9 +23,10 @@ namespace DMS.Entities
         public bool Week2 { get; set; }
         public bool Week3 { get; set; }
         public bool Week4 { get; set; }
+        public Guid RowId { get; set; }
         public ERoute ERoute { get; set; }
         public Store Store { get; set; }
-
+        public List<ERouteContentDay> ERouteContentDays { get; set; }
         public bool Equals(ERouteContent other)
         {
             return other != null && Id == other.Id;

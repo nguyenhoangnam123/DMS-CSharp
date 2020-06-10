@@ -5,6 +5,11 @@ namespace DMS.Models
 {
     public partial class ERouteContentDAO
     {
+        public ERouteContentDAO()
+        {
+            ERouteContentDays = new HashSet<ERouteContentDayDAO>();
+        }
+
         public long Id { get; set; }
         public long ERouteId { get; set; }
         public long StoreId { get; set; }
@@ -20,8 +25,10 @@ namespace DMS.Models
         public bool Week2 { get; set; }
         public bool Week3 { get; set; }
         public bool Week4 { get; set; }
+        public Guid RowId { get; set; }
 
         public virtual ERouteDAO ERoute { get; set; }
         public virtual StoreDAO Store { get; set; }
+        public virtual ICollection<ERouteContentDayDAO> ERouteContentDays { get; set; }
     }
 }

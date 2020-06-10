@@ -33,8 +33,10 @@ namespace DMS.Rpc.store_checking
 
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
-        public const string CountStore = Default + "/count-store";
-        public const string ListStore = Default + "/list-store";
+        public const string CountStorePlanned = Default + "/list-store-planned";
+        public const string ListStorePlanned = Default + "/list-store-planned";
+        public const string CountStoreUnPlanned = Default + "/list-store-unplanned";
+        public const string ListStoreUnPlanned = Default + "/list-store-unplanned";
         public const string CountProblem = Default + "/count-problem";
         public const string ListProblem = Default + "/list-problem";
 
@@ -51,7 +53,7 @@ namespace DMS.Rpc.store_checking
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStore,
                 Detail, Create, Update, CreateIndirectSalesOrder, CreateProblem, SaveImage,
-                CountItem, ListItem, CountStore, ListStore, CountProblem, ListProblem,
+                CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountProblem, ListProblem,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, } },
         };
     }
