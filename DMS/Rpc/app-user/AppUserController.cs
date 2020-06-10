@@ -339,6 +339,22 @@ namespace DMS.Rpc.app_user
             OrganizationFilter.Address = AppUser_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = AppUser_OrganizationFilterDTO.Email;
 
+            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
+            if (CurrentContext.Filters != null)
+            {
+                foreach (var currentFilter in CurrentContext.Filters)
+                {
+                    OrganizationFilter subFilter = new OrganizationFilter();
+                    OrganizationFilter.OrFilter.Add(subFilter);
+                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                    {
+                        if (FilterPermissionDefinition.Name == nameof(AppUserFilter.OrganizationId))
+                            subFilter.Id = FilterPermissionDefinition.IdFilter;
+                    }
+                }
+            }
+
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<AppUser_OrganizationDTO> AppUser_OrganizationDTOs = Organizations
                 .Select(x => new AppUser_OrganizationDTO(x)).ToList();
@@ -403,6 +419,22 @@ namespace DMS.Rpc.app_user
             OrganizationFilter.Phone = AppUser_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = AppUser_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = AppUser_OrganizationFilterDTO.Email;
+
+            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
+            if (CurrentContext.Filters != null)
+            {
+                foreach (var currentFilter in CurrentContext.Filters)
+                {
+                    OrganizationFilter subFilter = new OrganizationFilter();
+                    OrganizationFilter.OrFilter.Add(subFilter);
+                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                    {
+                        if (FilterPermissionDefinition.Name == nameof(AppUserFilter.OrganizationId))
+                            subFilter.Id = FilterPermissionDefinition.IdFilter;
+                    }
+                }
+            }
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<AppUser_OrganizationDTO> AppUser_OrganizationDTOs = Organizations

@@ -352,7 +352,7 @@ namespace DMS.Rpc.role
                 RoleId = Role_PermissionDTO.RoleId,
                 MenuId = Role_PermissionDTO.MenuId,
                 StatusId = Role_PermissionDTO.StatusId,
-                Menu = new Menu
+                Menu = Role_PermissionDTO.Menu == null ? null : new Menu
                 {
                     Id = Role_PermissionDTO.Menu.Id,
                     Code = Role_PermissionDTO.Menu.Code,

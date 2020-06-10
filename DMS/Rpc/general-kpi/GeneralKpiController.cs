@@ -916,6 +916,22 @@ namespace DMS.Rpc.general_kpi
             OrganizationFilter.Email = GeneralKpi_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = GeneralKpi_OrganizationFilterDTO.Address;
 
+            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
+            if (CurrentContext.Filters != null)
+            {
+                foreach (var currentFilter in CurrentContext.Filters)
+                {
+                    OrganizationFilter subFilter = new OrganizationFilter();
+                    OrganizationFilter.OrFilter.Add(subFilter);
+                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                    {
+                        if (FilterPermissionDefinition.Name == nameof(GeneralKpiFilter.OrganizationId))
+                            subFilter.Id = FilterPermissionDefinition.IdFilter;
+                    }
+                }
+            }
+
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<GeneralKpi_OrganizationDTO> GeneralKpi_OrganizationDTOs = Organizations
                 .Select(x => new GeneralKpi_OrganizationDTO(x)).ToList();
@@ -1015,6 +1031,22 @@ namespace DMS.Rpc.general_kpi
             OrganizationFilter.Phone = GeneralKpi_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = GeneralKpi_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = GeneralKpi_OrganizationFilterDTO.Address;
+
+            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
+            if (CurrentContext.Filters != null)
+            {
+                foreach (var currentFilter in CurrentContext.Filters)
+                {
+                    OrganizationFilter subFilter = new OrganizationFilter();
+                    OrganizationFilter.OrFilter.Add(subFilter);
+                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                    {
+                        if (FilterPermissionDefinition.Name == nameof(GeneralKpiFilter.OrganizationId))
+                            subFilter.Id = FilterPermissionDefinition.IdFilter;
+                    }
+                }
+            }
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<GeneralKpi_OrganizationDTO> GeneralKpi_OrganizationDTOs = Organizations
