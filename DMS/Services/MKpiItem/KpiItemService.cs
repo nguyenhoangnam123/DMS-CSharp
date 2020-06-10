@@ -239,7 +239,11 @@ namespace DMS.Services.MKpiItem
                     Skip = 0,
                     Take = int.MaxValue,
                     Id = new IdFilter { NotIn = AppUserIds },
-                    Selects = AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email
+                    Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email,
+                    DisplayName = AppUserFilter.DisplayName,
+                    Username = AppUserFilter.Username,
+                    Phone = AppUserFilter.Phone,
+                    Email = AppUserFilter.Email,
                 };
 
                 var AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
@@ -274,6 +278,10 @@ namespace DMS.Services.MKpiItem
                 AppUserFilter = new AppUserFilter
                 {
                     Id = new IdFilter { NotIn = AppUserIds },
+                    DisplayName = AppUserFilter.DisplayName,
+                    Username = AppUserFilter.Username,
+                    Phone = AppUserFilter.Phone,
+                    Email = AppUserFilter.Email,
                 };
 
                 var count = await UOW.AppUserRepository.Count(AppUserFilter);

@@ -278,6 +278,10 @@ namespace DMS.Services.MGeneralKpi
                 AppUserFilter = new AppUserFilter
                 {
                     Id = new IdFilter { NotIn = AppUserIds },
+                    DisplayName = AppUserFilter.DisplayName,
+                    Username = AppUserFilter.Username,
+                    Phone = AppUserFilter.Phone,
+                    Email = AppUserFilter.Email,
                 };
 
                 var count = await UOW.AppUserRepository.Count(AppUserFilter);
