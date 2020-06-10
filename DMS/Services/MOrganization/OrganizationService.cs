@@ -88,6 +88,10 @@ namespace DMS.Services.MOrganization
                 {
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
                         subFilter.Id = FilterPermissionDefinition.IdFilter;
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
+                        subFilter.Code = FilterPermissionDefinition.StringFilter;
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
+                        subFilter.Name = FilterPermissionDefinition.StringFilter;
                 }
             }
             return filter;

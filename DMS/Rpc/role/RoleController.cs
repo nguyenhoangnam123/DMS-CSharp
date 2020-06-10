@@ -373,6 +373,19 @@ namespace DMS.Rpc.role
                     PermissionOperatorId = pf.PermissionOperatorId,
                     FieldId = pf.FieldId,
                     Value = pf.Value,
+                    Field = pf.Field == null ? null : new Field
+                    {
+                        Id = pf.Field.Id,
+                        Name = pf.Field.Name,
+                        FieldTypeId = pf.Field.FieldTypeId,
+                    },
+                    PermissionOperator = pf.PermissionOperator == null ? null : new PermissionOperator
+                    {
+                        Id = pf.PermissionOperator.Id,
+                        Name = pf.PermissionOperator.Name,
+                        Code = pf.PermissionOperator.Code,
+                        FieldTypeId = pf.PermissionOperator.FieldTypeId,
+                    }
                 }).ToList(),
                 PermissionActionMappings = Role_PermissionDTO.PermissionActionMappings?.Select(pp => new PermissionActionMapping
                 {
