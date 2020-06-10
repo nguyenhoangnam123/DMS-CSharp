@@ -263,6 +263,8 @@ namespace DMS.Rpc.role
         {
             PermissionFilter PermissionFilter = new PermissionFilter();
             PermissionFilter.Id = Role_PermissionFilterDTO.Id;
+            PermissionFilter.Code = Role_PermissionFilterDTO.Code;
+            PermissionFilter.Name = Role_PermissionFilterDTO.Name;
             PermissionFilter.RoleId = Role_PermissionFilterDTO.RoleId;
             PermissionFilter.MenuId = Role_PermissionFilterDTO.MenuId;
 
@@ -278,6 +280,8 @@ namespace DMS.Rpc.role
             PermissionFilter.OrderType = OrderType.ASC;
             PermissionFilter.Selects = PermissionSelect.ALL;
             PermissionFilter.Id = Role_PermissionFilterDTO.Id;
+            PermissionFilter.Code = Role_PermissionFilterDTO.Code;
+            PermissionFilter.Name = Role_PermissionFilterDTO.Name;
             PermissionFilter.RoleId = Role_PermissionFilterDTO.RoleId;
             PermissionFilter.MenuId = Role_PermissionFilterDTO.MenuId;
 
