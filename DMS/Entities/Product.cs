@@ -31,6 +31,7 @@ namespace DMS.Entities
         public long UsedVariationId { get; set; }
         public long VariationCounter { get; set; }
         public bool CanDelete { get; set; }
+        public bool Used { get; set; }
         public Brand Brand { get; set; }
         public ProductType ProductType { get; set; }
         public Status Status { get; set; }

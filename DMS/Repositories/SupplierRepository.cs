@@ -278,6 +278,7 @@ namespace DMS.Repositories
                     DistrictId = q.Ward.DistrictId,
                     StatusId = q.Ward.StatusId,
                 } : null,
+                Used = q.Used,
             }).ToListAsync();
             return Suppliers;
         }
@@ -319,6 +320,7 @@ namespace DMS.Repositories
                     Description = x.Description,
                     StatusId = x.StatusId,
                     UpdatedTime = x.UpdatedAt,
+                    Used = x.Used,
                     District = x.District == null ? null : new District
                     {
                         Id = x.District.Id,

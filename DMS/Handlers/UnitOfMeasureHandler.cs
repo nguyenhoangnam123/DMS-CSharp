@@ -29,7 +29,7 @@ namespace DMS.Handlers
         {
             List<EventMessage<UnitOfMeasure>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<UnitOfMeasure>>>(json);
             List<long> UnitOfMeasureIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
-            await context.UnitOfMeasure.Where(a => UnitOfMeasureIds.Contains(a.Id)).UpdateFromQueryAsync(a => new UnitOfMeasureDAO {  });
+            await context.UnitOfMeasure.Where(a => UnitOfMeasureIds.Contains(a.Id)).UpdateFromQueryAsync(a => new UnitOfMeasureDAO { Used = true });
         }
     }
 }

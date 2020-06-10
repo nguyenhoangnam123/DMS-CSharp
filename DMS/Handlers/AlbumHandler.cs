@@ -29,7 +29,7 @@ namespace DMS.Handlers
         {
             List<EventMessage<Album>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Album>>>(json);
             List<long> AlbumIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
-            await context.Album.Where(a => AlbumIds.Contains(a.Id)).UpdateFromQueryAsync(a => new AlbumDAO {  });
+            await context.Album.Where(a => AlbumIds.Contains(a.Id)).UpdateFromQueryAsync(a => new AlbumDAO { Used = true });
         }
     }
 }

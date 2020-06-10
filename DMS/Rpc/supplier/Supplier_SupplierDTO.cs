@@ -20,6 +20,7 @@ namespace DMS.Rpc.supplier
         public string Description { get; set; }
         public long? PersonInChargeId { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public DateTime UpdatedTime { get; set; }
         public Supplier_AppUserDTO PersonInCharge { get; set; }
         public Supplier_ProvinceDTO Province { get; set; }
@@ -43,6 +44,7 @@ namespace DMS.Rpc.supplier
             this.PersonInChargeId = Supplier.PersonInChargeId;
             this.Description = Supplier.Description;
             this.StatusId = Supplier.StatusId;
+            this.Used = Supplier.Used;
             this.UpdatedTime = Supplier.UpdatedTime;
             this.District = Supplier.District == null ? null : new Supplier_DistrictDTO(Supplier.District);
             this.PersonInCharge = Supplier.PersonInCharge == null ? null : new Supplier_AppUserDTO(Supplier.PersonInCharge);

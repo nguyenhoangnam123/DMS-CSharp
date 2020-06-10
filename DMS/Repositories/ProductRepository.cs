@@ -379,6 +379,7 @@ namespace DMS.Repositories
                         Description = p.ProductGrouping.Description,
                     },
                 }).ToList() : null,
+                Used = q.Used,
             }).ToListAsync();
 
             var Ids = Products.Select(x => x.Id).ToList();
@@ -474,6 +475,7 @@ namespace DMS.Repositories
                     StatusId = x.StatusId,
                     IsNew = x.IsNew,
                     UsedVariationId = x.UsedVariationId,
+                    Used = x.Used,
                     Brand = x.Brand == null ? null : new Brand
                     {
                         Id = x.Brand.Id,

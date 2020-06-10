@@ -11,6 +11,7 @@ namespace DMS.Rpc.survey
         public long Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public bool Used { get; set; }
         public DateTime StartAt { get; set; }
         public DateTime? EndAt { get; set; }
         public long StatusId { get; set; }
@@ -28,6 +29,7 @@ namespace DMS.Rpc.survey
             this.Id = Survey.Id;
             this.Title = Survey.Title;
             this.Description = Survey.Description;
+            this.Used = Survey.Used;
             this.StartAt = Survey.StartAt;
             this.CreatorId = Survey.CreatorId;
             this.EndAt = Survey.EndAt;
