@@ -351,6 +351,12 @@ namespace DMS.Rpc.product
                             Product.ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
                         }
                     }
+                    Product.ProductType = new ProductType();
+                    Product.UnitOfMeasure = new UnitOfMeasure();
+                    Product.Brand = new Brand();
+                    Product.UsedVariation = new UsedVariation();
+                    Product.UnitOfMeasure = new UnitOfMeasure();
+                    Product.Supplier = new Supplier();
 
                     Product.ProductTypeId = ProductTypes.Where(x => x.Code.Equals(ProductTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
                     Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.Equals(UoMCodeValue)).Select(x => x.Id).FirstOrDefault();
@@ -363,8 +369,8 @@ namespace DMS.Rpc.product
 
                     Product.OtherName = OtherNameValue;
                     Product.TechnicalName = TechnicalNameValue;
-                    Product.TaxTypeId = TaxTypes.Where(x => x.Code.Equals(TaxTypeCodeValue.Trim())).Select(x => x.Id).FirstOrDefault();
-                    Product.UsedVariationId = UsedVariations.Where(x => x.Code.ToLower().Equals(UsedVariationCodeValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
+                    Product.TaxTypeId = TaxTypes.Where(x => x.Code.Equals(TaxTypeCodeValue == null ? string.Empty : TaxTypeCodeValue.Trim())).Select(x => x.Id).FirstOrDefault();
+                    Product.UsedVariationId = UsedVariations.Where(x => x.Code.ToLower().Equals(UsedVariationCodeValue == null ? string.Empty : UsedVariationCodeValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
                     Product.Description = DescriptionValue;
                     Product.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : decimal.Parse(RetailPriceValue);
                     Product.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : decimal.Parse(SalePriceValue);
