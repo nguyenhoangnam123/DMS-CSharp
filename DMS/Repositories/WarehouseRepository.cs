@@ -493,11 +493,10 @@ namespace DMS.Repositories
                         InventoryDAO.ItemId = Inventory.ItemId;
                         InventoryDAO.SaleStock = Inventory.SaleStock;
                         InventoryDAO.AccountingStock = Inventory.AccountingStock;
-
-                        InventoryDAOs.Add(InventoryDAO);
                         InventoryDAO.CreatedAt = StaticParams.DateTimeNow;
                         InventoryDAO.UpdatedAt = StaticParams.DateTimeNow;
                         InventoryDAO.DeletedAt = null;
+                        InventoryDAOs.Add(InventoryDAO);
                     }
                     else
                     {
@@ -518,7 +517,7 @@ namespace DMS.Repositories
                        .Where(x => x.Id == Inventory.Id && x.Id != 0).FirstOrDefault();
                     if (InventoryDAO != null)
                     {
-                        Inventory.Id = InventoryDAO.Id;
+                        //Inventory.Id = InventoryDAO.Id;
                         if (Inventory.InventoryHistories != null)
                         {
                             foreach (InventoryHistory inventoryHistory in Inventory.InventoryHistories)

@@ -89,7 +89,7 @@ namespace DMS.Services.MWarehouse
 
             try
             {
-                await BuildData(Warehouse);
+                Warehouse = await BuildData(Warehouse);
                 await UOW.Begin();
                 await UOW.WarehouseRepository.Create(Warehouse);
                 await UOW.Commit();
@@ -115,7 +115,7 @@ namespace DMS.Services.MWarehouse
             try
             {
                 var oldData = await UOW.WarehouseRepository.Get(Warehouse.Id);
-                await BuildData(Warehouse);
+                Warehouse = await BuildData(Warehouse);
                 await UOW.Begin();
                 await UOW.WarehouseRepository.Update(Warehouse);
                 await UOW.Commit();
@@ -227,7 +227,7 @@ namespace DMS.Services.MWarehouse
             return filter;
         }
 
-        private async Task BuildData(Warehouse Warehouse)
+        private async Task<Warehouse> BuildData(Warehouse Warehouse)
         {
             List<Item> items = await UOW.ItemRepository.List(new ItemFilter
             {
@@ -251,18 +251,20 @@ namespace DMS.Services.MWarehouse
                     Warehouse.Inventories.Add(Inventory);
                 }
             }
-            Warehouse ExistedWarehouse = await UOW.WarehouseRepository.Get(Warehouse.Id);
+            Warehouse ExistedWarehouse = await UOW.WarehouseRepository.Get(Warehouse.Id); // get laij gia tri warehouse
             if (ExistedWarehouse != null)
             {
                 foreach (Inventory inventory in Warehouse.Inventories)
                 {
                     if (inventory.InventoryHistories == null) inventory.InventoryHistories = new List<InventoryHistory>();
-                    Inventory ExistedInventory = ExistedWarehouse.Inventories.Where(i => i.ItemId == inventory.Id).FirstOrDefault();
+                    Inventory ExistedInventory = ExistedWarehouse.Inventories.Where(i => i.ItemId != null && i.ItemId == inventory.ItemId).FirstOrDefault();
                     if (ExistedInventory == null)
                     {
                         InventoryHistory InventoryHistory = new InventoryHistory();
                         InventoryHistory.SaleStock = inventory.SaleStock;
                         InventoryHistory.AccountingStock = inventory.AccountingStock;
+                        InventoryHistory.OldSaleStock = 0;
+                        InventoryHistory.OldAccountingStock = 0;
                         InventoryHistory.AppUserId = CurrentContext.UserId;
                         inventory.InventoryHistories.Add(InventoryHistory);
                     }
@@ -282,6 +284,7 @@ namespace DMS.Services.MWarehouse
                     }
                 }
             }
+            return Warehouse;
         }
     }
 }
