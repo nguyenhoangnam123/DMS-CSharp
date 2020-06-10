@@ -239,7 +239,7 @@ namespace DMS.Services.MGeneralKpi
                     Skip = 0,
                     Take = int.MaxValue,
                     Id = new IdFilter { NotIn = AppUserIds },
-                    Selects = AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email
+                    Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email
                 };
 
                 var AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
