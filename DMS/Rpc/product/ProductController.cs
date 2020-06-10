@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Services.MBrand;
 using DMS.Services.MImage;
 using DMS.Services.MInventory;
+using DMS.Services.MItemHistory;
 using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
@@ -38,6 +39,7 @@ namespace DMS.Rpc.product
         private IUnitOfMeasureService UnitOfMeasureService;
         private IUnitOfMeasureGroupingService UnitOfMeasureGroupingService;
         private IItemService ItemService;
+        private IItemHistoryService ItemHistoryService;
         private IImageService ImageService;
         private IInventoryService InventoryService;
         private IProductGroupingService ProductGroupingService;
@@ -55,6 +57,7 @@ namespace DMS.Rpc.product
             IUnitOfMeasureService UnitOfMeasureService,
             IUnitOfMeasureGroupingService UnitOfMeasureGroupingService,
             IItemService ItemService,
+            IItemHistoryService ItemHistoryService,
             IImageService ImageService,
             IInventoryService InventoryService,
             IProductGroupingService ProductGroupingService,
@@ -73,6 +76,7 @@ namespace DMS.Rpc.product
             this.UnitOfMeasureService = UnitOfMeasureService;
             this.UnitOfMeasureGroupingService = UnitOfMeasureGroupingService;
             this.ItemService = ItemService;
+            this.ItemHistoryService = ItemHistoryService;
             this.ImageService = ImageService;
             this.InventoryService = InventoryService;
             this.ProductGroupingService = ProductGroupingService;
@@ -1376,6 +1380,32 @@ namespace DMS.Rpc.product
             List<Product_InventoryDTO> Product_InventoryDTOs = Inventories
                 .Select(x => new Product_InventoryDTO(x)).ToList();
             return Product_InventoryDTOs;
+        }
+
+        [Route(ProductRoute.CountItemHistory), HttpPost]
+        public async Task<long> CountItemHistory([FromBody] Product_ItemHistoryFilterDTO Product_ItemHistoryFilterDTO)
+        {
+            ItemHistoryFilter ItemHistoryFilter = new ItemHistoryFilter();
+            ItemHistoryFilter.ItemId = Product_ItemHistoryFilterDTO.ItemId;
+            ItemHistoryFilter.Time = Product_ItemHistoryFilterDTO.Time;
+            return await ItemHistoryService.Count(ItemHistoryFilter);
+        }
+        [Route(ProductRoute.ListItemHistory), HttpPost]
+        public async Task<List<Product_ItemHistoryDTO>> ListItemHistory([FromBody] Product_ItemHistoryFilterDTO Product_ItemHistoryFilterDTO)
+        {
+            ItemHistoryFilter ItemHistoryFilter = new ItemHistoryFilter();
+            ItemHistoryFilter.Skip = Product_ItemHistoryFilterDTO.Skip;
+            ItemHistoryFilter.Take = Product_ItemHistoryFilterDTO.Take;
+            ItemHistoryFilter.OrderBy = ItemHistoryOrder.Id;
+            ItemHistoryFilter.OrderType = OrderType.ASC;
+            ItemHistoryFilter.Selects = ItemHistorySelect.ALL;
+            ItemHistoryFilter.ItemId = Product_ItemHistoryFilterDTO.ItemId;
+            ItemHistoryFilter.Time = Product_ItemHistoryFilterDTO.Time;
+
+            List<ItemHistory> ItemHistories = await ItemHistoryService.List(ItemHistoryFilter);
+            List<Product_ItemHistoryDTO> Product_ItemHistoryDTOs = ItemHistories
+                .Select(x => new Product_ItemHistoryDTO(x)).ToList();
+            return Product_ItemHistoryDTOs;
         }
     }
 }

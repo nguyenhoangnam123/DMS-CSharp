@@ -941,11 +941,29 @@ namespace DMS.Repositories
                     }
                 }
                 await DataContext.Item.BulkMergeAsync(ItemDAOs);
+                List<ItemHistoryDAO> ItemHistoryDAOs = new List<ItemHistoryDAO>();
                 foreach (ItemDAO ItemDAO in ItemDAOs)
                 {
                     Item Item = Product.Items.Where(i => i.Code == ItemDAO.Code).FirstOrDefault();
                     Item.Id = ItemDAO.Id;
+
+                    var list = new List<ItemHistoryDAO>();
+                    if (Item.ItemHistories != null)
+                    {
+                        list = Item.ItemHistories.Select(x => new ItemHistoryDAO
+                        {
+                            Id = x.Id,
+                            Time = x.Time,
+                            ItemId = Item.Id,
+                            ModifierId = x.ModifierId,
+                            OldPrice = x.OldPrice,
+                            NewPrice = x.NewPrice,
+                        }).ToList();
+                        ItemHistoryDAOs.AddRange(list);
+                    }
                 }
+
+                await DataContext.ItemHistory.BulkMergeAsync(ItemHistoryDAOs);
             }
             await DataContext.ProductImageMapping
                 .Where(x => x.ProductId == Product.Id)
