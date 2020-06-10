@@ -77,9 +77,10 @@ namespace DMS.Rpc
                     FilterPermissionDefinition FilterPermissionDefinition = FilterPermissionDefinitions.Where(f => f.Name == PermissionContentDAO.Field.Name).FirstOrDefault();
                     if (FilterPermissionDefinition == null)
                     {
-                        FilterPermissionDefinition = new FilterPermissionDefinition(PermissionContentDAO.Field.Name, PermissionContentDAO.Field.FieldTypeId, PermissionContentDAO.PermissionOperatorId, PermissionContentDAO.Value);
+                        FilterPermissionDefinition = new FilterPermissionDefinition(PermissionContentDAO.Field.Name, PermissionContentDAO.Field.FieldTypeId, PermissionContentDAO.PermissionOperatorId);
                         FilterPermissionDefinitions.Add(FilterPermissionDefinition);
                     }
+                    FilterPermissionDefinition.SetValue(PermissionContentDAO.Value);
                 }
             }
             context.Succeed(requirement);
