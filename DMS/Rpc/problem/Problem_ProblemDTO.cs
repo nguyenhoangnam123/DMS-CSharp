@@ -18,6 +18,7 @@ namespace DMS.Rpc.problem
         public DateTime? CompletedAt { get; set; }
         public string Content { get; set; }
         public long ProblemStatusId { get; set; }
+        public Guid RowId { get; set; }
         public Problem_AppUserDTO Creator { get; set; }
         public Problem_ProblemStatusDTO ProblemStatus { get; set; }
         public Problem_ProblemTypeDTO ProblemType { get; set; }
@@ -38,6 +39,7 @@ namespace DMS.Rpc.problem
             this.CompletedAt = Problem.CompletedAt;
             this.Content = Problem.Content;
             this.ProblemStatusId = Problem.ProblemStatusId;
+            this.RowId = Problem.RowId;
             this.Creator = Problem.Creator == null ? null : new Problem_AppUserDTO(Problem.Creator);
             this.ProblemStatus = Problem.ProblemStatus == null ? null : new Problem_ProblemStatusDTO(Problem.ProblemStatus);
             this.ProblemType = Problem.ProblemType == null ? null : new Problem_ProblemTypeDTO(Problem.ProblemType);

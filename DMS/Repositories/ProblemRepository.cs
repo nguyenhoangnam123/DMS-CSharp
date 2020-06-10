@@ -287,6 +287,7 @@ namespace DMS.Repositories
                 CompletedAt = x.CompletedAt,
                 Content = x.Content,
                 ProblemStatusId = x.ProblemStatusId,
+                RowId = x.RowId,
                 Creator = x.Creator == null ? null : new AppUser
                 {
                     Id = x.Creator.Id,
@@ -387,6 +388,7 @@ namespace DMS.Repositories
             ProblemDAO.CompletedAt = Problem.CompletedAt;
             ProblemDAO.Content = Problem.Content;
             ProblemDAO.ProblemStatusId = Enums.ProblemStatusEnum.WAITING.Id;
+            ProblemDAO.RowId = Guid.NewGuid();
             DataContext.Problem.Add(ProblemDAO);
             await DataContext.SaveChangesAsync();
             Problem.Id = ProblemDAO.Id;
