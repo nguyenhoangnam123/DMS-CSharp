@@ -307,7 +307,18 @@ namespace DMS.Services.MStore
             {
                 StoreFilter subFilter = new StoreFilter();
                 filter.OrFilter.Add(subFilter);
-
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = FilterPermissionDefinition.IdFilter;
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
+                        subFilter.OrganizationId = FilterPermissionDefinition.IdFilter;
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.StoreGroupingId))
+                        subFilter.StoreGroupingId = FilterPermissionDefinition.IdFilter;
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.StoreTypeId))
+                        subFilter.StoreTypeId = FilterPermissionDefinition.IdFilter;
+                }
             }
             return filter;
         }

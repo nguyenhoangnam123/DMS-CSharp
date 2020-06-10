@@ -266,6 +266,23 @@ namespace DMS.Services.MIndirectSalesOrder
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = FilterPermissionDefinition.IdFilter;
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.BuyerStoreId))
+                        subFilter.BuyerStoreId = FilterPermissionDefinition.IdFilter;
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.SellerStoreId))
+                        subFilter.SellerStoreId = FilterPermissionDefinition.IdFilter;
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleEmployeeId))
+                        subFilter.SaleEmployeeId = FilterPermissionDefinition.IdFilter;
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Total))
+                        subFilter.Total = FilterPermissionDefinition.LongFilter;
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrderDate))
+                        subFilter.OrderDate = FilterPermissionDefinition.DateFilter;
                 }
             }
             return filter;
