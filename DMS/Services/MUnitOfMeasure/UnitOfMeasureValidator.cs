@@ -109,12 +109,30 @@ namespace DMS.Services.MUnitOfMeasure
 
         private async Task<bool> ValidateUnitOfMeasureInUsed(UnitOfMeasure UnitOfMeasure)
         {
+            UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter
+            {
+                UnitOfMeasureId = new IdFilter { Equal = UnitOfMeasure.Id }
+            };
+
+            int count = await UOW.UnitOfMeasureGroupingRepository.Count(UnitOfMeasureGroupingFilter);
+            if (count > 0)
+                UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Id), ErrorCode.UnitOfMeasureInUsed);
+
+            UnitOfMeasureGroupingContentFilter UnitOfMeasureGroupingContentFilter = new UnitOfMeasureGroupingContentFilter
+            {
+                UnitOfMeasureId = new IdFilter { Equal = UnitOfMeasure.Id }
+            };
+
+            count = await UOW.UnitOfMeasureGroupingContentRepository.Count(UnitOfMeasureGroupingContentFilter);
+            if (count > 0)
+                UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Id), ErrorCode.UnitOfMeasureInUsed);
+
             ProductFilter ProductFilter = new ProductFilter
             {
                 UnitOfMeasureId = new IdFilter { Equal = UnitOfMeasure.Id },
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
             };
-            int count = await UOW.ProductRepository.Count(ProductFilter);
+            count = await UOW.ProductRepository.Count(ProductFilter);
             if (count > 0)
                 UnitOfMeasure.AddError(nameof(UnitOfMeasureValidator), nameof(UnitOfMeasure.Id), ErrorCode.UnitOfMeasureInUsed);
 
