@@ -113,6 +113,7 @@ namespace DMS.Rpc.store_checking
     {
 
         public IdFilter Id { get; set; }
+        public IdFilter ERouteId { get; set; }
 
         public StringFilter Code { get; set; }
 

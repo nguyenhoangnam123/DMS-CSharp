@@ -200,6 +200,7 @@ namespace DMS.Repositories
                     Name = q.ERoute.Name,
                     SaleEmployeeId = q.ERoute.SaleEmployeeId,
                     StartDate = q.ERoute.StartDate,
+                    RealStartDate = q.ERoute.RealStartDate,
                     EndDate = q.ERoute.EndDate,
                     RequestStateId = q.ERoute.RequestStateId,
                     StatusId = q.ERoute.StatusId,
@@ -233,6 +234,20 @@ namespace DMS.Repositories
                     StatusId = q.Store.StatusId,
                 } : null,
             }).ToListAsync();
+
+            var Ids = ERouteContents.Select(x => x.Id).ToList();
+            var ERouteContentDays = await DataContext.ERouteContentDay.Where(x => Ids.Contains(x.ERouteContentId)).Select(x => new ERouteContentDay
+            {
+                Id = x.Id,
+                ERouteContentId = x.ERouteContentId,
+                OrderDay = x.OrderDay,
+                Planned = x.Planned,
+            }).ToListAsync();
+
+            foreach (var ERouteContent in ERouteContents)
+            {
+                ERouteContent.ERouteContentDays = ERouteContentDays.Where(x => x.ERouteContentId == ERouteContent.Id).ToList();
+            }
             return ERouteContents;
         }
 
