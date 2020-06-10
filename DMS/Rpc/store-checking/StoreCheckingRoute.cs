@@ -33,9 +33,9 @@ namespace DMS.Rpc.store_checking
 
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
-        public const string CountStorePlanned = Default + "/list-store-planned";
+        public const string CountStorePlanned = Default + "/count-store-planned";
         public const string ListStorePlanned = Default + "/list-store-planned";
-        public const string CountStoreUnPlanned = Default + "/list-store-unplanned";
+        public const string CountStoreUnPlanned = Default + "/count-store-unplanned";
         public const string ListStoreUnPlanned = Default + "/list-store-unplanned";
         public const string CountProblem = Default + "/count-problem";
         public const string ListProblem = Default + "/list-problem";
