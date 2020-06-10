@@ -21,6 +21,10 @@ namespace DMS.Services.MStoreChecking
         Task<StoreChecking> Create(StoreChecking StoreChecking);
         Task<StoreChecking> Update(StoreChecking StoreChecking);
         Task<Image> SaveImage(Image Image);
+        Task<long> CountStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId);
+        Task<List<Store>> ListStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId);
+        Task<long> CountStoreUnPlanned(StoreFilter StoreFilter, IdFilter ERouteId);
+        Task<List<Store>> ListStoreUnPlanned(StoreFilter StoreFilter, IdFilter ERouteId);
         StoreCheckingFilter ToFilter(StoreCheckingFilter StoreCheckingFilter);
     }
 
@@ -98,22 +102,18 @@ namespace DMS.Services.MStoreChecking
 
             try
             {
-                DateTime Now = StaticParams.DateTimeNow;
                 StoreChecking.CheckInAt = StaticParams.DateTimeNow;
                 StoreChecking.SaleEmployeeId = CurrentContext.UserId;
-                ERouteFilter ERouteFilter = new ERouteFilter
+
+                List<long> StorePlannedIds = await ListStoreIds(null, true);
+                if (StorePlannedIds.Contains(StoreChecking.StoreId))
                 {
-                    SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
-                    StartDate = new DateFilter { LessEqual = Now },
-                    EndDate = new DateFilter { GreaterEqual = Now },
-                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Selects = ERouteSelect.ALL,
-                };
-                List<ERoute> ERoutes = await UOW.ERouteRepository.List(ERouteFilter);
-                //TODO
-                StoreChecking.Planned = true;
+                    StoreChecking.Planned = true;
+                }
+                else
+                {
+                    StoreChecking.Planned = false;
+                }
                 await UOW.Begin();
                 await UOW.StoreCheckingRepository.Create(StoreChecking);
                 await UOW.Commit();
@@ -176,6 +176,38 @@ namespace DMS.Services.MStoreChecking
             }
         }
 
+        public async Task<long> CountStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId)
+        {
+            List<long> StoreIds = await ListStoreIds(ERouteId, true);
+
+            return StoreIds == null ? 0 : StoreIds.Count();
+        }
+
+        public async Task<List<Store>> ListStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId) 
+        {
+            List<long> StoreIds = await ListStoreIds(ERouteId, true);
+
+            StoreFilter.Id = new IdFilter { In = StoreIds };
+            List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+            return Stores;
+        }
+
+        public async Task<long> CountStoreUnPlanned(StoreFilter StoreFilter, IdFilter ERouteId)
+        {
+            List<long> StoreIds = await ListStoreIds(ERouteId, false);
+
+            return StoreIds == null ? 0 : StoreIds.Count();
+        }
+
+        public async Task<List<Store>> ListStoreUnPlanned(StoreFilter StoreFilter, IdFilter ERouteId)
+        {
+            List<long> StoreIds = await ListStoreIds(ERouteId, false);
+
+            StoreFilter.Id = new IdFilter { In = StoreIds };
+            List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+            return Stores;
+        }
+
         public StoreCheckingFilter ToFilter(StoreCheckingFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<StoreCheckingFilter>();
@@ -198,6 +230,40 @@ namespace DMS.Services.MStoreChecking
             string path = $"/store-checking/images/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
             Image = await ImageService.Create(Image, path);
             return Image;
+        }
+
+        private async Task<List<long>> ListStoreIds(IdFilter ERouteId, bool Planned)
+        {
+            DateTime Now = StaticParams.DateTimeNow;
+            List<long> ERouteIds = (await UOW.ERouteRepository.List(new ERouteFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                StartDate = new DateFilter { LessEqual = Now },
+                EndDate = new DateFilter { GreaterEqual = Now },
+                Id = ERouteId,
+                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
+                Selects = ERouteSelect.Id
+            })).Select(x => x.Id).ToList();
+
+            List<ERouteContent> ERouteContents = await UOW.ERouteContentRepository.List(new ERouteContentFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                ERouteId = new IdFilter { In = ERouteIds },
+                Selects = ERouteContentSelect.Id | ERouteContentSelect.Store | ERouteContentSelect.ERoute
+            });
+
+            List<long> StoreIds = new List<long>();
+            foreach (var ERouteContent in ERouteContents)
+            {
+                var index = ((DateTime.Now - ERouteContent.ERoute.RealStartDate).Days + 1) % 28;
+                if (ERouteContent.ERouteContentDays[index].Planned == Planned)
+                    StoreIds.Add(ERouteContent.StoreId);
+            }
+
+            return StoreIds;
         }
     }
 }

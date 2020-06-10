@@ -67,19 +67,19 @@ namespace DMS.Rpc.indirect_sales_order
             { "Thêm", new List<string> {
                 Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure,
                 Detail, Create,
-                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType, SingleListStoreGrouping, SingleListSupplier,
+                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType, SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping,
                 CountItem, ListItem, CountStore, ListStore, } },
 
             { "Sửa", new List<string> {
                 Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, 
                 Detail, Update,
-                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType, SingleListStoreGrouping, SingleListSupplier,
+                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType, SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping,
                 CountItem, ListItem, CountStore, ListStore, } },
 
             { "Xoá", new List<string> {
                 Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure,
-                Detail, Delete,
-                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType, SingleListStoreGrouping, SingleListSupplier  } },
+                Delete,
+                } },
 
             { "Xuất excel", new List<string> {
                 Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,

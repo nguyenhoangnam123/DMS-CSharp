@@ -65,11 +65,16 @@ namespace DMS.Services.MAppUser
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(AppUserService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(AppUserService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(AppUserService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<AppUser> Get(long Id)

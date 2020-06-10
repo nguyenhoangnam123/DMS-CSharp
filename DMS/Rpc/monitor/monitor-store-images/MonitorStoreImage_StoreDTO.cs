@@ -1,9 +1,9 @@
 using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.store_checking
+namespace DMS.Rpc.monitor.monitor_store_images
 {
-    public class StoreChecking_StoreDTO : DataDTO
+    public class MonitorStoreImage_StoreDTO : DataDTO
     {
 
         public long Id { get; set; }
@@ -53,11 +53,10 @@ namespace DMS.Rpc.store_checking
         public string LegalEntity { get; set; }
 
         public long StatusId { get; set; }
-        public bool HasChecking { get; set; }
 
 
-        public StoreChecking_StoreDTO() { }
-        public StoreChecking_StoreDTO(Store Store)
+        public MonitorStoreImage_StoreDTO() { }
+        public MonitorStoreImage_StoreDTO(Store Store)
         {
 
             this.Id = Store.Id;
@@ -102,18 +101,20 @@ namespace DMS.Rpc.store_checking
 
             this.OwnerEmail = Store.OwnerEmail;
 
+            this.TaxCode = Store.TaxCode;
+
+            this.LegalEntity = Store.LegalEntity;
+
             this.StatusId = Store.StatusId;
-            this.HasChecking = Store.HasChecking;
 
             this.Errors = Store.Errors;
         }
     }
 
-    public class StoreChecking_StoreFilterDTO : FilterDTO
+    public class MonitorStoreImage_StoreFilterDTO : FilterDTO
     {
 
         public IdFilter Id { get; set; }
-        public IdFilter ERouteId { get; set; }
 
         public StringFilter Code { get; set; }
 

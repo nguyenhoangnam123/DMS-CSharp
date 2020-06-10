@@ -4,6 +4,7 @@ using DMS.Enums;
 using DMS.Services.MAlbum;
 using DMS.Services.MAppUser;
 using DMS.Services.MERoute;
+using DMS.Services.MERouteContent;
 using DMS.Services.MIndirectSalesOrder;
 using DMS.Services.MProblem;
 using DMS.Services.MProduct;
@@ -14,6 +15,7 @@ using DMS.Services.MStoreType;
 using DMS.Services.MTaxType;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,6 +28,7 @@ namespace DMS.Rpc.store_checking
         private IAlbumService AlbumService;
         private IAppUserService AppUserService;
         private IERouteService ERouteService;
+        private IERouteContentService ERouteContentService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
         private IItemService ItemService;
         private IStoreService StoreService;
@@ -41,6 +44,7 @@ namespace DMS.Rpc.store_checking
             IAlbumService AlbumService,
             IAppUserService AppUserService,
             IERouteService ERouteService,
+            IERouteContentService ERouteContentService,
             IIndirectSalesOrderService IndirectSalesOrderService,
             IItemService ItemService,
             IStoreService StoreService,
@@ -57,6 +61,7 @@ namespace DMS.Rpc.store_checking
             this.AlbumService = AlbumService;
             this.AppUserService = AppUserService;
             this.ERouteService = ERouteService;
+            this.ERouteContentService = ERouteContentService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
             this.ItemService = ItemService;
             this.StoreService = StoreService;
@@ -783,39 +788,8 @@ namespace DMS.Rpc.store_checking
             return StoreChecking_ProblemTypeDTOs;
         }
 
-        [Route(StoreCheckingRoute.CountStore), HttpPost]
-        public async Task<long> CountStore([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
-        {
-            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
-
-            StoreFilter StoreFilter = new StoreFilter();
-            StoreFilter.Id = StoreChecking_StoreFilterDTO.Id;
-            StoreFilter.Code = StoreChecking_StoreFilterDTO.Code;
-            StoreFilter.Name = StoreChecking_StoreFilterDTO.Name;
-            StoreFilter.ParentStoreId = StoreChecking_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
-            StoreFilter.StoreTypeId = StoreChecking_StoreFilterDTO.StoreTypeId;
-            StoreFilter.StoreGroupingId = StoreChecking_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.Telephone = StoreChecking_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = StoreChecking_StoreFilterDTO.ResellerId;
-            StoreFilter.ProvinceId = StoreChecking_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = StoreChecking_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = StoreChecking_StoreFilterDTO.WardId;
-            StoreFilter.Address = StoreChecking_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = StoreChecking_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = StoreChecking_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = StoreChecking_StoreFilterDTO.Longitude;
-            StoreFilter.DeliveryLatitude = StoreChecking_StoreFilterDTO.DeliveryLatitude;
-            StoreFilter.DeliveryLongitude = StoreChecking_StoreFilterDTO.DeliveryLongitude;
-            StoreFilter.OwnerName = StoreChecking_StoreFilterDTO.OwnerName;
-            StoreFilter.OwnerPhone = StoreChecking_StoreFilterDTO.OwnerPhone;
-            StoreFilter.OwnerEmail = StoreChecking_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            return await StoreService.Count(StoreFilter);
-        }
-
-        [Route(StoreCheckingRoute.ListStore), HttpPost]
-        public async Task<List<StoreChecking_StoreDTO>> ListStore([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
+        [Route(StoreCheckingRoute.CountStorePlanned), HttpPost]
+        public async Task<long> CountStorePlanned([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
         {
             AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
 
@@ -848,7 +822,121 @@ namespace DMS.Rpc.store_checking
             StoreFilter.OwnerEmail = StoreChecking_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
-            List<Store> Stores = await StoreService.List(StoreFilter);
+            return await StoreCheckingService.CountStorePlanned(StoreFilter, StoreChecking_StoreFilterDTO.ERouteId);
+        }
+
+        [Route(StoreCheckingRoute.ListStorePlanned), HttpPost]
+        public async Task<List<StoreChecking_StoreDTO>> ListStorePlanned([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
+        {
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+            
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = StoreChecking_StoreFilterDTO.Skip;
+            StoreFilter.Take = StoreChecking_StoreFilterDTO.Take;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = StoreChecking_StoreFilterDTO.Id;
+            StoreFilter.Code = StoreChecking_StoreFilterDTO.Code;
+            StoreFilter.Name = StoreChecking_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = StoreChecking_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
+            StoreFilter.StoreTypeId = StoreChecking_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = StoreChecking_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.Telephone = StoreChecking_StoreFilterDTO.Telephone;
+            StoreFilter.ResellerId = StoreChecking_StoreFilterDTO.ResellerId;
+            StoreFilter.ProvinceId = StoreChecking_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = StoreChecking_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = StoreChecking_StoreFilterDTO.WardId;
+            StoreFilter.Address = StoreChecking_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = StoreChecking_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = StoreChecking_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = StoreChecking_StoreFilterDTO.Longitude;
+            StoreFilter.DeliveryLatitude = StoreChecking_StoreFilterDTO.DeliveryLatitude;
+            StoreFilter.DeliveryLongitude = StoreChecking_StoreFilterDTO.DeliveryLongitude;
+            StoreFilter.OwnerName = StoreChecking_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = StoreChecking_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = StoreChecking_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Store> Stores = await StoreCheckingService.ListStorePlanned(StoreFilter, StoreChecking_StoreFilterDTO.ERouteId);
+            List<StoreChecking_StoreDTO> StoreChecking_StoreDTOs = Stores
+                .Select(x => new StoreChecking_StoreDTO(x)).ToList();
+            return StoreChecking_StoreDTOs;
+        }
+
+        [Route(StoreCheckingRoute.CountStoreUnPlanned), HttpPost]
+        public async Task<long> CountStoreUnPlanned([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
+        {
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = StoreChecking_StoreFilterDTO.Skip;
+            StoreFilter.Take = StoreChecking_StoreFilterDTO.Take;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = StoreChecking_StoreFilterDTO.Id;
+            StoreFilter.Code = StoreChecking_StoreFilterDTO.Code;
+            StoreFilter.Name = StoreChecking_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = StoreChecking_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
+            StoreFilter.StoreTypeId = StoreChecking_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = StoreChecking_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.Telephone = StoreChecking_StoreFilterDTO.Telephone;
+            StoreFilter.ResellerId = StoreChecking_StoreFilterDTO.ResellerId;
+            StoreFilter.ProvinceId = StoreChecking_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = StoreChecking_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = StoreChecking_StoreFilterDTO.WardId;
+            StoreFilter.Address = StoreChecking_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = StoreChecking_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = StoreChecking_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = StoreChecking_StoreFilterDTO.Longitude;
+            StoreFilter.DeliveryLatitude = StoreChecking_StoreFilterDTO.DeliveryLatitude;
+            StoreFilter.DeliveryLongitude = StoreChecking_StoreFilterDTO.DeliveryLongitude;
+            StoreFilter.OwnerName = StoreChecking_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = StoreChecking_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = StoreChecking_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            return await StoreCheckingService.CountStoreUnPlanned(StoreFilter, StoreChecking_StoreFilterDTO.ERouteId);
+        }
+
+        [Route(StoreCheckingRoute.ListStoreUnPlanned), HttpPost]
+        public async Task<List<StoreChecking_StoreDTO>> ListStoreUnPlanned([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
+        {
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = StoreChecking_StoreFilterDTO.Skip;
+            StoreFilter.Take = StoreChecking_StoreFilterDTO.Take;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = StoreChecking_StoreFilterDTO.Id;
+            StoreFilter.Code = StoreChecking_StoreFilterDTO.Code;
+            StoreFilter.Name = StoreChecking_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = StoreChecking_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
+            StoreFilter.StoreTypeId = StoreChecking_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = StoreChecking_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.Telephone = StoreChecking_StoreFilterDTO.Telephone;
+            StoreFilter.ResellerId = StoreChecking_StoreFilterDTO.ResellerId;
+            StoreFilter.ProvinceId = StoreChecking_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = StoreChecking_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = StoreChecking_StoreFilterDTO.WardId;
+            StoreFilter.Address = StoreChecking_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = StoreChecking_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = StoreChecking_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = StoreChecking_StoreFilterDTO.Longitude;
+            StoreFilter.DeliveryLatitude = StoreChecking_StoreFilterDTO.DeliveryLatitude;
+            StoreFilter.DeliveryLongitude = StoreChecking_StoreFilterDTO.DeliveryLongitude;
+            StoreFilter.OwnerName = StoreChecking_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = StoreChecking_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = StoreChecking_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Store> Stores = await StoreCheckingService.ListStoreUnPlanned(StoreFilter, StoreChecking_StoreFilterDTO.ERouteId);
             List<StoreChecking_StoreDTO> StoreChecking_StoreDTOs = Stores
                 .Select(x => new StoreChecking_StoreDTO(x)).ToList();
             return StoreChecking_StoreDTOs;

@@ -184,6 +184,13 @@ namespace DMS.Repositories
                     Name = x.Name,
                     RoleId = x.RoleId,
                     MenuId = x.MenuId,
+                    StatusId = x.StatusId,
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
                     Menu = x.Menu == null ? null : new Menu
                     {
                         Id = x.Menu.Id,

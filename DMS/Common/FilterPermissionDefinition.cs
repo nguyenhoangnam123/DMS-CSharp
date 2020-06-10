@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Generic;
 
 namespace Common
@@ -6,17 +7,20 @@ namespace Common
     public class FilterPermissionDefinition
     {
         public string Name { get; private set; }
-        public long FieldTypeId { get; private set; }
+     
         public IdFilter IdFilter { get; private set; }
         public DecimalFilter DecimalFilter { get; private set; }
         public LongFilter LongFilter { get; private set; }
         public DateFilter DateFilter { get; private set; }
         public StringFilter StringFilter { get; private set; }
 
-        public FilterPermissionDefinition(string name, long FieldTypeId, long PermissionOperatorId, string value)
+        public FilterPermissionDefinition(string name)
         {
             this.Name = name;
-            this.FieldTypeId = FieldTypeId;
+        }
+
+        public void SetValue(long FieldTypeId, long PermissionOperatorId, string value)
+        {
             if (FieldTypeId == FieldTypeEnum.ID.Id)
             {
                 if (IdFilter == null) IdFilter = new IdFilter();
