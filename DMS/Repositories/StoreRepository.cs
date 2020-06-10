@@ -69,7 +69,7 @@ namespace DMS.Repositories
                 {
                     List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
                         .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
-                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
                     query = query.Where(q => !Ids.Contains(q.OrganizationId));
@@ -157,7 +157,7 @@ namespace DMS.Repositories
                     {
                         List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
                             .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
-                        List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => StoreFilter.OrganizationId.In.Contains(o.Id)).ToList();
+                        List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => StoreFilter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                         List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> Ids = Branches.Select(o => o.Id).ToList();
                         queryable = queryable.Where(q => !Ids.Contains(q.OrganizationId));
