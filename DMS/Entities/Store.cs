@@ -36,6 +36,7 @@ namespace DMS.Entities
         public long? RequestStateId { get; set; }
         public bool HasEroute { get; set; }
         public bool HasChecking { get; set; }
+        public bool Used { get; set; }
         public District District { get; set; }
         public Organization Organization { get; set; }
         public Store ParentStore { get; set; }

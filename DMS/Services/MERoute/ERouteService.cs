@@ -223,6 +223,21 @@ namespace DMS.Services.MERoute
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = FilterPermissionDefinition.IdFilter;
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleEmployeeId))
+                        subFilter.SaleEmployeeId = FilterPermissionDefinition.IdFilter;
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.StoreId))
+                        subFilter.StoreId = FilterPermissionDefinition.IdFilter;
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ERouteTypeId))
+                        subFilter.ERouteTypeId = FilterPermissionDefinition.IdFilter;
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.RequestStateId))
+                        subFilter.RequestStateId = FilterPermissionDefinition.IdFilter;
+
                 }
             }
             return filter;

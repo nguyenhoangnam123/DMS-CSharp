@@ -379,6 +379,7 @@ namespace DMS.Repositories
                         Description = p.ProductGrouping.Description,
                     },
                 }).ToList() : null,
+                Used = q.Used,
             }).ToListAsync();
 
             var Ids = Products.Select(x => x.Id).ToList();
@@ -407,7 +408,7 @@ namespace DMS.Repositories
             var UnitOfMeasureGroupingIds = Products.Select(x => x.UnitOfMeasureGroupingId).ToList();
             var UnitOfMeasureGroupingContents = await DataContext.UnitOfMeasureGroupingContent
                 .Include(x => x.UnitOfMeasure)
-                .Where(x => UnitOfMeasureGroupingIds.Contains(x.UnitOfMeasureGroupingId)).ToListAsync();
+                .Where(x => UnitOfMeasureGroupingIds.Contains(x.UnitOfMeasureGroupingId) && x.UnitOfMeasure.DeletedAt == null).ToListAsync();
             foreach (var Product in Products)
             {
                 if (Product.UnitOfMeasureGrouping == null) Product.UnitOfMeasureGrouping = new UnitOfMeasureGrouping();
@@ -474,6 +475,7 @@ namespace DMS.Repositories
                     StatusId = x.StatusId,
                     IsNew = x.IsNew,
                     UsedVariationId = x.UsedVariationId,
+                    Used = x.Used,
                     Brand = x.Brand == null ? null : new Brand
                     {
                         Id = x.Brand.Id,

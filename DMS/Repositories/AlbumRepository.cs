@@ -119,6 +119,7 @@ namespace DMS.Repositories
                 } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
+                Used = q.Used,
             }).ToListAsync();
             return Albums;
         }
@@ -150,6 +151,7 @@ namespace DMS.Repositories
                 Id = x.Id,
                 Name = x.Name,
                 StatusId = x.StatusId,
+                Used = x.Used,
                 Status = x.Status == null ? null : new Status
                 {
                     Id = x.Status.Id,

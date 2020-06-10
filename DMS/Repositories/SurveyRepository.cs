@@ -178,6 +178,7 @@ namespace DMS.Repositories
                 } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
+                Used = q.Used,
             }).ToListAsync();
             return Surveys;
         }
@@ -213,6 +214,7 @@ namespace DMS.Repositories
                 EndAt = x.EndAt,
                 StatusId = x.StatusId,
                 CreatorId = x.CreatorId,
+                Used = x.Used,
                 Creator = x.Creator == null ? null : new AppUser
                 {
                     Id = x.Creator.Id,

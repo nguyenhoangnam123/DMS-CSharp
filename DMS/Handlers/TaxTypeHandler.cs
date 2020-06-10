@@ -29,7 +29,7 @@ namespace DMS.Handlers
         {
             List<EventMessage<TaxType>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<TaxType>>>(json);
             List<long> TaxTypeIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
-            await context.TaxType.Where(a => TaxTypeIds.Contains(a.Id)).UpdateFromQueryAsync(a => new TaxTypeDAO {  });
+            await context.TaxType.Where(a => TaxTypeIds.Contains(a.Id)).UpdateFromQueryAsync(a => new TaxTypeDAO { Used = true });
         }
     }
 }

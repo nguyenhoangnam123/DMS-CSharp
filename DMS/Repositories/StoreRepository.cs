@@ -432,6 +432,7 @@ namespace DMS.Repositories
                         Url = x.Image.Url
                     }
                 }).ToList() : null,
+                Used = q.Used,
             }).ToListAsync();
             return Stores;
         }
@@ -483,6 +484,7 @@ namespace DMS.Repositories
                     LegalEntity = x.LegalEntity,
                     StatusId = x.StatusId,
                     RowId = x.RowId,
+                    Used = x.Used,
                     District = x.District == null ? null : new District
                     {
                         Id = x.District.Id,

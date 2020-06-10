@@ -124,6 +124,7 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 } : null,
+                Used = q.Used,
             }).ToListAsync();
             return StoreTypes;
         }
@@ -154,6 +155,7 @@ namespace DMS.Repositories
                     Code = x.Code,
                     Name = x.Name,
                     StatusId = x.StatusId,
+                    Used = x.Used,
                     Status = x.Status == null ? null : new Status
                     {
                         Id = x.Status.Id,

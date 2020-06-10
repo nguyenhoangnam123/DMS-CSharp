@@ -239,7 +239,7 @@ namespace DMS.Services.MGeneralKpi
                     Skip = 0,
                     Take = int.MaxValue,
                     Id = new IdFilter { NotIn = AppUserIds },
-                    Selects = AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email
+                    Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email
                 };
 
                 var AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
@@ -302,6 +302,14 @@ namespace DMS.Services.MGeneralKpi
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = FilterPermissionDefinition.IdFilter;
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.EmployeeId))
+                        subFilter.EmployeeId = FilterPermissionDefinition.IdFilter;
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
+                        subFilter.OrganizationId = FilterPermissionDefinition.IdFilter;
                 }
             }
             return filter;
