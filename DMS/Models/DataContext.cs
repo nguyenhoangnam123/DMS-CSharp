@@ -28,6 +28,7 @@ namespace DMS.Models
         public virtual DbSet<ERouteChangeRequestDAO> ERouteChangeRequest { get; set; }
         public virtual DbSet<ERouteChangeRequestContentDAO> ERouteChangeRequestContent { get; set; }
         public virtual DbSet<ERouteContentDAO> ERouteContent { get; set; }
+        public virtual DbSet<ERouteContentDayDAO> ERouteContentDay { get; set; }
         public virtual DbSet<ERouteTypeDAO> ERouteType { get; set; }
         public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
@@ -684,6 +685,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.Name).HasMaxLength(500);
 
+                entity.Property(e => e.RealStartDate).HasColumnType("datetime");
+
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -779,6 +782,17 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StoreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ERouteContent_Store");
+            });
+
+            modelBuilder.Entity<ERouteContentDayDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.ERouteContent)
+                    .WithMany(p => p.ERouteContentDays)
+                    .HasForeignKey(d => d.ERouteContentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERouteContentDay_ERouteContent");
             });
 
             modelBuilder.Entity<ERouteTypeDAO>(entity =>
@@ -1875,7 +1889,7 @@ namespace DMS.Models
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.ProductTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Item_TypeItem");
+                    .HasConstraintName("FK_Product__ProductType");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Products)
