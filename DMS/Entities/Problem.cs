@@ -18,6 +18,7 @@ namespace DMS.Entities
         public DateTime? CompletedAt { get; set; }
         public string Content { get; set; }
         public long ProblemStatusId { get; set; }
+        public Guid RowId { get; set; }
         public AppUser Creator { get; set; }
         public ProblemStatus ProblemStatus { get; set; }
         public ProblemType ProblemType { get; set; }

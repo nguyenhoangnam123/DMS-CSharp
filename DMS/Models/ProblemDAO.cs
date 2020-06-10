@@ -21,6 +21,7 @@ namespace DMS.Models
         public DateTime? CompletedAt { get; set; }
         public string Content { get; set; }
         public long ProblemStatusId { get; set; }
+        public Guid RowId { get; set; }
 
         public virtual AppUserDAO Creator { get; set; }
         public virtual ProblemStatusDAO ProblemStatus { get; set; }
