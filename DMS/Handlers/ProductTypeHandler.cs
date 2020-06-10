@@ -29,7 +29,7 @@ namespace DMS.Handlers
         {
             List<EventMessage<ProductType>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<ProductType>>>(json);
             List<long> ProductTypeIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
-            await context.ProductType.Where(a => ProductTypeIds.Contains(a.Id)).UpdateFromQueryAsync(a => new ProductTypeDAO {  });
+            await context.ProductType.Where(a => ProductTypeIds.Contains(a.Id)).UpdateFromQueryAsync(a => new ProductTypeDAO { Used = true });
         }
     }
 }

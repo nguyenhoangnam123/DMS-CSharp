@@ -22,6 +22,7 @@ namespace DMS.Entities
         public string Description { get; set; }
         public long? PersonInChargeId { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public DateTime UpdatedTime { get; set; }
         public District District { get; set; }
         public Province Province { get; set; }

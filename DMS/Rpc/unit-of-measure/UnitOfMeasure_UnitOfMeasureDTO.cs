@@ -10,6 +10,7 @@ namespace DMS.Rpc.unit_of_measure
         public string Name { get; set; }
         public string Description { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public UnitOfMeasure_StatusDTO Status { get; set; }
         public UnitOfMeasure_UnitOfMeasureDTO() { }
         public UnitOfMeasure_UnitOfMeasureDTO(UnitOfMeasure UnitOfMeasure)
@@ -19,6 +20,7 @@ namespace DMS.Rpc.unit_of_measure
             this.Name = UnitOfMeasure.Name;
             this.Description = UnitOfMeasure.Description;
             this.StatusId = UnitOfMeasure.StatusId;
+            this.Used = UnitOfMeasure.Used;
             this.Status = UnitOfMeasure.Status == null ? null : new UnitOfMeasure_StatusDTO(UnitOfMeasure.Status);
             this.Errors = UnitOfMeasure.Errors;
         }

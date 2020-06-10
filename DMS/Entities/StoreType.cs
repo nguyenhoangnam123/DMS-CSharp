@@ -12,6 +12,7 @@ namespace DMS.Entities
         public string Code { get; set; }
         public string Name { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public Status Status { get; set; }
 
         public bool Equals(StoreType other)

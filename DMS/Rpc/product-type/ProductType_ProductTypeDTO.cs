@@ -11,6 +11,7 @@ namespace DMS.Rpc.product_type
         public string Name { get; set; }
         public string Description { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public DateTime UpdateTime { get; set; }
         public ProductType_StatusDTO Status { get; set; }
         public ProductType_ProductTypeDTO() { }
@@ -21,6 +22,7 @@ namespace DMS.Rpc.product_type
             this.Name = ProductType.Name;
             this.Description = ProductType.Description;
             this.StatusId = ProductType.StatusId;
+            this.Used = ProductType.Used;
             this.UpdateTime = ProductType.UpdatedTime;
             this.Status = ProductType.Status == null ? null : new ProductType_StatusDTO(ProductType.Status);
             this.Errors = ProductType.Errors;

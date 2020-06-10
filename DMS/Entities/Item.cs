@@ -19,6 +19,7 @@ namespace DMS.Entities
         public bool CanDelete { get; set; }
         public long StatusId { get; set; }
         public bool HasInventory { get; set; }
+        public bool Used { get; set; }
         public Product Product { get; set; }
         public Status Status { get; set; }
         public List<ItemImageMapping> ItemImageMappings { get; set; }

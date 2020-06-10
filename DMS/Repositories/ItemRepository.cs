@@ -270,6 +270,7 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 },
+                Used = q.Used,
             }).ToListAsync();
             var Ids = Items.Select(x => x.Id).ToList();
             var ItemImageMappings = DataContext.ItemImageMapping.Where(x => Ids.Contains(x.ItemId)).ToList();
@@ -324,6 +325,7 @@ namespace DMS.Repositories
                 ScanCode = x.ScanCode,
                 SalePrice = x.SalePrice,
                 RetailPrice = x.RetailPrice,
+                Used = x.Used,
                 Product = x.Product == null ? null : new Product
                 {
                     Id = x.Product.Id,

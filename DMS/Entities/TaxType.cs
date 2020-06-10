@@ -13,6 +13,7 @@ namespace DMS.Entities
         public string Name { get; set; }
         public decimal Percentage { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public Status Status { get; set; }
 
         public bool Equals(TaxType other)

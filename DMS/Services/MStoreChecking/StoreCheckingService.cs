@@ -139,6 +139,11 @@ namespace DMS.Services.MStoreChecking
                 await UOW.Commit();
 
                 var newData = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
+                //if (StoreChecking.StoreCheckingImageMappings != null)
+                //{
+                //    foreach
+                //}
+                
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreCheckingService));
                 return newData;
             }
