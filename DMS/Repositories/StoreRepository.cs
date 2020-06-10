@@ -126,7 +126,38 @@ namespace DMS.Repositories
                 if (StoreFilter.ParentStoreId != null)
                     queryable = queryable.Where(q => q.ParentStoreId, StoreFilter.ParentStoreId);
                 if (StoreFilter.OrganizationId != null)
-                    queryable = queryable.Where(q => q.OrganizationId, StoreFilter.OrganizationId);
+                {
+                    if (StoreFilter.OrganizationId.Equal != null)
+                    {
+                        OrganizationDAO OrganizationDAO = DataContext.Organization
+                            .Where(o => o.Id == StoreFilter.OrganizationId.Equal.Value).FirstOrDefault();
+                        queryable = queryable.Where(q => q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    }
+                    if (StoreFilter.OrganizationId.NotEqual != null)
+                    {
+                        OrganizationDAO OrganizationDAO = DataContext.Organization
+                            .Where(o => o.Id == StoreFilter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                        queryable = queryable.Where(q => !q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    }
+                    if (StoreFilter.OrganizationId.In != null)
+                    {
+                        List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                            .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                        List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => StoreFilter.OrganizationId.In.Contains(o.Id)).ToList();
+                        List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                        List<long> Ids = Branches.Select(o => o.Id).ToList();
+                        queryable = queryable.Where(q => Ids.Contains(q.OrganizationId));
+                    }
+                    if (StoreFilter.OrganizationId.NotIn != null)
+                    {
+                        List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                            .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                        List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => StoreFilter.OrganizationId.In.Contains(o.Id)).ToList();
+                        List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                        List<long> Ids = Branches.Select(o => o.Id).ToList();
+                        queryable = queryable.Where(q => !Ids.Contains(q.OrganizationId));
+                    }
+                }
                 if (StoreFilter.StoreTypeId != null)
                     queryable = queryable.Where(q => q.StoreTypeId, StoreFilter.StoreTypeId);
                 if (StoreFilter.StoreGroupingId != null)
