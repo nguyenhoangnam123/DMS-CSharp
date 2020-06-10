@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MVariationGrouping
+namespace DMS.Services.MProduct
 {
     public interface IVariationGroupingService : IServiceScoped
     {

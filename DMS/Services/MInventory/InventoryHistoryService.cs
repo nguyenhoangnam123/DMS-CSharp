@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MInventoryHistoryHistory
+namespace DMS.Services.MInventory
 {
     public interface IInventoryHistoryService : IServiceScoped
     {

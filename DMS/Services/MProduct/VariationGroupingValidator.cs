@@ -4,7 +4,7 @@ using DMS.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MVariationGrouping
+namespace DMS.Services.MProduct
 {
     public interface IVariationGroupingValidator : IServiceScoped
     {

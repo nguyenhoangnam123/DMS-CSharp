@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MProblemType
+namespace DMS.Services.MProblem
 {
     public interface IProblemTypeService : IServiceScoped
     {

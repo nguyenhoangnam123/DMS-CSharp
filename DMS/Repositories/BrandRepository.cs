@@ -201,6 +201,7 @@ namespace DMS.Repositories
             BrandDAO.StatusId = Brand.StatusId;
             BrandDAO.CreatedAt = StaticParams.DateTimeNow;
             BrandDAO.UpdatedAt = StaticParams.DateTimeNow;
+            BrandDAO.Used = false;
             DataContext.Brand.Add(BrandDAO);
             await DataContext.SaveChangesAsync();
             Brand.Id = BrandDAO.Id;

@@ -13,12 +13,6 @@ namespace DMS.Repositories
     {
         Task<int> Count(RequestStateFilter RequestStateFilter);
         Task<List<RequestState>> List(RequestStateFilter RequestStateFilter);
-        Task<RequestState> Get(long Id);
-        Task<bool> Create(RequestState RequestState);
-        Task<bool> Update(RequestState RequestState);
-        Task<bool> Delete(RequestState RequestState);
-        Task<bool> BulkMerge(List<RequestState> RequestStates);
-        Task<bool> BulkDelete(List<RequestState> RequestStates);
     }
     public class RequestStateRepository : IRequestStateRepository
     {
@@ -124,80 +118,6 @@ namespace DMS.Repositories
             RequestStateDAOs = DynamicOrder(RequestStateDAOs, filter);
             List<RequestState> RequestStates = await DynamicSelect(RequestStateDAOs, filter);
             return RequestStates;
-        }
-
-        public async Task<RequestState> Get(long Id)
-        {
-            RequestState RequestState = await DataContext.RequestState.AsNoTracking()
-            .Where(x => x.Id == Id).Select(x => new RequestState()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-            }).FirstOrDefaultAsync();
-
-            if (RequestState == null)
-                return null;
-
-            return RequestState;
-        }
-        public async Task<bool> Create(RequestState RequestState)
-        {
-            RequestStateDAO RequestStateDAO = new RequestStateDAO();
-            RequestStateDAO.Id = RequestState.Id;
-            RequestStateDAO.Code = RequestState.Code;
-            RequestStateDAO.Name = RequestState.Name;
-            DataContext.RequestState.Add(RequestStateDAO);
-            await DataContext.SaveChangesAsync();
-            RequestState.Id = RequestStateDAO.Id;
-            await SaveReference(RequestState);
-            return true;
-        }
-
-        public async Task<bool> Update(RequestState RequestState)
-        {
-            RequestStateDAO RequestStateDAO = DataContext.RequestState.Where(x => x.Id == RequestState.Id).FirstOrDefault();
-            if (RequestStateDAO == null)
-                return false;
-            RequestStateDAO.Id = RequestState.Id;
-            RequestStateDAO.Code = RequestState.Code;
-            RequestStateDAO.Name = RequestState.Name;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(RequestState);
-            return true;
-        }
-
-        public async Task<bool> Delete(RequestState RequestState)
-        {
-            await DataContext.RequestState.Where(x => x.Id == RequestState.Id).DeleteFromQueryAsync();
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<RequestState> RequestStates)
-        {
-            List<RequestStateDAO> RequestStateDAOs = new List<RequestStateDAO>();
-            foreach (RequestState RequestState in RequestStates)
-            {
-                RequestStateDAO RequestStateDAO = new RequestStateDAO();
-                RequestStateDAO.Id = RequestState.Id;
-                RequestStateDAO.Code = RequestState.Code;
-                RequestStateDAO.Name = RequestState.Name;
-                RequestStateDAOs.Add(RequestStateDAO);
-            }
-            await DataContext.BulkMergeAsync(RequestStateDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<RequestState> RequestStates)
-        {
-            List<long> Ids = RequestStates.Select(x => x.Id).ToList();
-            await DataContext.RequestState
-                .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
-            return true;
-        }
-
-        private async Task SaveReference(RequestState RequestState)
-        {
         }
 
     }

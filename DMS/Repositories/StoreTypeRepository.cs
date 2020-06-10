@@ -176,10 +176,10 @@ namespace DMS.Repositories
             StoreTypeDAO.StatusId = StoreType.StatusId;
             StoreTypeDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
+            StoreTypeDAO.Used = false;
             DataContext.StoreType.Add(StoreTypeDAO);
             await DataContext.SaveChangesAsync();
             StoreType.Id = StoreTypeDAO.Id;
-            await SaveReference(StoreType);
             return true;
         }
 
@@ -194,7 +194,6 @@ namespace DMS.Repositories
             StoreTypeDAO.StatusId = StoreType.StatusId;
             StoreTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
-            await SaveReference(StoreType);
             return true;
         }
 
@@ -230,10 +229,5 @@ namespace DMS.Repositories
                 .UpdateFromQueryAsync(x => new StoreTypeDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-
-        private async Task SaveReference(StoreType StoreType)
-        {
-        }
-
     }
 }

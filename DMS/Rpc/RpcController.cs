@@ -81,7 +81,6 @@ namespace DMS.Rpc
                         FilterPermissionDefinitions.Add(FilterPermissionDefinition);
                     }
                 }
-
             }
             context.Succeed(requirement);
         }

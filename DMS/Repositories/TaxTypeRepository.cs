@@ -188,6 +188,7 @@ namespace DMS.Repositories
             TaxTypeDAO.StatusId = TaxType.StatusId;
             TaxTypeDAO.CreatedAt = StaticParams.DateTimeNow;
             TaxTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
+            TaxTypeDAO.Used = false;
             DataContext.TaxType.Add(TaxTypeDAO);
             await DataContext.SaveChangesAsync();
             TaxType.Id = TaxTypeDAO.Id;

@@ -48,23 +48,6 @@ namespace Common
         }
     }
 
-    public class IntFilter
-    {
-        public int? Equal { get; set; }
-        public int? NotEqual { get; set; }
-        public int? Less { get; set; }
-        public int? LessEqual { get; set; }
-        public int? Greater { get; set; }
-        public int? GreaterEqual { get; set; }
-        public bool HasValue
-        {
-            get
-            {
-                return Equal.HasValue || NotEqual.HasValue || Less.HasValue || LessEqual.HasValue || Greater.HasValue || GreaterEqual.HasValue;
-            }
-        }
-    }
-
     public class LongFilter
     {
         public long? Equal { get; set; }
@@ -73,23 +56,6 @@ namespace Common
         public long? LessEqual { get; set; }
         public long? Greater { get; set; }
         public long? GreaterEqual { get; set; }
-        public bool HasValue
-        {
-            get
-            {
-                return Equal.HasValue || NotEqual.HasValue || Less.HasValue || LessEqual.HasValue || Greater.HasValue || GreaterEqual.HasValue;
-            }
-        }
-    }
-
-    public class DoubleFilter
-    {
-        public double? Equal { get; set; }
-        public double? NotEqual { get; set; }
-        public double? Less { get; set; }
-        public double? LessEqual { get; set; }
-        public double? Greater { get; set; }
-        public double? GreaterEqual { get; set; }
         public bool HasValue
         {
             get
@@ -220,40 +186,7 @@ namespace Common
                 source = source.Where(BuildPredicate(propertyName, "NotEndsWith", filter.NotEndWith));
             return source;
         }
-        public static IQueryable<TSource> Where<TSource, TKey>(this IQueryable<TSource> source, Expression<Func<TSource, TKey>> propertyName, IntFilter filter)
-        {
-            if (filter.Equal.HasValue)
-                source = source.Where(BuildPredicate(propertyName, "==", filter.Equal.Value.ToString()));
-            if (filter.NotEqual.HasValue)
-                source = source.Where(BuildPredicate(propertyName, "!=", filter.NotEqual.Value.ToString()));
-            if (filter.Less.HasValue)
-                source = source.Where(BuildPredicate(propertyName, "<", filter.Less.Value.ToString()));
-            if (filter.LessEqual.HasValue)
-                source = source.Where(BuildPredicate(propertyName, "<=", filter.LessEqual.Value.ToString()));
-            if (filter.Greater.HasValue)
-                source = source.Where(BuildPredicate(propertyName, ">", filter.Greater.Value.ToString()));
-            if (filter.GreaterEqual.HasValue)
-                source = source.Where(BuildPredicate(propertyName, ">=", filter.GreaterEqual.Value.ToString()));
-
-            return source;
-        }
-        public static IQueryable<TSource> Where<TSource, TKey>(this IQueryable<TSource> source, Expression<Func<TSource, TKey>> propertyName, DoubleFilter filter)
-        {
-            if (filter.Equal.HasValue)
-                source = source.Where(BuildPredicate(propertyName, "==", filter.Equal.Value.ToString()));
-            if (filter.NotEqual.HasValue)
-                source = source.Where(BuildPredicate(propertyName, "!=", filter.NotEqual.Value.ToString()));
-            if (filter.Less.HasValue)
-                source = source.Where(BuildPredicate(propertyName, "<", filter.Less.Value.ToString()));
-            if (filter.LessEqual.HasValue)
-                source = source.Where(BuildPredicate(propertyName, "<=", filter.LessEqual.Value.ToString()));
-            if (filter.Greater.HasValue)
-                source = source.Where(BuildPredicate(propertyName, ">", filter.Greater.Value.ToString()));
-            if (filter.GreaterEqual.HasValue)
-                source = source.Where(BuildPredicate(propertyName, ">=", filter.GreaterEqual.Value.ToString()));
-
-            return source;
-        }
+       
 
         public static IQueryable<TSource> Where<TSource, TKey>(this IQueryable<TSource> source, Expression<Func<TSource, TKey>> propertyName, DecimalFilter filter)
         {

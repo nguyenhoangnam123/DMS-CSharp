@@ -19,6 +19,7 @@ namespace DMS.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public bool Used { get; set; }
 
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<DirectPriceListStoreTypeMappingDAO> DirectPriceListStoreTypeMappings { get; set; }

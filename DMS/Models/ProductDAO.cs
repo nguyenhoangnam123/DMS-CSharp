@@ -37,6 +37,7 @@ namespace DMS.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public bool Used { get; set; }
 
         public virtual BrandDAO Brand { get; set; }
         public virtual ProductTypeDAO ProductType { get; set; }

@@ -201,10 +201,10 @@ namespace DMS.Repositories
             ProductTypeDAO.StatusId = ProductType.StatusId;
             ProductTypeDAO.CreatedAt = StaticParams.DateTimeNow;
             ProductTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
+            ProductTypeDAO.Used = false;
             DataContext.ProductType.Add(ProductTypeDAO);
             await DataContext.SaveChangesAsync();
             ProductType.Id = ProductTypeDAO.Id;
-            //await SaveReference(ProductType);
             return true;
         }
 
