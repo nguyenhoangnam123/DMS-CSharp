@@ -97,22 +97,18 @@ namespace DMS.Services.MStoreChecking
 
             try
             {
-                DateTime Now = StaticParams.DateTimeNow;
                 StoreChecking.CheckInAt = StaticParams.DateTimeNow;
                 StoreChecking.SaleEmployeeId = CurrentContext.UserId;
-                ERouteFilter ERouteFilter = new ERouteFilter
+
+                List<long> StorePlannedIds = await ListStoreIds(null, true);
+                if (StorePlannedIds.Contains(StoreChecking.StoreId))
                 {
-                    SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
-                    StartDate = new DateFilter { LessEqual = Now },
-                    EndDate = new DateFilter { GreaterEqual = Now },
-                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Selects = ERouteSelect.ALL,
-                };
-                List<ERoute> ERoutes = await UOW.ERouteRepository.List(ERouteFilter);
-                //TODO
-                StoreChecking.Planned = true;
+                    StoreChecking.Planned = true;
+                }
+                else
+                {
+                    StoreChecking.Planned = false;
+                }
                 await UOW.Begin();
                 await UOW.StoreCheckingRepository.Create(StoreChecking);
                 await UOW.Commit();
@@ -221,10 +217,13 @@ namespace DMS.Services.MStoreChecking
 
         private async Task<List<long>> ListStoreIds(IdFilter ERouteId, bool Planned)
         {
+            DateTime Now = StaticParams.DateTimeNow;
             List<long> ERouteIds = (await UOW.ERouteRepository.List(new ERouteFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
+                StartDate = new DateFilter { LessEqual = Now },
+                EndDate = new DateFilter { GreaterEqual = Now },
                 Id = ERouteId,
                 SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
