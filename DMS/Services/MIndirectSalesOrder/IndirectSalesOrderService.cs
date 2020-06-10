@@ -292,7 +292,7 @@ namespace DMS.Services.MIndirectSalesOrder
         {
             var ProductIds = new List<long>();
             if (IndirectSalesOrder.IndirectSalesOrderContents != null)
-                IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.Item.ProductId).ToList();
+                ProductIds.AddRange(IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.Item.ProductId).ToList());
             if (IndirectSalesOrder.IndirectSalesOrderPromotions != null)
                 ProductIds.AddRange(IndirectSalesOrder.IndirectSalesOrderPromotions.Select(x => x.Item.ProductId).ToList());
             ProductIds = ProductIds.Distinct().ToList();
