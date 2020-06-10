@@ -59,18 +59,23 @@ namespace DMS.Repositories
                 if (filter.OrganizationId.In != null)
                 {
                     List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
-                        .Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
-                    List<string> Paths = OrganizationDAOs.Select(o => o.Path).ToList();
-                    query = query.Where(q => Paths.Any(p => q.Organization.Path.StartsWith(p)));
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => Ids.Contains(q.OrganizationId));
                 }
                 if (filter.OrganizationId.NotIn != null)
                 {
                     List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
-                        .Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
-                    List<string> Paths = OrganizationDAOs.Select(o => o.Path).ToList();
-                    query = query.Where(q => Paths.All(p => !q.Organization.Path.StartsWith(p)));
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => !Ids.Contains(q.OrganizationId));
                 }
             }
+
             if (filter.StoreTypeId != null)
                 query = query.Where(q => q.StoreTypeId, filter.StoreTypeId);
             if (filter.StoreGroupingId != null)
