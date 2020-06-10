@@ -1,12 +1,14 @@
 using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Handlers;
 using DMS.Repositories;
 using DMS.Services.MImage;
 using Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MStoreChecking
@@ -27,13 +29,16 @@ namespace DMS.Services.MStoreChecking
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
+        private IRabbitManager RabbitManager;
         private IImageService ImageService;
+
         private IStoreCheckingValidator StoreCheckingValidator;
 
         public StoreCheckingService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
+            IRabbitManager RabbitManager,
             IImageService ImageService,
             IStoreCheckingValidator StoreCheckingValidator
         )
@@ -41,6 +46,7 @@ namespace DMS.Services.MStoreChecking
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
+            this.RabbitManager = RabbitManager;
             this.ImageService = ImageService;
             this.StoreCheckingValidator = StoreCheckingValidator;
         }
@@ -139,11 +145,23 @@ namespace DMS.Services.MStoreChecking
                 await UOW.Commit();
 
                 var newData = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
-                //if (StoreChecking.StoreCheckingImageMappings != null)
-                //{
-                //    foreach
-                //}
-                
+                List<long> AlbumIds = new List<long>();
+                if (StoreChecking.StoreCheckingImageMappings != null)
+                {
+                    foreach (StoreCheckingImageMapping StoreCheckingImageMapping in StoreChecking.StoreCheckingImageMappings)
+                    {
+                        AlbumIds.Add(StoreCheckingImageMapping.AlbumId);
+                    }
+                }
+                List<EventMessage<Album>> messages = AlbumIds.Select(a => new EventMessage<Album>
+                {
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                    EntityName = nameof(Album),
+                    Content = new Album { Id = a },
+                }).ToList();
+                // phai check quan he lien ket 1:1, hay 1:n hay n:m de publishSingle, hay publishList
+                RabbitManager.PublishList(messages, RoutingKeyEnum.AlbumUsed);
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreCheckingService));
                 return newData;
             }

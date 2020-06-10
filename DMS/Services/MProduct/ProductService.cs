@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
 using DMS.Services.MImage;
+using DMS.Handlers;
 using Helpers;
 using OfficeOpenXml;
 using System;
@@ -38,13 +39,15 @@ namespace DMS.Services.MProduct
         private ICurrentContext CurrentContext;
         private IProductValidator ProductValidator;
         private IImageService ImageService;
+        private IRabbitManager RabbitManager;
 
         public ProductService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
             IProductValidator ProductValidator,
-            IImageService ImageService
+            IImageService ImageService,
+            IRabbitManager RabbitManager
         )
         {
             this.UOW = UOW;
@@ -52,6 +55,7 @@ namespace DMS.Services.MProduct
             this.CurrentContext = CurrentContext;
             this.ProductValidator = ProductValidator;
             this.ImageService = ImageService;
+            this.RabbitManager = RabbitManager;
         }
         public async Task<int> Count(ProductFilter ProductFilter)
         {
