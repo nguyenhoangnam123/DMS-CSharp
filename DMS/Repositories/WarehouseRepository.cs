@@ -431,6 +431,7 @@ namespace DMS.Repositories
                         InventoryDAO.ItemId = Inventory.ItemId;
                         InventoryDAO.SaleStock = Inventory.SaleStock;
                         InventoryDAO.AccountingStock = Inventory.AccountingStock;
+
                         InventoryDAOs.Add(InventoryDAO);
                         InventoryDAO.CreatedAt = StaticParams.DateTimeNow;
                         InventoryDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -466,6 +467,8 @@ namespace DMS.Repositories
                                     AppUserId = inventoryHistory.AppUserId,
                                     SaleStock = inventoryHistory.SaleStock,
                                     AccountingStock = inventoryHistory.AccountingStock,
+                                    OldAccountingStock = inventoryHistory.OldAccountingStock,
+                                    OldSaleStock = inventoryHistory.OldSaleStock,
                                     CreatedAt = StaticParams.DateTimeNow,
                                     UpdatedAt = StaticParams.DateTimeNow,
                                     DeletedAt = null,

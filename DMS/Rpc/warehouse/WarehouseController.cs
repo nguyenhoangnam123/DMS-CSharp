@@ -150,6 +150,7 @@ namespace DMS.Rpc.warehouse
                 return Forbid();
 
             Warehouse Warehouse = ConvertDTOToEntity(Warehouse_WarehouseDTO);
+            //Warehouse.Inventories.
             Warehouse = await WarehouseService.Update(Warehouse);
             Warehouse_WarehouseDTO = new Warehouse_WarehouseDTO(Warehouse);
             if (Warehouse.IsValidated)
@@ -469,7 +470,7 @@ namespace DMS.Rpc.warehouse
                                 Name = x.Item.Product.UnitOfMeasure.Name,
                             }
                         }
-                    },
+                    }
                 }).ToList();
             Warehouse.BaseLanguage = CurrentContext.Language;
             return Warehouse;

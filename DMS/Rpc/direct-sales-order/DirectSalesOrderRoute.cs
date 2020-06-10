@@ -68,13 +68,13 @@ namespace DMS.Rpc.direct_sales_order
             { "Thêm", new List<string> {
                 Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,
                 Detail, Create,
-                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser, SingleListItem, SingleListProductGrouping, SingleListProductType,
+                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser, SingleListItem, SingleListProductGrouping, SingleListProductType, 
                 SingleListSupplier, SingleListStoreGrouping, SingleListStoreType, SingleListUnitOfMeasure, SingleListRequestState, CountStore, ListStore, CountItem, ListItem} },
 
             { "Sửa", new List<string> {
                 Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,
                 Detail, Update,
-                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser, SingleListItem, SingleListProductGrouping, SingleListProductType,
+                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser, SingleListItem, SingleListProductGrouping, SingleListProductType, 
                 SingleListSupplier, SingleListStoreGrouping, SingleListStoreType, SingleListUnitOfMeasure, SingleListRequestState, CountStore, ListStore, CountItem, ListItem} },
 
             { "Xoá", new List<string> {

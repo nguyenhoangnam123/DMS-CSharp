@@ -274,6 +274,8 @@ namespace DMS.Services.MWarehouse
                             InventoryHistory InventoryHistory = new InventoryHistory();
                             InventoryHistory.SaleStock = inventory.SaleStock;
                             InventoryHistory.AccountingStock = inventory.AccountingStock;
+                            InventoryHistory.OldSaleStock = ExistedInventory.SaleStock;
+                            InventoryHistory.OldAccountingStock = ExistedInventory.AccountingStock;
                             InventoryHistory.AppUserId = CurrentContext.UserId;
                             inventory.InventoryHistories.Add(InventoryHistory);
                         }
