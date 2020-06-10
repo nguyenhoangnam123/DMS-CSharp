@@ -49,7 +49,6 @@ namespace DMS.Services.MStore
             OwnerEmailOverLength,
             StatusNotExisted,
             StoreHasChild,
-            TaxCodeEmpty
         }
 
         private IUOW UOW;
@@ -378,14 +377,6 @@ namespace DMS.Services.MStore
             return Store.IsValidated;
         }
         #endregion
-        private async Task<bool> ValidateTaxCode(Store Store)
-        {
-            if (string.IsNullOrWhiteSpace(Store.TaxCode))
-            {
-                Store.AddError(nameof(StoreValidator), nameof(Store.OwnerEmail), ErrorCode.TaxCodeEmpty);
-            }
-            return Store.IsValidated;
-        }
         #region Status
         private async Task<bool> ValidateStatusId(Store Store)
         {
@@ -427,7 +418,6 @@ namespace DMS.Services.MStore
             await ValidateOwnerName(Store);
             await ValidateOwnerPhone(Store);
             await ValidateOwnerEmail(Store);
-            await ValidateTaxCode(Store);
             await ValidateStatusId(Store);
             return Store.IsValidated;
         }
