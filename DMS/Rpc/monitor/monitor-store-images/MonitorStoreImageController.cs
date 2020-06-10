@@ -153,10 +153,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
-            var query = from sc in DataContext.StoreChecking
-                        join s in DataContext.Store on sc.StoreId equals s.Id
+            var query = from au in DataContext.AppUser
+                        join sc in DataContext.StoreChecking on au.Id equals sc.SaleEmployeeId
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                        (OrganizationId.HasValue == false || s.OrganizationId == OrganizationId.Value) &&
+                        (OrganizationId.HasValue == false || au.OrganizationId == OrganizationId.Value) &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                         (
@@ -169,7 +169,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                             (HasOrder.Value == 0 && sc.IndirectSalesOrderCounter == 0) ||
                             (HasOrder.Value == 1 && sc.IndirectSalesOrderCounter > 0)
                         )
-                        select sc.Id;
+                        select au.Id;
             int count = await query.Distinct().CountAsync();
             return count;
         }
@@ -218,14 +218,26 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
             List<long> SaleEmployeeIds = SalesEmployees.Select(x => x.Id).ToList();
 
-            List<StoreChecking> StoreCheckings = await StoreCheckingService.List(new StoreCheckingFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                SaleEmployeeId = new IdFilter { In = SaleEmployeeIds },
-                CheckOutAt = new DateFilter { GreaterEqual = Start, LessEqual = End },
-                Selects = StoreCheckingSelect.Id | StoreCheckingSelect.Store | StoreCheckingSelect.SaleEmployee | StoreCheckingSelect.CountImage
-            });
+            var StoreCheckingQuery = from sc in DataContext.StoreChecking 
+                                     join s in DataContext.Store on sc.StoreId equals s.Id
+                                     join o in DataContext.Organization on s.OrganizationId equals o.Id
+                                     where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
+                                     (OrganizationId.HasValue == false || s.OrganizationId == OrganizationId.Value) &&
+                                     (SaleEmployeeIds.Contains(sc.SaleEmployeeId)) &&
+                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
+                                     (
+                                         HasImage == null ||
+                                         (HasImage.Value == 0 && sc.ImageCounter == 0) ||
+                                         (HasImage.Value == 1 && sc.ImageCounter > 0)
+                                     ) &&
+                                     (
+                                         HasOrder == null ||
+                                         (HasOrder.Value == 0 && sc.IndirectSalesOrderCounter == 0) ||
+                                         (HasOrder.Value == 1 && sc.IndirectSalesOrderCounter > 0)
+                                     )
+                                     select sc;
+
+            List<StoreCheckingDAO> StoreCheckingDAOs = await StoreCheckingQuery.ToListAsync();
 
             List<long> OrganizationIds = SalesEmployees.Where(x => x.OrganizationId.HasValue).Select(x => x.OrganizationId.Value).ToList();
             List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
@@ -246,12 +258,12 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     SaleEmployeeId = SalesEmployee.Id,
                     OrganizationName = SalesEmployee.Organization.Name
                 };
-                MonitorStoreImage_SaleEmployeeDTO.StoreCheckings = StoreCheckings.OrderBy(x => x.CheckOutAt).Where(x => x.SaleEmployeeId == SalesEmployee.Id).Select(x => new MonitorStoreImage_StoreCheckingDTO
+                MonitorStoreImage_SaleEmployeeDTO.StoreCheckings = StoreCheckingDAOs.OrderBy(x => x.CheckOutAt).Where(x => x.SaleEmployeeId == SalesEmployee.Id).Select(x => new MonitorStoreImage_StoreCheckingDTO
                 {
                     Id = x.Id,
                     Date = x.CheckOutAt.Value.Date,
                     StoreName = x.Store.Name,
-                    ImageCounter = x.CountImage ?? 0
+                    ImageCounter = x.ImageCounter ?? 0
                 }).ToList();
 
                 MonitorStoreImage_SaleEmployeeDTOs.Add(MonitorStoreImage_SaleEmployeeDTO);
