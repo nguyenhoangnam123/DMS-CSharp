@@ -43,7 +43,34 @@ namespace DMS.Repositories
             if (filter.ParentStoreId != null)
                 query = query.Where(q => q.ParentStoreId, filter.ParentStoreId);
             if (filter.OrganizationId != null)
-                query = query.Where(q => q.OrganizationId, filter.OrganizationId);
+            {
+                if (filter.OrganizationId.Equal != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.Equal.Value).FirstOrDefault();
+                    query = query.Where(q => q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.NotEqual != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                    query = query.Where(q => !q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.In != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<string> Paths = OrganizationDAOs.Select(o => o.Path).ToList();
+                    query = query.Where(q => Paths.Any(p => q.Organization.Path.StartsWith(p)));
+                }
+                if (filter.OrganizationId.NotIn != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<string> Paths = OrganizationDAOs.Select(o => o.Path).ToList();
+                    query = query.Where(q => Paths.All(p => !q.Organization.Path.StartsWith(p)));
+                }
+            }
             if (filter.StoreTypeId != null)
                 query = query.Where(q => q.StoreTypeId, filter.StoreTypeId);
             if (filter.StoreGroupingId != null)
