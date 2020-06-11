@@ -994,10 +994,9 @@ namespace DMS.Repositories
                 }
                 await DataContext.Item.BulkMergeAsync(ItemDAOs);
                 List<ItemHistoryDAO> ItemHistoryDAOs = new List<ItemHistoryDAO>();
-                foreach (ItemDAO ItemDAO in ItemDAOs)
+                foreach (Item Item in Product.Items)
                 {
-                    Item Item = Product.Items.Where(i => i.Code == ItemDAO.Code).FirstOrDefault();
-                    Item.Id = ItemDAO.Id;
+                    Item.Id = ItemDAOs.Where(i => i.Code == Item.Code).Select(x => x.Id).FirstOrDefault();
 
                     var list = new List<ItemHistoryDAO>();
                     if (Item.ItemHistories != null)

@@ -113,6 +113,14 @@ namespace Common
         public long? NotEqual { get; set; }
         public List<long> In { get; set; }
         public List<long> NotIn { get; set; }
+
+        public bool HasValue
+        {
+            get
+            {
+                return Equal.HasValue || NotEqual.HasValue || In != null || NotIn != null;
+            }
+        }
     }
 
 

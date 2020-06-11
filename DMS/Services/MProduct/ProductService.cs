@@ -282,8 +282,8 @@ namespace DMS.Services.MProduct
                                 ItemId = item.Id,
                                 ModifierId = CurrentContext.UserId,
                                 Time = StaticParams.DateTimeNow,
-                                OldPrice = oldItem.SalePrice.HasValue ? oldItem.SalePrice.Value : 0m,
-                                NewPrice = item.SalePrice.HasValue ? item.SalePrice.Value : 0m
+                                OldPrice = oldItem.SalePrice,
+                                NewPrice = item.SalePrice,
                             };
                             if (item.ItemHistories == null)
                             {
