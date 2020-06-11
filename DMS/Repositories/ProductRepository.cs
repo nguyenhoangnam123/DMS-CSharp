@@ -624,6 +624,7 @@ namespace DMS.Repositories
                     SalePrice = x.SalePrice,
                     RetailPrice = x.RetailPrice,
                     StatusId = x.StatusId,
+                    Used = x.Used,
                     ItemImageMappings = new List<ItemImageMapping>()
                 }).ToListAsync();
             Product.ProductImageMappings = await DataContext.ProductImageMapping.AsNoTracking()

@@ -286,57 +286,10 @@ namespace DMS.Services.MProduct
                     {
                         item.AddError(nameof(ProductValidator), nameof(Item.Name), ErrorCode.NameExisted);
                     }
-
-                    if (await ItemCanDelete(item))
-                    {
-
-                    }
-                    else
-                    {
-                        item.AddError(nameof(ProductValidator), nameof(Item.Id), ErrorCode.ItemInUsed);
-                    }
                 }
             }
 
             return Product.IsValidated;
-        }
-
-        private async Task<bool> ItemCanDelete(Item Item)
-        {
-            IndirectSalesOrderContentFilter IndirectSalesOrderContentFilter = new IndirectSalesOrderContentFilter()
-            {
-                ItemId = new IdFilter { Equal = Item.Id }
-            };
-
-            int count = await UOW.IndirectSalesOrderContentRepository.Count(IndirectSalesOrderContentFilter);
-            if (count != 0)
-                return false;
-
-            IndirectSalesOrderPromotionFilter IndirectSalesOrderPromotionFilter = new IndirectSalesOrderPromotionFilter
-            {
-                ItemId = new IdFilter { Equal = Item.Id }
-            };
-            count = await UOW.IndirectSalesOrderPromotionRepository.Count(IndirectSalesOrderPromotionFilter);
-            if (count != 0)
-                return false;
-
-            DirectSalesOrderContentFilter DirectSalesOrderContentFilter = new DirectSalesOrderContentFilter()
-            {
-                ItemId = new IdFilter { Equal = Item.Id }
-            };
-
-            count = await UOW.DirectSalesOrderContentRepository.Count(DirectSalesOrderContentFilter);
-            if (count != 0)
-                return false;
-
-            DirectSalesOrderPromotionFilter DirectSalesOrderPromotionFilter = new DirectSalesOrderPromotionFilter
-            {
-                ItemId = new IdFilter { Equal = Item.Id }
-            };
-            count = await UOW.DirectSalesOrderPromotionRepository.Count(DirectSalesOrderPromotionFilter);
-            if (count != 0)
-                return false;
-            return true;
         }
 
         private async Task<bool> ValidateVariation(Product Product)
