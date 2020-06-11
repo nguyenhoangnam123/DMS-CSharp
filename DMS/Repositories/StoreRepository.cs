@@ -40,7 +40,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
-            if (filter.ParentStoreId.HasValue)
+            if (filter.ParentStoreId != null && filter.ParentStoreId.HasValue)
                 query = query.Where(q => q.ParentStoreId.HasValue).Where(q => q.ParentStoreId.Value, filter.ParentStoreId);
             if (filter.OrganizationId != null)
             {
@@ -78,7 +78,7 @@ namespace DMS.Repositories
 
             if (filter.StoreTypeId != null)
                 query = query.Where(q => q.StoreTypeId, filter.StoreTypeId);
-            if (filter.StoreGroupingId.HasValue)
+            if (filter.StoreGroupingId != null && filter.StoreGroupingId.HasValue)
                 query = query.Where(q => q.StoreGroupingId.HasValue).Where(q => q.StoreGroupingId.Value, filter.StoreGroupingId);
             if (filter.ResellerId != null)
                 query = query.Where(q => q.ResellerId, filter.ResellerId);
