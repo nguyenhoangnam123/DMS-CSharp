@@ -553,7 +553,7 @@ namespace DMS.Services.MStore
                 await (ValidateLocation(Store));
                 await (ValidateOwnerName(Store));
                 await (ValidateOwnerPhone(Store));
-                await (ValidateOwnerEmail(Store));
+                //await (ValidateOwnerEmail(Store));
 
             }
             return Stores.Any(s => !s.IsValidated) ? false : true;
