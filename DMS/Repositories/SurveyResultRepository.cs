@@ -181,6 +181,8 @@ namespace DMS.Repositories
 
         public async Task<bool> Create(SurveyResult SurveyResult)
         {
+            SurveyDAO SurveyDAO = await DataContext.Survey.Where(s => s.Id == SurveyResult.SurveyId).FirstOrDefaultAsync();
+            SurveyDAO.Used = true;
             SurveyResult.RowId = Guid.NewGuid();
             SurveyResultDAO SurveyResultDAO = new SurveyResultDAO();
             SurveyResultDAO.AppUserId = SurveyResult.AppUserId;
