@@ -35,6 +35,8 @@ namespace DMS.Rpc.role
         public const string SingleListWarehouse = Default + "/single-list-warehouse";
         public const string SingleListField = Default + "/single-list-field";
         public const string SingleListPermissionOperator = Default + "/single-list-permission-operator";
+        public const string SingleListERouteType = Default + "/single-list-e-route-type";
+        public const string SingleListRequestState = Default + "/single-list-request-state";
 
         public const string CountAppUser = Default + "/count-app-user";
         public const string ListAppUser = Default + "/list-app-user";
@@ -62,13 +64,13 @@ namespace DMS.Rpc.role
             { "Thêm", new List<string> {
                 Master, Count, List, Get, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
-                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator,
+                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, SingleListERouteType, SingleListRequestState,
                 Detail, Create, GetMenu,
                 SingleListStatus } },
             { "Sửa", new List<string> {
                 Master, Count, List, Get, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
-                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator,
+                SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, SingleListERouteType, SingleListRequestState,
                 Detail, Update, GetMenu,
                  } },
              { "Gán người dùng", new List<string> {

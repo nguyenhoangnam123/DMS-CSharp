@@ -316,6 +316,38 @@ namespace DMS.Rpc.role
             return Role_PermissionOperatorDTOs;
         }
 
+        [Route(RoleRoute.SingleListERouteType), HttpPost]
+        public async Task<List<Role_ERouteTypeDTO>> SingleListERouteType()
+        {
+            ERouteTypeFilter ERouteTypeFilter = new ERouteTypeFilter();
+            ERouteTypeFilter.Skip = 0;
+            ERouteTypeFilter.Take = 20;
+            ERouteTypeFilter.OrderBy = ERouteTypeOrder.Id;
+            ERouteTypeFilter.OrderType = OrderType.ASC;
+            ERouteTypeFilter.Selects = ERouteTypeSelect.ALL;
+
+            List<ERouteType> ERouteTypees = await ERouteTypeService.List(ERouteTypeFilter);
+            List<Role_ERouteTypeDTO> Role_ERouteTypeDTOs = ERouteTypees
+                .Select(x => new Role_ERouteTypeDTO(x)).ToList();
+            return Role_ERouteTypeDTOs;
+        }
+
+        [Route(RoleRoute.SingleListRequestState), HttpPost]
+        public async Task<List<Role_RequestStateDTO>> SingleListRequestState()
+        {
+            RequestStateFilter RequestStateFilter = new RequestStateFilter();
+            RequestStateFilter.Skip = 0;
+            RequestStateFilter.Take = 20;
+            RequestStateFilter.OrderBy = RequestStateOrder.Id;
+            RequestStateFilter.OrderType = OrderType.ASC;
+            RequestStateFilter.Selects = RequestStateSelect.ALL;
+
+            List<RequestState> RequestStatees = await RequestStateService.List(RequestStateFilter);
+            List<Role_RequestStateDTO> Role_RequestStateDTOs = RequestStatees
+                .Select(x => new Role_RequestStateDTO(x)).ToList();
+            return Role_RequestStateDTOs;
+        }
+
     }
 }
 

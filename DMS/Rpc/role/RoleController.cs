@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
 using DMS.Services.MBrand;
+using DMS.Services.MERouteType;
 using DMS.Services.MField;
 using DMS.Services.MMenu;
 using DMS.Services.MOrganization;
@@ -18,6 +19,7 @@ using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MSupplier;
 using DMS.Services.MWarehouse;
+using DMS.Services.MWorkflow;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +47,8 @@ namespace DMS.Rpc.role
         private IWarehouseService WarehouseService;
         private IFieldService FieldService;
         private IPermissionOperatorService PermissionOperatorService;
+        private IERouteTypeService ERouteTypeService;
+        private IRequestStateService RequestStateService;
 
         public RoleController(
             IAppUserService AppUserService,
@@ -64,6 +68,8 @@ namespace DMS.Rpc.role
             IWarehouseService WarehouseService,
             IFieldService FieldService,
             IPermissionOperatorService PermissionOperatorService,
+            IERouteTypeService ERouteTypeService,
+            IRequestStateService RequestStateService,
             IStatusService StatusService
         )
         {
@@ -85,6 +91,8 @@ namespace DMS.Rpc.role
             this.FieldService = FieldService;
             this.StatusService = StatusService;
             this.PermissionOperatorService = PermissionOperatorService;
+            this.ERouteTypeService = ERouteTypeService;
+            this.RequestStateService = RequestStateService;
         }
 
         [Route(RoleRoute.Count), HttpPost]
