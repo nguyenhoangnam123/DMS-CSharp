@@ -215,20 +215,12 @@ namespace DMS.Services.MProduct
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = FilterPermissionDefinition.IdFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ProductId))
-                        subFilter.ProductId = FilterPermissionDefinition.IdFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
-                        subFilter.Code = FilterPermissionDefinition.StringFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        subFilter.Name = FilterPermissionDefinition.StringFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ScanCode))
-                        subFilter.ScanCode = FilterPermissionDefinition.StringFilter;
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ProductTypeId))
+                        subFilter.ProductTypeId = FilterPermissionDefinition.IdFilter;
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ProductGroupingId))
+                        subFilter.ProductGroupingId = FilterPermissionDefinition.IdFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.SalePrice))
                         subFilter.SalePrice = FilterPermissionDefinition.DecimalFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.RetailPrice))
-                        subFilter.RetailPrice = FilterPermissionDefinition.DecimalFilter;
                 }
             }
             return filter;

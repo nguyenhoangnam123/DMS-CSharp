@@ -81,7 +81,7 @@ namespace DMS.Repositories
                     ProductGroupingDAO ProductGroupingDAO = DataContext.ProductGrouping
                         .Where(o => o.Id == filter.ProductGroupingId.Equal.Value).FirstOrDefault();
                     query = from q in query
-                            join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductGroupingId
+                            join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductId
                             join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
                             where pg.Path.StartsWith(ProductGroupingDAO.Path)
                             select q;
@@ -91,7 +91,7 @@ namespace DMS.Repositories
                     ProductGroupingDAO ProductGroupingDAO = DataContext.ProductGrouping
                         .Where(o => o.Id == filter.ProductGroupingId.NotEqual.Value).FirstOrDefault();
                     query = from q in query
-                            join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductGroupingId
+                            join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductId
                             join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
                             where !pg.Path.StartsWith(ProductGroupingDAO.Path)
                             select q;
@@ -104,7 +104,7 @@ namespace DMS.Repositories
                     List<ProductGroupingDAO> Branches = ProductGroupingDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> ProductGroupingIds = Branches.Select(x => x.Id).ToList();
                     query = from q in query
-                            join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductGroupingId
+                            join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductId
                             join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
                             where ProductGroupingIds.Contains(pg.Id)
                             select q;
@@ -117,7 +117,7 @@ namespace DMS.Repositories
                     List<ProductGroupingDAO> Branches = ProductGroupingDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> ProductGroupingIds = Branches.Select(x => x.Id).ToList();
                     query = from q in query
-                            join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductGroupingId
+                            join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductId
                             join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
                             where !ProductGroupingIds.Contains(pg.Id)
                             select q;
@@ -148,7 +148,7 @@ namespace DMS.Repositories
                         ProductGroupingDAO ProductGroupingDAO = DataContext.ProductGrouping
                             .Where(o => o.Id == ProductFilter.ProductGroupingId.Equal.Value).FirstOrDefault();
                         queryable = from q in queryable
-                                    join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductGroupingId
+                                    join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductId
                                     join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
                                     where pg.Path.StartsWith(ProductGroupingDAO.Path)
                                     select q;
@@ -158,7 +158,7 @@ namespace DMS.Repositories
                         ProductGroupingDAO ProductGroupingDAO = DataContext.ProductGrouping
                             .Where(o => o.Id == ProductFilter.ProductGroupingId.NotEqual.Value).FirstOrDefault();
                         queryable = from q in queryable
-                                    join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductGroupingId
+                                    join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductId
                                     join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
                                     where !pg.Path.StartsWith(ProductGroupingDAO.Path)
                                     select q;
@@ -171,7 +171,7 @@ namespace DMS.Repositories
                         List<ProductGroupingDAO> Branches = ProductGroupingDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> ProductGroupingIds = Branches.Select(o => o.Id).ToList();
                         queryable = from q in queryable
-                                    join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductGroupingId
+                                    join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductId
                                     join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
                                     where ProductGroupingIds.Contains(pg.Id)
                                     select q;
@@ -184,7 +184,7 @@ namespace DMS.Repositories
                         List<ProductGroupingDAO> Branches = ProductGroupingDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> ProductGroupingIds = Branches.Select(o => o.Id).ToList();
                         queryable = from q in queryable
-                                    join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductGroupingId
+                                    join ppg in DataContext.ProductProductGroupingMapping on q.Id equals ppg.ProductId
                                     join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
                                     where !ProductGroupingIds.Contains(pg.Id)
                                     select q;

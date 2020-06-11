@@ -53,7 +53,6 @@ namespace DMS.Rpc.indirect_sales_order
             { nameof(IndirectSalesOrderFilter.Total), FieldTypeEnum.LONG.Id },
             { nameof(ItemFilter.ProductGroupingId), FieldTypeEnum.ID.Id },
             { nameof(ItemFilter.ProductTypeId), FieldTypeEnum.ID.Id },
-            { nameof(ItemFilter.SupplierId), FieldTypeEnum.ID.Id },
             { nameof(ItemFilter.SalePrice), FieldTypeEnum.LONG.Id },
         };
 
