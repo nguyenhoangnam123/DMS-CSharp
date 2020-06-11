@@ -126,11 +126,16 @@ namespace DMS.Services.MSurvey
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SurveyService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 

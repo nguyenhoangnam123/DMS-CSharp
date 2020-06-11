@@ -215,7 +215,6 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     StoreCheckerMonitor_StoreCheckingDTO.Date = i;
                     StoreCheckerMonitor_StoreCheckingDTO.Image = new HashSet<long>();
                     StoreCheckerMonitor_StoreCheckingDTO.SalesOrder = new HashSet<long>();
-                    StoreCheckerMonitor_StoreCheckingDTO.Plan = new HashSet<long>();
                     StoreCheckerMonitor_StoreCheckingDTO.External = new HashSet<long>();
                     StoreCheckerMonitor_StoreCheckingDTO.Internal = new HashSet<long>();
                     StoreCheckerMonitor_StoreCheckingDTO.Revenue = new Dictionary<long, long>();
@@ -251,10 +250,9 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     {
                         List<IndirectSalesOrderDAO> CheckedIndirectSalesOrderCounter = IndirectSalesOrderDAOs.Where(so => so.StoreCheckingId.Value == Checked.Id).ToList();
                         Checked.IndirectSalesOrderCounter = CheckedIndirectSalesOrderCounter.Count();
-                        if (MonitorStoreChecker_StoreCheckingDTO.Plan.Contains(Checked.StoreId))
-                        {
-
-                        }
+                        MonitorStoreChecker_StoreCheckingDTO.PlanCounter = ERoutePerformanceDAOs
+                            .Where(ep => ep.SaleEmployeeId == Checked.SaleEmployeeId && ep.Date == Checked.CheckInAt.Value.Date).Select(ep => ep.PlanCounter).FirstOrDefault();
+                      
                         if (Checked.Planned)
                             MonitorStoreChecker_StoreCheckingDTO.Internal.Add(Checked.StoreId);
                         else

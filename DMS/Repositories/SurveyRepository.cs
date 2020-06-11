@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Models;
 using Helpers;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -296,7 +297,6 @@ namespace DMS.Repositories
             SurveyDAO SurveyDAO = DataContext.Survey.Where(x => x.Id == Survey.Id).FirstOrDefault();
             if (SurveyDAO == null)
                 return false;
-            SurveyDAO.Id = Survey.Id;
             SurveyDAO.Title = Survey.Title;
             SurveyDAO.Description = Survey.Description;
             SurveyDAO.StartAt = Survey.StartAt;
@@ -304,7 +304,8 @@ namespace DMS.Repositories
             SurveyDAO.StatusId = Survey.StatusId;
             SurveyDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
-            await SaveReference(Survey);
+            if (SurveyDAO.Used == false)
+                await SaveReference(Survey);
             return true;
         }
 

@@ -25,6 +25,7 @@ namespace DMS.Repositories
         IERouteChangeRequestContentRepository ERouteChangeRequestContentRepository { get; }
         IERouteChangeRequestRepository ERouteChangeRequestRepository { get; }
         IERouteContentRepository ERouteContentRepository { get; }
+        IERoutePerformanceRepository ERoutePerformanceRepository { get; }
         IERouteRepository ERouteRepository { get; }
         IERouteTypeRepository ERouteTypeRepository { get; }
         IEventMessageRepository EventMessageRepository { get; }
@@ -116,6 +117,7 @@ namespace DMS.Repositories
         public IERouteChangeRequestContentRepository ERouteChangeRequestContentRepository { get; private set; }
         public IERouteChangeRequestRepository ERouteChangeRequestRepository { get; private set; }
         public IERouteContentRepository ERouteContentRepository { get; private set; }
+        public IERoutePerformanceRepository ERoutePerformanceRepository { get; private set; }
         public IERouteRepository ERouteRepository { get; private set; }
         public IERouteTypeRepository ERouteTypeRepository { get; private set; }
         public IFieldRepository FieldRepository { get; private set; }
@@ -206,6 +208,7 @@ namespace DMS.Repositories
             ERouteChangeRequestContentRepository = new ERouteChangeRequestContentRepository(DataContext);
             ERouteChangeRequestRepository = new ERouteChangeRequestRepository(DataContext);
             ERouteContentRepository = new ERouteContentRepository(DataContext);
+            ERoutePerformanceRepository = new ERoutePerformanceRepository(DataContext);
             ERouteRepository = new ERouteRepository(DataContext);
             ERouteTypeRepository = new ERouteTypeRepository(DataContext);
             FieldRepository = new FieldRepository(DataContext);
