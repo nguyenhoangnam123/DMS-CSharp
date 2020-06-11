@@ -450,28 +450,10 @@ namespace DMS.Services.MProduct
                 {
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
                         subFilter.Id = FilterPermissionDefinition.IdFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
-                        subFilter.Code = FilterPermissionDefinition.StringFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.SupplierCode))
-                        subFilter.SupplierCode = FilterPermissionDefinition.StringFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        subFilter.Name = FilterPermissionDefinition.StringFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Description))
-                        subFilter.Description = FilterPermissionDefinition.StringFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ScanCode))
-                        subFilter.ScanCode = FilterPermissionDefinition.StringFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.ERPCode))
-                        subFilter.ERPCode = FilterPermissionDefinition.StringFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ProductTypeId))
                         subFilter.ProductTypeId = FilterPermissionDefinition.IdFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.SupplierId))
-                        subFilter.SupplierId = FilterPermissionDefinition.IdFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.BrandId))
-                        subFilter.BrandId = FilterPermissionDefinition.IdFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.UnitOfMeasureId))
-                        subFilter.UnitOfMeasureId = FilterPermissionDefinition.IdFilter;
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.UnitOfMeasureGroupingId))
-                        subFilter.UnitOfMeasureGroupingId = FilterPermissionDefinition.IdFilter;
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ProductGroupingId))
+                        subFilter.ProductGroupingId = FilterPermissionDefinition.IdFilter;
                 }
             }
             return filter;
