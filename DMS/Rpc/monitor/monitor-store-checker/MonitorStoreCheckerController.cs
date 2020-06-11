@@ -4,6 +4,7 @@ using DMS.Enums;
 using DMS.Models;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
+using Hangfire.Annotations;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -172,31 +173,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             }
 
             List<long> AppUserIds = MonitorStoreChecker_SaleEmployeeDTOs.Select(s => s.SaleEmployeeId).ToList();
-            List<ERouteContent> ERouteContents = await (from ec in DataContext.ERouteContent
-                                                        join e in DataContext.ERoute on ec.ERouteId equals e.Id
-                                                        where AppUserIds.Contains(e.SaleEmployeeId) &&
-                                                        End >= e.StartDate && (e.EndDate.HasValue == false || e.EndDate.Value >= Start)
-                                                        select new ERouteContent
-                                                        {
-                                                            Id = ec.Id,
-                                                            Monday = ec.Monday,
-                                                            Tuesday = ec.Tuesday,
-                                                            Wednesday = ec.Wednesday,
-                                                            Thursday = ec.Thursday,
-                                                            Friday = ec.Friday,
-                                                            Saturday = ec.Saturday,
-                                                            Sunday = ec.Sunday,
-                                                            Week1 = ec.Week1,
-                                                            Week2 = ec.Week2,
-                                                            Week3 = ec.Week3,
-                                                            Week4 = ec.Week4,
-                                                            StoreId = ec.StoreId,
-                                                            ERoute = new ERoute
-                                                            {
-                                                                StartDate = e.StartDate,
-                                                                SaleEmployeeId = e.SaleEmployeeId,
-                                                            }
-                                                        }).ToListAsync();
+
             List<StoreCheckingDAO> StoreCheckingDAOs = new List<StoreCheckingDAO>();
             var StoreCheckingQuery = DataContext.StoreChecking
                 .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End);
@@ -225,6 +202,8 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 StoreCheckingDAOs = await StoreCheckingQuery.ToListAsync();
             }
 
+            List<ERoutePerformanceDAO> ERoutePerformanceDAOs = await DataContext.ERoutePerformance.Where(ep => Start <= ep.Date && ep.Date <= End).ToListAsync();
+
             // khởi tạo khung dữ liệu
             foreach (MonitorStoreChecker_SaleEmployeeDTO MonitorStoreChecker_SaleEmployeeDTO in MonitorStoreChecker_SaleEmployeeDTOs)
             {
@@ -232,6 +211,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 for (DateTime i = Start; i < End; i = i.AddDays(1))
                 {
                     MonitorStoreChecker_StoreCheckingDTO StoreCheckerMonitor_StoreCheckingDTO = new MonitorStoreChecker_StoreCheckingDTO();
+                    StoreCheckerMonitor_StoreCheckingDTO.SaleEmployeeId = MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId;
                     StoreCheckerMonitor_StoreCheckingDTO.Date = i;
                     StoreCheckerMonitor_StoreCheckingDTO.Image = new HashSet<long>();
                     StoreCheckerMonitor_StoreCheckingDTO.SalesOrder = new HashSet<long>();
@@ -250,64 +230,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 {
                     MonitorStoreChecker_StoreCheckingDTO MonitorStoreChecker_StoreCheckingDTO = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings
                         .Where(s => s.Date == i).FirstOrDefault();
-                    foreach (ERouteContent ERouteContent in ERouteContents)
-                    {
-                        bool PlanWeek = false, PlanDay = false;
-                        int week = Convert.ToInt32(StaticParams.DateTimeNow.Subtract(ERouteContent.ERoute.StartDate).TotalDays / 7) + 1;
-                        switch (week / 4)
-                        {
-                            case 1:
-                                if (ERouteContent.Week1)
-                                    PlanWeek = true;
-                                break;
-                            case 2:
-                                if (ERouteContent.Week2)
-                                    PlanWeek = true;
-                                break;
-                            case 3:
-                                if (ERouteContent.Week3)
-                                    PlanWeek = true;
-                                break;
-                            case 0:
-                                if (ERouteContent.Week4)
-                                    PlanWeek = true;
-                                break;
-                        }
-                        DayOfWeek day = StaticParams.DateTimeNow.DayOfWeek;
-                        switch (day)
-                        {
-                            case DayOfWeek.Sunday:
-                                if (ERouteContent.Sunday)
-                                    PlanDay = true;
-                                break;
-                            case DayOfWeek.Monday:
-                                if (ERouteContent.Monday)
-                                    PlanDay = true;
-                                break;
-                            case DayOfWeek.Tuesday:
-                                if (ERouteContent.Tuesday)
-                                    PlanDay = true;
-                                break;
-                            case DayOfWeek.Wednesday:
-                                if (ERouteContent.Wednesday)
-                                    PlanDay = true;
-                                break;
-                            case DayOfWeek.Thursday:
-                                if (ERouteContent.Thursday)
-                                    PlanDay = true;
-                                break;
-                            case DayOfWeek.Friday:
-                                if (ERouteContent.Friday)
-                                    PlanDay = true;
-                                break;
-                            case DayOfWeek.Saturday:
-                                if (ERouteContent.Saturday)
-                                    PlanDay = true;
-                                break;
-                        }
-                        if (PlanDay && PlanWeek)
-                            MonitorStoreChecker_StoreCheckingDTO.Plan.Add(ERouteContent.StoreId);
-                    }
+
                     List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
                            .Where(s =>
                                s.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId &&
@@ -329,6 +252,10 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                         List<IndirectSalesOrderDAO> CheckedIndirectSalesOrderCounter = IndirectSalesOrderDAOs.Where(so => so.StoreCheckingId.Value == Checked.Id).ToList();
                         Checked.IndirectSalesOrderCounter = CheckedIndirectSalesOrderCounter.Count();
                         if (MonitorStoreChecker_StoreCheckingDTO.Plan.Contains(Checked.StoreId))
+                        {
+
+                        }
+                        if (Checked.Planned)
                             MonitorStoreChecker_StoreCheckingDTO.Internal.Add(Checked.StoreId);
                         else
                             MonitorStoreChecker_StoreCheckingDTO.External.Add(Checked.StoreId);

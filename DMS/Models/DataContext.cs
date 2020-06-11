@@ -29,6 +29,7 @@ namespace DMS.Models
         public virtual DbSet<ERouteChangeRequestContentDAO> ERouteChangeRequestContent { get; set; }
         public virtual DbSet<ERouteContentDAO> ERouteContent { get; set; }
         public virtual DbSet<ERouteContentDayDAO> ERouteContentDay { get; set; }
+        public virtual DbSet<ERoutePerformanceDAO> ERoutePerformance { get; set; }
         public virtual DbSet<ERouteTypeDAO> ERouteType { get; set; }
         public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
@@ -59,6 +60,7 @@ namespace DMS.Models
         public virtual DbSet<KpiItemContentKpiCriteriaItemMappingDAO> KpiItemContentKpiCriteriaItemMapping { get; set; }
         public virtual DbSet<KpiItemKpiCriteriaTotalMappingDAO> KpiItemKpiCriteriaTotalMapping { get; set; }
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
+        public virtual DbSet<KpiYearDAO> KpiYear { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<NotificationDAO> Notification { get; set; }
         public virtual DbSet<NotificationStatusDAO> NotificationStatus { get; set; }
@@ -794,6 +796,17 @@ namespace DMS.Models
                     .HasForeignKey(d => d.ERouteContentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ERouteContentDay_ERouteContent");
+            });
+
+            modelBuilder.Entity<ERoutePerformanceDAO>(entity =>
+            {
+                entity.Property(e => e.Date).HasColumnType("date");
+
+                entity.HasOne(d => d.SaleEmployee)
+                    .WithMany(p => p.ERoutePerformances)
+                    .HasForeignKey(d => d.SaleEmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERoutePerformance_AppUser");
             });
 
             modelBuilder.Entity<ERouteTypeDAO>(entity =>
@@ -1533,6 +1546,19 @@ namespace DMS.Models
                 entity.Property(e => e.Code).HasMaxLength(50);
 
                 entity.Property(e => e.Name).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<KpiYearDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
             });
 
             modelBuilder.Entity<MenuDAO>(entity =>
@@ -2361,9 +2387,7 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.TaxCode)
-                    .IsRequired()
-                    .HasMaxLength(500);
+                entity.Property(e => e.TaxCode).HasMaxLength(500);
 
                 entity.Property(e => e.Telephone).HasMaxLength(500);
 
@@ -2372,7 +2396,6 @@ namespace DMS.Models
                 entity.HasOne(d => d.District)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.DistrictId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_District");
 
                 entity.HasOne(d => d.Organization)
@@ -2389,7 +2412,6 @@ namespace DMS.Models
                 entity.HasOne(d => d.Province)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.ProvinceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_Province");
 
                 entity.HasOne(d => d.Reseller)
@@ -2417,7 +2439,6 @@ namespace DMS.Models
                 entity.HasOne(d => d.Ward)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.WardId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_Ward");
             });
 

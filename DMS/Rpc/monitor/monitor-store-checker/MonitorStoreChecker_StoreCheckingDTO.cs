@@ -7,6 +7,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 {
     public class MonitorStoreChecker_StoreCheckingDTO : DataDTO
     {
+        public long SaleEmployeeId { get; set; }
         public DateTime Date { get; set; }
         public long PlanCounter { get { return Plan == null ? 0 : Plan.Count; } }
         public long InternalCounter { get { return Internal == null ? 0 : Internal.Count; } }
