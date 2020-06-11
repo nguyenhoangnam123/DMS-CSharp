@@ -957,6 +957,9 @@ namespace DMS.Rpc.indirect_sales_order
             ItemFilter.ScanCode = IndirectSalesOrder_ItemFilterDTO.ScanCode;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = IndirectSalesOrder_ItemFilterDTO.SupplierId;
+
+            ItemFilter = ItemService.ToFilter(ItemFilter);
+
             return await ItemService.Count(ItemFilter);
         }
 
@@ -984,6 +987,7 @@ namespace DMS.Rpc.indirect_sales_order
             ItemFilter.ScanCode = IndirectSalesOrder_ItemFilterDTO.ScanCode;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = IndirectSalesOrder_ItemFilterDTO.SupplierId;
+            ItemFilter = ItemService.ToFilter(ItemFilter);
 
             if (IndirectSalesOrder_ItemFilterDTO.StoreId != null && IndirectSalesOrder_ItemFilterDTO.StoreId.Equal.HasValue)
             {

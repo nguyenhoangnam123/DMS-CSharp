@@ -41,7 +41,7 @@ namespace DMS.Repositories
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.ParentStoreId != null)
-                query = query.Where(q => q.ParentStoreId, filter.ParentStoreId);
+                query = query.Where(q => q.ParentStoreId.HasValue).Where(q => q.ParentStoreId.Value, filter.ParentStoreId);
             if (filter.OrganizationId != null)
             {
                 if (filter.OrganizationId.Equal != null)
@@ -79,7 +79,7 @@ namespace DMS.Repositories
             if (filter.StoreTypeId != null)
                 query = query.Where(q => q.StoreTypeId, filter.StoreTypeId);
             if (filter.StoreGroupingId != null)
-                query = query.Where(q => q.StoreGroupingId, filter.StoreGroupingId);
+                query = query.Where(q => q.StoreGroupingId.HasValue).Where(q => q.StoreGroupingId.Value, filter.StoreGroupingId);
             if (filter.ResellerId != null)
                 query = query.Where(q => q.ResellerId, filter.ResellerId);
             if (filter.Telephone != null)
@@ -166,7 +166,7 @@ namespace DMS.Repositories
                 if (StoreFilter.StoreTypeId != null)
                     queryable = queryable.Where(q => q.StoreTypeId, StoreFilter.StoreTypeId);
                 if (StoreFilter.StoreGroupingId != null)
-                    queryable = queryable.Where(q => q.StoreGroupingId, StoreFilter.StoreGroupingId);
+                    queryable = queryable.Where(q => q.StoreGroupingId.HasValue).Where(q => q.StoreGroupingId.Value, StoreFilter.StoreGroupingId);
                 if (StoreFilter.ResellerId != null)
                     queryable = queryable.Where(q => q.ResellerId, StoreFilter.ResellerId);
                 if (StoreFilter.Telephone != null)

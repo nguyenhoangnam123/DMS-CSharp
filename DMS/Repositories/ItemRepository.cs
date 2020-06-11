@@ -53,14 +53,50 @@ namespace DMS.Repositories
                 query = query.Where(q => q.RetailPrice, filter.RetailPrice);
             if (filter.ProductGroupingId != null)
             {
-                if (filter.ProductGroupingId.Equal.HasValue)
+                if (filter.ProductGroupingId.Equal != null)
                 {
                     ProductGroupingDAO ProductGroupingDAO = DataContext.ProductGrouping
-                        .Where(pg => pg.Id == filter.ProductGroupingId.Equal.Value).FirstOrDefault();
+                        .Where(o => o.Id == filter.ProductGroupingId.Equal.Value).FirstOrDefault();
                     query = from q in query
                             join ppg in DataContext.ProductProductGroupingMapping on q.ProductId equals ppg.ProductId
                             join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
                             where pg.Path.StartsWith(ProductGroupingDAO.Path)
+                            select q;
+                }
+                if (filter.ProductGroupingId.NotEqual != null)
+                {
+                    ProductGroupingDAO ProductGroupingDAO = DataContext.ProductGrouping
+                        .Where(o => o.Id == filter.ProductGroupingId.NotEqual.Value).FirstOrDefault();
+                    query = from q in query
+                            join ppg in DataContext.ProductProductGroupingMapping on q.ProductId equals ppg.ProductId
+                            join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
+                            where !pg.Path.StartsWith(ProductGroupingDAO.Path)
+                            select q;
+                }
+                if (filter.ProductGroupingId.In != null)
+                {
+                    List<ProductGroupingDAO> ProductGroupingDAOs = DataContext.ProductGrouping
+                        .Where(o => o.DeletedAt == null).ToList();
+                    List<ProductGroupingDAO> Parents = ProductGroupingDAOs.Where(o => filter.ProductGroupingId.In.Contains(o.Id)).ToList();
+                    List<ProductGroupingDAO> Branches = ProductGroupingDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> ProductGroupingIds = Branches.Select(x => x.Id).ToList();
+                    query = from q in query
+                            join ppg in DataContext.ProductProductGroupingMapping on q.ProductId equals ppg.ProductId
+                            join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
+                            where ProductGroupingIds.Contains(pg.Id)
+                            select q;
+                }
+                if (filter.ProductGroupingId.NotIn != null)
+                {
+                    List<ProductGroupingDAO> ProductGroupingDAOs = DataContext.ProductGrouping
+                        .Where(o => o.DeletedAt == null).ToList();
+                    List<ProductGroupingDAO> Parents = ProductGroupingDAOs.Where(o => filter.ProductGroupingId.NotIn.Contains(o.Id)).ToList();
+                    List<ProductGroupingDAO> Branches = ProductGroupingDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> ProductGroupingIds = Branches.Select(x => x.Id).ToList();
+                    query = from q in query
+                            join ppg in DataContext.ProductProductGroupingMapping on q.ProductId equals ppg.ProductId
+                            join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
+                            where !ProductGroupingIds.Contains(pg.Id)
                             select q;
                 }
             }
@@ -94,20 +130,59 @@ namespace DMS.Repositories
             foreach (ItemFilter ItemFilter in filter.OrFilter)
             {
                 IQueryable<ItemDAO> queryable = query;
-                if (ItemFilter.Id != null)
-                    queryable = queryable.Where(q => q.Id, ItemFilter.Id);
-                if (ItemFilter.ProductId != null)
-                    queryable = queryable.Where(q => q.ProductId, ItemFilter.ProductId);
-                if (ItemFilter.Code != null)
-                    queryable = queryable.Where(q => q.Code, ItemFilter.Code);
-                if (ItemFilter.Name != null)
-                    queryable = queryable.Where(q => q.Name, ItemFilter.Name);
-                if (ItemFilter.ScanCode != null)
-                    queryable = queryable.Where(q => q.ScanCode, ItemFilter.ScanCode);
                 if (ItemFilter.SalePrice != null)
                     queryable = queryable.Where(q => q.SalePrice, ItemFilter.SalePrice);
-                if (ItemFilter.RetailPrice != null)
-                    queryable = queryable.Where(q => q.RetailPrice, ItemFilter.RetailPrice);
+                if (ItemFilter.ProductTypeId != null)
+                    queryable = queryable.Where(q => q.Product.ProductTypeId, ItemFilter.ProductTypeId);
+                if (ItemFilter.ProductGroupingId != null)
+                {
+                    if (ItemFilter.ProductGroupingId.Equal != null)
+                    {
+                        ProductGroupingDAO ProductGroupingDAO = DataContext.ProductGrouping
+                            .Where(o => o.Id == ItemFilter.ProductGroupingId.Equal.Value).FirstOrDefault();
+                        queryable = from q in queryable
+                                    join ppg in DataContext.ProductProductGroupingMapping on q.ProductId equals ppg.ProductId
+                                    join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
+                                    where pg.Path.StartsWith(ProductGroupingDAO.Path)
+                                    select q;
+                    }
+                    if (ItemFilter.ProductGroupingId.NotEqual != null)
+                    {
+                        ProductGroupingDAO ProductGroupingDAO = DataContext.ProductGrouping
+                            .Where(o => o.Id == ItemFilter.ProductGroupingId.NotEqual.Value).FirstOrDefault();
+                        queryable = from q in queryable
+                                    join ppg in DataContext.ProductProductGroupingMapping on q.ProductId equals ppg.ProductId
+                                    join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
+                                    where !pg.Path.StartsWith(ProductGroupingDAO.Path)
+                                    select q;
+                    }
+                    if (ItemFilter.ProductGroupingId.In != null)
+                    {
+                        List<ProductGroupingDAO> ProductGroupingDAOs = DataContext.ProductGrouping
+                            .Where(o => o.DeletedAt == null).ToList();
+                        List<ProductGroupingDAO> Parents = ProductGroupingDAOs.Where(o => ItemFilter.ProductGroupingId.In.Contains(o.Id)).ToList();
+                        List<ProductGroupingDAO> Branches = ProductGroupingDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                        List<long> ProductGroupingIds = Branches.Select(o => o.Id).ToList();
+                        queryable = from q in queryable
+                                    join ppg in DataContext.ProductProductGroupingMapping on q.ProductId equals ppg.ProductId
+                                    join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
+                                    where ProductGroupingIds.Contains(pg.Id)
+                                    select q;
+                    }
+                    if (ItemFilter.ProductGroupingId.NotIn != null)
+                    {
+                        List<ProductGroupingDAO> ProductGroupingDAOs = DataContext.ProductGrouping
+                            .Where(o => o.DeletedAt == null).ToList();
+                        List<ProductGroupingDAO> Parents = ProductGroupingDAOs.Where(o => ItemFilter.ProductGroupingId.NotIn.Contains(o.Id)).ToList();
+                        List<ProductGroupingDAO> Branches = ProductGroupingDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                        List<long> ProductGroupingIds = Branches.Select(o => o.Id).ToList();
+                        queryable = from q in queryable
+                                    join ppg in DataContext.ProductProductGroupingMapping on q.ProductId equals ppg.ProductId
+                                    join pg in DataContext.ProductGrouping on ppg.ProductGroupingId equals pg.Id
+                                    where !ProductGroupingIds.Contains(pg.Id)
+                                    select q;
+                    }
+                }
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
