@@ -8,6 +8,7 @@ namespace DMS.Rpc.product_grouping
         public long ProductId { get; set; }
         public long ProductGroupingId { get; set; }
         public ProductGrouping_ProductDTO Product { get; set; }
+        public ProductGrouping_ProductGroupingDTO ProductGrouping { get; set; }
 
         public ProductGrouping_ProductProductGroupingMappingDTO() { }
         public ProductGrouping_ProductProductGroupingMappingDTO(ProductProductGroupingMapping ProductProductGroupingMapping)
@@ -15,6 +16,7 @@ namespace DMS.Rpc.product_grouping
             this.ProductId = ProductProductGroupingMapping.ProductId;
             this.ProductGroupingId = ProductProductGroupingMapping.ProductGroupingId;
             this.Product = ProductProductGroupingMapping.Product == null ? null : new ProductGrouping_ProductDTO(ProductProductGroupingMapping.Product);
+            this.ProductGrouping = ProductProductGroupingMapping.ProductGrouping == null ? null : new ProductGrouping_ProductGroupingDTO(ProductProductGroupingMapping.ProductGrouping);
         }
     }
 
