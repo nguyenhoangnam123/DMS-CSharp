@@ -16,6 +16,7 @@ namespace DMS.Entities
         public DateTime UpdatedAt { get; set; }
         public Item Item { get; set; }
         public Warehouse Warehouse { get; set; }
+        public Guid RowId { get; set; }
         public List<InventoryHistory> InventoryHistories { get; set; }
 
         public bool Equals(Inventory other)
