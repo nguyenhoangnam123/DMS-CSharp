@@ -1,5 +1,7 @@
 using Common;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.product_grouping
 {
@@ -31,6 +33,7 @@ namespace DMS.Rpc.product_grouping
         public ProductGrouping_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping { get; set; }
         public ProductGrouping_TaxTypeDTO TaxType { get; set; }
         public ProductGrouping_StatusDTO Status { get; set; }
+        public List<ProductGrouping_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
         public ProductGrouping_ProductDTO() { }
         public ProductGrouping_ProductDTO(Product Product)
         {
@@ -59,6 +62,7 @@ namespace DMS.Rpc.product_grouping
             this.TaxType = Product.TaxType == null ? null : new ProductGrouping_TaxTypeDTO(Product.TaxType);
             this.UnitOfMeasure = Product.UnitOfMeasure == null ? null : new ProductGrouping_UnitOfMeasureDTO(Product.UnitOfMeasure);
             this.UnitOfMeasureGrouping = Product.UnitOfMeasureGrouping == null ? null : new ProductGrouping_UnitOfMeasureGroupingDTO(Product.UnitOfMeasureGrouping);
+            this.ProductProductGroupingMappings = Product.ProductProductGroupingMappings?.Select(x => new ProductGrouping_ProductProductGroupingMappingDTO(x)).ToList();
             this.Errors = Product.Errors;
         }
     }
