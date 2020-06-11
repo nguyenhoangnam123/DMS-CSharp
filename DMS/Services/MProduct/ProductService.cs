@@ -268,7 +268,18 @@ namespace DMS.Services.MProduct
             try
             {
                 var oldData = await UOW.ProductRepository.Get(Product.Id);
-
+                if(oldData.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
+                {
+                    if (Product.StatusId == StatusEnum.ACTIVE.Id)
+                        Product.Items.ForEach(x => x.StatusId = StatusEnum.ACTIVE.Id);
+                    else
+                        Product.Items.ForEach(x => x.StatusId = StatusEnum.INACTIVE.Id);
+                }
+                else
+                {
+                    if (Product.StatusId == StatusEnum.INACTIVE.Id)
+                        Product.Items.ForEach(x => x.StatusId = StatusEnum.INACTIVE.Id);
+                }
                 await UOW.Begin();
                 await UOW.ProductRepository.Update(Product);
                 await UOW.Commit();

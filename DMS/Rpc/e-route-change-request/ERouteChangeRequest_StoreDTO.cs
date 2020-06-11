@@ -24,11 +24,11 @@ namespace DMS.Rpc.e_route_change_request
 
         public string Telephone { get; set; }
 
-        public long ProvinceId { get; set; }
+        public long? ProvinceId { get; set; }
 
-        public long DistrictId { get; set; }
+        public long? DistrictId { get; set; }
 
-        public long WardId { get; set; }
+        public long? WardId { get; set; }
 
         public string Address { get; set; }
 

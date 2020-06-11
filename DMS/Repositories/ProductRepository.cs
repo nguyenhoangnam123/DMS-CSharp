@@ -611,7 +611,7 @@ namespace DMS.Repositories
                     }).ToListAsync();
             }
 
-            Product.Items = await DataContext.Item
+            Product.Items = await DataContext.Item.AsNoTracking()
                 .Where(x => x.ProductId == Product.Id)
                 .Where(x => x.DeletedAt == null)
                 .Select(x => new Item
@@ -626,7 +626,7 @@ namespace DMS.Repositories
                     StatusId = x.StatusId,
                     ItemImageMappings = new List<ItemImageMapping>()
                 }).ToListAsync();
-            Product.ProductImageMappings = await DataContext.ProductImageMapping
+            Product.ProductImageMappings = await DataContext.ProductImageMapping.AsNoTracking()
                 .Where(x => x.ProductId == Product.Id)
                 .Select(x => new ProductImageMapping
                 {
@@ -639,7 +639,7 @@ namespace DMS.Repositories
                         Url = x.Image.Url,
                     },
                 }).ToListAsync();
-            Product.ProductProductGroupingMappings = await DataContext.ProductProductGroupingMapping
+            Product.ProductProductGroupingMappings = await DataContext.ProductProductGroupingMapping.AsNoTracking()
                 .Where(x => x.ProductId == Product.Id)
                 .Where(x => x.ProductGrouping.DeletedAt == null)
                 .Select(x => new ProductProductGroupingMapping
@@ -970,10 +970,9 @@ namespace DMS.Repositories
                     }
                 }
                 await DataContext.Item.BulkMergeAsync(ItemDAOs);
-                foreach (ItemDAO ItemDAO in ItemDAOs)
+                foreach (Item Item in Product.Items)
                 {
-                    Item Item = Product.Items.Where(i => i.Code == ItemDAO.Code).FirstOrDefault();
-                    Item.Id = ItemDAO.Id;
+                    Item.Id = ItemDAOs.Where(i => i.Code == Item.Code).Select(x => x.Id).FirstOrDefault();
                 }
             }
             await DataContext.ProductImageMapping

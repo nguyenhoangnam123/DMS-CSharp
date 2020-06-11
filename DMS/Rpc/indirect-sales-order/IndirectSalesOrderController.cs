@@ -688,7 +688,7 @@ namespace DMS.Rpc.indirect_sales_order
                 });
             }
 
-            return IndirectSalesOrder_UnitOfMeasureDTOs;
+            return IndirectSalesOrder_UnitOfMeasureDTOs.Where(x => x.StatusId == StatusEnum.ACTIVE.Id).ToList();
         }
 
         [Route(IndirectSalesOrderRoute.SingleListSupplier), HttpPost]
