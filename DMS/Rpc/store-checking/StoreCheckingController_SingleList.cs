@@ -563,6 +563,49 @@ namespace DMS.Rpc.store_checking
                 .Select(x => new StoreChecking_ProblemDTO(x)).ToList();
             return StoreChecking_ProblemDTOs;
         }
+
+        [Route(StoreCheckingRoute.CountSurvey), HttpPost]
+        public async Task<long> CountSurvey([FromBody] StoreChecking_SurveyFilterDTO StoreChecking_SurveyFilterDTO)
+        {
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            SurveyFilter SurveyFilter = new SurveyFilter();
+            SurveyFilter.Selects = SurveySelect.ALL;
+            SurveyFilter.Skip = StoreChecking_SurveyFilterDTO.Skip;
+            SurveyFilter.Take = StoreChecking_SurveyFilterDTO.Take;
+            SurveyFilter.OrderBy = StoreChecking_SurveyFilterDTO.OrderBy;
+            SurveyFilter.OrderType = StoreChecking_SurveyFilterDTO.OrderType;
+
+            SurveyFilter.Id = StoreChecking_SurveyFilterDTO.Id;
+            SurveyFilter.Title = StoreChecking_SurveyFilterDTO.Title;
+            SurveyFilter.Description = StoreChecking_SurveyFilterDTO.Description;
+            SurveyFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            return await SurveyService.Count(SurveyFilter);
+        }
+
+        [Route(StoreCheckingRoute.ListSurvey), HttpPost]
+        public async Task<List<StoreChecking_SurveyDTO>> ListSurvey([FromBody] StoreChecking_SurveyFilterDTO StoreChecking_SurveyFilterDTO)
+        {
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            SurveyFilter SurveyFilter = new SurveyFilter();
+            SurveyFilter.Selects = SurveySelect.ALL;
+            SurveyFilter.Skip = StoreChecking_SurveyFilterDTO.Skip;
+            SurveyFilter.Take = StoreChecking_SurveyFilterDTO.Take;
+            SurveyFilter.OrderBy = StoreChecking_SurveyFilterDTO.OrderBy;
+            SurveyFilter.OrderType = StoreChecking_SurveyFilterDTO.OrderType;
+
+            SurveyFilter.Id = StoreChecking_SurveyFilterDTO.Id;
+            SurveyFilter.Title = StoreChecking_SurveyFilterDTO.Title;
+            SurveyFilter.Description = StoreChecking_SurveyFilterDTO.Description;
+            SurveyFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Survey> Surveys = await SurveyService.List(SurveyFilter);
+            List<StoreChecking_SurveyDTO> StoreChecking_SurveyDTOs = Surveys
+                .Select(x => new StoreChecking_SurveyDTO(x)).ToList();
+            return StoreChecking_SurveyDTOs;
+        }
     }
 }
 

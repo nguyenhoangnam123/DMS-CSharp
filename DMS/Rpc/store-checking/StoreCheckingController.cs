@@ -12,6 +12,7 @@ using DMS.Services.MStore;
 using DMS.Services.MStoreChecking;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
+using DMS.Services.MSurvey;
 using DMS.Services.MTaxType;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,7 @@ namespace DMS.Rpc.store_checking
         private IProductService ProductService;
         private IProblemService ProblemService;
         private IProblemTypeService ProblemTypeService;
+        private ISurveyService SurveyService;
         private ICurrentContext CurrentContext;
         public StoreCheckingController(
             IAlbumService AlbumService,
@@ -55,6 +57,7 @@ namespace DMS.Rpc.store_checking
             ITaxTypeService TaxTypeService,
             IProblemService ProblemService,
             IProblemTypeService ProblemTypeService,
+            ISurveyService SurveyService,
             ICurrentContext CurrentContext
         )
         {
@@ -72,6 +75,7 @@ namespace DMS.Rpc.store_checking
             this.ProductService = ProductService;
             this.ProblemService = ProblemService;
             this.ProblemTypeService = ProblemTypeService;
+            this.SurveyService = SurveyService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -387,6 +391,74 @@ namespace DMS.Rpc.store_checking
             else
                 return BadRequest(StoreChecking_ProblemDTO);
         }
+
+        [Route(StoreCheckingRoute.GetSurveyForm), HttpPost]
+        public async Task<ActionResult<StoreChecking_SurveyDTO>> GetSurveyForm([FromBody] StoreChecking_SurveyDTO StoreChecking_SurveyDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            //if (!await HasPermission(StoreChecking_SurveyDTO.Id))
+            //    return Forbid();
+
+            Survey Survey = await SurveyService.GetForm(StoreChecking_SurveyDTO.Id);
+            StoreChecking_SurveyDTO = new StoreChecking_SurveyDTO(Survey);
+            if (Survey.IsValidated)
+                return StoreChecking_SurveyDTO;
+            else
+                return BadRequest(StoreChecking_SurveyDTO);
+        }
+
+        [Route(StoreCheckingRoute.SaveSurveyForm), HttpPost]
+        public async Task<ActionResult<StoreChecking_SurveyDTO>> SaveSurveyForm([FromBody] StoreChecking_SurveyDTO StoreChecking_SurveyDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(StoreChecking_SurveyDTO.Id))
+                return Forbid();
+
+            Survey Survey = new Survey();
+            Survey.Id = StoreChecking_SurveyDTO.Id;
+            Survey.Title = StoreChecking_SurveyDTO.Title;
+            Survey.Description = StoreChecking_SurveyDTO.Description;
+            Survey.StartAt = StoreChecking_SurveyDTO.StartAt;
+            Survey.EndAt = StoreChecking_SurveyDTO.EndAt;
+            Survey.StatusId = StoreChecking_SurveyDTO.StatusId;
+            Survey.StoreId = StoreChecking_SurveyDTO.StoreId;
+            Survey.SurveyQuestions = StoreChecking_SurveyDTO.SurveyQuestions?
+                .Select(x => new SurveyQuestion
+                {
+                    Id = x.Id,
+                    Content = x.Content,
+                    SurveyQuestionTypeId = x.SurveyQuestionTypeId,
+                    IsMandatory = x.IsMandatory,
+                    SurveyQuestionType = x.SurveyQuestionType == null ? null : new SurveyQuestionType
+                    {
+                        Id = x.SurveyQuestionType.Id,
+                        Code = x.SurveyQuestionType.Code,
+                        Name = x.SurveyQuestionType.Name,
+                    },
+                    SurveyOptions = x.SurveyOptions?.Select(x => new SurveyOption
+                    {
+                        Id = x.Id,
+                        Content = x.Content,
+                        SurveyOptionTypeId = x.SurveyOptionTypeId,
+                        SurveyQuestionId = x.SurveyOptionTypeId
+                    }).ToList(),
+                    TableResult = x.TableResult,
+                    ListResult = x.ListResult,
+                }).ToList();
+            Survey.BaseLanguage = CurrentContext.Language;
+            Survey = await SurveyService.SaveForm(Survey);
+            StoreChecking_SurveyDTO = new StoreChecking_SurveyDTO(Survey);
+            if (Survey.IsValidated)
+                return StoreChecking_SurveyDTO;
+            else
+                return BadRequest(StoreChecking_SurveyDTO);
+        }
+
+
         [Route(StoreCheckingRoute.SaveImage), HttpPost]
         public async Task<ActionResult<StoreChecking_ImageDTO>> SaveImage(IFormFile file)
         {
