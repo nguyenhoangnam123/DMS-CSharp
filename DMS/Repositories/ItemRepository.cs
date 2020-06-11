@@ -43,6 +43,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
+            if (filter.OtherName != null)
+                query = query.Where(q => q.Product.OtherName, filter.OtherName);
             if (filter.ScanCode != null)
                 query = query.Where(q => q.ScanCode, filter.ScanCode);
             if (filter.SalePrice != null)
