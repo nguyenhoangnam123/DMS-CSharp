@@ -615,6 +615,13 @@ namespace DMS.Rpc.product
                 Take = int.MaxValue,
                 Selects = BrandSelect.ALL
             });
+            List<TaxType> TaxTypes = await TaxTypeService.List(new TaxTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = TaxTypeSelect.ALL,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+            });
             MemoryStream MemoryStream = new MemoryStream();
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using (ExcelPackage excel = new ExcelPackage(MemoryStream))
@@ -875,7 +882,28 @@ namespace DMS.Rpc.product
                     });
                 }
                 excel.GenerateWorksheet("Brand", BrandHeader, data);
-                #endregion 
+                #endregion
+
+                #region Sheet TaxType
+                data.Clear();
+                var TaxTypeHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "Mã VAT",
+                        "Tên VAT",
+                    }
+                };
+                foreach (var TaxType in TaxTypes)
+                {
+                    data.Add(new object[]
+                    {
+                        TaxType.Code,
+                        TaxType.Name
+                    });
+                }
+                excel.GenerateWorksheet("TaxType", TaxTypeHeader, data);
+                #endregion
+
                 excel.Save();
             }
 
@@ -926,6 +954,14 @@ namespace DMS.Rpc.product
                 Selects = BrandSelect.ALL,
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
+            List<TaxType> TaxTypes = await TaxTypeService.List(new TaxTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = TaxTypeSelect.ALL,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+            });
+
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             MemoryStream MemoryStream = new MemoryStream();
             string tempPath = "Templates/Product_Export.xlsx";
@@ -980,6 +1016,7 @@ namespace DMS.Rpc.product
                     UnitOfMeasureGrouping UnitOfMeasureGrouping = UnitOfMeasureGroupings[i];
                     worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup].Value = UnitOfMeasureGrouping.Code;
                     worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup + 1].Value = UnitOfMeasureGrouping.Name;
+                    worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup + 2].Value = UnitOfMeasureGrouping.UnitOfMeasure.Name;
                 }
                 #endregion
 
@@ -1006,6 +1043,19 @@ namespace DMS.Rpc.product
                     Brand Brand = Brands[i];
                     worksheet_Brand.Cells[startRow_Brand + i, numberCell_Brand].Value = Brand.Code;
                     worksheet_Brand.Cells[startRow_Brand + i, numberCell_Brand + 1].Value = Brand.Name;
+                }
+                #endregion
+
+                #region sheet TaxType ( VAT )
+                var worksheet_TaxType = xlPackage.Workbook.Worksheets["TaxType"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_TaxType = 2;
+                int numberCell_TaxType = 1;
+                for (var i = 0; i < TaxTypes.Count; i++)
+                {
+                    TaxType TaxType = TaxTypes[i];
+                    worksheet_TaxType.Cells[startRow_TaxType + i, numberCell_TaxType].Value = TaxType.Code;
+                    worksheet_TaxType.Cells[startRow_TaxType + i, numberCell_TaxType + 1].Value = TaxType.Name;
                 }
                 #endregion
 

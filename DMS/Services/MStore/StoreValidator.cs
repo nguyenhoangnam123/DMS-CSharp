@@ -372,14 +372,14 @@ namespace DMS.Services.MStore
             }
             return Store.IsValidated;
         }
-        private async Task<bool> ValidateOwnerEmail(Store Store)
-        {
-            if (!string.IsNullOrEmpty(Store.OwnerEmail) && Store.OwnerEmail.Length > 255)
-            {
-                Store.AddError(nameof(StoreValidator), nameof(Store.OwnerEmail), ErrorCode.OwnerEmailOverLength);
-            }
-            return Store.IsValidated;
-        }
+        //private async Task<bool> ValidateOwnerEmail(Store Store)
+        //{
+        //    if (!string.IsNullOrEmpty(Store.OwnerEmail) && Store.OwnerEmail.Length > 255)
+        //    {
+        //        Store.AddError(nameof(StoreValidator), nameof(Store.OwnerEmail), ErrorCode.OwnerEmailOverLength);
+        //    }
+        //    return Store.IsValidated;
+        //}
         #endregion
         #region Status
         private async Task<bool> ValidateStatusId(Store Store)
@@ -421,7 +421,7 @@ namespace DMS.Services.MStore
             await ValidateLocation(Store);
             await ValidateOwnerName(Store);
             await ValidateOwnerPhone(Store);
-            await ValidateOwnerEmail(Store);
+            //await ValidateOwnerEmail(Store);
             await ValidateStatusId(Store);
             return Store.IsValidated;
         }
@@ -446,7 +446,7 @@ namespace DMS.Services.MStore
                 await ValidateLocation(Store);
                 await ValidateOwnerName(Store);
                 await ValidateOwnerPhone(Store);
-                await ValidateOwnerEmail(Store);
+                //await ValidateOwnerEmail(Store);
                 await ValidateStatusId(Store);
             }
             return Store.IsValidated;
@@ -553,7 +553,7 @@ namespace DMS.Services.MStore
                 await (ValidateLocation(Store));
                 await (ValidateOwnerName(Store));
                 await (ValidateOwnerPhone(Store));
-                await (ValidateOwnerEmail(Store));
+                //await (ValidateOwnerEmail(Store));
 
             }
             return Stores.Any(s => !s.IsValidated) ? false : true;
