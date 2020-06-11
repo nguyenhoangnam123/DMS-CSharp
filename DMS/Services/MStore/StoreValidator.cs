@@ -335,9 +335,13 @@ namespace DMS.Services.MStore
         }
         private async Task<bool> ValidateLocation(Store Store)
         {
-            if (Store.Latitude == null || Store.Longitude == null)
+            if (Store.Longitude == null)
             {
-                Store.AddError(nameof(StoreValidator), nameof(Store.OwnerName), ErrorCode.LocationEmpty);
+                Store.AddError(nameof(StoreValidator), nameof(Store.Longitude), ErrorCode.LocationEmpty);
+            }
+            if (Store.Latitude == null)
+            {
+                Store.AddError(nameof(StoreValidator), nameof(Store.Latitude), ErrorCode.LocationEmpty);
             }
             return Store.IsValidated;
         }
