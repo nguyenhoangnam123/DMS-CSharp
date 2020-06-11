@@ -23,6 +23,7 @@ namespace DMS.Entities
         public Product Product { get; set; }
         public Status Status { get; set; }
         public List<ItemImageMapping> ItemImageMappings { get; set; }
+        public List<ItemHistory> ItemHistories { get; set; }
         public bool Equals(Item other)
         {
             return other != null && Id == other.Id;
