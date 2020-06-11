@@ -181,7 +181,7 @@ namespace DMS.Repositories
                 Code = filter.Selects.Contains(ItemSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(ItemSelect.Name) ? q.Name : default(string),
                 ScanCode = filter.Selects.Contains(ItemSelect.ScanCode) ? q.ScanCode : default(string),
-                SalePrice = filter.Selects.Contains(ItemSelect.SalePrice) ? q.SalePrice : default(decimal?),
+                SalePrice = filter.Selects.Contains(ItemSelect.SalePrice) ? q.SalePrice : default(decimal),
                 RetailPrice = filter.Selects.Contains(ItemSelect.RetailPrice) ? q.RetailPrice : default(decimal?),
                 StatusId = filter.Selects.Contains(ItemSelect.Status) ? q.StatusId : default(long),
                 Product = filter.Selects.Contains(ItemSelect.Product) && q.Product != null ? new Product

@@ -546,7 +546,7 @@ namespace DMS.Rpc.product
                     Name = Product.Name,
                     ScanCode = Product.ScanCode,
                     RetailPrice = Product.RetailPrice,
-                    SalePrice = Product.SalePrice,
+                    SalePrice = Product.SalePrice ?? 0,
                     ProductId = Product.Id
                 });
             }

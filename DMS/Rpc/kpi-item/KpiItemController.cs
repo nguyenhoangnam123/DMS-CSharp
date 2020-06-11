@@ -844,8 +844,6 @@ namespace DMS.Rpc.kpi_item
                         Code = x.Item.Code,
                         Name = x.Item.Name,
                         ScanCode = x.Item.ScanCode,
-                        SalePrice = x.Item.SalePrice,
-                        RetailPrice = x.Item.RetailPrice,
                         StatusId = x.Item.StatusId,
                     },
                     KpiItemContentKpiCriteriaItemMappings = x.KpiItemContentKpiCriteriaItemMappings.Select(p => new KpiItemContentKpiCriteriaItemMapping

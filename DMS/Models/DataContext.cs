@@ -50,6 +50,7 @@ namespace DMS.Models
         public virtual DbSet<InventoryDAO> Inventory { get; set; }
         public virtual DbSet<InventoryHistoryDAO> InventoryHistory { get; set; }
         public virtual DbSet<ItemDAO> Item { get; set; }
+        public virtual DbSet<ItemHistoryDAO> ItemHistory { get; set; }
         public virtual DbSet<ItemImageMappingDAO> ItemImageMapping { get; set; }
         public virtual DbSet<KpiCriteriaItemDAO> KpiCriteriaItem { get; set; }
         public virtual DbSet<KpiCriteriaTotalDAO> KpiCriteriaTotal { get; set; }
@@ -1371,6 +1372,29 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Item_Status");
+            });
+
+            modelBuilder.Entity<ItemHistoryDAO>(entity =>
+            {
+                entity.ToTable("ItemHistory", "MDM");
+
+                entity.Property(e => e.NewPrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.OldPrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Time).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.ItemHistories)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemHistory_Item");
+
+                entity.HasOne(d => d.Modifier)
+                    .WithMany(p => p.ItemHistories)
+                    .HasForeignKey(d => d.ModifierId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ItemHistory_AppUser");
             });
 
             modelBuilder.Entity<ItemImageMappingDAO>(entity =>

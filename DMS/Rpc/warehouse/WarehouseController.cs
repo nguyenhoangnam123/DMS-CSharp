@@ -454,8 +454,6 @@ namespace DMS.Rpc.warehouse
                         Code = x.Item.Code,
                         Name = x.Item.Name,
                         ScanCode = x.Item.ScanCode,
-                        SalePrice = x.Item.SalePrice,
-                        RetailPrice = x.Item.RetailPrice,
                         Product = x.Item.Product == null ? null : new Product
                         {
                             Id = x.Item.Product.Id,
