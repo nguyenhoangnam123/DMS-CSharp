@@ -53,6 +53,8 @@ namespace DMS.Rpc.product
         public const string CountItem = Default + "/count-item";
         public const string ListInventory = Default + "/list-inventory";
         public const string CountInventory = Default + "/count-inventory";
+        public const string ListItemHistory = Default + "/list-item-history";
+        public const string CountItemHistory = Default + "/count-item-history";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(ProductFilter.ProductTypeId), FieldTypeEnum.ID.Id },

@@ -268,6 +268,35 @@ namespace DMS.Services.MProduct
             try
             {
                 var oldData = await UOW.ProductRepository.Get(Product.Id);
+                var Items = Product.Items;
+                var OldItems = oldData.Items;
+                foreach (var item in Items)
+                {
+                    var oldItem = OldItems.Where(x => x.Id == item.Id).FirstOrDefault();
+                    if(oldItem != null)
+                    {
+                        if (item.SalePrice != oldItem.SalePrice)
+                        {
+                            ItemHistory ItemHistory = new ItemHistory
+                            {
+                                ItemId = item.Id,
+                                ModifierId = CurrentContext.UserId,
+                                Time = StaticParams.DateTimeNow,
+                                OldPrice = oldItem.SalePrice,
+                                NewPrice = item.SalePrice,
+                            };
+                            if (item.ItemHistories == null)
+                            {
+                                item.ItemHistories = new List<ItemHistory>();
+                                item.ItemHistories.Add(ItemHistory);
+                            }
+                            else
+                            {
+                                item.ItemHistories.Add(ItemHistory);
+                            }
+                        }
+                    }
+                }
                 if(oldData.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
                 {
                     if (Product.StatusId == StatusEnum.ACTIVE.Id)

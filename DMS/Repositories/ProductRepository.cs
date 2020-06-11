@@ -692,6 +692,20 @@ namespace DMS.Repositories
                 item.ItemImageMappings = ItemImageMappings.Where(x => x.ItemId == item.Id).ToList();
             }
 
+            List<ItemHistory> ItemHistories = await DataContext.ItemHistory.Where(x => ItemIds.Contains(x.ItemId)).Select(x => new ItemHistory
+            {
+                Id = x.Id,
+                ItemId = x.ItemId,
+                ModifierId = x.ModifierId,
+                NewPrice = x.NewPrice,
+                OldPrice = x.OldPrice,  
+                Time = x.Time,
+            }).ToListAsync();
+
+            foreach (var item in Product.Items)
+            {
+                item.ItemHistories = ItemHistories.Where(x => x.ItemId == item.Id).ToList();
+            }
             return Product;
         }
         public async Task<bool> Create(Product Product)
@@ -771,6 +785,8 @@ namespace DMS.Repositories
         public async Task<bool> Delete(Product Product)
         {
             await DataContext.ProductProductGroupingMapping.Where(x => x.ProductId == Product.Id).DeleteFromQueryAsync();
+            var ItemIds = await DataContext.Item.Where(x => x.ProductId == Product.Id).Select(x => x.Id).ToListAsync();
+            await DataContext.ItemHistory.Where(x => ItemIds.Contains(x.ItemId)).DeleteFromQueryAsync();
             await DataContext.Item.Where(x => x.ProductId == Product.Id).UpdateFromQueryAsync(x => new ItemDAO { DeletedAt = StaticParams.DateTimeNow });
             await DataContext.Product.Where(x => x.Id == Product.Id).UpdateFromQueryAsync(x => new ProductDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
@@ -918,6 +934,11 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<Product> Products)
         {
             List<long> Ids = Products.Select(x => x.Id).ToList();
+            List<long> ItemIds = DataContext.Item.Where(x => Ids.Contains(x.ProductId)).Select(x => x.Id).ToList();
+
+            await DataContext.ItemHistory.Where(x => ItemIds.Contains(x.ItemId)).DeleteFromQueryAsync();
+            await DataContext.Item.Where(x => Ids.Contains(x.ProductId))
+                .UpdateFromQueryAsync(x => new ItemDAO { DeletedAt = StaticParams.DateTimeNow });
             await DataContext.ProductProductGroupingMapping
                 .Where(x => Ids.Contains(x.ProductId))
                 .DeleteFromQueryAsync();
@@ -929,6 +950,8 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Product Product)
         {
+            var ItemIds = await DataContext.Item.Where(x => x.ProductId == Product.Id).Select(x => x.Id).ToListAsync();
+            await DataContext.ItemHistory.Where(x => ItemIds.Contains(x.ItemId)).DeleteFromQueryAsync();
             List<ItemDAO> ItemDAOs = await DataContext.Item
                 .Where(x => x.ProductId == Product.Id).ToListAsync();
             ItemDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
@@ -971,10 +994,28 @@ namespace DMS.Repositories
                     }
                 }
                 await DataContext.Item.BulkMergeAsync(ItemDAOs);
+                List<ItemHistoryDAO> ItemHistoryDAOs = new List<ItemHistoryDAO>();
                 foreach (Item Item in Product.Items)
                 {
                     Item.Id = ItemDAOs.Where(i => i.Code == Item.Code).Select(x => x.Id).FirstOrDefault();
+
+                    var list = new List<ItemHistoryDAO>();
+                    if (Item.ItemHistories != null)
+                    {
+                        list = Item.ItemHistories.Select(x => new ItemHistoryDAO
+                        {
+                            Id = x.Id,
+                            Time = x.Time,
+                            ItemId = Item.Id,
+                            ModifierId = x.ModifierId,
+                            OldPrice = x.OldPrice,
+                            NewPrice = x.NewPrice,
+                        }).ToList();
+                        ItemHistoryDAOs.AddRange(list);
+                    }
                 }
+
+                await DataContext.ItemHistory.BulkMergeAsync(ItemHistoryDAOs);
             }
             await DataContext.ProductImageMapping
                 .Where(x => x.ProductId == Product.Id)
@@ -993,7 +1034,7 @@ namespace DMS.Repositories
                 }
                 await DataContext.ProductImageMapping.BulkMergeAsync(ProductImageMappingDAOs);
             }
-            var ItemIds = ItemDAOs.Select(x => x.Id).ToList();
+            ItemIds = ItemDAOs.Select(x => x.Id).ToList();
             await DataContext.ItemImageMapping
                 .Where(x => ItemIds.Contains(x.ItemId))
                 .DeleteFromQueryAsync();
