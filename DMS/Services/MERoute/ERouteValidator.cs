@@ -78,23 +78,25 @@ namespace DMS.Services.MERoute
             else
             {
                 var Code = ERoute.Code;
-                if (ERoute.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(ERoute.Code))
+                if (string.IsNullOrWhiteSpace(ERoute.Code) || !FilterExtension.ChangeToEnglishChar(Code).Equals(ERoute.Code))
                 {
                     ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
-
-                ERouteFilter ERouteFilter = new ERouteFilter
+                else
                 {
-                    Skip = 0,
-                    Take = 10,
-                    Id = new IdFilter { NotEqual = ERoute.Id },
-                    Code = new StringFilter { Equal = ERoute.Code },
-                    Selects = ERouteSelect.Code
-                };
+                    ERouteFilter ERouteFilter = new ERouteFilter
+                    {
+                        Skip = 0,
+                        Take = 10,
+                        Id = new IdFilter { NotEqual = ERoute.Id },
+                        Code = new StringFilter { Equal = ERoute.Code },
+                        Selects = ERouteSelect.Code
+                    };
 
-                int count = await UOW.ERouteRepository.Count(ERouteFilter);
-                if (count != 0)
-                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Code), ErrorCode.CodeExisted);
+                    int count = await UOW.ERouteRepository.Count(ERouteFilter);
+                    if (count != 0)
+                        ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Code), ErrorCode.CodeExisted);
+                }
             }
 
             return ERoute.IsValidated;

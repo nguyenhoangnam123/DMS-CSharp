@@ -490,7 +490,7 @@ namespace DMS.Repositories
                     List<ERouteContentDay> ERouteContentDays = await BuildERouteContentDays(ERouteContent);
                     List<ERouteContentDayDAO> eRouteContentDayDAOs = ERouteContentDays.Select(x => new ERouteContentDayDAO
                     {
-                        ERouteContentId = x.ERouteContentId,
+                        ERouteContentId = ERouteContent.Id,
                         Planned = x.Planned,
                         OrderDay = x.OrderDay
                     }).ToList();

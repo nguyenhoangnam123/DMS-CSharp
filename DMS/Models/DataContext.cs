@@ -789,8 +789,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<ERouteContentDayDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.HasOne(d => d.ERouteContent)
                     .WithMany(p => p.ERouteContentDays)
                     .HasForeignKey(d => d.ERouteContentId)

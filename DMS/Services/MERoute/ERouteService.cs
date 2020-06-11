@@ -107,11 +107,17 @@ namespace DMS.Services.MERoute
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
+
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ERouteService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
