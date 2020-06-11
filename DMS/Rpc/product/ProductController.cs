@@ -1047,7 +1047,7 @@ namespace DMS.Rpc.product
                 #endregion
 
                 #region sheet TaxType ( VAT )
-                var worksheet_TaxType = xlPackage.Workbook.Worksheets["TaxType"];
+                var worksheet_TaxType = xlPackage.Workbook.Worksheets["VAT"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_TaxType = 2;
                 int numberCell_TaxType = 1;
