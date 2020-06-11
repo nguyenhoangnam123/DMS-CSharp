@@ -247,7 +247,7 @@ namespace DMS.Services.MERoute
 
         public async Task<List<Store>> ListStore(StoreFilter StoreFilter)
         {
-            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
             List<long> StoreIds = Stores.Select(s => s.Id).ToList();
             ERouteContentFilter ERouteContentFilter = new ERouteContentFilter
             {
