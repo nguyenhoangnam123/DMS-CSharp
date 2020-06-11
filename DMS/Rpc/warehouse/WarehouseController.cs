@@ -446,6 +446,7 @@ namespace DMS.Rpc.warehouse
                     Id = x.Id,
                     ItemId = x.ItemId,
                     SaleStock = x.SaleStock,
+                    WarehouseId = x.WarehouseId,
                     AccountingStock = x.AccountingStock,
                     Item = x.Item == null ? null : new Item
                     {
