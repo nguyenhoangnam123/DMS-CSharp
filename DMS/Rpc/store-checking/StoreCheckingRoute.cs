@@ -11,8 +11,9 @@ namespace DMS.Rpc.store_checking
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
+        public const string CheckIn = Default + "/check-in";
         public const string Update = Default + "/update";
+        public const string CheckOut = Default + "/check-out";
         public const string CreateIndirectSalesOrder = Default + "/create-indirect-sales-order";
         public const string CreateProblem = Default + "/create-problem";
         public const string SaveImage = Default + "/save-image";
@@ -52,7 +53,7 @@ namespace DMS.Rpc.store_checking
             { "Checkin", new List<string> {
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStore,
-                Detail, Create, Update, CreateIndirectSalesOrder, CreateProblem, SaveImage,
+                Detail, CheckIn, Update, CreateIndirectSalesOrder, CreateProblem, SaveImage,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountProblem, ListProblem,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, } },
         };

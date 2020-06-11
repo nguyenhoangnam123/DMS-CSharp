@@ -18,8 +18,9 @@ namespace DMS.Services.MStoreChecking
         Task<int> Count(StoreCheckingFilter StoreCheckingFilter);
         Task<List<StoreChecking>> List(StoreCheckingFilter StoreCheckingFilter);
         Task<StoreChecking> Get(long Id);
-        Task<StoreChecking> Create(StoreChecking StoreChecking);
+        Task<StoreChecking> CheckIn(StoreChecking StoreChecking);
         Task<StoreChecking> Update(StoreChecking StoreChecking);
+        Task<StoreChecking> CheckOut(StoreChecking StoreChecking);
         Task<Image> SaveImage(Image Image);
         Task<long> CountStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId);
         Task<List<Store>> ListStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId);
@@ -95,9 +96,9 @@ namespace DMS.Services.MStoreChecking
             return StoreChecking;
         }
 
-        public async Task<StoreChecking> Create(StoreChecking StoreChecking)
+        public async Task<StoreChecking> CheckIn(StoreChecking StoreChecking)
         {
-            if (!await StoreCheckingValidator.Create(StoreChecking))
+            if (!await StoreCheckingValidator.CheckIn(StoreChecking))
                 return StoreChecking;
 
             try
@@ -135,6 +136,51 @@ namespace DMS.Services.MStoreChecking
         public async Task<StoreChecking> Update(StoreChecking StoreChecking)
         {
             if (!await StoreCheckingValidator.Update(StoreChecking))
+                return StoreChecking;
+            try
+            {
+                var oldData = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
+                StoreChecking.CheckOutAt = oldData.CheckOutAt;
+                await UOW.Begin();
+                await UOW.StoreCheckingRepository.Update(StoreChecking);
+                await UOW.Commit();
+
+                var newData = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
+                List<long> AlbumIds = new List<long>();
+                if (StoreChecking.StoreCheckingImageMappings != null)
+                {
+                    foreach (StoreCheckingImageMapping StoreCheckingImageMapping in StoreChecking.StoreCheckingImageMappings)
+                    {
+                        AlbumIds.Add(StoreCheckingImageMapping.AlbumId);
+                    }
+                }
+                List<EventMessage<Album>> messages = AlbumIds.Select(a => new EventMessage<Album>
+                {
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                    EntityName = nameof(Album),
+                    Content = new Album { Id = a },
+                }).ToList();
+                // phai check quan he lien ket 1:1, hay 1:n hay n:m de publishSingle, hay publishList
+                RabbitManager.PublishList(messages, RoutingKeyEnum.AlbumUsed);
+                await Logging.CreateAuditLog(newData, oldData, nameof(StoreCheckingService));
+                return newData;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreCheckingService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+        }
+
+
+        public async Task<StoreChecking> CheckOut(StoreChecking StoreChecking)
+        {
+            if (!await StoreCheckingValidator.CheckOut(StoreChecking))
                 return StoreChecking;
             try
             {

@@ -114,8 +114,8 @@ namespace DMS.Rpc.store_checking
             return new StoreChecking_StoreCheckingDTO(StoreChecking);
         }
 
-        [Route(StoreCheckingRoute.Create), HttpPost]
-        public async Task<ActionResult<StoreChecking_StoreCheckingDTO>> Create([FromBody] StoreChecking_StoreCheckingDTO StoreChecking_StoreCheckingDTO)
+        [Route(StoreCheckingRoute.CheckIn), HttpPost]
+        public async Task<ActionResult<StoreChecking_StoreCheckingDTO>> Checkin([FromBody] StoreChecking_StoreCheckingDTO StoreChecking_StoreCheckingDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -124,7 +124,7 @@ namespace DMS.Rpc.store_checking
                 return Forbid();
 
             StoreChecking StoreChecking = ConvertDTOToEntity(StoreChecking_StoreCheckingDTO);
-            StoreChecking = await StoreCheckingService.Create(StoreChecking);
+            StoreChecking = await StoreCheckingService.CheckIn(StoreChecking);
             StoreChecking_StoreCheckingDTO = new StoreChecking_StoreCheckingDTO(StoreChecking);
             if (StoreChecking.IsValidated)
                 return StoreChecking_StoreCheckingDTO;
@@ -143,6 +143,24 @@ namespace DMS.Rpc.store_checking
 
             StoreChecking StoreChecking = ConvertDTOToEntity(StoreChecking_StoreCheckingDTO);
             StoreChecking = await StoreCheckingService.Update(StoreChecking);
+            StoreChecking_StoreCheckingDTO = new StoreChecking_StoreCheckingDTO(StoreChecking);
+            if (StoreChecking.IsValidated)
+                return StoreChecking_StoreCheckingDTO;
+            else
+                return BadRequest(StoreChecking_StoreCheckingDTO);
+        }
+
+        [Route(StoreCheckingRoute.CheckOut), HttpPost]
+        public async Task<ActionResult<StoreChecking_StoreCheckingDTO>> CheckOut([FromBody] StoreChecking_StoreCheckingDTO StoreChecking_StoreCheckingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(StoreChecking_StoreCheckingDTO.Id))
+                return Forbid();
+
+            StoreChecking StoreChecking = ConvertDTOToEntity(StoreChecking_StoreCheckingDTO);
+            StoreChecking = await StoreCheckingService.CheckOut(StoreChecking);
             StoreChecking_StoreCheckingDTO = new StoreChecking_StoreCheckingDTO(StoreChecking);
             if (StoreChecking.IsValidated)
                 return StoreChecking_StoreCheckingDTO;
