@@ -434,54 +434,29 @@ namespace DMS.Repositories
                 Used = q.Used,
             }).ToListAsync();
 
-            var Ids = Products.Select(x => x.Id).ToList();
-            var ProductImageMappings = DataContext.ProductImageMapping.Include(x => x.Image).Where(x => Ids.Contains(x.ProductId)).ToList();
-            foreach (var Product in Products)
-            {
-                Product.ProductImageMappings = new List<ProductImageMapping>();
-                var ProductImageMappingDAO = ProductImageMappings.Where(x => x.ProductId == Product.Id).FirstOrDefault();
-                if (ProductImageMappingDAO != null)
-                {
-                    ProductImageMapping ProductImageMapping = new ProductImageMapping
-                    {
-                        ImageId = ProductImageMappingDAO.ImageId,
-                        ProductId = ProductImageMappingDAO.ProductId,
-                        Image = new Image
-                        {
-                            Id = ProductImageMappingDAO.Image.Id,
-                            Name = ProductImageMappingDAO.Image.Name,
-                            Url = ProductImageMappingDAO.Image.Url
-                        }
-                    };
-                    Product.ProductImageMappings.Add(ProductImageMapping);
-                }
-            }
+            //var Ids = Products.Select(x => x.Id).ToList();
+            //var ProductImageMappings = DataContext.ProductImageMapping.Include(x => x.Image).Where(x => Ids.Contains(x.ProductId)).ToList();
+            //foreach (var Product in Products)
+            //{
+            //    Product.ProductImageMappings = new List<ProductImageMapping>();
+            //    var ProductImageMappingDAO = ProductImageMappings.Where(x => x.ProductId == Product.Id).FirstOrDefault();
+            //    if (ProductImageMappingDAO != null)
+            //    {
+            //        ProductImageMapping ProductImageMapping = new ProductImageMapping
+            //        {
+            //            ImageId = ProductImageMappingDAO.ImageId,
+            //            ProductId = ProductImageMappingDAO.ProductId,
+            //            Image = new Image
+            //            {
+            //                Id = ProductImageMappingDAO.Image.Id,
+            //                Name = ProductImageMappingDAO.Image.Name,
+            //                Url = ProductImageMappingDAO.Image.Url
+            //            }
+            //        };
+            //        Product.ProductImageMappings.Add(ProductImageMapping);
+            //    }
+            //}
 
-            var UnitOfMeasureGroupingIds = Products.Select(x => x.UnitOfMeasureGroupingId).ToList();
-            var UnitOfMeasureGroupingContents = await DataContext.UnitOfMeasureGroupingContent
-                .Include(x => x.UnitOfMeasure)
-                .Where(x => UnitOfMeasureGroupingIds.Contains(x.UnitOfMeasureGroupingId) && x.UnitOfMeasure.DeletedAt == null).ToListAsync();
-            foreach (var Product in Products)
-            {
-                if (Product.UnitOfMeasureGrouping == null) Product.UnitOfMeasureGrouping = new UnitOfMeasureGrouping();
-                Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents = UnitOfMeasureGroupingContents
-                    .Where(x => x.UnitOfMeasureGroupingId == Product.UnitOfMeasureGroupingId)
-                    .Select(x => new UnitOfMeasureGroupingContent
-                    {
-                        Id = x.Id,
-                        UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
-                        UnitOfMeasureId = x.UnitOfMeasureId,
-                        Factor = x.Factor,
-                        UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
-                        {
-                            Id = x.UnitOfMeasure.Id,
-                            Code = x.UnitOfMeasure.Code,
-                            Name = x.UnitOfMeasure.Name,
-                            Description = x.UnitOfMeasure.Description,
-                            StatusId = x.UnitOfMeasure.StatusId,
-                        }
-                    }).ToList();
-            }
             return Products;
         }
 

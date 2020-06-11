@@ -1,9 +1,11 @@
 using Common;
 using DMS.Entities;
+using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DMS.Rpc.indirect_sales_order
 {
-    public class IndirectSalesOrder_UnitOfMeasureDTO : DataDTO
+    public class IndirectSalesOrder_UnitOfMeasureDTO : DataDTO , IEquatable<IndirectSalesOrder_UnitOfMeasureDTO>
     {
 
         public long Id { get; set; }
@@ -45,6 +47,16 @@ namespace DMS.Rpc.indirect_sales_order
             this.StatusId = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? 0 : UnitOfMeasureGroupingContent.UnitOfMeasure.StatusId;
 
             this.Factor = UnitOfMeasureGroupingContent.Factor;
+        }
+
+        public bool Equals(IndirectSalesOrder_UnitOfMeasureDTO other)
+        {
+            if (other == null) return false;
+            return other.Id == this.Id;
+        }
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
         }
     }
 

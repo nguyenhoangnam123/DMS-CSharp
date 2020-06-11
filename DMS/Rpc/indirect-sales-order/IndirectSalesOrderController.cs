@@ -664,11 +664,15 @@ namespace DMS.Rpc.indirect_sales_order
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            var Product = (await ProductService.List(new ProductFilter
+            //TODO cần optimize lại phần này, sử dụng itemId thay vì productId
+
+            List<Product> Products = await ProductService.List(new ProductFilter
             {
                 Id = IndirectSalesOrder_UnitOfMeasureFilterDTO.ProductId,
-                Selects = ProductSelect.UnitOfMeasure | ProductSelect.UnitOfMeasureGrouping
-            })).FirstOrDefault();
+                Selects = ProductSelect.Id,
+            });
+            long ProductId = Products.Select(p => p.Id).FirstOrDefault();
+            Product Product = await ProductService.Get(ProductId);
 
             List<IndirectSalesOrder_UnitOfMeasureDTO> IndirectSalesOrder_UnitOfMeasureDTOs = new List<IndirectSalesOrder_UnitOfMeasureDTO>();
             if (Product.UnitOfMeasureGrouping != null && Product.UnitOfMeasureGrouping.StatusId == Enums.StatusEnum.ACTIVE.Id)
@@ -677,7 +681,7 @@ namespace DMS.Rpc.indirect_sales_order
             }
             if (Product.UnitOfMeasure.StatusId == Enums.StatusEnum.ACTIVE.Id)
             {
-                IndirectSalesOrder_UnitOfMeasureDTOs.Add(new IndirectSalesOrder_UnitOfMeasureDTO
+                IndirectSalesOrder_UnitOfMeasureDTO IndirectSalesOrder_UnitOfMeasureDTO = new IndirectSalesOrder_UnitOfMeasureDTO
                 {
                     Id = Product.UnitOfMeasure.Id,
                     Code = Product.UnitOfMeasure.Code,
@@ -685,10 +689,11 @@ namespace DMS.Rpc.indirect_sales_order
                     Description = Product.UnitOfMeasure.Description,
                     StatusId = Product.UnitOfMeasure.StatusId,
                     Factor = 1
-                });
+                };
+                IndirectSalesOrder_UnitOfMeasureDTOs.Add(IndirectSalesOrder_UnitOfMeasureDTO);
             }
-
-            return IndirectSalesOrder_UnitOfMeasureDTOs.Where(x => x.StatusId == StatusEnum.ACTIVE.Id).ToList();
+            IndirectSalesOrder_UnitOfMeasureDTOs = IndirectSalesOrder_UnitOfMeasureDTOs.Where(x => x.StatusId == StatusEnum.ACTIVE.Id).Distinct().ToList();
+            return IndirectSalesOrder_UnitOfMeasureDTOs;
         }
 
         [Route(IndirectSalesOrderRoute.SingleListSupplier), HttpPost]
