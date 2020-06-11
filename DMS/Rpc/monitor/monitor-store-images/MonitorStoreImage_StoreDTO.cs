@@ -24,11 +24,11 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
         public string Telephone { get; set; }
 
-        public long ProvinceId { get; set; }
+        public long? ProvinceId { get; set; }
 
-        public long DistrictId { get; set; }
+        public long? DistrictId { get; set; }
 
-        public long WardId { get; set; }
+        public long? WardId { get; set; }
 
         public string Address { get; set; }
 

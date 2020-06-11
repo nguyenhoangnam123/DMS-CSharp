@@ -14,9 +14,9 @@ namespace DMS.Rpc.store_grouping
         public long? StoreGroupingId { get; set; }
         public string Telephone { get; set; }
         public long? ResellerId { get; set; }
-        public long ProvinceId { get; set; }
-        public long DistrictId { get; set; }
-        public long WardId { get; set; }
+        public long? ProvinceId { get; set; }
+        public long? DistrictId { get; set; }
+        public long? WardId { get; set; }
         public string Address { get; set; }
         public string DeliveryAddress { get; set; }
         public decimal? Latitude { get; set; }

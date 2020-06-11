@@ -2361,9 +2361,7 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.TaxCode)
-                    .IsRequired()
-                    .HasMaxLength(500);
+                entity.Property(e => e.TaxCode).HasMaxLength(500);
 
                 entity.Property(e => e.Telephone).HasMaxLength(500);
 
@@ -2372,7 +2370,6 @@ namespace DMS.Models
                 entity.HasOne(d => d.District)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.DistrictId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_District");
 
                 entity.HasOne(d => d.Organization)
@@ -2389,7 +2386,6 @@ namespace DMS.Models
                 entity.HasOne(d => d.Province)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.ProvinceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_Province");
 
                 entity.HasOne(d => d.Reseller)
@@ -2417,7 +2413,6 @@ namespace DMS.Models
                 entity.HasOne(d => d.Ward)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.WardId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Store_Ward");
             });
 
