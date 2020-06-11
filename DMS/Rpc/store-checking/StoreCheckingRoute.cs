@@ -11,8 +11,9 @@ namespace DMS.Rpc.store_checking
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
-        public const string Create = Default + "/create";
+        public const string CheckIn = Default + "/check-in";
         public const string Update = Default + "/update";
+        public const string CheckOut = Default + "/check-out";
         public const string CreateIndirectSalesOrder = Default + "/create-indirect-sales-order";
         public const string CreateProblem = Default + "/create-problem";
         public const string SaveImage = Default + "/save-image";
@@ -39,7 +40,10 @@ namespace DMS.Rpc.store_checking
         public const string ListStoreUnPlanned = Default + "/list-store-unplanned";
         public const string CountProblem = Default + "/count-problem";
         public const string ListProblem = Default + "/list-problem";
-
+        public const string CountSurvey = Default + "/count-survey";
+        public const string ListSurvey = Default + "/list-survey";
+        public const string GetSurveyForm = Default + "/get-survey-form";
+        public const string SaveSurveyForm = Default + "/save-survey-form";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
@@ -52,8 +56,9 @@ namespace DMS.Rpc.store_checking
             { "Checkin", new List<string> {
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStore,
-                Detail, Create, Update, CreateIndirectSalesOrder, CreateProblem, SaveImage,
-                CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountProblem, ListProblem,
+                Detail, CheckIn, Update, CreateIndirectSalesOrder, CreateProblem, SaveImage,
+                CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountProblem, ListProblem, CountSurvey, ListSurvey,
+                GetSurveyForm, SaveSurveyForm,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, } },
         };
     }

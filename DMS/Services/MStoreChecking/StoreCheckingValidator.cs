@@ -9,11 +9,10 @@ namespace DMS.Services.MStoreChecking
 {
     public interface IStoreCheckingValidator : IServiceScoped
     {
-        Task<bool> Create(StoreChecking StoreChecking);
+        Task<bool> CheckIn(StoreChecking StoreChecking);
         Task<bool> Update(StoreChecking StoreChecking);
+        Task<bool> CheckOut(StoreChecking StoreChecking);
         Task<bool> Delete(StoreChecking StoreChecking);
-        Task<bool> BulkDelete(List<StoreChecking> StoreCheckings);
-        Task<bool> Import(List<StoreChecking> StoreCheckings);
     }
 
     public class StoreCheckingValidator : IStoreCheckingValidator
@@ -71,7 +70,7 @@ namespace DMS.Services.MStoreChecking
             return StoreChecking.IsValidated;
         }
 
-        public async Task<bool> Create(StoreChecking StoreChecking)
+        public async Task<bool> CheckIn(StoreChecking StoreChecking)
         {
             await ValidateGPS(StoreChecking);
             return StoreChecking.IsValidated;
@@ -85,7 +84,7 @@ namespace DMS.Services.MStoreChecking
             return StoreChecking.IsValidated;
         }
 
-        public async Task<bool> Delete(StoreChecking StoreChecking)
+        public async Task<bool> CheckOut(StoreChecking StoreChecking)
         {
             if (await ValidateId(StoreChecking))
             {
@@ -93,14 +92,13 @@ namespace DMS.Services.MStoreChecking
             return StoreChecking.IsValidated;
         }
 
-        public async Task<bool> BulkDelete(List<StoreChecking> StoreCheckings)
-        {
-            return true;
-        }
 
-        public async Task<bool> Import(List<StoreChecking> StoreCheckings)
+        public async Task<bool> Delete(StoreChecking StoreChecking)
         {
-            return true;
+            if (await ValidateId(StoreChecking))
+            {
+            }
+            return StoreChecking.IsValidated;
         }
     }
 }

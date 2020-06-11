@@ -12,6 +12,7 @@ namespace DMS.Models
             DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
             ERouteChangeRequests = new HashSet<ERouteChangeRequestDAO>();
             ERouteCreators = new HashSet<ERouteDAO>();
+            ERoutePerformances = new HashSet<ERoutePerformanceDAO>();
             ERouteSaleEmployees = new HashSet<ERouteDAO>();
             GeneralKpiCreators = new HashSet<GeneralKpiDAO>();
             GeneralKpiEmployees = new HashSet<GeneralKpiDAO>();
@@ -62,6 +63,7 @@ namespace DMS.Models
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
         public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }
         public virtual ICollection<ERouteDAO> ERouteCreators { get; set; }
+        public virtual ICollection<ERoutePerformanceDAO> ERoutePerformances { get; set; }
         public virtual ICollection<ERouteDAO> ERouteSaleEmployees { get; set; }
         public virtual ICollection<GeneralKpiDAO> GeneralKpiCreators { get; set; }
         public virtual ICollection<GeneralKpiDAO> GeneralKpiEmployees { get; set; }

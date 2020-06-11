@@ -33,8 +33,7 @@ namespace DMS.Repositories
         {
             if (filter == null)
                 return query.Where(q => false);
-            query = query.Where(q => q.DeletedAt == null);
-            query = query.Where(q => q.Product.DeletedAt == null);
+            query = query.Where(q => q.DeletedAt == null && q.Product.DeletedAt == null);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.ProductId != null)
