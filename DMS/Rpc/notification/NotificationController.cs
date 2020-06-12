@@ -105,7 +105,7 @@ namespace DMS.Rpc.notification
                 return Forbid();
 
             Notification Notification = ConvertDTOToEntity(Notification_NotificationDTO);
-            Notification = await NotificationService.Create(Notification);
+            Notification = await NotificationService.CreateDraft(Notification);
             Notification_NotificationDTO = new Notification_NotificationDTO(Notification);
             if (Notification.IsValidated)
                 return Notification_NotificationDTO;
