@@ -1,22 +1,24 @@
 ﻿{
   "Id": {
-    "IdNotExisted": "Id không tồn tại"
+    "IdNotExisted": "Id không tồn tại",
+    "ERouteInUsed": "Nội dung tuyến đang được sử dụng"
   },
   "Code": {
     "CodeEmpty": "Chưa nhập mã cho tuyến",
-    "CodeHasSpecialCharacter": "Mã không chứa khoảng trắng và ký tự Tiếng Việt",
-    "CodeExisted": "Mã đã được sử dụng"
+    "CodeOverLength": "Mã tuyến quá dài",
+    "CodeHasSpecialCharacter": "Mã không chứa khoảng trắng hoặc ký tự Tiếng Việt",
+    "CodeExisted": "Mã đã tồn tại"
   },
   "Name": {
     "NameEmpty": "Chưa nhập tên cho tuyến",
-    "NameOverLength": "Tên quá dài"
+    "NameOverLength": "Tên tuyến quá dài"
   },
   "SaleEmployee": {
     "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại",
     "SaleEmployeeEmpty": "Chưa chọn nhân viên kinh"
   },
   "ERouteType": {
-    "ERouteTypeNotExisted": "Loại tuyến không tồn tại"
+    "ERouteTypeEmpty": "Chưa chọn loại tuyến"
   },
   "Status": {
     "StatusNotExisted": "Trạng thái không tồn tại"
@@ -28,14 +30,11 @@
     "EndDateEmpty": "Chưa nhập ngày kết thúc"
   },
   "ERouteContents": {
-    "ERouteContentsEmpty": "Chưa tạo nội dung tuyến"
+    "ERouteContentsEmpty": "Chưa tạo nội dung cho tuyến"
   },
   "ERouteContent": {
     "Store": {
-      "StoreNotExisted": "Cửa hàng không tồn tại"
+      "StoreEmpty": "Chưa chọn cửa hàng"
     }
-  },
-  "RequestState": {
-    "ERouteInUsed":  "Nội dung tuyến đang được sử dụng"
   }
 }

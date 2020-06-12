@@ -1,5 +1,12 @@
 ﻿{
   "Id": {
-    "IdNotExisted": "Id không tồn tại",
+    "IdNotExisted": "Id không tồn tại"
+  },
+  "Name": {
+    "NameEmpty": "Chưa nhập tên Album",
+    "NameOverLength": "Tên quá dài"
+  },
+  "Status": {
+    "StatusNotExisted": "Trạng thái không tồn tại"
   }
 }

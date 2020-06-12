@@ -32,11 +32,11 @@ namespace DMS.Services.MIndirectSalesOrder
             OrderDateEmpty,
             EditedPriceStatusNotExisted,
             PriceOutOfRange,
-            UnitOfMeasureNotExisted,
-            PrimaryUnitOfMeasureNotExisted,
+            UnitOfMeasureEmpty,
             QuantityEmpty,
             ItemNotExisted,
-            QuantityInvalid
+            QuantityInvalid,
+            SellerStoreEqualBuyerStore
         }
 
         private IUOW UOW;
@@ -102,6 +102,8 @@ namespace DMS.Services.MIndirectSalesOrder
                     IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SellerStore), ErrorCode.SellerStoreNotExisted);
             }
 
+            if(IndirectSalesOrder.SellerStoreId != 0 && IndirectSalesOrder.SellerStoreId == IndirectSalesOrder.BuyerStoreId)
+                IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SellerStore), ErrorCode.SellerStoreEqualBuyerStore);
             return IndirectSalesOrder.IsValidated;
         }
 
@@ -183,7 +185,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                 {
                     if (listIdsNotExisted.Contains(IndirectSalesOrderContent.UnitOfMeasureId))
-                        IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
+                        IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.UnitOfMeasure), ErrorCode.UnitOfMeasureEmpty);
                 }
             }
 
@@ -206,7 +208,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 foreach (var IndirectSalesOrderPromotion in IndirectSalesOrder.IndirectSalesOrderPromotions)
                 {
                     if (listIdsNotExisted.Contains(IndirectSalesOrderPromotion.UnitOfMeasureId))
-                        IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderPromotion.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
+                        IndirectSalesOrderPromotion.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderPromotion.UnitOfMeasure), ErrorCode.UnitOfMeasureEmpty);
                 }
             }
 

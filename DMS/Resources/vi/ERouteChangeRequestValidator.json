@@ -7,12 +7,14 @@
   },
   "RequestState": {
     "RequestStateIsNotApproved": "Trạng thái yêu cầu tuyến không được chấp nhận",
-    "ERouteChangeRequestInUsed": "Yêu cầu tuyến thay đổi đang sử dụng",
+    "ERouteChangeRequestInUsed": "Yêu cầu tuyến thay đổi đang sử dụng"
   },
-  "Store": {
-    "StoreNotExisted": "Cửa hàng không tồn tại"
+  "ERouteChangeRequestContent": {
+    "Store": {
+      "StoreEmpty": "Chưa chọn cửa hàng"
+    }
   },
   "ERouteChangeRequestContents": {
-    "ERouteChangeRequestContentsEmpty": "Chưa nhập tuyến thay đổi"
+    "ERouteChangeRequestContentsEmpty": "Chưa tạo nội dung cho tuyến thay đổi"
   }
 }

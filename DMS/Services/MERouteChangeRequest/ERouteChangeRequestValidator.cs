@@ -23,7 +23,7 @@ namespace DMS.Services.MERouteChangeRequest
         public enum ErrorCode
         {
             IdNotExisted,
-            StoreNotExisted,
+            StoreEmpty,
             ERouteChangeRequestInUsed,
             ERouteNotExisted,
             RequestStateIsNotApproved,
@@ -86,7 +86,7 @@ namespace DMS.Services.MERouteChangeRequest
                 foreach (var ERouteChangeRequestContent in ERouteChangeRequest.ERouteChangeRequestContents)
                 {
                     if (listIdsNotExisted.Contains(ERouteChangeRequestContent.StoreId))
-                        ERouteChangeRequest.AddError(nameof(ERouteChangeRequestValidator), nameof(ERouteChangeRequestContent.Store), ErrorCode.StoreNotExisted);
+                        ERouteChangeRequestContent.AddError(nameof(ERouteChangeRequestValidator), nameof(ERouteChangeRequestContent.Store), ErrorCode.StoreEmpty);
                 }
             }
             else

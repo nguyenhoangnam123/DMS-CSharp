@@ -35,7 +35,7 @@ namespace DMS.Services.MERoute
             StatusNotExisted,
             StartDateEmpty,
             EndDateEmpty,
-            StoreNotExisted,
+            StoreEmpty,
             ERouteInUsed,
             ERouteContentsEmpty
         }
@@ -190,7 +190,7 @@ namespace DMS.Services.MERoute
                 foreach (var ERouteContent in ERoute.ERouteContents)
                 {
                     if (listIdsNotExisted.Contains(ERouteContent.StoreId))
-                        ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreNotExisted);
+                        ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreEmpty);
                 }
             }
             else
@@ -232,7 +232,7 @@ namespace DMS.Services.MERoute
             if (await ValidateId(ERoute))
             {
                 if (ERoute.RequestStateId != RequestStateEnum.NEW.Id)
-                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.RequestState), ErrorCode.ERouteInUsed);
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Id), ErrorCode.ERouteInUsed);
             }
             return ERoute.IsValidated;
         }
