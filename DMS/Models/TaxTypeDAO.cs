@@ -5,11 +5,6 @@ namespace DMS.Models
 {
     public partial class TaxTypeDAO
     {
-        public TaxTypeDAO()
-        {
-            Products = new HashSet<ProductDAO>();
-        }
-
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
@@ -21,6 +16,5 @@ namespace DMS.Models
         public bool Used { get; set; }
 
         public virtual StatusDAO Status { get; set; }
-        public virtual ICollection<ProductDAO> Products { get; set; }
     }
 }
