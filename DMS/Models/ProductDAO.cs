@@ -25,7 +25,7 @@ namespace DMS.Models
         public long? BrandId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long? UnitOfMeasureGroupingId { get; set; }
-        public decimal? SalePrice { get; set; }
+        public decimal SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public long TaxTypeId { get; set; }
         public long StatusId { get; set; }
@@ -39,14 +39,6 @@ namespace DMS.Models
         public DateTime? DeletedAt { get; set; }
         public bool Used { get; set; }
 
-        public virtual BrandDAO Brand { get; set; }
-        public virtual ProductTypeDAO ProductType { get; set; }
-        public virtual StatusDAO Status { get; set; }
-        public virtual SupplierDAO Supplier { get; set; }
-        public virtual TaxTypeDAO TaxType { get; set; }
-        public virtual UnitOfMeasureDAO UnitOfMeasure { get; set; }
-        public virtual UnitOfMeasureGroupingDAO UnitOfMeasureGrouping { get; set; }
-        public virtual UsedVariationDAO UsedVariation { get; set; }
         public virtual ICollection<ItemDAO> Items { get; set; }
         public virtual ICollection<ProductImageMappingDAO> ProductImageMappings { get; set; }
         public virtual ICollection<ProductProductGroupingMappingDAO> ProductProductGroupingMappings { get; set; }

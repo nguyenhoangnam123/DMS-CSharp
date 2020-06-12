@@ -1927,51 +1927,6 @@ namespace DMS.Models
                 entity.Property(e => e.TechnicalName).HasMaxLength(1000);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Brand)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.BrandId)
-                    .HasConstraintName("FK_Product_Brand");
-
-                entity.HasOne(d => d.ProductType)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.ProductTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Product__ProductType");
-
-                entity.HasOne(d => d.Status)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.StatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Product_Status");
-
-                entity.HasOne(d => d.Supplier)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.SupplierId)
-                    .HasConstraintName("FK_Product_Supplier");
-
-                entity.HasOne(d => d.TaxType)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.TaxTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Product_TaxType");
-
-                entity.HasOne(d => d.UnitOfMeasureGrouping)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.UnitOfMeasureGroupingId)
-                    .HasConstraintName("FK_Product_UnitOfMeasureGrouping");
-
-                entity.HasOne(d => d.UnitOfMeasure)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.UnitOfMeasureId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Item_UnitOfMeasure");
-
-                entity.HasOne(d => d.UsedVariation)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.UsedVariationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Product_UsedVariation");
             });
 
             modelBuilder.Entity<ProductGroupingDAO>(entity =>
