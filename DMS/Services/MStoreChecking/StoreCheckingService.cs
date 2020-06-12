@@ -250,7 +250,9 @@ namespace DMS.Services.MStoreChecking
         {
             List<long> StoreIds = await ListStoreIds(ERouteId, false);
 
-            return StoreIds == null ? 0 : StoreIds.Count();
+            StoreFilter.Id = new IdFilter { In = StoreIds };
+            int count = await UOW.StoreRepository.Count(StoreFilter);
+            return count;
         }
 
         public async Task<List<Store>> ListStoreUnPlanned(StoreFilter StoreFilter, IdFilter ERouteId)
