@@ -18,6 +18,7 @@ namespace DMS.Rpc.monitor_store_problems
         public DateTime? CompletedAt { get; set; }
         public string Content { get; set; }
         public long ProblemStatusId { get; set; }
+        public Guid RowId { get; set; }
         public MonitorStoreProblem_AppUserDTO Creator { get; set; }
         public MonitorStoreProblem_ProblemStatusDTO ProblemStatus { get; set; }
         public MonitorStoreProblem_ProblemTypeDTO ProblemType { get; set; }
@@ -38,6 +39,7 @@ namespace DMS.Rpc.monitor_store_problems
             this.CompletedAt = Problem.CompletedAt;
             this.Content = Problem.Content;
             this.ProblemStatusId = Problem.ProblemStatusId;
+            this.RowId = Problem.RowId;
             this.Creator = Problem.Creator == null ? null : new MonitorStoreProblem_AppUserDTO(Problem.Creator);
             this.ProblemStatus = Problem.ProblemStatus == null ? null : new MonitorStoreProblem_ProblemStatusDTO(Problem.ProblemStatus);
             this.ProblemType = Problem.ProblemType == null ? null : new MonitorStoreProblem_ProblemTypeDTO(Problem.ProblemType);

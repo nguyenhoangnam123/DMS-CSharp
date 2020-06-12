@@ -251,6 +251,7 @@ namespace DMS.Repositories
                     CheckInAt = q.StoreChecking.CheckInAt,
                     CheckOutAt = q.StoreChecking.CheckOutAt,
                 } : null,
+                RowId = q.RowId,
             }).ToListAsync();
             return Problems;
         }
