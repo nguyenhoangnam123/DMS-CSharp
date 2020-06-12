@@ -588,6 +588,8 @@ namespace DMS.Rpc.product
             Products = await ProductService.Import(Products);
             List<Product_ProductDTO> Product_ProductDTOs = Products
                 .Select(c => new Product_ProductDTO(c)).ToList();
+            if (Products.Any(x => !x.IsValidated))
+                return BadRequest(Products.Where(x => !x.IsValidated));
             return Product_ProductDTOs;
         }
 
