@@ -121,104 +121,27 @@ namespace DMS.Rpc.Monitor.monitor_salesman
 
 
             List<long> AppUserIds = MonitorSalesman_SaleEmployeeDTOs.Select(s => s.SaleEmployeeId).ToList();
-            List<ERouteContent> ERouteContents = await (from ec in DataContext.ERouteContent
-                                                        join e in DataContext.ERoute on ec.ERouteId equals e.Id
-                                                        where AppUserIds.Contains(e.SaleEmployeeId) &&
-                                                        CheckIn >= e.StartDate && (e.EndDate.HasValue == false || e.EndDate.Value >= CheckIn)
-                                                        select new ERouteContent
-                                                        {
-                                                            Id = ec.Id,
-                                                            Monday = ec.Monday,
-                                                            Tuesday = ec.Tuesday,
-                                                            Wednesday = ec.Wednesday,
-                                                            Thursday = ec.Thursday,
-                                                            Friday = ec.Friday,
-                                                            Saturday = ec.Saturday,
-                                                            Sunday = ec.Sunday,
-                                                            Week1 = ec.Week1,
-                                                            Week2 = ec.Week2,
-                                                            Week3 = ec.Week3,
-                                                            Week4 = ec.Week4,
-                                                            StoreId = ec.StoreId,
-                                                            ERoute = new ERoute
-                                                            {
-                                                                StartDate = e.StartDate,
-                                                                SaleEmployeeId = e.SaleEmployeeId,
-                                                            }
-                                                        }).ToListAsync();
 
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && CheckIn == sc.CheckOutAt.Value.Date)
                 .ToListAsync();
+            List<ERoutePerformanceDAO> ERoutePerformanceDAOs = await DataContext.ERoutePerformance.Where(ep => CheckIn == ep.Date ).ToListAsync();
 
             // khởi tạo kế hoạch
             foreach (MonitorSalesman_SaleEmployeeDTO MonitorSalesman_SaleEmployeeDTO in MonitorSalesman_SaleEmployeeDTOs)
             {
                 if (MonitorSalesman_SaleEmployeeDTO.StoreCheckings == null)
                     MonitorSalesman_SaleEmployeeDTO.StoreCheckings = new List<MonitorSalesman_StoreCheckingDTO>();
-                foreach (ERouteContent ERouteContent in ERouteContents)
-                {
-                    bool PlanWeek = false, PlanDay = false;
-                    int week = Convert.ToInt32(StaticParams.DateTimeNow.Subtract(ERouteContent.ERoute.StartDate).TotalDays / 7) + 1;
-                    switch (week / 4)
-                    {
-                        case 1:
-                            if (ERouteContent.Week1)
-                                PlanWeek = true;
-                            break;
-                        case 2:
-                            if (ERouteContent.Week2)
-                                PlanWeek = true;
-                            break;
-                        case 3:
-                            if (ERouteContent.Week3)
-                                PlanWeek = true;
-                            break;
-                        case 0:
-                            if (ERouteContent.Week4)
-                                PlanWeek = true;
-                            break;
-                    }
-                    DayOfWeek day = StaticParams.DateTimeNow.DayOfWeek;
-                    switch (day)
-                    {
-                        case DayOfWeek.Sunday:
-                            if (ERouteContent.Sunday)
-                                PlanDay = true;
-                            break;
-                        case DayOfWeek.Monday:
-                            if (ERouteContent.Monday)
-                                PlanDay = true;
-                            break;
-                        case DayOfWeek.Tuesday:
-                            if (ERouteContent.Tuesday)
-                                PlanDay = true;
-                            break;
-                        case DayOfWeek.Wednesday:
-                            if (ERouteContent.Wednesday)
-                                PlanDay = true;
-                            break;
-                        case DayOfWeek.Thursday:
-                            if (ERouteContent.Thursday)
-                                PlanDay = true;
-                            break;
-                        case DayOfWeek.Friday:
-                            if (ERouteContent.Friday)
-                                PlanDay = true;
-                            break;
-                        case DayOfWeek.Saturday:
-                            if (ERouteContent.Saturday)
-                                PlanDay = true;
-                            break;
-                    }
-                    if (PlanDay && PlanWeek)
-                        MonitorSalesman_SaleEmployeeDTO.PlanCounter++;
-                }
+                MonitorSalesman_SaleEmployeeDTO.PlanCounter = ERoutePerformanceDAOs
+                            .Where(ep => ep.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId && ep.Date == CheckIn)
+                            .Select(ep => ep.PlanCounter).FirstOrDefault();
+
                 List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
                        .Where(s =>
                            s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId &&
                            s.CheckOutAt.Value.Date == CheckIn
                        ).ToList();
+
                 List<long> StoreCheckingIds = ListChecked.Select(sc => sc.Id).ToList();
                 foreach (StoreCheckingDAO Checked in ListChecked)
                 {

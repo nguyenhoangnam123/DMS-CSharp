@@ -675,23 +675,20 @@ namespace DMS.Rpc.indirect_sales_order
             Product Product = await ProductService.Get(ProductId);
 
             List<IndirectSalesOrder_UnitOfMeasureDTO> IndirectSalesOrder_UnitOfMeasureDTOs = new List<IndirectSalesOrder_UnitOfMeasureDTO>();
-            if (Product.UnitOfMeasureGrouping != null && Product.UnitOfMeasureGrouping.StatusId == Enums.StatusEnum.ACTIVE.Id)
+            if (Product.UnitOfMeasureGrouping != null)
             {
                 IndirectSalesOrder_UnitOfMeasureDTOs = Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(x => new IndirectSalesOrder_UnitOfMeasureDTO(x)).ToList();
             }
-            if (Product.UnitOfMeasure.StatusId == Enums.StatusEnum.ACTIVE.Id)
+            IndirectSalesOrder_UnitOfMeasureDTO IndirectSalesOrder_UnitOfMeasureDTO = new IndirectSalesOrder_UnitOfMeasureDTO
             {
-                IndirectSalesOrder_UnitOfMeasureDTO IndirectSalesOrder_UnitOfMeasureDTO = new IndirectSalesOrder_UnitOfMeasureDTO
-                {
-                    Id = Product.UnitOfMeasure.Id,
-                    Code = Product.UnitOfMeasure.Code,
-                    Name = Product.UnitOfMeasure.Name,
-                    Description = Product.UnitOfMeasure.Description,
-                    StatusId = Product.UnitOfMeasure.StatusId,
-                    Factor = 1
-                };
-                IndirectSalesOrder_UnitOfMeasureDTOs.Add(IndirectSalesOrder_UnitOfMeasureDTO);
-            }
+                Id = Product.UnitOfMeasure.Id,
+                Code = Product.UnitOfMeasure.Code,
+                Name = Product.UnitOfMeasure.Name,
+                Description = Product.UnitOfMeasure.Description,
+                StatusId = StatusEnum.ACTIVE.Id,
+                Factor = 1,
+            };
+            IndirectSalesOrder_UnitOfMeasureDTOs.Add(IndirectSalesOrder_UnitOfMeasureDTO);
             IndirectSalesOrder_UnitOfMeasureDTOs = IndirectSalesOrder_UnitOfMeasureDTOs.Where(x => x.StatusId == StatusEnum.ACTIVE.Id).Distinct().ToList();
             return IndirectSalesOrder_UnitOfMeasureDTOs;
         }
