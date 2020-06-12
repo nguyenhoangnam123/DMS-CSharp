@@ -19,7 +19,7 @@ namespace DMS.Rpc.product
         public long? BrandId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long? UnitOfMeasureGroupingId { get; set; }
-        public decimal? SalePrice { get; set; }
+        public decimal SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public long TaxTypeId { get; set; }
         public long StatusId { get; set; }

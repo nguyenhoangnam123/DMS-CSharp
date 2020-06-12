@@ -188,7 +188,7 @@ namespace DMS.Services.MProduct
                         Name = Product.Name,
                         ScanCode = Product.ScanCode,
                         RetailPrice = Product.RetailPrice,
-                        SalePrice = Product.SalePrice ?? 0,
+                        SalePrice = Product.SalePrice,
                         ProductId = Product.Id,
                         StatusId = StatusEnum.ACTIVE.Id
                     });

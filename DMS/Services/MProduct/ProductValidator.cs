@@ -44,7 +44,8 @@ namespace DMS.Services.MProduct
             TaxTypeEmpty,
             ItemInUsed,
             ProductInUsed,
-            UsedVariationNotExisted
+            UsedVariationNotExisted,
+            SalePriceInvalid
         }
 
         private IUOW UOW;
@@ -337,6 +338,26 @@ namespace DMS.Services.MProduct
             return Product.IsValidated;
         }
 
+        private async Task<bool> ValidateSalePrice(Product Product)
+        {
+            if(Product.SalePrice <= 0)
+            {
+                Product.AddError(nameof(ProductValidator), nameof(Product.SalePrice), ErrorCode.SalePriceInvalid);
+            }
+
+            if(Product.Items != null)
+            {
+                foreach (var item in Product.Items)
+                {
+                    if(item.SalePrice <= 0)
+                    {
+                        item.AddError(nameof(ProductValidator), nameof(item.SalePrice), ErrorCode.SalePriceInvalid);
+                    }
+                }
+            }
+            return Product.IsValidated;
+        }
+
         private async Task<bool> CanDelete(Product Product)
         {
             IndirectSalesOrderContentFilter IndirectSalesOrderContentFilter = new IndirectSalesOrderContentFilter
@@ -380,6 +401,7 @@ namespace DMS.Services.MProduct
             await ValidateItem(Product);
             await ValidateVariation(Product);
             await ValidateUsedVariation(Product);
+            await ValidateSalePrice(Product);
             return Product.IsValidated;
         }
 
@@ -408,6 +430,7 @@ namespace DMS.Services.MProduct
                 await ValidateItem(Product);
                 await ValidateVariation(Product);
                 await ValidateUsedVariation(Product);
+                await ValidateSalePrice(Product);
             }
             return Product.IsValidated;
         }
