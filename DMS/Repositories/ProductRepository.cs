@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Models;
 using Helpers;
@@ -434,28 +434,29 @@ namespace DMS.Repositories
                 Used = q.Used,
             }).ToListAsync();
 
-            //var Ids = Products.Select(x => x.Id).ToList();
-            //var ProductImageMappings = DataContext.ProductImageMapping.Include(x => x.Image).Where(x => Ids.Contains(x.ProductId)).ToList();
-            //foreach (var Product in Products)
-            //{
-            //    Product.ProductImageMappings = new List<ProductImageMapping>();
-            //    var ProductImageMappingDAO = ProductImageMappings.Where(x => x.ProductId == Product.Id).FirstOrDefault();
-            //    if (ProductImageMappingDAO != null)
-            //    {
-            //        ProductImageMapping ProductImageMapping = new ProductImageMapping
-            //        {
-            //            ImageId = ProductImageMappingDAO.ImageId,
-            //            ProductId = ProductImageMappingDAO.ProductId,
-            //            Image = new Image
-            //            {
-            //                Id = ProductImageMappingDAO.Image.Id,
-            //                Name = ProductImageMappingDAO.Image.Name,
-            //                Url = ProductImageMappingDAO.Image.Url
-            //            }
-            //        };
-            //        Product.ProductImageMappings.Add(ProductImageMapping);
-            //    }
-            //}
+            //Lấy ra 1 cái ảnh cho list product
+            var Ids = Products.Select(x => x.Id).ToList();
+            var ProductImageMappings = DataContext.ProductImageMapping.Include(x => x.Image).Where(x => Ids.Contains(x.ProductId)).ToList();
+            foreach (var Product in Products)
+            {
+                Product.ProductImageMappings = new List<ProductImageMapping>();
+                var ProductImageMappingDAO = ProductImageMappings.Where(x => x.ProductId == Product.Id).FirstOrDefault();
+                if (ProductImageMappingDAO != null)
+                {
+                    ProductImageMapping ProductImageMapping = new ProductImageMapping
+                    {
+                        ImageId = ProductImageMappingDAO.ImageId,
+                        ProductId = ProductImageMappingDAO.ProductId,
+                        Image = new Image
+                        {
+                            Id = ProductImageMappingDAO.Image.Id,
+                            Name = ProductImageMappingDAO.Image.Name,
+                            Url = ProductImageMappingDAO.Image.Url
+                        }
+                    };
+                    Product.ProductImageMappings.Add(ProductImageMapping);
+                }
+            }
 
             return Products;
         }
