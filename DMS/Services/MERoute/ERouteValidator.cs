@@ -31,7 +31,7 @@ namespace DMS.Services.MERoute
             NameOverLength,
             SaleEmployeeNotExisted,
             SaleEmployeeEmpty,
-            ERouteTypeNotExisted,
+            ERouteTypeEmpty,
             StatusNotExisted,
             StartDateEmpty,
             EndDateEmpty,
@@ -140,11 +140,8 @@ namespace DMS.Services.MERoute
 
         private async Task<bool> ValidateERouteType(ERoute ERoute)
         {
-            if (ERoute.ERouteTypeId.HasValue)
-            {
-                if (ERouteTypeEnum.PERMANENT.Id != ERoute.ERouteTypeId && ERouteTypeEnum.INCURRED.Id != ERoute.ERouteTypeId)
-                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.ERouteType), ErrorCode.ERouteTypeNotExisted);
-            }
+            if (ERouteTypeEnum.PERMANENT.Id != ERoute.ERouteTypeId && ERouteTypeEnum.INCURRED.Id != ERoute.ERouteTypeId)
+                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.ERouteType), ErrorCode.ERouteTypeEmpty);
             return ERoute.IsValidated;
         }
 
@@ -157,21 +154,18 @@ namespace DMS.Services.MERoute
 
         private async Task<bool> ValidateStartDateAndEndDate(ERoute ERoute)
         {
-            if (ERoute.ERouteTypeId.HasValue)
+            if (ERoute.ERouteTypeId == ERouteTypeEnum.PERMANENT.Id)
             {
-                if (ERoute.ERouteTypeId == ERouteTypeEnum.PERMANENT.Id)
-                {
-                    if (ERoute.StartDate == default(DateTime))
-                        ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.StartDate), ErrorCode.StartDateEmpty);
-                }
+                if (ERoute.StartDate == default(DateTime))
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.StartDate), ErrorCode.StartDateEmpty);
+            }
 
-                if (ERoute.ERouteTypeId == ERouteTypeEnum.INCURRED.Id)
-                {
-                    if (ERoute.StartDate == default(DateTime))
-                        ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.StartDate), ErrorCode.StartDateEmpty);
-                    if (ERoute.EndDate == null || ERoute.EndDate == default(DateTime))
-                        ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.EndDate), ErrorCode.EndDateEmpty);
-                }
+            if (ERoute.ERouteTypeId == ERouteTypeEnum.INCURRED.Id)
+            {
+                if (ERoute.StartDate == default(DateTime))
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.StartDate), ErrorCode.StartDateEmpty);
+                if (ERoute.EndDate == null || ERoute.EndDate == default(DateTime))
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.EndDate), ErrorCode.EndDateEmpty);
             }
 
             return ERoute.IsValidated;

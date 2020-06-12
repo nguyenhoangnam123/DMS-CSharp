@@ -703,6 +703,7 @@ namespace DMS.Models
                 entity.HasOne(d => d.ERouteType)
                     .WithMany(p => p.ERoutes)
                     .HasForeignKey(d => d.ERouteTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ERoute_ERouteType");
 
                 entity.HasOne(d => d.RequestState)

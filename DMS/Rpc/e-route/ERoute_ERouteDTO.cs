@@ -14,7 +14,7 @@ namespace DMS.Rpc.e_route
         public long SaleEmployeeId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public long? ERouteTypeId { get; set; }
+        public long ERouteTypeId { get; set; }
         public long RequestStateId { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
