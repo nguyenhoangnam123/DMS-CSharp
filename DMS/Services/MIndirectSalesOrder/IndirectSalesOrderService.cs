@@ -175,11 +175,16 @@ namespace DMS.Services.MIndirectSalesOrder
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -313,6 +318,13 @@ namespace DMS.Services.MIndirectSalesOrder
                 Selects = ProductSelect.UnitOfMeasure | ProductSelect.UnitOfMeasureGrouping | ProductSelect.Id | ProductSelect.TaxType
             });
 
+            var UOMGs = await UOW.UnitOfMeasureGroupingRepository.List(new UnitOfMeasureGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = UnitOfMeasureGroupingSelect.Id | UnitOfMeasureGroupingSelect.UnitOfMeasure | UnitOfMeasureGroupingSelect.UnitOfMeasureGroupingContents
+            });
+
             //sản phẩm bán
             if (IndirectSalesOrder.IndirectSalesOrderContents != null)
             {
@@ -322,27 +334,30 @@ namespace DMS.Services.MIndirectSalesOrder
                     var Product = Products.Where(x => IndirectSalesOrderContent.Item.ProductId == x.Id).FirstOrDefault();
                     IndirectSalesOrderContent.PrimaryUnitOfMeasureId = Product.UnitOfMeasureId;
 
-                    var UnitOfMeasures = Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(x => new UnitOfMeasure
+                    List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
+                    if (Product.UnitOfMeasureGroupingId.HasValue)
                     {
-                        Id = x.UnitOfMeasure.Id,
-                        Code = x.UnitOfMeasure.Code,
-                        Name = x.UnitOfMeasure.Name,
-                        Description = x.UnitOfMeasure.Description,
-                        StatusId = x.UnitOfMeasure.StatusId,
-                        Factor = x.Factor
-                    }).ToList();
-                    if (Product.UnitOfMeasure.StatusId == Enums.StatusEnum.ACTIVE.Id)
-                    {
-                        UnitOfMeasures.Add(new UnitOfMeasure
+                        var UOMG = UOMGs.Where(x => x.Id == Product.UnitOfMeasureGroupingId).FirstOrDefault();
+                        UnitOfMeasures = UOMG.UnitOfMeasureGroupingContents.Select(x => new UnitOfMeasure
                         {
-                            Id = Product.UnitOfMeasure.Id,
-                            Code = Product.UnitOfMeasure.Code,
-                            Name = Product.UnitOfMeasure.Name,
-                            Description = Product.UnitOfMeasure.Description,
-                            StatusId = Product.UnitOfMeasure.StatusId,
-                            Factor = 1
-                        });
+                            Id = x.UnitOfMeasure.Id,
+                            Code = x.UnitOfMeasure.Code,
+                            Name = x.UnitOfMeasure.Name,
+                            Description = x.UnitOfMeasure.Description,
+                            StatusId = x.UnitOfMeasure.StatusId,
+                            Factor = x.Factor
+                        }).ToList();
                     }
+                    
+                    UnitOfMeasures.Add(new UnitOfMeasure
+                    {
+                        Id = Product.UnitOfMeasure.Id,
+                        Code = Product.UnitOfMeasure.Code,
+                        Name = Product.UnitOfMeasure.Name,
+                        Description = Product.UnitOfMeasure.Description,
+                        StatusId = Product.UnitOfMeasure.StatusId,
+                        Factor = 1
+                    });
                     var UOM = UnitOfMeasures.Where(x => IndirectSalesOrderContent.UnitOfMeasureId == x.Id).FirstOrDefault();
                     IndirectSalesOrderContent.TaxPercentage = Product.TaxType.Percentage;
                     IndirectSalesOrderContent.RequestedQuantity = IndirectSalesOrderContent.Quantity * UOM.Factor.Value;

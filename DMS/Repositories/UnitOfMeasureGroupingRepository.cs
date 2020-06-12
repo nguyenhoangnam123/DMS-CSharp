@@ -160,8 +160,10 @@ namespace DMS.Repositories
                     Id = x.Id,
                     Factor = x.Factor,
                     UnitOfMeasureId = x.UnitOfMeasureId,
+                    UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
                     UnitOfMeasure = new UnitOfMeasure
                     {
+                        Id = x.UnitOfMeasure.Id,
                         Name = x.UnitOfMeasure.Name,
                         Code = x.UnitOfMeasure.Code,
                     }
