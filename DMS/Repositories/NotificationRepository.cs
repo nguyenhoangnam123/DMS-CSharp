@@ -60,6 +60,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Content, NotificationFilter.Content);
                 if (NotificationFilter.OrganizationId != null)
                     query = query.Where(q => q.OrganizationId, NotificationFilter.OrganizationId);
+                if (NotificationFilter.NotificationStatusId != null)
+                    query = query.Where(q => q.NotificationStatusId, NotificationFilter.NotificationStatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -84,6 +86,9 @@ namespace DMS.Repositories
                         case NotificationOrder.Organization:
                             query = query.OrderBy(q => q.OrganizationId);
                             break;
+                        case NotificationOrder.NotificationStatus:
+                            query = query.OrderBy(q => q.NotificationStatusId);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -101,6 +106,9 @@ namespace DMS.Repositories
                         case NotificationOrder.Organization:
                             query = query.OrderByDescending(q => q.OrganizationId);
                             break;
+                        case NotificationOrder.NotificationStatus:
+                            query = query.OrderByDescending(q => q.NotificationStatusId);
+                            break;
                     }
                     break;
             }
@@ -116,6 +124,7 @@ namespace DMS.Repositories
                 Title = filter.Selects.Contains(NotificationSelect.Title) ? q.Title : default(string),
                 Content = filter.Selects.Contains(NotificationSelect.Content) ? q.Content : default(string),
                 OrganizationId = filter.Selects.Contains(NotificationSelect.Organization) ? q.OrganizationId : default(long?),
+                NotificationStatusId = filter.Selects.Contains(NotificationSelect.NotificationStatus) ? q.NotificationStatusId : default(long),
                 Organization = filter.Selects.Contains(NotificationSelect.Organization) && q.Organization != null ? new Organization
                 {
                     Id = q.Organization.Id,
@@ -124,7 +133,13 @@ namespace DMS.Repositories
                     Address = q.Organization.Address,
                     Email = q.Organization.Email,
                     Phone = q.Organization.Phone,
-                } : null
+                } : null,
+                NotificationStatus = filter.Selects.Contains(NotificationSelect.NotificationStatus) && q.NotificationStatus != null ? new NotificationStatus
+                {
+                    Id = q.NotificationStatus.Id,
+                    Code = q.NotificationStatus.Code,
+                    Name = q.NotificationStatus.Name,
+                } : null,
             }).ToListAsync();
             return Notifications;
         }
@@ -155,6 +170,7 @@ namespace DMS.Repositories
                 Title = x.Title,
                 Content = x.Content,
                 OrganizationId = x.OrganizationId,
+                NotificationStatusId = x.NotificationStatusId,
                 Organization = new Organization
                 {
                     Id = x.Organization.Id,
@@ -163,6 +179,12 @@ namespace DMS.Repositories
                     Address = x.Organization.Address,
                     Email = x.Organization.Email,
                     Phone = x.Organization.Phone,
+                },
+                NotificationStatus = new NotificationStatus
+                {
+                    Id = x.NotificationStatus.Id,
+                    Code = x.NotificationStatus.Code,
+                    Name = x.NotificationStatus.Name,
                 }
             }).FirstOrDefaultAsync();
 
@@ -177,6 +199,7 @@ namespace DMS.Repositories
             NotificationDAO.Title = Notification.Title;
             NotificationDAO.Content = Notification.Content;
             NotificationDAO.OrganizationId = Notification.OrganizationId;
+            NotificationDAO.NotificationStatusId = Notification.NotificationStatusId;
             DataContext.Notification.Add(NotificationDAO);
             await DataContext.SaveChangesAsync();
             Notification.Id = NotificationDAO.Id;
@@ -193,6 +216,7 @@ namespace DMS.Repositories
             NotificationDAO.Title = Notification.Title;
             NotificationDAO.Content = Notification.Content;
             NotificationDAO.OrganizationId = Notification.OrganizationId;
+            NotificationDAO.NotificationStatusId = Notification.NotificationStatusId;
             await DataContext.SaveChangesAsync();
             await SaveReference(Notification);
             return true;
@@ -214,6 +238,7 @@ namespace DMS.Repositories
                 NotificationDAO.Title = Notification.Title;
                 NotificationDAO.Content = Notification.Content;
                 NotificationDAO.OrganizationId = Notification.OrganizationId;
+                NotificationDAO.NotificationStatusId = Notification.NotificationStatusId;
                 NotificationDAOs.Add(NotificationDAO);
             }
             await DataContext.BulkMergeAsync(NotificationDAOs);
