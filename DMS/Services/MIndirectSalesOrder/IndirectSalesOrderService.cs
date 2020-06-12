@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Handlers;
 using DMS.Repositories;
 using DMS.Services.MWorkflow;
 using Helpers;
@@ -33,12 +34,14 @@ namespace DMS.Services.MIndirectSalesOrder
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IIndirectSalesOrderValidator IndirectSalesOrderValidator;
+        private IRabbitManager RabbitManager;
         private IWorkflowService WorkflowService;
 
         public IndirectSalesOrderService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
+            IRabbitManager RabbitManager,
             IIndirectSalesOrderValidator IndirectSalesOrderValidator,
             IWorkflowService WorkflowService
         )
@@ -46,6 +49,7 @@ namespace DMS.Services.MIndirectSalesOrder
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
+            this.RabbitManager = RabbitManager;
             this.IndirectSalesOrderValidator = IndirectSalesOrderValidator;
             this.WorkflowService = WorkflowService;
         }
@@ -135,9 +139,11 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);
                 await WorkflowService.Initialize(IndirectSalesOrder.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(IndirectSalesOrder));
                 await UOW.Commit();
+                IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
 
+                NotifyUsed(IndirectSalesOrder);
                 await Logging.CreateAuditLog(IndirectSalesOrder, new { }, nameof(IndirectSalesOrderService));
-                return await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
+                return IndirectSalesOrder;
             }
             catch (Exception ex)
             {
@@ -168,9 +174,10 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);
                 await UOW.Commit();
 
-                var newData = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
-                await Logging.CreateAuditLog(newData, oldData, nameof(IndirectSalesOrderService));
-                return newData;
+                IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
+                NotifyUsed(IndirectSalesOrder);
+                await Logging.CreateAuditLog(IndirectSalesOrder, oldData, nameof(IndirectSalesOrderService));
+                return IndirectSalesOrder;
             }
             catch (Exception ex)
             {
@@ -204,11 +211,16 @@ namespace DMS.Services.MIndirectSalesOrder
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -228,11 +240,16 @@ namespace DMS.Services.MIndirectSalesOrder
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -252,11 +269,16 @@ namespace DMS.Services.MIndirectSalesOrder
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -348,7 +370,7 @@ namespace DMS.Services.MIndirectSalesOrder
                             Factor = x.Factor
                         }).ToList();
                     }
-                    
+
                     UnitOfMeasures.Add(new UnitOfMeasure
                     {
                         Id = Product.UnitOfMeasure.Id,
@@ -570,6 +592,66 @@ namespace DMS.Services.MIndirectSalesOrder
             Parameters.Add(nameof(IndirectSalesOrder.Code), IndirectSalesOrder.Code);
             Parameters.Add("Username", CurrentContext.UserName);
             return Parameters;
+        }
+
+        private void NotifyUsed(IndirectSalesOrder IndirectSalesOrder)
+        {
+            {
+                List<long> ItemIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(i => i.ItemId).ToList();
+                List<EventMessage<Item>> itemMessages = ItemIds.Select(i => new EventMessage<Item>
+                {
+                    Content = new Item { Id = i },
+                    EntityName = nameof(Item),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                }).ToList();
+                RabbitManager.PublishList(itemMessages, RoutingKeyEnum.ItemUsed);
+            }
+
+            {
+                List<long> PrimaryUOMIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(i => i.PrimaryUnitOfMeasureId).ToList();
+                List<long> UOMIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(i => i.UnitOfMeasureId).ToList();
+                UOMIds.AddRange(PrimaryUOMIds);
+                List<EventMessage<UnitOfMeasure>> UnitOfMeasureMessages = UOMIds.Select(x => new EventMessage<UnitOfMeasure>
+                {
+                    Content = new UnitOfMeasure { Id = x },
+                    EntityName = nameof(UnitOfMeasure),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                }).ToList();
+                RabbitManager.PublishList(UnitOfMeasureMessages, RoutingKeyEnum.UnitOfMeasureUsed);
+            }
+            {
+                List<EventMessage<Store>> storeMessages = new List<EventMessage<Store>>();
+                EventMessage<Store> BuyerStore = new EventMessage<Store>
+                {
+                    Content = new Store { Id = IndirectSalesOrder.BuyerStoreId },
+                    EntityName = nameof(Store),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                storeMessages.Add(BuyerStore);
+                EventMessage<Store> SellerStore = new EventMessage<Store>
+                {
+                    Content = new Store { Id = IndirectSalesOrder.SellerStoreId },
+                    EntityName = nameof(Store),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                storeMessages.Add(SellerStore);
+                RabbitManager.PublishList(storeMessages, RoutingKeyEnum.StoreUsed);
+            }
+
+            {
+                EventMessage<AppUser> AppUserMessage = new EventMessage<AppUser>
+                {
+                    Content = new AppUser { Id = IndirectSalesOrder.SaleEmployeeId },
+                    EntityName = nameof(AppUser),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                RabbitManager.PublishSingle(AppUserMessage, RoutingKeyEnum.AppUserUsed);
+            }
         }
     }
 }

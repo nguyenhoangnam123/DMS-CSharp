@@ -17,6 +17,9 @@ namespace DMS.Enums
             AppUserSync, OrganizationSync, StorenSync, SendMail, AuditLogSend, SystemLogSend
         };
 
+        public static GenericEnum AppUserUsed = new GenericEnum { Id = 1001, Code = "AppUser.Used", Name = "AppUser Used" };
+        public static GenericEnum OrganizationUsed = new GenericEnum { Id = 1002, Code = "Organization.Used", Name = "Organization Used" };
+
         public static GenericEnum AlbumUsed = new GenericEnum { Id = 101, Code = "Album.Used", Name = "Album Used" };
         public static GenericEnum BrandUsed = new GenericEnum { Id = 102, Code = "Brand.Used", Name = "Brand Used" };
         public static GenericEnum ItemUsed = new GenericEnum { Id = 103, Code = "Item.Used", Name = "Item Used" };

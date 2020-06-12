@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Models;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -30,6 +31,8 @@ namespace DMS.Handlers
             List<EventMessage<Item>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Item>>>(json);
             List<long> ItemIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
             await context.Item.Where(a => ItemIds.Contains(a.Id)).UpdateFromQueryAsync(a => new ItemDAO { Used = true });
+            List<long> ProductIds = await context.Item.Where(i => ItemIds.Contains(i.Id)).Select(i => i.ProductId).Distinct().ToListAsync();
+            await context.Product.Where(a => ProductIds.Contains(a.Id)).UpdateFromQueryAsync(a => new ProductDAO { Used = true });
         }
     }
 }
