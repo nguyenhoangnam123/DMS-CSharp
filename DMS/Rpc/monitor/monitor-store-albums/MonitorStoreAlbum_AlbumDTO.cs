@@ -12,7 +12,6 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         public long Id { get; set; }
         public string Name { get; set; }
         public long StatusId { get; set; }
-        public List<MonitorStoreAlbum_StoreCheckingImageMappingDTO> StoreCheckingImageMappings { get; set; }
         public MonitorStoreAlbum_AlbumDTO() { }
         public MonitorStoreAlbum_AlbumDTO(Album Album)
         {
