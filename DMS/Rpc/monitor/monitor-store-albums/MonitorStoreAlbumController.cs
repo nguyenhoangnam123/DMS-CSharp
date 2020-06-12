@@ -139,9 +139,10 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         }
 
         [Route(MonitorStoreAlbumRoute.List), HttpPost]
-        public async Task<List<MonitorStoreAlbum_MonitorStoreAlbumDTO>> List([FromBody] MonitorStoreAlbum_MonitorStoreAlbumFilterDTO MonitorStoreAlbum_MonitorStoreAlbumFilterDTO)
+        public async Task<MonitorStoreAlbum_MonitorStoreAlbumDTO> List([FromBody] MonitorStoreAlbum_MonitorStoreAlbumFilterDTO MonitorStoreAlbum_MonitorStoreAlbumFilterDTO)
         {
             long? AlbumId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.AlbumId?.Equal;
+            if (!AlbumId.HasValue) return new MonitorStoreAlbum_MonitorStoreAlbumDTO();
             long? OrganizationId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.SaleEmployeeId?.Equal;
             long? StoreId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.StoreId?.Equal;
@@ -165,12 +166,10 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                         (OrganizationId.HasValue == false || au.OrganizationId == OrganizationId.Value) &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
-                        (AlbumId.HasValue == false || scim.AlbumId == AlbumId.Value)
+                        (scim.AlbumId == AlbumId.Value)
                         select sc;
             List<StoreCheckingDAO> StoreCheckingDAOs = await query.Distinct().ToListAsync();
-
             List<long> StoreCheckingIds = StoreCheckingDAOs.Select(x => x.Id).ToList();
-
             StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
             {
                 Skip = 0,
@@ -187,10 +186,8 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                                                  {
                                                      AlbumId = scim.AlbumId,
                                                      ImageId = scim.ImageId,
-                                                     SaleEmployeeId = scim.SaleEmployeeId,
                                                      ShootingAt = scim.ShootingAt,
                                                      StoreCheckingId = scim.StoreCheckingId,
-                                                     StoreId = scim.StoreId,
                                                      Image = new MonitorStoreAlbum_ImageDTO
                                                      {
                                                          Id = scim.Image.Id,
@@ -200,37 +197,21 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                                                  };
             List<MonitorStoreAlbum_StoreCheckingImageMappingDTO> MonitorStoreAlbum_StoreCheckingImageMappingDTOs = await StoreCheckingImageMappingQuery.OrderBy(x => x.ShootingAt).ToListAsync();
 
-            List<MonitorStoreAlbum_MonitorStoreAlbumDTO> MonitorStoreAlbum_MonitorStoreAlbumDTOs = new List<MonitorStoreAlbum_MonitorStoreAlbumDTO>();
-            foreach (StoreChecking StoreChecking in StoreCheckings)
+            List<Album> Albums = await AlbumService.List(new AlbumFilter 
+            { 
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AlbumSelect.ALL,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            });
+            MonitorStoreAlbum_MonitorStoreAlbumDTO MonitorStoreAlbum_MonitorStoreAlbumDTO = new MonitorStoreAlbum_MonitorStoreAlbumDTO();
+            MonitorStoreAlbum_MonitorStoreAlbumDTO.StoreCheckingImageMappings = MonitorStoreAlbum_StoreCheckingImageMappingDTOs;
+            foreach (var StoreCheckingImageMapping in MonitorStoreAlbum_MonitorStoreAlbumDTO.StoreCheckingImageMappings)
             {
-                MonitorStoreAlbum_MonitorStoreAlbumDTO MonitorStoreAlbum_MonitorStoreAlbumDTO = new MonitorStoreAlbum_MonitorStoreAlbumDTO()
-                {
-                    CheckInAt = StoreChecking.CheckInAt,
-                    CheckOutAt = StoreChecking.CheckOutAt,
-                    Latitude = StoreChecking.Latitude,
-                    Longtitude = StoreChecking.Longtitude,
-                    SaleEmployeeId = StoreChecking.SaleEmployeeId,
-                    StoreId = StoreChecking.StoreId,
-                    SaleEmployee = new MonitorStoreAlbum_AppUserDTO
-                    {
-                        Id = StoreChecking.SaleEmployee.Id,
-                        Username = StoreChecking.SaleEmployee.Username,
-                        DisplayName = StoreChecking.SaleEmployee.DisplayName,
-                    },
-                    Store = new MonitorStoreAlbum_StoreDTO
-                    {
-                        Id = StoreChecking.Store.Id,
-                        Code = StoreChecking.Store.Code,
-                        Name = StoreChecking.Store.Name,
-                        Telephone = StoreChecking.Store.Telephone,
-                        StatusId = StoreChecking.Store.StatusId,
-                    }
-                };
-                MonitorStoreAlbum_MonitorStoreAlbumDTO.StoreCheckingImageMappings = MonitorStoreAlbum_StoreCheckingImageMappingDTOs.Where(x => x.StoreCheckingId == StoreChecking.Id).ToList();
-                MonitorStoreAlbum_MonitorStoreAlbumDTOs.Add(MonitorStoreAlbum_MonitorStoreAlbumDTO);
+                StoreCheckingImageMapping.StoreChecking = StoreCheckings.Where(x => x.Id == StoreCheckingImageMapping.StoreCheckingId).Select(x => new MonitorStoreAlbum_StoreCheckingDTO(x)).FirstOrDefault();
             }
 
-            return MonitorStoreAlbum_MonitorStoreAlbumDTOs;
+            return MonitorStoreAlbum_MonitorStoreAlbumDTO;
         }
 
         public async Task<StoreChecking> Get([FromBody] MonitorStoreAlbum_StoreCheckingImageMappingDTO MonitorStoreAlbum_StoreCheckingImageMappingDTO)
@@ -240,7 +221,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
 
             StoreChecking StoreChecking = new StoreChecking
             {
-                Id = MonitorStoreAlbum_StoreCheckingDTO.Id
+                //Id = MonitorStoreAlbum_StoreCheckingDTO.Id
             };
 
             StoreChecking = await StoreCheckingService.Get(StoreChecking.Id);

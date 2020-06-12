@@ -9,6 +9,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
 {
     public class MonitorStoreAlbum_StoreCheckingDTO : DataDTO
     {
+        public long Id { get; set; }
         public long StoreId { get; set; }
         public long SaleEmployeeId { get; set; }
         public decimal? Longtitude { get; set; }
