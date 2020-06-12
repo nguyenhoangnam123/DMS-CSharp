@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Services.MBrand;
 using DMS.Services.MImage;
 using DMS.Services.MInventory;
@@ -350,22 +351,47 @@ namespace DMS.Rpc.product
                         {
                             ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
                             Product.ProductProductGroupingMappings = new List<ProductProductGroupingMapping>();
-
+                            ProductProductGroupingMapping.ProductGroupingId = ProductGrouping.Id;
                             ProductProductGroupingMapping.ProductGrouping = ProductGrouping;
                             Product.ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
                         }
                     }
-                    Product.ProductType = new ProductType();
-                    Product.UnitOfMeasure = new UnitOfMeasure();
-                    Product.Brand = new Brand();
-                    Product.UsedVariation = new UsedVariation();
-                    Product.UnitOfMeasureGrouping = new UnitOfMeasureGrouping();
-                    Product.Supplier = new Supplier();
-                    Product.TaxType = new TaxType();
-                    Product.UsedVariation = new UsedVariation();
+                    Product.ProductType = new ProductType()
+                    {
+                        Code = ProductTypeCodeValue
+                    };
+                    Product.UnitOfMeasure = new UnitOfMeasure()
+                    {
+                        Code = UoMCodeValue
+                    };
+                    Product.Brand = new Brand()
+                    {
+                        Code = BrandCodeValue
+                    };
+                    Product.UsedVariation = new UsedVariation()
+                    {
+                        Code = UsedVariationCodeValue
+                    };
+                    Product.UnitOfMeasureGrouping = new UnitOfMeasureGrouping()
+                    {
+                        Code = UoMGroupCodeValue
+                    };
+                    Product.Supplier = new Supplier()
+                    {
+                        Code = SupplierCodeValue
+                    };
+                    Product.TaxType = new TaxType()
+                    {
+                        Code = TaxTypeCodeValue
+                    };
+                    Product.UsedVariation = new UsedVariation()
+                    {
+                        Code = UsedVariationCodeValue
+                    };
 
-                    Product.ProductTypeId = ProductTypes.Where(x => x.Code.Equals(ProductTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
+
                     Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.Equals(UoMCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    Product.ProductTypeId = ProductTypes.Where(x => x.Code.Equals(ProductTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
                     Product.UnitOfMeasureGroupingId = UnitOfMeasureGroupings.Where(x => x.Code.Equals(UoMGroupCodeValue)).Select(x => x.Id).FirstOrDefault();
                     Product.SupplierId = Suppliers.Where(x => x.Code.Equals(SupplierCodeValue)).Select(x => x.Id).FirstOrDefault();
                     Product.BrandId = Brands.Where(x => x.Code.Equals(BrandCodeValue)).Select(x => x.Id).FirstOrDefault();
@@ -380,8 +406,9 @@ namespace DMS.Rpc.product
                     Product.Description = DescriptionValue;
                     Product.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : decimal.Parse(RetailPriceValue);
                     Product.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : decimal.Parse(SalePriceValue);
+                    Product.StatusId = StatusEnum.ACTIVE.Id;
 
-                    if(Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
+                    if (Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
                     {
                         #region Variation
                         if (!string.IsNullOrEmpty(Property1Value))
@@ -768,7 +795,7 @@ namespace DMS.Rpc.product
                                 });
                 }
                 excel.GenerateWorksheet("Item", ItemHeader, data);
-                #endregion 
+                #endregion
 
                 #region Sheet Product Group
                 data.Clear();
@@ -788,7 +815,7 @@ namespace DMS.Rpc.product
                     });
                 }
                 excel.GenerateWorksheet("ProductGroup", ProductGroupHeader, data);
-                #endregion 
+                #endregion
 
                 #region Sheet Product Type
                 data.Clear();
@@ -808,7 +835,7 @@ namespace DMS.Rpc.product
                     });
                 }
                 excel.GenerateWorksheet("ProductType", ProductTypeHeader, data);
-                #endregion 
+                #endregion
 
                 #region Sheet UOM
                 data.Clear();
@@ -828,7 +855,7 @@ namespace DMS.Rpc.product
                     });
                 }
                 excel.GenerateWorksheet("UnitOfMeasure", UOMHeader, data);
-                #endregion 
+                #endregion
 
                 #region Sheet UOMGrouping
                 data.Clear();
@@ -848,7 +875,7 @@ namespace DMS.Rpc.product
                     });
                 }
                 excel.GenerateWorksheet("UnitOfMeasureGrouping", UOMGroupingHeader, data);
-                #endregion 
+                #endregion
 
                 #region Sheet Supplier
                 data.Clear();
@@ -868,7 +895,7 @@ namespace DMS.Rpc.product
                     });
                 }
                 excel.GenerateWorksheet("Supplier", SupplierHeader, data);
-                #endregion 
+                #endregion
 
                 #region Sheet Brand
                 data.Clear();
