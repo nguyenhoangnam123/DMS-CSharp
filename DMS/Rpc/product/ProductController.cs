@@ -359,8 +359,10 @@ namespace DMS.Rpc.product
                     Product.UnitOfMeasure = new UnitOfMeasure();
                     Product.Brand = new Brand();
                     Product.UsedVariation = new UsedVariation();
-                    Product.UnitOfMeasure = new UnitOfMeasure();
+                    Product.UnitOfMeasureGrouping = new UnitOfMeasureGrouping();
                     Product.Supplier = new Supplier();
+                    Product.TaxType = new TaxType();
+                    Product.UsedVariation = new UsedVariation();
 
                     Product.ProductTypeId = ProductTypes.Where(x => x.Code.Equals(ProductTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
                     Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.Equals(UoMCodeValue)).Select(x => x.Id).FirstOrDefault();
