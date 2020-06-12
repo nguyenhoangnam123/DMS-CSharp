@@ -5,6 +5,11 @@ namespace DMS.Models
 {
     public partial class SupplierDAO
     {
+        public SupplierDAO()
+        {
+            Products = new HashSet<ProductDAO>();
+        }
+
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
@@ -29,5 +34,6 @@ namespace DMS.Models
         public virtual ProvinceDAO Province { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual WardDAO Ward { get; set; }
+        public virtual ICollection<ProductDAO> Products { get; set; }
     }
 }

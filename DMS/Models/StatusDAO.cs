@@ -23,6 +23,7 @@ namespace DMS.Models
             Permissions = new HashSet<PermissionDAO>();
             Positions = new HashSet<PositionDAO>();
             ProductTypes = new HashSet<ProductTypeDAO>();
+            Products = new HashSet<ProductDAO>();
             Provinces = new HashSet<ProvinceDAO>();
             Resellers = new HashSet<ResellerDAO>();
             Roles = new HashSet<RoleDAO>();
@@ -59,6 +60,7 @@ namespace DMS.Models
         public virtual ICollection<PermissionDAO> Permissions { get; set; }
         public virtual ICollection<PositionDAO> Positions { get; set; }
         public virtual ICollection<ProductTypeDAO> ProductTypes { get; set; }
+        public virtual ICollection<ProductDAO> Products { get; set; }
         public virtual ICollection<ProvinceDAO> Provinces { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<RoleDAO> Roles { get; set; }

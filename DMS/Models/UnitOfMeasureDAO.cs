@@ -15,6 +15,7 @@ namespace DMS.Models
             IndirectSalesOrderContentUnitOfMeasures = new HashSet<IndirectSalesOrderContentDAO>();
             IndirectSalesOrderPromotionPrimaryUnitOfMeasures = new HashSet<IndirectSalesOrderPromotionDAO>();
             IndirectSalesOrderPromotionUnitOfMeasures = new HashSet<IndirectSalesOrderPromotionDAO>();
+            Products = new HashSet<ProductDAO>();
             UnitOfMeasureGroupingContents = new HashSet<UnitOfMeasureGroupingContentDAO>();
             UnitOfMeasureGroupings = new HashSet<UnitOfMeasureGroupingDAO>();
         }
@@ -38,6 +39,7 @@ namespace DMS.Models
         public virtual ICollection<IndirectSalesOrderContentDAO> IndirectSalesOrderContentUnitOfMeasures { get; set; }
         public virtual ICollection<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotionPrimaryUnitOfMeasures { get; set; }
         public virtual ICollection<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotionUnitOfMeasures { get; set; }
+        public virtual ICollection<ProductDAO> Products { get; set; }
         public virtual ICollection<UnitOfMeasureGroupingContentDAO> UnitOfMeasureGroupingContents { get; set; }
         public virtual ICollection<UnitOfMeasureGroupingDAO> UnitOfMeasureGroupings { get; set; }
     }

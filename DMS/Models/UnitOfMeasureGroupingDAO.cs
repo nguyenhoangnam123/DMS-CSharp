@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public UnitOfMeasureGroupingDAO()
         {
+            Products = new HashSet<ProductDAO>();
             UnitOfMeasureGroupingContents = new HashSet<UnitOfMeasureGroupingContentDAO>();
         }
 
@@ -23,6 +24,7 @@ namespace DMS.Models
 
         public virtual StatusDAO Status { get; set; }
         public virtual UnitOfMeasureDAO UnitOfMeasure { get; set; }
+        public virtual ICollection<ProductDAO> Products { get; set; }
         public virtual ICollection<UnitOfMeasureGroupingContentDAO> UnitOfMeasureGroupingContents { get; set; }
     }
 }
