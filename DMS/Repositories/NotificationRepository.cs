@@ -40,6 +40,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Content, filter.Content);
             if (filter.OrganizationId != null)
                 query = query.Where(q => q.OrganizationId, filter.OrganizationId);
+            if (filter.NotificationStatusId != null)
+                query = query.Where(q => q.NotificationStatusId, filter.NotificationStatusId);
             query = OrFilter(query, filter);
             return query;
         }
