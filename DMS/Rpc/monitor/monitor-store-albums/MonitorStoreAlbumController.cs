@@ -4,6 +4,7 @@ using DMS.Enums;
 using DMS.Models;
 using DMS.Services.MAlbum;
 using DMS.Services.MAppUser;
+using DMS.Services.MImage;
 using DMS.Services.MOrganization;
 using DMS.Services.MStore;
 using DMS.Services.MStoreChecking;
@@ -24,6 +25,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         private IAlbumService AlbumService;
         private IOrganizationService OrganizationService;
         private IAppUserService AppUserService;
+        private IImageService ImageService;
         private IStoreService StoreService;
         private IStoreCheckingService StoreCheckingService;
 
@@ -32,6 +34,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             IAlbumService AlbumService,
             IOrganizationService OrganizationService,
             IAppUserService AppUserService,
+            IImageService ImageService,
             IStoreService StoreService,
             IStoreCheckingService StoreCheckingService)
         {
@@ -39,6 +42,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             this.AlbumService = AlbumService;
             this.OrganizationService = OrganizationService;
             this.AppUserService = AppUserService;
+            this.ImageService = ImageService;
             this.StoreService = StoreService;
             this.StoreCheckingService = StoreCheckingService;
         }
@@ -188,7 +192,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                                                      ImageId = scim.ImageId,
                                                      ShootingAt = scim.ShootingAt,
                                                      StoreCheckingId = scim.StoreCheckingId,
-                                                     Image = new MonitorStoreAlbum_ImageDTO
+                                                     Image = scim.Image == null ? null : new MonitorStoreAlbum_ImageDTO
                                                      {
                                                          Id = scim.Image.Id,
                                                          Url = scim.Image.Url,
@@ -208,24 +212,72 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             MonitorStoreAlbum_MonitorStoreAlbumDTO.StoreCheckingImageMappings = MonitorStoreAlbum_StoreCheckingImageMappingDTOs;
             foreach (var StoreCheckingImageMapping in MonitorStoreAlbum_MonitorStoreAlbumDTO.StoreCheckingImageMappings)
             {
+                StoreCheckingImageMapping.Album = Albums.Where(x => x.Id == StoreCheckingImageMapping.AlbumId).Select(x => new MonitorStoreAlbum_AlbumDTO(x)).FirstOrDefault();
                 StoreCheckingImageMapping.StoreChecking = StoreCheckings.Where(x => x.Id == StoreCheckingImageMapping.StoreCheckingId).Select(x => new MonitorStoreAlbum_StoreCheckingDTO(x)).FirstOrDefault();
             }
 
             return MonitorStoreAlbum_MonitorStoreAlbumDTO;
         }
 
-        public async Task<StoreChecking> Get([FromBody] MonitorStoreAlbum_StoreCheckingImageMappingDTO MonitorStoreAlbum_StoreCheckingImageMappingDTO)
+        [Route(MonitorStoreAlbumRoute.Get), HttpPost]
+        public async Task<MonitorStoreAlbum_StoreCheckingImageMappingDTO> Get([FromBody] MonitorStoreAlbum_StoreCheckingImageMappingDTO MonitorStoreAlbum_StoreCheckingImageMappingDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            StoreChecking StoreChecking = new StoreChecking
+            StoreCheckingImageMappingDAO StoreCheckingImageMappingDAO = await DataContext.StoreCheckingImageMapping
+                .Where(x => x.ImageId == MonitorStoreAlbum_StoreCheckingImageMappingDTO.ImageId && x.StoreCheckingId == MonitorStoreAlbum_StoreCheckingImageMappingDTO.StoreCheckingId).FirstOrDefaultAsync();
+            if (StoreCheckingImageMappingDAO == null)
+                return new MonitorStoreAlbum_StoreCheckingImageMappingDTO();
+
+            Image Image = await ImageService.Get(StoreCheckingImageMappingDAO.ImageId);
+            Album Album = await AlbumService.Get(StoreCheckingImageMappingDAO.AlbumId);
+            StoreChecking StoreChecking = await StoreCheckingService.Get(MonitorStoreAlbum_StoreCheckingImageMappingDTO.StoreCheckingId);
+            MonitorStoreAlbum_StoreCheckingImageMappingDTO = new MonitorStoreAlbum_StoreCheckingImageMappingDTO() 
             {
-                //Id = MonitorStoreAlbum_StoreCheckingDTO.Id
+                ImageId = StoreCheckingImageMappingDAO.ImageId,
+                StoreCheckingId = StoreCheckingImageMappingDAO.StoreCheckingId,
+                AlbumId = StoreCheckingImageMappingDAO.AlbumId,
+                ShootingAt = StoreCheckingImageMappingDAO.ShootingAt,
+                Album = Album == null ? null : new MonitorStoreAlbum_AlbumDTO
+                {
+                    Id = Album.Id,
+                    Name = Album.Name,
+                    StatusId = Album.StatusId
+                },
+                Image = Image == null ? null : new MonitorStoreAlbum_ImageDTO
+                {
+                    Id = Image.Id,
+                    Name = Image.Name,
+                    Url = Image.Url,
+                },
+                StoreChecking = new MonitorStoreAlbum_StoreCheckingDTO
+                {
+                    Id = StoreChecking.Id,
+                    CheckInAt = StoreChecking.CheckInAt,
+                    CheckOutAt = StoreChecking.CheckOutAt,
+                    Latitude = StoreChecking.Latitude,
+                    Longtitude = StoreChecking.Longtitude,
+                    SaleEmployeeId = StoreChecking.SaleEmployeeId,
+                    StoreId = StoreChecking.StoreId,
+                    SaleEmployee = StoreChecking.SaleEmployee == null ? null : new MonitorStoreAlbum_AppUserDTO
+                    {
+                        Id = StoreChecking.SaleEmployee.Id,
+                        DisplayName = StoreChecking.SaleEmployee.DisplayName,
+                        Username = StoreChecking.SaleEmployee.Username,
+                    },
+                    Store = StoreChecking.Store == null ? null : new MonitorStoreAlbum_StoreDTO
+                    {
+                        Id = StoreChecking.Store.Id,
+                        Code = StoreChecking.Store.Code,
+                        Name = StoreChecking.Store.Name,
+                        Telephone = StoreChecking.Store.Telephone,
+                        StatusId = StoreChecking.Store.StatusId,
+                    }
+                }
             };
 
-            StoreChecking = await StoreCheckingService.Get(StoreChecking.Id);
-            return StoreChecking;
+            return MonitorStoreAlbum_StoreCheckingImageMappingDTO;
         }
     }
 }

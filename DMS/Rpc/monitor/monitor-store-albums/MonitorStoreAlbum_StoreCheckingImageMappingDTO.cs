@@ -13,6 +13,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         public long StoreCheckingId { get; set; }
         public long AlbumId { get; set; }
         public DateTime ShootingAt { get; set; }
+        public MonitorStoreAlbum_AlbumDTO Album { get; set; }
         public MonitorStoreAlbum_ImageDTO Image { get; set; }
         public MonitorStoreAlbum_StoreCheckingDTO StoreChecking { get; set; }
         public MonitorStoreAlbum_StoreCheckingImageMappingDTO() { }
@@ -22,6 +23,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             this.StoreCheckingId = StoreCheckingImageMapping.StoreCheckingId;
             this.AlbumId = StoreCheckingImageMapping.AlbumId;
             this.ShootingAt = StoreCheckingImageMapping.ShootingAt;
+            this.Album = StoreCheckingImageMapping.Album == null ? null : new MonitorStoreAlbum_AlbumDTO(StoreCheckingImageMapping.Album);
             this.Image = StoreCheckingImageMapping.Image == null ? null : new MonitorStoreAlbum_ImageDTO(StoreCheckingImageMapping.Image);
             this.StoreChecking = StoreCheckingImageMapping.StoreChecking == null ? null : new MonitorStoreAlbum_StoreCheckingDTO(StoreCheckingImageMapping.StoreChecking);
         }
