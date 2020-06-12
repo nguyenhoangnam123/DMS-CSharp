@@ -60,6 +60,8 @@ namespace DMS.Rpc.store_checking
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountProblem, ListProblem, CountSurvey, ListSurvey,
                 GetSurveyForm, SaveSurveyForm,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, } },
+            { "Checkout", new List<string> {
+                CheckOut } },
         };
     }
 }

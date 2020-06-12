@@ -243,6 +243,22 @@ namespace DMS.Services.MStoreChecking
 
             StoreFilter.Id = new IdFilter { In = StoreIds };
             List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+
+            StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreCheckingSelect.ALL,
+                StoreId = new IdFilter { In = StoreIds },
+                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                CheckOutAt = new DateFilter { GreaterEqual = StaticParams.DateTimeNow.Date, Less = StaticParams.DateTimeNow.Date.AddDays(1) }
+            };
+            List<StoreChecking> StoreCheckings = await UOW.StoreCheckingRepository.List(StoreCheckingFilter);
+            foreach (var Store in Stores)
+            {
+                var count = StoreCheckings.Where(x => x.StoreId == Store.Id).Count();
+                Store.HasChecking = count != 0 ? true : false;
+            }
             return Stores;
         }
 
@@ -261,6 +277,22 @@ namespace DMS.Services.MStoreChecking
 
             StoreFilter.Id = new IdFilter { In = StoreIds };
             List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+
+            StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreCheckingSelect.ALL,
+                StoreId = new IdFilter { In = StoreIds },
+                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                CheckOutAt = new DateFilter { GreaterEqual = StaticParams.DateTimeNow.Date, Less = StaticParams.DateTimeNow.Date.AddDays(1) }
+            };
+            List<StoreChecking> StoreCheckings = await UOW.StoreCheckingRepository.List(StoreCheckingFilter);
+            foreach (var Store in Stores)
+            {
+                var count = StoreCheckings.Where(x => x.StoreId == Store.Id).Count();
+                Store.HasChecking = count != 0 ? true : false;
+            }
             return Stores;
         }
 
