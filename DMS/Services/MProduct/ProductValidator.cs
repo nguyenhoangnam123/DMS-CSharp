@@ -74,44 +74,61 @@ namespace DMS.Services.MProduct
         }
         private async Task<bool> ValidateName(Product Product)
         {
-            if (string.IsNullOrWhiteSpace(Product.Name))
+            var oldData = await UOW.ProductRepository.Get(Product.Id);
+            if (oldData != null && oldData.Used)
             {
-                Product.AddError(nameof(ProductValidator), nameof(Product.Name), ErrorCode.NameEmpty);
+                Product.AddError(nameof(ProductValidator), nameof(Product.Id), ErrorCode.ProductInUsed);
             }
-            else if (Product.Name.Length > 3000)
+            else
             {
-                Product.AddError(nameof(ProductValidator), nameof(Product.Name), ErrorCode.NameOverLength);
+                if (string.IsNullOrWhiteSpace(Product.Name))
+                {
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Name), ErrorCode.NameEmpty);
+                }
+                else if (Product.Name.Length > 3000)
+                {
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Name), ErrorCode.NameOverLength);
+                }
             }
+            
             return Product.IsValidated;
         }
         private async Task<bool> ValidateCode(Product Product)
         {
-            if (string.IsNullOrWhiteSpace(Product.Code))
+            var oldData = await UOW.ProductRepository.Get(Product.Id);
+            if(oldData != null && oldData.Used)
             {
-                Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeEmpty);
+                Product.AddError(nameof(ProductValidator), nameof(Product.Id), ErrorCode.ProductInUsed);
             }
             else
             {
-                var Code = Product.Code;
-                if (Product.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Product.Code))
+                if (string.IsNullOrWhiteSpace(Product.Code))
                 {
-                    Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeHasSpecialCharacter);
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeEmpty);
                 }
-
-                ProductFilter ProductFilter = new ProductFilter
+                else
                 {
-                    Skip = 0,
-                    Take = 10,
-                    Id = new IdFilter { NotEqual = Product.Id },
-                    Code = new StringFilter { Equal = Product.Code },
-                    Selects = ProductSelect.Code
-                };
+                    var Code = Product.Code;
+                    if (Product.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Product.Code))
+                    {
+                        Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeHasSpecialCharacter);
+                    }
 
-                int count = await UOW.ProductRepository.Count(ProductFilter);
-                if (count != 0)
-                    Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeExisted);
+                    ProductFilter ProductFilter = new ProductFilter
+                    {
+                        Skip = 0,
+                        Take = 10,
+                        Id = new IdFilter { NotEqual = Product.Id },
+                        Code = new StringFilter { Equal = Product.Code },
+                        Selects = ProductSelect.Code
+                    };
+
+                    int count = await UOW.ProductRepository.Count(ProductFilter);
+                    if (count != 0)
+                        Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeExisted);
+                }
             }
-
+            
             return Product.IsValidated;
         }
 
@@ -439,7 +456,8 @@ namespace DMS.Services.MProduct
         {
             if (await ValidateId(Product))
             {
-                await CanDelete(Product);
+                if(Product.Used)
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Id), ErrorCode.ProductInUsed);
             }
             return Product.IsValidated;
         }

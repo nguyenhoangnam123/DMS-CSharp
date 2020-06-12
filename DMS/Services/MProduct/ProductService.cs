@@ -179,7 +179,7 @@ namespace DMS.Services.MProduct
 
             try
             {
-                if (Product.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
+                if (Product.UsedVariationId == UsedVariationEnum.NOTUSED.Id || Product.Items == null)
                 {
                     Product.Items = new List<Item>();
                     Product.Items.Add(new Item
@@ -303,6 +303,18 @@ namespace DMS.Services.MProduct
                         Product.Items.ForEach(x => x.StatusId = StatusEnum.ACTIVE.Id);
                     else
                         Product.Items.ForEach(x => x.StatusId = StatusEnum.INACTIVE.Id);
+                    if (!Product.Used)
+                    {
+                        foreach (var item in Product.Items)
+                        {
+                            item.Code = Product.Code;
+                            item.Name = Product.Name;
+                            item.ScanCode = Product.ScanCode;
+                            item.RetailPrice = Product.RetailPrice;
+                            item.SalePrice = Product.SalePrice;
+                        }
+                    }
+                        
                 }
                 else
                 {
