@@ -418,6 +418,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Problem Problem)
         {
+            await DataContext.ProblemHistory.Where(x => x.ProblemId == Problem.Id).DeleteFromQueryAsync();
             await DataContext.ProblemImageMapping.Where(x => x.ProblemId == Problem.Id).DeleteFromQueryAsync();
             await DataContext.Problem.Where(x => x.Id == Problem.Id).DeleteFromQueryAsync();
             return true;
@@ -448,6 +449,7 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<Problem> Problems)
         {
             List<long> Ids = Problems.Select(x => x.Id).ToList();
+            await DataContext.ProblemHistory.Where(x => Ids.Contains(x.ProblemId)).DeleteFromQueryAsync();
             await DataContext.ProblemImageMapping.Where(x => Ids.Contains(x.ProblemId)).DeleteFromQueryAsync();
             await DataContext.Problem
                 .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
