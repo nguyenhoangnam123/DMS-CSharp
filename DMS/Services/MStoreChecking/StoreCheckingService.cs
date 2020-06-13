@@ -346,7 +346,7 @@ namespace DMS.Services.MStoreChecking
             List<long> StoreIds = new List<long>();
             foreach (var ERouteContent in ERouteContents)
             {
-                var index = ((Now - ERouteContent.ERoute.RealStartDate).Days + 1) % 28;
+                var index = (Now - ERouteContent.ERoute.RealStartDate).Days % 28;
                 if (ERouteContent.ERouteContentDays[index].Planned == Planned)
                     StoreIds.Add(ERouteContent.StoreId);
             }

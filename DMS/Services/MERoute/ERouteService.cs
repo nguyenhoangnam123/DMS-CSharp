@@ -128,7 +128,8 @@ namespace DMS.Services.MERoute
             try
             {
                 var oldData = await UOW.ERouteRepository.Get(ERoute.Id);
-
+                int diff = (7 + (ERoute.StartDate.DayOfWeek - DayOfWeek.Monday)) % 7;
+                ERoute.RealStartDate = ERoute.StartDate.AddDays(-1 * diff);
                 await UOW.Begin();
                 await UOW.ERouteRepository.Update(ERoute);
                 await UOW.Commit();

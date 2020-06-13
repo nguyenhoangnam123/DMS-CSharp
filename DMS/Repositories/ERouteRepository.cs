@@ -397,6 +397,7 @@ namespace DMS.Repositories
             ERouteDAO.SaleEmployeeId = ERoute.SaleEmployeeId;
             ERouteDAO.StartDate = ERoute.StartDate;
             ERouteDAO.EndDate = ERoute.EndDate;
+            ERouteDAO.RealStartDate = ERoute.RealStartDate;
             ERouteDAO.ERouteTypeId = ERoute.ERouteTypeId;
             ERouteDAO.RequestStateId = ERoute.RequestStateId;
             ERouteDAO.StatusId = ERoute.StatusId;
