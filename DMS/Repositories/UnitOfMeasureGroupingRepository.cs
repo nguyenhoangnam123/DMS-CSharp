@@ -279,6 +279,10 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
+            await DataContext.Product
+               .Where(x => x.UnitOfMeasureGroupingId.HasValue && x.UnitOfMeasureGroupingId.Value == UnitOfMeasureGrouping.Id)
+               .UpdateFromQueryAsync(x => new ProductDAO { SupplierId = null });
+
             await DataContext.UnitOfMeasureGrouping.Where(x => x.Id == UnitOfMeasureGrouping.Id)
                 .UpdateFromQueryAsync(x => new UnitOfMeasureGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
@@ -307,6 +311,11 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<UnitOfMeasureGrouping> UnitOfMeasureGroupings)
         {
             List<long> Ids = UnitOfMeasureGroupings.Select(x => x.Id).ToList();
+
+            await DataContext.Product
+                .Where(x => x.UnitOfMeasureGroupingId.HasValue && Ids.Contains(x.UnitOfMeasureGroupingId.Value))
+                .UpdateFromQueryAsync(x => new ProductDAO { UnitOfMeasureGroupingId = null });
+
             await DataContext.UnitOfMeasureGrouping
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new UnitOfMeasureGroupingDAO { DeletedAt = StaticParams.DateTimeNow });

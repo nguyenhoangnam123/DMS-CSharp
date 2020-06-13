@@ -420,6 +420,9 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Supplier Supplier)
         {
+            await DataContext.Product
+                .Where(x => x.SupplierId.HasValue && x.SupplierId.Value == Supplier.Id)
+                .UpdateFromQueryAsync(x => new ProductDAO { SupplierId = null });
             await DataContext.Supplier.Where(x => x.Id == Supplier.Id)
                 .UpdateFromQueryAsync(x => new SupplierDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
@@ -456,6 +459,10 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<Supplier> Suppliers)
         {
             List<long> Ids = Suppliers.Select(x => x.Id).ToList();
+            await DataContext.Product
+              .Where(x => x.SupplierId.HasValue && Ids.Contains(x.SupplierId.Value))
+              .UpdateFromQueryAsync(x => new ProductDAO { SupplierId = null });
+
             await DataContext.Supplier
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new SupplierDAO { DeletedAt = StaticParams.DateTimeNow });

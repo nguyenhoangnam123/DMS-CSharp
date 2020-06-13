@@ -273,7 +273,7 @@ namespace DMS.Services.MProduct
                 foreach (var item in Items)
                 {
                     var oldItem = OldItems.Where(x => x.Id == item.Id).FirstOrDefault();
-                    if(oldItem != null)
+                    if (oldItem != null)
                     {
                         if (item.SalePrice != oldItem.SalePrice)
                         {
@@ -297,7 +297,7 @@ namespace DMS.Services.MProduct
                         }
                     }
                 }
-                if(oldData.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
+                if (oldData.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
                 {
                     if (Product.StatusId == StatusEnum.ACTIVE.Id)
                         Product.Items.ForEach(x => x.StatusId = StatusEnum.ACTIVE.Id);
@@ -314,7 +314,7 @@ namespace DMS.Services.MProduct
                             item.SalePrice = Product.SalePrice;
                         }
                     }
-                        
+
                 }
                 else
                 {
@@ -555,6 +555,42 @@ namespace DMS.Services.MProduct
             if (count != 0)
                 return false;
             return true;
+        }
+
+        private void NotifyUsed(Product Product)
+        {
+            {
+                EventMessage<ProductType> ProductTypeMessage = new EventMessage<ProductType>
+                {
+                    Content = new ProductType { Id = Product.ProductTypeId },
+                    EntityName = nameof(Item),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                RabbitManager.PublishSingle(ProductTypeMessage, RoutingKeyEnum.ProductTypeUsed);
+            }
+
+            {
+                EventMessage<UnitOfMeasure> UnitOfMeasureMessage = new EventMessage<UnitOfMeasure>
+                {
+                    Content = new UnitOfMeasure { Id = Product.UnitOfMeasureId },
+                    EntityName = nameof(Item),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                RabbitManager.PublishSingle(UnitOfMeasureMessage, RoutingKeyEnum.UnitOfMeasureUsed);
+            }
+
+            {
+                EventMessage<TaxType> TaxTypeMessage = new EventMessage<TaxType>
+                {
+                    Content = new TaxType { Id = Product.TaxTypeId },
+                    EntityName = nameof(Item),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                RabbitManager.PublishSingle(TaxTypeMessage, RoutingKeyEnum.TaxTypeUsed);
+            }
         }
     }
 }
