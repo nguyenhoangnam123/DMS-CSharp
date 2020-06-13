@@ -29,17 +29,7 @@ namespace DMS.Handlers
             _channel = _objectPool.Get();
             _channel.ExchangeDeclare(exchangeName, ExchangeType.Topic, true, false);
             _channel.QueueDeclare(StaticParams.ModuleName, true, false, false, null);
-            Init();
 
-            foreach (IHandler handler in Handlers)
-            {
-                handler.QueueBind(_channel, StaticParams.ModuleName, exchangeName);
-            }
-            _channel.BasicQos(0, 1, false);
-        }
-
-        private void Init()
-        {
             List<Type> handlerTypes = typeof(ConsumeRabbitMQHostedService).Assembly.GetTypes()
                 .Where(x => typeof(Handler).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract)
                 .ToList();
@@ -48,6 +38,12 @@ namespace DMS.Handlers
                 Handler handler = (Handler)Activator.CreateInstance(type);
                 Handlers.Add(handler);
             }
+
+            foreach (IHandler handler in Handlers)
+            {
+                handler.QueueBind(_channel, StaticParams.ModuleName, exchangeName);
+            }
+            _channel.BasicQos(0, 1, false);
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
