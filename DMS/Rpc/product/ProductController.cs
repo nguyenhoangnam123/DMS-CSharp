@@ -235,12 +235,6 @@ namespace DMS.Rpc.product
                 Take = int.MaxValue,
                 Selects = UsedVariationSelect.ALL
             });
-            List<VariationGrouping> VariationGroupings = await VariationGroupingService.List(new VariationGroupingFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = VariationGroupingSelect.ALL
-            });
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
@@ -290,24 +284,26 @@ namespace DMS.Rpc.product
                 //Giá bán đề xuất
                 int SalePriceColumn = 16 + StartColumn;
 
+                //Trạng thái
+                int StatusIdColumn = 17 + StartColumn;
                 //Có tạo phiên bản
-                int UsedVariationCodeColumn = 17 + StartColumn;
+                int UsedVariationCodeColumn = 18 + StartColumn;
                 //Thuộc tính 1
-                int Property1Column = 18 + StartColumn;
+                int Property1Column = 19 + StartColumn;
                 //Giá trị 1
-                int PropertyValue1Column = 19 + StartColumn;
+                int PropertyValue1Column = 20 + StartColumn;
                 //Thuộc tính 2
-                int Property2Column = 20 + StartColumn;
+                int Property2Column = 21 + StartColumn;
                 //Giá trị 2
-                int PropertyValue2Column = 21 + StartColumn;
+                int PropertyValue2Column = 22 + StartColumn;
                 //Thuộc tính 3
-                int Property3Column = 22 + StartColumn;
+                int Property3Column = 23 + StartColumn;
                 //Giá trị 3
-                int PropertyValue3Column = 23 + StartColumn;
+                int PropertyValue3Column = 24 + StartColumn;
                 //Thuộc tính 4
-                int Property4Column = 24 + StartColumn;
+                int Property4Column = 25 + StartColumn;
                 //Giá trị 4
-                int PropertyValue4Column = 25 + StartColumn;
+                int PropertyValue4Column = 26 + StartColumn;
                 #endregion
 
                 for (int i = StartRow; i <= ProductSheet.Dimension.End.Row; i++)
@@ -330,8 +326,10 @@ namespace DMS.Rpc.product
                     string DescriptionValue = ProductSheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
                     string RetailPriceValue = ProductSheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
                     string SalePriceValue = ProductSheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
-                    //Thuộc tính
+
+                    string StatusIdValue = ProductSheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
                     string UsedVariationCodeValue = ProductSheet.Cells[i + StartRow, UsedVariationCodeColumn].Value?.ToString();
+                    //Thuộc tính
                     string Property1Value = ProductSheet.Cells[i + StartRow, Property1Column].Value?.ToString();
                     string PropertyValue1Value = ProductSheet.Cells[i + StartRow, PropertyValue1Column].Value?.ToString();
                     string Property2Value = ProductSheet.Cells[i + StartRow, Property2Column].Value?.ToString();
@@ -406,7 +404,15 @@ namespace DMS.Rpc.product
                     Product.Description = DescriptionValue;
                     Product.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : decimal.Parse(RetailPriceValue);
                     Product.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : decimal.Parse(SalePriceValue);
-                    Product.StatusId = StatusEnum.ACTIVE.Id;
+                    if (!string.IsNullOrEmpty(StatusIdValue))
+                    {
+                        int StatusId = 0;
+                        int.TryParse(StatusIdValue.Trim(), out StatusId);
+                        if (StatusId == Enums.StatusEnum.ACTIVE.Id)
+                            Product.StatusId = StatusEnum.ACTIVE.Id;
+                        else
+                            Product.StatusId = StatusEnum.INACTIVE.Id;
+                    }
 
                     if (Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
                     {
@@ -414,174 +420,145 @@ namespace DMS.Rpc.product
                         if (!string.IsNullOrEmpty(Property1Value))
                         {
                             Product.VariationGroupings = new List<VariationGrouping>();
-                            VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property1Value)).FirstOrDefault();
-                            if (VariationGrouping == null)
+                            VariationGrouping VariationGrouping = new VariationGrouping
                             {
-                                VariationGrouping = new VariationGrouping
-                                {
-                                    Name = Property1Value
-                                };
-
-                            }
+                                Name = Property1Value
+                            };
                             VariationGrouping.Variations = new List<Variation>();
-                            var Values = PropertyValue1Value.Split(',');
-                            foreach (var Value in Values)
+                            if (!string.IsNullOrEmpty(PropertyValue1Value))
                             {
-                                var splitValue = Value.Split('-');
-                                Variation Variation = new Variation
+                                var Values = PropertyValue1Value.Split(';');
+                                foreach (var Value in Values)
                                 {
-                                    Code = splitValue[0],
-                                    Name = splitValue[1]
-                                };
-                                VariationGrouping.Variations.Add(Variation);
+                                    var splitValue = Value.Trim().Split('-');
+                                    Variation Variation = new Variation
+                                    {
+                                        Code = splitValue[0].Trim(),
+                                        Name = splitValue[1].Trim()
+                                    };
+                                    VariationGrouping.Variations.Add(Variation);
+                                }
+                                Product.VariationGroupings.Add(VariationGrouping);
                             }
-                            Product.VariationGroupings.Add(VariationGrouping);
-
                         }
 
                         if (!string.IsNullOrEmpty(Property2Value))
                         {
                             Product.VariationGroupings = new List<VariationGrouping>();
-                            VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property2Value)).FirstOrDefault();
-                            if (VariationGrouping == null)
+                            VariationGrouping VariationGrouping = new VariationGrouping
                             {
-                                VariationGrouping = new VariationGrouping
-                                {
-                                    Name = Property2Value
-                                };
-
-                            }
+                                Name = Property2Value
+                            };
                             VariationGrouping.Variations = new List<Variation>();
-                            var Values = PropertyValue2Value.Split(',');
-                            foreach (var Value in Values)
+                            if (!string.IsNullOrEmpty(PropertyValue2Value))
                             {
-                                var splitValue = Value.Split('-');
-                                Variation Variation = new Variation
+                                var Values = PropertyValue2Value.Split(';');
+                                foreach (var Value in Values)
                                 {
-                                    Code = splitValue[0],
-                                    Name = splitValue[1]
-                                };
-                                VariationGrouping.Variations.Add(Variation);
+                                    var splitValue = Value.Trim().Split('-');
+                                    Variation Variation = new Variation
+                                    {
+                                        Code = splitValue[0].Trim(),
+                                        Name = splitValue[1].Trim()
+                                    };
+                                    VariationGrouping.Variations.Add(Variation);
+                                }
+                                Product.VariationGroupings.Add(VariationGrouping);
                             }
-                            Product.VariationGroupings.Add(VariationGrouping);
-
                         }
 
                         if (!string.IsNullOrEmpty(Property3Value))
                         {
                             Product.VariationGroupings = new List<VariationGrouping>();
-                            VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property3Value)).FirstOrDefault();
-                            if (VariationGrouping == null)
+                            VariationGrouping VariationGrouping = new VariationGrouping
                             {
-                                VariationGrouping = new VariationGrouping
-                                {
-                                    Name = Property3Value
-                                };
-
-                            }
+                                Name = Property3Value
+                            };
                             VariationGrouping.Variations = new List<Variation>();
-                            var Values = PropertyValue3Value.Split(',');
-                            foreach (var Value in Values)
+                            if (!string.IsNullOrEmpty(PropertyValue3Value))
                             {
-                                var splitValue = Value.Split('-');
-                                Variation Variation = new Variation
+                                var Values = PropertyValue3Value.Split(';');
+                                foreach (var Value in Values)
                                 {
-                                    Code = splitValue[0],
-                                    Name = splitValue[1]
-                                };
-                                VariationGrouping.Variations.Add(Variation);
+                                    var splitValue = Value.Trim().Split('-');
+                                    Variation Variation = new Variation
+                                    {
+                                        Code = splitValue[0].Trim(),
+                                        Name = splitValue[1].Trim()
+                                    };
+                                    VariationGrouping.Variations.Add(Variation);
+                                }
+                                Product.VariationGroupings.Add(VariationGrouping);
                             }
-                            Product.VariationGroupings.Add(VariationGrouping);
-
                         }
 
                         if (!string.IsNullOrEmpty(Property4Value))
                         {
                             Product.VariationGroupings = new List<VariationGrouping>();
-                            VariationGrouping VariationGrouping = VariationGroupings.Where(v => v.Name.Equals(Property4Value)).FirstOrDefault();
-                            if (VariationGrouping == null)
+                            VariationGrouping VariationGrouping = new VariationGrouping
                             {
-                                VariationGrouping = new VariationGrouping
-                                {
-                                    Name = Property4Value
-                                };
-
-                            }
+                                Name = Property3Value
+                            };
                             VariationGrouping.Variations = new List<Variation>();
-                            var Values = PropertyValue4Value.Split(',');
-                            foreach (var Value in Values)
+                            if (!string.IsNullOrEmpty(PropertyValue3Value))
                             {
-                                var splitValue = Value.Split('-');
-                                Variation Variation = new Variation
+                                var Values = PropertyValue3Value.Split(';');
+                                foreach (var Value in Values)
                                 {
-                                    Code = splitValue[0],
-                                    Name = splitValue[1]
-                                };
-                                VariationGrouping.Variations.Add(Variation);
+                                    var splitValue = Value.Trim().Split('-');
+                                    Variation Variation = new Variation
+                                    {
+                                        Code = splitValue[0].Trim(),
+                                        Name = splitValue[1].Trim()
+                                    };
+                                    VariationGrouping.Variations.Add(Variation);
+                                }
+                                Product.VariationGroupings.Add(VariationGrouping);
                             }
-                            Product.VariationGroupings.Add(VariationGrouping);
                         }
                         #endregion
                     }
                     Products.Add(Product);
                 }
                 #endregion
-
-                #region ItemSheet
-                ExcelWorksheet ItemSheet = excelPackage.Workbook.Worksheets["Item"];
-                if (ItemSheet != null)
-                {
-                    StartColumn = 1;
-                    StartRow = 1;
-
-                    CodeColumn = 1 + StartColumn;
-                    int CodeProductItemColumn = 2 + StartColumn;
-                    int NameProductItemColumn = 3 + StartColumn;
-                    int ScanCodeItemColumn = 4 + StartColumn;
-                    SalePriceColumn = 5 + StartColumn;
-                    RetailPriceColumn = 6 + StartColumn;
-
-                    for (int i = StartRow; i <= ItemSheet.Dimension.End.Row; i++)
-                    {
-                        if (string.IsNullOrEmpty(ItemSheet.Cells[i + StartRow, CodeColumn].Value?.ToString()))
-                            break;
-                        string CodeValue = ItemSheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                        string CodeProductItemValue = ItemSheet.Cells[i + StartRow, CodeProductItemColumn].Value?.ToString();
-                        string NameProductItemValue = ItemSheet.Cells[i + StartRow, NameProductItemColumn].Value?.ToString();
-                        string ScanCodeItemValue = ItemSheet.Cells[i + StartRow, ScanCodeItemColumn].Value?.ToString();
-                        string SalePriceValue = ItemSheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
-                        string RetailPriceValue = ItemSheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
-
-                        Item Item = new Item();
-                        Item.Code = CodeProductItemValue;
-                        Item.Name = NameProductItemValue;
-                        Item.ScanCode = ScanCodeItemValue;
-                        Item.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : decimal.Parse(SalePriceValue);
-                        Item.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : decimal.Parse(RetailPriceValue);
-                        var Product = Products.Where(p => p.Code == CodeValue).FirstOrDefault();
-                        if (Product != null)
-                        {
-                            Product.Items.Add(Item);
-                        }
-
-                    }
-                    #endregion
-                }
             }
-            #region Tạo mới item nếu chưa có
+            #region Item
             foreach (var Product in Products)
             {
-                if (Product.Items != null && Product.Items.Count > 0) continue;
-                Product.Items = new List<Item>();
-                Product.Items.Add(new Item
+                if(Product.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
                 {
-                    Code = Product.Code,
-                    Name = Product.Name,
-                    ScanCode = Product.ScanCode,
-                    RetailPrice = Product.RetailPrice,
-                    SalePrice = Product.SalePrice,
-                    ProductId = Product.Id
-                });
+                    Product.Items = new List<Item>();
+                    Product.Items.Add(new Item
+                    {
+                        Code = Product.Code,
+                        Name = Product.Name,
+                        ScanCode = Product.ScanCode,
+                        RetailPrice = Product.RetailPrice,
+                        SalePrice = Product.SalePrice,
+                        ProductId = Product.Id,
+                        StatusId = Product.StatusId
+                    });
+                }
+                if (Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
+                {
+                    Product.Items = new List<Item>();
+                    foreach (var VariationGrouping in Product.VariationGroupings)
+                    {
+                        foreach (var Variation in VariationGrouping.Variations)
+                        {
+                            Item Item = new Item
+                            {
+                                Code = $"{Product.Code}-{Variation.Code}",
+                                Name = $"{Product.Name} - {Variation.Name}",
+                                ScanCode = Product.ScanCode,
+                                RetailPrice = Product.RetailPrice,
+                                SalePrice = Product.SalePrice,
+                                StatusId = Product.StatusId
+                            };
+                            Product.Items.Add(Item);
+                        }
+                    }
+                }
             }
             #endregion
 
