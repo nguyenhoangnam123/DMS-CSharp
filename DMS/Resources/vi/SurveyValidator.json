@@ -1,20 +1,22 @@
 ﻿{
-  "Id": {
-    "IdNotExisted": "Id không tồn tại",
-    "SurveyInUsed": "Bản khảo sát đã có câu trả lời"
-  },
-  "Title": {
-    "TitleEmpty": "Chưa nhập tiêu đề"
-  },
-  "StartAt": {
-    "StartDateEmpty": "Chưa nhập ngày bắt đầu"
-  },
-  "EndAt": {
-    "EndDateWrong": "Ngày kết thúc không hợp lệ"
-  },
-  "SurveyQuestion": {
-    "Content": {
-      "ContentEmpty": "Chưa nhập nội dung câu hỏi"
+  "Survey": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại",
+      "SurveyInUsed": "Bản khảo sát đã có câu trả lời"
+    },
+    "Title": {
+      "TitleEmpty": "Chưa nhập tiêu đề"
+    },
+    "StartAt": {
+      "StartDateEmpty": "Chưa nhập ngày bắt đầu"
+    },
+    "EndAt": {
+      "EndDateWrong": "Ngày kết thúc không hợp lệ"
+    },
+    "SurveyQuestion": {
+      "Content": {
+        "ContentEmpty": "Chưa nhập nội dung câu hỏi"
+      }
     }
   }
 }

@@ -1,10 +1,11 @@
 ﻿{
-  "Id": {
-    "IdNotExisted": "Id không tồn tại"
-  },
-  "Store": {
-    "StoreNotExisted": "Cửa hàng không tồn tại",
-    "DistanceOutOfRange": "Khoảng cách ngoài phạm vi"
+  "StoreChecking": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại"
+    },
+    "Store": {
+      "StoreNotExisted": "Cửa hàng không tồn tại",
+      "DistanceOutOfRange": "Khoảng cách ngoài phạm vi"
+    }
   }
-
 }

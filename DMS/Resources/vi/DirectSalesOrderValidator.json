@@ -1,31 +1,33 @@
 ﻿{
-  "Id": {
-    "IdNotExisted": "Id không tồn tại"
-  },
-  "BuyerStore": {
-    "BuyerStoreNotExisted": "Cửa hàng mua không tồn tại"
-  },
-  "SaleEmployee": {
-    "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại"
-  },
-  "OrderDate": {
-    "OrderDateEmpty": "Chưa chọn ngày đặt hàng"
-  },
-  "EditedPriceStatus": {
-    "EditedPriceStatusNotExisted": "Trạng thái sửa giá không hợp lệ"
-  },
-  "Amount": {
-    "PriceOutOfRange": "Không được phép sửa giá vượt quá khung"
-  },
-  "UnitOfMeasure": {
-    "UnitOfMeasureNotExisted": "Chưa chọn đơn vị tính"
-  },
-  "Quantity": {
-    "QuantityEmpty": "Chưa nhập số lượng",
-    "QuantityInvalid": "Số lượng không hợp lệ",
-    "InventoryHasntEnough": "Số lượng tồn kho không đủ"
-  },
-  "Item": {
-    "ItemNotExisted": "Phiên bản sản phẩm không tồn tại"
+  "DirectSalesOrder": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại"
+    },
+    "BuyerStore": {
+      "BuyerStoreNotExisted": "Cửa hàng mua không tồn tại"
+    },
+    "SaleEmployee": {
+      "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại"
+    },
+    "OrderDate": {
+      "OrderDateEmpty": "Chưa chọn ngày đặt hàng"
+    },
+    "EditedPriceStatus": {
+      "EditedPriceStatusNotExisted": "Trạng thái sửa giá không hợp lệ"
+    },
+    "Amount": {
+      "PriceOutOfRange": "Không được phép sửa giá vượt quá khung"
+    },
+    "UnitOfMeasure": {
+      "UnitOfMeasureNotExisted": "Chưa chọn đơn vị tính"
+    },
+    "Quantity": {
+      "QuantityEmpty": "Chưa nhập số lượng",
+      "QuantityInvalid": "Số lượng không hợp lệ",
+      "InventoryHasntEnough": "Số lượng tồn kho không đủ"
+    },
+    "Item": {
+      "ItemNotExisted": "Phiên bản sản phẩm không tồn tại"
+    }
   }
 }

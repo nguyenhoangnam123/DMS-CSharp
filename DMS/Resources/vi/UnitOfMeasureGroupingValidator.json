@@ -1,22 +1,24 @@
 ﻿{
-  "Id": {
-    "IdNotExisted": "Id không tồn tại"
-  },
-  "Code": {
-    "CodeEmpty": "Chưa nhập Code",
-    "CodeOverLength": "Code quá dài",
-    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
-  },
-  "Name": {
-    "NameEmpty": "Chưa nhập tên",
-    "NameOverLength": "Tên quá dài"
-  },
-  "Status": {
-    "StatusNotExisted": "Trạng thái không tồn tại"
-  },
-  "UnitOfMeasureId": {
-    "UnitOfMeasureEmpty": "Chưa nhập đơn vị tính toán",
-    "UnitOfMeasureNotExisted": "Đơn vị tính toán không tồn tại",
-    "UnitOfMeasureGroupingInUsed": "Nhóm đơn vị tính toán đã được sử dụng"
+  "UnitOfMeasureGrouping": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại"
+    },
+    "Code": {
+      "CodeEmpty": "Chưa nhập Code",
+      "CodeOverLength": "Code quá dài",
+      "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
+    },
+    "Name": {
+      "NameEmpty": "Chưa nhập tên",
+      "NameOverLength": "Tên quá dài"
+    },
+    "Status": {
+      "StatusNotExisted": "Trạng thái không tồn tại"
+    },
+    "UnitOfMeasureId": {
+      "UnitOfMeasureEmpty": "Chưa nhập đơn vị tính toán",
+      "UnitOfMeasureNotExisted": "Đơn vị tính toán không tồn tại",
+      "UnitOfMeasureGroupingInUsed": "Nhóm đơn vị tính toán đã được sử dụng"
+    }
   }
 }
