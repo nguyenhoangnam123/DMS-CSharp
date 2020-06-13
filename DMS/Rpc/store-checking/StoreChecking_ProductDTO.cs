@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace DMS.Rpc.store_checking
 {
-    public class StoreChecking_ProductDTO : DataDTO
+    public class Mobile_ProductDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -32,8 +32,8 @@ namespace DMS.Rpc.store_checking
         public StoreChecking_UnitOfMeasureDTO UnitOfMeasure { get; set; }
         public StoreChecking_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping { get; set; }
         public List<StoreChecking_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
-        public StoreChecking_ProductDTO() { }
-        public StoreChecking_ProductDTO(Product Product)
+        public Mobile_ProductDTO() { }
+        public Mobile_ProductDTO(Product Product)
         {
             this.Id = Product.Id;
             this.Code = Product.Code;

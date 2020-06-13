@@ -22,12 +22,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DMS.Services.MBanner;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DMS.Rpc.store_checking
 {
     public partial class StoreCheckingController : SimpleController
     {
         private IAlbumService AlbumService;
+        private IBannerService BannerService;
         private IAppUserService AppUserService;
         private IERouteService ERouteService;
         private IERouteContentService ERouteContentService;
@@ -45,6 +48,7 @@ namespace DMS.Rpc.store_checking
         private ICurrentContext CurrentContext;
         public StoreCheckingController(
             IAlbumService AlbumService,
+            IBannerService BannerService,
             IAppUserService AppUserService,
             IERouteService ERouteService,
             IERouteContentService ERouteContentService,
@@ -63,6 +67,7 @@ namespace DMS.Rpc.store_checking
         )
         {
             this.AlbumService = AlbumService;
+            this.BannerService = BannerService;
             this.AppUserService = AppUserService;
             this.ERouteService = ERouteService;
             this.ERouteContentService = ERouteContentService;

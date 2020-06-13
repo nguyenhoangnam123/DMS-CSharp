@@ -304,6 +304,48 @@ namespace DMS.Rpc.store_checking
             return StoreChecking_ProblemTypeDTOs;
         }
 
+
+
+        [Route(StoreCheckingRoute.CountBanner), HttpPost]
+        public async Task<ActionResult<int>> Count([FromBody] StoreChecking_BannerFilterDTO StoreChecking_BannerFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            BannerFilter BannerFilter = new BannerFilter();
+            BannerFilter.Selects = BannerSelect.ALL;
+            BannerFilter.Skip = StoreChecking_BannerFilterDTO.Skip;
+            BannerFilter.Take = StoreChecking_BannerFilterDTO.Take;
+            BannerFilter.OrderBy = StoreChecking_BannerFilterDTO.OrderBy;
+            BannerFilter.OrderType = StoreChecking_BannerFilterDTO.OrderType;
+            BannerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            BannerFilter = BannerService.ToFilter(BannerFilter);
+            int count = await BannerService.Count(BannerFilter);
+            return count;
+        }
+
+        [Route(StoreCheckingRoute.ListBanner), HttpPost]
+        public async Task<ActionResult<List<StoreChecking_BannerDTO>>> List([FromBody] StoreChecking_BannerFilterDTO StoreChecking_BannerFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            BannerFilter BannerFilter = new BannerFilter();
+            BannerFilter.Selects = BannerSelect.ALL;
+            BannerFilter.Skip = StoreChecking_BannerFilterDTO.Skip;
+            BannerFilter.Take = StoreChecking_BannerFilterDTO.Take;
+            BannerFilter.OrderBy = StoreChecking_BannerFilterDTO.OrderBy;
+            BannerFilter.OrderType = StoreChecking_BannerFilterDTO.OrderType;
+            BannerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            BannerFilter = BannerService.ToFilter(BannerFilter);
+            List<Banner> Banners = await BannerService.List(BannerFilter);
+            List<StoreChecking_BannerDTO> StoreChecking_BannerDTOs = Banners
+                .Select(c => new StoreChecking_BannerDTO(c)).ToList();
+            return StoreChecking_BannerDTOs;
+        }
+
         [Route(StoreCheckingRoute.CountStorePlanned), HttpPost]
         public async Task<long> CountStorePlanned([FromBody] StoreChecking_StoreFilterDTO StoreChecking_StoreFilterDTO)
         {
