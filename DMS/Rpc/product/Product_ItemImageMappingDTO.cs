@@ -25,6 +25,6 @@ namespace DMS.Rpc.product
 
         public IdFilter ImageId { get; set; }
 
-        public ProductImageMappingOrder OrderBy { get; set; }
+        public ItemImageMappingOrder OrderBy { get; set; }
     }
 }

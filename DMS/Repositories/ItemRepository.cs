@@ -349,7 +349,7 @@ namespace DMS.Repositories
                 Used = q.Used,
             }).ToListAsync();
             var Ids = Items.Select(x => x.Id).ToList();
-            var ItemImageMappings = DataContext.ItemImageMapping.Where(x => Ids.Contains(x.ItemId)).ToList();
+            var ItemImageMappings = DataContext.ItemImageMapping.Include(x => x.Image).Where(x => Ids.Contains(x.ItemId)).ToList();
             foreach (var Item in Items)
             {
                 Item.ItemImageMappings = new List<ItemImageMapping>();

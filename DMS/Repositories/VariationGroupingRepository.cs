@@ -126,6 +126,19 @@ namespace DMS.Repositories
                     StatusId = q.Product.StatusId,
                 } : null,
             }).ToListAsync();
+
+            var Ids = VariationGroupings.Select(x => x.Id).ToList();
+            var VariationDAOs = await DataContext.Variation.Where(x => Ids.Contains(x.VariationGroupingId)).ToListAsync();
+            foreach (VariationGrouping VariationGrouping in VariationGroupings)
+            {
+                VariationGrouping.Variations = VariationDAOs.Where(x => x.VariationGroupingId == VariationGrouping.Id).Select(x => new Variation
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    VariationGroupingId = x.VariationGroupingId,
+                }).ToList();
+            }
             return VariationGroupings;
         }
 
@@ -176,6 +189,13 @@ namespace DMS.Repositories
             if (VariationGrouping == null)
                 return null;
 
+            VariationGrouping.Variations = await DataContext.Variation.Where(x => x.VariationGroupingId == Id).Select(x => new Variation
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                VariationGroupingId = x.VariationGroupingId,
+            }).ToListAsync();
             return VariationGrouping;
         }
         public async Task<bool> Create(VariationGrouping VariationGrouping)

@@ -16,6 +16,7 @@ namespace DMS.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public Guid RowId { get; set; }
 
         public virtual ProductDAO Product { get; set; }
         public virtual ICollection<VariationDAO> Variations { get; set; }
