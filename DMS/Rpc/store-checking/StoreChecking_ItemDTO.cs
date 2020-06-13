@@ -6,7 +6,6 @@ namespace DMS.Rpc.store_checking
 {
     public class StoreChecking_ItemDTO : DataDTO
     {
-
         public long Id { get; set; }
         public long ProductId { get; set; }
         public string Code { get; set; }
@@ -16,7 +15,7 @@ namespace DMS.Rpc.store_checking
         public decimal? RetailPrice { get; set; }
         public long SaleStock { get; set; }
         public long StatusId { get; set; }
-        public StoreChecking_ProductDTO Product { get; set; }
+        public Mobile_ProductDTO Product { get; set; }
         public StoreChecking_ItemDTO() { }
         public StoreChecking_ItemDTO(Item Item)
         {
@@ -29,7 +28,7 @@ namespace DMS.Rpc.store_checking
             this.RetailPrice = Item.RetailPrice;
             this.SaleStock = Item.SaleStock;
             this.StatusId = Item.StatusId;
-            this.Product = Item.Product == null ? null : new StoreChecking_ProductDTO(Item.Product);
+            this.Product = Item.Product == null ? null : new Mobile_ProductDTO(Item.Product);
             this.Errors = Item.Errors;
         }
     }

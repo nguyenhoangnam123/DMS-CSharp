@@ -31,7 +31,8 @@ namespace DMS.Rpc.store_checking
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public const string SingleListProblemType = Default + "/single-list-problem-type";
 
-
+        public const string CountBanner = Default + "/count-banner";
+        public const string ListBanner = Default + "/list-banner";
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
         public const string CountStorePlanned = Default + "/count-store-planned";
