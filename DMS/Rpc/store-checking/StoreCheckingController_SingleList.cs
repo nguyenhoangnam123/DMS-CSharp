@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.store_checking
 {
-    public partial class StoreCheckingController : RpcController
+    public partial class StoreCheckingController
     {
         [Route(StoreCheckingRoute.FilterListAppUser), HttpPost]
         public async Task<List<StoreChecking_AppUserDTO>> FilterListAppUser([FromBody] StoreChecking_AppUserFilterDTO StoreChecking_AppUserFilterDTO)

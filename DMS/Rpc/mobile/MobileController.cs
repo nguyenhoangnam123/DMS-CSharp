@@ -17,8 +17,7 @@ using System.Threading.Tasks;
 namespace DMS.Rpc.mobile
 {
 
-    [Authorize]
-    public class MobileController : ControllerBase
+    public class MobileController : SimpleController
     {
         private IBannerService BannerService;
         private ICurrentContext CurrentContext;

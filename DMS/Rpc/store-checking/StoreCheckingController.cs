@@ -1,4 +1,7 @@
 using Common;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAlbum;
@@ -14,8 +17,6 @@ using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MSurvey;
 using DMS.Services.MTaxType;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.store_checking
 {
-    public partial class StoreCheckingController : RpcController
+    public partial class StoreCheckingController : SimpleController
     {
         private IAlbumService AlbumService;
         private IAppUserService AppUserService;
@@ -598,7 +599,7 @@ namespace DMS.Rpc.store_checking
             StoreCheckingFilter.CountImage = StoreChecking_StoreCheckingFilterDTO.CountImage;
             return StoreCheckingFilter;
         }
-       
+
     }
 }
 

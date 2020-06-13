@@ -17,6 +17,12 @@ namespace DMS.Rpc
     {
     }
 
+    [Authorize]
+    [Authorize(Policy = "Simple")]
+    public class SimpleController : ControllerBase
+    {
+    }
+
     public class PermissionRequirement : IAuthorizationRequirement
     {
         public PermissionRequirement()
@@ -83,6 +89,45 @@ namespace DMS.Rpc
                     FilterPermissionDefinition.SetValue(PermissionContentDAO.Field.FieldTypeId, PermissionContentDAO.PermissionOperatorId, PermissionContentDAO.Value);
                 }
             }
+            context.Succeed(requirement);
+        }
+    }
+
+    public class SimpleRequirement : IAuthorizationRequirement
+    {
+        public SimpleRequirement()
+        {
+        }
+    }
+    public class SimpleHandler : AuthorizationHandler<SimpleRequirement>
+    {
+        private ICurrentContext CurrentContext;
+        private DataContext DataContext;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        public SimpleHandler(ICurrentContext CurrentContext, DataContext DataContext, IHttpContextAccessor httpContextAccessor)
+        {
+            this.CurrentContext = CurrentContext;
+            this.DataContext = DataContext;
+            this.httpContextAccessor = httpContextAccessor;
+        }
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, SimpleRequirement requirement)
+        {
+            var types = context.User.Claims.Select(c => c.Type).ToList();
+            if (!context.User.HasClaim(c => c.Type == ClaimTypes.NameIdentifier))
+            {
+                context.Fail();
+                return;
+            }
+            long UserId = long.TryParse(context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value, out long u) ? u : 0;
+            string UserName = context.User.FindFirst(c => c.Type == ClaimTypes.Name).Value;
+            var HttpContext = httpContextAccessor.HttpContext;
+            string url = HttpContext.Request.Path.Value.ToLower().Substring(1);
+            string TimeZone = HttpContext.Request.Headers["X-TimeZone"];
+            string Language = HttpContext.Request.Headers["X-Language"];
+            CurrentContext.Token = HttpContext.Request.Cookies["Token"];
+            CurrentContext.UserId = UserId;
+            CurrentContext.TimeZone = int.TryParse(TimeZone, out int t) ? t : 0;
+            CurrentContext.Language = Language ?? "vi";
             context.Succeed(requirement);
         }
     }

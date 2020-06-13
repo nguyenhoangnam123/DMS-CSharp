@@ -129,6 +129,13 @@ namespace DMS
                     policy.Requirements.Add(new PermissionRequirement()));
             });
 
+            services.AddScoped<IAuthorizationHandler, SimpleHandler>();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Simple", policy =>
+                    policy.Requirements.Add(new SimpleRequirement()));
+            });
+
             Action onChange = () =>
             {
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily);
