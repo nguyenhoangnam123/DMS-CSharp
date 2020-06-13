@@ -168,6 +168,7 @@ namespace DMS.Repositories
                         Code = x.UnitOfMeasure.Code,
                     }
                 }).ToList(),
+                Used = q.Used,
             }).ToListAsync();
             return UnitOfMeasureGroupings;
         }
@@ -200,6 +201,7 @@ namespace DMS.Repositories
                     Description = x.Description,
                     UnitOfMeasureId = x.UnitOfMeasureId,
                     StatusId = x.StatusId,
+                    Used = x.Used,
                     Status = x.Status == null ? null : new Status
                     {
                         Id = x.Status.Id,

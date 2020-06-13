@@ -442,6 +442,7 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<ERoute> ERoutes)
         {
             List<long> Ids = ERoutes.Select(x => x.Id).ToList();
+            await DataContext.ERouteContentDay.Where(x => Ids.Contains(x.ERouteContent.ERouteId)).DeleteFromQueryAsync();
             await DataContext.ERouteContent.Where(x => Ids.Contains(x.ERouteId)).DeleteFromQueryAsync();
             await DataContext.ERoute
                 .Where(x => Ids.Contains(x.Id))
