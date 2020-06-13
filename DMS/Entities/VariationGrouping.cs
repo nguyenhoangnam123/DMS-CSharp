@@ -11,6 +11,7 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Name { get; set; }
         public long ProductId { get; set; }
+        public Guid RowId { get; set; }
         public Product Product { get; set; }
         public List<Variation> Variations { get; set; }
 
