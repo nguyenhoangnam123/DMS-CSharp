@@ -49,7 +49,7 @@ namespace DMS.Repositories
             if (filter.StartDate != null)
                 query = query.Where(q => q.StartDate, filter.StartDate);
             if (filter.EndDate != null)
-                query = query.Where(q => q.EndDate, filter.EndDate);
+                query = query.Where(q => q.EndDate == null).Union(query.Where(q => q.EndDate, filter.EndDate));
             if (filter.ERouteTypeId != null)
                 query = query.Where(q => q.ERouteTypeId, filter.ERouteTypeId);
             if (filter.RequestStateId != null)
@@ -397,6 +397,7 @@ namespace DMS.Repositories
             ERouteDAO.SaleEmployeeId = ERoute.SaleEmployeeId;
             ERouteDAO.StartDate = ERoute.StartDate;
             ERouteDAO.EndDate = ERoute.EndDate;
+            ERouteDAO.RealStartDate = ERoute.RealStartDate;
             ERouteDAO.ERouteTypeId = ERoute.ERouteTypeId;
             ERouteDAO.RequestStateId = ERoute.RequestStateId;
             ERouteDAO.StatusId = ERoute.StatusId;

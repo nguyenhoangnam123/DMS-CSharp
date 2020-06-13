@@ -684,13 +684,13 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.EndDate).HasColumnType("datetime");
+                entity.Property(e => e.EndDate).HasColumnType("date");
 
                 entity.Property(e => e.Name).HasMaxLength(500);
 
-                entity.Property(e => e.RealStartDate).HasColumnType("datetime");
+                entity.Property(e => e.RealStartDate).HasColumnType("date");
 
-                entity.Property(e => e.StartDate).HasColumnType("datetime");
+                entity.Property(e => e.StartDate).HasColumnType("date");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 

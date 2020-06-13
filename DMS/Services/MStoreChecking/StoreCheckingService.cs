@@ -322,7 +322,7 @@ namespace DMS.Services.MStoreChecking
 
         private async Task<List<long>> ListStoreIds(IdFilter ERouteId, bool Planned)
         {
-            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Now = StaticParams.DateTimeNow.Date;
             List<long> ERouteIds = (await UOW.ERouteRepository.List(new ERouteFilter
             {
                 Skip = 0,
@@ -346,7 +346,7 @@ namespace DMS.Services.MStoreChecking
             List<long> StoreIds = new List<long>();
             foreach (var ERouteContent in ERouteContents)
             {
-                var index = ((DateTime.Now - ERouteContent.ERoute.RealStartDate).Days + 1) % 28;
+                var index = (Now - ERouteContent.ERoute.RealStartDate).Days % 28;
                 if (ERouteContent.ERouteContentDays[index].Planned == Planned)
                     StoreIds.Add(ERouteContent.StoreId);
             }
