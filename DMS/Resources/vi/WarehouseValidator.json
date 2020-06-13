@@ -1,36 +1,38 @@
 ﻿{
-  "Id": {
-    "IdNotExisted": "Id không tồn tại"
-  },
-  "Code": {
-    "CodeEmpty": "Chưa nhập Code",
-    "CodeOverLength": "Code quá dài",
-    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
-  },
-  "Name": {
-    "NameEmpty": "Chưa nhập tên",
-    "NameOverLength": "Tên quá dài"
-  },
-  "Address": {
-    "AddressOverLength": "Địa chỉ quá dài"
-  },
-  "Organization": {
-    "OrganizationNotExisted": "Đơn vị tổ chức không tồn tại",
-    "OrganizationEmpty": "Chưa chọn đơn vị tổ chức"
-  },
-  "District": {
-    "DistrictNotExisted": "Quận/ Huyện không tồn tại"
-  },
-  "Province": {
-    "ProvinceNotExisted": "Tỉnh/Thành phố không tồn tại"
-  },
-  "Ward": {
-    "WardNotExisted": "Xã không tồn tại"
-  },
-  "Status": {
-    "StatusNotExisted": "Trạng thái không tồn tại"
-  },
   "Warehouse": {
-    "WarehouseHasInventory":  "Kho đã có hàng tồn",
-  } 
+    "Id": {
+      "IdNotExisted": "Id không tồn tại"
+    },
+    "Code": {
+      "CodeEmpty": "Chưa nhập Code",
+      "CodeOverLength": "Code quá dài",
+      "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
+    },
+    "Name": {
+      "NameEmpty": "Chưa nhập tên",
+      "NameOverLength": "Tên quá dài"
+    },
+    "Address": {
+      "AddressOverLength": "Địa chỉ quá dài"
+    },
+    "Organization": {
+      "OrganizationNotExisted": "Đơn vị tổ chức không tồn tại",
+      "OrganizationEmpty": "Chưa chọn đơn vị tổ chức"
+    },
+    "District": {
+      "DistrictNotExisted": "Quận/ Huyện không tồn tại"
+    },
+    "Province": {
+      "ProvinceNotExisted": "Tỉnh/Thành phố không tồn tại"
+    },
+    "Ward": {
+      "WardNotExisted": "Xã không tồn tại"
+    },
+    "Status": {
+      "StatusNotExisted": "Trạng thái không tồn tại"
+    },
+    "Warehouse": {
+      "WarehouseHasInventory": "Kho đã có hàng tồn"
+    }
+  }
 }

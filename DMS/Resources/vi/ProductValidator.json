@@ -1,58 +1,60 @@
 ﻿{
-  "Id": {
-    "IdNotExisted": "Id không tồn tại"
-  },
-  "Name": {
-    "NameEmpty": "Chưa nhập tên",
-    "NameOverLength": "Tên quá dài",
-    "NameExisted": "Tên đã tồn tại"
-  },
-  "Code": {
-    "CodeEmpty": "Chưa nhập Code",
-    "CodeOverLength": "Code quá dài",
-    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
-  },
-  "ProductType": {
-    "ProductTypeEmpty": "Chưa chọn loại sản phẩm",
-    "ProductTypeNotExisted": "Loại sản phẩm không tồn tại"
-  },
-  "Supplier": {
-    "SupplierNotExisted": "Nhà cung cấp không tồn tại"
-  },
-  "Brand": {
-    "BrandNotExisted": "Nhãn hiệu không tồn tại"
-  },
-  "TaxType": {
-    "TaxTypeEmpty": "Chưa chọn thuế",
-    "TaxTypeNotExisted": "Thuế không tồn tại"
-  },
-  "UnitOfMeasure": {
-    "UnitOfMeasureNotExisted": "Đơn vị tính không tồn tại",
-    "UnitOfMeasureEmpty":  "Chưa chọn đơn vị tính "
-  },
-  "Status": {
-    "StatusNotExisted": "Trạng thái không tồn tại"
-  },
-  "VariationGrouping": {
-    "VariationGroupingExisted": "Nhóm phiên bản đã tồn tại"
-  },
-  "Variation": {
-    "Code": {
-      "VariationCodeExisted": "Phiên bản code đã tồn tại"
-    },
-    "Name": {
-      "VariationNameExisted": "Tên phiên bản đã tồn tại"
-    }
-  },
-  "Item": {
-    "Code": {
-      "CodeExisted": "Code của phiên bản sản phẩm đã tồn tại"
-    },
-    "Name": {
-      "NameExisted": "Tên của phiên bản sản phẩm đã tồn tại"
-    },
+  "Product": {
     "Id": {
-      "ItemInUsed": "phiên bản sản phẩm đang được sử dụng"
+      "IdNotExisted": "Id không tồn tại"
+    },
+    "Name": {
+      "NameEmpty": "Chưa nhập tên",
+      "NameOverLength": "Tên quá dài",
+      "NameExisted": "Tên đã tồn tại"
+    },
+    "Code": {
+      "CodeEmpty": "Chưa nhập Code",
+      "CodeOverLength": "Code quá dài",
+      "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
+    },
+    "ProductType": {
+      "ProductTypeEmpty": "Chưa chọn loại sản phẩm",
+      "ProductTypeNotExisted": "Loại sản phẩm không tồn tại"
+    },
+    "Supplier": {
+      "SupplierNotExisted": "Nhà cung cấp không tồn tại"
+    },
+    "Brand": {
+      "BrandNotExisted": "Nhãn hiệu không tồn tại"
+    },
+    "TaxType": {
+      "TaxTypeEmpty": "Chưa chọn thuế",
+      "TaxTypeNotExisted": "Thuế không tồn tại"
+    },
+    "UnitOfMeasure": {
+      "UnitOfMeasureNotExisted": "Đơn vị tính không tồn tại",
+      "UnitOfMeasureEmpty": "Chưa chọn đơn vị tính "
+    },
+    "Status": {
+      "StatusNotExisted": "Trạng thái không tồn tại"
+    },
+    "VariationGrouping": {
+      "VariationGroupingExisted": "Nhóm phiên bản đã tồn tại"
+    },
+    "Variation": {
+      "Code": {
+        "VariationCodeExisted": "Phiên bản code đã tồn tại"
+      },
+      "Name": {
+        "VariationNameExisted": "Tên phiên bản đã tồn tại"
+      }
+    },
+    "Item": {
+      "Code": {
+        "CodeExisted": "Code của phiên bản sản phẩm đã tồn tại"
+      },
+      "Name": {
+        "NameExisted": "Tên của phiên bản sản phẩm đã tồn tại"
+      },
+      "Id": {
+        "ItemInUsed": "phiên bản sản phẩm đang được sử dụng"
+      }
     }
   }
 }

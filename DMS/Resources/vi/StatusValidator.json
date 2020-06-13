@@ -1,5 +1,7 @@
 ﻿{
-  "Id": {
-    "IdNotExisted": "Id không tồn tại"
+  "Status": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại"
+    }
   }
 }

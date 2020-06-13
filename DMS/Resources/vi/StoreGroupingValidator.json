@@ -1,22 +1,24 @@
 ﻿{
-  "Id": {
-    "IdNotExisted": "Id không tồn tại",
-    "StoreGroupingInUsed": "Nhóm cửa hàng đang hoạt động"
-  },
-  "Name": {
-    "NameEmpty": "Chưa nhập tên",
-    "NameOverLength": "Tên quá dài",
-    "NameExisted": "Tên đã tồn tại"
-  },
-  "Code": {
-    "CodeEmpty": "Chưa nhập Code",
-    "CodeOverLength": "Code quá dài",
-    "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
-  },
-  "Status": {
-    "StatusNotExisted": "Trạng thái không tồn tại"
-  },
-  "ParentId": {
-    "ParentNotExisted": "Cửa hàng cha không tồn tại"
+  "StoreGrouping": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại",
+      "StoreGroupingInUsed": "Nhóm cửa hàng đang hoạt động"
+    },
+    "Name": {
+      "NameEmpty": "Chưa nhập tên",
+      "NameOverLength": "Tên quá dài",
+      "NameExisted": "Tên đã tồn tại"
+    },
+    "Code": {
+      "CodeEmpty": "Chưa nhập Code",
+      "CodeOverLength": "Code quá dài",
+      "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
+    },
+    "Status": {
+      "StatusNotExisted": "Trạng thái không tồn tại"
+    },
+    "ParentId": {
+      "ParentNotExisted": "Cửa hàng cha không tồn tại"
+    }
   }
 }

@@ -1,40 +1,42 @@
 ﻿{
-  "Id": {
-    "IdNotExisted": "Id không tồn tại",
-    "ERouteInUsed": "Nội dung tuyến đang được sử dụng"
-  },
-  "Code": {
-    "CodeEmpty": "Chưa nhập mã cho tuyến",
-    "CodeOverLength": "Mã tuyến quá dài",
-    "CodeHasSpecialCharacter": "Mã không chứa khoảng trắng hoặc ký tự Tiếng Việt",
-    "CodeExisted": "Mã đã tồn tại"
-  },
-  "Name": {
-    "NameEmpty": "Chưa nhập tên cho tuyến",
-    "NameOverLength": "Tên tuyến quá dài"
-  },
-  "SaleEmployee": {
-    "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại",
-    "SaleEmployeeEmpty": "Chưa chọn nhân viên kinh"
-  },
-  "ERouteType": {
-    "ERouteTypeEmpty": "Chưa chọn loại tuyến"
-  },
-  "Status": {
-    "StatusNotExisted": "Trạng thái không tồn tại"
-  },
-  "StartDate": {
-    "StartDateEmpty": "Chưa nhập ngày bắt đầu"
-  },
-  "EndDate": {
-    "EndDateEmpty": "Chưa nhập ngày kết thúc"
-  },
-  "ERouteContents": {
-    "ERouteContentsEmpty": "Chưa tạo nội dung cho tuyến"
-  },
-  "ERouteContent": {
-    "Store": {
-      "StoreEmpty": "Chưa chọn cửa hàng"
+  "Eroute": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại",
+      "ERouteInUsed": "Nội dung tuyến đang được sử dụng"
+    },
+    "Code": {
+      "CodeEmpty": "Chưa nhập mã cho tuyến",
+      "CodeOverLength": "Mã tuyến quá dài",
+      "CodeHasSpecialCharacter": "Mã không chứa khoảng trắng hoặc ký tự Tiếng Việt",
+      "CodeExisted": "Mã đã tồn tại"
+    },
+    "Name": {
+      "NameEmpty": "Chưa nhập tên cho tuyến",
+      "NameOverLength": "Tên tuyến quá dài"
+    },
+    "SaleEmployee": {
+      "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại",
+      "SaleEmployeeEmpty": "Chưa chọn nhân viên kinh"
+    },
+    "ERouteType": {
+      "ERouteTypeEmpty": "Chưa chọn loại tuyến"
+    },
+    "Status": {
+      "StatusNotExisted": "Trạng thái không tồn tại"
+    },
+    "StartDate": {
+      "StartDateEmpty": "Chưa nhập ngày bắt đầu"
+    },
+    "EndDate": {
+      "EndDateEmpty": "Chưa nhập ngày kết thúc"
+    },
+    "ERouteContents": {
+      "ERouteContentsEmpty": "Chưa tạo nội dung cho tuyến"
+    },
+    "ERouteContent": {
+      "Store": {
+        "StoreEmpty": "Chưa chọn cửa hàng"
+      }
     }
   }
 }

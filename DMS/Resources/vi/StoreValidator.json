@@ -1,5 +1,7 @@
 ﻿{
-  "Id": {
-    "IdNotExisted": "Id không tồn tại",
+  "Store": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại"
+    }
   }
 }

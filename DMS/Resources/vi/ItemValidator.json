@@ -1,20 +1,22 @@
 ﻿{
-  "Id": {
-    "IdNotExisted": "Id không tồn tại"
-  },
-  "Name": {
-    "NameEmpty": "Chưa nhập tên",
-    "NameOverLength": "Tên quá dài"
-  },
-  "Code": {
-    "CodeEmpty": "Chưa nhập Code",
-    "CodeOverLength": "Code quá dài"
-  },
-  "ScanCoded": {
-    "ScanCodeEmpty": "Chưa nhập ScanCode",
-    "ScanCodeOverLength": "ScanCode quá dài"
-  },
-  "ProductId": {
-    "ProductNotExisted": "Sản phẩm không tồn tại"
+  "Item": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại"
+    },
+    "Name": {
+      "NameEmpty": "Chưa nhập tên",
+      "NameOverLength": "Tên quá dài"
+    },
+    "Code": {
+      "CodeEmpty": "Chưa nhập Code",
+      "CodeOverLength": "Code quá dài"
+    },
+    "ScanCoded": {
+      "ScanCodeEmpty": "Chưa nhập ScanCode",
+      "ScanCodeOverLength": "ScanCode quá dài"
+    },
+    "ProductId": {
+      "ProductNotExisted": "Sản phẩm không tồn tại"
+    }
   }
 }
