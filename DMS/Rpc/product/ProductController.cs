@@ -402,8 +402,8 @@ namespace DMS.Rpc.product
                     Product.TaxTypeId = TaxTypes.Where(x => x.Code.Equals(TaxTypeCodeValue == null ? string.Empty : TaxTypeCodeValue.Trim())).Select(x => x.Id).FirstOrDefault();
                     Product.UsedVariationId = UsedVariations.Where(x => x.Code.ToLower().Equals(UsedVariationCodeValue == null ? string.Empty : UsedVariationCodeValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
                     Product.Description = DescriptionValue;
-                    Product.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : decimal.Parse(RetailPriceValue);
-                    Product.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : decimal.Parse(SalePriceValue);
+                    Product.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : long.Parse(RetailPriceValue);
+                    Product.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : long.Parse(SalePriceValue);
                     if (!string.IsNullOrEmpty(StatusIdValue))
                     {
                         int StatusId = 0;

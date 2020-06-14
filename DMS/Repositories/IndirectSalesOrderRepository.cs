@@ -652,11 +652,12 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
             IndirectSalesOrderDAO.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
             IndirectSalesOrderDAO.Total = IndirectSalesOrder.Total;
-            IndirectSalesOrderDAO.RowId = IndirectSalesOrder.RowId;
+            IndirectSalesOrderDAO.RowId = Guid.NewGuid();
             IndirectSalesOrderDAO.StoreCheckingId = IndirectSalesOrder.StoreCheckingId;
             DataContext.IndirectSalesOrder.Add(IndirectSalesOrderDAO);
             await DataContext.SaveChangesAsync();
             IndirectSalesOrder.Id = IndirectSalesOrderDAO.Id;
+            IndirectSalesOrder.RowId = IndirectSalesOrderDAO.RowId;
             await SaveReference(IndirectSalesOrder);
             return true;
         }

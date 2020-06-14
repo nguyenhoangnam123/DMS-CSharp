@@ -132,7 +132,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 await Calculator(IndirectSalesOrder);
                 await UOW.Begin();
                 IndirectSalesOrder.RequestStateId = Enums.RequestStateEnum.NEW.Id;
-                IndirectSalesOrder.RowId = Guid.NewGuid();
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 await UOW.IndirectSalesOrderRepository.Create(IndirectSalesOrder);
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
@@ -318,15 +317,23 @@ namespace DMS.Services.MIndirectSalesOrder
         private async Task<IndirectSalesOrder> Calculator(IndirectSalesOrder IndirectSalesOrder)
         {
             var ProductIds = new List<long>();
+            var ItemIds = new List<long>();
             if (IndirectSalesOrder.IndirectSalesOrderContents != null)
+            {
                 ProductIds.AddRange(IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.Item.ProductId).ToList());
+                ItemIds.AddRange(IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.ItemId).ToList());
+            }
             if (IndirectSalesOrder.IndirectSalesOrderPromotions != null)
+            {
                 ProductIds.AddRange(IndirectSalesOrder.IndirectSalesOrderPromotions.Select(x => x.Item.ProductId).ToList());
+                ItemIds.AddRange(IndirectSalesOrder.IndirectSalesOrderPromotions.Select(x => x.ItemId).ToList());
+            }
             ProductIds = ProductIds.Distinct().ToList();
+            ItemIds = ItemIds.Distinct().ToList();
 
             var Items = await UOW.ItemRepository.List(new ItemFilter
             {
-                ProductId = new IdFilter { In = ProductIds },
+                Id = new IdFilter { In = ItemIds },
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = ItemSelect.SalePrice | ItemSelect.Id
@@ -355,6 +362,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     var Item = Items.Where(x => x.Id == IndirectSalesOrderContent.ItemId).FirstOrDefault();
                     var Product = Products.Where(x => IndirectSalesOrderContent.Item.ProductId == x.Id).FirstOrDefault();
                     IndirectSalesOrderContent.PrimaryUnitOfMeasureId = Product.UnitOfMeasureId;
+                    IndirectSalesOrderContent.PrimaryPrice = Item.SalePrice;
 
                     List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
                     if (Product.UnitOfMeasureGroupingId.HasValue)
@@ -384,17 +392,21 @@ namespace DMS.Services.MIndirectSalesOrder
                     IndirectSalesOrderContent.TaxPercentage = Product.TaxType.Percentage;
                     IndirectSalesOrderContent.RequestedQuantity = IndirectSalesOrderContent.Quantity * UOM.Factor.Value;
 
-                    //giá tiền từng line = số lượng yc*đơn giá*(100-%chiết khấu)
+                    //Trường hợp không sửa giá, giá bán = giá bán cơ sở của sản phẩm * hệ số quy đổi của đơn vị tính
                     if (IndirectSalesOrder.EditedPriceStatusId == Enums.EditedPriceStatusEnum.INACTIVE.Id)
                     {
-                        //Trường hợp không sửa giá, giá bán = giá bán cơ sở của sản phẩm * hệ số quy đổi của đơn vị tính
-                        IndirectSalesOrderContent.SalePrice = Convert.ToInt64(Item.SalePrice * UOM.Factor.Value);
-                        IndirectSalesOrderContent.Amount = Convert.ToInt64((IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.SalePrice) * ((100 - IndirectSalesOrderContent.DiscountPercentage.Value) / 100));
+                        IndirectSalesOrderContent.SalePrice = Item.SalePrice * UOM.Factor.Value;
                     }
-                    else if (IndirectSalesOrder.EditedPriceStatusId == Enums.EditedPriceStatusEnum.ACTIVE.Id)
+                    //giá tiền từng line trước chiết khấu
+                    var SubAmount = IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.SalePrice;
+                    if (IndirectSalesOrderContent.DiscountPercentage.HasValue)
                     {
-                        //Trường hợp cho phép sửa giá, sử dụng giá bán do người dùng nhập
-                        IndirectSalesOrderContent.Amount = Convert.ToInt64((IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.SalePrice) * ((100 - IndirectSalesOrderContent.DiscountPercentage.Value) / 100));
+                        IndirectSalesOrderContent.DiscountAmount = Convert.ToInt64(SubAmount * IndirectSalesOrderContent.DiscountPercentage.Value / 100);
+                        IndirectSalesOrderContent.Amount = SubAmount - IndirectSalesOrderContent.DiscountAmount.Value;
+                    }
+                    else
+                    {
+                        IndirectSalesOrderContent.Amount = SubAmount;
                     }
                 }
 
@@ -402,27 +414,23 @@ namespace DMS.Services.MIndirectSalesOrder
                 IndirectSalesOrder.SubTotal = IndirectSalesOrder.IndirectSalesOrderContents.Sum(x => x.Amount);
 
                 //tính tổng chiết khấu theo % chiết khấu chung
-                if (IndirectSalesOrder.GeneralDiscountPercentage.HasValue)
+                if (IndirectSalesOrder.GeneralDiscountPercentage.HasValue && IndirectSalesOrder.GeneralDiscountPercentage > 0)
                 {
-                    IndirectSalesOrder.GeneralDiscountAmount = Convert.ToInt64(IndirectSalesOrder.SubTotal * IndirectSalesOrder.GeneralDiscountPercentage / 100);
+                    IndirectSalesOrder.GeneralDiscountAmount = Convert.ToInt64(IndirectSalesOrder.SubTotal * (IndirectSalesOrder.GeneralDiscountPercentage / 100));
+                    
                 }
-
-                if (IndirectSalesOrder.GeneralDiscountAmount.HasValue && IndirectSalesOrder.GeneralDiscountAmount > 0)
-                {
-                    foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
-                    {
-                        //phân bổ chiết khấu chung = tổng chiết khấu chung * (tổng từng line/tổng trc chiết khấu)
-                        IndirectSalesOrderContent.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount * (IndirectSalesOrderContent.Amount / IndirectSalesOrder.SubTotal);
-                    }
-                }
-
                 foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                 {
+                    //phân bổ chiết khấu chung = tổng chiết khấu chung * (tổng từng line/tổng trc chiết khấu)
+                    IndirectSalesOrderContent.GeneralDiscountPercentage = Convert.ToDecimal(IndirectSalesOrderContent.Amount) / Convert.ToDecimal(IndirectSalesOrder.SubTotal) * 100;
+                    IndirectSalesOrderContent.GeneralDiscountAmount = Convert.ToInt64(IndirectSalesOrder.GeneralDiscountAmount * IndirectSalesOrderContent.GeneralDiscountPercentage / 100);
                     //thuê từng line = (tổng từng line - chiết khấu phân bổ) * % thuế
                     IndirectSalesOrderContent.TaxAmount = Convert.ToInt64((IndirectSalesOrderContent.Amount - (IndirectSalesOrderContent.GeneralDiscountAmount.HasValue ? IndirectSalesOrderContent.GeneralDiscountAmount.Value : 0)) * IndirectSalesOrderContent.TaxPercentage / 100);
                 }
-                IndirectSalesOrder.TotalTaxAmount = IndirectSalesOrder.IndirectSalesOrderContents.Sum(x => x.TaxAmount.Value);
-                IndirectSalesOrder.Total = IndirectSalesOrder.SubTotal - IndirectSalesOrder.GeneralDiscountAmount ?? 0 + IndirectSalesOrder.TotalTaxAmount;
+
+                IndirectSalesOrder.TotalTaxAmount = IndirectSalesOrder.IndirectSalesOrderContents.Where(x => x.TaxAmount.HasValue).Sum(x => x.TaxAmount.Value);
+                //tổng phải thanh toán
+                IndirectSalesOrder.Total = IndirectSalesOrder.SubTotal - (IndirectSalesOrder.GeneralDiscountAmount.HasValue ? IndirectSalesOrder.GeneralDiscountAmount.Value : 0) + IndirectSalesOrder.TotalTaxAmount;
             }
             else
             {
@@ -441,27 +449,30 @@ namespace DMS.Services.MIndirectSalesOrder
                     var Product = Products.Where(x => IndirectSalesOrderPromotion.Item.ProductId == x.Id).FirstOrDefault();
                     IndirectSalesOrderPromotion.PrimaryUnitOfMeasureId = Product.UnitOfMeasureId;
 
-                    var UnitOfMeasures = Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(x => new UnitOfMeasure
+                    List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
+                    if (Product.UnitOfMeasureGroupingId.HasValue)
                     {
-                        Id = x.UnitOfMeasure.Id,
-                        Code = x.UnitOfMeasure.Code,
-                        Name = x.UnitOfMeasure.Name,
-                        Description = x.UnitOfMeasure.Description,
-                        StatusId = x.UnitOfMeasure.StatusId,
-                        Factor = x.Factor
-                    }).ToList();
-                    if (Product.UnitOfMeasure.StatusId == Enums.StatusEnum.ACTIVE.Id)
-                    {
-                        UnitOfMeasures.Add(new UnitOfMeasure
+                        var UOMG = UOMGs.Where(x => x.Id == Product.UnitOfMeasureGroupingId).FirstOrDefault();
+                        UnitOfMeasures = UOMG.UnitOfMeasureGroupingContents.Select(x => new UnitOfMeasure
                         {
-                            Id = Product.UnitOfMeasure.Id,
-                            Code = Product.UnitOfMeasure.Code,
-                            Name = Product.UnitOfMeasure.Name,
-                            Description = Product.UnitOfMeasure.Description,
-                            StatusId = Product.UnitOfMeasure.StatusId,
-                            Factor = 1
-                        });
+                            Id = x.UnitOfMeasure.Id,
+                            Code = x.UnitOfMeasure.Code,
+                            Name = x.UnitOfMeasure.Name,
+                            Description = x.UnitOfMeasure.Description,
+                            StatusId = x.UnitOfMeasure.StatusId,
+                            Factor = x.Factor
+                        }).ToList();
                     }
+
+                    UnitOfMeasures.Add(new UnitOfMeasure
+                    {
+                        Id = Product.UnitOfMeasure.Id,
+                        Code = Product.UnitOfMeasure.Code,
+                        Name = Product.UnitOfMeasure.Name,
+                        Description = Product.UnitOfMeasure.Description,
+                        StatusId = Product.UnitOfMeasure.StatusId,
+                        Factor = 1
+                    });
                     var UOM = UnitOfMeasures.Where(x => IndirectSalesOrderPromotion.UnitOfMeasureId == x.Id).FirstOrDefault();
                     IndirectSalesOrderPromotion.RequestedQuantity = IndirectSalesOrderPromotion.Quantity * UOM.Factor.Value;
                 }

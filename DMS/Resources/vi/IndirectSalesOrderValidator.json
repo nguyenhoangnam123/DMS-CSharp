@@ -30,12 +30,14 @@
         "ItemNotExisted": "Phiên bản sản phẩm không tồn tại"
       },
       "UnitOfMeasure": {
-        "UnitOfMeasureNotExisted": "Chưa chọn đơn vị tính"
+        "UnitOfMeasureNotExisted": "Đơn vị tính không tồn tại",
+        "UnitOfMeasureEmpty": "Chưa chọn đơn vị tính"
       }
     },
     "IndirectSalesOrderPromotion": {
       "UnitOfMeasure": {
-        "UnitOfMeasureNotExisted": "Chưa chọn đơn vị tính"
+        "UnitOfMeasureNotExisted": "Đơn vị tính không tồn tại",
+        "UnitOfMeasureEmpty": "Chưa chọn đơn vị tính"
       }
     },
     "Quantity": {

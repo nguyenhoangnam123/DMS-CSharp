@@ -1365,10 +1365,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(4000);
 
-                entity.Property(e => e.RetailPrice).HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
-
                 entity.Property(e => e.ScanCode).HasMaxLength(4000);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -1916,10 +1912,6 @@ namespace DMS.Models
                 entity.Property(e => e.Note).HasMaxLength(3000);
 
                 entity.Property(e => e.OtherName).HasMaxLength(1000);
-
-                entity.Property(e => e.RetailPrice).HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.ScanCode).HasMaxLength(500);
 

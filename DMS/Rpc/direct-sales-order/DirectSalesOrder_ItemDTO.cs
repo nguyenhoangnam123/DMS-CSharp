@@ -11,8 +11,8 @@ namespace DMS.Rpc.direct_sales_order
         public string Code { get; set; }
         public string Name { get; set; }
         public string ScanCode { get; set; }
-        public decimal? SalePrice { get; set; }
-        public decimal? RetailPrice { get; set; }
+        public long? SalePrice { get; set; }
+        public long? RetailPrice { get; set; }
         public long SaleStock { get; set; }
         public long StatusId { get; set; }
         public DirectSalesOrder_ProductDTO Product { get; set; }
@@ -41,8 +41,8 @@ namespace DMS.Rpc.direct_sales_order
         public StringFilter Name { get; set; }
         public StringFilter OtherName { get; set; }
         public StringFilter ScanCode { get; set; }
-        public DecimalFilter SalePrice { get; set; }
-        public DecimalFilter RetailPrice { get; set; }
+        public LongFilter SalePrice { get; set; }
+        public LongFilter RetailPrice { get; set; }
         public IdFilter ProductGroupingId { get; set; }
         public IdFilter ProductTypeId { get; set; }
         public IdFilter SupplierId { get; set; }

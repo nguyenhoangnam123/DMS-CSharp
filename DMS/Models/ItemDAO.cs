@@ -24,8 +24,8 @@ namespace DMS.Models
         public string Code { get; set; }
         public string Name { get; set; }
         public string ScanCode { get; set; }
-        public decimal SalePrice { get; set; }
-        public decimal? RetailPrice { get; set; }
+        public long SalePrice { get; set; }
+        public long? RetailPrice { get; set; }
         public long StatusId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

@@ -16,9 +16,9 @@ namespace DMS.Rpc.indirect_price_list
 
         public string ScanCode { get; set; }
 
-        public decimal SalePrice { get; set; }
+        public long SalePrice { get; set; }
 
-        public decimal? RetailPrice { get; set; }
+        public long? RetailPrice { get; set; }
 
         public long StatusId { get; set; }
 
@@ -60,9 +60,9 @@ namespace DMS.Rpc.indirect_price_list
 
         public StringFilter ScanCode { get; set; }
 
-        public DecimalFilter SalePrice { get; set; }
+        public LongFilter SalePrice { get; set; }
 
-        public DecimalFilter RetailPrice { get; set; }
+        public LongFilter RetailPrice { get; set; }
 
         public IdFilter StatusId { get; set; }
 
