@@ -229,6 +229,10 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Brand Brand)
         {
+            await DataContext.Product
+                .Where(x => x.BrandId.HasValue && x.BrandId.Value == Brand.Id)
+                .UpdateFromQueryAsync(x => new ProductDAO { BrandId = null });
+
             await DataContext.Brand.Where(x => x.Id == Brand.Id).UpdateFromQueryAsync(x => new BrandDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
@@ -255,6 +259,9 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<Brand> Brands)
         {
             List<long> Ids = Brands.Select(x => x.Id).ToList();
+            await DataContext.Product
+                .Where(x => x.BrandId.HasValue && Ids.Contains(x.BrandId.Value))
+                .UpdateFromQueryAsync(x => new ProductDAO { BrandId = null });
             await DataContext.Brand
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new BrandDAO { DeletedAt = StaticParams.DateTimeNow });

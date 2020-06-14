@@ -14,6 +14,7 @@ namespace DMS.Entities
         public string Description { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public Status Status { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
         public List<UnitOfMeasureGroupingContent> UnitOfMeasureGroupingContents { get; set; }

@@ -932,7 +932,13 @@ namespace DMS.Repositories
             await DataContext.ItemHistory.Where(x => ItemIds.Contains(x.ItemId)).DeleteFromQueryAsync();
             List<ItemDAO> ItemDAOs = await DataContext.Item
                 .Where(x => x.ProductId == Product.Id).ToListAsync();
-            ItemDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
+            foreach(ItemDAO ItemDAO in ItemDAOs)
+            {
+                if (ItemDAO.Used == false)
+                {
+                    ItemDAO.DeletedAt = StaticParams.DateTimeNow;
+                }    
+            }    
             if (Product.Items != null)
             {
                 foreach (Item Item in Product.Items)

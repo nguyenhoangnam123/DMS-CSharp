@@ -2,7 +2,9 @@ using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MUnitOfMeasureGrouping
@@ -29,7 +31,8 @@ namespace DMS.Services.MUnitOfMeasureGrouping
             StatusNotExisted,
             UnitOfMeasureEmpty,
             UnitOfMeasureNotExisted,
-            UnitOfMeasureGroupingInUsed
+            UnitOfMeasureGroupingInUsed,
+            FactorWrongValue,
         }
 
         private IUOW UOW;
@@ -107,38 +110,72 @@ namespace DMS.Services.MUnitOfMeasureGrouping
         }
         private async Task<bool> ValidateUnitOfMeasureId(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
+
             if (UnitOfMeasureGrouping.UnitOfMeasureId == 0)
             {
                 UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.UnitOfMeasureId), ErrorCode.UnitOfMeasureEmpty);
             }
             else
             {
-                UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
+                var oldData = await UOW.UnitOfMeasureGroupingRepository.Get(UnitOfMeasureGrouping.Id);
+                if (oldData != null && oldData.Used)
                 {
-                    Skip = 0,
-                    Take = 10,
-                    Id = new IdFilter { Equal = UnitOfMeasureGrouping.UnitOfMeasureId },
-                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
-                    Selects = UnitOfMeasureSelect.Id
-                };
+                    if (oldData.UnitOfMeasureId != UnitOfMeasureGrouping.UnitOfMeasureId)
+                        UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.Id), ErrorCode.UnitOfMeasureGroupingInUsed);
+                }
+                else
+                {
+                    UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
+                    {
+                        Skip = 0,
+                        Take = 10,
+                        Id = new IdFilter { Equal = UnitOfMeasureGrouping.UnitOfMeasureId },
+                        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
+                        Selects = UnitOfMeasureSelect.Id
+                    };
 
-                int count = await UOW.UnitOfMeasureRepository.Count(UnitOfMeasureFilter);
-                if (count == 0)
-                    UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.UnitOfMeasureId), ErrorCode.UnitOfMeasureNotExisted);
+                    int count = await UOW.UnitOfMeasureRepository.Count(UnitOfMeasureFilter);
+                    if (count == 0)
+                        UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.UnitOfMeasureId), ErrorCode.UnitOfMeasureNotExisted);
+                }
             }
             return UnitOfMeasureGrouping.IsValidated;
         }
 
         private async Task<bool> ValidateUnitOfMeasureGroupingInUsed(UnitOfMeasureGrouping UnitOfMeasureGrouping)
         {
-            ProductFilter ProductFilter = new ProductFilter
+            var old = await UOW.UnitOfMeasureGroupingRepository.Get(UnitOfMeasureGrouping.Id);
+            if (old != null && old.Used)
             {
-                UnitOfMeasureGroupingId = new IdFilter { Equal = UnitOfMeasureGrouping.Id },
-                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
-            };
-            int count = await UOW.ProductRepository.Count(ProductFilter);
-            if (count > 0)
                 UnitOfMeasureGrouping.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGrouping.Id), ErrorCode.UnitOfMeasureGroupingInUsed);
+            }
+
+            return UnitOfMeasureGrouping.IsValidated;
+        }
+
+        private async Task<bool> ValidateUnitOfMeasureGroupingContent(UnitOfMeasureGrouping UnitOfMeasureGrouping)
+        {
+            List<long> UOMIds = UnitOfMeasureGrouping.UnitOfMeasureGroupingContents.Select(x => x.UnitOfMeasureId).ToList();
+            List<UnitOfMeasure> UnitOfMeasures = await UOW.UnitOfMeasureRepository.List(new UnitOfMeasureFilter
+            {
+                Id = new IdFilter { In = UOMIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = UnitOfMeasureSelect.Id,
+            });
+            foreach (UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent in UnitOfMeasureGrouping.UnitOfMeasureGroupingContents)
+            {
+                if (UnitOfMeasureGroupingContent.Factor < 1)
+                    UnitOfMeasureGroupingContent.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGroupingContent.Factor), ErrorCode.FactorWrongValue);
+                if (UnitOfMeasureGroupingContent.UnitOfMeasureId == 0)
+                    UnitOfMeasureGroupingContent.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGroupingContent.UnitOfMeasureId), ErrorCode.UnitOfMeasureEmpty);
+                else
+                {
+                    UnitOfMeasure UOM = UnitOfMeasures.Where(x => x.Id == UnitOfMeasureGroupingContent.UnitOfMeasureId).FirstOrDefault();
+                    if (UOM == null)
+                        UnitOfMeasureGroupingContent.AddError(nameof(UnitOfMeasureGroupingValidator), nameof(UnitOfMeasureGroupingContent.UnitOfMeasureId), ErrorCode.UnitOfMeasureNotExisted);
+                }
+            }
 
             return UnitOfMeasureGrouping.IsValidated;
         }
