@@ -71,7 +71,7 @@ namespace DMS.Services.MSurvey
                         foreach (var SurveyOption in SurveyQuestion.SurveyOptions)
                         {
                             if (string.IsNullOrWhiteSpace(SurveyOption.Content))
-                                SurveyQuestion.AddError(nameof(SurveyValidator), nameof(SurveyQuestion.SurveyOptions), ErrorCode.ContentSurveyOptionsEmpty);
+                                SurveyOption.AddError(nameof(SurveyValidator), nameof(SurveyOption.Content), ErrorCode.ContentSurveyOptionsEmpty);
                         }
                 }
             }
