@@ -1,30 +1,29 @@
+using System;
+using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class GeneralKpi : DataEntity, IEquatable<GeneralKpi>
+    public class KpiGeneral : DataEntity,  IEquatable<KpiGeneral>
     {
         public long Id { get; set; }
         public long OrganizationId { get; set; }
         public long EmployeeId { get; set; }
-        public long KpiPeriodId { get; set; }
+        public long KpiYearId { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
         public AppUser Creator { get; set; }
         public AppUser Employee { get; set; }
-        public KpiPeriod KpiPeriod { get; set; }
+        public KpiYear KpiYear { get; set; }
         public Organization Organization { get; set; }
         public Status Status { get; set; }
-        public List<long> EmployeeIds { get; set; }
-        public List<GeneralKpiCriteriaMapping> GeneralKpiCriteriaMappings { get; set; }
+        public List<KpiGeneralContent> KpiGeneralContents { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public Guid RowId { get; set; }
-        public bool Equals(GeneralKpi other)
+
+        public bool Equals(KpiGeneral other)
         {
             return other != null && Id == other.Id;
         }
@@ -34,28 +33,28 @@ namespace DMS.Entities
         }
     }
 
-    public class GeneralKpiFilter : FilterEntity
+    public class KpiGeneralFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
         public IdFilter OrganizationId { get; set; }
         public IdFilter EmployeeId { get; set; }
-        public IdFilter KpiPeriodId { get; set; }
+        public IdFilter KpiYearId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter CreatorId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
-        public List<GeneralKpiFilter> OrFilter { get; set; }
-        public GeneralKpiOrder OrderBy { get; set; }
-        public GeneralKpiSelect Selects { get; set; }
+        public List<KpiGeneralFilter> OrFilter { get; set; }
+        public KpiGeneralOrder OrderBy {get; set;}
+        public KpiGeneralSelect Selects {get; set;}
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum GeneralKpiOrder
+    public enum KpiGeneralOrder
     {
         Id = 0,
         Organization = 1,
         Employee = 2,
-        KpiPeriod = 3,
+        KpiYear = 3,
         Status = 4,
         Creator = 5,
         CreatedAt = 50,
@@ -63,13 +62,13 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum GeneralKpiSelect : long
+    public enum KpiGeneralSelect:long
     {
         ALL = E.ALL,
         Id = E._0,
         Organization = E._1,
         Employee = E._2,
-        KpiPeriod = E._3,
+        KpiYear = E._3,
         Status = E._4,
         Creator = E._5,
     }

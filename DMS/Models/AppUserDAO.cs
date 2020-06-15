@@ -14,11 +14,11 @@ namespace DMS.Models
             ERouteCreators = new HashSet<ERouteDAO>();
             ERoutePerformances = new HashSet<ERoutePerformanceDAO>();
             ERouteSaleEmployees = new HashSet<ERouteDAO>();
-            GeneralKpiCreators = new HashSet<GeneralKpiDAO>();
-            GeneralKpiEmployees = new HashSet<GeneralKpiDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
             InventoryHistories = new HashSet<InventoryHistoryDAO>();
             ItemHistories = new HashSet<ItemHistoryDAO>();
+            KpiGeneralCreators = new HashSet<KpiGeneralDAO>();
+            KpiGeneralEmployees = new HashSet<KpiGeneralDAO>();
             KpiItemCreators = new HashSet<KpiItemDAO>();
             KpiItemEmployees = new HashSet<KpiItemDAO>();
             ProblemHistories = new HashSet<ProblemHistoryDAO>();
@@ -66,11 +66,11 @@ namespace DMS.Models
         public virtual ICollection<ERouteDAO> ERouteCreators { get; set; }
         public virtual ICollection<ERoutePerformanceDAO> ERoutePerformances { get; set; }
         public virtual ICollection<ERouteDAO> ERouteSaleEmployees { get; set; }
-        public virtual ICollection<GeneralKpiDAO> GeneralKpiCreators { get; set; }
-        public virtual ICollection<GeneralKpiDAO> GeneralKpiEmployees { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
         public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
         public virtual ICollection<ItemHistoryDAO> ItemHistories { get; set; }
+        public virtual ICollection<KpiGeneralDAO> KpiGeneralCreators { get; set; }
+        public virtual ICollection<KpiGeneralDAO> KpiGeneralEmployees { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItemCreators { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItemEmployees { get; set; }
         public virtual ICollection<ProblemHistoryDAO> ProblemHistories { get; set; }

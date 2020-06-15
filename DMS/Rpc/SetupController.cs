@@ -407,7 +407,7 @@ namespace DMS.Rpc
                 Code = item.Code,
                 Name = item.Name,
             }).ToList();
-            DataContext.KpiCriteriaItem.BulkMerge(KpiCriteriaItemDAOs);
+            DataContext.KpiCriteriaItem.BulkSynchronize(KpiCriteriaItemDAOs);
 
             List<KpiPeriodDAO> KpiPeriodDAOs = KpiPeriodEnum.KpiPeriodEnumList.Select(item => new KpiPeriodDAO
             {
@@ -415,15 +415,16 @@ namespace DMS.Rpc
                 Code = item.Code,
                 Name = item.Name,
             }).ToList();
-            DataContext.KpiPeriod.BulkMerge(KpiPeriodDAOs);
+            DataContext.KpiPeriod.BulkSynchronize(KpiPeriodDAOs);
 
-            List<GeneralCriteriaDAO> GeneralCriteriaDAOs = GeneralCriteriaEnum.KpiCriteriaEnumList.Select(item => new GeneralCriteriaDAO
+            List<KpiYearDAO> KpiYearDAOs = KpiYearEnum.KpiYearEnumList.Select(item => new KpiYearDAO
             {
                 Id = item.Id,
                 Code = item.Code,
                 Name = item.Name,
             }).ToList();
-            DataContext.GeneralCriteria.BulkMerge(GeneralCriteriaDAOs);
+            DataContext.KpiYear.BulkSynchronize(KpiYearDAOs);
+
 
             List<KpiCriteriaTotalDAO> KpiCriteriaTotalDAOs = KpiCriteriaTotalEnum.KpiCriteriaTotalEnumList.Select(item => new KpiCriteriaTotalDAO
             {
@@ -431,7 +432,7 @@ namespace DMS.Rpc
                 Code = item.Code,
                 Name = item.Name,
             }).ToList();
-            DataContext.KpiCriteriaTotal.BulkMerge(KpiCriteriaTotalDAOs);
+            DataContext.KpiCriteriaTotal.BulkSynchronize(KpiCriteriaTotalDAOs);
         }
 
         private void InitUsedVariationEnum()

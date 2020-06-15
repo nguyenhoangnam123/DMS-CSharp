@@ -1,19 +1,18 @@
+using System;
+using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public class GeneralCriteria : DataEntity, IEquatable<GeneralCriteria>
+    public class KpiYear : DataEntity,  IEquatable<KpiYear>
     {
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public List<GeneralKpiCriteriaMapping> GeneralKpiCriteriaMappings { get; set; }
 
-        public bool Equals(GeneralCriteria other)
+        public bool Equals(KpiYear other)
         {
             return other != null && Id == other.Id;
         }
@@ -23,18 +22,18 @@ namespace DMS.Entities
         }
     }
 
-    public class GeneralCriteriaFilter : FilterEntity
+    public class KpiYearFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
-        public List<GeneralCriteriaFilter> OrFilter { get; set; }
-        public GeneralCriteriaOrder OrderBy { get; set; }
-        public GeneralCriteriaSelect Selects { get; set; }
+        public List<KpiYearFilter> OrFilter { get; set; }
+        public KpiYearOrder OrderBy {get; set;}
+        public KpiYearSelect Selects {get; set;}
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum GeneralCriteriaOrder
+    public enum KpiYearOrder
     {
         Id = 0,
         Code = 1,
@@ -42,7 +41,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum GeneralCriteriaSelect : long
+    public enum KpiYearSelect:long
     {
         ALL = E.ALL,
         Id = E._0,

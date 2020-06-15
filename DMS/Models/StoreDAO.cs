@@ -19,7 +19,6 @@ namespace DMS.Models
             StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
             StoreImageMappings = new HashSet<StoreImageMappingDAO>();
-            StoreScoutings = new HashSet<StoreScoutingDAO>();
             SurveyResults = new HashSet<SurveyResultDAO>();
         }
 
@@ -52,6 +51,7 @@ namespace DMS.Models
         public DateTime? DeletedAt { get; set; }
         public Guid RowId { get; set; }
         public bool Used { get; set; }
+        public long? StoreScoutingId { get; set; }
 
         public virtual DistrictDAO District { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
@@ -74,7 +74,6 @@ namespace DMS.Models
         public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
         public virtual ICollection<StoreImageMappingDAO> StoreImageMappings { get; set; }
-        public virtual ICollection<StoreScoutingDAO> StoreScoutings { get; set; }
         public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
     }
 }

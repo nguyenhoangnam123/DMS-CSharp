@@ -30,8 +30,6 @@ namespace DMS.Repositories
         IERouteTypeRepository ERouteTypeRepository { get; }
         IEventMessageRepository EventMessageRepository { get; }
         IFieldRepository FieldRepository { get; }
-        IGeneralCriteriaRepository GeneralCriteriaRepository { get; }
-        IGeneralKpiRepository GeneralKpiRepository { get; }
         IImageRepository ImageRepository { get; }
         IIndirectPriceListRepository IndirectPriceListRepository { get; }
         IIndirectPriceListTypeRepository IndirectPriceListTypeRepository { get; }
@@ -41,10 +39,13 @@ namespace DMS.Repositories
         IIndirectSalesOrderPromotionRepository IndirectSalesOrderPromotionRepository { get; }
         IItemRepository ItemRepository { get; }
         IItemHistoryRepository ItemHistoryRepository { get; }
+        IKpiCriteriaGeneralRepository KpiCriteriaGeneralRepository { get; }
         IKpiCriteriaItemRepository KpiCriteriaItemRepository { get; }
         IKpiCriteriaTotalRepository KpiCriteriaTotalRepository { get; }
+        IKpiGeneralRepository KpiGeneralRepository { get; }
         IKpiItemRepository KpiItemRepository { get; }
         IKpiPeriodRepository KpiPeriodRepository { get; }
+        IKpiYearRepository KpiYearRepository { get; }
         IInventoryRepository InventoryRepository { get; }
         IInventoryHistoryRepository InventoryHistoryRepository { get; }
         IMenuRepository MenuRepository { get; }
@@ -124,8 +125,6 @@ namespace DMS.Repositories
         public IERouteTypeRepository ERouteTypeRepository { get; private set; }
         public IFieldRepository FieldRepository { get; private set; }
         public IEventMessageRepository EventMessageRepository { get; private set; }
-        public IGeneralCriteriaRepository GeneralCriteriaRepository { get; private set; }
-        public IGeneralKpiRepository GeneralKpiRepository { get; private set; }
         public IImageRepository ImageRepository { get; private set; }
         public IIndirectPriceListRepository IndirectPriceListRepository { get; private set; }
         public IIndirectPriceListTypeRepository IndirectPriceListTypeRepository { get; private set; }
@@ -137,10 +136,13 @@ namespace DMS.Repositories
         public IItemHistoryRepository ItemHistoryRepository { get; private set; }
         public IInventoryRepository InventoryRepository { get; private set; }
         public IInventoryHistoryRepository InventoryHistoryRepository { get; private set; }
+        public IKpiCriteriaGeneralRepository KpiCriteriaGeneralRepository { get; private set; }
         public IKpiCriteriaItemRepository KpiCriteriaItemRepository { get; private set; }
         public IKpiCriteriaTotalRepository KpiCriteriaTotalRepository { get; private set; }
+        public IKpiGeneralRepository KpiGeneralRepository { get; private set; }
         public IKpiItemRepository KpiItemRepository { get; private set; }
         public IKpiPeriodRepository KpiPeriodRepository { get; private set; }
+        public IKpiYearRepository KpiYearRepository { get; private set; }
         public IMenuRepository MenuRepository { get; private set; }
         public INotificationRepository NotificationRepository { get; private set; }
         public INotificationStatusRepository NotificationStatusRepository { get; private set; }
@@ -217,8 +219,6 @@ namespace DMS.Repositories
             ERouteTypeRepository = new ERouteTypeRepository(DataContext);
             FieldRepository = new FieldRepository(DataContext);
             EventMessageRepository = new EventMessageRepository(DataContext);
-            GeneralCriteriaRepository = new GeneralCriteriaRepository(DataContext);
-            GeneralKpiRepository = new GeneralKpiRepository(DataContext);
             ImageRepository = new ImageRepository(DataContext);
             IndirectPriceListRepository = new IndirectPriceListRepository(DataContext);
             IndirectPriceListTypeRepository = new IndirectPriceListTypeRepository(DataContext);
@@ -230,10 +230,13 @@ namespace DMS.Repositories
             ItemHistoryRepository = new ItemHistoryRepository(DataContext);
             InventoryRepository = new InventoryRepository(DataContext);
             InventoryHistoryRepository = new InventoryHistoryRepository(DataContext);
+            KpiCriteriaGeneralRepository = new KpiCriteriaGeneralRepository(DataContext);
             KpiCriteriaItemRepository = new KpiCriteriaItemRepository(DataContext);
             KpiCriteriaTotalRepository = new KpiCriteriaTotalRepository(DataContext);
+            KpiGeneralRepository = new KpiGeneralRepository(DataContext);
             KpiItemRepository = new KpiItemRepository(DataContext);
             KpiPeriodRepository = new KpiPeriodRepository(DataContext);
+            KpiYearRepository = new KpiYearRepository(DataContext);
             MenuRepository = new MenuRepository(DataContext);
             NotificationRepository = new NotificationRepository(DataContext);
             NotificationStatusRepository = new NotificationStatusRepository(DataContext);

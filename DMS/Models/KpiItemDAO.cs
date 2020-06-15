@@ -13,6 +13,7 @@ namespace DMS.Models
 
         public long Id { get; set; }
         public long OrganizationId { get; set; }
+        public long KpiYearId { get; set; }
         public long KpiPeriodId { get; set; }
         public long StatusId { get; set; }
         public long EmployeeId { get; set; }
