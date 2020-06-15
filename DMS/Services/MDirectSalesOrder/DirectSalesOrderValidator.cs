@@ -118,7 +118,7 @@ namespace DMS.Services.MDirectSalesOrder
                             var oldDataContent = oldData.DirectSalesOrderContents.Where(x => x.Id == DirectSalesOrderContent.Id).FirstOrDefault();
                             if (oldDataContent != null)
                             {
-                                if (DirectSalesOrderContent.Amount > 1.1 * oldDataContent.Amount || DirectSalesOrderContent.Amount < 0.9 * oldDataContent.Amount)
+                                if (DirectSalesOrderContent.Amount > 1.1m * oldDataContent.Amount || DirectSalesOrderContent.Amount < 0.9m * oldDataContent.Amount)
                                     DirectSalesOrderContent.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Amount), ErrorCode.PriceOutOfRange);
                             }
                         }

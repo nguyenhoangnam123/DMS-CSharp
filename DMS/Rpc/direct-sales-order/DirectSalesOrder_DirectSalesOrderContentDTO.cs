@@ -12,15 +12,15 @@ namespace DMS.Rpc.direct_sales_order
         public long Quantity { get; set; }
         public long PrimaryUnitOfMeasureId { get; set; }
         public long RequestedQuantity { get; set; }
-        public long Price { get; set; }
+        public decimal Price { get; set; }
         public decimal? DiscountPercentage { get; set; }
-        public long? DiscountAmount { get; set; }
+        public decimal? DiscountAmount { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
-        public long? GeneralDiscountAmount { get; set; }
+        public decimal? GeneralDiscountAmount { get; set; }
         public decimal? TaxPercentage { get; set; }
-        public long? TaxAmount { get; set; }
+        public decimal? TaxAmount { get; set; }
         public long? Factor { get; set; }
-        public long Amount { get; set; }
+        public decimal Amount { get; set; }
         public DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder { get; set; }
         public DirectSalesOrder_ItemDTO Item { get; set; }
         public DirectSalesOrder_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }

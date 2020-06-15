@@ -24,11 +24,11 @@ namespace DMS.Models
         public long RequestStateId { get; set; }
         public long EditedPriceStatusId { get; set; }
         public string Note { get; set; }
-        public long SubTotal { get; set; }
+        public decimal SubTotal { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
-        public long? GeneralDiscountAmount { get; set; }
-        public long TotalTaxAmount { get; set; }
-        public long Total { get; set; }
+        public decimal? GeneralDiscountAmount { get; set; }
+        public decimal TotalTaxAmount { get; set; }
+        public decimal Total { get; set; }
         public Guid RowId { get; set; }
         public long? StoreCheckingId { get; set; }
 

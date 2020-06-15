@@ -220,7 +220,7 @@ namespace DMS.Services.MProduct
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ProductGroupingId))
                         subFilter.ProductGroupingId = FilterPermissionDefinition.IdFilter;
                     if (FilterPermissionDefinition.Name == nameof(subFilter.SalePrice))
-                        subFilter.SalePrice = FilterPermissionDefinition.LongFilter;
+                        subFilter.SalePrice = FilterPermissionDefinition.DecimalFilter;
                 }
             }
             return filter;

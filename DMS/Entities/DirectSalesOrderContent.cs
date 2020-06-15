@@ -15,14 +15,14 @@ namespace DMS.Entities
         public long Quantity { get; set; }
         public long PrimaryUnitOfMeasureId { get; set; }
         public long RequestedQuantity { get; set; }
-        public long Price { get; set; }
+        public decimal Price { get; set; }
         public decimal? DiscountPercentage { get; set; }
-        public long? DiscountAmount { get; set; }
+        public decimal? DiscountAmount { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
-        public long? GeneralDiscountAmount { get; set; }
+        public decimal? GeneralDiscountAmount { get; set; }
         public decimal? TaxPercentage { get; set; }
-        public long? TaxAmount { get; set; }
-        public long Amount { get; set; }
+        public decimal? TaxAmount { get; set; }
+        public decimal Amount { get; set; }
         public long? Factor { get; set; }
         public DirectSalesOrder DirectSalesOrder { get; set; }
         public Item Item { get; set; }
@@ -49,14 +49,14 @@ namespace DMS.Entities
         public LongFilter Quantity { get; set; }
         public IdFilter PrimaryUnitOfMeasureId { get; set; }
         public LongFilter RequestedQuantity { get; set; }
-        public LongFilter Price { get; set; }
+        public DecimalFilter Price { get; set; }
         public DecimalFilter DiscountPercentage { get; set; }
-        public LongFilter DiscountAmount { get; set; }
+        public DecimalFilter DiscountAmount { get; set; }
         public DecimalFilter GeneralDiscountPercentage { get; set; }
-        public LongFilter GeneralDiscountAmount { get; set; }
+        public DecimalFilter GeneralDiscountAmount { get; set; }
         public DecimalFilter TaxPercentage { get; set; }
-        public LongFilter TaxAmount { get; set; }
-        public LongFilter Amount { get; set; }
+        public DecimalFilter TaxAmount { get; set; }
+        public DecimalFilter Amount { get; set; }
         public List<DirectSalesOrderContentFilter> OrFilter { get; set; }
         public DirectSalesOrderContentOrder OrderBy { get; set; }
         public DirectSalesOrderContentSelect Selects { get; set; }

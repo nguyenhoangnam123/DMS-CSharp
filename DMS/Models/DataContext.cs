@@ -523,6 +523,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeliveryDate).HasColumnType("date");
 
+                entity.Property(e => e.GeneralDiscountAmount).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(8, 2)");
 
                 entity.Property(e => e.Note).HasMaxLength(4000);
@@ -535,7 +537,13 @@ namespace DMS.Models
 
                 entity.Property(e => e.StorePhone).HasMaxLength(500);
 
+                entity.Property(e => e.SubTotal).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.TaxCode).HasMaxLength(500);
+
+                entity.Property(e => e.Total).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.TotalTaxAmount).HasColumnType("decimal(18, 4)");
 
                 entity.HasOne(d => d.BuyerStore)
                     .WithMany(p => p.DirectSalesOrders)
@@ -564,9 +572,19 @@ namespace DMS.Models
 
             modelBuilder.Entity<DirectSalesOrderContentDAO>(entity =>
             {
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.DiscountAmount).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
 
+                entity.Property(e => e.GeneralDiscountAmount).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(8, 2)");
+
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.TaxAmount).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.TaxPercentage).HasColumnType("decimal(8, 2)");
 
@@ -1132,7 +1150,9 @@ namespace DMS.Models
 
                 entity.Property(e => e.EditedPriceStatusId).HasComment("Sửa giá");
 
-                entity.Property(e => e.GeneralDiscountAmount).HasComment("Số tiền chiết khấu tổng");
+                entity.Property(e => e.GeneralDiscountAmount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Số tiền chiết khấu tổng");
 
                 entity.Property(e => e.GeneralDiscountPercentage)
                     .HasColumnType("decimal(8, 2)")
@@ -1158,11 +1178,17 @@ namespace DMS.Models
 
                 entity.Property(e => e.StoreAddress).HasMaxLength(4000);
 
-                entity.Property(e => e.SubTotal).HasComment("Tổng tiền trước thuế");
+                entity.Property(e => e.SubTotal)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Tổng tiền trước thuế");
 
-                entity.Property(e => e.Total).HasComment("Tổng tiền sau thuế");
+                entity.Property(e => e.Total)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Tổng tiền sau thuế");
 
-                entity.Property(e => e.TotalTaxAmount).HasComment("Tổng thuế");
+                entity.Property(e => e.TotalTaxAmount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Tổng thuế");
 
                 entity.HasOne(d => d.BuyerStore)
                     .WithMany(p => p.IndirectSalesOrderBuyerStores)
@@ -1199,15 +1225,21 @@ namespace DMS.Models
             {
                 entity.Property(e => e.Id).HasComment("Id");
 
-                entity.Property(e => e.Amount).HasComment("Tổng số tiền từng dòng trước chiết khấu tổng");
+                entity.Property(e => e.Amount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Tổng số tiền từng dòng trước chiết khấu tổng");
 
-                entity.Property(e => e.DiscountAmount).HasComment("Số tiền chiết khấu theo dòng");
+                entity.Property(e => e.DiscountAmount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Số tiền chiết khấu theo dòng");
 
                 entity.Property(e => e.DiscountPercentage)
                     .HasColumnType("decimal(8, 2)")
                     .HasComment("% chiết khấu theo dòng");
 
-                entity.Property(e => e.GeneralDiscountAmount).HasComment("Số tiền sau chiết khấu từng dòng");
+                entity.Property(e => e.GeneralDiscountAmount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Số tiền sau chiết khấu từng dòng");
 
                 entity.Property(e => e.GeneralDiscountPercentage)
                     .HasColumnType("decimal(8, 2)")
@@ -1217,7 +1249,9 @@ namespace DMS.Models
 
                 entity.Property(e => e.ItemId).HasComment("Sản phẩm");
 
-                entity.Property(e => e.PrimaryPrice).HasComment("Giá theo đơn vị lưu kho");
+                entity.Property(e => e.PrimaryPrice)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Giá theo đơn vị lưu kho");
 
                 entity.Property(e => e.PrimaryUnitOfMeasureId).HasComment("Đơn vị lưu kho");
 
@@ -1225,9 +1259,13 @@ namespace DMS.Models
 
                 entity.Property(e => e.RequestedQuantity).HasComment("Số lượng xuất hàng theo đơn vị lưu kho");
 
-                entity.Property(e => e.SalePrice).HasComment("Giá bán theo đơn vị xuất hàng");
+                entity.Property(e => e.SalePrice)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Giá bán theo đơn vị xuất hàng");
 
-                entity.Property(e => e.TaxAmount).HasComment("Số tiền thuế sau tất cả các loại chiết khấu");
+                entity.Property(e => e.TaxAmount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Số tiền thuế sau tất cả các loại chiết khấu");
 
                 entity.Property(e => e.TaxPercentage)
                     .HasColumnType("decimal(8, 2)")
@@ -1366,6 +1404,10 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(4000);
+
+                entity.Property(e => e.RetailPrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.ScanCode).HasMaxLength(4000);
 
@@ -1914,6 +1956,10 @@ namespace DMS.Models
                 entity.Property(e => e.Note).HasMaxLength(3000);
 
                 entity.Property(e => e.OtherName).HasMaxLength(1000);
+
+                entity.Property(e => e.RetailPrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.ScanCode).HasMaxLength(500);
 

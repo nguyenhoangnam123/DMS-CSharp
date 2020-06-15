@@ -21,11 +21,11 @@ namespace DMS.Entities
         public long RequestStateId { get; set; }
         public long EditedPriceStatusId { get; set; }
         public string Note { get; set; }
-        public long SubTotal { get; set; }
+        public decimal SubTotal { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
-        public long? GeneralDiscountAmount { get; set; }
-        public long TotalTaxAmount { get; set; }
-        public long Total { get; set; }
+        public decimal? GeneralDiscountAmount { get; set; }
+        public decimal TotalTaxAmount { get; set; }
+        public decimal Total { get; set; }
         public Store BuyerStore { get; set; }
         public EditedPriceStatus EditedPriceStatus { get; set; }
         public RequestState RequestState { get; set; }
@@ -61,11 +61,11 @@ namespace DMS.Entities
         public IdFilter RequestStateId { get; set; }
         public IdFilter EditedPriceStatusId { get; set; }
         public StringFilter Note { get; set; }
-        public LongFilter SubTotal { get; set; }
-        public LongFilter GeneralDiscountPercentage { get; set; }
-        public LongFilter GeneralDiscountAmount { get; set; }
-        public LongFilter TotalTaxAmount { get; set; }
-        public LongFilter Total { get; set; }
+        public DecimalFilter SubTotal { get; set; }
+        public DecimalFilter GeneralDiscountPercentage { get; set; }
+        public DecimalFilter GeneralDiscountAmount { get; set; }
+        public DecimalFilter TotalTaxAmount { get; set; }
+        public DecimalFilter Total { get; set; }
         public List<IndirectSalesOrderFilter> OrFilter { get; set; }
         public IndirectSalesOrderOrder OrderBy { get; set; }
         public IndirectSalesOrderSelect Selects { get; set; }

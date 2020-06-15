@@ -8,7 +8,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
         public string IndirectSalesOrderCode { get; set; }
-        public long Sales { get; set; }
+        public decimal Sales { get; set; }
         public string ImagePath { get; set; }
         public long StoreProblemId { get; set; }
         public long CompetitorProblemId { get; set; }

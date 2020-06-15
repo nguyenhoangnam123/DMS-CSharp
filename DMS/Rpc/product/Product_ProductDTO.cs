@@ -19,8 +19,8 @@ namespace DMS.Rpc.product
         public long? BrandId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long? UnitOfMeasureGroupingId { get; set; }
-        public long SalePrice { get; set; }
-        public long? RetailPrice { get; set; }
+        public decimal SalePrice { get; set; }
+        public decimal? RetailPrice { get; set; }
         public long TaxTypeId { get; set; }
         public long StatusId { get; set; }
         public string OtherName { get; set; }
@@ -99,8 +99,8 @@ namespace DMS.Rpc.product
         public IdFilter BrandId { get; set; }
         public IdFilter UnitOfMeasureId { get; set; }
         public IdFilter UnitOfMeasureGroupingId { get; set; }
-        public LongFilter SalePrice { get; set; }
-        public LongFilter RetailPrice { get; set; }
+        public DecimalFilter SalePrice { get; set; }
+        public DecimalFilter RetailPrice { get; set; }
         public IdFilter TaxTypeId { get; set; }
         public IdFilter StatusId { get; set; }
         public StringFilter OtherName { get; set; }
