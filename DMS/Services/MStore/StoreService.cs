@@ -19,7 +19,6 @@ namespace DMS.Services.MStore
         Task<List<Store>> List(StoreFilter StoreFilter);
         Task<Store> Get(long Id);
         Task<Store> Create(Store Store);
-        Task<Store> CreateStoreScouting(Store Store, StoreScouting StoreScouting);
         Task<Store> Update(Store Store);
         Task<Store> Delete(Store Store);
         Task<Store> Approve(Store Store);
@@ -149,37 +148,15 @@ namespace DMS.Services.MStore
                 Store.RowId = Guid.NewGuid();
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
-                await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
-                await UOW.Commit();
-
-                await Logging.CreateAuditLog(Store, new { }, nameof(StoreService));
-                return await UOW.StoreRepository.Get(Store.Id);
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreService));
-                if (ex.InnerException == null)
-                    throw new MessageException(ex);
-                else
-                    throw new MessageException(ex.InnerException);
-            }
-        }
-
-        public async Task<Store> CreateStoreScouting(Store Store, StoreScouting StoreScouting)
-        {
-            if (!await StoreValidator.Create(Store))
-                return Store;
-
-            try
-            {
-                Store.Id = 0;
-                Store.RowId = Guid.NewGuid();
-                await UOW.Begin();
-                await UOW.StoreRepository.Create(Store);
-                StoreScouting.StoreId = Store.Id;
-                StoreScouting.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.INACTIVE.Id;
-                await UOW.StoreScoutingRepository.Update(StoreScouting);
+                if (Store.StoreScoutingId.HasValue)
+                {
+                    StoreScouting StoreScouting = await UOW.StoreScoutingRepository.Get(Store.StoreScoutingId.Value);
+                    if(StoreScouting != null)
+                    {
+                        StoreScouting.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.ACTIVE.Id;
+                    }
+                    await UOW.StoreScoutingRepository.Update(StoreScouting);
+                }
                 await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
                 await UOW.Commit();
 

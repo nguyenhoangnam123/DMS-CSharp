@@ -20,14 +20,12 @@ namespace DMS.Rpc.store
         public string Address { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
-        public long? StoreId { get; set; }
         public long CreatorId { get; set; }
         public long StoreScoutingStatusId { get; set; }
         public Store_AppUserDTO Creator { get; set; }
         public Store_DistrictDTO District { get; set; }
         public Store_OrganizationDTO Organization { get; set; }
         public Store_ProvinceDTO Province { get; set; }
-        public Store_StoreDTO Store { get; set; }
         public Store_StoreScoutingStatusDTO StoreScoutingStatus { get; set; }
         public Store_WardDTO Ward { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -46,14 +44,12 @@ namespace DMS.Rpc.store
             this.Address = StoreScouting.Address;
             this.Latitude = StoreScouting.Latitude;
             this.Longitude = StoreScouting.Longitude;
-            this.StoreId = StoreScouting.StoreId;
             this.CreatorId = StoreScouting.CreatorId;
             this.StoreScoutingStatusId = StoreScouting.StoreScoutingStatusId;
             this.Creator = StoreScouting.Creator == null ? null : new Store_AppUserDTO(StoreScouting.Creator);
             this.District = StoreScouting.District == null ? null : new Store_DistrictDTO(StoreScouting.District);
             this.Organization = StoreScouting.Organization == null ? null : new Store_OrganizationDTO(StoreScouting.Organization);
             this.Province = StoreScouting.Province == null ? null : new Store_ProvinceDTO(StoreScouting.Province);
-            this.Store = StoreScouting.Store == null ? null : new Store_StoreDTO(StoreScouting.Store);
             this.StoreScoutingStatus = StoreScouting.StoreScoutingStatus == null ? null : new Store_StoreScoutingStatusDTO(StoreScouting.StoreScoutingStatus);
             this.Ward = StoreScouting.Ward == null ? null : new Store_WardDTO(StoreScouting.Ward);
             this.CreatedAt = StoreScouting.CreatedAt;

@@ -19,14 +19,12 @@ namespace DMS.Entities
         public string Address { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
-        public long? StoreId { get; set; }
         public long CreatorId { get; set; }
         public long StoreScoutingStatusId { get; set; }
         public AppUser Creator { get; set; }
         public District District { get; set; }
         public Organization Organization { get; set; }
         public Province Province { get; set; }
-        public Store Store { get; set; }
         public StoreScoutingStatus StoreScoutingStatus { get; set; }
         public Ward Ward { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -55,7 +53,6 @@ namespace DMS.Entities
         public StringFilter Address { get; set; }
         public DecimalFilter Latitude { get; set; }
         public DecimalFilter Longitude { get; set; }
-        public IdFilter StoreId { get; set; }
         public IdFilter CreatorId { get; set; }
         public IdFilter StoreScoutingStatusId { get; set; }
         public DateFilter CreatedAt { get; set; }

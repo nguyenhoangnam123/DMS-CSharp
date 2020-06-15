@@ -63,7 +63,6 @@ namespace DMS.Rpc.store_scouting
             { nameof(StoreScoutingFilter.Address), FieldTypeEnum.STRING.Id },
             { nameof(StoreScoutingFilter.Latitude), FieldTypeEnum.DECIMAL.Id },
             { nameof(StoreScoutingFilter.Longitude), FieldTypeEnum.DECIMAL.Id },
-            { nameof(StoreScoutingFilter.StoreId), FieldTypeEnum.ID.Id },
             { nameof(StoreScoutingFilter.CreatorId), FieldTypeEnum.ID.Id },
             { nameof(StoreScoutingFilter.StoreScoutingStatusId), FieldTypeEnum.ID.Id },
         };

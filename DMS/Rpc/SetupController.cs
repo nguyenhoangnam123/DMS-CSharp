@@ -425,7 +425,6 @@ namespace DMS.Rpc
             }).ToList();
             DataContext.KpiYear.BulkSynchronize(KpiYearDAOs);
 
-
             List<KpiCriteriaTotalDAO> KpiCriteriaTotalDAOs = KpiCriteriaTotalEnum.KpiCriteriaTotalEnumList.Select(item => new KpiCriteriaTotalDAO
             {
                 Id = item.Id,

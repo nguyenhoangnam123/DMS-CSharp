@@ -37,6 +37,7 @@ namespace DMS.Entities
         public bool HasEroute { get; set; }
         public bool HasChecking { get; set; }
         public bool Used { get; set; }
+        public long? StoreScoutingId { get; set; }
         public District District { get; set; }
         public Organization Organization { get; set; }
         public Store ParentStore { get; set; }
@@ -46,6 +47,7 @@ namespace DMS.Entities
         public StoreGrouping StoreGrouping { get; set; }
         public StoreType StoreType { get; set; }
         public Ward Ward { get; set; }
+        public StoreScouting StoreScouting { get; set; }
         public RequestState RequestState { get; set; }
         public List<StoreImageMapping> StoreImageMappings { get; set; }
         public List<RequestWorkflowStepMapping> StoreWorkflows { get; set; }
@@ -117,6 +119,7 @@ namespace DMS.Entities
         OwnerPhone = 19,
         OwnerEmail = 20,
         Status = 21,
+        StoreScouting = 22
     }
 
     [Flags]
@@ -147,6 +150,7 @@ namespace DMS.Entities
         Status = E._21,
         StoreImageMappings = E._23,
         TaxCode = E._24,
-        LegalEntity = E._25
+        LegalEntity = E._25,
+        StoreScouting = E._26
     }
 }

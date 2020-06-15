@@ -34,6 +34,7 @@ namespace DMS.Rpc.store
         public bool HasEroute { get; set; }
         public bool HasChecking { get; set; }
         public bool Used { get; set; }
+        public long? StoreScoutingId { get; set; }
         public Store_DistrictDTO District { get; set; }
         public Store_OrganizationDTO Organization { get; set; }
         public Store_StoreDTO ParentStore { get; set; }
