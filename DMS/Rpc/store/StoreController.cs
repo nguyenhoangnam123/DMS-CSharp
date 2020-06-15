@@ -8,6 +8,7 @@ using DMS.Services.MReseller;
 using DMS.Services.MStatus;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreScouting;
 using DMS.Services.MStoreType;
 using DMS.Services.MWard;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +29,7 @@ namespace DMS.Rpc.store
         private IProvinceService ProvinceService;
         private IResellerService ResellerService;
         private IStatusService StatusService;
+        private IStoreScoutingService StoreScoutingService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
         private IWardService WardService;
@@ -39,6 +41,7 @@ namespace DMS.Rpc.store
             IProvinceService ProvinceService,
             IResellerService ResellerService,
             IStatusService StatusService,
+            IStoreScoutingService StoreScoutingService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
             IWardService WardService,
@@ -51,6 +54,7 @@ namespace DMS.Rpc.store
             this.ProvinceService = ProvinceService;
             this.ResellerService = ResellerService;
             this.StatusService = StatusService;
+            this.StoreScoutingService = StoreScoutingService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
             this.WardService = WardService;
@@ -97,6 +101,40 @@ namespace DMS.Rpc.store
             return new Store_StoreDTO(Store);
         }
 
+        [Route(StoreRoute.GetDraft), HttpPost]
+        public async Task<ActionResult<Store_StoreDTO>> GetDraft([FromBody] Store_StoreScoutingDTO Store_StoreScoutingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreScouting StoreScouting = await StoreScoutingService.Get(Store_StoreScoutingDTO.Id);
+            Store_StoreDTO Store_StoreDTO = new Store_StoreDTO
+            {
+                Address = StoreScouting.Address,
+                DistrictId = StoreScouting.DistrictId,
+                Latitude = StoreScouting.Latitude,
+                Longitude = StoreScouting.Longitude,
+                Name = StoreScouting.Name,
+                OrganizationId = StoreScouting.OrganizationId.HasValue ? StoreScouting.OrganizationId.Value : 0,
+                OwnerPhone = StoreScouting.OwnerPhone,
+                ProvinceId = StoreScouting.ProvinceId,
+                StatusId = StatusEnum.INACTIVE.Id,
+                WardId = StoreScouting.WardId,
+                District = StoreScouting.District == null ? null : new Store_DistrictDTO(StoreScouting.District),
+                Organization = StoreScouting.Organization == null ? null : new Store_OrganizationDTO(StoreScouting.Organization),
+                Province = StoreScouting.Province == null ? null : new Store_ProvinceDTO(StoreScouting.Province),
+                Ward = StoreScouting.Ward == null ? null : new Store_WardDTO(StoreScouting.Ward),
+                Status = new Store_StatusDTO
+                {
+                    Id = StatusEnum.INACTIVE.Id,
+                    Code = StatusEnum.INACTIVE.Code,
+                    Name = StatusEnum.INACTIVE.Name,
+                },
+                StoreScouting = new Store_StoreScoutingDTO(StoreScouting)
+            };
+            return Store_StoreDTO;
+        }
+
         [Route(StoreRoute.Create), HttpPost]
         public async Task<ActionResult<Store_StoreDTO>> Create([FromBody] Store_StoreDTO Store_StoreDTO)
         {
@@ -108,6 +146,40 @@ namespace DMS.Rpc.store
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
             Store = await StoreService.Create(Store);
+            Store_StoreDTO = new Store_StoreDTO(Store);
+            if (Store.IsValidated)
+                return Store_StoreDTO;
+            else
+                return BadRequest(Store_StoreDTO);
+        }
+
+        [Route(StoreRoute.CreateStoreScouting), HttpPost]
+        public async Task<ActionResult<Store_StoreDTO>> CreateStoreScouting([FromBody] Store_StoreDTO Store_StoreDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Store_StoreDTO.Id))
+                return Forbid();
+
+            Store Store = ConvertDTOToEntity(Store_StoreDTO);
+            StoreScouting StoreScouting = new StoreScouting
+            {
+                Id = Store_StoreDTO.StoreScouting.Id,
+                Code = Store_StoreDTO.StoreScouting.Code,
+                Address = Store_StoreDTO.StoreScouting.Address,
+                CreatorId = Store_StoreDTO.StoreScouting.CreatorId,
+                DistrictId = Store_StoreDTO.StoreScouting.DistrictId,
+                Latitude = Store_StoreDTO.StoreScouting.Latitude,
+                Longitude = Store_StoreDTO.StoreScouting.Longitude,
+                Name = Store_StoreDTO.StoreScouting.Name,
+                OrganizationId = Store_StoreDTO.StoreScouting.OrganizationId,
+                OwnerPhone = Store_StoreDTO.StoreScouting.OwnerPhone,
+                ProvinceId = Store_StoreDTO.StoreScouting.ProvinceId,
+                StoreScoutingStatusId = Store_StoreDTO.StoreScouting.StoreScoutingStatusId,
+                WardId = Store_StoreDTO.StoreScouting.WardId,
+            };
+            Store = await StoreService.CreateStoreScouting(Store, StoreScouting);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
                 return Store_StoreDTO;
