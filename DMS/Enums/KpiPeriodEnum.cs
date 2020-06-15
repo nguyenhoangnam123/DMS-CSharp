@@ -23,7 +23,7 @@ namespace DMS.Enums
         public static GenericEnum PERIOD_QUATER03 = new GenericEnum { Id = 203, Code = "Q03", Name = "Quý 3" };
         public static GenericEnum PERIOD_QUATER04 = new GenericEnum { Id = 204, Code = "Q04", Name = "Quý 4" };
 
-        public static GenericEnum PERIOD_YEAR01 = new GenericEnum { Id = 301, Code = "Y01", Name = "Năm" };
+        public static GenericEnum PERIOD_YEAR01 = new GenericEnum { Id = 401, Code = "Y01", Name = "Năm" };
 
 
         public static List<GenericEnum> KpiPeriodEnumList = new List<GenericEnum>()
