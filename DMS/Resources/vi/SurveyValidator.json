@@ -16,6 +16,9 @@
     "SurveyQuestion": {
       "Content": {
         "ContentEmpty": "Chưa nhập nội dung câu hỏi"
+      },
+      "SurveyOptions": {
+        "ContentSurveyOptionsEmpty": "Chưa nhập nội dung câu hỏi"
       }
     }
   }

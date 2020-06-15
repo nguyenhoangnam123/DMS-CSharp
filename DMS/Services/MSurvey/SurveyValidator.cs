@@ -27,7 +27,8 @@ namespace DMS.Services.MSurvey
             StartDateEmpty,
             QuestionIsMandatory,
             ContentEmpty,
-            SurveyInUsed
+            SurveyInUsed,
+            ContentSurveyOptionsEmpty
         }
 
         private IUOW UOW;
@@ -65,6 +66,13 @@ namespace DMS.Services.MSurvey
                     if (SurveyQuestion.SurveyOptions == null) SurveyQuestion.SurveyOptions = new List<SurveyOption>();
                     if (string.IsNullOrWhiteSpace(SurveyQuestion.Content))
                         SurveyQuestion.AddError(nameof(SurveyValidator), nameof(SurveyQuestion.Content), ErrorCode.ContentEmpty);
+                    if (SurveyQuestion.SurveyOptions == null) SurveyQuestion.SurveyOptions = new List<SurveyOption>();
+                    else
+                        foreach (var SurveyOption in SurveyQuestion.SurveyOptions)
+                        {
+                            if (string.IsNullOrWhiteSpace(SurveyOption.Content))
+                                SurveyQuestion.AddError(nameof(SurveyValidator), nameof(SurveyQuestion.SurveyOptions), ErrorCode.ContentSurveyOptionsEmpty);
+                        }
                 }
             }
             return Survey.IsValidated;

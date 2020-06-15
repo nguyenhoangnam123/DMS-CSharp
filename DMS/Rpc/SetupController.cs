@@ -417,13 +417,13 @@ namespace DMS.Rpc
             }).ToList();
             DataContext.KpiPeriod.BulkMerge(KpiPeriodDAOs);
 
-            List<GeneralCriteriaDAO> GeneralCriteriaDAOs = GeneralCriteriaEnum.KpiCriteriaEnumList.Select(item => new GeneralCriteriaDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.GeneralCriteria.BulkMerge(GeneralCriteriaDAOs);
+            //List<GeneralCriteriaDAO> GeneralCriteriaDAOs = GeneralCriteriaEnum.KpiCriteriaEnumList.Select(item => new GeneralCriteriaDAO
+            //{
+            //    Id = item.Id,
+            //    Code = item.Code,
+            //    Name = item.Name,
+            //}).ToList();
+            //DataContext.GeneralCriteria.BulkMerge(GeneralCriteriaDAOs);
 
             List<KpiCriteriaTotalDAO> KpiCriteriaTotalDAOs = KpiCriteriaTotalEnum.KpiCriteriaTotalEnumList.Select(item => new KpiCriteriaTotalDAO
             {
