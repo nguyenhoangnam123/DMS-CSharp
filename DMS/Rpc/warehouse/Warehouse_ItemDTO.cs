@@ -18,9 +18,9 @@ namespace DMS.Rpc.warehouse
 
         public string ScanCode { get; set; }
 
-        public long SalePrice { get; set; }
+        public decimal SalePrice { get; set; }
 
-        public long? RetailPrice { get; set; }
+        public decimal? RetailPrice { get; set; }
         public Warehouse_ProductDTO Product { get; set; }
 
         public Warehouse_ItemDTO() { }
@@ -62,9 +62,9 @@ namespace DMS.Rpc.warehouse
 
         public StringFilter ScanCode { get; set; }
 
-        public LongFilter SalePrice { get; set; }
+        public DecimalFilter SalePrice { get; set; }
 
-        public LongFilter RetailPrice { get; set; }
+        public DecimalFilter RetailPrice { get; set; }
 
         public ItemOrder OrderBy { get; set; }
     }

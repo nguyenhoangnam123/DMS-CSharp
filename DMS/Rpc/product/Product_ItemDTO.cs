@@ -12,8 +12,8 @@ namespace DMS.Rpc.product
         public string Code { get; set; }
         public string Name { get; set; }
         public string ScanCode { get; set; }
-        public long SalePrice { get; set; }
-        public long? RetailPrice { get; set; }
+        public decimal SalePrice { get; set; }
+        public decimal? RetailPrice { get; set; }
         public long SaleStock { get; set; }
         public bool CanDelete { get; set; }
         public bool HasInventory { get; set; }
@@ -57,9 +57,9 @@ namespace DMS.Rpc.product
 
         public StringFilter ScanCode { get; set; }
 
-        public LongFilter SalePrice { get; set; }
+        public DecimalFilter SalePrice { get; set; }
 
-        public LongFilter RetailPrice { get; set; }
+        public DecimalFilter RetailPrice { get; set; }
 
         public ItemOrder OrderBy { get; set; }
     }

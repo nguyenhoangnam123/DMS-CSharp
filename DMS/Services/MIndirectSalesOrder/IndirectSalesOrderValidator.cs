@@ -213,8 +213,8 @@ namespace DMS.Services.MIndirectSalesOrder
                             {
                                 if(IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
                                 {
-                                    if(IndirectSalesOrderContent.SalePrice < (Item.SalePrice * UOM.Factor.Value) * 0.9 
-                                        || IndirectSalesOrderContent.SalePrice > (Item.SalePrice * UOM.Factor.Value) * 1.1)
+                                    if(IndirectSalesOrderContent.SalePrice < (Item.SalePrice * UOM.Factor.Value) * 0.9m
+                                        || IndirectSalesOrderContent.SalePrice > (Item.SalePrice * UOM.Factor.Value) * 1.1m)
                                         IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Amount), ErrorCode.PriceOutOfRange);
                                 }
                             }

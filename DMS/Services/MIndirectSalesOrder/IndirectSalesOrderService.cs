@@ -305,7 +305,7 @@ namespace DMS.Services.MIndirectSalesOrder
                         subFilter.SaleEmployeeId = FilterPermissionDefinition.IdFilter;
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Total))
-                        subFilter.Total = FilterPermissionDefinition.LongFilter;
+                        subFilter.Total = FilterPermissionDefinition.DecimalFilter;
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.OrderDate))
                         subFilter.OrderDate = FilterPermissionDefinition.DateFilter;

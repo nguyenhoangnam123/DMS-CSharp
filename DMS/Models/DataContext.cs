@@ -98,6 +98,8 @@ namespace DMS.Models
         public virtual DbSet<StoreCheckingImageMappingDAO> StoreCheckingImageMapping { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
+        public virtual DbSet<StoreScoutingDAO> StoreScouting { get; set; }
+        public virtual DbSet<StoreScoutingStatusDAO> StoreScoutingStatus { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
         public virtual DbSet<SurveyDAO> Survey { get; set; }
@@ -521,6 +523,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeliveryDate).HasColumnType("date");
 
+                entity.Property(e => e.GeneralDiscountAmount).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(8, 2)");
 
                 entity.Property(e => e.Note).HasMaxLength(4000);
@@ -533,7 +537,13 @@ namespace DMS.Models
 
                 entity.Property(e => e.StorePhone).HasMaxLength(500);
 
+                entity.Property(e => e.SubTotal).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.TaxCode).HasMaxLength(500);
+
+                entity.Property(e => e.Total).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.TotalTaxAmount).HasColumnType("decimal(18, 4)");
 
                 entity.HasOne(d => d.BuyerStore)
                     .WithMany(p => p.DirectSalesOrders)
@@ -562,9 +572,19 @@ namespace DMS.Models
 
             modelBuilder.Entity<DirectSalesOrderContentDAO>(entity =>
             {
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.DiscountAmount).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
 
+                entity.Property(e => e.GeneralDiscountAmount).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(8, 2)");
+
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.TaxAmount).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.TaxPercentage).HasColumnType("decimal(8, 2)");
 
@@ -1130,7 +1150,9 @@ namespace DMS.Models
 
                 entity.Property(e => e.EditedPriceStatusId).HasComment("Sửa giá");
 
-                entity.Property(e => e.GeneralDiscountAmount).HasComment("Số tiền chiết khấu tổng");
+                entity.Property(e => e.GeneralDiscountAmount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Số tiền chiết khấu tổng");
 
                 entity.Property(e => e.GeneralDiscountPercentage)
                     .HasColumnType("decimal(8, 2)")
@@ -1156,11 +1178,17 @@ namespace DMS.Models
 
                 entity.Property(e => e.StoreAddress).HasMaxLength(4000);
 
-                entity.Property(e => e.SubTotal).HasComment("Tổng tiền trước thuế");
+                entity.Property(e => e.SubTotal)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Tổng tiền trước thuế");
 
-                entity.Property(e => e.Total).HasComment("Tổng tiền sau thuế");
+                entity.Property(e => e.Total)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Tổng tiền sau thuế");
 
-                entity.Property(e => e.TotalTaxAmount).HasComment("Tổng thuế");
+                entity.Property(e => e.TotalTaxAmount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Tổng thuế");
 
                 entity.HasOne(d => d.BuyerStore)
                     .WithMany(p => p.IndirectSalesOrderBuyerStores)
@@ -1197,15 +1225,21 @@ namespace DMS.Models
             {
                 entity.Property(e => e.Id).HasComment("Id");
 
-                entity.Property(e => e.Amount).HasComment("Tổng số tiền từng dòng trước chiết khấu tổng");
+                entity.Property(e => e.Amount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Tổng số tiền từng dòng trước chiết khấu tổng");
 
-                entity.Property(e => e.DiscountAmount).HasComment("Số tiền chiết khấu theo dòng");
+                entity.Property(e => e.DiscountAmount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Số tiền chiết khấu theo dòng");
 
                 entity.Property(e => e.DiscountPercentage)
                     .HasColumnType("decimal(8, 2)")
                     .HasComment("% chiết khấu theo dòng");
 
-                entity.Property(e => e.GeneralDiscountAmount).HasComment("Số tiền sau chiết khấu từng dòng");
+                entity.Property(e => e.GeneralDiscountAmount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Số tiền sau chiết khấu từng dòng");
 
                 entity.Property(e => e.GeneralDiscountPercentage)
                     .HasColumnType("decimal(8, 2)")
@@ -1215,7 +1249,9 @@ namespace DMS.Models
 
                 entity.Property(e => e.ItemId).HasComment("Sản phẩm");
 
-                entity.Property(e => e.PrimaryPrice).HasComment("Giá theo đơn vị lưu kho");
+                entity.Property(e => e.PrimaryPrice)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Giá theo đơn vị lưu kho");
 
                 entity.Property(e => e.PrimaryUnitOfMeasureId).HasComment("Đơn vị lưu kho");
 
@@ -1223,9 +1259,13 @@ namespace DMS.Models
 
                 entity.Property(e => e.RequestedQuantity).HasComment("Số lượng xuất hàng theo đơn vị lưu kho");
 
-                entity.Property(e => e.SalePrice).HasComment("Giá bán theo đơn vị xuất hàng");
+                entity.Property(e => e.SalePrice)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Giá bán theo đơn vị xuất hàng");
 
-                entity.Property(e => e.TaxAmount).HasComment("Số tiền thuế sau tất cả các loại chiết khấu");
+                entity.Property(e => e.TaxAmount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Số tiền thuế sau tất cả các loại chiết khấu");
 
                 entity.Property(e => e.TaxPercentage)
                     .HasColumnType("decimal(8, 2)")
@@ -1364,6 +1404,10 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(4000);
+
+                entity.Property(e => e.RetailPrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.ScanCode).HasMaxLength(4000);
 
@@ -1912,6 +1956,10 @@ namespace DMS.Models
                 entity.Property(e => e.Note).HasMaxLength(3000);
 
                 entity.Property(e => e.OtherName).HasMaxLength(1000);
+
+                entity.Property(e => e.RetailPrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.ScanCode).HasMaxLength(500);
 
@@ -2545,6 +2593,87 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StoreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreImageMapping_Store");
+            });
+
+            modelBuilder.Entity<StoreScoutingDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Address)
+                    .IsRequired()
+                    .HasMaxLength(3000);
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.OwnerPhone)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreScouting_AppUser");
+
+                entity.HasOne(d => d.District)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.DistrictId)
+                    .HasConstraintName("FK_StoreScouting_District");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .HasConstraintName("FK_StoreScouting_Organization");
+
+                entity.HasOne(d => d.Province)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.ProvinceId)
+                    .HasConstraintName("FK_StoreScouting_Province");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.StoreId)
+                    .HasConstraintName("FK_StoreScouting_Store");
+
+                entity.HasOne(d => d.StoreScoutingStatus)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.StoreScoutingStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreScouting_StoreScouting");
+
+                entity.HasOne(d => d.Ward)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.WardId)
+                    .HasConstraintName("FK_StoreScouting_Ward");
+            });
+
+            modelBuilder.Entity<StoreScoutingStatusDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<StoreTypeDAO>(entity =>

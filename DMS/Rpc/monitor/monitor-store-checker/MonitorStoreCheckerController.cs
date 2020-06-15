@@ -217,7 +217,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     StoreCheckerMonitor_StoreCheckingDTO.SalesOrder = new HashSet<long>();
                     StoreCheckerMonitor_StoreCheckingDTO.External = new HashSet<long>();
                     StoreCheckerMonitor_StoreCheckingDTO.Internal = new HashSet<long>();
-                    StoreCheckerMonitor_StoreCheckingDTO.Revenue = new Dictionary<long, long>();
+                    StoreCheckerMonitor_StoreCheckingDTO.Revenue = new Dictionary<long, decimal>();
                     MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings.Add(StoreCheckerMonitor_StoreCheckingDTO);
                 }
             }
