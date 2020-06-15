@@ -21,7 +21,8 @@ namespace DMS.Services.MStoreChecking
         {
             IdNotExisted,
             StoreNotExisted,
-            DistanceOutOfRange
+            DistanceOutOfRange,
+            HasCheckOut
         }
 
         private IUOW UOW;
@@ -80,6 +81,9 @@ namespace DMS.Services.MStoreChecking
         {
             if (await ValidateId(StoreChecking))
             {
+                var oldData = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
+                if(oldData.CheckOutAt.HasValue)
+                    StoreChecking.AddError(nameof(StoreCheckingValidator), nameof(StoreChecking.CheckOutAt), ErrorCode.HasCheckOut);
             }
             return StoreChecking.IsValidated;
         }

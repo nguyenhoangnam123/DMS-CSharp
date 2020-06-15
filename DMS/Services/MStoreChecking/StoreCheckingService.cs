@@ -132,11 +132,18 @@ namespace DMS.Services.MStoreChecking
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreCheckingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreCheckingService));
+
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreCheckingService));
+
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -176,11 +183,18 @@ namespace DMS.Services.MStoreChecking
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreCheckingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreCheckingService));
+
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreCheckingService));
+
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -221,11 +235,18 @@ namespace DMS.Services.MStoreChecking
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreCheckingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreCheckingService));
+
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreCheckingService));
+
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 

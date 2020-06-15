@@ -6,6 +6,9 @@
     "Store": {
       "StoreNotExisted": "Cửa hàng không tồn tại",
       "DistanceOutOfRange": "Khoảng cách ngoài phạm vi"
+    },
+    "CheckOutAt": {
+      "HasCheckOut": "Cửa hàng đã viếng thăm"
     }
   }
 }
