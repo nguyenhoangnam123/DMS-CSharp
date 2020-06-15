@@ -17,6 +17,7 @@ namespace DMS.Entities
         public long? DistrictId { get; set; }
         public long? WardId { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public Organization Organization { get; set; }
         public District District { get; set; }
         public Province Province { get; set; }

@@ -266,6 +266,7 @@ namespace DMS.Repositories
                     Code = q.Ward.Code,
                     Name = q.Ward.Name,
                 } : null,
+                Used = q.Inventories.Select(i => i.SaleStock).DefaultIfEmpty(0).Sum() > 0,
             }).AsNoTracking().ToListAsync();
             return Warehouses;
         }
@@ -375,6 +376,7 @@ namespace DMS.Repositories
                     SaleStock = x.SaleStock,
                     AccountingStock = x.AccountingStock,
                 }).ToListAsync();
+            Warehouse.Used = Warehouse.Inventories.Select(i => i.SaleStock).DefaultIfEmpty(0).Sum() > 0;
             foreach (Item Item in Items)
             {
                 Inventory Inventory = Warehouse.Inventories.Where(i => i.ItemId == Item.Id).FirstOrDefault();
