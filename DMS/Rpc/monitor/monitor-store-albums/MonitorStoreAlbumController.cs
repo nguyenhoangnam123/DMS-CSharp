@@ -50,6 +50,9 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         [Route(MonitorStoreAlbumRoute.FilterListAlbum), HttpPost]
         public async Task<List<MonitorStoreAlbum_AlbumDTO>> FilterListAlbum([FromBody] MonitorStoreAlbum_AlbumFilterDTO MonitorStoreAlbum_AlbumFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AlbumFilter AlbumFilter = new AlbumFilter();
             AlbumFilter.Skip = 0;
             AlbumFilter.Take = 20;
@@ -67,6 +70,9 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         [Route(MonitorStoreAlbumRoute.FilterListAppUser), HttpPost]
         public async Task<List<MonitorStoreAlbum_AppUserDTO>> FilterListAppUser([FromBody] MonitorStoreAlbum_AppUserFilterDTO MonitorStoreAlbum_AppUserFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AppUserFilter AppUserFilter = new AppUserFilter();
             AppUserFilter.Skip = 0;
             AppUserFilter.Take = 20;
@@ -87,6 +93,9 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         [Route(MonitorStoreAlbumRoute.FilterListOrganization), HttpPost]
         public async Task<List<MonitorStoreAlbum_OrganizationDTO>> FilterListOrganization([FromBody] MonitorStoreAlbum_OrganizationFilterDTO MonitorStoreAlbum_OrganizationFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
             OrganizationFilter.Skip = 0;
             OrganizationFilter.Take = int.MaxValue;
@@ -145,6 +154,8 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         [Route(MonitorStoreAlbumRoute.List), HttpPost]
         public async Task<MonitorStoreAlbum_MonitorStoreAlbumDTO> List([FromBody] MonitorStoreAlbum_MonitorStoreAlbumFilterDTO MonitorStoreAlbum_MonitorStoreAlbumFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
             long? AlbumId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.AlbumId?.Equal;
             if (!AlbumId.HasValue) return new MonitorStoreAlbum_MonitorStoreAlbumDTO();
             long? OrganizationId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.OrganizationId?.Equal;

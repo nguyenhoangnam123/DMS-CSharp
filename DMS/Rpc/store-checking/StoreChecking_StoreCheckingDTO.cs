@@ -19,7 +19,7 @@ namespace DMS.Rpc.store_checking
         public long? CountImage { get; set; }
         public StoreChecking_AppUserDTO SaleEmployee { get; set; }
         public StoreChecking_StoreDTO Store { get; set; }
-        public List<StoreChecking_ImageStoreCheckingMappingDTO> ImageStoreCheckingMappings { get; set; }
+        public List<StoreChecking_StoreCheckingImageMappingDTO> StoreCheckingImageMappings { get; set; }
         public StoreChecking_StoreCheckingDTO() { }
         public StoreChecking_StoreCheckingDTO(StoreChecking StoreChecking)
         {
@@ -34,7 +34,7 @@ namespace DMS.Rpc.store_checking
             this.CountImage = StoreChecking.CountImage;
             this.SaleEmployee = StoreChecking.SaleEmployee == null ? null : new StoreChecking_AppUserDTO(StoreChecking.SaleEmployee);
             this.Store = StoreChecking.Store == null ? null : new StoreChecking_StoreDTO(StoreChecking.Store);
-            this.ImageStoreCheckingMappings = StoreChecking.StoreCheckingImageMappings?.Select(x => new StoreChecking_ImageStoreCheckingMappingDTO(x)).ToList();
+            this.StoreCheckingImageMappings = StoreChecking.StoreCheckingImageMappings?.Select(x => new StoreChecking_StoreCheckingImageMappingDTO(x)).ToList();
             this.Errors = StoreChecking.Errors;
         }
     }

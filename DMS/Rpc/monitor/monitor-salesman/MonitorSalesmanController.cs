@@ -28,6 +28,9 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         [Route(MonitorSalesmanRoute.FilterListAppUser), HttpPost]
         public async Task<List<MonitorSalesman_AppUserDTO>> FilterListAppUser([FromBody] SalesmanMonitor_AppUserFilterDTO SalesmanMonitor_AppUserFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AppUserFilter AppUserFilter = new AppUserFilter();
             AppUserFilter.Skip = 0;
             AppUserFilter.Take = 20;
@@ -48,6 +51,9 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         [Route(MonitorSalesmanRoute.FilterListOrganization), HttpPost]
         public async Task<List<MonitorSalesman_OrganizationDTO>> FilterListOrganization([FromBody] MonitorSalesman_OrganizationFilterDTO MonitorSalesman_OrganizationFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
             OrganizationFilter.Skip = 0;
             OrganizationFilter.Take = int.MaxValue;
@@ -65,6 +71,9 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         [Route(MonitorSalesmanRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             DateTime CheckIn = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.Date ?? StaticParams.DateTimeNow.Date;
 
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
@@ -90,6 +99,9 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         [Route(MonitorSalesmanRoute.List), HttpPost]
         public async Task<List<MonitorSalesman_MonitorSalesmanDTO>> List([FromBody] MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             DateTime CheckIn = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.Date ?? StaticParams.DateTimeNow.Date;
 
             var query = from ap in DataContext.AppUser

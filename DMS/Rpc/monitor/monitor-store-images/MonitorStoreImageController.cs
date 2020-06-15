@@ -41,6 +41,9 @@ namespace DMS.Rpc.monitor.monitor_store_images
         [Route(MonitorStoreImageRoute.FilterListAppUser), HttpPost]
         public async Task<List<MonitorStoreImage_AppUserDTO>> FilterListAppUser([FromBody] MonitorStoreImage_AppUserFilterDTO MonitorStoreImage_AppUserFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AppUserFilter AppUserFilter = new AppUserFilter();
             AppUserFilter.Skip = 0;
             AppUserFilter.Take = 20;
@@ -61,6 +64,9 @@ namespace DMS.Rpc.monitor.monitor_store_images
         [Route(MonitorStoreImageRoute.FilterListOrganization), HttpPost]
         public async Task<List<MonitorStoreImage_OrganizationDTO>> FilterListOrganization([FromBody] MonitorStoreImage_OrganizationFilterDTO MonitorStoreImage_OrganizationFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
             OrganizationFilter.Skip = 0;
             OrganizationFilter.Take = int.MaxValue;
@@ -137,6 +143,9 @@ namespace DMS.Rpc.monitor.monitor_store_images
         [Route(MonitorStoreImageRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] MonitorStoreImage_MonitorStoreImageFilterDTO MonitorStoreImage_MonitorStoreImageFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             long? OrganizationId = MonitorStoreImage_MonitorStoreImageFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorStoreImage_MonitorStoreImageFilterDTO.SaleEmployeeId?.Equal;
             long? StoreId = MonitorStoreImage_MonitorStoreImageFilterDTO.StoreId?.Equal;
@@ -177,6 +186,9 @@ namespace DMS.Rpc.monitor.monitor_store_images
         [Route(MonitorStoreImageRoute.List), HttpPost]
         public async Task<List<MonitorStoreImage_MonitorStoreImageDTO>> List([FromBody] MonitorStoreImage_MonitorStoreImageFilterDTO MonitorStoreImage_MonitorStoreImageFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             long? OrganizationId = MonitorStoreImage_MonitorStoreImageFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorStoreImage_MonitorStoreImageFilterDTO.SaleEmployeeId?.Equal;
             long? StoreId = MonitorStoreImage_MonitorStoreImageFilterDTO.StoreId?.Equal;

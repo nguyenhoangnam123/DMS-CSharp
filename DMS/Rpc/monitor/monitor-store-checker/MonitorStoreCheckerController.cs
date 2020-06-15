@@ -30,6 +30,9 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         [Route(MonitorStoreCheckerRoute.FilterListAppUser), HttpPost]
         public async Task<List<MonitorStoreChecker_AppUserDTO>> FilterListAppUser([FromBody] StoreCheckerMonitor_AppUserFilterDTO StoreCheckerMonitor_AppUserFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AppUserFilter AppUserFilter = new AppUserFilter();
             AppUserFilter.Skip = 0;
             AppUserFilter.Take = 20;
@@ -50,6 +53,9 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         [Route(MonitorStoreCheckerRoute.FilterListOrganization), HttpPost]
         public async Task<List<MonitorStoreChecker_OrganizationDTO>> FilterListOrganization([FromBody] StoreCheckerMonitor_OrganizationFilterDTO StoreCheckerMonitor_OrganizationFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
             OrganizationFilter.Skip = 0;
             OrganizationFilter.Take = int.MaxValue;
@@ -93,6 +99,9 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         [Route(MonitorStoreCheckerRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] MonitorStoreChecker_MonitorStoreCheckerFilterDTO MonitorStoreChecker_MonitorStoreCheckerFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
                    StaticParams.DateTimeNow :
                    MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
@@ -134,6 +143,9 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         [Route(MonitorStoreCheckerRoute.List), HttpPost]
         public async Task<List<MonitorStoreChecker_MonitorStoreCheckerDTO>> List([FromBody] MonitorStoreChecker_MonitorStoreCheckerFilterDTO MonitorStoreChecker_MonitorStoreCheckerFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
                     MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
@@ -275,6 +287,9 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         [Route(MonitorStoreCheckerRoute.Get), HttpPost]
         public async Task<List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO>> Get([FromBody] MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.Date;
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             DateTime End = Start.AddDays(1).AddSeconds(-1);

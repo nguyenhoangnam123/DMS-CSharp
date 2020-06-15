@@ -14,7 +14,7 @@ namespace DMS.Rpc.store_checking
 
         public string Url { get; set; }
 
-        public List<StoreChecking_ImageStoreCheckingMappingDTO> ImageStoreCheckingMapping { get; set; }
+        public List<StoreChecking_StoreCheckingImageMappingDTO> ImageStoreCheckingMapping { get; set; }
         public StoreChecking_ImageDTO() { }
         public StoreChecking_ImageDTO(Image Image)
         {
@@ -24,7 +24,7 @@ namespace DMS.Rpc.store_checking
             this.Name = Image.Name;
 
             this.Url = Image.Url;
-            this.ImageStoreCheckingMapping = Image.ImageStoreCheckingMapping?.Select(x => new StoreChecking_ImageStoreCheckingMappingDTO(x)).ToList();
+            this.ImageStoreCheckingMapping = Image.ImageStoreCheckingMapping?.Select(x => new StoreChecking_StoreCheckingImageMappingDTO(x)).ToList();
             this.Errors = Image.Errors;
         }
     }

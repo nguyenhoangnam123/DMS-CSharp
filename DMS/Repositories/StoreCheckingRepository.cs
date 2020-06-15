@@ -422,8 +422,8 @@ namespace DMS.Repositories
                     StoreCheckingImageMappingDAO.ImageId = StoreCheckingImageMapping.ImageId;
                     StoreCheckingImageMappingDAO.StoreCheckingId = StoreChecking.Id;
                     StoreCheckingImageMappingDAO.AlbumId = StoreCheckingImageMapping.AlbumId;
-                    StoreCheckingImageMappingDAO.StoreId = StoreCheckingImageMapping.StoreId;
-                    StoreCheckingImageMappingDAO.SaleEmployeeId = StoreCheckingImageMapping.SaleEmployeeId;
+                    StoreCheckingImageMappingDAO.StoreId = StoreChecking.StoreId;
+                    StoreCheckingImageMappingDAO.SaleEmployeeId = StoreChecking.SaleEmployeeId;
                     StoreCheckingImageMappingDAO.ShootingAt = StoreCheckingImageMapping.ShootingAt;
                     StoreCheckingImageMappingDAOs.Add(StoreCheckingImageMappingDAO);
                 }
