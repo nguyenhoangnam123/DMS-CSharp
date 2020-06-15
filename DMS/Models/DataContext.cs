@@ -98,6 +98,8 @@ namespace DMS.Models
         public virtual DbSet<StoreCheckingImageMappingDAO> StoreCheckingImageMapping { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
+        public virtual DbSet<StoreScoutingDAO> StoreScouting { get; set; }
+        public virtual DbSet<StoreScoutingStatusDAO> StoreScoutingStatus { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
         public virtual DbSet<SurveyDAO> Survey { get; set; }
@@ -2545,6 +2547,87 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StoreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreImageMapping_Store");
+            });
+
+            modelBuilder.Entity<StoreScoutingDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Address)
+                    .IsRequired()
+                    .HasMaxLength(3000);
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.OwnerPhone)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreScouting_AppUser");
+
+                entity.HasOne(d => d.District)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.DistrictId)
+                    .HasConstraintName("FK_StoreScouting_District");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .HasConstraintName("FK_StoreScouting_Organization");
+
+                entity.HasOne(d => d.Province)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.ProvinceId)
+                    .HasConstraintName("FK_StoreScouting_Province");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.StoreId)
+                    .HasConstraintName("FK_StoreScouting_Store");
+
+                entity.HasOne(d => d.StoreScoutingStatus)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.StoreScoutingStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreScouting_StoreScouting");
+
+                entity.HasOne(d => d.Ward)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.WardId)
+                    .HasConstraintName("FK_StoreScouting_Ward");
+            });
+
+            modelBuilder.Entity<StoreScoutingStatusDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<StoreTypeDAO>(entity =>

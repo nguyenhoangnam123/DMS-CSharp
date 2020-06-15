@@ -9,6 +9,7 @@ namespace DMS.Models
         {
             AppUsers = new HashSet<AppUserDAO>();
             Districts = new HashSet<DistrictDAO>();
+            StoreScoutings = new HashSet<StoreScoutingDAO>();
             Stores = new HashSet<StoreDAO>();
             Suppliers = new HashSet<SupplierDAO>();
             Warehouses = new HashSet<WarehouseDAO>();
@@ -27,6 +28,7 @@ namespace DMS.Models
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserDAO> AppUsers { get; set; }
         public virtual ICollection<DistrictDAO> Districts { get; set; }
+        public virtual ICollection<StoreScoutingDAO> StoreScoutings { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
         public virtual ICollection<WarehouseDAO> Warehouses { get; set; }

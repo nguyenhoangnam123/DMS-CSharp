@@ -72,6 +72,8 @@ namespace DMS.Repositories
         IRoleRepository RoleRepository { get; }
         ISexRepository SexRepository { get; }
         IStatusRepository StatusRepository { get; }
+        IStoreScoutingRepository StoreScoutingRepository { get; }
+        IStoreScoutingStatusRepository StoreScoutingStatusRepository { get; }
         IStoreRepository StoreRepository { get; }
         IStoreCheckingRepository StoreCheckingRepository { get; }
         IStoreGroupingRepository StoreGroupingRepository { get; }
@@ -164,6 +166,8 @@ namespace DMS.Repositories
         public IRoleRepository RoleRepository { get; private set; }
         public ISexRepository SexRepository { get; private set; }
         public IStatusRepository StatusRepository { get; private set; }
+        public IStoreScoutingRepository StoreScoutingRepository { get; private set; }
+        public IStoreScoutingStatusRepository StoreScoutingStatusRepository { get; private set; }
         public IStoreRepository StoreRepository { get; private set; }
         public IStoreCheckingRepository StoreCheckingRepository { get; private set; }
         public IStoreGroupingRepository StoreGroupingRepository { get; private set; }
@@ -255,6 +259,8 @@ namespace DMS.Repositories
             RoleRepository = new RoleRepository(DataContext);
             SexRepository = new SexRepository(DataContext);
             StatusRepository = new StatusRepository(DataContext);
+            StoreScoutingStatusRepository = new StoreScoutingStatusRepository(DataContext);
+            StoreScoutingRepository = new StoreScoutingRepository(DataContext);
             StoreRepository = new StoreRepository(DataContext);
             StoreCheckingRepository = new StoreCheckingRepository(DataContext);
             StoreGroupingRepository = new StoreGroupingRepository(DataContext);
