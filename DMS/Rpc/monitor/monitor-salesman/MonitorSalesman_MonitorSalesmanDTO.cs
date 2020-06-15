@@ -37,6 +37,6 @@ namespace DMS.Rpc.Monitor.monitor_salesman
     {
         public IdFilter OrganizationId { get; set; }
         public IdFilter AppUserId { get; set; }
-        public DateTime? CheckIn { get; set; }
+        public DateFilter CheckIn { get; set; }
     }
 }
