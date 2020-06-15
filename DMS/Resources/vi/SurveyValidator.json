@@ -18,7 +18,9 @@
         "ContentEmpty": "Chưa nhập nội dung câu hỏi"
       },
       "SurveyOptions": {
-        "ContentSurveyOptionsEmpty": "Chưa nhập nội dung câu hỏi"
+        "Content": {
+          "ContentSurveyOptionsEmpty": "Chưa nhập nội dung câu hỏi"
+        }
       }
     }
   }
