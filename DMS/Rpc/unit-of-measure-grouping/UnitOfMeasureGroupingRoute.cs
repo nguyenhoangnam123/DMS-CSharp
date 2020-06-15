@@ -42,7 +42,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
                 Detail, Delete,
                 SingleListStatus, SingleListUnitOfMeasure,FilterListUnitOfMeasure } },
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get, FilterListUnitOfMeasure
+                Master, Count, List, Get, FilterListUnitOfMeasure,
                 BulkDelete } },
         };
     }
