@@ -227,7 +227,7 @@ namespace DMS.Repositories
         {
             List<Warehouse> Warehouses = await query.Select(q => new Warehouse()
             {
-                Id = filter.Selects.Contains(WarehouseSelect.Id) ? q.Id : default(long),
+                Id = q.Id,
                 Code = filter.Selects.Contains(WarehouseSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(WarehouseSelect.Name) ? q.Name : default(string),
                 Address = filter.Selects.Contains(WarehouseSelect.Address) ? q.Address : default(string),
@@ -266,8 +266,13 @@ namespace DMS.Repositories
                     Code = q.Ward.Code,
                     Name = q.Ward.Name,
                 } : null,
-                Used = q.Inventories.Select(i => i.SaleStock).DefaultIfEmpty(0).Sum() > 0,
             }).AsNoTracking().ToListAsync();
+            List<long> WarehouseIds = Warehouses.Select(x => x.Id).ToList();
+            List<InventoryDAO> InventoryDAOs = DataContext.Inventory.Where(i => WarehouseIds.Contains(i.Id)).ToList();
+            foreach (Warehouse Warehouse in Warehouses)
+            {
+                Warehouse.Used = InventoryDAOs.Where(x => x.WarehouseId == Warehouse.Id).Select(x => x.SaleStock).DefaultIfEmpty(0).Sum() > 0;
+            }
             return Warehouses;
         }
 
