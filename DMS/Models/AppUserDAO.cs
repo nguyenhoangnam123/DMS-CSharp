@@ -27,6 +27,7 @@ namespace DMS.Models
             Resellers = new HashSet<ResellerDAO>();
             StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
+            StoreScoutings = new HashSet<StoreScoutingDAO>();
             Suppliers = new HashSet<SupplierDAO>();
             SurveyResults = new HashSet<SurveyResultDAO>();
             Surveys = new HashSet<SurveyDAO>();
@@ -78,6 +79,7 @@ namespace DMS.Models
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
+        public virtual ICollection<StoreScoutingDAO> StoreScoutings { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
         public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
         public virtual ICollection<SurveyDAO> Surveys { get; set; }
