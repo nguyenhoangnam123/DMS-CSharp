@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DMS.Enums
 {
-    public class KpiYeardEnum
+    public class KpiYearEnum
     {
         public static GenericEnum YEAR_2020 = new GenericEnum { Id = 2020, Code = "2020", Name = "2020" };
         public static GenericEnum YEAR_2021 = new GenericEnum { Id = 2021, Code = "2021", Name = "2021" };
