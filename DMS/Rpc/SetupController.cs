@@ -365,6 +365,23 @@ namespace DMS.Rpc
             }
         }
 
+        private void InitStoreScoutingStatusEnum()
+        {
+            List<StoreScoutingStatusDAO> statuses = DataContext.StoreScoutingStatus.ToList();
+            foreach (var item in StoreScoutingStatusEnum.StoreScoutingStatusEnumList)
+            {
+                if (!statuses.Any(pt => pt.Id == item.Id))
+                {
+                    DataContext.StoreScoutingStatus.Add(new StoreScoutingStatusDAO
+                    {
+                        Id = item.Id,
+                        Code = item.Code,
+                        Name = item.Name,
+                    });
+                }
+            }
+        }
+
         private void InitNotificationStatusEnum()
         {
             List<NotificationStatusDAO> NotificationStatuses = DataContext.NotificationStatus.ToList();
