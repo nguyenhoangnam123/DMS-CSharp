@@ -32,9 +32,6 @@ namespace DMS.Rpc.store_scouting
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
         
         public const string FilterListAppUser = Default + "/filter-list-app-user";
@@ -95,13 +92,6 @@ namespace DMS.Rpc.store_scouting
                 Master, Count, List, Get, FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
                 BulkDelete } },
 
-            { "Xuất excel", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
-                Export } },
-
-            { "Nhập excel", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
-                ExportTemplate, Import } },
         };
     }
 }

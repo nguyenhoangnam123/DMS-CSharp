@@ -43,6 +43,7 @@ namespace DMS.Rpc.store
         public Store_StoreGroupingDTO StoreGrouping { get; set; }
         public Store_StoreTypeDTO StoreType { get; set; }
         public Store_WardDTO Ward { get; set; }
+        public Store_StoreScoutingDTO StoreScouting { get; set; }
         public List<Store_StoreImageMappingDTO> StoreImageMappings { get; set; }
         public List<Store_StoreCheckingDTO> StoreCheckings { get; set; }
         public Store_StoreDTO() { }

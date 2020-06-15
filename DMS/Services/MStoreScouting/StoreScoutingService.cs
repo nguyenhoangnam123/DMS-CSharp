@@ -91,8 +91,13 @@ namespace DMS.Services.MStoreScouting
 
             try
             {
+                StoreScouting.CreatorId = CurrentContext.UserId;
+                StoreScouting.Code = Guid.NewGuid().ToString();
+                StoreScouting.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.INACTIVE.Id;
                 await UOW.Begin();
                 await UOW.StoreScoutingRepository.Create(StoreScouting);
+                StoreScouting.Code = StoreScouting.Id.ToString();
+                await UOW.StoreScoutingRepository.Update(StoreScouting);
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(StoreScouting, new { }, nameof(StoreScoutingService));
