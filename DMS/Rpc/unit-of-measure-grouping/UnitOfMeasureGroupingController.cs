@@ -251,6 +251,25 @@ namespace DMS.Rpc.unit_of_measure_grouping
                 .Select(x => new UnitOfMeasureGrouping_UnitOfMeasureDTO(x)).ToList();
             return UnitOfMeasureGrouping_UnitOfMeasureDTOs;
         }
+        [Route(UnitOfMeasureGroupingRoute.FilterListUnitOfMeasure), HttpPost]
+        public async Task<List<UnitOfMeasureGrouping_UnitOfMeasureDTO>> FilterListUnitOfMeasure([FromBody] UnitOfMeasureGrouping_UnitOfMeasureFilterDTO UnitOfMeasureGrouping_UnitOfMeasureFilterDTO)
+        {
+            UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter();
+            UnitOfMeasureFilter.Skip = 0;
+            UnitOfMeasureFilter.Take = 20;
+            UnitOfMeasureFilter.OrderBy = UnitOfMeasureOrder.Id;
+            UnitOfMeasureFilter.OrderType = OrderType.ASC;
+            UnitOfMeasureFilter.Selects = UnitOfMeasureSelect.ALL;
+            UnitOfMeasureFilter.Id = UnitOfMeasureGrouping_UnitOfMeasureFilterDTO.Id;
+            UnitOfMeasureFilter.Code = UnitOfMeasureGrouping_UnitOfMeasureFilterDTO.Code;
+            UnitOfMeasureFilter.Name = UnitOfMeasureGrouping_UnitOfMeasureFilterDTO.Name;
+            //UnitOfMeasureFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
+            List<UnitOfMeasureGrouping_UnitOfMeasureDTO> UnitOfMeasureGrouping_UnitOfMeasureDTOs = UnitOfMeasures
+                .Select(x => new UnitOfMeasureGrouping_UnitOfMeasureDTO(x)).ToList();
+            return UnitOfMeasureGrouping_UnitOfMeasureDTOs;
+        }
     }
 }
 

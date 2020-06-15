@@ -18,6 +18,9 @@ namespace DMS.Rpc.unit_of_measure_grouping
 
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
+
+        public const string FilterListUnitOfMeasure = Default + "/filter-list-unit-of-measure";
+
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
@@ -25,21 +28,21 @@ namespace DMS.Rpc.unit_of_measure_grouping
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get } },
+                Master, Count, List, Get, FilterListUnitOfMeasure } },
             { "Thêm", new List<string> {
                 Master, Count, List, Get,
                 Detail, Create,
-                SingleListStatus, SingleListUnitOfMeasure, } },
+                SingleListStatus, SingleListUnitOfMeasure, FilterListUnitOfMeasure } },
             { "Sửa", new List<string> {
                 Master, Count, List, Get,
                 Detail, Update,
-                SingleListStatus, SingleListUnitOfMeasure, } },
+                SingleListStatus, SingleListUnitOfMeasure,FilterListUnitOfMeasure } },
             { "Xoá", new List<string> {
                 Master, Count, List, Get,
                 Detail, Delete,
-                SingleListStatus, SingleListUnitOfMeasure, } },
+                SingleListStatus, SingleListUnitOfMeasure,FilterListUnitOfMeasure } },
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get,
+                Master, Count, List, Get, FilterListUnitOfMeasure,
                 BulkDelete } },
         };
     }
