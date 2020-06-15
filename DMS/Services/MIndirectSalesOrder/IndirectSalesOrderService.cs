@@ -401,7 +401,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     var SubAmount = IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.SalePrice;
                     if (IndirectSalesOrderContent.DiscountPercentage.HasValue)
                     {
-                        IndirectSalesOrderContent.DiscountAmount = Convert.ToInt64(SubAmount * IndirectSalesOrderContent.DiscountPercentage.Value / 100);
+                        IndirectSalesOrderContent.DiscountAmount = SubAmount * IndirectSalesOrderContent.DiscountPercentage.Value / 100;
                         IndirectSalesOrderContent.Amount = SubAmount - IndirectSalesOrderContent.DiscountAmount.Value;
                     }
                     else
@@ -416,16 +416,16 @@ namespace DMS.Services.MIndirectSalesOrder
                 //tính tổng chiết khấu theo % chiết khấu chung
                 if (IndirectSalesOrder.GeneralDiscountPercentage.HasValue && IndirectSalesOrder.GeneralDiscountPercentage > 0)
                 {
-                    IndirectSalesOrder.GeneralDiscountAmount = Convert.ToInt64(IndirectSalesOrder.SubTotal * (IndirectSalesOrder.GeneralDiscountPercentage / 100));
+                    IndirectSalesOrder.GeneralDiscountAmount = IndirectSalesOrder.SubTotal * (IndirectSalesOrder.GeneralDiscountPercentage / 100);
                     
                 }
                 foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                 {
                     //phân bổ chiết khấu chung = tổng chiết khấu chung * (tổng từng line/tổng trc chiết khấu)
-                    IndirectSalesOrderContent.GeneralDiscountPercentage = Convert.ToDecimal(IndirectSalesOrderContent.Amount) / Convert.ToDecimal(IndirectSalesOrder.SubTotal) * 100;
-                    IndirectSalesOrderContent.GeneralDiscountAmount = Convert.ToInt64(IndirectSalesOrder.GeneralDiscountAmount * IndirectSalesOrderContent.GeneralDiscountPercentage / 100);
+                    IndirectSalesOrderContent.GeneralDiscountPercentage = IndirectSalesOrderContent.Amount / IndirectSalesOrder.SubTotal * 100;
+                    IndirectSalesOrderContent.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount * IndirectSalesOrderContent.GeneralDiscountPercentage / 100;
                     //thuê từng line = (tổng từng line - chiết khấu phân bổ) * % thuế
-                    IndirectSalesOrderContent.TaxAmount = Convert.ToInt64((IndirectSalesOrderContent.Amount - (IndirectSalesOrderContent.GeneralDiscountAmount.HasValue ? IndirectSalesOrderContent.GeneralDiscountAmount.Value : 0)) * IndirectSalesOrderContent.TaxPercentage / 100);
+                    IndirectSalesOrderContent.TaxAmount = (IndirectSalesOrderContent.Amount - (IndirectSalesOrderContent.GeneralDiscountAmount.HasValue ? IndirectSalesOrderContent.GeneralDiscountAmount.Value : 0)) * IndirectSalesOrderContent.TaxPercentage / 100;
                 }
 
                 IndirectSalesOrder.TotalTaxAmount = IndirectSalesOrder.IndirectSalesOrderContents.Where(x => x.TaxAmount.HasValue).Sum(x => x.TaxAmount.Value);
@@ -487,7 +487,7 @@ namespace DMS.Services.MIndirectSalesOrder
             var OrganizationIds = CurrrentUser.Organization.Path.Split('.').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => long.Parse(x)).OrderByDescending(x => x).ToList();
             var Store = await UOW.StoreRepository.Get(StoreId);
             var ItemIds = Items.Select(x => x.Id).ToList();
-            Dictionary<long, long> result = new Dictionary<long, long>();
+            Dictionary<long, decimal> result = new Dictionary<long, decimal>();
             IndirectPriceListItemMappingFilter IndirectPriceListItemMappingFilter = new IndirectPriceListItemMappingFilter
             {
                 ItemId = new IdFilter { In = ItemIds },
@@ -546,7 +546,7 @@ namespace DMS.Services.MIndirectSalesOrder
             IndirectPriceListItemMappings.AddRange(IndirectPriceListItemMappingStoreDetail);
             foreach (var ItemId in ItemIds)
             {
-                result.Add(ItemId, long.MaxValue);
+                result.Add(ItemId, decimal.MaxValue);
             }
 
             foreach (var ItemId in ItemIds)
@@ -565,9 +565,9 @@ namespace DMS.Services.MIndirectSalesOrder
 
             foreach (var ItemId in ItemIds)
             {
-                if (result[ItemId] == long.MaxValue)
+                if (result[ItemId] == decimal.MaxValue)
                 {
-                    result[ItemId] = Convert.ToInt64(Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice).FirstOrDefault());
+                    result[ItemId] = Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice).FirstOrDefault();
                 }
             }
             return Items;
