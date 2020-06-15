@@ -14,10 +14,10 @@ namespace DMS.Models
             DirectPriceLists = new HashSet<DirectPriceListDAO>();
             Districts = new HashSet<DistrictDAO>();
             ERoutes = new HashSet<ERouteDAO>();
-            GeneralKpiCriteriaMappings = new HashSet<GeneralKpiCriteriaMappingDAO>();
-            GeneralKpis = new HashSet<GeneralKpiDAO>();
             IndirectPriceLists = new HashSet<IndirectPriceListDAO>();
             Items = new HashSet<ItemDAO>();
+            KpiGeneralContents = new HashSet<KpiGeneralContentDAO>();
+            KpiGenerals = new HashSet<KpiGeneralDAO>();
             KpiItems = new HashSet<KpiItemDAO>();
             Organizations = new HashSet<OrganizationDAO>();
             Permissions = new HashSet<PermissionDAO>();
@@ -51,10 +51,10 @@ namespace DMS.Models
         public virtual ICollection<DirectPriceListDAO> DirectPriceLists { get; set; }
         public virtual ICollection<DistrictDAO> Districts { get; set; }
         public virtual ICollection<ERouteDAO> ERoutes { get; set; }
-        public virtual ICollection<GeneralKpiCriteriaMappingDAO> GeneralKpiCriteriaMappings { get; set; }
-        public virtual ICollection<GeneralKpiDAO> GeneralKpis { get; set; }
         public virtual ICollection<IndirectPriceListDAO> IndirectPriceLists { get; set; }
         public virtual ICollection<ItemDAO> Items { get; set; }
+        public virtual ICollection<KpiGeneralContentDAO> KpiGeneralContents { get; set; }
+        public virtual ICollection<KpiGeneralDAO> KpiGenerals { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItems { get; set; }
         public virtual ICollection<OrganizationDAO> Organizations { get; set; }
         public virtual ICollection<PermissionDAO> Permissions { get; set; }

@@ -9,9 +9,9 @@ namespace DMS.Models
         {
             AppUsers = new HashSet<AppUserDAO>();
             DirectPriceLists = new HashSet<DirectPriceListDAO>();
-            GeneralKpis = new HashSet<GeneralKpiDAO>();
             IndirectPriceLists = new HashSet<IndirectPriceListDAO>();
             InverseParent = new HashSet<OrganizationDAO>();
+            KpiGenerals = new HashSet<KpiGeneralDAO>();
             KpiItems = new HashSet<KpiItemDAO>();
             Notifications = new HashSet<NotificationDAO>();
             Resellers = new HashSet<ResellerDAO>();
@@ -39,9 +39,9 @@ namespace DMS.Models
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserDAO> AppUsers { get; set; }
         public virtual ICollection<DirectPriceListDAO> DirectPriceLists { get; set; }
-        public virtual ICollection<GeneralKpiDAO> GeneralKpis { get; set; }
         public virtual ICollection<IndirectPriceListDAO> IndirectPriceLists { get; set; }
         public virtual ICollection<OrganizationDAO> InverseParent { get; set; }
+        public virtual ICollection<KpiGeneralDAO> KpiGenerals { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItems { get; set; }
         public virtual ICollection<NotificationDAO> Notifications { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }

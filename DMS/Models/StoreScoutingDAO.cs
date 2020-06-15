@@ -16,7 +16,6 @@ namespace DMS.Models
         public string Address { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
-        public long? StoreId { get; set; }
         public long CreatorId { get; set; }
         public long StoreScoutingStatusId { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -27,7 +26,6 @@ namespace DMS.Models
         public virtual DistrictDAO District { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual ProvinceDAO Province { get; set; }
-        public virtual StoreDAO Store { get; set; }
         public virtual StoreScoutingStatusDAO StoreScoutingStatus { get; set; }
         public virtual WardDAO Ward { get; set; }
     }

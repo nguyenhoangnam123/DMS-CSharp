@@ -19,14 +19,12 @@ namespace DMS.Rpc.store_scouting
         public string Address { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
-        public long? StoreId { get; set; }
         public long CreatorId { get; set; }
         public long StoreScoutingStatusId { get; set; }
         public StoreScouting_AppUserDTO Creator { get; set; }
         public StoreScouting_DistrictDTO District { get; set; }
         public StoreScouting_OrganizationDTO Organization { get; set; }
         public StoreScouting_ProvinceDTO Province { get; set; }
-        public StoreScouting_StoreDTO Store { get; set; }
         public StoreScouting_StoreScoutingStatusDTO StoreScoutingStatus { get; set; }
         public StoreScouting_WardDTO Ward { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -45,14 +43,12 @@ namespace DMS.Rpc.store_scouting
             this.Address = StoreScouting.Address;
             this.Latitude = StoreScouting.Latitude;
             this.Longitude = StoreScouting.Longitude;
-            this.StoreId = StoreScouting.StoreId;
             this.CreatorId = StoreScouting.CreatorId;
             this.StoreScoutingStatusId = StoreScouting.StoreScoutingStatusId;
             this.Creator = StoreScouting.Creator == null ? null : new StoreScouting_AppUserDTO(StoreScouting.Creator);
             this.District = StoreScouting.District == null ? null : new StoreScouting_DistrictDTO(StoreScouting.District);
             this.Organization = StoreScouting.Organization == null ? null : new StoreScouting_OrganizationDTO(StoreScouting.Organization);
             this.Province = StoreScouting.Province == null ? null : new StoreScouting_ProvinceDTO(StoreScouting.Province);
-            this.Store = StoreScouting.Store == null ? null : new StoreScouting_StoreDTO(StoreScouting.Store);
             this.StoreScoutingStatus = StoreScouting.StoreScoutingStatus == null ? null : new StoreScouting_StoreScoutingStatusDTO(StoreScouting.StoreScoutingStatus);
             this.Ward = StoreScouting.Ward == null ? null : new StoreScouting_WardDTO(StoreScouting.Ward);
             this.CreatedAt = StoreScouting.CreatedAt;

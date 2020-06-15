@@ -130,6 +130,7 @@ namespace DMS.Rpc.store
                     Code = StatusEnum.INACTIVE.Code,
                     Name = StatusEnum.INACTIVE.Name,
                 },
+                StoreScoutingId = StoreScouting.Id,
                 StoreScouting = new Store_StoreScoutingDTO(StoreScouting)
             };
             return Store_StoreDTO;
@@ -146,40 +147,6 @@ namespace DMS.Rpc.store
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
             Store = await StoreService.Create(Store);
-            Store_StoreDTO = new Store_StoreDTO(Store);
-            if (Store.IsValidated)
-                return Store_StoreDTO;
-            else
-                return BadRequest(Store_StoreDTO);
-        }
-
-        [Route(StoreRoute.CreateStoreScouting), HttpPost]
-        public async Task<ActionResult<Store_StoreDTO>> CreateStoreScouting([FromBody] Store_StoreDTO Store_StoreDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (!await HasPermission(Store_StoreDTO.Id))
-                return Forbid();
-
-            Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            StoreScouting StoreScouting = new StoreScouting
-            {
-                Id = Store_StoreDTO.StoreScouting.Id,
-                Code = Store_StoreDTO.StoreScouting.Code,
-                Address = Store_StoreDTO.StoreScouting.Address,
-                CreatorId = Store_StoreDTO.StoreScouting.CreatorId,
-                DistrictId = Store_StoreDTO.StoreScouting.DistrictId,
-                Latitude = Store_StoreDTO.StoreScouting.Latitude,
-                Longitude = Store_StoreDTO.StoreScouting.Longitude,
-                Name = Store_StoreDTO.StoreScouting.Name,
-                OrganizationId = Store_StoreDTO.StoreScouting.OrganizationId,
-                OwnerPhone = Store_StoreDTO.StoreScouting.OwnerPhone,
-                ProvinceId = Store_StoreDTO.StoreScouting.ProvinceId,
-                StoreScoutingStatusId = Store_StoreDTO.StoreScouting.StoreScoutingStatusId,
-                WardId = Store_StoreDTO.StoreScouting.WardId,
-            };
-            Store = await StoreService.CreateStoreScouting(Store, StoreScouting);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
                 return Store_StoreDTO;
@@ -854,6 +821,7 @@ namespace DMS.Rpc.store
             Store.TaxCode = Store_StoreDTO.TaxCode;
             Store.LegalEntity = Store_StoreDTO.LegalEntity;
             Store.StatusId = Store_StoreDTO.StatusId;
+            Store.StoreScoutingId = Store_StoreDTO.StoreScoutingId;
             Store.District = Store_StoreDTO.District == null ? null : new District
             {
                 Id = Store_StoreDTO.District.Id,
@@ -912,6 +880,22 @@ namespace DMS.Rpc.store
                 Id = Store_StoreDTO.Status.Id,
                 Code = Store_StoreDTO.Status.Code,
                 Name = Store_StoreDTO.Status.Name,
+            };
+            Store.StoreScouting = Store_StoreDTO.StoreScouting == null ? null : new StoreScouting
+            {
+                Id = Store_StoreDTO.StoreScouting.Id,
+                Code = Store_StoreDTO.StoreScouting.Code,
+                Name = Store_StoreDTO.StoreScouting.Name,
+                Address = Store_StoreDTO.StoreScouting.Address,
+                CreatorId = Store_StoreDTO.StoreScouting.CreatorId,
+                DistrictId = Store_StoreDTO.StoreScouting.DistrictId,
+                Latitude = Store_StoreDTO.StoreScouting.Latitude,
+                Longitude = Store_StoreDTO.StoreScouting.Longitude,
+                OrganizationId = Store_StoreDTO.StoreScouting.OrganizationId,
+                OwnerPhone = Store_StoreDTO.StoreScouting.OwnerPhone,
+                ProvinceId = Store_StoreDTO.StoreScouting.ProvinceId,
+                StoreScoutingStatusId = Store_StoreDTO.StoreScouting.StoreScoutingStatusId,
+                WardId = Store_StoreDTO.StoreScouting.WardId,
             };
             Store.StoreGrouping = Store_StoreDTO.StoreGrouping == null ? null : new StoreGrouping
             {

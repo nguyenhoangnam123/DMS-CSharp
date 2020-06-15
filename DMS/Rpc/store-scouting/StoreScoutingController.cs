@@ -198,7 +198,6 @@ namespace DMS.Rpc.store_scouting
             StoreScouting.Address = StoreScouting_StoreScoutingDTO.Address;
             StoreScouting.Latitude = StoreScouting_StoreScoutingDTO.Latitude;
             StoreScouting.Longitude = StoreScouting_StoreScoutingDTO.Longitude;
-            StoreScouting.StoreId = StoreScouting_StoreScoutingDTO.StoreId;
             StoreScouting.CreatorId = StoreScouting_StoreScoutingDTO.CreatorId;
             StoreScouting.StoreScoutingStatusId = StoreScouting_StoreScoutingDTO.StoreScoutingStatusId;
             StoreScouting.Creator = StoreScouting_StoreScoutingDTO.Creator == null ? null : new AppUser
@@ -248,34 +247,6 @@ namespace DMS.Rpc.store_scouting
                 Priority = StoreScouting_StoreScoutingDTO.Province.Priority,
                 StatusId = StoreScouting_StoreScoutingDTO.Province.StatusId,
             };
-            StoreScouting.Store = StoreScouting_StoreScoutingDTO.Store == null ? null : new Store
-            {
-                Id = StoreScouting_StoreScoutingDTO.Store.Id,
-                Code = StoreScouting_StoreScoutingDTO.Store.Code,
-                Name = StoreScouting_StoreScoutingDTO.Store.Name,
-                ParentStoreId = StoreScouting_StoreScoutingDTO.Store.ParentStoreId,
-                OrganizationId = StoreScouting_StoreScoutingDTO.Store.OrganizationId,
-                StoreTypeId = StoreScouting_StoreScoutingDTO.Store.StoreTypeId,
-                StoreGroupingId = StoreScouting_StoreScoutingDTO.Store.StoreGroupingId,
-                ResellerId = StoreScouting_StoreScoutingDTO.Store.ResellerId,
-                Telephone = StoreScouting_StoreScoutingDTO.Store.Telephone,
-                ProvinceId = StoreScouting_StoreScoutingDTO.Store.ProvinceId,
-                DistrictId = StoreScouting_StoreScoutingDTO.Store.DistrictId,
-                WardId = StoreScouting_StoreScoutingDTO.Store.WardId,
-                Address = StoreScouting_StoreScoutingDTO.Store.Address,
-                DeliveryAddress = StoreScouting_StoreScoutingDTO.Store.DeliveryAddress,
-                Latitude = StoreScouting_StoreScoutingDTO.Store.Latitude,
-                Longitude = StoreScouting_StoreScoutingDTO.Store.Longitude,
-                DeliveryLatitude = StoreScouting_StoreScoutingDTO.Store.DeliveryLatitude,
-                DeliveryLongitude = StoreScouting_StoreScoutingDTO.Store.DeliveryLongitude,
-                OwnerName = StoreScouting_StoreScoutingDTO.Store.OwnerName,
-                OwnerPhone = StoreScouting_StoreScoutingDTO.Store.OwnerPhone,
-                OwnerEmail = StoreScouting_StoreScoutingDTO.Store.OwnerEmail,
-                TaxCode = StoreScouting_StoreScoutingDTO.Store.TaxCode,
-                LegalEntity = StoreScouting_StoreScoutingDTO.Store.LegalEntity,
-                StatusId = StoreScouting_StoreScoutingDTO.Store.StatusId,
-                Used = StoreScouting_StoreScoutingDTO.Store.Used,
-            };
             StoreScouting.StoreScoutingStatus = StoreScouting_StoreScoutingDTO.StoreScoutingStatus == null ? null : new StoreScoutingStatus
             {
                 Id = StoreScouting_StoreScoutingDTO.StoreScoutingStatus.Id,
@@ -315,7 +286,6 @@ namespace DMS.Rpc.store_scouting
             StoreScoutingFilter.Address = StoreScouting_StoreScoutingFilterDTO.Address;
             StoreScoutingFilter.Latitude = StoreScouting_StoreScoutingFilterDTO.Latitude;
             StoreScoutingFilter.Longitude = StoreScouting_StoreScoutingFilterDTO.Longitude;
-            StoreScoutingFilter.StoreId = StoreScouting_StoreScoutingFilterDTO.StoreId;
             StoreScoutingFilter.CreatorId = StoreScouting_StoreScoutingFilterDTO.CreatorId;
             StoreScoutingFilter.StoreScoutingStatusId = StoreScouting_StoreScoutingFilterDTO.StoreScoutingStatusId;
             StoreScoutingFilter.CreatedAt = StoreScouting_StoreScoutingFilterDTO.CreatedAt;

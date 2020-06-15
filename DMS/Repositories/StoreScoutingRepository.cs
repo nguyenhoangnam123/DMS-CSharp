@@ -60,8 +60,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Latitude, filter.Latitude);
             if (filter.Longitude != null)
                 query = query.Where(q => q.Longitude, filter.Longitude);
-            if (filter.StoreId != null)
-                query = query.Where(q => q.StoreId, filter.StoreId);
             if (filter.CreatorId != null)
                 query = query.Where(q => q.CreatorId, filter.CreatorId);
             if (filter.StoreScoutingStatusId != null)
@@ -100,8 +98,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Latitude, filter.Latitude);
                 if (filter.Longitude != null)
                     queryable = queryable.Where(q => q.Longitude, filter.Longitude);
-                if (filter.StoreId != null)
-                    queryable = queryable.Where(q => q.StoreId, filter.StoreId);
                 if (filter.CreatorId != null)
                     queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
                 if (filter.StoreScoutingStatusId != null)
@@ -151,9 +147,6 @@ namespace DMS.Repositories
                         case StoreScoutingOrder.Longitude:
                             query = query.OrderBy(q => q.Longitude);
                             break;
-                        case StoreScoutingOrder.Store:
-                            query = query.OrderBy(q => q.StoreId);
-                            break;
                         case StoreScoutingOrder.Creator:
                             query = query.OrderBy(q => q.CreatorId);
                             break;
@@ -198,9 +191,6 @@ namespace DMS.Repositories
                         case StoreScoutingOrder.Longitude:
                             query = query.OrderByDescending(q => q.Longitude);
                             break;
-                        case StoreScoutingOrder.Store:
-                            query = query.OrderByDescending(q => q.StoreId);
-                            break;
                         case StoreScoutingOrder.Creator:
                             query = query.OrderByDescending(q => q.CreatorId);
                             break;
@@ -229,7 +219,6 @@ namespace DMS.Repositories
                 Address = filter.Selects.Contains(StoreScoutingSelect.Address) ? q.Address : default(string),
                 Latitude = filter.Selects.Contains(StoreScoutingSelect.Latitude) ? q.Latitude : default(decimal?),
                 Longitude = filter.Selects.Contains(StoreScoutingSelect.Longitude) ? q.Longitude : default(decimal?),
-                StoreId = filter.Selects.Contains(StoreScoutingSelect.Store) ? q.StoreId : default(long?),
                 CreatorId = filter.Selects.Contains(StoreScoutingSelect.Creator) ? q.CreatorId : default(long),
                 StoreScoutingStatusId = filter.Selects.Contains(StoreScoutingSelect.StoreScoutingStatus) ? q.StoreScoutingStatusId : default(long),
                 Creator = filter.Selects.Contains(StoreScoutingSelect.Creator) && q.Creator != null ? new AppUser
@@ -278,34 +267,6 @@ namespace DMS.Repositories
                     Name = q.Province.Name,
                     Priority = q.Province.Priority,
                     StatusId = q.Province.StatusId,
-                } : null,
-                Store = filter.Selects.Contains(StoreScoutingSelect.Store) && q.Store != null ? new Store
-                {
-                    Id = q.Store.Id,
-                    Code = q.Store.Code,
-                    Name = q.Store.Name,
-                    ParentStoreId = q.Store.ParentStoreId,
-                    OrganizationId = q.Store.OrganizationId,
-                    StoreTypeId = q.Store.StoreTypeId,
-                    StoreGroupingId = q.Store.StoreGroupingId,
-                    ResellerId = q.Store.ResellerId,
-                    Telephone = q.Store.Telephone,
-                    ProvinceId = q.Store.ProvinceId,
-                    DistrictId = q.Store.DistrictId,
-                    WardId = q.Store.WardId,
-                    Address = q.Store.Address,
-                    DeliveryAddress = q.Store.DeliveryAddress,
-                    Latitude = q.Store.Latitude,
-                    Longitude = q.Store.Longitude,
-                    DeliveryLatitude = q.Store.DeliveryLatitude,
-                    DeliveryLongitude = q.Store.DeliveryLongitude,
-                    OwnerName = q.Store.OwnerName,
-                    OwnerPhone = q.Store.OwnerPhone,
-                    OwnerEmail = q.Store.OwnerEmail,
-                    TaxCode = q.Store.TaxCode,
-                    LegalEntity = q.Store.LegalEntity,
-                    StatusId = q.Store.StatusId,
-                    Used = q.Store.Used,
                 } : null,
                 StoreScoutingStatus = filter.Selects.Contains(StoreScoutingSelect.StoreScoutingStatus) && q.StoreScoutingStatus != null ? new StoreScoutingStatus
                 {
@@ -363,7 +324,6 @@ namespace DMS.Repositories
                 Address = x.Address,
                 Latitude = x.Latitude,
                 Longitude = x.Longitude,
-                StoreId = x.StoreId,
                 CreatorId = x.CreatorId,
                 StoreScoutingStatusId = x.StoreScoutingStatusId,
                 Creator = x.Creator == null ? null : new AppUser
@@ -413,34 +373,6 @@ namespace DMS.Repositories
                     Priority = x.Province.Priority,
                     StatusId = x.Province.StatusId,
                 },
-                Store = x.Store == null ? null : new Store
-                {
-                    Id = x.Store.Id,
-                    Code = x.Store.Code,
-                    Name = x.Store.Name,
-                    ParentStoreId = x.Store.ParentStoreId,
-                    OrganizationId = x.Store.OrganizationId,
-                    StoreTypeId = x.Store.StoreTypeId,
-                    StoreGroupingId = x.Store.StoreGroupingId,
-                    ResellerId = x.Store.ResellerId,
-                    Telephone = x.Store.Telephone,
-                    ProvinceId = x.Store.ProvinceId,
-                    DistrictId = x.Store.DistrictId,
-                    WardId = x.Store.WardId,
-                    Address = x.Store.Address,
-                    DeliveryAddress = x.Store.DeliveryAddress,
-                    Latitude = x.Store.Latitude,
-                    Longitude = x.Store.Longitude,
-                    DeliveryLatitude = x.Store.DeliveryLatitude,
-                    DeliveryLongitude = x.Store.DeliveryLongitude,
-                    OwnerName = x.Store.OwnerName,
-                    OwnerPhone = x.Store.OwnerPhone,
-                    OwnerEmail = x.Store.OwnerEmail,
-                    TaxCode = x.Store.TaxCode,
-                    LegalEntity = x.Store.LegalEntity,
-                    StatusId = x.Store.StatusId,
-                    Used = x.Store.Used,
-                },
                 StoreScoutingStatus = x.StoreScoutingStatus == null ? null : new StoreScoutingStatus
                 {
                     Id = x.StoreScoutingStatus.Id,
@@ -477,7 +409,6 @@ namespace DMS.Repositories
             StoreScoutingDAO.Address = StoreScouting.Address;
             StoreScoutingDAO.Latitude = StoreScouting.Latitude;
             StoreScoutingDAO.Longitude = StoreScouting.Longitude;
-            StoreScoutingDAO.StoreId = StoreScouting.StoreId;
             StoreScoutingDAO.CreatorId = StoreScouting.CreatorId;
             StoreScoutingDAO.StoreScoutingStatusId = StoreScouting.StoreScoutingStatusId;
             StoreScoutingDAO.CreatedAt = StaticParams.DateTimeNow;
@@ -505,7 +436,6 @@ namespace DMS.Repositories
             StoreScoutingDAO.Address = StoreScouting.Address;
             StoreScoutingDAO.Latitude = StoreScouting.Latitude;
             StoreScoutingDAO.Longitude = StoreScouting.Longitude;
-            StoreScoutingDAO.StoreId = StoreScouting.StoreId;
             StoreScoutingDAO.CreatorId = StoreScouting.CreatorId;
             StoreScoutingDAO.StoreScoutingStatusId = StoreScouting.StoreScoutingStatusId;
             StoreScoutingDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -537,7 +467,6 @@ namespace DMS.Repositories
                 StoreScoutingDAO.Address = StoreScouting.Address;
                 StoreScoutingDAO.Latitude = StoreScouting.Latitude;
                 StoreScoutingDAO.Longitude = StoreScouting.Longitude;
-                StoreScoutingDAO.StoreId = StoreScouting.StoreId;
                 StoreScoutingDAO.CreatorId = StoreScouting.CreatorId;
                 StoreScoutingDAO.StoreScoutingStatusId = StoreScouting.StoreScoutingStatusId;
                 StoreScoutingDAO.CreatedAt = StaticParams.DateTimeNow;
