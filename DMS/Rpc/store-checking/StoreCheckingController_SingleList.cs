@@ -648,6 +648,62 @@ namespace DMS.Rpc.store_checking
                 .Select(x => new StoreChecking_SurveyDTO(x)).ToList();
             return StoreChecking_SurveyDTOs;
         }
+
+        [Route(StoreCheckingRoute.CountStoreScouting), HttpPost]
+        public async Task<long> CountStoreScouting([FromBody] StoreChecking_StoreScoutingFilterDTO StoreChecking_StoreScoutingFilterDTO)
+        {
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter();
+            StoreScoutingFilter.Selects = StoreScoutingSelect.ALL;
+            StoreScoutingFilter.Skip = StoreChecking_StoreScoutingFilterDTO.Skip;
+            StoreScoutingFilter.Take = StoreChecking_StoreScoutingFilterDTO.Take;
+            StoreScoutingFilter.OrderBy = StoreChecking_StoreScoutingFilterDTO.OrderBy;
+            StoreScoutingFilter.OrderType = StoreChecking_StoreScoutingFilterDTO.OrderType;
+
+            StoreScoutingFilter.Id = StoreChecking_StoreScoutingFilterDTO.Id;
+            StoreScoutingFilter.Code = StoreChecking_StoreScoutingFilterDTO.Code;
+            StoreScoutingFilter.Name = StoreChecking_StoreScoutingFilterDTO.Name;
+            StoreScoutingFilter.CreatedAt = StoreChecking_StoreScoutingFilterDTO.CreatedAt;
+            StoreScoutingFilter.CreatorId = new IdFilter { Equal = appUser.Id };
+            StoreScoutingFilter.DistrictId = StoreChecking_StoreScoutingFilterDTO.DistrictId;
+            StoreScoutingFilter.OrganizationId = StoreChecking_StoreScoutingFilterDTO.OrganizationId;
+            StoreScoutingFilter.ProvinceId = StoreChecking_StoreScoutingFilterDTO.ProvinceId;
+            StoreScoutingFilter.WardId = StoreChecking_StoreScoutingFilterDTO.WardId;
+            StoreScoutingFilter.StoreScoutingStatusId = StoreChecking_StoreScoutingFilterDTO.StoreScoutingStatusId;
+            StoreScoutingFilter.OwnerPhone = StoreChecking_StoreScoutingFilterDTO.OwnerPhone;
+
+            return await StoreScoutingService.Count(StoreScoutingFilter);
+        }
+
+        public async Task<List<StoreChecking_StoreScoutingDTO>> ListStoreScouting([FromBody] StoreChecking_StoreScoutingFilterDTO StoreChecking_StoreScoutingFilterDTO)
+        {
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter();
+            StoreScoutingFilter.Selects = StoreScoutingSelect.ALL;
+            StoreScoutingFilter.Skip = StoreChecking_StoreScoutingFilterDTO.Skip;
+            StoreScoutingFilter.Take = StoreChecking_StoreScoutingFilterDTO.Take;
+            StoreScoutingFilter.OrderBy = StoreChecking_StoreScoutingFilterDTO.OrderBy;
+            StoreScoutingFilter.OrderType = StoreChecking_StoreScoutingFilterDTO.OrderType;
+
+            StoreScoutingFilter.Id = StoreChecking_StoreScoutingFilterDTO.Id;
+            StoreScoutingFilter.Code = StoreChecking_StoreScoutingFilterDTO.Code;
+            StoreScoutingFilter.Name = StoreChecking_StoreScoutingFilterDTO.Name;
+            StoreScoutingFilter.CreatedAt = StoreChecking_StoreScoutingFilterDTO.CreatedAt;
+            StoreScoutingFilter.CreatorId = new IdFilter { Equal = appUser.Id };
+            StoreScoutingFilter.DistrictId = StoreChecking_StoreScoutingFilterDTO.DistrictId;
+            StoreScoutingFilter.OrganizationId = StoreChecking_StoreScoutingFilterDTO.OrganizationId;
+            StoreScoutingFilter.ProvinceId = StoreChecking_StoreScoutingFilterDTO.ProvinceId;
+            StoreScoutingFilter.WardId = StoreChecking_StoreScoutingFilterDTO.WardId;
+            StoreScoutingFilter.StoreScoutingStatusId = StoreChecking_StoreScoutingFilterDTO.StoreScoutingStatusId;
+            StoreScoutingFilter.OwnerPhone = StoreChecking_StoreScoutingFilterDTO.OwnerPhone;
+
+            List<StoreScouting> StoreScoutings = await StoreScoutingService.List(StoreScoutingFilter);
+            List<StoreChecking_StoreScoutingDTO> StoreChecking_StoreScoutingDTOs = StoreScoutings
+                .Select(x => new StoreChecking_StoreScoutingDTO(x)).ToList();
+            return StoreChecking_StoreScoutingDTOs;
+        }
     }
 }
 

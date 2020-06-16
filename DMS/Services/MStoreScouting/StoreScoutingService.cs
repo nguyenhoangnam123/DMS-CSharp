@@ -18,9 +18,7 @@ namespace DMS.Services.MStoreScouting
         Task<StoreScouting> Get(long Id);
         Task<StoreScouting> Create(StoreScouting StoreScouting);
         Task<StoreScouting> Update(StoreScouting StoreScouting);
-        Task<StoreScouting> Delete(StoreScouting StoreScouting);
-        Task<List<StoreScouting>> BulkDelete(List<StoreScouting> StoreScoutings);
-        Task<List<StoreScouting>> Import(List<StoreScouting> StoreScoutings);
+        Task<StoreScouting> Reject(StoreScouting StoreScouting);
         StoreScoutingFilter ToFilter(StoreScoutingFilter StoreScoutingFilter);
     }
 
@@ -91,9 +89,11 @@ namespace DMS.Services.MStoreScouting
 
             try
             {
-                StoreScouting.CreatorId = CurrentContext.UserId;
+                var User = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                StoreScouting.CreatorId = User.Id;
+                StoreScouting.OrganizationId = User.OrganizationId;
                 StoreScouting.Code = Guid.NewGuid().ToString();
-                StoreScouting.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.INACTIVE.Id;
+                StoreScouting.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.NOTOPEN.Id;
                 await UOW.Begin();
                 await UOW.StoreScoutingRepository.Create(StoreScouting);
                 StoreScouting.Code = StoreScouting.Id.ToString();
@@ -141,17 +141,19 @@ namespace DMS.Services.MStoreScouting
             }
         }
 
-        public async Task<StoreScouting> Delete(StoreScouting StoreScouting)
+        public async Task<StoreScouting> Reject(StoreScouting StoreScouting)
         {
-            if (!await StoreScoutingValidator.Delete(StoreScouting))
+            if (!await StoreScoutingValidator.Reject(StoreScouting))
                 return StoreScouting;
 
             try
             {
+                var oldData = await UOW.StoreScoutingRepository.Get(StoreScouting.Id);
+                oldData.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.REJECTED.Id;
                 await UOW.Begin();
-                await UOW.StoreScoutingRepository.Delete(StoreScouting);
+                await UOW.StoreScoutingRepository.Update(oldData);
                 await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, StoreScouting, nameof(StoreScoutingService));
+                await Logging.CreateAuditLog(StoreScouting, oldData, nameof(StoreScoutingService));
                 return StoreScouting;
             }
             catch (Exception ex)
@@ -165,54 +167,6 @@ namespace DMS.Services.MStoreScouting
             }
         }
 
-        public async Task<List<StoreScouting>> BulkDelete(List<StoreScouting> StoreScoutings)
-        {
-            if (!await StoreScoutingValidator.BulkDelete(StoreScoutings))
-                return StoreScoutings;
-
-            try
-            {
-                await UOW.Begin();
-                await UOW.StoreScoutingRepository.BulkDelete(StoreScoutings);
-                await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, StoreScoutings, nameof(StoreScoutingService));
-                return StoreScoutings;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
-                if (ex.InnerException == null)
-                    throw new MessageException(ex);
-                else
-                    throw new MessageException(ex.InnerException);
-            }
-        }
-        
-        public async Task<List<StoreScouting>> Import(List<StoreScouting> StoreScoutings)
-        {
-            if (!await StoreScoutingValidator.Import(StoreScoutings))
-                return StoreScoutings;
-            try
-            {
-                await UOW.Begin();
-                await UOW.StoreScoutingRepository.BulkMerge(StoreScoutings);
-                await UOW.Commit();
-
-                await Logging.CreateAuditLog(StoreScoutings, new { }, nameof(StoreScoutingService));
-                return StoreScoutings;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
-                if (ex.InnerException == null)
-                    throw new MessageException(ex);
-                else
-                    throw new MessageException(ex.InnerException);
-            }
-        }     
-        
         public StoreScoutingFilter ToFilter(StoreScoutingFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<StoreScoutingFilter>();

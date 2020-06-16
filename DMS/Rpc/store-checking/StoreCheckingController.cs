@@ -24,6 +24,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DMS.Services.MBanner;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using DMS.Services.MStoreScouting;
 
 namespace DMS.Rpc.store_checking
 {
@@ -33,10 +34,10 @@ namespace DMS.Rpc.store_checking
         private IBannerService BannerService;
         private IAppUserService AppUserService;
         private IERouteService ERouteService;
-        private IERouteContentService ERouteContentService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
         private IItemService ItemService;
         private IStoreService StoreService;
+        private IStoreScoutingService StoreScoutingService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreCheckingService StoreCheckingService;
         private IStoreTypeService StoreTypeService;
@@ -51,9 +52,9 @@ namespace DMS.Rpc.store_checking
             IBannerService BannerService,
             IAppUserService AppUserService,
             IERouteService ERouteService,
-            IERouteContentService ERouteContentService,
             IIndirectSalesOrderService IndirectSalesOrderService,
             IItemService ItemService,
+            IStoreScoutingService StoreScoutingService,
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreCheckingService StoreCheckingService,
@@ -70,10 +71,10 @@ namespace DMS.Rpc.store_checking
             this.BannerService = BannerService;
             this.AppUserService = AppUserService;
             this.ERouteService = ERouteService;
-            this.ERouteContentService = ERouteContentService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
             this.ItemService = ItemService;
             this.StoreService = StoreService;
+            this.StoreScoutingService = StoreScoutingService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreCheckingService = StoreCheckingService;
             this.StoreTypeService = StoreTypeService;

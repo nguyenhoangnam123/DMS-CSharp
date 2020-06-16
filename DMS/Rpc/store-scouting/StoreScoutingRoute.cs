@@ -31,8 +31,7 @@ namespace DMS.Rpc.store_scouting
         public const string Get = Default + "/get";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
-        public const string Delete = Default + "/delete";
-        public const string BulkDelete = Default + "/bulk-delete";
+        public const string Reject = Default + "/reject";
         
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListDistrict = Default + "/filter-list-district";
@@ -82,14 +81,10 @@ namespace DMS.Rpc.store_scouting
                 Detail, Update, 
                  SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
 
-            { "Xoá", new List<string> { 
+            { "Từ chối", new List<string> { 
                 Master, Count, List, Get,  FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
-                Detail, Delete, 
+                Detail, Reject, 
                  SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
-
-            { "Xoá nhiều", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
-                BulkDelete } },
 
         };
     }

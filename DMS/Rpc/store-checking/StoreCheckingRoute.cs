@@ -43,6 +43,8 @@ namespace DMS.Rpc.store_checking
         public const string ListProblem = Default + "/list-problem";
         public const string CountSurvey = Default + "/count-survey";
         public const string ListSurvey = Default + "/list-survey";
+        public const string CountStoreScouting = Default + "/count-store-scouting";
+        public const string ListStoreScouting = Default + "/list-store-scouting";
         public const string GetSurveyForm = Default + "/get-survey-form";
         public const string SaveSurveyForm = Default + "/save-survey-form";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
@@ -58,7 +60,7 @@ namespace DMS.Rpc.store_checking
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStore,
                 Detail, CheckIn, Update, CreateIndirectSalesOrder, CreateProblem, SaveImage,
-                CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountProblem, ListProblem, CountSurvey, ListSurvey,
+                CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
                 GetSurveyForm, SaveSurveyForm,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, } },
             { "Checkout", new List<string> {

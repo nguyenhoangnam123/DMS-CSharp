@@ -50,6 +50,8 @@ namespace DMS.Services.MStore
             OwnerEmailInvalid,
             StatusNotExisted,
             StoreHasChild,
+            StoreScoutingHasOpened,
+            StoreScoutingHasRejected
         }
 
         private IUOW UOW;
@@ -423,6 +425,20 @@ namespace DMS.Services.MStore
                 Store.AddError(nameof(StoreValidator), nameof(Store.ParentStoreId), ErrorCode.StoreHasChild);
             return Store.IsValidated;
         }
+
+        private async Task<bool> ValidateStoreScouting(Store Store)
+        {
+            if (Store.StoreScoutingId.HasValue)
+            {
+                StoreScouting StoreScouting = await UOW.StoreScoutingRepository.Get(Store.StoreScoutingId.Value);
+                if(StoreScouting.StoreScoutingStatusId == Enums.StoreScoutingStatusEnum.OPENED.Id)
+                    Store.AddError(nameof(StoreValidator), nameof(Store.StoreScouting), ErrorCode.StoreScoutingHasOpened);
+                if (StoreScouting.StoreScoutingStatusId == Enums.StoreScoutingStatusEnum.REJECTED.Id)
+                    Store.AddError(nameof(StoreValidator), nameof(Store.StoreScouting), ErrorCode.StoreScoutingHasRejected);
+            }
+            return Store.IsValidated;
+        }
+
         public async Task<bool> Create(Store Store)
         {
             await ValidateCode(Store);
@@ -443,6 +459,7 @@ namespace DMS.Services.MStore
             await ValidateOwnerPhone(Store);
             await ValidateOwnerEmail(Store);
             await ValidateStatusId(Store);
+            await ValidateStoreScouting(Store);
             return Store.IsValidated;
         }
 
