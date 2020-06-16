@@ -153,7 +153,7 @@ namespace DMS.Services.MStore
                     StoreScouting StoreScouting = await UOW.StoreScoutingRepository.Get(Store.StoreScoutingId.Value);
                     if(StoreScouting != null)
                     {
-                        StoreScouting.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.ACTIVE.Id;
+                        StoreScouting.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.OPENED.Id;
                     }
                     await UOW.StoreScoutingRepository.Update(StoreScouting);
                 }

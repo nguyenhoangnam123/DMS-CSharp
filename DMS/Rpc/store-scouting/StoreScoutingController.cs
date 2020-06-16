@@ -130,8 +130,8 @@ namespace DMS.Rpc.store_scouting
                 return BadRequest(StoreScouting_StoreScoutingDTO);
         }
 
-        [Route(StoreScoutingRoute.Delete), HttpPost]
-        public async Task<ActionResult<StoreScouting_StoreScoutingDTO>> Delete([FromBody] StoreScouting_StoreScoutingDTO StoreScouting_StoreScoutingDTO)
+        [Route(StoreScoutingRoute.Reject), HttpPost]
+        public async Task<ActionResult<StoreScouting_StoreScoutingDTO>> Reject([FromBody] StoreScouting_StoreScoutingDTO StoreScouting_StoreScoutingDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -140,30 +140,12 @@ namespace DMS.Rpc.store_scouting
                 return Forbid();
 
             StoreScouting StoreScouting = ConvertDTOToEntity(StoreScouting_StoreScoutingDTO);
-            StoreScouting = await StoreScoutingService.Delete(StoreScouting);
+            StoreScouting = await StoreScoutingService.Reject(StoreScouting);
             StoreScouting_StoreScoutingDTO = new StoreScouting_StoreScoutingDTO(StoreScouting);
             if (StoreScouting.IsValidated)
                 return StoreScouting_StoreScoutingDTO;
             else
                 return BadRequest(StoreScouting_StoreScoutingDTO);
-        }
-        
-        [Route(StoreScoutingRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter();
-            StoreScoutingFilter = StoreScoutingService.ToFilter(StoreScoutingFilter);
-            StoreScoutingFilter.Id = new IdFilter { In = Ids };
-            StoreScoutingFilter.Selects = StoreScoutingSelect.Id;
-            StoreScoutingFilter.Skip = 0;
-            StoreScoutingFilter.Take = int.MaxValue;
-
-            List<StoreScouting> StoreScoutings = await StoreScoutingService.List(StoreScoutingFilter);
-            StoreScoutings = await StoreScoutingService.BulkDelete(StoreScoutings);
-            return true;
         }
         
         private async Task<bool> HasPermission(long Id)

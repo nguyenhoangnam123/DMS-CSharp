@@ -74,7 +74,13 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            DateTime CheckIn = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.Date ?? StaticParams.DateTimeNow.Date;
+            DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
+                    StaticParams.DateTimeNow :
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value;
+
+            DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
+                    StaticParams.DateTimeNow :
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value;
 
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
@@ -87,7 +93,7 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             var query = from ap in DataContext.AppUser
                         join o in DataContext.Organization on ap.OrganizationId equals o.Id
                         join sc in DataContext.StoreChecking on ap.Id equals sc.SaleEmployeeId
-                        where sc.CheckOutAt.HasValue && sc.CheckOutAt.Value.Date == CheckIn &&
+                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                         (OrganizationDAO == null || o.Path.StartsWith(OrganizationDAO.Path)) &&
                         (SaleEmployeeId == null || ap.Id == SaleEmployeeId.Value)
                         select ap.Id;
@@ -102,11 +108,17 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            DateTime CheckIn = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.Date ?? StaticParams.DateTimeNow.Date;
+            DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
+                   StaticParams.DateTimeNow :
+                   MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value;
+
+            DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
+                    StaticParams.DateTimeNow :
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value;
 
             var query = from ap in DataContext.AppUser
                         join sc in DataContext.StoreChecking on ap.Id equals sc.SaleEmployeeId
-                        where sc.CheckOutAt.HasValue && sc.CheckOutAt.Value.Date == CheckIn
+                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End
                         select new MonitorSalesman_SaleEmployeeDTO
                         {
                             SaleEmployeeId = ap.Id,
@@ -135,9 +147,9 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             List<long> AppUserIds = MonitorSalesman_SaleEmployeeDTOs.Select(s => s.SaleEmployeeId).ToList();
 
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && CheckIn == sc.CheckOutAt.Value.Date)
+                .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
-            List<ERoutePerformanceDAO> ERoutePerformanceDAOs = await DataContext.ERoutePerformance.Where(ep => CheckIn == ep.Date ).ToListAsync();
+            List<ERoutePerformanceDAO> ERoutePerformanceDAOs = await DataContext.ERoutePerformance.Where(ep => Start <= ep.Date && ep.Date <= End).ToListAsync();
 
             // khởi tạo kế hoạch
             foreach (MonitorSalesman_SaleEmployeeDTO MonitorSalesman_SaleEmployeeDTO in MonitorSalesman_SaleEmployeeDTOs)
@@ -145,13 +157,13 @@ namespace DMS.Rpc.Monitor.monitor_salesman
                 if (MonitorSalesman_SaleEmployeeDTO.StoreCheckings == null)
                     MonitorSalesman_SaleEmployeeDTO.StoreCheckings = new List<MonitorSalesman_StoreCheckingDTO>();
                 MonitorSalesman_SaleEmployeeDTO.PlanCounter = ERoutePerformanceDAOs
-                            .Where(ep => ep.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId && ep.Date == CheckIn)
+                            .Where(ep => ep.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId && Start <= ep.Date && ep.Date <= End)
                             .Select(ep => ep.PlanCounter).FirstOrDefault();
 
                 List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
                        .Where(s =>
                            s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId &&
-                           s.CheckOutAt.Value.Date == CheckIn
+                           Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End
                        ).ToList();
 
                 List<long> StoreCheckingIds = ListChecked.Select(sc => sc.Id).ToList();

@@ -16,6 +16,7 @@ namespace DMS.Rpc.warehouse
         public long? DistrictId { get; set; }
         public long? WardId { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public Warehouse_DistrictDTO District { get; set; }
         public Warehouse_OrganizationDTO Organization { get; set; }
         public Warehouse_ProvinceDTO Province { get; set; }
@@ -34,6 +35,7 @@ namespace DMS.Rpc.warehouse
             this.DistrictId = Warehouse.DistrictId;
             this.WardId = Warehouse.WardId;
             this.StatusId = Warehouse.StatusId;
+            this.Used = Warehouse.Used;
             this.District = Warehouse.District == null ? null : new Warehouse_DistrictDTO(Warehouse.District);
             this.Organization = Warehouse.Organization == null ? null : new Warehouse_OrganizationDTO(Warehouse.Organization);
             this.Province = Warehouse.Province == null ? null : new Warehouse_ProvinceDTO(Warehouse.Province);

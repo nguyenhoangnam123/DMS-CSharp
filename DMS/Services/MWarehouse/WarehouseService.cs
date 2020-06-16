@@ -67,11 +67,16 @@ namespace DMS.Services.MWarehouse
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(WarehouseService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WarehouseService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WarehouseService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<Warehouse> Get(long Id)
