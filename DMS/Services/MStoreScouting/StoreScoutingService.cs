@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using Helpers;
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
+using RestSharp;
+using DMS.Helpers;
+using DMS.Handlers;
+using DMS.Enums;
 
 namespace DMS.Services.MStoreScouting
 {
@@ -28,18 +32,21 @@ namespace DMS.Services.MStoreScouting
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IStoreScoutingValidator StoreScoutingValidator;
+        private IRabbitManager RabbitManager;
 
         public StoreScoutingService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IStoreScoutingValidator StoreScoutingValidator
+            IStoreScoutingValidator StoreScoutingValidator,
+            IRabbitManager RabbitManager
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.StoreScoutingValidator = StoreScoutingValidator;
+            this.RabbitManager = RabbitManager;
         }
         public async Task<int> Count(StoreScoutingFilter StoreScoutingFilter)
         {
@@ -148,11 +155,33 @@ namespace DMS.Services.MStoreScouting
 
             try
             {
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 var oldData = await UOW.StoreScoutingRepository.Get(StoreScouting.Id);
+                var Creator = await UOW.AppUserRepository.Get(oldData.CreatorId);
                 oldData.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.REJECTED.Id;
                 await UOW.Begin();
                 await UOW.StoreScoutingRepository.Update(oldData);
                 await UOW.Commit();
+
+                DateTime Now = StaticParams.DateTimeNow;
+                UserNotification NotificationUtils = new UserNotification
+                {
+                    Content = $"{oldData.Name} đã bị từ chối bởi {CurrentUser.DisplayName} vào lúc {Now}. Chi tiết xem tại {StoreScouting.Link}",
+                    Time = StaticParams.DateTimeNow,
+                    Unread = false,
+                    SenderId = CurrentContext.UserId,
+                    RecipientId = Creator.Id
+                };
+                await SendNotification(NotificationUtils);
+
+                Mail mail = new Mail
+                {
+                    Subject = "Từ chối tạo cửa hàng",
+                    Body = $"{oldData.Name} đã bị từ chối bởi {CurrentUser.DisplayName} vào lúc {Now}. Chi tiết xem tại {StoreScouting.Link}",
+                    Recipients = new List<string> { Creator.Email },
+                    RowId = Guid.NewGuid()
+                };
+                RabbitManager.PublishSingle(new EventMessage<Mail>(mail, mail.RowId), RoutingKeyEnum.MailSend);
                 await Logging.CreateAuditLog(StoreScouting, oldData, nameof(StoreScoutingService));
                 return StoreScouting;
             }
@@ -182,6 +211,31 @@ namespace DMS.Services.MStoreScouting
                 }
             }
             return filter;
+        }
+
+        private async Task<UserNotification> SendNotification(UserNotification NotificationUtils)
+        {
+            RestClient restClient = new RestClient($"http://localhost:{Modules.Utils}");
+            RestRequest restRequest = new RestRequest("/rpc/utils/notification/create");
+            restRequest.RequestFormat = DataFormat.Json;
+            restRequest.Method = Method.POST;
+            restRequest.AddCookie("Token", CurrentContext.Token);
+            restRequest.AddCookie("X-Language", CurrentContext.Language);
+            restRequest.AddHeader("Content-Type", "multipart/form-data");
+            restRequest.AddBody(NotificationUtils);
+            try
+            {
+                var response = restClient.Execute<UserNotification>(restRequest);
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return NotificationUtils;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+            return null;
         }
     }
 }

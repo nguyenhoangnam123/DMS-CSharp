@@ -182,6 +182,8 @@ namespace DMS.Rpc.store_scouting
             StoreScouting.Longitude = StoreScouting_StoreScoutingDTO.Longitude;
             StoreScouting.CreatorId = StoreScouting_StoreScoutingDTO.CreatorId;
             StoreScouting.StoreScoutingStatusId = StoreScouting_StoreScoutingDTO.StoreScoutingStatusId;
+            StoreScouting.Link = StoreScouting_StoreScoutingDTO.Link;
+            StoreScouting.RowId = StoreScouting_StoreScoutingDTO.RowId;
             StoreScouting.Creator = StoreScouting_StoreScoutingDTO.Creator == null ? null : new AppUser
             {
                 Id = StoreScouting_StoreScoutingDTO.Creator.Id,

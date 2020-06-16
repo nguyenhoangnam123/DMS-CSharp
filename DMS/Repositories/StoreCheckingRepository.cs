@@ -212,7 +212,9 @@ namespace DMS.Repositories
                     TaxCode = q.Store.TaxCode,
                     LegalEntity = q.Store.LegalEntity,
                     StatusId = q.Store.StatusId,
-                }
+                },
+                Planned = q.Planned,
+                IsOpenedStore = q.IsOpenedStore
             }).ToListAsync();
             return StoreCheckings;
         }
@@ -248,6 +250,8 @@ namespace DMS.Repositories
                 CheckOutAt = x.CheckOutAt,
                 CountIndirectSalesOrder = x.IndirectSalesOrderCounter,
                 CountImage = x.ImageCounter,
+                IsOpenedStore = x.IsOpenedStore,
+                Planned = x.Planned,
                 SaleEmployee = x.SaleEmployee == null ? null : new AppUser
                 {
                     Id = x.SaleEmployee.Id,
@@ -353,6 +357,7 @@ namespace DMS.Repositories
             StoreCheckingDAO.IndirectSalesOrderCounter = StoreChecking.CountIndirectSalesOrder;
             StoreCheckingDAO.ImageCounter = StoreChecking.CountImage;
             StoreCheckingDAO.Planned = StoreChecking.Planned;
+            StoreCheckingDAO.IsOpenedStore = true;
             DataContext.StoreChecking.Add(StoreCheckingDAO);
             await DataContext.SaveChangesAsync();
             StoreChecking.Id = StoreCheckingDAO.Id;
@@ -374,6 +379,7 @@ namespace DMS.Repositories
             StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
             StoreCheckingDAO.IndirectSalesOrderCounter = StoreChecking.CountIndirectSalesOrder;
             StoreCheckingDAO.ImageCounter = StoreChecking.CountImage;
+            StoreCheckingDAO.IsOpenedStore = StoreChecking.IsOpenedStore;
             await DataContext.SaveChangesAsync();
             await SaveReference(StoreChecking);
             return true;
@@ -394,6 +400,7 @@ namespace DMS.Repositories
                 StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
                 StoreCheckingDAO.IndirectSalesOrderCounter = StoreChecking.CountIndirectSalesOrder;
                 StoreCheckingDAO.ImageCounter = StoreChecking.CountImage;
+                StoreCheckingDAO.IsOpenedStore = StoreChecking.IsOpenedStore;
                 StoreCheckingDAOs.Add(StoreCheckingDAO);
             }
             await DataContext.BulkMergeAsync(StoreCheckingDAOs);

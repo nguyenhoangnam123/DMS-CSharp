@@ -21,6 +21,8 @@ namespace DMS.Rpc.store_scouting
         public decimal? Longitude { get; set; }
         public long CreatorId { get; set; }
         public long StoreScoutingStatusId { get; set; }
+        public string Link { get; set; }
+        public Guid RowId { get; set; }
         public StoreScouting_AppUserDTO Creator { get; set; }
         public StoreScouting_DistrictDTO District { get; set; }
         public StoreScouting_OrganizationDTO Organization { get; set; }
@@ -45,6 +47,8 @@ namespace DMS.Rpc.store_scouting
             this.Longitude = StoreScouting.Longitude;
             this.CreatorId = StoreScouting.CreatorId;
             this.StoreScoutingStatusId = StoreScouting.StoreScoutingStatusId;
+            this.Link = StoreScouting.Link;
+            this.RowId = StoreScouting.RowId;
             this.Creator = StoreScouting.Creator == null ? null : new StoreScouting_AppUserDTO(StoreScouting.Creator);
             this.District = StoreScouting.District == null ? null : new StoreScouting_DistrictDTO(StoreScouting.District);
             this.Organization = StoreScouting.Organization == null ? null : new StoreScouting_OrganizationDTO(StoreScouting.Organization);

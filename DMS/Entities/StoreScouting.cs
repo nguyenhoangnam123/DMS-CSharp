@@ -21,6 +21,8 @@ namespace DMS.Entities
         public decimal? Longitude { get; set; }
         public long CreatorId { get; set; }
         public long StoreScoutingStatusId { get; set; }
+        public string Link { get; set; }
+        public Guid RowId { get; set; }
         public AppUser Creator { get; set; }
         public District District { get; set; }
         public Organization Organization { get; set; }
