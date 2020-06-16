@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
+using DMS.Helpers;
 
 namespace DMS.Services.MKpiGeneral
 {
@@ -21,6 +22,8 @@ namespace DMS.Services.MKpiGeneral
         Task<KpiGeneral> Delete(KpiGeneral KpiGeneral);
         Task<List<KpiGeneral>> BulkDelete(List<KpiGeneral> KpiGenerals);
         Task<List<KpiGeneral>> Import(List<KpiGeneral> KpiGenerals);
+        Task<List<AppUser>> ListAppUser(AppUserFilter appUserFilter);
+        Task<int> CountAppUser(AppUserFilter appUserFilter);
         KpiGeneralFilter ToFilter(KpiGeneralFilter KpiGeneralFilter);
     }
 
@@ -83,7 +86,7 @@ namespace DMS.Services.MKpiGeneral
                 return null;
             return KpiGeneral;
         }
-       
+
         public async Task<KpiGeneral> Create(KpiGeneral KpiGeneral)
         {
             if (!await KpiGeneralValidator.Create(KpiGeneral))
@@ -92,7 +95,18 @@ namespace DMS.Services.MKpiGeneral
             try
             {
                 await UOW.Begin();
-                await UOW.KpiGeneralRepository.Create(KpiGeneral);
+                List<KpiGeneral> KpiGenerals = new List<KpiGeneral>();
+                if (KpiGeneral.EmployeeIds != null && KpiGeneral.EmployeeIds.Any())
+                {
+                    foreach (var EmployeeId in KpiGeneral.EmployeeIds)
+                    {
+                        var newObj = Utils.Clone(KpiGeneral);
+                        newObj.EmployeeId = EmployeeId;
+                        newObj.CreatorId = CurrentContext.UserId;
+                        KpiGenerals.Add(newObj);
+                    }
+                }
+                await UOW.KpiGeneralRepository.BulkMerge(KpiGenerals);
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(KpiGeneral, new { }, nameof(KpiGeneralService));
@@ -183,7 +197,7 @@ namespace DMS.Services.MKpiGeneral
                     throw new MessageException(ex.InnerException);
             }
         }
-        
+
         public async Task<List<KpiGeneral>> Import(List<KpiGeneral> KpiGenerals)
         {
             if (!await KpiGeneralValidator.Import(KpiGenerals))
@@ -206,8 +220,85 @@ namespace DMS.Services.MKpiGeneral
                 else
                     throw new MessageException(ex.InnerException);
             }
-        }     
-        
+        }
+        public async Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter)
+        {
+            try
+            {
+                KpiGeneralFilter KpiGeneralFilter = new KpiGeneralFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    //KpiPeriodId = KpiPeriodId,
+                    Selects = KpiGeneralSelect.Id | KpiGeneralSelect.Employee
+                };
+
+                var KpiGenerals = await UOW.KpiGeneralRepository.List(KpiGeneralFilter);
+                var AppUserIds = KpiGenerals.Select(x => x.EmployeeId).ToList();
+                AppUserFilter = new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter { NotIn = AppUserIds },
+                    Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email,
+                    DisplayName = AppUserFilter.DisplayName,
+                    Username = AppUserFilter.Username,
+                    Phone = AppUserFilter.Phone,
+                    Email = AppUserFilter.Email,
+                };
+
+                var AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
+                return AppUsers;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiGeneralService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+
+        }
+
+        public async Task<int> CountAppUser(AppUserFilter AppUserFilter)
+        {
+            try
+            {
+                KpiGeneralFilter KpiGeneralFilter = new KpiGeneralFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    //KpiPeriodId = KpiPeriodId,
+                    Selects = KpiGeneralSelect.Id | KpiGeneralSelect.Employee
+                };
+
+                var KpiGenerals = await UOW.KpiGeneralRepository.List(KpiGeneralFilter);
+                var AppUserIds = KpiGenerals.Select(x => x.EmployeeId).ToList();
+                AppUserFilter = new AppUserFilter
+                {
+                    Id = new IdFilter { NotIn = AppUserIds },
+                    DisplayName = AppUserFilter.DisplayName,
+                    Username = AppUserFilter.Username,
+                    Phone = AppUserFilter.Phone,
+                    Email = AppUserFilter.Email,
+                };
+
+                var count = await UOW.AppUserRepository.Count(AppUserFilter);
+                return count;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiGeneralService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+
+        }
         public KpiGeneralFilter ToFilter(KpiGeneralFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<KpiGeneralFilter>();

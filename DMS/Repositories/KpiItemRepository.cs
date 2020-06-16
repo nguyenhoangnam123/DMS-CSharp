@@ -431,7 +431,7 @@ namespace DMS.Repositories
                 KpiItemDAO.UpdatedAt = StaticParams.DateTimeNow;
                 KpiItemDAO.RowId = Guid.NewGuid();
                 KpiItemDAOs.Add(KpiItemDAO);
-                KpiItem.RowId = KpiItemDAO.RowId;
+                KpiItem.RowId = KpiItemDAO.RowId; 
             }
             await DataContext.BulkMergeAsync(KpiItemDAOs);
 

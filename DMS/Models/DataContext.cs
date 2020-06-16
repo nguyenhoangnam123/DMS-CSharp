@@ -2614,8 +2614,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<StoreScoutingDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Address)
                     .IsRequired()
                     .HasMaxLength(3000);
