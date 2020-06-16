@@ -17,6 +17,7 @@ namespace DMS.Rpc.store_checking
         public DateTime? CheckOutAt { get; set; }
         public long? CountIndirectSalesOrder { get; set; }
         public long? CountImage { get; set; }
+        public bool IsOpenedStore { get; set; }
         public StoreChecking_AppUserDTO SaleEmployee { get; set; }
         public StoreChecking_StoreDTO Store { get; set; }
         public List<StoreChecking_StoreCheckingImageMappingDTO> StoreCheckingImageMappings { get; set; }
@@ -32,6 +33,7 @@ namespace DMS.Rpc.store_checking
             this.CheckOutAt = StoreChecking.CheckOutAt;
             this.CountIndirectSalesOrder = StoreChecking.CountIndirectSalesOrder;
             this.CountImage = StoreChecking.CountImage;
+            this.IsOpenedStore = StoreChecking.IsOpenedStore;
             this.SaleEmployee = StoreChecking.SaleEmployee == null ? null : new StoreChecking_AppUserDTO(StoreChecking.SaleEmployee);
             this.Store = StoreChecking.Store == null ? null : new StoreChecking_StoreDTO(StoreChecking.Store);
             this.StoreCheckingImageMappings = StoreChecking.StoreCheckingImageMappings?.Select(x => new StoreChecking_StoreCheckingImageMappingDTO(x)).ToList();

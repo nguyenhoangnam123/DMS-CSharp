@@ -21,6 +21,7 @@ namespace DMS.Models
         public long? IndirectSalesOrderCounter { get; set; }
         public long? ImageCounter { get; set; }
         public bool Planned { get; set; }
+        public bool IsOpenedStore { get; set; }
 
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StoreDAO Store { get; set; }
