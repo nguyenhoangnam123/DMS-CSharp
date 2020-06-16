@@ -22,8 +22,8 @@ namespace DMS.Services.MKpiGeneral
         Task<KpiGeneral> Delete(KpiGeneral KpiGeneral);
         Task<List<KpiGeneral>> BulkDelete(List<KpiGeneral> KpiGenerals);
         Task<List<KpiGeneral>> Import(List<KpiGeneral> KpiGenerals);
-        Task<List<AppUser>> ListAppUser(AppUserFilter appUserFilter);
-        Task<int> CountAppUser(AppUserFilter appUserFilter);
+        Task<List<AppUser>> ListAppUser(AppUserFilter appUserFilter, IdFilter KpiYearId);
+        Task<int> CountAppUser(AppUserFilter appUserFilter, IdFilter KpiYearId);
         KpiGeneralFilter ToFilter(KpiGeneralFilter KpiGeneralFilter);
     }
 
@@ -110,7 +110,7 @@ namespace DMS.Services.MKpiGeneral
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(KpiGeneral, new { }, nameof(KpiGeneralService));
-                return await UOW.KpiGeneralRepository.Get(KpiGeneral.Id);
+                return KpiGeneral;
             }
             catch (Exception ex)
             {
@@ -221,7 +221,7 @@ namespace DMS.Services.MKpiGeneral
                     throw new MessageException(ex.InnerException);
             }
         }
-        public async Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter)
+        public async Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId)
         {
             try
             {
@@ -229,7 +229,7 @@ namespace DMS.Services.MKpiGeneral
                 {
                     Skip = 0,
                     Take = int.MaxValue,
-                    //KpiPeriodId = KpiPeriodId,
+                    KpiYearId = KpiYearId,
                     Selects = KpiGeneralSelect.Id | KpiGeneralSelect.Employee
                 };
 
@@ -262,7 +262,7 @@ namespace DMS.Services.MKpiGeneral
 
         }
 
-        public async Task<int> CountAppUser(AppUserFilter AppUserFilter)
+        public async Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId)
         {
             try
             {
@@ -270,7 +270,7 @@ namespace DMS.Services.MKpiGeneral
                 {
                     Skip = 0,
                     Take = int.MaxValue,
-                    //KpiPeriodId = KpiPeriodId,
+                    KpiYearId = KpiYearId,
                     Selects = KpiGeneralSelect.Id | KpiGeneralSelect.Employee
                 };
 

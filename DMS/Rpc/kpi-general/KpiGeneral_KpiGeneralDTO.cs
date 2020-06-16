@@ -23,12 +23,14 @@ namespace DMS.Rpc.kpi_general
         public List<KpiGeneral_KpiPeriodDTO> KpiPeriods { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public List<long> EmployeeIds { get; set; }
         public KpiGeneral_KpiGeneralDTO() {}
         public KpiGeneral_KpiGeneralDTO(KpiGeneral KpiGeneral)
         {
             this.Id = KpiGeneral.Id;
             this.OrganizationId = KpiGeneral.OrganizationId;
             this.EmployeeId = KpiGeneral.EmployeeId;
+            this.EmployeeIds = KpiGeneral.EmployeeIds;
             this.KpiYearId = KpiGeneral.KpiYearId;
             this.StatusId = KpiGeneral.StatusId;
             this.CreatorId = KpiGeneral.CreatorId;

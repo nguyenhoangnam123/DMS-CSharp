@@ -423,7 +423,7 @@ namespace DMS.Repositories
                         Value = x.Value,
                         KpiGeneralContentId = KpiGeneralContent.Id
                     }).ToList();
-                    KpiGeneralContentKpiPeriodMappingDAOs.AddRange(KpiGeneralContentKpiPeriodMappingDAOs);
+                    KpiGeneralContentKpiPeriodMappingDAOs.AddRange(listMappings);
                 }
             }
 
