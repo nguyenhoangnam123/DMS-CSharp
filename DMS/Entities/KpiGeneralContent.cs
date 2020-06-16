@@ -15,6 +15,10 @@ namespace DMS.Entities
         public KpiCriteriaGeneral KpiCriteriaGeneral { get; set; }
         public KpiGeneral KpiGeneral { get; set; }
         public Status Status { get; set; }
+        public Guid RowId { get; set; }
+
+        public List<KpiGeneralContentKpiPeriodMapping> KpiGeneralContentKpiPeriodMappings { get; set; }
+
 
         public bool Equals(KpiGeneralContent other)
         {

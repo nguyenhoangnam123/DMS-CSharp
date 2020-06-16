@@ -102,7 +102,8 @@ namespace DMS.Rpc.kpi_general
         public IdFilter ProvinceId { get; set; }
         
         public IdFilter SexId { get; set; }
-        
+        public IdFilter KpiYearId { get; set; }
+
         public DateFilter Birthday { get; set; }
         
         public AppUserOrder OrderBy { get; set; }

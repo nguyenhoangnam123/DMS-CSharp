@@ -14,7 +14,8 @@ namespace DMS.Rpc.kpi_general
         public string Code { get; set; }
         
         public string Name { get; set; }
-        
+        public List<long> EmployeeIds { get; set; }
+
 
         public KpiGeneral_KpiCriteriaGeneralDTO() {}
         public KpiGeneral_KpiCriteriaGeneralDTO(KpiCriteriaGeneral KpiCriteriaGeneral)

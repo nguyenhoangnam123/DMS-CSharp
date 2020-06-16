@@ -832,6 +832,7 @@ namespace DMS.Rpc.kpi_item
                 Code = KpiItem_KpiItemDTO.Status.Code,
                 Name = KpiItem_KpiItemDTO.Status.Name,
             };
+            KpiItem.EmployeeIds = KpiItem_KpiItemDTO.EmployeeIds; // to do
             KpiItem.KpiItemContents = KpiItem_KpiItemDTO.KpiItemContents?
                 .Select(x => new KpiItemContent
                 {

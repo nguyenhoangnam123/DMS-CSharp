@@ -16,6 +16,7 @@ using DMS.Services.MKpiYear;
 using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
 using DMS.Services.MKpiCriteriaGeneral;
+using DMS.Services.MKpiPeriod;
 
 namespace DMS.Rpc.kpi_general
 {
@@ -27,6 +28,7 @@ namespace DMS.Rpc.kpi_general
         private IStatusService StatusService;
         private IKpiCriteriaGeneralService KpiCriteriaGeneralService;
         private IKpiGeneralService KpiGeneralService;
+        private IKpiPeriodService KpiPeriodService;
         private ICurrentContext CurrentContext;
         public KpiGeneralController(
             IAppUserService AppUserService,
@@ -35,6 +37,7 @@ namespace DMS.Rpc.kpi_general
             IStatusService StatusService,
             IKpiCriteriaGeneralService KpiCriteriaGeneralService,
             IKpiGeneralService KpiGeneralService,
+            IKpiPeriodService KpiPeriodService,
             ICurrentContext CurrentContext
         )
         {
@@ -44,6 +47,7 @@ namespace DMS.Rpc.kpi_general
             this.StatusService = StatusService;
             this.KpiCriteriaGeneralService = KpiCriteriaGeneralService;
             this.KpiGeneralService = KpiGeneralService;
+            this.KpiPeriodService = KpiPeriodService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -86,12 +90,40 @@ namespace DMS.Rpc.kpi_general
             return new KpiGeneral_KpiGeneralDTO(KpiGeneral);
         }
 
+        [Route(KpiGeneralRoute.GetDraft), HttpPost]
+        public async Task<ActionResult<KpiGeneral_KpiGeneralDTO>> GetDraft()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            List<KpiCriteriaGeneral> KpiCriteriaGenerals = await KpiCriteriaGeneralService.List(new KpiCriteriaGeneralFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiCriteriaGeneralSelect.ALL,
+            });
+            List<KpiPeriod> KpiPeriods = await KpiPeriodService.List(new KpiPeriodFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiPeriodSelect.ALL,
+            });
+            var KpiGeneral_KpiGeneralDTO = new KpiGeneral_KpiGeneralDTO();
+            KpiGeneral_KpiGeneralDTO.KpiPeriods = KpiPeriods.Select(x => new KpiGeneral_KpiPeriodDTO(x)).ToList();
+            KpiGeneral_KpiGeneralDTO.KpiGeneralContents = KpiCriteriaGenerals.Select(x => new KpiGeneral_KpiGeneralContentDTO
+            {
+                KpiCriteriaGeneralId = x.Id,
+                KpiCriteriaGeneral = new KpiGeneral_KpiCriteriaGeneralDTO(x),
+                KpiGeneralContentKpiPeriodMappings = KpiPeriods.ToDictionary(x => x.Id, y => 0L),
+            }).ToList();
+            return KpiGeneral_KpiGeneralDTO;
+        }
         [Route(KpiGeneralRoute.Create), HttpPost]
         public async Task<ActionResult<KpiGeneral_KpiGeneralDTO>> Create([FromBody] KpiGeneral_KpiGeneralDTO KpiGeneral_KpiGeneralDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(KpiGeneral_KpiGeneralDTO.Id))
                 return Forbid();
 
@@ -109,7 +141,7 @@ namespace DMS.Rpc.kpi_general
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(KpiGeneral_KpiGeneralDTO.Id))
                 return Forbid();
 
@@ -139,7 +171,7 @@ namespace DMS.Rpc.kpi_general
             else
                 return BadRequest(KpiGeneral_KpiGeneralDTO);
         }
-        
+
         [Route(KpiGeneralRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -157,7 +189,7 @@ namespace DMS.Rpc.kpi_general
             KpiGenerals = await KpiGeneralService.BulkDelete(KpiGenerals);
             return true;
         }
-        
+
         [Route(KpiGeneralRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -216,7 +248,7 @@ namespace DMS.Rpc.kpi_general
                     string KpiYearIdValue = worksheet.Cells[i + StartRow, KpiYearIdColumn].Value?.ToString();
                     string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
                     string CreatorIdValue = worksheet.Cells[i + StartRow, CreatorIdColumn].Value?.ToString();
-                    
+
                     KpiGeneral KpiGeneral = new KpiGeneral();
                     AppUser Creator = Creators.Where(x => x.Id.ToString() == CreatorIdValue).FirstOrDefault();
                     KpiGeneral.CreatorId = Creator == null ? 0 : Creator.Id;
@@ -230,7 +262,7 @@ namespace DMS.Rpc.kpi_general
                     Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
                     KpiGeneral.StatusId = Status == null ? 0 : Status.Id;
                     KpiGeneral.Status = Status;
-                    
+
                     KpiGenerals.Add(KpiGeneral);
                 }
             }
@@ -264,13 +296,13 @@ namespace DMS.Rpc.kpi_general
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(KpiGeneralRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] KpiGeneral_KpiGeneralFilterDTO KpiGeneral_KpiGeneralFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -283,7 +315,7 @@ namespace DMS.Rpc.kpi_general
 
                 var KpiGeneralHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "OrganizationId",
                         "EmployeeId",
@@ -308,7 +340,7 @@ namespace DMS.Rpc.kpi_general
                 }
                 excel.GenerateWorksheet("KpiGeneral", KpiGeneralHeaders, KpiGeneralData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -320,7 +352,7 @@ namespace DMS.Rpc.kpi_general
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "DisplayName",
@@ -372,7 +404,7 @@ namespace DMS.Rpc.kpi_general
 
                 var KpiYearHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -402,7 +434,7 @@ namespace DMS.Rpc.kpi_general
 
                 var OrganizationHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -446,7 +478,7 @@ namespace DMS.Rpc.kpi_general
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -465,7 +497,7 @@ namespace DMS.Rpc.kpi_general
                 }
                 excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
                 #endregion
-              
+
                 #region KpiCriteriaGeneral
                 var KpiCriteriaGeneralFilter = new KpiCriteriaGeneralFilter();
                 KpiCriteriaGeneralFilter.Selects = KpiCriteriaGeneralSelect.ALL;
@@ -477,7 +509,7 @@ namespace DMS.Rpc.kpi_general
 
                 var KpiCriteriaGeneralHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -506,14 +538,14 @@ namespace DMS.Rpc.kpi_general
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
                 #region KpiGeneral
                 var KpiGeneralHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "OrganizationId",
                         "EmployeeId",
@@ -525,7 +557,7 @@ namespace DMS.Rpc.kpi_general
                 List<object[]> KpiGeneralData = new List<object[]>();
                 excel.GenerateWorksheet("KpiGeneral", KpiGeneralHeaders, KpiGeneralData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -537,7 +569,7 @@ namespace DMS.Rpc.kpi_general
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "DisplayName",
@@ -589,7 +621,7 @@ namespace DMS.Rpc.kpi_general
 
                 var KpiYearHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -619,7 +651,7 @@ namespace DMS.Rpc.kpi_general
 
                 var OrganizationHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -663,7 +695,7 @@ namespace DMS.Rpc.kpi_general
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -693,7 +725,7 @@ namespace DMS.Rpc.kpi_general
 
                 var KpiCriteriaGeneralHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -741,6 +773,7 @@ namespace DMS.Rpc.kpi_general
             KpiGeneral.Id = KpiGeneral_KpiGeneralDTO.Id;
             KpiGeneral.OrganizationId = KpiGeneral_KpiGeneralDTO.OrganizationId;
             KpiGeneral.EmployeeId = KpiGeneral_KpiGeneralDTO.EmployeeId;
+            KpiGeneral.EmployeeIds = KpiGeneral_KpiGeneralDTO.EmployeeIds;
             KpiGeneral.KpiYearId = KpiGeneral_KpiGeneralDTO.KpiYearId;
             KpiGeneral.StatusId = KpiGeneral_KpiGeneralDTO.StatusId;
             KpiGeneral.CreatorId = KpiGeneral_KpiGeneralDTO.CreatorId;
@@ -821,6 +854,11 @@ namespace DMS.Rpc.kpi_general
                         Code = x.Status.Code,
                         Name = x.Status.Name,
                     },
+                    KpiGeneralContentKpiPeriodMappings = x.KpiGeneralContentKpiPeriodMappings.Select(p => new KpiGeneralContentKpiPeriodMapping
+                    {
+                        Value = p.Value,
+                        KpiPeriodId = p.Key 
+                    }).ToList()
                 }).ToList();
             KpiGeneral.BaseLanguage = CurrentContext.Language;
             return KpiGeneral;
@@ -943,7 +981,7 @@ namespace DMS.Rpc.kpi_general
                 .Select(x => new KpiGeneral_StatusDTO(x)).ToList();
             return KpiGeneral_StatusDTOs;
         }
-      
+
         [Route(KpiGeneralRoute.FilterListKpiCriteriaGeneral), HttpPost]
         public async Task<List<KpiGeneral_KpiCriteriaGeneralDTO>> FilterListKpiCriteriaGeneral([FromBody] KpiGeneral_KpiCriteriaGeneralFilterDTO KpiGeneral_KpiCriteriaGeneralFilterDTO)
         {
@@ -1061,7 +1099,7 @@ namespace DMS.Rpc.kpi_general
                 .Select(x => new KpiGeneral_StatusDTO(x)).ToList();
             return KpiGeneral_StatusDTOs;
         }
-     
+
         [Route(KpiGeneralRoute.SingleListKpiCriteriaGeneral), HttpPost]
         public async Task<List<KpiGeneral_KpiCriteriaGeneralDTO>> SingleListKpiCriteriaGeneral([FromBody] KpiGeneral_KpiCriteriaGeneralFilterDTO KpiGeneral_KpiCriteriaGeneralFilterDTO)
         {
@@ -1080,6 +1118,43 @@ namespace DMS.Rpc.kpi_general
             List<KpiGeneral_KpiCriteriaGeneralDTO> KpiGeneral_KpiCriteriaGeneralDTOs = KpiCriteriaGenerals
                 .Select(x => new KpiGeneral_KpiCriteriaGeneralDTO(x)).ToList();
             return KpiGeneral_KpiCriteriaGeneralDTOs;
+        }
+
+        [Route(KpiGeneralRoute.CountAppUser), HttpPost]
+        public async Task<long> CountAppUser([FromBody] KpiGeneral_AppUserFilterDTO KpiGeneral_AppUserFilterDTO)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Id = KpiGeneral_AppUserFilterDTO.Id;
+            AppUserFilter.Username = KpiGeneral_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = KpiGeneral_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Email = KpiGeneral_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = KpiGeneral_AppUserFilterDTO.Phone;
+            AppUserFilter.OrganizationId = KpiGeneral_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            return await KpiGeneralService.CountAppUser(AppUserFilter, KpiGeneral_AppUserFilterDTO.KpiYearId);
+        }
+        [Route(KpiGeneralRoute.ListAppUser), HttpPost]
+        public async Task<List<KpiGeneral_AppUserDTO>> ListAppUser([FromBody] KpiGeneral_AppUserFilterDTO KpiGeneral_AppUserFilterDTO)
+        {
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = KpiGeneral_AppUserFilterDTO.Skip;
+            AppUserFilter.Take = KpiGeneral_AppUserFilterDTO.Take;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = KpiGeneral_AppUserFilterDTO.Id;
+            AppUserFilter.Username = KpiGeneral_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = KpiGeneral_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Email = KpiGeneral_AppUserFilterDTO.Email;
+            AppUserFilter.OrganizationId = KpiGeneral_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.Phone = KpiGeneral_AppUserFilterDTO.Phone;
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<AppUser> AppUsers = await KpiGeneralService.ListAppUser(AppUserFilter, KpiGeneral_AppUserFilterDTO.KpiYearId);
+            List<KpiGeneral_AppUserDTO> KpiGeneral_AppUserDTOs = AppUsers
+                .Select(x => new KpiGeneral_AppUserDTO(x)).ToList();
+            return KpiGeneral_AppUserDTOs;
         }
 
     }

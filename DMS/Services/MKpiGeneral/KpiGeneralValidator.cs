@@ -6,6 +6,7 @@ using Common;
 using DMS.Entities;
 using DMS;
 using DMS.Repositories;
+using DMS.Enums;
 
 namespace DMS.Services.MKpiGeneral
 {
@@ -23,6 +24,12 @@ namespace DMS.Services.MKpiGeneral
         public enum ErrorCode
         {
             IdNotExisted,
+            OrganizationIdNotExisted,
+            EmployeeIdsEmpty,
+            StatusNotExisted,
+            KpiYearIdNotExisted,
+            KpiYearExisted,
+            KpiGeneralContentsEmpty,
         }
 
         private IUOW UOW;
@@ -50,8 +57,94 @@ namespace DMS.Services.MKpiGeneral
             return count == 1;
         }
 
-        public async Task<bool>Create(KpiGeneral KpiGeneral)
+        private async Task<bool> ValidateOrganization(KpiGeneral KpiGeneral)
         {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            {
+                Id = new IdFilter { Equal = KpiGeneral.OrganizationId }
+            };
+
+            var count = await UOW.OrganizationRepository.Count(OrganizationFilter);
+            if (count == 0)
+                KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.Organization), ErrorCode.OrganizationIdNotExisted);
+            return KpiGeneral.IsValidated;
+        }
+
+        private async Task<bool> ValidateEmployees(KpiGeneral KpiGeneral)
+        {
+            if (KpiGeneral.EmployeeIds == null || !KpiGeneral.EmployeeIds.Any())
+                KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.EmployeeIds), ErrorCode.EmployeeIdsEmpty);
+            else
+            {
+                AppUserFilter AppUserFilter = new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter { In = KpiGeneral.EmployeeIds },
+                    OrganizationId = new IdFilter(),
+                    Selects = AppUserSelect.Id
+                };
+
+                var EmployeeIdsInDB = (await UOW.AppUserRepository.List(AppUserFilter)).Select(x => x.Id).ToList();
+                var listIdsNotExisted = KpiGeneral.EmployeeIds.Except(EmployeeIdsInDB).ToList();
+
+                if (listIdsNotExisted != null && listIdsNotExisted.Any())
+                {
+                    foreach (var Id in listIdsNotExisted)
+                    {
+                        KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.EmployeeIds), ErrorCode.IdNotExisted);
+                    }
+                }
+
+            }
+            return KpiGeneral.IsValidated;
+        }
+
+        private async Task<bool> ValidateStatus(KpiGeneral KpiGeneral)
+        {
+            if (StatusEnum.ACTIVE.Id != KpiGeneral.StatusId && StatusEnum.INACTIVE.Id != KpiGeneral.StatusId)
+                KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.Status), ErrorCode.StatusNotExisted);
+            return KpiGeneral.IsValidated;
+        }
+        private async Task<bool> ValidateKpiYear(KpiGeneral KpiGeneral)
+        {
+            KpiYearFilter KpiYearFilter = new KpiYearFilter
+            {
+                Id = new IdFilter { Equal = KpiGeneral.KpiYearId }
+            };
+
+            int count = await UOW.KpiYearRepository.Count(KpiYearFilter);
+            if (count == 0)
+                KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.KpiYear), ErrorCode.KpiYearIdNotExisted);
+            return KpiGeneral.IsValidated;
+        }
+        private async Task<bool> ValidateKpiGeneral(KpiGeneral KpiGeneral)
+        {
+            foreach (var id in KpiGeneral.EmployeeIds)
+            {
+                KpiGeneralFilter KpiGeneralFilter = new KpiGeneralFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    EmployeeId = new IdFilter { Equal = id },
+                    KpiYearId = new IdFilter { Equal = KpiGeneral.KpiYearId },
+                    Selects = KpiGeneralSelect.Employee | KpiGeneralSelect.KpiYear
+                };
+                int count = await UOW.KpiGeneralRepository.Count(KpiGeneralFilter);
+                if (count != 0)
+                    KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.KpiYear), ErrorCode.KpiYearExisted);
+            }
+            return KpiGeneral.IsValidated;
+        }
+
+
+        public async Task<bool> Create(KpiGeneral KpiGeneral)
+        {
+            await ValidateOrganization(KpiGeneral);
+            await ValidateEmployees(KpiGeneral);
+            await ValidateStatus(KpiGeneral);
+            await ValidateKpiYear(KpiGeneral);
+            await ValidateKpiGeneral(KpiGeneral);
             return KpiGeneral.IsValidated;
         }
 
@@ -59,6 +152,9 @@ namespace DMS.Services.MKpiGeneral
         {
             if (await ValidateId(KpiGeneral))
             {
+                await ValidateOrganization(KpiGeneral);
+                await ValidateStatus(KpiGeneral);
+                await ValidateKpiGeneral(KpiGeneral);
             }
             return KpiGeneral.IsValidated;
         }
@@ -70,12 +166,12 @@ namespace DMS.Services.MKpiGeneral
             }
             return KpiGeneral.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<KpiGeneral> KpiGenerals)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<KpiGeneral> KpiGenerals)
         {
             return true;

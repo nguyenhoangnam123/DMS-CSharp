@@ -20,8 +20,10 @@ namespace DMS.Entities
         public Organization Organization { get; set; }
         public Status Status { get; set; }
         public List<KpiGeneralContent> KpiGeneralContents { get; set; }
+        public List<long> EmployeeIds { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public Guid RowId { get; set; }
 
         public bool Equals(KpiGeneral other)
         {
