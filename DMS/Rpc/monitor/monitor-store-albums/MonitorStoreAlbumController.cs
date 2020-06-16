@@ -151,6 +151,56 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             return MonitorStoreAlbum_StoreDTOs;
         }
 
+        [Route(MonitorStoreAlbumRoute.Count), HttpPost]
+        public async Task<long> Count([FromBody] MonitorStoreAlbum_MonitorStoreAlbumFilterDTO MonitorStoreAlbum_MonitorStoreAlbumFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            long? AlbumId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.AlbumId?.Equal;
+            if (!AlbumId.HasValue) return 0;
+            long? OrganizationId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.OrganizationId?.Equal;
+            long? SaleEmployeeId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.SaleEmployeeId?.Equal;
+            long? StoreId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.StoreId?.Equal;
+
+            DateTime Start = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.GreaterEqual == null ?
+                    StaticParams.DateTimeNow :
+                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.GreaterEqual.Value;
+
+            DateTime End = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.LessEqual == null ?
+                    StaticParams.DateTimeNow :
+                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value;
+
+            Start = new DateTime(Start.Year, Start.Month, Start.Day);
+            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+
+            var query = from sc in DataContext.StoreChecking
+                        join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
+                        join scim in DataContext.StoreCheckingImageMapping on sc.Id equals scim.StoreCheckingId
+                        join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
+                        (OrganizationId.HasValue == false || au.OrganizationId == OrganizationId.Value) &&
+                        (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
+                        (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
+                        (scim.AlbumId == AlbumId.Value)
+                        select sc;
+            List<StoreCheckingDAO> StoreCheckingDAOs = await query.Distinct().ToListAsync();
+            List<long> StoreCheckingIds = StoreCheckingDAOs.Select(x => x.Id).ToList();
+            StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Id = new IdFilter { In = StoreCheckingIds },
+                Selects = StoreCheckingSelect.ALL
+            };
+            List<StoreChecking> StoreCheckings = await StoreCheckingService.List(StoreCheckingFilter);
+
+            var StoreCheckingImageMappingQuery = from scim in DataContext.StoreCheckingImageMapping
+                                                 join i in DataContext.Image on scim.ImageId equals i.Id
+                                                 where StoreCheckingIds.Contains(scim.StoreCheckingId)
+                                                 select scim;
+            return await StoreCheckingImageMappingQuery.CountAsync();
+        }
+
         [Route(MonitorStoreAlbumRoute.List), HttpPost]
         public async Task<MonitorStoreAlbum_MonitorStoreAlbumDTO> List([FromBody] MonitorStoreAlbum_MonitorStoreAlbumFilterDTO MonitorStoreAlbum_MonitorStoreAlbumFilterDTO)
         {

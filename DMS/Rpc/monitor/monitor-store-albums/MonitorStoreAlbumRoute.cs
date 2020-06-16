@@ -11,6 +11,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         public const string Master = Module + "/monitor-store-album/monitor-store-album-master";
 
         private const string Default = Rpc + Module + "/monitor-store-album";
+        public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
         public const string Export = Default + "/export";
@@ -23,7 +24,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, List, Get, Export, FilterListOrganization, FilterListAppUser, FilterListStore } },
+                Master, Count, List, Get, Export, FilterListOrganization, FilterListAppUser, FilterListStore } },
         };
     }
 }
