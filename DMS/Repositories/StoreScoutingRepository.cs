@@ -285,6 +285,7 @@ namespace DMS.Repositories
                 } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
+                RowId = q.RowId,
             }).ToListAsync();
             return StoreScoutings;
         }
@@ -326,6 +327,7 @@ namespace DMS.Repositories
                 Longitude = x.Longitude,
                 CreatorId = x.CreatorId,
                 StoreScoutingStatusId = x.StoreScoutingStatusId,
+                RowId = x.RowId,
                 Creator = x.Creator == null ? null : new AppUser
                 {
                     Id = x.Creator.Id,
@@ -413,6 +415,7 @@ namespace DMS.Repositories
             StoreScoutingDAO.StoreScoutingStatusId = StoreScouting.StoreScoutingStatusId;
             StoreScoutingDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreScoutingDAO.UpdatedAt = StaticParams.DateTimeNow;
+            StoreScoutingDAO.RowId = Guid.NewGuid();
             DataContext.StoreScouting.Add(StoreScoutingDAO);
             await DataContext.SaveChangesAsync();
             StoreScouting.Id = StoreScoutingDAO.Id;

@@ -362,16 +362,5 @@ namespace DMS.Services.MNotification
             }
             return null;
         }
-
-        public class UserNotification
-        {
-            public long Id { get; set; }
-            public string Content { get; set; }
-            public long SenderId { get; set; }
-            public long RecipientId { get; set; }
-            public bool Unread { get; set; }
-            public DateTime Time { get; set; }
-        }
     }
-
 }

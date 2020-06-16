@@ -14,6 +14,7 @@ namespace DMS.Models
         public long KpiGeneralId { get; set; }
         public long KpiCriteriaGeneralId { get; set; }
         public long StatusId { get; set; }
+        public Guid RowId { get; set; }
 
         public virtual KpiCriteriaGeneralDAO KpiCriteriaGeneral { get; set; }
         public virtual KpiGeneralDAO KpiGeneral { get; set; }

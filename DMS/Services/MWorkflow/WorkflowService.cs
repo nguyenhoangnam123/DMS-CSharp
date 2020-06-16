@@ -266,7 +266,7 @@ namespace DMS.Services.MWorkflow
                 }
                 Mails = Mails.Distinct().ToList();
                 List<EventMessage<Mail>> messages = Mails.Select(m => new EventMessage<Mail>(m, m.RowId)).ToList();
-                RabbitManager.PublishList(messages, RoutingKeyEnum.SendMail);
+                RabbitManager.PublishList(messages, RoutingKeyEnum.MailSend);
                 return true;
             }
 
@@ -316,7 +316,7 @@ namespace DMS.Services.MWorkflow
                     }
                 }
                 List<EventMessage<Mail>> messages = Mails.Select(m => new EventMessage<Mail>(m, m.RowId)).ToList();
-                RabbitManager.PublishList(messages, RoutingKeyEnum.SendMail);
+                RabbitManager.PublishList(messages, RoutingKeyEnum.MailSend);
             }
             return false;
         }
