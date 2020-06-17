@@ -22,6 +22,6 @@ CONSUL_PID="$!"
 sleep 5
 consul connect envoy -sidecar-for dms-backend &
 sleep 10
-dotnet ${PROJECT_NAME}.dll --urls http://0.0.0.0:80 --environment Production &
+dotnet ${PROJECT_NAME}.dll --urls http://0.0.0.0:80 --environment Production & wait -n "$!" || term_handler
 wait "${CONSUL_PID}"
 
