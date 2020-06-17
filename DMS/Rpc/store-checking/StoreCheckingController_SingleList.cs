@@ -304,7 +304,62 @@ namespace DMS.Rpc.store_checking
             return StoreChecking_ProblemTypeDTOs;
         }
 
+        [Route(StoreCheckingRoute.SingleListProvince), HttpPost]
+        public async Task<List<StoreChecking_ProvinceDTO>> SingleListProvince([FromBody] StoreChecking_ProvinceFilterDTO StoreChecking_ProvinceFilterDTO)
+        {
+            ProvinceFilter ProvinceFilter = new ProvinceFilter();
+            ProvinceFilter.Skip = 0;
+            ProvinceFilter.Take = 20;
+            ProvinceFilter.OrderBy = ProvinceOrder.Priority;
+            ProvinceFilter.OrderType = OrderType.ASC;
+            ProvinceFilter.Selects = ProvinceSelect.ALL;
+            ProvinceFilter.Id = StoreChecking_ProvinceFilterDTO.Id;
+            ProvinceFilter.Name = StoreChecking_ProvinceFilterDTO.Name;
+            ProvinceFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
+            List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
+            List<StoreChecking_ProvinceDTO> StoreChecking_ProvinceDTOs = Provinces
+                .Select(x => new StoreChecking_ProvinceDTO(x)).ToList();
+            return StoreChecking_ProvinceDTOs;
+        }
+        [Route(StoreCheckingRoute.SingleListDistrict), HttpPost]
+        public async Task<List<StoreChecking_DistrictDTO>> SingleListDistrict([FromBody] StoreChecking_DistrictFilterDTO StoreChecking_DistrictFilterDTO)
+        {
+            DistrictFilter DistrictFilter = new DistrictFilter();
+            DistrictFilter.Skip = 0;
+            DistrictFilter.Take = 20;
+            DistrictFilter.OrderBy = DistrictOrder.Priority;
+            DistrictFilter.OrderType = OrderType.ASC;
+            DistrictFilter.Selects = DistrictSelect.ALL;
+            DistrictFilter.Id = StoreChecking_DistrictFilterDTO.Id;
+            DistrictFilter.Name = StoreChecking_DistrictFilterDTO.Name;
+            DistrictFilter.Priority = StoreChecking_DistrictFilterDTO.Priority;
+            DistrictFilter.ProvinceId = StoreChecking_DistrictFilterDTO.ProvinceId;
+            DistrictFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<District> Districts = await DistrictService.List(DistrictFilter);
+            List<StoreChecking_DistrictDTO> StoreChecking_DistrictDTOs = Districts
+                .Select(x => new StoreChecking_DistrictDTO(x)).ToList();
+            return StoreChecking_DistrictDTOs;
+        }
+        [Route(StoreCheckingRoute.SingleListWard), HttpPost]
+        public async Task<List<StoreChecking_WardDTO>> SingleListWard([FromBody] StoreChecking_WardFilterDTO StoreChecking_WardFilterDTO)
+        {
+            WardFilter WardFilter = new WardFilter();
+            WardFilter.Skip = 0;
+            WardFilter.Take = 20;
+            WardFilter.OrderBy = WardOrder.Priority;
+            WardFilter.OrderType = OrderType.ASC;
+            WardFilter.Selects = WardSelect.ALL;
+            WardFilter.Id = StoreChecking_WardFilterDTO.Id;
+            WardFilter.Name = StoreChecking_WardFilterDTO.Name;
+            WardFilter.DistrictId = StoreChecking_WardFilterDTO.DistrictId;
+            WardFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            List<Ward> Wards = await WardService.List(WardFilter);
+            List<StoreChecking_WardDTO> StoreChecking_WardDTOs = Wards
+                .Select(x => new StoreChecking_WardDTO(x)).ToList();
+            return StoreChecking_WardDTOs;
+        }
 
         [Route(StoreCheckingRoute.CountBanner), HttpPost]
         public async Task<ActionResult<int>> Count([FromBody] StoreChecking_BannerFilterDTO StoreChecking_BannerFilterDTO)
