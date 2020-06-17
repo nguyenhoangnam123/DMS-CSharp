@@ -53,6 +53,8 @@ namespace DMS.Models
         public long? ProvinceId { get; set; }
         public long? SexId { get; set; }
         public DateTime? Birthday { get; set; }
+        public decimal? Longitude { get; set; }
+        public decimal? Latitude { get; set; }
 
         public virtual OrganizationDAO Organization { get; set; }
         public virtual PositionDAO Position { get; set; }

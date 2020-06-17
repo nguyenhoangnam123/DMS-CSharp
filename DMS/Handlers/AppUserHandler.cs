@@ -61,6 +61,8 @@ namespace DMS.Handlers
                     Username = au.Username,
                     SexId = au.SexId,
                     Birthday = au.Birthday,
+                    Longitude = au.Longitude,
+                    Latitude = au.Latitude,
                 }).ToList();
                 await context.BulkMergeAsync(AppUserDAOs);
             }

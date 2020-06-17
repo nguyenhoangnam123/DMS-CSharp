@@ -95,6 +95,44 @@ namespace DMS.Rpc.dashboards
             return Dashboard_StoreCheckingDTO;
         }
 
+        [Route(DashboardRoute.SaleEmployeeOnline), HttpPost]
+        public async Task<Dashboard_SaleEmployeeOnlineDTO> SaleEmployeeOnline()
+        {
+            var AppUser = await AppUserService.Get(CurrentContext.UserId);
+            var OnlineTime = StaticParams.DateTimeNow.AddMinutes(-30);
+
+            var query = from au in DataContext.AppUser
+                        join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        where au.DeletedAt.HasValue == false && au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
+                        o.Path.StartsWith(AppUser.Organization.Path) &&
+                        au.UpdatedAt > OnlineTime
+                        group au by au.UpdatedAt.Hour into x
+                        select new Dashboard_SaleEmployeeOnlineHourDTO
+                        {
+                            Hour = x.Key.ToString(),
+                            Counter = x.Count()
+                        };
+
+            List<Dashboard_SaleEmployeeOnlineHourDTO> Dashboard_SaleEmployeeOnlineHourDTOs = await query.ToListAsync();
+            Dashboard_SaleEmployeeOnlineDTO Dashboard_SaleEmployeeOnlineDTO = new Dashboard_SaleEmployeeOnlineDTO();
+
+            Dashboard_SaleEmployeeOnlineDTO.SaleEmployeeOnlineHours = new List<Dashboard_SaleEmployeeOnlineHourDTO>();
+            for (int i = 0; i < 24; i++)
+            {
+                Dashboard_SaleEmployeeOnlineDTO.SaleEmployeeOnlineHours.Add(new Dashboard_SaleEmployeeOnlineHourDTO
+                {
+                    Counter = 0,
+                    Hour = i.ToString()
+                });
+            }
+            foreach (var SaleEmployeeOnlineHour in Dashboard_SaleEmployeeOnlineHourDTOs)
+            {
+                var x = Dashboard_SaleEmployeeOnlineDTO.SaleEmployeeOnlineHours.Where(x => x.Hour == SaleEmployeeOnlineHour.Hour).FirstOrDefault();
+                x.Counter = SaleEmployeeOnlineHour.Counter;
+            }
+            return Dashboard_SaleEmployeeOnlineDTO;
+        }
+
         [Route(DashboardRoute.StatisticIndirectSalesOrder), HttpPost]
         public async Task<Dashboard_StatisticIndirectSalesOrderDTO> StatisticIndirectSalesOrder()
         {
@@ -134,46 +172,6 @@ namespace DMS.Rpc.dashboards
             return Dashboard_StatisticIndirectSalesOrderDTO;
         }
 
-        [Route(DashboardRoute.ListIndirectSalesOrder), HttpPost]
-        public async Task<List<Dashboard_IndirectSalesOrderDTO>> ListIndirectSalesOrder()
-        {
-            var appUser = await AppUserService.Get(CurrentContext.UserId);
-            var OrganizationIds = (await OrganizationService.List(new OrganizationFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Id = new IdFilter { NotEqual = appUser.OrganizationId },
-                Path = new StringFilter { StartWith = appUser.Organization.Path },
-                Selects = OrganizationSelect.Id
-            })).Select(x => x.Id).ToList();
-            var AppUserIds = (await AppUserService.List(new AppUserFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = AppUserSelect.Id,
-                OrganizationId = new IdFilter { In = OrganizationIds }
-            })).Select(x => x.Id).ToList();
-            AppUserIds.Add(appUser.Id);
-            AppUserIds = AppUserIds.Distinct().ToList();
-            IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter
-            {
-                Skip = 0,
-                Take = 5,
-                Selects = IndirectSalesOrderSelect.Id | IndirectSalesOrderSelect.OrderDate 
-                | IndirectSalesOrderSelect.Code | IndirectSalesOrderSelect.SaleEmployee 
-                | IndirectSalesOrderSelect.RequestState | IndirectSalesOrderSelect.Total,
-                OrderBy = IndirectSalesOrderOrder.OrderDate,
-                OrderType = OrderType.DESC,
-                SaleEmployeeId = new IdFilter { In = AppUserIds },
-            };
-
-            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
-            List<Dashboard_IndirectSalesOrderDTO> Dashboard_IndirectSalesOrderDTOs = IndirectSalesOrders
-                .Select(x => new Dashboard_IndirectSalesOrderDTO(x)).ToList();
-
-            return Dashboard_IndirectSalesOrderDTOs;
-        }
-
         [Route(DashboardRoute.ImageStoreCheking), HttpPost]
         public async Task<Dashboard_StoreCheckingImageMappingDTO> ImageStoreCheking()
         {
@@ -211,6 +209,89 @@ namespace DMS.Rpc.dashboards
             return Dashboard_StoreCheckingImageMappingDTO;
         }
 
+        [Route(DashboardRoute.StoreCheckingCoverage), HttpPost]
+        public async Task<List<Dashboard_StoreDTO>> StoreCheckingCoverage()
+        {
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = new DateTime(Now.Year, Now.Month, 1);
+            DateTime End = Start.AddMonths(1).AddSeconds(-1);
+
+            var query = from s in DataContext.Store
+                        join sc in DataContext.StoreChecking on s.Id equals sc.StoreId
+                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End
+                        select new Dashboard_StoreDTO 
+                        {
+                            Id = s.Id,
+                            Name = s.Name,
+                            Latitude = s.Latitude,
+                            Longitude = s.Longitude,
+                            Telephone = s.Telephone,
+                        };
+            List<Dashboard_StoreDTO> Dashboard_StoreDTOs = await query.Distinct().ToListAsync();
+            return Dashboard_StoreDTOs;
+        }
+
+        [Route(DashboardRoute.SaleEmployeeLocation), HttpPost]
+        public async Task<List<Dashboard_AppUserDTO>> SaleEmployeeLocation()
+        {
+            var AppUser = await AppUserService.Get(CurrentContext.UserId);
+            var query = from au in DataContext.AppUser
+                        join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        where au.DeletedAt.HasValue == false && au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
+                        o.Path.StartsWith(AppUser.Organization.Path)
+                        select new Dashboard_AppUserDTO
+                        {
+                            Id = au.Id,
+                            DisplayName = au.DisplayName,
+                            Username = au.Username,
+                            Longitude = au.Longitude,
+                            Latitude = au.Latitude,
+                        };
+
+            List<Dashboard_AppUserDTO> Dashboard_AppUserDTOs = await query.Distinct().ToListAsync();
+            return Dashboard_AppUserDTOs;
+        }
+
+        [Route(DashboardRoute.ListIndirectSalesOrder), HttpPost]
+        public async Task<List<Dashboard_IndirectSalesOrderDTO>> ListIndirectSalesOrder()
+        {
+            var appUser = await AppUserService.Get(CurrentContext.UserId);
+            var OrganizationIds = (await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Id = new IdFilter { NotEqual = appUser.OrganizationId },
+                Path = new StringFilter { StartWith = appUser.Organization.Path },
+                Selects = OrganizationSelect.Id
+            })).Select(x => x.Id).ToList();
+            var AppUserIds = (await AppUserService.List(new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id,
+                OrganizationId = new IdFilter { In = OrganizationIds }
+            })).Select(x => x.Id).ToList();
+            AppUserIds.Add(appUser.Id);
+            AppUserIds = AppUserIds.Distinct().ToList();
+            IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter
+            {
+                Skip = 0,
+                Take = 5,
+                Selects = IndirectSalesOrderSelect.Id | IndirectSalesOrderSelect.OrderDate
+                | IndirectSalesOrderSelect.Code | IndirectSalesOrderSelect.SaleEmployee
+                | IndirectSalesOrderSelect.RequestState | IndirectSalesOrderSelect.Total,
+                OrderBy = IndirectSalesOrderOrder.OrderDate,
+                OrderType = OrderType.DESC,
+                SaleEmployeeId = new IdFilter { In = AppUserIds },
+            };
+
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+            List<Dashboard_IndirectSalesOrderDTO> Dashboard_IndirectSalesOrderDTOs = IndirectSalesOrders
+                .Select(x => new Dashboard_IndirectSalesOrderDTO(x)).ToList();
+
+            return Dashboard_IndirectSalesOrderDTOs;
+        }
+
         [Route(DashboardRoute.TopSaleEmployeeStoreChecking), HttpPost]
         public async Task<List<Dashboard_TopSaleEmployeeStoreCheckingDTO>> TopSaleEmployeeStoreChecking([FromBody] Dashboard_TopSaleEmployeeStoreCheckingFilterDTO Dashboard_TopSaleEmployeeStoreCheckingFilterDTO)
         {
@@ -224,7 +305,7 @@ namespace DMS.Rpc.dashboards
                 Start = new DateTime(Now.Year, Now.Month, Now.Day);
                 End = Start.AddDays(1).AddSeconds(-1);
             }
-            else if(Dashboard_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == TODAY)
+            else if (Dashboard_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == TODAY)
             {
                 Start = new DateTime(Now.Year, Now.Month, Now.Day);
                 End = Start.AddDays(1).AddSeconds(-1);
@@ -235,7 +316,7 @@ namespace DMS.Rpc.dashboards
                 Start = Now.AddDays(-1 * diff);
                 End = Start.AddDays(7).AddSeconds(-1);
             }
-            else if(Dashboard_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == THIS_MONTH)
+            else if (Dashboard_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
                 Start = new DateTime(Now.Year, Now.Month, 1);
                 End = Start.AddMonths(1).AddSeconds(-1);
@@ -277,30 +358,8 @@ namespace DMS.Rpc.dashboards
                 Dashboard_TopSaleEmployeeStoreCheckingDTO.DisplayName = AppUsers.Where(x => x.Id == Dashboard_TopSaleEmployeeStoreCheckingDTO.SaleEmployeeId)
                     .Select(x => x.DisplayName).FirstOrDefault();
             }
-            
+
             return Dashboard_TopSaleEmployeeStoreCheckingDTOs;
-        }
-
-        [Route(DashboardRoute.StoreCheckingCoverage), HttpPost]
-        public async Task<List<Dashboard_StoreDTO>> StoreCheckingCoverage()
-        {
-            DateTime Now = StaticParams.DateTimeNow;
-            DateTime Start = new DateTime(Now.Year, Now.Month, 1);
-            DateTime End = Start.AddMonths(1).AddSeconds(-1);
-
-            var query = from s in DataContext.Store
-                        join sc in DataContext.StoreChecking on s.Id equals sc.StoreId
-                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End
-                        select new Dashboard_StoreDTO 
-                        {
-                            Id = s.Id,
-                            Name = s.Name,
-                            Latitude = s.Latitude,
-                            Longitude = s.Longitude,
-                            Telephone = s.Telephone,
-                        };
-            List<Dashboard_StoreDTO> Dashboard_StoreDTOs = await query.Distinct().ToListAsync();
-            return Dashboard_StoreDTOs;
         }
     }
 }

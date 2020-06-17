@@ -12,6 +12,8 @@ namespace DMS.Rpc.dashboards
         public long Id { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
 
         public Dashboard_AppUserDTO() { }
         public Dashboard_AppUserDTO(AppUser AppUser)
@@ -19,6 +21,8 @@ namespace DMS.Rpc.dashboards
             this.Id = AppUser.Id;
             this.Username = AppUser.Username;
             this.DisplayName = AppUser.DisplayName;
+            this.Latitude = AppUser.Latitude;
+            this.Longitude = AppUser.Longitude;
             this.Errors = AppUser.Errors;
         }
     }

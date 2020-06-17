@@ -209,7 +209,9 @@ namespace DMS.Models
                     .HasMaxLength(500)
                     .HasComment("Địa chỉ nhà");
 
-                entity.Property(e => e.Avatar).HasComment("Ảnh đại diện");
+                entity.Property(e => e.Avatar)
+                    .HasMaxLength(4000)
+                    .HasComment("Ảnh đại diện");
 
                 entity.Property(e => e.Birthday).HasColumnType("datetime");
 
@@ -232,6 +234,10 @@ namespace DMS.Models
                 entity.Property(e => e.Email)
                     .HasMaxLength(500)
                     .HasComment("Địa chỉ email");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.OrganizationId).HasComment("Đơn vị công tác");
 

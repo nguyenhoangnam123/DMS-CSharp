@@ -284,6 +284,8 @@ namespace DMS.Repositories
                 Department = filter.Selects.Contains(AppUserSelect.Department) ? q.Department : default(string),
                 OrganizationId = filter.Selects.Contains(AppUserSelect.Organization) ? q.OrganizationId : default(long),
                 ProvinceId = filter.Selects.Contains(AppUserSelect.Province) ? q.ProvinceId : default(long),
+                Latitude = filter.Selects.Contains(AppUserSelect.Latitude) ? q.Latitude : default(decimal?),
+                Longitude = filter.Selects.Contains(AppUserSelect.Longitude) ? q.Longitude : default(decimal?),
                 Organization = filter.Selects.Contains(AppUserSelect.Organization) && q.Organization != null ? new Organization
                 {
                     Id = q.Organization.Id,
@@ -364,6 +366,8 @@ namespace DMS.Repositories
                 Department = x.Department,
                 OrganizationId = x.OrganizationId,
                 ProvinceId = x.ProvinceId,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
                 Organization = x.Organization == null ? null : new Organization
                 {
                     Id = x.Organization.Id,

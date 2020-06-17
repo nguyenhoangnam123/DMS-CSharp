@@ -23,6 +23,8 @@ namespace DMS.Entities
         public DateTime? Birthday { get; set; }
         public long? ProvinceId { get; set; }
         public Guid RowId { get; set; }
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
@@ -104,5 +106,7 @@ namespace DMS.Entities
         RowId = E._13,
         Avatar = E._14,
         Province = E._15,
+        Latitude = E._16,
+        Longitude = E._17
     }
 }
