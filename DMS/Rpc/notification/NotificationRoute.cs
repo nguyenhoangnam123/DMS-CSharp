@@ -13,9 +13,9 @@ namespace DMS.Rpc.notification
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
         public const string Create = Default + "/create";
-        public const string CreateDraft = Default + "/create-draft";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
+        public const string Send = Default + "/send";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-tempate";
@@ -40,12 +40,9 @@ namespace DMS.Rpc.notification
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { Master, Count, List, Get, FilterListOrganization, FilterListNotificationStatus } },
-            { "Thêm", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Create, CreateDraft, SingleListOrganization, SingleListNotificationStatus } },
-            { "Sửa", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Update,  SingleListOrganization, SingleListNotificationStatus } },
+            { "Thêm", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Create, Send, SingleListOrganization, SingleListNotificationStatus } },
+            { "Sửa", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Update, Send, SingleListOrganization, SingleListNotificationStatus } },
             { "Xoá", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Delete,  SingleListOrganization, SingleListNotificationStatus } },
-            { "Xoá nhiều", new List<string> { Master, Count, List, Get, FilterListOrganization, FilterListNotificationStatus, BulkDelete } },
-            { "Xuất excel", new List<string> { Master, Count, List, Get, FilterListOrganization, FilterListNotificationStatus, Export } },
-            { "Nhập excel", new List<string> { Master, Count, List, Get, FilterListOrganization, FilterListNotificationStatus, ExportTemplate, Import } },
         };
     }
 }
