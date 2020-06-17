@@ -33,14 +33,15 @@ namespace DMS.Rpc.store
         public const string FilterListWard = Default + "/filter-list-ward";
         public const string FilterListStatus = Default + "/filter-list-status";
 
-        public const string SingleListDistrict = Default + "/single-list-district";
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListParentStore = Default + "/single-list-parent-store";
         public const string SingleListProvince = Default + "/single-list-province";
+        public const string SingleListDistrict = Default + "/single-list-district";
+        public const string SingleListWard = Default + "/single-list-ward";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
         public const string SingleListStoreType = Default + "/single-list-store-type";
-        public const string SingleListWard = Default + "/single-list-ward";
+        
 
         public const string ListReseller = Default + "/list-reseller";
         public const string CountReseller = Default + "/count-reseller";

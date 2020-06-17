@@ -30,6 +30,9 @@ namespace DMS.Rpc.store_checking
         public const string SingleListTaxType = Default + "/single-list-tax-type";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public const string SingleListProblemType = Default + "/single-list-problem-type";
+        public const string SingleListProvince = Default + "/single-list-province";
+        public const string SingleListDistrict = Default + "/single-list-district";
+        public const string SingleListWard = Default + "/single-list-ward";
 
         public const string CountBanner = Default + "/count-banner";
         public const string ListBanner = Default + "/list-banner";
@@ -59,12 +62,10 @@ namespace DMS.Rpc.store_checking
             { "Checkin", new List<string> {
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStore,
-                Detail, CheckIn, Update, CreateIndirectSalesOrder, CreateProblem, SaveImage,
+                Detail, CheckIn,  Update, CheckOut,
+                CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
-                GetSurveyForm, SaveSurveyForm,
-                SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, } },
-            { "Checkout", new List<string> {
-                CheckOut } },
+                SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListProvince, SingleListDistrict, SingleListWard, } },
         };
     }
 }

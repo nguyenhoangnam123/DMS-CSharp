@@ -25,6 +25,9 @@ using System.Threading.Tasks;
 using DMS.Services.MBanner;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using DMS.Services.MStoreScouting;
+using DMS.Services.MProvince;
+using DMS.Services.MDistrict;
+using DMS.Services.MWard;
 
 namespace DMS.Rpc.store_checking
 {
@@ -46,6 +49,9 @@ namespace DMS.Rpc.store_checking
         private IProblemService ProblemService;
         private IProblemTypeService ProblemTypeService;
         private ISurveyService SurveyService;
+        private IProvinceService ProvinceService;
+        private IDistrictService DistrictService;
+        private IWardService WardService;
         private ICurrentContext CurrentContext;
         public StoreCheckingController(
             IAlbumService AlbumService,
@@ -64,6 +70,9 @@ namespace DMS.Rpc.store_checking
             IProblemService ProblemService,
             IProblemTypeService ProblemTypeService,
             ISurveyService SurveyService,
+            IProvinceService ProvinceService,
+            IDistrictService DistrictService,
+            IWardService WardService,
             ICurrentContext CurrentContext
         )
         {
@@ -83,6 +92,9 @@ namespace DMS.Rpc.store_checking
             this.ProblemService = ProblemService;
             this.ProblemTypeService = ProblemTypeService;
             this.SurveyService = SurveyService;
+            this.ProvinceService = ProvinceService;
+            this.DistrictService = DistrictService;
+            this.WardService = WardService;
             this.CurrentContext = CurrentContext;
         }
 
