@@ -296,6 +296,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
             return MonitorStoreImage_MonitorStoreImageDTOs;
         }
 
+        [Route(MonitorStoreImageRoute.Get), HttpPost]
         public async Task<StoreChecking> Get([FromBody] MonitorStoreImage_StoreCheckingDTO MonitorStoreImage_StoreCheckingDTO)
         {
             if (!ModelState.IsValid)
