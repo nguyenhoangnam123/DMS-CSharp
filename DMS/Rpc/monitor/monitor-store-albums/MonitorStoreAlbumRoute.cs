@@ -24,7 +24,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, Export, FilterListOrganization, FilterListAppUser, FilterListStore } },
+                Master, Count, List, Get, Export, FilterListOrganization, FilterListAppUser, FilterListStore, FilterListAlbum } },
         };
     }
 }

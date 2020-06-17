@@ -213,10 +213,6 @@ namespace DMS.Rpc.brand
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 var nameexcel = "Export nhãn hiệu" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff");
                 xlPackage.Workbook.Properties.Title = string.Format("{0}", nameexcel);
-                xlPackage.Workbook.Properties.Author = "Sonhx5";
-                xlPackage.Workbook.Properties.Subject = string.Format("{0}", "RD-DMS");
-                xlPackage.Workbook.Properties.Category = "RD-DMS";
-                xlPackage.Workbook.Properties.Company = "FPT-FIS-ERP-ESC";
                 xlPackage.SaveAs(MemoryStream);
             }
 
