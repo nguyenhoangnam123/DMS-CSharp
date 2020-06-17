@@ -24,7 +24,7 @@ namespace DMS.Rpc.warehouse
             this.OldSaleStock = InventoryHistory.OldSaleStock;
             this.SaleStock = InventoryHistory.SaleStock;
             this.OldAccountingStock = InventoryHistory.OldAccountingStock;
-            this.AccountingStock = InventoryHistory.InventoryId;
+            this.AccountingStock = InventoryHistory.AccountingStock;
             this.AppUserId = InventoryHistory.AppUserId;
             this.UpdateTime = InventoryHistory.UpdateTime;
             this.AppUser = InventoryHistory.AppUser == null ? null : new Warehouse_AppUserDTO(InventoryHistory.AppUser);

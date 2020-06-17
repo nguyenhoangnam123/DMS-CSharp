@@ -268,7 +268,7 @@ namespace DMS.Repositories
                 } : null,
             }).AsNoTracking().ToListAsync();
             List<long> WarehouseIds = Warehouses.Select(x => x.Id).ToList();
-            List<InventoryDAO> InventoryDAOs = DataContext.Inventory.Where(i => WarehouseIds.Contains(i.Id)).ToList();
+            List<InventoryDAO> InventoryDAOs = await DataContext.Inventory.Where(i => WarehouseIds.Contains(i.WarehouseId)).ToListAsync();
             foreach (Warehouse Warehouse in Warehouses)
             {
                 Warehouse.Used = InventoryDAOs.Where(x => x.WarehouseId == Warehouse.Id).Select(x => x.SaleStock).DefaultIfEmpty(0).Sum() > 0;
