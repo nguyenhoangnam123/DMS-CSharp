@@ -96,7 +96,7 @@ namespace DMS.Services.MNotification
 
                 Notification.NotificationStatusId = Enums.NotificationStatusEnum.SENT.Id;
                 await UOW.Begin();
-                await UOW.NotificationRepository.Create(Notification);
+                await UOW.NotificationRepository.Update(Notification);
                 await UOW.Commit();
 
                 List<AppUser> AppUsers = new List<AppUser>();
