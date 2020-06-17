@@ -11,7 +11,7 @@ namespace DMS.Rpc.store_checking
         public long Id { get; set; }
         public long StoreId { get; set; }
         public long SaleEmployeeId { get; set; }
-        public decimal? Longtitude { get; set; }
+        public decimal? Longitude { get; set; }
         public decimal? Latitude { get; set; }
         public DateTime? CheckInAt { get; set; }
         public DateTime? CheckOutAt { get; set; }
@@ -27,7 +27,7 @@ namespace DMS.Rpc.store_checking
             this.Id = StoreChecking.Id;
             this.StoreId = StoreChecking.StoreId;
             this.SaleEmployeeId = StoreChecking.SaleEmployeeId;
-            this.Longtitude = StoreChecking.Longtitude;
+            this.Longitude = StoreChecking.Longitude;
             this.Latitude = StoreChecking.Latitude;
             this.CheckInAt = StoreChecking.CheckInAt;
             this.CheckOutAt = StoreChecking.CheckOutAt;
@@ -46,7 +46,7 @@ namespace DMS.Rpc.store_checking
         public IdFilter Id { get; set; }
         public IdFilter StoreId { get; set; }
         public IdFilter SaleEmployeeId { get; set; }
-        public DecimalFilter Longtitude { get; set; }
+        public DecimalFilter Longitude { get; set; }
         public DecimalFilter Latitude { get; set; }
         public DateFilter CheckInAt { get; set; }
         public DateFilter CheckOutAt { get; set; }

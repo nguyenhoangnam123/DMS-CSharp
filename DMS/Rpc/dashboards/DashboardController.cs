@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using DMS.Services.MIndirectSalesOrder;
 using Microsoft.EntityFrameworkCore;
 using DMS.Services.MAppUser;
+using DMS.Services.MOrganization;
 
 namespace DMS.Rpc.dashboards
 {
@@ -25,18 +26,21 @@ namespace DMS.Rpc.dashboards
         private DataContext DataContext;
         private IAppUserService AppUserService;
         private ICurrentContext CurrentContext;
+        private IOrganizationService OrganizationService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
         private IStoreCheckingService StoreCheckingService;
         public DashboardController(
             DataContext DataContext,
             IAppUserService AppUserService,
             ICurrentContext CurrentContext,
+            IOrganizationService OrganizationService,
             IIndirectSalesOrderService IndirectSalesOrderService,
             IStoreCheckingService StoreCheckingService)
         {
             this.DataContext = DataContext;
             this.AppUserService = AppUserService;
             this.CurrentContext = CurrentContext;
+            this.OrganizationService = OrganizationService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
             this.StoreCheckingService = StoreCheckingService;
         }
@@ -133,6 +137,24 @@ namespace DMS.Rpc.dashboards
         [Route(DashboardRoute.ListIndirectSalesOrder), HttpPost]
         public async Task<List<Dashboard_IndirectSalesOrderDTO>> ListIndirectSalesOrder()
         {
+            var appUser = await AppUserService.Get(CurrentContext.UserId);
+            var OrganizationIds = (await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Id = new IdFilter { NotEqual = appUser.OrganizationId },
+                Path = new StringFilter { StartWith = appUser.Organization.Path },
+                Selects = OrganizationSelect.Id
+            })).Select(x => x.Id).ToList();
+            var AppUserIds = (await AppUserService.List(new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id,
+                OrganizationId = new IdFilter { In = OrganizationIds }
+            })).Select(x => x.Id).ToList();
+            AppUserIds.Add(appUser.Id);
+            AppUserIds = AppUserIds.Distinct().ToList();
             IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter
             {
                 Skip = 0,
@@ -142,7 +164,7 @@ namespace DMS.Rpc.dashboards
                 | IndirectSalesOrderSelect.RequestState | IndirectSalesOrderSelect.Total,
                 OrderBy = IndirectSalesOrderOrder.OrderDate,
                 OrderType = OrderType.DESC,
-                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                SaleEmployeeId = new IdFilter { In = AppUserIds },
             };
 
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);

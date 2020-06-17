@@ -525,7 +525,7 @@ namespace DMS.Rpc.store_checking
             StoreChecking.Id = StoreChecking_StoreCheckingDTO.Id;
             StoreChecking.StoreId = StoreChecking_StoreCheckingDTO.StoreId;
             StoreChecking.SaleEmployeeId = StoreChecking_StoreCheckingDTO.SaleEmployeeId;
-            StoreChecking.Longtitude = StoreChecking_StoreCheckingDTO.Longtitude;
+            StoreChecking.Longitude = StoreChecking_StoreCheckingDTO.Longitude;
             StoreChecking.Latitude = StoreChecking_StoreCheckingDTO.Latitude;
             StoreChecking.CheckInAt = StoreChecking_StoreCheckingDTO.CheckInAt;
             StoreChecking.CheckOutAt = StoreChecking_StoreCheckingDTO.CheckOutAt;
@@ -610,7 +610,7 @@ namespace DMS.Rpc.store_checking
             StoreCheckingFilter.Id = StoreChecking_StoreCheckingFilterDTO.Id;
             StoreCheckingFilter.StoreId = StoreChecking_StoreCheckingFilterDTO.StoreId;
             StoreCheckingFilter.SaleEmployeeId = StoreChecking_StoreCheckingFilterDTO.SaleEmployeeId;
-            StoreCheckingFilter.Longtitude = StoreChecking_StoreCheckingFilterDTO.Longtitude;
+            StoreCheckingFilter.Longitude = StoreChecking_StoreCheckingFilterDTO.Longitude;
             StoreCheckingFilter.Latitude = StoreChecking_StoreCheckingFilterDTO.Latitude;
             StoreCheckingFilter.CheckInAt = StoreChecking_StoreCheckingFilterDTO.CheckInAt;
             StoreCheckingFilter.CheckOutAt = StoreChecking_StoreCheckingFilterDTO.CheckOutAt;

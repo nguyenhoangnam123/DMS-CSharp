@@ -234,7 +234,7 @@ namespace DMS.Rpc.monitor_store_problems
                 Id = MonitorStoreProblem_ProblemDTO.StoreChecking.Id,
                 StoreId = MonitorStoreProblem_ProblemDTO.StoreChecking.StoreId,
                 SaleEmployeeId = MonitorStoreProblem_ProblemDTO.StoreChecking.SaleEmployeeId,
-                Longtitude = MonitorStoreProblem_ProblemDTO.StoreChecking.Longtitude,
+                Longitude = MonitorStoreProblem_ProblemDTO.StoreChecking.Longitude,
                 Latitude = MonitorStoreProblem_ProblemDTO.StoreChecking.Latitude,
                 CheckInAt = MonitorStoreProblem_ProblemDTO.StoreChecking.CheckInAt,
                 CheckOutAt = MonitorStoreProblem_ProblemDTO.StoreChecking.CheckOutAt,

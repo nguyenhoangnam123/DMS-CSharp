@@ -35,8 +35,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StoreId, filter.StoreId);
             if (filter.SaleEmployeeId != null)
                 query = query.Where(q => q.SaleEmployeeId, filter.SaleEmployeeId);
-            if (filter.Longtitude != null)
-                query = query.Where(q => q.Longtitude, filter.Longtitude);
+            if (filter.Longitude != null)
+                query = query.Where(q => q.Longitude, filter.Longitude);
             if (filter.Latitude != null)
                 query = query.Where(q => q.Latitude, filter.Latitude);
             if (filter.CheckInAt != null)
@@ -65,8 +65,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.StoreId, StoreCheckingFilter.StoreId);
                 if (StoreCheckingFilter.SaleEmployeeId != null)
                     queryable = queryable.Where(q => q.SaleEmployeeId, StoreCheckingFilter.SaleEmployeeId);
-                if (StoreCheckingFilter.Longtitude != null)
-                    queryable = queryable.Where(q => q.Longtitude, StoreCheckingFilter.Longtitude);
+                if (StoreCheckingFilter.Longitude != null)
+                    queryable = queryable.Where(q => q.Longitude, StoreCheckingFilter.Longitude);
                 if (StoreCheckingFilter.Latitude != null)
                     queryable = queryable.Where(q => q.Latitude, StoreCheckingFilter.Latitude);
                 if (StoreCheckingFilter.CheckInAt != null)
@@ -98,8 +98,8 @@ namespace DMS.Repositories
                         case StoreCheckingOrder.SaleEmployee:
                             query = query.OrderBy(q => q.SaleEmployeeId);
                             break;
-                        case StoreCheckingOrder.Longtitude:
-                            query = query.OrderBy(q => q.Longtitude);
+                        case StoreCheckingOrder.Longitude:
+                            query = query.OrderBy(q => q.Longitude);
                             break;
                         case StoreCheckingOrder.Latitude:
                             query = query.OrderBy(q => q.Latitude);
@@ -130,8 +130,8 @@ namespace DMS.Repositories
                         case StoreCheckingOrder.SaleEmployee:
                             query = query.OrderByDescending(q => q.SaleEmployeeId);
                             break;
-                        case StoreCheckingOrder.Longtitude:
-                            query = query.OrderByDescending(q => q.Longtitude);
+                        case StoreCheckingOrder.Longitude:
+                            query = query.OrderByDescending(q => q.Longitude);
                             break;
                         case StoreCheckingOrder.Latitude:
                             query = query.OrderByDescending(q => q.Latitude);
@@ -162,7 +162,7 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(StoreCheckingSelect.Id) ? q.Id : default(long),
                 StoreId = filter.Selects.Contains(StoreCheckingSelect.Store) ? q.StoreId : default(long),
                 SaleEmployeeId = filter.Selects.Contains(StoreCheckingSelect.SaleEmployee) ? q.SaleEmployeeId : default(long),
-                Longtitude = filter.Selects.Contains(StoreCheckingSelect.Longtitude) ? q.Longtitude : default(decimal?),
+                Longitude = filter.Selects.Contains(StoreCheckingSelect.Longitude) ? q.Longitude : default(decimal?),
                 Latitude = filter.Selects.Contains(StoreCheckingSelect.Latitude) ? q.Latitude : default(decimal?),
                 CheckInAt = filter.Selects.Contains(StoreCheckingSelect.CheckInAt) ? q.CheckInAt : default(DateTime?),
                 CheckOutAt = filter.Selects.Contains(StoreCheckingSelect.CheckOutAt) ? q.CheckOutAt : default(DateTime?),
@@ -244,7 +244,7 @@ namespace DMS.Repositories
                 Id = x.Id,
                 StoreId = x.StoreId,
                 SaleEmployeeId = x.SaleEmployeeId,
-                Longtitude = x.Longtitude,
+                Longitude = x.Longitude,
                 Latitude = x.Latitude,
                 CheckInAt = x.CheckInAt,
                 CheckOutAt = x.CheckOutAt,
@@ -350,7 +350,7 @@ namespace DMS.Repositories
             StoreCheckingDAO.Id = StoreChecking.Id;
             StoreCheckingDAO.StoreId = StoreChecking.StoreId;
             StoreCheckingDAO.SaleEmployeeId = StoreChecking.SaleEmployeeId;
-            StoreCheckingDAO.Longtitude = StoreChecking.Longtitude;
+            StoreCheckingDAO.Longitude = StoreChecking.Longitude;
             StoreCheckingDAO.Latitude = StoreChecking.Latitude;
             StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
             StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
@@ -373,7 +373,7 @@ namespace DMS.Repositories
             StoreCheckingDAO.Id = StoreChecking.Id;
             StoreCheckingDAO.StoreId = StoreChecking.StoreId;
             StoreCheckingDAO.SaleEmployeeId = StoreChecking.SaleEmployeeId;
-            StoreCheckingDAO.Longtitude = StoreChecking.Longtitude;
+            StoreCheckingDAO.Longitude = StoreChecking.Longitude;
             StoreCheckingDAO.Latitude = StoreChecking.Latitude;
             StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
             StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
@@ -394,7 +394,7 @@ namespace DMS.Repositories
                 StoreCheckingDAO.Id = StoreChecking.Id;
                 StoreCheckingDAO.StoreId = StoreChecking.StoreId;
                 StoreCheckingDAO.SaleEmployeeId = StoreChecking.SaleEmployeeId;
-                StoreCheckingDAO.Longtitude = StoreChecking.Longtitude;
+                StoreCheckingDAO.Longitude = StoreChecking.Longitude;
                 StoreCheckingDAO.Latitude = StoreChecking.Latitude;
                 StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
                 StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;

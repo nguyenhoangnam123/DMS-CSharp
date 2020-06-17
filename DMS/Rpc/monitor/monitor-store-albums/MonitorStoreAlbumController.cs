@@ -318,7 +318,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                     CheckInAt = StoreChecking.CheckInAt,
                     CheckOutAt = StoreChecking.CheckOutAt,
                     Latitude = StoreChecking.Latitude,
-                    Longtitude = StoreChecking.Longtitude,
+                    Longitude = StoreChecking.Longitude,
                     SaleEmployeeId = StoreChecking.SaleEmployeeId,
                     StoreId = StoreChecking.StoreId,
                     SaleEmployee = StoreChecking.SaleEmployee == null ? null : new MonitorStoreAlbum_AppUserDTO
