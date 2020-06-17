@@ -212,7 +212,7 @@ namespace DMS.Rpc.dashboards
         }
 
         [Route(DashboardRoute.TopSaleEmployeeStoreChecking), HttpPost]
-        public async Task<List<Dashboard_TopSaleEmployeeStoreCheckingDTO>> TopSaleEmployeeStoreChecking(Dashboard_TopSaleEmployeeStoreCheckingFilterDTO Dashboard_TopSaleEmployeeStoreCheckingFilterDTO)
+        public async Task<List<Dashboard_TopSaleEmployeeStoreCheckingDTO>> TopSaleEmployeeStoreChecking([FromBody] Dashboard_TopSaleEmployeeStoreCheckingFilterDTO Dashboard_TopSaleEmployeeStoreCheckingFilterDTO)
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
@@ -279,6 +279,28 @@ namespace DMS.Rpc.dashboards
             }
             
             return Dashboard_TopSaleEmployeeStoreCheckingDTOs;
+        }
+
+        [Route(DashboardRoute.StoreCheckingCoverage), HttpPost]
+        public async Task<List<Dashboard_StoreDTO>> StoreCheckingCoverage()
+        {
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = new DateTime(Now.Year, Now.Month, 1);
+            DateTime End = Start.AddMonths(1).AddSeconds(-1);
+
+            var query = from s in DataContext.Store
+                        join sc in DataContext.StoreChecking on s.Id equals sc.StoreId
+                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End
+                        select new Dashboard_StoreDTO 
+                        {
+                            Id = s.Id,
+                            Name = s.Name,
+                            Latitude = s.Latitude,
+                            Longitude = s.Longitude,
+                            Telephone = s.Telephone,
+                        };
+            List<Dashboard_StoreDTO> Dashboard_StoreDTOs = await query.Distinct().ToListAsync();
+            return Dashboard_StoreDTOs;
         }
     }
 }

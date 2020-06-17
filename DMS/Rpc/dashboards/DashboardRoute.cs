@@ -11,6 +11,7 @@ namespace DMS.Rpc.dashboards
         private const string Default = Rpc + Module + "/dashboards";
         public const string ListIndirectSalesOrder = Default + "/list-indirect-sales-order";
         public const string StoreChecking = Default + "/store-checking";
+        public const string StoreCheckingCoverage = Default + "/store-checking-coverage";
         public const string StatisticIndirectSalesOrder = Default + "/statistic-indirect-sales-order";
         public const string ImageStoreCheking = Default + "/image-store-checking";
         public const string FilterListTime = Default + "/filter-list-time";
