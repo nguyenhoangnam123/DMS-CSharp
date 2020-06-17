@@ -134,8 +134,8 @@ namespace DMS.Rpc.organization
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.Skip = 0;
             OrganizationFilter.Take = 99999;
-            OrganizationFilter.OrderBy = Organization_OrganizationFilterDTO.OrderBy;
-            OrganizationFilter.OrderType = Organization_OrganizationFilterDTO.OrderType;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
 
             OrganizationFilter.Id = Organization_OrganizationFilterDTO.Id;
             OrganizationFilter.Code = Organization_OrganizationFilterDTO.Code;

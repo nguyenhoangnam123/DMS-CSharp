@@ -100,7 +100,9 @@ namespace DMS.Rpc.app_user
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = OrganizationSelect.Code | OrganizationSelect.Name
+                Selects = OrganizationSelect.Code | OrganizationSelect.Name,
+                OrderType = OrderType.ASC,
+                OrderBy = OrganizationOrder.Id,
             });
             List<Sex> Sexes = await SexService.List(new SexFilter
             {
