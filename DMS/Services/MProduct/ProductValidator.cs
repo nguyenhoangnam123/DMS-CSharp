@@ -45,7 +45,8 @@ namespace DMS.Services.MProduct
             ItemInUsed,
             ProductInUsed,
             UsedVariationNotExisted,
-            SalePriceInvalid
+            SalePriceInvalid,
+            VariationGroupingsEmpty
         }
 
         private IUOW UOW;
@@ -272,6 +273,8 @@ namespace DMS.Services.MProduct
         {
             if (UsedVariationEnum.USED.Id != Product.UsedVariationId && UsedVariationEnum.NOTUSED.Id != Product.UsedVariationId)
                 Product.AddError(nameof(ProductValidator), nameof(Product.UsedVariation), ErrorCode.UsedVariationNotExisted);
+            if(UsedVariationEnum.USED.Id == Product.UsedVariationId && Product.VariationGroupings == null)
+                Product.AddError(nameof(ProductValidator), nameof(Product.VariationGroupings), ErrorCode.VariationGroupingsEmpty);
             return Product.IsValidated;
         }
 

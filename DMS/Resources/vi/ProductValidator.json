@@ -34,7 +34,8 @@
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
     },
-    "VariationGrouping": {
+    "VariationGroupings": {
+      "VariationGroupingsEmpty": "Chưa tạo phiên bản cho sản phẩm",
       "VariationGroupingExisted": "Nhóm phiên bản đã tồn tại"
     },
     "Variation": {
