@@ -257,7 +257,7 @@ namespace DMS.Rpc.problem
                 Id = Problem_ProblemDTO.StoreChecking.Id,
                 StoreId = Problem_ProblemDTO.StoreChecking.StoreId,
                 SaleEmployeeId = Problem_ProblemDTO.StoreChecking.SaleEmployeeId,
-                Longtitude = Problem_ProblemDTO.StoreChecking.Longtitude,
+                Longitude = Problem_ProblemDTO.StoreChecking.Longitude,
                 Latitude = Problem_ProblemDTO.StoreChecking.Latitude,
                 CheckInAt = Problem_ProblemDTO.StoreChecking.CheckInAt,
                 CheckOutAt = Problem_ProblemDTO.StoreChecking.CheckOutAt,
@@ -425,7 +425,7 @@ namespace DMS.Rpc.problem
             StoreCheckingFilter.Id = Problem_StoreCheckingFilterDTO.Id;
             StoreCheckingFilter.StoreId = Problem_StoreCheckingFilterDTO.StoreId;
             StoreCheckingFilter.SaleEmployeeId = Problem_StoreCheckingFilterDTO.SaleEmployeeId;
-            StoreCheckingFilter.Longtitude = Problem_StoreCheckingFilterDTO.Longtitude;
+            StoreCheckingFilter.Longitude = Problem_StoreCheckingFilterDTO.Longitude;
             StoreCheckingFilter.Latitude = Problem_StoreCheckingFilterDTO.Latitude;
             StoreCheckingFilter.CheckInAt = Problem_StoreCheckingFilterDTO.CheckInAt;
             StoreCheckingFilter.CheckOutAt = Problem_StoreCheckingFilterDTO.CheckOutAt;
@@ -562,7 +562,7 @@ namespace DMS.Rpc.problem
             StoreCheckingFilter.Id = Problem_StoreCheckingFilterDTO.Id;
             StoreCheckingFilter.StoreId = Problem_StoreCheckingFilterDTO.StoreId;
             StoreCheckingFilter.SaleEmployeeId = Problem_StoreCheckingFilterDTO.SaleEmployeeId;
-            StoreCheckingFilter.Longtitude = Problem_StoreCheckingFilterDTO.Longtitude;
+            StoreCheckingFilter.Longitude = Problem_StoreCheckingFilterDTO.Longitude;
             StoreCheckingFilter.Latitude = Problem_StoreCheckingFilterDTO.Latitude;
             StoreCheckingFilter.CheckInAt = Problem_StoreCheckingFilterDTO.CheckInAt;
             StoreCheckingFilter.CheckOutAt = Problem_StoreCheckingFilterDTO.CheckOutAt;

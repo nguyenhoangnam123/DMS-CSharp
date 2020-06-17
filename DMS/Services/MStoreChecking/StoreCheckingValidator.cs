@@ -59,7 +59,7 @@ namespace DMS.Services.MStoreChecking
             }
             else
             {
-                var Distance = Math.Sqrt(Math.Pow(Convert.ToDouble(Store.Longitude - StoreChecking.Longtitude), 2)
+                var Distance = Math.Sqrt(Math.Pow(Convert.ToDouble(Store.Longitude - StoreChecking.Longitude), 2)
                            + Math.Pow(Convert.ToDouble(Store.Latitude - StoreChecking.Latitude), 2));
 
                 if (Distance > 100)

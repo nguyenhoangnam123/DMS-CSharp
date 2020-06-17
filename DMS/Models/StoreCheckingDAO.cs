@@ -14,7 +14,7 @@ namespace DMS.Models
         public long Id { get; set; }
         public long StoreId { get; set; }
         public long SaleEmployeeId { get; set; }
-        public decimal? Longtitude { get; set; }
+        public decimal? Longitude { get; set; }
         public decimal? Latitude { get; set; }
         public DateTime? CheckInAt { get; set; }
         public DateTime? CheckOutAt { get; set; }

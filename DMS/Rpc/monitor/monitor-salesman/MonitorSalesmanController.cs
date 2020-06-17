@@ -173,7 +173,7 @@ namespace DMS.Rpc.Monitor.monitor_salesman
                     {
                         Id = Checked.Id,
                         Latitude = Checked.Latitude ?? 0,
-                        Longtitude = Checked.Longtitude ?? 0,
+                        Longitude = Checked.Longitude ?? 0,
                         StoreCode = Checked.Store.Code,
                         StoreName = Checked.Store.Name,
                     };

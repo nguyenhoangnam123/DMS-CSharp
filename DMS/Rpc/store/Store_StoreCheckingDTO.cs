@@ -9,7 +9,7 @@ namespace DMS.Rpc.store
         public long Id { get; set; }
         public long StoreId { get; set; }
         public long SaleEmployeeId { get; set; }
-        public decimal? Longtitude { get; set; }
+        public decimal? Longitude { get; set; }
         public decimal? Latitude { get; set; }
         public DateTime? CheckInAt { get; set; }
         public DateTime? CheckOutAt { get; set; }
@@ -22,7 +22,7 @@ namespace DMS.Rpc.store
             this.Id = StoreChecking.Id;
             this.StoreId = StoreChecking.StoreId;
             this.SaleEmployeeId = StoreChecking.SaleEmployeeId;
-            this.Longtitude = StoreChecking.Longtitude;
+            this.Longitude = StoreChecking.Longitude;
             this.Latitude = StoreChecking.Latitude;
             this.CheckInAt = StoreChecking.CheckInAt;
             this.CheckOutAt = StoreChecking.CheckOutAt;

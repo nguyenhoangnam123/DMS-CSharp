@@ -13,7 +13,7 @@ namespace DMS.Rpc.problem
 
         public long SaleEmployeeId { get; set; }
 
-        public decimal? Longtitude { get; set; }
+        public decimal? Longitude { get; set; }
 
         public decimal? Latitude { get; set; }
 
@@ -36,7 +36,7 @@ namespace DMS.Rpc.problem
 
             this.SaleEmployeeId = StoreChecking.SaleEmployeeId;
 
-            this.Longtitude = StoreChecking.Longtitude;
+            this.Longitude = StoreChecking.Longitude;
 
             this.Latitude = StoreChecking.Latitude;
 
@@ -57,7 +57,7 @@ namespace DMS.Rpc.problem
 
         public IdFilter SaleEmployeeId { get; set; }
 
-        public DecimalFilter Longtitude { get; set; }
+        public DecimalFilter Longitude { get; set; }
 
         public DecimalFilter Latitude { get; set; }
 

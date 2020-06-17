@@ -2506,7 +2506,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
 
-                entity.Property(e => e.Longtitude).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
 
                 entity.HasOne(d => d.SaleEmployee)
                     .WithMany(p => p.StoreCheckings)

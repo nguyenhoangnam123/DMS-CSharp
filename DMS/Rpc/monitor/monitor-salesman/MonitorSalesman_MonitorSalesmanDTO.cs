@@ -29,7 +29,7 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         public long Id { get; set; }
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
-        public decimal Longtitude { get; set; }
+        public decimal Longitude { get; set; }
         public decimal Latitude { get; set; }
     }
 
