@@ -8,13 +8,13 @@ namespace DMS.Rpc.dashboards
 {
     public class Dashboard_IndirectSalesOrderDTO : DataDTO
     {
-        public long Count => IndirectSalesOrderHours.Sum(x => x.Counter);
+        public long Sum => IndirectSalesOrderHours.Sum(x => x.Counter);
         public List<Dashboard_IndirectSalesOrderHourDTO> IndirectSalesOrderHours { get; set; }
     }
 
     public class Dashboard_IndirectSalesOrderHourDTO : DataDTO
     {
-        public long Hour { get; set; }
+        public string Hour { get; set; }
         public long Counter { get; set; }
     }
 }

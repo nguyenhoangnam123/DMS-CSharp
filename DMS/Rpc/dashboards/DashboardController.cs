@@ -50,9 +50,24 @@ namespace DMS.Rpc.dashboards
 
             List<StoreChecking> StoreCheckings = await StoreCheckingService.List(StoreCheckingFilter);
             List<Dashboard_StoreCheckingHourDTO> NumberCheckingHours = StoreCheckings.GroupBy(x => x.CheckOutAt.Value.Hour)
-                .Select(x => new Dashboard_StoreCheckingHourDTO { Hour = x.Key, Counter = x.Count() }).ToList();
+                .Select(x => new Dashboard_StoreCheckingHourDTO { Hour = x.Key.ToString(), Counter = x.Count() }).ToList();
+
             Dashboard_StoreCheckingDTO Dashboard_StoreCheckingDTO = new Dashboard_StoreCheckingDTO();
-            Dashboard_StoreCheckingDTO.StoreCheckingHours = NumberCheckingHours;
+            Dashboard_StoreCheckingDTO.StoreCheckingHours = new List<Dashboard_StoreCheckingHourDTO>();
+            for (int i = 0; i < 24; i++)
+            {
+                Dashboard_StoreCheckingDTO.StoreCheckingHours.Add(new Dashboard_StoreCheckingHourDTO
+                {
+                    Counter = 0,
+                    Hour = i.ToString()
+                });
+            }
+            foreach (var NumberCheckingHour in NumberCheckingHours)
+            {
+                var x = Dashboard_StoreCheckingDTO.StoreCheckingHours.Where(x => x.Hour == NumberCheckingHour.Hour).FirstOrDefault();
+                x.Counter = NumberCheckingHour.Counter;
+            }
+            
             return Dashboard_StoreCheckingDTO;
         }
 
@@ -74,9 +89,24 @@ namespace DMS.Rpc.dashboards
 
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
             List<Dashboard_IndirectSalesOrderHourDTO> Dashboard_IndirectSalesOrderHourDTOs = IndirectSalesOrders.GroupBy(x => x.OrderDate.Hour)
-                .Select(x => new Dashboard_IndirectSalesOrderHourDTO { Hour = x.Key, Counter = x.Count() }).ToList();
+                .Select(x => new Dashboard_IndirectSalesOrderHourDTO { Hour = x.Key.ToString(), Counter = x.Count() }).ToList();
+
             Dashboard_IndirectSalesOrderDTO Dashboard_IndirectSalesOrderDTO = new Dashboard_IndirectSalesOrderDTO();
-            Dashboard_IndirectSalesOrderDTO.IndirectSalesOrderHours = Dashboard_IndirectSalesOrderHourDTOs;
+            Dashboard_IndirectSalesOrderDTO.IndirectSalesOrderHours = new List<Dashboard_IndirectSalesOrderHourDTO>();
+
+            for (int i = 0; i < 24; i++)
+            {
+                Dashboard_IndirectSalesOrderDTO.IndirectSalesOrderHours.Add(new Dashboard_IndirectSalesOrderHourDTO
+                {
+                    Counter = 0,
+                    Hour = i.ToString()
+                });
+            }
+            foreach (var IndirectSalesOrderHour in Dashboard_IndirectSalesOrderHourDTOs)
+            {
+                var x = Dashboard_IndirectSalesOrderDTO.IndirectSalesOrderHours.Where(x => x.Hour == IndirectSalesOrderHour.Hour).FirstOrDefault();
+                x.Counter = IndirectSalesOrderHour.Counter;
+            }
             return Dashboard_IndirectSalesOrderDTO;
         }
 
@@ -93,13 +123,27 @@ namespace DMS.Rpc.dashboards
                         group scim by scim.ShootingAt.Hour into i
                         select new Dashboard_StoreCheckingImageMappingHourDTO
                         {
-                            Hour = i.Key,
+                            Hour = i.Key.ToString(),
                             Counter = i.Count()
                         };
 
             List<Dashboard_StoreCheckingImageMappingHourDTO> Dashboard_StoreCheckingImageMappingHourDTOs = await query.ToListAsync();
             Dashboard_StoreCheckingImageMappingDTO Dashboard_StoreCheckingImageMappingDTO = new Dashboard_StoreCheckingImageMappingDTO();
-            Dashboard_StoreCheckingImageMappingDTO.StoreCheckingImageMappingHours = Dashboard_StoreCheckingImageMappingHourDTOs;
+
+            Dashboard_StoreCheckingImageMappingDTO.StoreCheckingImageMappingHours = new List<Dashboard_StoreCheckingImageMappingHourDTO>();
+            for (int i = 0; i < 24; i++)
+            {
+                Dashboard_StoreCheckingImageMappingDTO.StoreCheckingImageMappingHours.Add(new Dashboard_StoreCheckingImageMappingHourDTO
+                {
+                    Counter = 0,
+                    Hour = i.ToString()
+                });
+            }
+            foreach (var StoreCheckingImageMappingHour in Dashboard_StoreCheckingImageMappingHourDTOs)
+            {
+                var x = Dashboard_StoreCheckingImageMappingDTO.StoreCheckingImageMappingHours.Where(x => x.Hour == StoreCheckingImageMappingHour.Hour).FirstOrDefault();
+                x.Counter = StoreCheckingImageMappingHour.Counter;
+            }
             return Dashboard_StoreCheckingImageMappingDTO;
         }
     }
