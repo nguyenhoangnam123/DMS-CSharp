@@ -179,7 +179,7 @@ namespace DMS.Services.MProduct
 
             try
             {
-                if (Product.UsedVariationId == UsedVariationEnum.NOTUSED.Id || Product.Items == null)
+                if (Product.UsedVariationId == UsedVariationEnum.NOTUSED.Id)
                 {
                     Product.Items = new List<Item>();
                     Product.Items.Add(new Item

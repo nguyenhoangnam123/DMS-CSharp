@@ -17,9 +17,9 @@ namespace DMS.Services.MNotification
         Task<List<Notification>> List(NotificationFilter NotificationFilter);
         Task<Notification> Get(long Id);
         Task<Notification> Create(Notification Notification);
-        Task<Notification> CreateDraft(Notification Notification);
         Task<Notification> Update(Notification Notification);
         Task<Notification> Delete(Notification Notification);
+        Task<Notification> Send(Notification Notification);
         Task<List<Notification>> BulkDelete(List<Notification> Notifications);
         Task<List<Notification>> Import(List<Notification> Notifications);
         NotificationFilter ToFilter(NotificationFilter NotificationFilter);
@@ -85,13 +85,15 @@ namespace DMS.Services.MNotification
             return Notification;
         }
 
-        public async Task<Notification> Create(Notification Notification)
+        public async Task<Notification> Send(Notification Notification)
         {
-            if (!await NotificationValidator.Create(Notification))
+            if (!await NotificationValidator.Update(Notification))
                 return Notification;
 
             try
             {
+                var oldData = await UOW.NotificationRepository.Get(Notification.Id);
+
                 Notification.NotificationStatusId = Enums.NotificationStatusEnum.SENT.Id;
                 await UOW.Begin();
                 await UOW.NotificationRepository.Create(Notification);
@@ -140,8 +142,9 @@ namespace DMS.Services.MNotification
                     await SendNotification(NotificationUtilss);
                 }
 
-                await Logging.CreateAuditLog(Notification, new { }, nameof(NotificationService));
-                return await UOW.NotificationRepository.Get(Notification.Id);
+                var newData = await UOW.NotificationRepository.Get(Notification.Id);
+                await Logging.CreateAuditLog(newData, oldData, nameof(NotificationService));
+                return newData;
             }
             catch (Exception ex)
             {
@@ -154,7 +157,7 @@ namespace DMS.Services.MNotification
             }
         }
 
-        public async Task<Notification> CreateDraft(Notification Notification)
+        public async Task<Notification> Create(Notification Notification)
         {
             if (!await NotificationValidator.Create(Notification))
                 return Notification;
@@ -188,53 +191,11 @@ namespace DMS.Services.MNotification
             try
             {
                 var oldData = await UOW.NotificationRepository.Get(Notification.Id);
-                Notification.NotificationStatusId = Enums.NotificationStatusEnum.SENT.Id;
+
                 await UOW.Begin();
                 await UOW.NotificationRepository.Update(Notification);
                 await UOW.Commit();
 
-                List<AppUser> AppUsers = new List<AppUser>();
-                if (Notification.OrganizationId.HasValue)
-                {
-                    AppUserFilter AppUserFilter = new AppUserFilter
-                    {
-                        Skip = 0,
-                        Take = int.MaxValue,
-                        OrganizationId = new IdFilter { Equal = Notification.OrganizationId.Value },
-                        Selects = AppUserSelect.Id,
-                        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-                    };
-
-                    AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
-                }
-                else
-                {
-                    AppUserFilter AppUserFilter = new AppUserFilter
-                    {
-                        Skip = 0,
-                        Take = int.MaxValue,
-                        Selects = AppUserSelect.Id,
-                        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-                    };
-
-                    AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
-                }
-
-                if (AppUsers != null && AppUsers.Any())
-                {
-                    var AppUserIds = AppUsers.Select(x => x.Id).ToList();
-
-                    List<UserNotification> NotificationUtilss = AppUserIds.Select(x => new UserNotification
-                    {
-                        Content = Notification.Content,
-                        Time = StaticParams.DateTimeNow,
-                        Unread = false,
-                        SenderId = CurrentContext.UserId,
-                        RecipientId = x
-                    }).ToList();
-
-                    await SendNotification(NotificationUtilss);
-                }
                 var newData = await UOW.NotificationRepository.Get(Notification.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(NotificationService));
                 return newData;

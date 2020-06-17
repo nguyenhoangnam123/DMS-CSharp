@@ -95,24 +95,6 @@ namespace DMS.Rpc.notification
                 return BadRequest(Notification_NotificationDTO);
         }
 
-        [Route(NotificationRoute.CreateDraft), HttpPost]
-        public async Task<ActionResult<Notification_NotificationDTO>> CreateDraft([FromBody] Notification_NotificationDTO Notification_NotificationDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (!await HasPermission(Notification_NotificationDTO.Id))
-                return Forbid();
-
-            Notification Notification = ConvertDTOToEntity(Notification_NotificationDTO);
-            Notification = await NotificationService.CreateDraft(Notification);
-            Notification_NotificationDTO = new Notification_NotificationDTO(Notification);
-            if (Notification.IsValidated)
-                return Notification_NotificationDTO;
-            else
-                return BadRequest(Notification_NotificationDTO);
-        }
-
         [Route(NotificationRoute.Update), HttpPost]
         public async Task<ActionResult<Notification_NotificationDTO>> Update([FromBody] Notification_NotificationDTO Notification_NotificationDTO)
         {
@@ -124,6 +106,29 @@ namespace DMS.Rpc.notification
 
             Notification Notification = ConvertDTOToEntity(Notification_NotificationDTO);
             Notification = await NotificationService.Update(Notification);
+            Notification_NotificationDTO = new Notification_NotificationDTO(Notification);
+            if (Notification.IsValidated)
+                return Notification_NotificationDTO;
+            else
+                return BadRequest(Notification_NotificationDTO);
+        }
+
+        [Route(NotificationRoute.Send), HttpPost]
+        public async Task<ActionResult<Notification_NotificationDTO>> Send([FromBody] Notification_NotificationDTO Notification_NotificationDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Notification_NotificationDTO.Id))
+                return Forbid();
+
+            Notification Notification = ConvertDTOToEntity(Notification_NotificationDTO);
+            var oldData = await NotificationService.Get(Notification.Id);
+            if(oldData == null)
+            {
+                Notification = await NotificationService.Create(Notification);
+            }
+            Notification = await NotificationService.Send(Notification);
             Notification_NotificationDTO = new Notification_NotificationDTO(Notification);
             if (Notification.IsValidated)
                 return Notification_NotificationDTO;
