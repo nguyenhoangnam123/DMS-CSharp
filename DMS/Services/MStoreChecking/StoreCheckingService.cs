@@ -155,6 +155,7 @@ namespace DMS.Services.MStoreChecking
             {
                 var oldData = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
                 StoreChecking.CheckOutAt = oldData.CheckOutAt;
+                StoreChecking.ImageCounter = StoreChecking.StoreCheckingImageMappings?.Count() ?? 0;
                 await UOW.Begin();
                 await UOW.StoreCheckingRepository.Update(StoreChecking);
                 await UOW.Commit();
@@ -207,6 +208,7 @@ namespace DMS.Services.MStoreChecking
             {
                 var oldData = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
                 StoreChecking.CheckOutAt = StaticParams.DateTimeNow;
+                StoreChecking.ImageCounter = StoreChecking.StoreCheckingImageMappings?.Count() ?? 0;
                 await UOW.Begin();
                 await UOW.StoreCheckingRepository.Update(StoreChecking);
                 await UOW.Commit();

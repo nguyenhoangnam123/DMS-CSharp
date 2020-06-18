@@ -16,7 +16,7 @@ namespace DMS.Entities
         public DateTime? CheckInAt { get; set; }
         public DateTime? CheckOutAt { get; set; }
         public long? CountIndirectSalesOrder { get; set; }
-        public long? CountImage { get; set; }
+        public long? ImageCounter { get; set; }
         public bool Planned { get; set; }
         public bool IsOpenedStore { get; set; }
         public Store Store { get; set; }
