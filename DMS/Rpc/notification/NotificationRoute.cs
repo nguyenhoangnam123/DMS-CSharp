@@ -21,9 +21,11 @@ namespace DMS.Rpc.notification
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
 
+        public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListNotificationStatus = Default + "/filter-list-notification-status";
 
+        public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListNotificationStatus = Default + "/single-list-notification-status";
 
@@ -39,10 +41,10 @@ namespace DMS.Rpc.notification
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { Master, Count, List, Get, FilterListOrganization, FilterListNotificationStatus } },
-            { "Thêm", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Create, Send, SingleListOrganization, SingleListNotificationStatus } },
-            { "Sửa", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Update, Send, SingleListOrganization, SingleListNotificationStatus } },
-            { "Xoá", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Delete,  SingleListOrganization, SingleListNotificationStatus } },
+            { "Tìm kiếm", new List<string> { Master, Count, List, Get, FilterListOrganization, FilterListNotificationStatus, FilterListAppUser } },
+            { "Thêm", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Create, Send, SingleListAppUser, SingleListOrganization, SingleListNotificationStatus } },
+            { "Sửa", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Update, Send, SingleListAppUser, SingleListOrganization, SingleListNotificationStatus } },
+            { "Xoá", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Delete, SingleListAppUser, SingleListOrganization, SingleListNotificationStatus } },
         };
     }
 }
