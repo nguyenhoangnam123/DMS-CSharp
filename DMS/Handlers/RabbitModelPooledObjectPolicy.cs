@@ -20,19 +20,9 @@ namespace DMS.Handlers
                 Port = int.Parse(Configuration["RabbitConfig:Port"]),
             };
 
-            for (int i = 0; i < 6; i++)
-            {
-                try
-                {
-                    // create connection  
-                    _connection = factory.CreateConnection();
-                    _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
-                }
-                catch
-                {
-                    Thread.Sleep(5000);
-                }
-            }
+            // create connection  
+            _connection = factory.CreateConnection();
+            _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
         }
 
         public IModel Create()
