@@ -147,6 +147,7 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             List<long> AppUserIds = MonitorSalesman_SaleEmployeeDTOs.Select(s => s.SaleEmployeeId).ToList();
 
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
+                .Include(sc => sc.Store)
                 .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
             List<ERoutePerformanceDAO> ERoutePerformanceDAOs = await DataContext.ERoutePerformance.Where(ep => Start <= ep.Date && ep.Date <= End).ToListAsync();
@@ -174,8 +175,8 @@ namespace DMS.Rpc.Monitor.monitor_salesman
                         Id = Checked.Id,
                         Latitude = Checked.Latitude ?? 0,
                         Longitude = Checked.Longitude ?? 0,
-                        StoreCode = Checked.Store.Code,
-                        StoreName = Checked.Store.Name,
+                        StoreCode = Checked.Store?.Code,
+                        StoreName = Checked.Store?.Name,
                     };
                     MonitorSalesman_SaleEmployeeDTO.StoreCheckings.Add(MonitorSalesman_StoreCheckingDTO);
                 }
