@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
 using DMS.Services.MImage;
+using DMS.Services.MNotification;
 using DMS.Services.MWorkflow;
 using Helpers;
 using System;
@@ -34,12 +35,14 @@ namespace DMS.Services.MStore
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
+        private INotificationService NotificationService;
         private IStoreValidator StoreValidator;
         private IWorkflowService WorkflowService;
         private IImageService ImageService;
         public StoreService(
             IUOW UOW,
             ILogging Logging,
+            INotificationService NotificationService,
             ICurrentContext CurrentContext,
             IImageService ImageService,
             IWorkflowService WorkflowService,
@@ -49,6 +52,7 @@ namespace DMS.Services.MStore
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
+            this.NotificationService = NotificationService;
             this.WorkflowService = WorkflowService;
             this.StoreValidator = StoreValidator;
             this.ImageService = ImageService;
@@ -160,24 +164,6 @@ namespace DMS.Services.MStore
                 await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
                 await UOW.Commit();
 
-                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                if (CurrentUser.OrganizationId.HasValue)
-                {
-                    var OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
-                    {
-                        Skip = 0,
-                        Take = int.MaxValue,
-                        Selects = OrganizationSelect.Id,
-                        Path = new StringFilter { StartWith = CurrentUser .Organization.Path }
-                    })).Select(x => x.Id).ToList();
-                    var RecipientIds = await UOW.AppUserRepository.List(new AppUserFilter
-                    {
-                        Skip = 0,
-                        Take = int.MaxValue,
-                        Selects = AppUserSelect.Id,
-                        OrganizationId = new IdFilter { In = OrganizationIds }
-                    });
-                }
                 
 
                 await Logging.CreateAuditLog(Store, new { }, nameof(StoreService));
@@ -398,6 +384,42 @@ namespace DMS.Services.MStore
             Parameters.Add(nameof(Store.OwnerName), Store.OwnerName);
             Parameters.Add("Username", CurrentContext.UserName);
             return Parameters;
+        }
+
+        private async Task SendNotification(UserNotification UserNotification)
+        {
+            var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            if (CurrentUser.OrganizationId.HasValue)
+            {
+                var OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = OrganizationSelect.Id,
+                    Path = new StringFilter { StartWith = CurrentUser.Organization.Path }
+                })).Select(x => x.Id).ToList();
+                var RecipientIds = (await UOW.AppUserRepository.List(new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = AppUserSelect.Id,
+                    OrganizationId = new IdFilter { In = OrganizationIds }
+                })).Select(x => x.Id).Distinct().ToList();
+
+                List<UserNotification> NotificationUtilss = RecipientIds.Select(x => new UserNotification
+                {
+                    Content = UserNotification.Content,
+                    LinkMobile = UserNotification.LinkMobile,
+                    LinkWebsite = UserNotification.LinkWebsite,
+                    Time = StaticParams.DateTimeNow,
+                    Unread = false,
+                    SenderId = CurrentContext.UserId,
+                    RecipientId = x
+                }).ToList();
+
+                await NotificationService.SendToUtils(NotificationUtilss);
+            }
+
         }
     }
 }

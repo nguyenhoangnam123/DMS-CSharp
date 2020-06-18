@@ -22,7 +22,7 @@ namespace DMS.Entities
         public long CreatorId { get; set; }
         public long StoreScoutingStatusId { get; set; }
         public string Link { get; set; }
-        public long StoreId { get; set; }
+        public long? StoreId { get; set; }
         public Guid RowId { get; set; }
         public AppUser Creator { get; set; }
         public District District { get; set; }
