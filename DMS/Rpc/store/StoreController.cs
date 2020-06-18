@@ -1234,7 +1234,7 @@ namespace DMS.Rpc.store
             return Store_WardDTOs;
         }
         [Route(StoreRoute.SingleListStatus), HttpPost]
-        public async Task<List<Store_StatusDTO>> SingleListStatus([FromBody] Store_StatusFilterDTO Store_StatusFilterDTO)
+        public async Task<List<Store_StatusDTO>> SingleListStatus()
         {
             StatusFilter StatusFilter = new StatusFilter();
             StatusFilter.Skip = 0;

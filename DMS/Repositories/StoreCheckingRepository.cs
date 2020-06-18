@@ -167,7 +167,7 @@ namespace DMS.Repositories
                 CheckInAt = filter.Selects.Contains(StoreCheckingSelect.CheckInAt) ? q.CheckInAt : default(DateTime?),
                 CheckOutAt = filter.Selects.Contains(StoreCheckingSelect.CheckOutAt) ? q.CheckOutAt : default(DateTime?),
                 CountIndirectSalesOrder = filter.Selects.Contains(StoreCheckingSelect.CountIndirectSalesOrder) ? q.IndirectSalesOrderCounter : default(long?),
-                CountImage = filter.Selects.Contains(StoreCheckingSelect.CountImage) ? q.ImageCounter : default(long?),
+                ImageCounter = filter.Selects.Contains(StoreCheckingSelect.CountImage) ? q.ImageCounter : default(long?),
                 SaleEmployee = filter.Selects.Contains(StoreCheckingSelect.SaleEmployee) && q.SaleEmployee == null ? null : new AppUser
                 {
                     Id = q.SaleEmployee.Id,
@@ -249,7 +249,7 @@ namespace DMS.Repositories
                 CheckInAt = x.CheckInAt,
                 CheckOutAt = x.CheckOutAt,
                 CountIndirectSalesOrder = x.IndirectSalesOrderCounter,
-                CountImage = x.ImageCounter,
+                ImageCounter = x.ImageCounter,
                 IsOpenedStore = x.IsOpenedStore,
                 Planned = x.Planned,
                 SaleEmployee = x.SaleEmployee == null ? null : new AppUser
@@ -355,7 +355,7 @@ namespace DMS.Repositories
             StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
             StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
             StoreCheckingDAO.IndirectSalesOrderCounter = StoreChecking.CountIndirectSalesOrder;
-            StoreCheckingDAO.ImageCounter = StoreChecking.CountImage;
+            StoreCheckingDAO.ImageCounter = StoreChecking.ImageCounter;
             StoreCheckingDAO.Planned = StoreChecking.Planned;
             StoreCheckingDAO.IsOpenedStore = true;
             DataContext.StoreChecking.Add(StoreCheckingDAO);
@@ -378,7 +378,7 @@ namespace DMS.Repositories
             StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
             StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
             StoreCheckingDAO.IndirectSalesOrderCounter = StoreChecking.CountIndirectSalesOrder;
-            StoreCheckingDAO.ImageCounter = StoreChecking.CountImage;
+            StoreCheckingDAO.ImageCounter = StoreChecking.ImageCounter;
             StoreCheckingDAO.IsOpenedStore = StoreChecking.IsOpenedStore;
             await DataContext.SaveChangesAsync();
             await SaveReference(StoreChecking);
@@ -399,7 +399,7 @@ namespace DMS.Repositories
                 StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
                 StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
                 StoreCheckingDAO.IndirectSalesOrderCounter = StoreChecking.CountIndirectSalesOrder;
-                StoreCheckingDAO.ImageCounter = StoreChecking.CountImage;
+                StoreCheckingDAO.ImageCounter = StoreChecking.ImageCounter;
                 StoreCheckingDAO.IsOpenedStore = StoreChecking.IsOpenedStore;
                 StoreCheckingDAOs.Add(StoreCheckingDAO);
             }

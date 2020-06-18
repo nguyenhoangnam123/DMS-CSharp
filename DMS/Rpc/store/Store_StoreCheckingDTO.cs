@@ -27,7 +27,7 @@ namespace DMS.Rpc.store
             this.CheckInAt = StoreChecking.CheckInAt;
             this.CheckOutAt = StoreChecking.CheckOutAt;
             this.CountIndirectSalesOrder = StoreChecking.CountIndirectSalesOrder;
-            this.CountImage = StoreChecking.CountImage;
+            this.CountImage = StoreChecking.ImageCounter;
             this.SaleEmployee = StoreChecking.SaleEmployee == null ? null : new Store_AppUserDTO(StoreChecking.SaleEmployee);
             this.Errors = StoreChecking.Errors;
         }

@@ -32,7 +32,7 @@ namespace DMS.Rpc.store_checking
             this.CheckInAt = StoreChecking.CheckInAt;
             this.CheckOutAt = StoreChecking.CheckOutAt;
             this.CountIndirectSalesOrder = StoreChecking.CountIndirectSalesOrder;
-            this.CountImage = StoreChecking.CountImage;
+            this.CountImage = StoreChecking.ImageCounter;
             this.IsOpenedStore = StoreChecking.IsOpenedStore;
             this.SaleEmployee = StoreChecking.SaleEmployee == null ? null : new StoreChecking_AppUserDTO(StoreChecking.SaleEmployee);
             this.Store = StoreChecking.Store == null ? null : new StoreChecking_StoreDTO(StoreChecking.Store);

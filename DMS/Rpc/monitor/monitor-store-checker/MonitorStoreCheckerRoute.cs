@@ -19,6 +19,11 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         public const string FilterListImage = Default + "/filter-list-image";
         public const string FilterListSalesOrder = Default + "/filter-list-sales-order";
 
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
+        {
+            { nameof(MonitorStoreChecker_MonitorStoreCheckerFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
+        };
+
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {

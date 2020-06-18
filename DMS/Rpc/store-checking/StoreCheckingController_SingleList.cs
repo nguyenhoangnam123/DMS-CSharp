@@ -113,6 +113,7 @@ namespace DMS.Rpc.store_checking
             AlbumFilter.Selects = AlbumSelect.ALL;
             AlbumFilter.Id = StoreChecking_AlbumFilterDTO.Id;
             AlbumFilter.Name = StoreChecking_AlbumFilterDTO.Name;
+            AlbumFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Album> Albums = await AlbumService.List(AlbumFilter);
             List<StoreChecking_AlbumDTO> StoreChecking_AlbumDTOs = Albums
