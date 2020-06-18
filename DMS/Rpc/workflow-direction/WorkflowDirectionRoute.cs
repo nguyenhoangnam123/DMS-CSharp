@@ -16,9 +16,11 @@ namespace DMS.Rpc.workflow_direction
         public const string Delete = Default + "/delete";
         public const string Export = Default + "/export";
 
+        public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListWorkflowStep = Default + "/filter-list-workflow-step";
         public const string FilterListWorkflowDefinition = Default + "/filter-list-workflow-definition";
 
+        public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListWorkflowStep = Default + "/single-list-workflow-step";
         public const string SingleListWorkflowDefinition = Default + "/single-list-workflow-definition";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
@@ -29,17 +31,17 @@ namespace DMS.Rpc.workflow_direction
         {
             { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get,
-                FilterListWorkflowStep, FilterListWorkflowDefinition, } },
+                FilterListWorkflowStep, FilterListWorkflowDefinition, FilterListAppUser} },
             { "Thêm", new List<string> {
                 Master, Count, List, Get,
                 FilterListWorkflowStep, FilterListWorkflowDefinition,
                 Detail, Create,
-                SingleListWorkflowStep, SingleListWorkflowDefinition,  } },
+                SingleListWorkflowStep, SingleListWorkflowDefinition, SingleListAppUser } },
             { "Sửa", new List<string> {
                 Master, Count, List, Get,
                 FilterListWorkflowStep, FilterListWorkflowDefinition,
                 Detail, Update,
-                SingleListWorkflowStep, SingleListWorkflowDefinition,  } },
+                SingleListWorkflowStep, SingleListWorkflowDefinition, SingleListAppUser } },
             { "Xoá", new List<string> {
                 Master, Count, List, Get,
                 FilterListWorkflowStep, FilterListWorkflowDefinition,

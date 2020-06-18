@@ -689,7 +689,7 @@ namespace DMS.Rpc.indirect_sales_order
                 Factor = 1,
             };
             IndirectSalesOrder_UnitOfMeasureDTOs.Add(IndirectSalesOrder_UnitOfMeasureDTO);
-            IndirectSalesOrder_UnitOfMeasureDTOs = IndirectSalesOrder_UnitOfMeasureDTOs.Where(x => x.StatusId == StatusEnum.ACTIVE.Id).Distinct().ToList();
+            IndirectSalesOrder_UnitOfMeasureDTOs = IndirectSalesOrder_UnitOfMeasureDTOs.Distinct().ToList();
             return IndirectSalesOrder_UnitOfMeasureDTOs;
         }
 

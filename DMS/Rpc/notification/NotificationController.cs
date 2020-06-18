@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Services.MAppUser;
 using DMS.Services.MNotification;
 using DMS.Services.MNotificationStatus;
@@ -19,12 +20,14 @@ namespace DMS.Rpc.notification
     public class NotificationController : RpcController
     {
         private INotificationStatusService NotificationStatusService;
+        private IAppUserService AppUserService;
         private IOrganizationService OrganizationService;
         private IStatusService StatusService;
         private INotificationService NotificationService;
         private ICurrentContext CurrentContext;
         public NotificationController(
             INotificationStatusService NotificationStatusService,
+            IAppUserService AppUserService,
             IOrganizationService OrganizationService,
             IStatusService StatusService,
             INotificationService NotificationService,
@@ -32,6 +35,7 @@ namespace DMS.Rpc.notification
         )
         {
             this.NotificationStatusService = NotificationStatusService;
+            this.AppUserService = AppUserService;
             this.OrganizationService = OrganizationService;
             this.StatusService = StatusService;
             this.NotificationService = NotificationService;
@@ -240,6 +244,28 @@ namespace DMS.Rpc.notification
             return NotificationFilter;
         }
 
+        [Route(NotificationRoute.FilterListAppUser), HttpPost]
+        public async Task<List<Notification_AppUserDTO>> FilterListAppUser([FromBody] Notification_AppUserFilterDTO Notification_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName;
+            AppUserFilter.Id = Notification_AppUserFilterDTO.Id;
+            AppUserFilter.Username = Notification_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = Notification_AppUserFilterDTO.DisplayName;
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<Notification_AppUserDTO> StoreCheckerMonitor_AppUserDTOs = AppUsers
+                .Select(x => new Notification_AppUserDTO(x)).ToList();
+            return StoreCheckerMonitor_AppUserDTOs;
+        }
+
         [Route(NotificationRoute.FilterListNotificationStatus), HttpPost]
         public async Task<List<Notification_NotificationStatusDTO>> FilterListNotificationStatus([FromBody] Notification_NotificationStatusFilterDTO Notification_NotificationStatusFilterDTO)
         {
@@ -289,6 +315,29 @@ namespace DMS.Rpc.notification
             List<Notification_OrganizationDTO> Notification_OrganizationDTOs = Organizations
                 .Select(x => new Notification_OrganizationDTO(x)).ToList();
             return Notification_OrganizationDTOs;
+        }
+
+        [Route(NotificationRoute.SingleListAppUser), HttpPost]
+        public async Task<List<Notification_AppUserDTO>> SingleListAppUser([FromBody] Notification_AppUserFilterDTO Notification_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName;
+            AppUserFilter.Id = Notification_AppUserFilterDTO.Id;
+            AppUserFilter.Username = Notification_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = Notification_AppUserFilterDTO.DisplayName;
+            AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<Notification_AppUserDTO> StoreCheckerMonitor_AppUserDTOs = AppUsers
+                .Select(x => new Notification_AppUserDTO(x)).ToList();
+            return StoreCheckerMonitor_AppUserDTOs;
         }
 
         [Route(NotificationRoute.SingleListNotificationStatus), HttpPost]
