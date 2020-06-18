@@ -34,7 +34,7 @@ namespace DMS.Rpc.problem
         public long? SexId { get; set; }
 
         public DateTime? Birthday { get; set; }
-
+        public Problem_OrganizationDTO Organization { get; set; }
 
         public Problem_AppUserDTO() { }
         public Problem_AppUserDTO(AppUser AppUser)
@@ -67,7 +67,7 @@ namespace DMS.Rpc.problem
             this.SexId = AppUser.SexId;
 
             this.Birthday = AppUser.Birthday;
-
+            this.Organization = AppUser.Organization == null ? null : new Problem_OrganizationDTO(AppUser.Organization);
             this.Errors = AppUser.Errors;
         }
     }
