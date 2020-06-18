@@ -424,7 +424,10 @@ namespace DMS.Repositories
                 RowId = x.RowId,
                 Used = x.Used,
             }).FirstOrDefaultAsync();
-            StoreScouting.StoreId = StoreScouting.Store.Id;
+            if(StoreScouting.Store != null)
+            {
+                StoreScouting.StoreId = StoreScouting.Store.Id;
+            }
             return StoreScouting;
         }
         public async Task<bool> Create(StoreScouting StoreScouting)

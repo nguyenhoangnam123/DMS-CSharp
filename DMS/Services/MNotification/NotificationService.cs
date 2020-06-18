@@ -20,6 +20,7 @@ namespace DMS.Services.MNotification
         Task<Notification> Update(Notification Notification);
         Task<Notification> Delete(Notification Notification);
         Task<Notification> Send(Notification Notification);
+        Task<List<UserNotification>> SendToUtils(List<UserNotification> UserNotifications);
         Task<List<Notification>> BulkDelete(List<Notification> Notifications);
         Task<List<Notification>> Import(List<Notification> Notifications);
         NotificationFilter ToFilter(NotificationFilter NotificationFilter);
@@ -139,7 +140,7 @@ namespace DMS.Services.MNotification
                         RecipientId = x
                     }).ToList();
 
-                    await SendNotification(NotificationUtilss);
+                    await SendToUtils(NotificationUtilss);
                 }
 
                 var newData = await UOW.NotificationRepository.Get(Notification.Id);
@@ -299,7 +300,7 @@ namespace DMS.Services.MNotification
             return filter;
         }
 
-        private async Task<List<UserNotification>> SendNotification(List<UserNotification> NotificationUtilss)
+        public async Task<List<UserNotification>> SendToUtils(List<UserNotification> UserNotifications)
         {
             RestClient restClient = new RestClient($"http://localhost:{Modules.Utils}");
             RestRequest restRequest = new RestRequest("/rpc/utils/notification/bulk-create");
@@ -308,13 +309,13 @@ namespace DMS.Services.MNotification
             restRequest.AddCookie("Token", CurrentContext.Token);
             restRequest.AddCookie("X-Language", CurrentContext.Language);
             restRequest.AddHeader("Content-Type", "multipart/form-data");
-            restRequest.AddBody(NotificationUtilss);
+            restRequest.AddBody(UserNotifications);
             try
             {
                 var response = restClient.Execute<List<UserNotification>>(restRequest);
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    return NotificationUtilss;
+                    return UserNotifications;
                 }
             }
             catch
