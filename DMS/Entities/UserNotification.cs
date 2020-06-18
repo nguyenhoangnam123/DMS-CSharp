@@ -12,6 +12,8 @@ namespace DMS.Entities
         public long SenderId { get; set; }
         public long RecipientId { get; set; }
         public bool Unread { get; set; }
+        public string LinkWebsite { get; set; }
+        public string LinkMobile { get; set; }
         public DateTime Time { get; set; }
     }
 }

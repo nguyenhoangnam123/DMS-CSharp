@@ -160,6 +160,26 @@ namespace DMS.Services.MStore
                 await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
                 await UOW.Commit();
 
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                if (CurrentUser.OrganizationId.HasValue)
+                {
+                    var OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = OrganizationSelect.Id,
+                        Path = new StringFilter { StartWith = CurrentUser .Organization.Path }
+                    })).Select(x => x.Id).ToList();
+                    var RecipientIds = await UOW.AppUserRepository.List(new AppUserFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = AppUserSelect.Id,
+                        OrganizationId = new IdFilter { In = OrganizationIds }
+                    });
+                }
+                
+
                 await Logging.CreateAuditLog(Store, new { }, nameof(StoreService));
                 return await UOW.StoreRepository.Get(Store.Id);
             }

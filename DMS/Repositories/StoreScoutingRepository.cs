@@ -395,6 +395,36 @@ namespace DMS.Repositories
             if (StoreScouting == null)
                 return null;
 
+            StoreScouting.Store = await DataContext.Store.Where(x => x.StoreScoutingId.HasValue && x.StoreScoutingId == Id).Select(x => new Store
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                ParentStoreId = x.ParentStoreId,
+                OrganizationId = x.OrganizationId,
+                StoreTypeId = x.StoreTypeId,
+                StoreGroupingId = x.StoreGroupingId,
+                Telephone = x.Telephone,
+                ResellerId = x.ResellerId,
+                ProvinceId = x.ProvinceId,
+                DistrictId = x.DistrictId,
+                WardId = x.WardId,
+                Address = x.Address,
+                DeliveryAddress = x.DeliveryAddress,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                DeliveryLatitude = x.DeliveryLatitude,
+                DeliveryLongitude = x.DeliveryLongitude,
+                OwnerName = x.OwnerName,
+                OwnerPhone = x.OwnerPhone,
+                OwnerEmail = x.OwnerEmail,
+                TaxCode = x.TaxCode,
+                LegalEntity = x.LegalEntity,
+                StatusId = x.StatusId,
+                RowId = x.RowId,
+                Used = x.Used,
+            }).FirstOrDefaultAsync();
+            StoreScouting.StoreId = StoreScouting.Store.Id;
             return StoreScouting;
         }
         public async Task<bool> Create(StoreScouting StoreScouting)

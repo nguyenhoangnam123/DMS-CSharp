@@ -196,7 +196,8 @@ namespace DMS.Rpc.monitor.monitor_store_albums
 
             var StoreCheckingImageMappingQuery = from scim in DataContext.StoreCheckingImageMapping
                                                  join i in DataContext.Image on scim.ImageId equals i.Id
-                                                 where StoreCheckingIds.Contains(scim.StoreCheckingId)
+                                                 where StoreCheckingIds.Contains(scim.StoreCheckingId) &&
+                                                 scim.AlbumId == AlbumId.Value
                                                  select scim;
             return await StoreCheckingImageMappingQuery.CountAsync();
         }
@@ -246,7 +247,8 @@ namespace DMS.Rpc.monitor.monitor_store_albums
 
             var StoreCheckingImageMappingQuery = from scim in DataContext.StoreCheckingImageMapping
                                                  join i in DataContext.Image on scim.ImageId equals i.Id
-                                                 where StoreCheckingIds.Contains(scim.StoreCheckingId)
+                                                 where StoreCheckingIds.Contains(scim.StoreCheckingId) &&
+                                                 scim.AlbumId == AlbumId.Value
                                                  select new MonitorStoreAlbum_StoreCheckingImageMappingDTO 
                                                  {
                                                      AlbumId = scim.AlbumId,
