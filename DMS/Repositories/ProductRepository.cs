@@ -583,6 +583,7 @@ namespace DMS.Repositories
                             Code = uomgc.UnitOfMeasure.Code,
                             Name = uomgc.UnitOfMeasure.Name,
                             Description = uomgc.UnitOfMeasure.Description,
+                            StatusId = uomgc.UnitOfMeasure.StatusId,
                         }
                     }).ToListAsync();
             }
