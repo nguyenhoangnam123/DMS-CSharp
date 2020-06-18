@@ -253,21 +253,21 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
             foreach (MonitorStoreChecker_SaleEmployeeDTO MonitorStoreChecker_SaleEmployeeDTO in MonitorStoreChecker_SaleEmployeeDTOs)
             {
-                if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Checking.Equal.HasValue)
+                if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Checking?.Equal != null)
                 {
                     if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Checking.Equal.Value == 0)
                         MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings.Where(sc => sc.InternalCounter + sc.ExternalCounter == 0).ToList();
                     if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Checking.Equal.Value == 1)
                         MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings.Where(sc => sc.InternalCounter + sc.ExternalCounter > 0).ToList();
                 }
-                if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Image.Equal.HasValue)
+                if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Image?.Equal != null)
                 {
                     if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Image.Equal.Value == 0)
                         MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings.Where(sc => sc.Image.Count == 0).ToList();
                     if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Image.Equal.Value == 1)
                         MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings.Where(sc => sc.Image.Count > 0).ToList();
                 }
-                if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.SalesOrder.Equal.HasValue)
+                if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.SalesOrder?.Equal != null)
                 {
                     if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.SalesOrder.Equal.Value == 0)
                         MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings.Where(sc => sc.SalesOrderCounter == 0).ToList();
