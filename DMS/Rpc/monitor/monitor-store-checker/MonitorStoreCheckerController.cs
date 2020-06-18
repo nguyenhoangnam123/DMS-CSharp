@@ -153,7 +153,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.SaleEmployeeId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization();
-            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
             if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.OrganizationId?.Equal != null)
             {
@@ -221,8 +221,12 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 {
                     MonitorStoreChecker_StoreCheckingDTO MonitorStoreChecker_StoreCheckingDTO = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings
                         .Where(s => s.Date == i).FirstOrDefault();
-                    MonitorStoreChecker_StoreCheckingDTO.RevenueCounter = IndirectSalesOrderDAOs.Where(o => o.OrderDate.Date == i)
-                         .Select(o => o.Total).DefaultIfEmpty(0).Sum();
+                    MonitorStoreChecker_StoreCheckingDTO.SaleOrderCounter = IndirectSalesOrderDAOs
+                        .Where(o => o.OrderDate.Date == i && o.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
+                        .Count();
+                    MonitorStoreChecker_StoreCheckingDTO.RevenueCounter = IndirectSalesOrderDAOs
+                        .Where(o => o.OrderDate.Date == i && o.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
+                        .Select(o => o.Total).DefaultIfEmpty(0).Sum();
 
                     List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
                            .Where(s =>
