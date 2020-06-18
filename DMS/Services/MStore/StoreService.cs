@@ -2,6 +2,7 @@
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
+using DMS.Rpc.store;
 using DMS.Services.MImage;
 using DMS.Services.MNotification;
 using DMS.Services.MWorkflow;
@@ -164,7 +165,14 @@ namespace DMS.Services.MStore
                 await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
                 await UOW.Commit();
 
-                
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                UserNotification UserNotification = new UserNotification
+                {
+                    Content = $"Cửa hàng {Store.Code} - {Store.Name} vừa được thêm mới vào hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                    LinkWebsite = $"{StoreRoute.Master}/{Store.Id}",
+                    LinkMobile = $"{StoreRoute.Mobile}/{Store.Id}"
+                };
+                await SendNotification(UserNotification, CurrentUser);
 
                 await Logging.CreateAuditLog(Store, new { }, nameof(StoreService));
                 return await UOW.StoreRepository.Get(Store.Id);
@@ -192,6 +200,15 @@ namespace DMS.Services.MStore
                 await UOW.StoreRepository.Update(Store);
                 await UOW.Commit();
 
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                UserNotification UserNotification = new UserNotification
+                {
+                    Content = $"Cửa hàng {Store.Code} - {Store.Name} vừa được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                    LinkWebsite = $"{StoreRoute.Master}/{Store.Id}",
+                    LinkMobile = $"{StoreRoute.Mobile}/{Store.Id}"
+                };
+                await SendNotification(UserNotification, CurrentUser);
+
                 var newData = await UOW.StoreRepository.Get(Store.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreService));
                 return newData;
@@ -217,6 +234,14 @@ namespace DMS.Services.MStore
                 await UOW.Begin();
                 await UOW.StoreRepository.Delete(Store);
                 await UOW.Commit();
+
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                UserNotification UserNotification = new UserNotification
+                {
+                    Content = $"Cửa hàng {Store.Code} - {Store.Name} vừa được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                };
+                await SendNotification(UserNotification, CurrentUser);
+
                 await Logging.CreateAuditLog(new { }, Store, nameof(StoreService));
                 return Store;
             }
@@ -386,9 +411,8 @@ namespace DMS.Services.MStore
             return Parameters;
         }
 
-        private async Task SendNotification(UserNotification UserNotification)
+        private async Task SendNotification(UserNotification UserNotification, AppUser CurrentUser)
         {
-            var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             if (CurrentUser.OrganizationId.HasValue)
             {
                 var OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter

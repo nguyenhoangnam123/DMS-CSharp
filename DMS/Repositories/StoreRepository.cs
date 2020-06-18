@@ -694,6 +694,7 @@ namespace DMS.Repositories
             StoreDAO.TaxCode = Store.TaxCode;
             StoreDAO.LegalEntity = Store.LegalEntity;
             StoreDAO.StatusId = Store.StatusId;
+            StoreDAO.StoreScoutingId = Store.StoreScoutingId;
             StoreDAO.RowId = Store.RowId;
             StoreDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -735,6 +736,7 @@ namespace DMS.Repositories
             StoreDAO.TaxCode = Store.TaxCode;
             StoreDAO.LegalEntity = Store.LegalEntity;
             StoreDAO.StatusId = Store.StatusId;
+            StoreDAO.StoreScoutingId = Store.StoreScoutingId;
             StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(Store);
@@ -778,6 +780,7 @@ namespace DMS.Repositories
                 StoreDAO.TaxCode = Store.TaxCode;
                 StoreDAO.LegalEntity = Store.LegalEntity;
                 StoreDAO.StatusId = Store.StatusId;
+                StoreDAO.StoreScoutingId = Store.StoreScoutingId;
                 StoreDAO.CreatedAt = StaticParams.DateTimeNow;
                 StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
                 StoreDAOs.Add(StoreDAO);
