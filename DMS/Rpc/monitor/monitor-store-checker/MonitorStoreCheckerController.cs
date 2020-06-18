@@ -284,19 +284,23 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            long SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.SaleEmployeeId;
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.Date;
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
 
-            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.Where(sc => sc.CheckOutAt.HasValue && sc.CheckInAt.HasValue &&
-                    sc.SaleEmployeeId == MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.SaleEmployeeId &&
+            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
+                .Where(sc => 
+                    sc.CheckOutAt.HasValue && sc.CheckInAt.HasValue &&
+                    sc.SaleEmployeeId == SaleEmployeeId &&
                     Start <= sc.CheckInAt.Value && sc.CheckInAt.Value <= End)
                 .Include(sc => sc.Store)
                 .ToListAsync();
             List<long> StoreCheckingIds = StoreCheckingDAOs.Select(s => s.Id).ToList();
 
-            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.Where(i => i.StoreCheckingId.HasValue && StoreCheckingIds.Contains(i.StoreCheckingId.Value)).ToListAsync();
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
+                .Where(o => Start <= o.OrderDate && o.OrderDate <= End && o.SaleEmployeeId == SaleEmployeeId)
+                .ToListAsync();
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem.Where(p => p.StoreCheckingId.HasValue && StoreCheckingIds.Contains(p.StoreCheckingId.Value)).ToListAsync();
             List<StoreCheckingImageMappingDAO> StoreCheckingImageMappingDAOs = await DataContext.StoreCheckingImageMapping.Where(sc => StoreCheckingIds.Contains(sc.StoreCheckingId))
                 .Include(sc => sc.Image)
