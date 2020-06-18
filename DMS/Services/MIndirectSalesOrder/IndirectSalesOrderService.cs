@@ -417,7 +417,9 @@ namespace DMS.Services.MIndirectSalesOrder
                 if (IndirectSalesOrder.GeneralDiscountPercentage.HasValue && IndirectSalesOrder.GeneralDiscountPercentage > 0)
                 {
                     IndirectSalesOrder.GeneralDiscountAmount = IndirectSalesOrder.SubTotal * (IndirectSalesOrder.GeneralDiscountPercentage / 100);
-                    
+                    IndirectSalesOrder.GeneralDiscountAmount = Math.Round(IndirectSalesOrder.GeneralDiscountAmount.Value, 0);
+
+
                 }
                 foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                 {
@@ -429,6 +431,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
 
                 IndirectSalesOrder.TotalTaxAmount = IndirectSalesOrder.IndirectSalesOrderContents.Where(x => x.TaxAmount.HasValue).Sum(x => x.TaxAmount.Value);
+                IndirectSalesOrder.TotalTaxAmount = Math.Round(IndirectSalesOrder.TotalTaxAmount, 0);
                 //tổng phải thanh toán
                 IndirectSalesOrder.Total = IndirectSalesOrder.SubTotal - (IndirectSalesOrder.GeneralDiscountAmount.HasValue ? IndirectSalesOrder.GeneralDiscountAmount.Value : 0) + IndirectSalesOrder.TotalTaxAmount;
             }
