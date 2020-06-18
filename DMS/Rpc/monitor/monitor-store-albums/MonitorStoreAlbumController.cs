@@ -28,6 +28,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         private IImageService ImageService;
         private IStoreService StoreService;
         private IStoreCheckingService StoreCheckingService;
+        private ICurrentContext CurrentContext;
 
         public MonitorStoreAlbumController
             (DataContext DataContext,
@@ -36,7 +37,8 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             IAppUserService AppUserService,
             IImageService ImageService,
             IStoreService StoreService,
-            IStoreCheckingService StoreCheckingService)
+            IStoreCheckingService StoreCheckingService,
+            ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
             this.AlbumService = AlbumService;
@@ -45,6 +47,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             this.ImageService = ImageService;
             this.StoreService = StoreService;
             this.StoreCheckingService = StoreCheckingService;
+            this.CurrentContext = CurrentContext;
         }
 
         [Route(MonitorStoreAlbumRoute.FilterListAlbum), HttpPost]
@@ -83,6 +86,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             AppUserFilter.Username = MonitorStoreAlbum_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = MonitorStoreAlbum_AppUserFilterDTO.DisplayName;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            AppUserFilter.Id.In = await FilterAppUser();
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<MonitorStoreAlbum_AppUserDTO> MonitorStoreAlbum_AppUserDTOs = AppUsers
@@ -103,6 +107,8 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization();
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<MonitorStoreAlbum_OrganizationDTO> StoreCheckerMonitor_OrganizationDTOs = Organizations
@@ -278,7 +284,6 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                 StoreCheckingImageMapping.Album = Albums.Where(x => x.Id == StoreCheckingImageMapping.AlbumId).Select(x => new MonitorStoreAlbum_AlbumDTO(x)).FirstOrDefault();
                 StoreCheckingImageMapping.StoreChecking = StoreCheckings.Where(x => x.Id == StoreCheckingImageMapping.StoreCheckingId).Select(x => new MonitorStoreAlbum_StoreCheckingDTO(x)).FirstOrDefault();
             }
-
             return MonitorStoreAlbum_MonitorStoreAlbumDTO;
         }
 
@@ -341,6 +346,63 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             };
 
             return MonitorStoreAlbum_StoreCheckingImageMappingDTO;
+        }
+
+        private async Task<List<long>> FilterOrganization()
+        {
+            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return new List<long>();
+
+            List<long> In = new List<long>();
+            List<long> NotIn = new List<long>();
+            foreach (var currentFilter in CurrentContext.Filters)
+            {
+
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == nameof(MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.OrganizationId))
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal != null)
+                            In.Add(FilterPermissionDefinition.IdFilter.Equal.Value);
+                        if (FilterPermissionDefinition.IdFilter.In != null)
+                            In.AddRange(FilterPermissionDefinition.IdFilter.In);
+
+                        if (FilterPermissionDefinition.IdFilter.NotEqual != null)
+                            NotIn.Add(FilterPermissionDefinition.IdFilter.NotEqual.Value);
+                        if (FilterPermissionDefinition.IdFilter.NotIn != null)
+                            NotIn.AddRange(FilterPermissionDefinition.IdFilter.NotIn);
+                    }
+                }
+            }
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL,
+                OrderBy = OrganizationOrder.Id,
+                OrderType = OrderType.ASC
+            });
+            List<string> InPaths = Organizations.Where(o => In.Contains(o.Id)).Select(o => o.Path).ToList();
+            List<string> NotInPaths = Organizations.Where(o => NotIn.Contains(o.Id)).Select(o => o.Path).ToList();
+            Organizations = Organizations.Where(o => InPaths.Any(p => o.Path.StartsWith(p))).ToList();
+            Organizations = Organizations.Where(o => !NotInPaths.Any(p => o.Path.StartsWith(p))).ToList();
+
+            List<long> organizationIds = Organizations.Select(o => o.Id).ToList();
+
+            return organizationIds;
+        }
+        private async Task<List<long>> FilterAppUser()
+        {
+            List<long> organizationIds = await FilterOrganization();
+            List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = organizationIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id,
+            });
+            List<long> AppUserIds = AppUsers.Select(a => a.Id).ToList();
+            return AppUserIds;
         }
     }
 }

@@ -19,11 +19,16 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         private DataContext DataContext;
         private IOrganizationService OrganizationService;
         private IAppUserService AppUserService;
-        public MonitorSalesmanController(DataContext DataContext, IOrganizationService OrganizationService, IAppUserService AppUserService)
+        private ICurrentContext CurrentContext;
+        public MonitorSalesmanController(DataContext DataContext,
+            IOrganizationService OrganizationService, 
+            IAppUserService AppUserService,
+            ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
             this.OrganizationService = OrganizationService;
             this.AppUserService = AppUserService;
+            this.CurrentContext = CurrentContext;
         }
         [Route(MonitorSalesmanRoute.FilterListAppUser), HttpPost]
         public async Task<List<MonitorSalesman_AppUserDTO>> FilterListAppUser([FromBody] SalesmanMonitor_AppUserFilterDTO SalesmanMonitor_AppUserFilterDTO)
@@ -41,7 +46,7 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             AppUserFilter.Username = SalesmanMonitor_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = SalesmanMonitor_AppUserFilterDTO.DisplayName;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-
+            AppUserFilter.Id.In = await FilterAppUser();
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<MonitorSalesman_AppUserDTO> SalesmanMonitor_AppUserDTOs = AppUsers
                 .Select(x => new MonitorSalesman_AppUserDTO(x)).ToList();
@@ -61,6 +66,9 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization();
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<MonitorSalesman_OrganizationDTO> SalesmanMonitor_OrganizationDTOs = Organizations
@@ -184,5 +192,61 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             return MonitorSalesman_MonitorSalesmanDTOs;
         }
 
+        private async Task<List<long>> FilterOrganization()
+        {
+            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return new List<long>();
+
+            List<long> In = new List<long>();
+            List<long> NotIn = new List<long>();
+            foreach (var currentFilter in CurrentContext.Filters)
+            {
+
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == nameof(MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId))
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal != null)
+                            In.Add(FilterPermissionDefinition.IdFilter.Equal.Value);
+                        if (FilterPermissionDefinition.IdFilter.In != null)
+                            In.AddRange(FilterPermissionDefinition.IdFilter.In);
+
+                        if (FilterPermissionDefinition.IdFilter.NotEqual != null)
+                            NotIn.Add(FilterPermissionDefinition.IdFilter.NotEqual.Value);
+                        if (FilterPermissionDefinition.IdFilter.NotIn != null)
+                            NotIn.AddRange(FilterPermissionDefinition.IdFilter.NotIn);
+                    }
+                }
+            }
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL,
+                OrderBy = OrganizationOrder.Id,
+                OrderType = OrderType.ASC
+            });
+            List<string> InPaths = Organizations.Where(o => In.Contains(o.Id)).Select(o => o.Path).ToList();
+            List<string> NotInPaths = Organizations.Where(o => NotIn.Contains(o.Id)).Select(o => o.Path).ToList();
+            Organizations = Organizations.Where(o => InPaths.Any(p => o.Path.StartsWith(p))).ToList();
+            Organizations = Organizations.Where(o => !NotInPaths.Any(p => o.Path.StartsWith(p))).ToList();
+
+            List<long> organizationIds = Organizations.Select(o => o.Id).ToList();
+
+            return organizationIds;
+        }
+        private async Task<List<long>> FilterAppUser()
+        {
+            List<long> organizationIds = await FilterOrganization();
+            List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = organizationIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id,
+            });
+            List<long> AppUserIds = AppUsers.Select(a => a.Id).ToList();
+            return AppUserIds;
+        }
     }
 }
