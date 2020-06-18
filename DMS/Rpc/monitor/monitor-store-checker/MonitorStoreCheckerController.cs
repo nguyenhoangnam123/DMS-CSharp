@@ -214,7 +214,8 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
-            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.Where(o => Start <= o.OrderDate && o.OrderDate <= End).ToListAsync();
+            List<long> StoreIds = StoreCheckingDAOs.Select(sc => sc.StoreId).ToList();
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.Where(o => Start <= o.OrderDate && o.OrderDate <= End && StoreIds.Contains(o.BuyerStoreId)).ToListAsync();
             // khởi tạo kế hoạch
             foreach (MonitorStoreChecker_SaleEmployeeDTO MonitorStoreChecker_SaleEmployeeDTO in MonitorStoreChecker_SaleEmployeeDTOs)
             {
@@ -284,19 +285,23 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            long SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.SaleEmployeeId;
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.Date;
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
 
-            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.Where(sc => sc.CheckOutAt.HasValue && sc.CheckInAt.HasValue &&
-                    sc.SaleEmployeeId == MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.SaleEmployeeId &&
+            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
+                .Where(sc => 
+                    sc.CheckOutAt.HasValue && sc.CheckInAt.HasValue &&
+                    sc.SaleEmployeeId == SaleEmployeeId &&
                     Start <= sc.CheckInAt.Value && sc.CheckInAt.Value <= End)
                 .Include(sc => sc.Store)
                 .ToListAsync();
             List<long> StoreCheckingIds = StoreCheckingDAOs.Select(s => s.Id).ToList();
 
-            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.Where(i => i.StoreCheckingId.HasValue && StoreCheckingIds.Contains(i.StoreCheckingId.Value)).ToListAsync();
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
+                .Where(o => Start <= o.OrderDate && o.OrderDate <= End && o.SaleEmployeeId == SaleEmployeeId)
+                .ToListAsync();
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem.Where(p => p.StoreCheckingId.HasValue && StoreCheckingIds.Contains(p.StoreCheckingId.Value)).ToListAsync();
             List<StoreCheckingImageMappingDAO> StoreCheckingImageMappingDAOs = await DataContext.StoreCheckingImageMapping.Where(sc => StoreCheckingIds.Contains(sc.StoreCheckingId))
                 .Include(sc => sc.Image)
@@ -305,13 +310,13 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO> MonitorStoreChecker_MonitorStoreCheckerDetailDTOs = new List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO>();
             foreach (StoreCheckingDAO StoreCheckingDAO in StoreCheckingDAOs)
             {
-                List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.StoreCheckingId.Value == StoreCheckingDAO.Id).ToList();
+                List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == StoreCheckingDAO.Store.Id).ToList();
                 List<ProblemDAO> CompetitorProblems = ProblemDAOs.Where(p => p.StoreCheckingId.Value == StoreCheckingDAO.Id && p.ProblemTypeId == ProblemTypeEnum.COMPETITOR.Id).ToList();
                 List<ProblemDAO> StoreProblems = ProblemDAOs.Where(p => p.StoreCheckingId.Value == StoreCheckingDAO.Id && p.ProblemTypeId == ProblemTypeEnum.STORE.Id).ToList();
                 List<StoreCheckingImageMappingDAO> SubStoreCheckingImageMappingDAOs = StoreCheckingImageMappingDAOs.Where(sc => sc.StoreCheckingId == StoreCheckingDAO.Id).ToList();
 
                 int Max = 0;
-                Max = SubIndirectSalesOrderDAOs.Count > Max ? SubIndirectSalesOrderDAOs.Count : Max;
+                Max = SubIndirectSalesOrderDAOs.Count > Max ? IndirectSalesOrderDAOs.Count : Max;
                 Max = CompetitorProblems.Count > Max ? CompetitorProblems.Count : Max;
                 Max = StoreProblems.Count > Max ? StoreProblems.Count : Max;
                 for (int i = 0; i < Max; i++)

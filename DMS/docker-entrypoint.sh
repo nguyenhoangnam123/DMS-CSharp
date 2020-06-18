@@ -17,11 +17,25 @@ trap term_handler TERM
 
 PROJECT_NAME="DMS"
 
+getStatus () {
+    netstat -ant | awk '/LISTEN/ { print $4 }' | rev | cut -f1 -d: | rev | grep -w $1 && return 0
+    return 1
+}
+
 consul agent -config-dir /consul/config -node ${NODE} &
 CONSUL_PID="$!"
 sleep 5
 consul connect envoy -sidecar-for dms-backend &
 sleep 10
-dotnet ${PROJECT_NAME}.dll --urls http://0.0.0.0:80 --environment Production & wait -n "$!" || term_handler
+
+while [ 1 ]; do
+    getStatus 80
+    if [ $? -eq 0 ]; then
+        break
+    fi
+    dotnet ${PROJECT_NAME}.dll --urls http://0.0.0.0:80 --environment Production &
+    sleep 5
+done
+
 wait "${CONSUL_PID}"
 
