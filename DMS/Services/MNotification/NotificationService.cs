@@ -20,7 +20,7 @@ namespace DMS.Services.MNotification
         Task<Notification> Update(Notification Notification);
         Task<Notification> Delete(Notification Notification);
         Task<Notification> Send(Notification Notification);
-        Task<List<UserNotification>> SendToUtils(List<UserNotification> UserNotifications);
+        Task<List<UserNotification>> BulkSend(List<UserNotification> UserNotifications);
         Task<List<Notification>> BulkDelete(List<Notification> Notifications);
         Task<List<Notification>> Import(List<Notification> Notifications);
         NotificationFilter ToFilter(NotificationFilter NotificationFilter);
@@ -140,7 +140,7 @@ namespace DMS.Services.MNotification
                         RecipientId = x
                     }).ToList();
 
-                    await SendToUtils(NotificationUtilss);
+                    await BulkSend(NotificationUtilss);
                 }
 
                 var newData = await UOW.NotificationRepository.Get(Notification.Id);
@@ -300,7 +300,7 @@ namespace DMS.Services.MNotification
             return filter;
         }
 
-        public async Task<List<UserNotification>> SendToUtils(List<UserNotification> UserNotifications)
+        public async Task<List<UserNotification>> BulkSend(List<UserNotification> UserNotifications)
         {
             RestClient restClient = new RestClient($"http://localhost:{Modules.Utils}");
             RestRequest restRequest = new RestRequest("/rpc/utils/notification/bulk-create");

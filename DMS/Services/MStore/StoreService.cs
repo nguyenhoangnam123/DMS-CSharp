@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
 using DMS.Rpc.store;
+using DMS.Rpc.store_scouting;
 using DMS.Services.MImage;
 using DMS.Services.MNotification;
 using DMS.Services.MWorkflow;
@@ -149,10 +150,12 @@ namespace DMS.Services.MStore
 
             try
             {
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 Store.Id = 0;
                 Store.RowId = Guid.NewGuid();
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
+                List<UserNotification> UserNotifications = new List<UserNotification>();
                 if (Store.StoreScoutingId.HasValue)
                 {
                     StoreScouting StoreScouting = await UOW.StoreScoutingRepository.Get(Store.StoreScoutingId.Value);
@@ -161,18 +164,38 @@ namespace DMS.Services.MStore
                         StoreScouting.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.OPENED.Id;
                     }
                     await UOW.StoreScoutingRepository.Update(StoreScouting);
+
+                    UserNotification Notification = new UserNotification
+                    {
+                        Content = $"Cửa hàng cắm cờ {StoreScouting.Code} - {StoreScouting.Name} đã được mở cửa hàng bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        LinkWebsite = $"{StoreScoutingRoute.Master}/{StoreScouting.Id}",
+                        RecipientId = StoreScouting.CreatorId,
+                        SenderId = CurrentContext.UserId,
+                        Time = StaticParams.DateTimeNow,
+                        Unread = false
+                    };
+                    UserNotifications.Add(Notification);
                 }
                 await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
                 await UOW.Commit();
 
-                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                UserNotification UserNotification = new UserNotification
+                var RecipientIds = await ListAppUserInOrgs();
+                foreach (var Id in RecipientIds)
                 {
-                    Content = $"Cửa hàng {Store.Code} - {Store.Name} vừa được thêm mới vào hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
-                    LinkWebsite = $"{StoreRoute.Master}/{Store.Id}",
-                    LinkMobile = $"{StoreRoute.Mobile}/{Store.Id}"
-                };
-                await SendNotification(UserNotification, CurrentUser);
+                    UserNotification UserNotification = new UserNotification
+                    {
+                        Content = $"Cửa hàng {Store.Code} - {Store.Name} vừa được thêm mới vào hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        LinkWebsite = $"{StoreRoute.Master}/{Store.Id}",
+                        LinkMobile = $"{StoreRoute.Mobile}/{Store.Id}",
+                        RecipientId = Id,
+                        SenderId = CurrentContext.UserId,
+                        Time = StaticParams.DateTimeNow,
+                        Unread = false
+                    };
+                    UserNotifications.Add(UserNotification);
+                }
+                
+                await NotificationService.BulkSend(UserNotifications);
 
                 await Logging.CreateAuditLog(Store, new { }, nameof(StoreService));
                 return await UOW.StoreRepository.Get(Store.Id);
@@ -201,13 +224,24 @@ namespace DMS.Services.MStore
                 await UOW.Commit();
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                UserNotification UserNotification = new UserNotification
+                var RecipientIds = await ListAppUserInOrgs();
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                foreach (var Id in RecipientIds)
                 {
-                    Content = $"Cửa hàng {Store.Code} - {Store.Name} vừa được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
-                    LinkWebsite = $"{StoreRoute.Master}/{Store.Id}",
-                    LinkMobile = $"{StoreRoute.Mobile}/{Store.Id}"
-                };
-                await SendNotification(UserNotification, CurrentUser);
+                    UserNotification UserNotification = new UserNotification
+                    {
+                        Content = $"Cửa hàng {Store.Code} - {Store.Name} vừa được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        LinkWebsite = $"{StoreRoute.Master}/{Store.Id}",
+                        LinkMobile = $"{StoreRoute.Mobile}/{Store.Id}",
+                        RecipientId = Id,
+                        SenderId = CurrentContext.UserId,
+                        Time = StaticParams.DateTimeNow,
+                        Unread = false
+                    };
+                    UserNotifications.Add(UserNotification);
+                }
+
+                await NotificationService.BulkSend(UserNotifications);
 
                 var newData = await UOW.StoreRepository.Get(Store.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreService));
@@ -236,11 +270,22 @@ namespace DMS.Services.MStore
                 await UOW.Commit();
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                UserNotification UserNotification = new UserNotification
+                var RecipientIds = await ListAppUserInOrgs();
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                foreach (var Id in RecipientIds)
                 {
-                    Content = $"Cửa hàng {Store.Code} - {Store.Name} vừa được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
-                };
-                await SendNotification(UserNotification, CurrentUser);
+                    UserNotification UserNotification = new UserNotification
+                    {
+                        Content = $"Cửa hàng {Store.Code} - {Store.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        RecipientId = Id,
+                        SenderId = CurrentContext.UserId,
+                        Time = StaticParams.DateTimeNow,
+                        Unread = false
+                    };
+                    UserNotifications.Add(UserNotification);
+                }
+
+                await NotificationService.BulkSend(UserNotifications);
 
                 await Logging.CreateAuditLog(new { }, Store, nameof(StoreService));
                 return Store;
@@ -411,8 +456,10 @@ namespace DMS.Services.MStore
             return Parameters;
         }
 
-        private async Task SendNotification(UserNotification UserNotification, AppUser CurrentUser)
+        private async Task<List<long>> ListAppUserInOrgs()
         {
+            var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            List<long> Ids = new List<long>();
             if (CurrentUser.OrganizationId.HasValue)
             {
                 var OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
@@ -422,7 +469,7 @@ namespace DMS.Services.MStore
                     Selects = OrganizationSelect.Id,
                     Path = new StringFilter { StartWith = CurrentUser.Organization.Path }
                 })).Select(x => x.Id).ToList();
-                var RecipientIds = (await UOW.AppUserRepository.List(new AppUserFilter
+                Ids = (await UOW.AppUserRepository.List(new AppUserFilter
                 {
                     Skip = 0,
                     Take = int.MaxValue,
@@ -430,20 +477,8 @@ namespace DMS.Services.MStore
                     OrganizationId = new IdFilter { In = OrganizationIds }
                 })).Select(x => x.Id).Distinct().ToList();
 
-                List<UserNotification> NotificationUtilss = RecipientIds.Select(x => new UserNotification
-                {
-                    Content = UserNotification.Content,
-                    LinkMobile = UserNotification.LinkMobile,
-                    LinkWebsite = UserNotification.LinkWebsite,
-                    Time = StaticParams.DateTimeNow,
-                    Unread = false,
-                    SenderId = CurrentContext.UserId,
-                    RecipientId = x
-                }).ToList();
-
-                await NotificationService.SendToUtils(NotificationUtilss);
             }
-
+            return Ids;
         }
     }
 }

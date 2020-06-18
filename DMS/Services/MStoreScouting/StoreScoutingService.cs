@@ -12,6 +12,8 @@ using RestSharp;
 using DMS.Helpers;
 using DMS.Handlers;
 using DMS.Enums;
+using DMS.Services.MNotification;
+using DMS.Rpc.store_scouting;
 
 namespace DMS.Services.MStoreScouting
 {
@@ -31,12 +33,14 @@ namespace DMS.Services.MStoreScouting
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
+        private INotificationService NotificationService;
         private IStoreScoutingValidator StoreScoutingValidator;
         private IRabbitManager RabbitManager;
 
         public StoreScoutingService(
             IUOW UOW,
             ILogging Logging,
+            INotificationService NotificationService,
             ICurrentContext CurrentContext,
             IStoreScoutingValidator StoreScoutingValidator,
             IRabbitManager RabbitManager
@@ -44,6 +48,7 @@ namespace DMS.Services.MStoreScouting
         {
             this.UOW = UOW;
             this.Logging = Logging;
+            this.NotificationService = NotificationService;
             this.CurrentContext = CurrentContext;
             this.StoreScoutingValidator = StoreScoutingValidator;
             this.RabbitManager = RabbitManager;
@@ -107,6 +112,26 @@ namespace DMS.Services.MStoreScouting
                 await UOW.StoreScoutingRepository.Update(StoreScouting);
                 await UOW.Commit();
 
+                var RecipientIds = await UOW.PermissionRepository.ListAppUserPermission(StoreScoutingRoute.Reject);
+
+                DateTime Now = StaticParams.DateTimeNow;
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                foreach (var Id in RecipientIds)
+                {
+                    UserNotification NotificationUtils = new UserNotification
+                    {
+                        Content = $"Cửa hàng cắm cờ {StoreScouting.Code} - {StoreScouting.Name} vừa được thêm mới vào hệ thống bởi {User.DisplayName} vào lúc {Now}",
+                        LinkWebsite = $"{StoreScouting.Link}",
+                        Time = Now,
+                        Unread = false,
+                        SenderId = CurrentContext.UserId,
+                        RecipientId = Id
+                    };
+                    UserNotifications.Add(NotificationUtils);
+                }
+
+                await NotificationService.BulkSend(UserNotifications);
+
                 await Logging.CreateAuditLog(StoreScouting, new { }, nameof(StoreScoutingService));
                 return await UOW.StoreScoutingRepository.Get(StoreScouting.Id);
             }
@@ -167,12 +192,12 @@ namespace DMS.Services.MStoreScouting
                 UserNotification NotificationUtils = new UserNotification
                 {
                     Content = $"{oldData.Name} đã bị từ chối bởi {CurrentUser.DisplayName} vào lúc {Now}. Chi tiết xem tại {StoreScouting.Link}",
-                    Time = StaticParams.DateTimeNow,
+                    Time = Now,
                     Unread = false,
                     SenderId = CurrentContext.UserId,
                     RecipientId = Creator.Id
                 };
-                await SendNotification(NotificationUtils);
+                await NotificationService.BulkSend(new List<UserNotification> { NotificationUtils });
 
                 Mail mail = new Mail
                 {
@@ -213,29 +238,5 @@ namespace DMS.Services.MStoreScouting
             return filter;
         }
 
-        private async Task<UserNotification> SendNotification(UserNotification NotificationUtils)
-        {
-            RestClient restClient = new RestClient($"http://localhost:{Modules.Utils}");
-            RestRequest restRequest = new RestRequest("/rpc/utils/notification/create");
-            restRequest.RequestFormat = DataFormat.Json;
-            restRequest.Method = Method.POST;
-            restRequest.AddCookie("Token", CurrentContext.Token);
-            restRequest.AddCookie("X-Language", CurrentContext.Language);
-            restRequest.AddHeader("Content-Type", "multipart/form-data");
-            restRequest.AddBody(NotificationUtils);
-            try
-            {
-                var response = restClient.Execute<UserNotification>(restRequest);
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    return NotificationUtils;
-                }
-            }
-            catch
-            {
-                return null;
-            }
-            return null;
-        }
     }
 }

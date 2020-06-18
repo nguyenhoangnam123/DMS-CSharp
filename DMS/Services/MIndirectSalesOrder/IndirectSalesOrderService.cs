@@ -3,6 +3,8 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
 using DMS.Repositories;
+using DMS.Rpc.indirect_sales_order;
+using DMS.Services.MNotification;
 using DMS.Services.MWorkflow;
 using Helpers;
 using System;
@@ -33,6 +35,7 @@ namespace DMS.Services.MIndirectSalesOrder
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
+        private INotificationService NotificationService;
         private IIndirectSalesOrderValidator IndirectSalesOrderValidator;
         private IRabbitManager RabbitManager;
         private IWorkflowService WorkflowService;
@@ -41,6 +44,7 @@ namespace DMS.Services.MIndirectSalesOrder
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
+            INotificationService NotificationService,
             IRabbitManager RabbitManager,
             IIndirectSalesOrderValidator IndirectSalesOrderValidator,
             IWorkflowService WorkflowService
@@ -49,6 +53,7 @@ namespace DMS.Services.MIndirectSalesOrder
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
+            this.NotificationService = NotificationService;
             this.RabbitManager = RabbitManager;
             this.IndirectSalesOrderValidator = IndirectSalesOrderValidator;
             this.WorkflowService = WorkflowService;
@@ -140,6 +145,31 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.Commit();
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
 
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                var RecipientIds = await UOW.PermissionRepository.ListAppUserPermission(IndirectSalesOrderRoute.Approve);
+                RecipientIds.AddRange(await UOW.PermissionRepository.ListAppUserPermission(IndirectSalesOrderRoute.Reject));
+                RecipientIds.Add(CurrentContext.UserId);
+                RecipientIds = RecipientIds.Distinct().ToList();
+                
+                DateTime Now = StaticParams.DateTimeNow;
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                foreach (var Id in RecipientIds)
+                {
+                    UserNotification NotificationUtils = new UserNotification
+                    {
+                        Content = $"Đơn hàng {IndirectSalesOrder.Code} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                        LinkWebsite = $"{IndirectSalesOrderRoute.Master}/{IndirectSalesOrder.Id}",
+                        LinkMobile = $"{IndirectSalesOrderRoute.Mobile}/{IndirectSalesOrder.Id}",
+                        Time = Now,
+                        Unread = false,
+                        SenderId = CurrentContext.UserId,
+                        RecipientId = Id
+                    };
+                    UserNotifications.Add(NotificationUtils);
+                }
+
+                await NotificationService.BulkSend(UserNotifications);
+
                 NotifyUsed(IndirectSalesOrder);
                 await Logging.CreateAuditLog(IndirectSalesOrder, new { }, nameof(IndirectSalesOrderService));
                 return IndirectSalesOrder;
@@ -173,6 +203,31 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);
                 await UOW.Commit();
 
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                var RecipientIds = await UOW.PermissionRepository.ListAppUserPermission(IndirectSalesOrderRoute.Approve);
+                RecipientIds.AddRange(await UOW.PermissionRepository.ListAppUserPermission(IndirectSalesOrderRoute.Reject));
+                RecipientIds.Add(CurrentContext.UserId);
+                RecipientIds = RecipientIds.Distinct().ToList();
+
+                DateTime Now = StaticParams.DateTimeNow;
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                foreach (var Id in RecipientIds)
+                {
+                    UserNotification NotificationUtils = new UserNotification
+                    {
+                        Content = $"Đơn hàng {IndirectSalesOrder.Code} đã được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                        LinkWebsite = $"{IndirectSalesOrderRoute.Master}/{IndirectSalesOrder.Id}",
+                        LinkMobile = $"{IndirectSalesOrderRoute.Mobile}/{IndirectSalesOrder.Id}",
+                        Time = Now,
+                        Unread = false,
+                        SenderId = CurrentContext.UserId,
+                        RecipientId = Id
+                    };
+                    UserNotifications.Add(NotificationUtils);
+                }
+
+                await NotificationService.BulkSend(UserNotifications);
+
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
                 NotifyUsed(IndirectSalesOrder);
                 await Logging.CreateAuditLog(IndirectSalesOrder, oldData, nameof(IndirectSalesOrderService));
@@ -204,6 +259,30 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.Begin();
                 await UOW.IndirectSalesOrderRepository.Delete(IndirectSalesOrder);
                 await UOW.Commit();
+
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                var RecipientIds = await UOW.PermissionRepository.ListAppUserPermission(IndirectSalesOrderRoute.Approve);
+                RecipientIds.AddRange(await UOW.PermissionRepository.ListAppUserPermission(IndirectSalesOrderRoute.Reject));
+                RecipientIds.Add(CurrentContext.UserId);
+                RecipientIds = RecipientIds.Distinct().ToList();
+
+                DateTime Now = StaticParams.DateTimeNow;
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                foreach (var Id in RecipientIds)
+                {
+                    UserNotification NotificationUtils = new UserNotification
+                    {
+                        Content = $"Đơn hàng {IndirectSalesOrder.Code} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                        Time = Now,
+                        Unread = false,
+                        SenderId = CurrentContext.UserId,
+                        RecipientId = Id
+                    };
+                    UserNotifications.Add(NotificationUtils);
+                }
+
+                await NotificationService.BulkSend(UserNotifications);
+
                 await Logging.CreateAuditLog(new { }, IndirectSalesOrder, nameof(IndirectSalesOrderService));
                 return IndirectSalesOrder;
             }

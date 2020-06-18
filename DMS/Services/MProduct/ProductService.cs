@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DMS.Rpc.product;
+using DMS.Services.MNotification;
 
 namespace DMS.Services.MProduct
 {
@@ -37,6 +39,7 @@ namespace DMS.Services.MProduct
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
+        private INotificationService NotificationService;
         private IProductValidator ProductValidator;
         private IImageService ImageService;
         private IRabbitManager RabbitManager;
@@ -45,6 +48,7 @@ namespace DMS.Services.MProduct
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
+            INotificationService NotificationService,
             IProductValidator ProductValidator,
             IImageService ImageService,
             IRabbitManager RabbitManager
@@ -53,6 +57,7 @@ namespace DMS.Services.MProduct
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
+            this.NotificationService = NotificationService;
             this.ProductValidator = ProductValidator;
             this.ImageService = ImageService;
             this.RabbitManager = RabbitManager;
@@ -218,10 +223,39 @@ namespace DMS.Services.MProduct
 
             try
             {
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 Products.ForEach(x => x.IsNew = true);
                 await UOW.Begin();
                 await UOW.ProductRepository.BulkInsertNewProduct(Products);
                 await UOW.Commit();
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                var RecipientIds = (await UOW.AppUserRepository.List(new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = AppUserSelect.Id,
+                    OrganizationId = new IdFilter { }
+                })).Select(x => x.Id).ToList();
+                foreach (var Product in Products)
+                {
+                    foreach (var Id in RecipientIds)
+                    {
+                        UserNotification UserNotification = new UserNotification
+                        {
+                            Content = $"Sản phẩm {Product.Code} - {Product.Name} đã được đưa vào danh sách sản phẩm mới bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                            LinkWebsite = $"{ProductRoute.Master}/{Product.Id}",
+                            LinkMobile = $"{ProductRoute.Mobile}/{Product.Id}",
+                            RecipientId = Id,
+                            SenderId = CurrentContext.UserId,
+                            Time = StaticParams.DateTimeNow,
+                            Unread = false
+                        };
+                        UserNotifications.Add(UserNotification);
+                    }
+                }
+
+                await NotificationService.BulkSend(UserNotifications);
+
                 await Logging.CreateAuditLog(new { }, Products, nameof(ProductService));
                 return Products;
             }

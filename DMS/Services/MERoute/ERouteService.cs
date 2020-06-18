@@ -1,6 +1,8 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Repositories;
+using DMS.Rpc.e_route;
+using DMS.Services.MNotification;
 using DMS.Services.MStore;
 using Helpers;
 using System;
@@ -29,6 +31,7 @@ namespace DMS.Services.MERoute
     {
         private IUOW UOW;
         private ILogging Logging;
+        private INotificationService NotificationService;
         private ICurrentContext CurrentContext;
         private IERouteValidator ERouteValidator;
         private IStoreService StoreService;
@@ -36,6 +39,7 @@ namespace DMS.Services.MERoute
         public ERouteService(
             IUOW UOW,
             ILogging Logging,
+            INotificationService NotificationService,
             ICurrentContext CurrentContext,
             IStoreService StoreService,
             IERouteValidator ERouteValidator
@@ -43,6 +47,7 @@ namespace DMS.Services.MERoute
         {
             this.UOW = UOW;
             this.Logging = Logging;
+            this.NotificationService = NotificationService;
             this.CurrentContext = CurrentContext;
             this.StoreService = StoreService;
             this.ERouteValidator = ERouteValidator;
@@ -95,6 +100,7 @@ namespace DMS.Services.MERoute
 
             try
             {
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 int diff = (7 + (ERoute.StartDate.DayOfWeek - DayOfWeek.Monday)) % 7;
                 ERoute.RealStartDate = ERoute.StartDate.AddDays(-1 * diff);
                 ERoute.CreatorId = CurrentContext.UserId;
@@ -102,6 +108,18 @@ namespace DMS.Services.MERoute
                 await UOW.Begin();
                 await UOW.ERouteRepository.Create(ERoute);
                 await UOW.Commit();
+
+                DateTime Now = StaticParams.DateTimeNow;
+                UserNotification NotificationUtils = new UserNotification
+                {
+                    Content = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được thêm mới cho anh/chị bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                    LinkWebsite = $"{ERouteRoute.Master}/{ERoute.Id}",
+                    Time = Now,
+                    Unread = false,
+                    SenderId = CurrentContext.UserId,
+                    RecipientId = ERoute.SaleEmployeeId
+                };
+                await NotificationService.BulkSend(new List<UserNotification> { NotificationUtils });
 
                 await Logging.CreateAuditLog(ERoute, new { }, nameof(ERouteService));
                 return await UOW.ERouteRepository.Get(ERoute.Id);
@@ -129,12 +147,25 @@ namespace DMS.Services.MERoute
                 return ERoute;
             try
             {
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 var oldData = await UOW.ERouteRepository.Get(ERoute.Id);
                 int diff = (7 + (ERoute.StartDate.DayOfWeek - DayOfWeek.Monday)) % 7;
                 ERoute.RealStartDate = ERoute.StartDate.AddDays(-1 * diff);
                 await UOW.Begin();
                 await UOW.ERouteRepository.Update(ERoute);
                 await UOW.Commit();
+
+                DateTime Now = StaticParams.DateTimeNow;
+                UserNotification NotificationUtils = new UserNotification
+                {
+                    Content = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được cập nhật cho anh/chị bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                    LinkWebsite = $"{ERouteRoute.Master}/{ERoute.Id}",
+                    Time = Now,
+                    Unread = false,
+                    SenderId = CurrentContext.UserId,
+                    RecipientId = ERoute.SaleEmployeeId
+                };
+                await NotificationService.BulkSend(new List<UserNotification> { NotificationUtils });
 
                 var newData = await UOW.ERouteRepository.Get(ERoute.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(ERouteService));
@@ -161,6 +192,19 @@ namespace DMS.Services.MERoute
                 await UOW.Begin();
                 await UOW.ERouteRepository.Delete(ERoute);
                 await UOW.Commit();
+
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                DateTime Now = StaticParams.DateTimeNow;
+                UserNotification NotificationUtils = new UserNotification
+                {
+                    Content = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                    Time = Now,
+                    Unread = false,
+                    SenderId = CurrentContext.UserId,
+                    RecipientId = ERoute.SaleEmployeeId
+                };
+                await NotificationService.BulkSend(new List<UserNotification> { NotificationUtils });
+
                 await Logging.CreateAuditLog(new { }, ERoute, nameof(ERouteService));
                 return ERoute;
             }

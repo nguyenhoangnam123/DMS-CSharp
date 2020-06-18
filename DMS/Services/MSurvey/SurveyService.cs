@@ -1,7 +1,9 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
+using DMS.Rpc.survey;
+using DMS.Services.MNotification;
 using Helpers;
 using System;
 using System.Collections.Generic;
@@ -27,18 +29,21 @@ namespace DMS.Services.MSurvey
     {
         private IUOW UOW;
         private ILogging Logging;
+        private INotificationService NotificationService;
         private ICurrentContext CurrentContext;
         private ISurveyValidator SurveyValidator;
 
         public SurveyService(
             IUOW UOW,
             ILogging Logging,
+            INotificationService NotificationService,
             ICurrentContext CurrentContext,
             ISurveyValidator SurveyValidator
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
+            this.NotificationService = NotificationService;
             this.CurrentContext = CurrentContext;
             this.SurveyValidator = SurveyValidator;
         }
@@ -93,6 +98,31 @@ namespace DMS.Services.MSurvey
                 await UOW.SurveyRepository.Create(Survey);
                 await UOW.Commit();
 
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                var RecipientIds = (await UOW.AppUserRepository.List(new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = AppUserSelect.Id,
+                    OrganizationId = new IdFilter { }
+                })).Select(x => x.Id).ToList();
+                foreach (var Id in RecipientIds)
+                {
+                    UserNotification UserNotification = new UserNotification
+                    {
+                        Content = $"Khảo sát {Survey.Title} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}, có hiệu lực từ {Survey.StartAt} - {Survey.EndAt}",
+                        LinkWebsite = $"{SurveyRoute.Master}/{Survey.Id}",
+                        RecipientId = Id,
+                        SenderId = CurrentContext.UserId,
+                        Time = StaticParams.DateTimeNow,
+                        Unread = false
+                    };
+                    UserNotifications.Add(UserNotification);
+                }
+
+                await NotificationService.BulkSend(UserNotifications);
+
                 await Logging.CreateAuditLog(Survey, new { }, nameof(SurveyService));
                 return await UOW.SurveyRepository.Get(Survey.Id);
             }
@@ -118,6 +148,31 @@ namespace DMS.Services.MSurvey
                 await UOW.Begin();
                 await UOW.SurveyRepository.Update(Survey);
                 await UOW.Commit();
+
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                var RecipientIds = (await UOW.AppUserRepository.List(new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = AppUserSelect.Id,
+                    OrganizationId = new IdFilter { }
+                })).Select(x => x.Id).ToList();
+                foreach (var Id in RecipientIds)
+                {
+                    UserNotification UserNotification = new UserNotification
+                    {
+                        Content = $"Khảo sát {Survey.Title} đã được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}, có hiệu lực từ {Survey.StartAt} - {Survey.EndAt}",
+                        LinkWebsite = $"{SurveyRoute.Master}/{Survey.Id}",
+                        RecipientId = Id,
+                        SenderId = CurrentContext.UserId,
+                        Time = StaticParams.DateTimeNow,
+                        Unread = false
+                    };
+                    UserNotifications.Add(UserNotification);
+                }
+
+                await NotificationService.BulkSend(UserNotifications);
 
                 var newData = await UOW.SurveyRepository.Get(Survey.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(SurveyService));
@@ -176,6 +231,31 @@ namespace DMS.Services.MSurvey
                 await UOW.Begin();
                 await UOW.SurveyRepository.Delete(Survey);
                 await UOW.Commit();
+
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                var RecipientIds = (await UOW.AppUserRepository.List(new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = AppUserSelect.Id,
+                    OrganizationId = new IdFilter { }
+                })).Select(x => x.Id).ToList();
+                foreach (var Id in RecipientIds)
+                {
+                    UserNotification UserNotification = new UserNotification
+                    {
+                        Content = $"Khảo sát {Survey.Title} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        RecipientId = Id,
+                        SenderId = CurrentContext.UserId,
+                        Time = StaticParams.DateTimeNow,
+                        Unread = false
+                    };
+                    UserNotifications.Add(UserNotification);
+                }
+
+                await NotificationService.BulkSend(UserNotifications);
+
                 await Logging.CreateAuditLog(new { }, Survey, nameof(SurveyService));
                 return Survey;
             }

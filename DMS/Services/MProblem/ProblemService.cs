@@ -1,8 +1,10 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
+using DMS.Rpc.problem;
 using DMS.Services.MImage;
+using DMS.Services.MNotification;
 using Helpers;
 using System;
 using System.Collections.Generic;
@@ -29,6 +31,7 @@ namespace DMS.Services.MProblem
     {
         private IUOW UOW;
         private ILogging Logging;
+        private INotificationService NotificationService;
         private ICurrentContext CurrentContext;
         private IImageService ImageService;
         private IProblemValidator ProblemValidator;
@@ -36,6 +39,7 @@ namespace DMS.Services.MProblem
         public ProblemService(
             IUOW UOW,
             ILogging Logging,
+            INotificationService NotificationService,
             ICurrentContext CurrentContext,
             IImageService ImageService,
             IProblemValidator ProblemValidator
@@ -43,6 +47,7 @@ namespace DMS.Services.MProblem
         {
             this.UOW = UOW;
             this.Logging = Logging;
+            this.NotificationService = NotificationService;
             this.CurrentContext = CurrentContext;
             this.ImageService = ImageService;
             this.ProblemValidator = ProblemValidator;
@@ -115,6 +120,27 @@ namespace DMS.Services.MProblem
                 };
                 await UOW.ProblemRepository.Update(Problem);
                 await UOW.Commit();
+
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                var RecipientIds = await UOW.PermissionRepository.ListAppUserPermission(ProblemRoute.Update);
+
+                DateTime Now = StaticParams.DateTimeNow;
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                foreach (var id in RecipientIds)
+                {
+                    UserNotification NotificationUtils = new UserNotification
+                    {
+                        Content = $"Vấn đề {Problem.Code} của cửa hàng {Problem.Store.Code} - {Problem.Store.Name} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                        LinkWebsite = $"{ProblemRoute.Master}/{Problem.Id}",
+                        Time = Now,
+                        Unread = false,
+                        SenderId = CurrentContext.UserId,
+                        RecipientId = id
+                    };
+                    UserNotifications.Add(NotificationUtils);
+                }
+
+                await NotificationService.BulkSend(UserNotifications);
 
                 await Logging.CreateAuditLog(Problem, new { }, nameof(ProblemService));
                 return await UOW.ProblemRepository.Get(Problem.Id);
