@@ -13,6 +13,7 @@ namespace DMS.Rpc.app_user
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string Update = Default + "/update";
         public const string Export = Default + "/export";
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
@@ -37,6 +38,12 @@ namespace DMS.Rpc.app_user
                 Master,Detail,Count,List,Get,
                 FilterListPosition, FilterListOrganization, FilterListStatus,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, CountRole, ListRole}},
+            { "Sửa", new List<string> {
+                Master, Count, List,Get,
+                FilterListPosition,
+                Detail,Get,Update, 
+                SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole,
+                CountRole, ListRole}},
         };
     }
 }

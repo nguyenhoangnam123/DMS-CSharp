@@ -21,10 +21,12 @@ namespace DMS.Rpc.app_user
         public long? PositionId { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
+        public long? ERouteScopeId { get; set; }
         public long? ProvinceId { get; set; }
         public long? SexId { get; set; }
         public long StatusId { get; set; }
         public AppUser_OrganizationDTO Organization { get; set; }
+        public AppUser_OrganizationDTO ERouteScope { get; set; }
         public AppUser_PositionDTO Position { get; set; }
         public AppUser_ProvinceDTO Province { get; set; }
         public AppUser_SexDTO Sex { get; set; }
@@ -44,9 +46,11 @@ namespace DMS.Rpc.app_user
             this.PositionId = AppUser.PositionId;
             this.Department = AppUser.Department;
             this.OrganizationId = AppUser.OrganizationId;
+            this.ERouteScopeId = AppUser.ERouteScopeId;
             this.SexId = AppUser.SexId;
             this.StatusId = AppUser.StatusId;
             this.Organization = AppUser.Organization == null ? null : new AppUser_OrganizationDTO(AppUser.Organization);
+            this.ERouteScope = AppUser.ERouteScope == null ? null : new AppUser_OrganizationDTO(AppUser.ERouteScope);
             this.Position = AppUser.Position == null ? null : new AppUser_PositionDTO(AppUser.Position);
             this.Province = AppUser.Province == null ? null : new AppUser_ProvinceDTO(AppUser.Province);
             this.Sex = AppUser.Sex == null ? null : new AppUser_SexDTO(AppUser.Sex);
@@ -69,6 +73,7 @@ namespace DMS.Rpc.app_user
         public IdFilter PositionId { get; set; }
         public StringFilter Department { get; set; }
         public IdFilter OrganizationId { get; set; }
+        public IdFilter ERouteScopeId { get; set; }
         public IdFilter SexId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter ProvinceId { get; set; }

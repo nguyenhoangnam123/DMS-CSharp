@@ -83,6 +83,24 @@ namespace DMS.Rpc.app_user
             return new AppUser_AppUserDTO(AppUser);
         }
 
+        [Route(AppUserRoute.Update), HttpPost]
+        public async Task<ActionResult<AppUser_AppUserDTO>> Update([FromBody] AppUser_AppUserDTO AppUser_AppUserDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(AppUser_AppUserDTO.Id))
+                return Forbid();
+
+            AppUser AppUser = ConvertDTOToEntity(AppUser_AppUserDTO);
+            AppUser = await AppUserService.Update(AppUser);
+            AppUser_AppUserDTO = new AppUser_AppUserDTO(AppUser);
+            if (AppUser.IsValidated)
+                return AppUser_AppUserDTO;
+            else
+                return BadRequest(AppUser_AppUserDTO);
+        }
+
         [Route(AppUserRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] AppUser_AppUserFilterDTO AppUser_AppUserFilterDTO)
         {
@@ -244,6 +262,7 @@ namespace DMS.Rpc.app_user
             AppUser.PositionId = AppUser_AppUserDTO.PositionId;
             AppUser.Department = AppUser_AppUserDTO.Department;
             AppUser.OrganizationId = AppUser_AppUserDTO.OrganizationId;
+            AppUser.ERouteScopeId = AppUser_AppUserDTO.ERouteScopeId;
             AppUser.ProvinceId = AppUser_AppUserDTO.ProvinceId;
             AppUser.SexId = AppUser_AppUserDTO.SexId;
             AppUser.StatusId = AppUser_AppUserDTO.StatusId;
@@ -259,6 +278,19 @@ namespace DMS.Rpc.app_user
                 Phone = AppUser_AppUserDTO.Organization.Phone,
                 Address = AppUser_AppUserDTO.Organization.Address,
                 Email = AppUser_AppUserDTO.Organization.Email,
+            };
+            AppUser.ERouteScope = AppUser_AppUserDTO.ERouteScope == null ? null : new Organization
+            {
+                Id = AppUser_AppUserDTO.ERouteScope.Id,
+                Code = AppUser_AppUserDTO.ERouteScope.Code,
+                Name = AppUser_AppUserDTO.ERouteScope.Name,
+                ParentId = AppUser_AppUserDTO.ERouteScope.ParentId,
+                Path = AppUser_AppUserDTO.ERouteScope.Path,
+                Level = AppUser_AppUserDTO.ERouteScope.Level,
+                StatusId = AppUser_AppUserDTO.ERouteScope.StatusId,
+                Phone = AppUser_AppUserDTO.ERouteScope.Phone,
+                Address = AppUser_AppUserDTO.ERouteScope.Address,
+                Email = AppUser_AppUserDTO.ERouteScope.Email,
             };
             AppUser.Province = AppUser_AppUserDTO.Province == null ? null : new Province
             {
@@ -315,6 +347,7 @@ namespace DMS.Rpc.app_user
             AppUserFilter.PositionId = AppUser_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = AppUser_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = AppUser_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.ERouteScopeId = AppUser_AppUserFilterDTO.ERouteScopeId;
             AppUserFilter.SexId = AppUser_AppUserFilterDTO.SexId;
             AppUserFilter.StatusId = AppUser_AppUserFilterDTO.StatusId;
             AppUserFilter.ProvinceId = AppUser_AppUserFilterDTO.ProvinceId;

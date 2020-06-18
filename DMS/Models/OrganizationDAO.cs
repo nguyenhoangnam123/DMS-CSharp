@@ -7,7 +7,8 @@ namespace DMS.Models
     {
         public OrganizationDAO()
         {
-            AppUsers = new HashSet<AppUserDAO>();
+            AppUserERouteScopes = new HashSet<AppUserDAO>();
+            AppUserOrganizations = new HashSet<AppUserDAO>();
             DirectPriceLists = new HashSet<DirectPriceListDAO>();
             IndirectPriceLists = new HashSet<IndirectPriceListDAO>();
             InverseParent = new HashSet<OrganizationDAO>();
@@ -37,7 +38,8 @@ namespace DMS.Models
 
         public virtual OrganizationDAO Parent { get; set; }
         public virtual StatusDAO Status { get; set; }
-        public virtual ICollection<AppUserDAO> AppUsers { get; set; }
+        public virtual ICollection<AppUserDAO> AppUserERouteScopes { get; set; }
+        public virtual ICollection<AppUserDAO> AppUserOrganizations { get; set; }
         public virtual ICollection<DirectPriceListDAO> DirectPriceLists { get; set; }
         public virtual ICollection<IndirectPriceListDAO> IndirectPriceLists { get; set; }
         public virtual ICollection<OrganizationDAO> InverseParent { get; set; }

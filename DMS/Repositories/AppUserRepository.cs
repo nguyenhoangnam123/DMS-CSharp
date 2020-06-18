@@ -1,6 +1,7 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace DMS.Repositories
         Task<int> Count(AppUserFilter AppUserFilter);
         Task<List<AppUser>> List(AppUserFilter AppUserFilter);
         Task<AppUser> Get(long Id);
+        Task<bool> Update(AppUser AppUser);
     }
     public class AppUserRepository : IAppUserRepository
     {
@@ -81,7 +83,7 @@ namespace DMS.Repositories
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
                     query = query.Where(q => q.OrganizationId.HasValue && !Ids.Contains(q.OrganizationId.Value));
                 }
-            
+
             }
             if (filter.ProvinceId != null)
                 query = query.Where(q => q.ProvinceId, filter.OrganizationId);
@@ -212,6 +214,9 @@ namespace DMS.Repositories
                         case AppUserOrder.Organization:
                             query = query.OrderBy(q => q.OrganizationId);
                             break;
+                        case AppUserOrder.ERouteScope:
+                            query = query.OrderBy(q => q.ERouteScopeId);
+                            break;
                         case AppUserOrder.Province:
                             query = query.OrderBy(q => q.ProvinceId);
                             break;
@@ -256,6 +261,9 @@ namespace DMS.Repositories
                         case AppUserOrder.Organization:
                             query = query.OrderByDescending(q => q.OrganizationId);
                             break;
+                        case AppUserOrder.ERouteScope:
+                            query = query.OrderByDescending(q => q.ERouteScopeId);
+                            break;
                         case AppUserOrder.Province:
                             query = query.OrderByDescending(q => q.ProvinceId);
                             break;
@@ -282,7 +290,8 @@ namespace DMS.Repositories
                 Birthday = filter.Selects.Contains(AppUserSelect.Birthday) ? q.Birthday : default(DateTime?),
                 PositionId = filter.Selects.Contains(AppUserSelect.Position) ? q.PositionId : default(long),
                 Department = filter.Selects.Contains(AppUserSelect.Department) ? q.Department : default(string),
-                OrganizationId = filter.Selects.Contains(AppUserSelect.Organization) ? q.OrganizationId : default(long),
+                OrganizationId = filter.Selects.Contains(AppUserSelect.Organization) ? q.OrganizationId : default(long?),
+                ERouteScopeId = filter.Selects.Contains(AppUserSelect.ERouteScope) ? q.ERouteScopeId : default(long?),
                 ProvinceId = filter.Selects.Contains(AppUserSelect.Province) ? q.ProvinceId : default(long),
                 Latitude = filter.Selects.Contains(AppUserSelect.Latitude) ? q.Latitude : default(decimal?),
                 Longitude = filter.Selects.Contains(AppUserSelect.Longitude) ? q.Longitude : default(decimal?),
@@ -298,6 +307,19 @@ namespace DMS.Repositories
                     Email = q.Organization.Email,
                     StatusId = q.Organization.StatusId,
                     Level = q.Organization.Level
+                } : null,
+                ERouteScope = filter.Selects.Contains(AppUserSelect.ERouteScope) && q.ERouteScope != null ? new Organization
+                {
+                    Id = q.ERouteScope.Id,
+                    Code = q.ERouteScope.Code,
+                    Name = q.ERouteScope.Name,
+                    Address = q.ERouteScope.Address,
+                    Phone = q.ERouteScope.Phone,
+                    Path = q.ERouteScope.Path,
+                    ParentId = q.ERouteScope.ParentId,
+                    Email = q.ERouteScope.Email,
+                    StatusId = q.ERouteScope.StatusId,
+                    Level = q.ERouteScope.Level
                 } : null,
                 Province = filter.Selects.Contains(AppUserSelect.Province) && q.Province != null ? new Province
                 {
@@ -365,6 +387,7 @@ namespace DMS.Repositories
                 PositionId = x.PositionId,
                 Department = x.Department,
                 OrganizationId = x.OrganizationId,
+                ERouteScopeId = x.ERouteScopeId,
                 ProvinceId = x.ProvinceId,
                 Latitude = x.Latitude,
                 Longitude = x.Longitude,
@@ -380,6 +403,19 @@ namespace DMS.Repositories
                     Email = x.Organization.Email,
                     StatusId = x.Organization.StatusId,
                     Level = x.Organization.Level
+                },
+                ERouteScope = x.ERouteScope == null ? null : new Organization
+                {
+                    Id = x.ERouteScope.Id,
+                    Code = x.ERouteScope.Code,
+                    Name = x.ERouteScope.Name,
+                    Address = x.ERouteScope.Address,
+                    Phone = x.ERouteScope.Phone,
+                    Path = x.ERouteScope.Path,
+                    ParentId = x.ERouteScope.ParentId,
+                    Email = x.ERouteScope.Email,
+                    StatusId = x.ERouteScope.StatusId,
+                    Level = x.ERouteScope.Level
                 },
                 Position = x.Position == null ? null : new Position
                 {
@@ -426,6 +462,17 @@ namespace DMS.Repositories
                 }).ToListAsync();
 
             return AppUser;
+        }
+
+        public async Task<bool> Update(AppUser AppUser)
+        {
+            AppUserDAO AppUserDAO = DataContext.AppUser.Where(x => x.Id == AppUser.Id).FirstOrDefault();
+            if (AppUserDAO == null)
+                return false;
+            AppUserDAO.ERouteScopeId = AppUser.ERouteScopeId;
+            AppUserDAO.UpdatedAt = StaticParams.DateTimeNow;
+            await DataContext.SaveChangesAsync();
+            return true;
         }
     }
 }

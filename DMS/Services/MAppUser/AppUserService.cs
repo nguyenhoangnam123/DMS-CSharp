@@ -14,6 +14,7 @@ namespace DMS.Services.MAppUser
         Task<int> Count(AppUserFilter AppUserFilter);
         Task<List<AppUser>> List(AppUserFilter AppUserFilter);
         Task<AppUser> Get(long Id);
+        Task<AppUser> Update(AppUser AppUser);
         AppUserFilter ToFilter(AppUserFilter AppUserFilter);
     }
 
@@ -83,6 +84,38 @@ namespace DMS.Services.MAppUser
             if (AppUser == null)
                 return null;
             return AppUser;
+        }
+
+        public async Task<AppUser> Update(AppUser AppUser)
+        {
+            if (!await AppUserValidator.Update(AppUser))
+                return AppUser;
+            try
+            {
+                var oldData = await UOW.AppUserRepository.Get(AppUser.Id);
+
+                await UOW.Begin();
+                await UOW.AppUserRepository.Update(AppUser);
+                await UOW.Commit();
+
+                var newData = await UOW.AppUserRepository.Get(AppUser.Id);
+                await Logging.CreateAuditLog(newData, oldData, nameof(AppUserService));
+                return newData;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(AppUserService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(AppUserService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
         }
 
         public AppUserFilter ToFilter(AppUserFilter filter)

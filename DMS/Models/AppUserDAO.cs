@@ -41,21 +41,23 @@ namespace DMS.Models
         public string Address { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public long? SexId { get; set; }
+        public DateTime? Birthday { get; set; }
+        public string Avatar { get; set; }
         public long? PositionId { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
+        public long? ERouteScopeId { get; set; }
+        public long? ProvinceId { get; set; }
+        public decimal? Longitude { get; set; }
+        public decimal? Latitude { get; set; }
         public long StatusId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-        public string Avatar { get; set; }
         public Guid RowId { get; set; }
-        public long? ProvinceId { get; set; }
-        public long? SexId { get; set; }
-        public DateTime? Birthday { get; set; }
-        public decimal? Longitude { get; set; }
-        public decimal? Latitude { get; set; }
 
+        public virtual OrganizationDAO ERouteScope { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual PositionDAO Position { get; set; }
         public virtual ProvinceDAO Province { get; set; }

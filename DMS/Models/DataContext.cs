@@ -260,8 +260,13 @@ namespace DMS.Models
                     .HasMaxLength(500)
                     .HasComment("Tên đăng nhập");
 
+                entity.HasOne(d => d.ERouteScope)
+                    .WithMany(p => p.AppUserERouteScopes)
+                    .HasForeignKey(d => d.ERouteScopeId)
+                    .HasConstraintName("FK_AppUser_Organization1");
+
                 entity.HasOne(d => d.Organization)
-                    .WithMany(p => p.AppUsers)
+                    .WithMany(p => p.AppUserOrganizations)
                     .HasForeignKey(d => d.OrganizationId)
                     .HasConstraintName("FK_AppUser_Organization");
 

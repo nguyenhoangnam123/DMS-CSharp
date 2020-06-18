@@ -285,16 +285,45 @@ namespace DMS.Services.MStoreChecking
 
         public async Task<long> CountStoreUnPlanned(StoreFilter StoreFilter, IdFilter ERouteId)
         {
+            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             List<long> StoreIds = await ListStoreIds(ERouteId, false);
+            if (AppUser.ERouteScopeId.HasValue)
+            {
+                List<long> OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = OrganizationSelect.Id,
+                    Path = new StringFilter { StartWith = AppUser.ERouteScope.Path },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+                })).Select(x => x.Id).ToList();
 
+                StoreFilter.OrganizationId = new IdFilter { In = OrganizationIds };
+            }
+            
             StoreFilter.Id = new IdFilter { In = StoreIds };
+            
             int count = await UOW.StoreRepository.Count(StoreFilter);
             return count;
         }
 
         public async Task<List<Store>> ListStoreUnPlanned(StoreFilter StoreFilter, IdFilter ERouteId)
         {
+            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             List<long> StoreIds = await ListStoreIds(ERouteId, false);
+            if (AppUser.ERouteScopeId.HasValue)
+            {
+                List<long> OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = OrganizationSelect.Id,
+                    Path = new StringFilter { StartWith = AppUser.ERouteScope.Path },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+                })).Select(x => x.Id).ToList();
+
+                StoreFilter.OrganizationId = new IdFilter { In = OrganizationIds };
+            }
 
             StoreFilter.Id = new IdFilter { In = StoreIds };
             List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
