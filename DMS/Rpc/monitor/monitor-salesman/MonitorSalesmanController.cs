@@ -121,8 +121,6 @@ namespace DMS.Rpc.Monitor.monitor_salesman
                     MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value;
 
             var query = from ap in DataContext.AppUser
-                        join sc in DataContext.StoreChecking on ap.Id equals sc.SaleEmployeeId
-                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End
                         select new MonitorSalesman_SaleEmployeeDTO
                         {
                             SaleEmployeeId = ap.Id,
@@ -131,7 +129,8 @@ namespace DMS.Rpc.Monitor.monitor_salesman
                             OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
                         };
 
-            List<MonitorSalesman_SaleEmployeeDTO> MonitorSalesman_SaleEmployeeDTOs = await query.Distinct().OrderBy(q => q.DisplayName)
+            List<MonitorSalesman_SaleEmployeeDTO> MonitorSalesman_SaleEmployeeDTOs = await query.Distinct()
+                .OrderBy(q => q.DisplayName)
                 .Skip(MonitorSalesman_MonitorSalesmanFilterDTO.Skip)
                 .Take(MonitorSalesman_MonitorSalesmanFilterDTO.Take)
                 .ToListAsync();
@@ -151,10 +150,12 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             List<long> AppUserIds = MonitorSalesman_SaleEmployeeDTOs.Select(s => s.SaleEmployeeId).ToList();
 
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                .Include(sc => sc.Store)
                 .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
             List<ERoutePerformanceDAO> ERoutePerformanceDAOs = await DataContext.ERoutePerformance.Where(ep => Start <= ep.Date && ep.Date <= End).ToListAsync();
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
+                .Where(o => Start <= o.OrderDate && o.OrderDate <= End && AppUserIds.Contains(o.SaleEmployeeId))
+                .ToListAsync();
 
             // khởi tạo kế hoạch
             foreach (MonitorSalesman_SaleEmployeeDTO MonitorSalesman_SaleEmployeeDTO in MonitorSalesman_SaleEmployeeDTOs)
@@ -165,7 +166,10 @@ namespace DMS.Rpc.Monitor.monitor_salesman
                             .Where(ep => ep.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId && Start <= ep.Date && ep.Date <= End)
                             .Select(ep => ep.PlanCounter).FirstOrDefault();
 
-                List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
+                MonitorSalesman_SaleEmployeeDTO.SalesOrderCounter = IndirectSalesOrderDAOs.Count();
+                MonitorSalesman_SaleEmployeeDTO.Revenue = IndirectSalesOrderDAOs.Select(o => o.Total).DefaultIfEmpty(0).Sum();
+
+                List < StoreCheckingDAO > ListChecked = StoreCheckingDAOs
                        .Where(s =>
                            s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId &&
                            Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End

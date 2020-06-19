@@ -20,7 +20,8 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         public long PlanCounter { get; set; }
         public long CheckinCounter { get; set; }
         public long ImageCounter { get; set; }
-        public long Revenue { get; set; }
+        public long SalesOrderCounter { get; set; }
+        public decimal Revenue { get; set; }
         public List<MonitorSalesman_StoreCheckingDTO> StoreCheckings { get; set; }
     }
 
