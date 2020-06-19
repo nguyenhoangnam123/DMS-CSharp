@@ -201,6 +201,18 @@ namespace DMS.Repositories
                     ProvinceId = q.Creator.ProvinceId,
                     SexId = q.Creator.SexId,
                     Birthday = q.Creator.Birthday,
+                    Organization = q.Creator.Organization == null ? null : new Organization
+                    {
+                        Id = q.Creator.Organization.Id,
+                        Code = q.Creator.Organization.Code,
+                        Name = q.Creator.Organization.Name,
+                        Email = q.Creator.Organization.Email,
+                        Level = q.Creator.Organization.Level,
+                        Phone = q.Creator.Organization.Phone,
+                        ParentId = q.Creator.Organization.ParentId,
+                        StatusId = q.Creator.Organization.StatusId,
+                        Address = q.Creator.Organization.Address,
+                    }
                 } : null,
                 ProblemStatus = filter.Selects.Contains(ProblemSelect.ProblemStatus) && q.ProblemStatus != null ? new ProblemStatus
                 {
