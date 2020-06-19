@@ -7,7 +7,10 @@ using DMS.Services.MKpiItem;
 using DMS.Services.MKpiPeriod;
 using DMS.Services.MOrganization;
 using DMS.Services.MProduct;
+using DMS.Services.MProductGrouping;
+using DMS.Services.MProductType;
 using DMS.Services.MStatus;
+using DMS.Services.MSupplier;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
@@ -29,6 +32,9 @@ namespace DMS.Rpc.kpi_item
         private IStatusService StatusService;
         private IItemService ItemService;
         private IKpiItemService KpiItemService;
+        private ISupplierService SupplierService;
+        private IProductTypeService ProductTypeService;
+        private IProductGroupingService ProductGroupingService;
         private ICurrentContext CurrentContext;
         public KpiItemController(
             IAppUserService AppUserService,
@@ -39,6 +45,9 @@ namespace DMS.Rpc.kpi_item
             IStatusService StatusService,
             IItemService ItemService,
             IKpiItemService KpiItemService,
+            ISupplierService SupplierService,
+            IProductTypeService ProductTypeService,
+            IProductGroupingService ProductGroupingService,
             ICurrentContext CurrentContext
         )
         {
@@ -50,6 +59,9 @@ namespace DMS.Rpc.kpi_item
             this.StatusService = StatusService;
             this.ItemService = ItemService;
             this.KpiItemService = KpiItemService;
+            this.SupplierService = SupplierService;
+            this.ProductTypeService = ProductTypeService;
+            this.ProductGroupingService = ProductGroupingService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -1039,6 +1051,62 @@ namespace DMS.Rpc.kpi_item
             List<KpiItem_ItemDTO> KpiItem_ItemDTOs = Items
                 .Select(x => new KpiItem_ItemDTO(x)).ToList();
             return KpiItem_ItemDTOs;
+        }
+
+        [Route(KpiItemRoute.FilterListSupplier), HttpPost]
+        public async Task<List<KpiItem_SupplierDTO>> FilterListSupplier([FromBody] KpiItem_SupplierFilterDTO KpiItem_SupplierFilterDTO)
+        {
+            SupplierFilter SupplierFilter = new SupplierFilter();
+            SupplierFilter.Skip = 0;
+            SupplierFilter.Take = 20;
+            SupplierFilter.OrderBy = SupplierOrder.Id;
+            SupplierFilter.OrderType = OrderType.ASC;
+            SupplierFilter.Selects = SupplierSelect.ALL;
+            SupplierFilter.Id = KpiItem_SupplierFilterDTO.Id;
+            SupplierFilter.Code = KpiItem_SupplierFilterDTO.Code;
+            SupplierFilter.Name = KpiItem_SupplierFilterDTO.Name;
+            SupplierFilter.TaxCode = KpiItem_SupplierFilterDTO.TaxCode;
+
+            List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
+            List<KpiItem_SupplierDTO> KpiItem_SupplierDTOs = Suppliers
+                .Select(x => new KpiItem_SupplierDTO(x)).ToList();
+            return KpiItem_SupplierDTOs;
+        }
+        [Route(KpiItemRoute.FilterListProductType), HttpPost]
+        public async Task<List<KpiItem_ProductTypeDTO>> FilterListProductType([FromBody] KpiItem_ProductTypeFilterDTO KpiItem_ProductTypeFilterDTO)
+        {
+            ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
+            ProductTypeFilter.Skip = 0;
+            ProductTypeFilter.Take = 20;
+            ProductTypeFilter.OrderBy = ProductTypeOrder.Id;
+            ProductTypeFilter.OrderType = OrderType.ASC;
+            ProductTypeFilter.Selects = ProductTypeSelect.ALL;
+            ProductTypeFilter.Id = KpiItem_ProductTypeFilterDTO.Id;
+            ProductTypeFilter.Code = KpiItem_ProductTypeFilterDTO.Code;
+            ProductTypeFilter.Name = KpiItem_ProductTypeFilterDTO.Name;
+            ProductTypeFilter.Description = KpiItem_ProductTypeFilterDTO.Description;
+
+            List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
+            List<KpiItem_ProductTypeDTO> KpiItem_ProductTypeDTOs = ProductTypes
+                .Select(x => new KpiItem_ProductTypeDTO(x)).ToList();
+            return KpiItem_ProductTypeDTOs;
+        }
+
+        [Route(KpiItemRoute.FilterListProductGrouping), HttpPost]
+        public async Task<List<KpiItem_ProductGroupingDTO>> FilterListProductGrouping([FromBody] KpiItem_ProductGroupingFilterDTO KpiItem_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<KpiItem_ProductGroupingDTO> KpiItem_ProductGroupingDTOs = ProductGroupings
+                .Select(x => new KpiItem_ProductGroupingDTO(x)).ToList();
+            return KpiItem_ProductGroupingDTOs;
         }
 
         [Route(KpiItemRoute.SingleListAppUser), HttpPost]

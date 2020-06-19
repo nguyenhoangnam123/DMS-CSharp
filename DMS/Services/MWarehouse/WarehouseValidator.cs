@@ -250,7 +250,7 @@ namespace DMS.Services.MWarehouse
                 int count = await UOW.InventoryRepository.Count(filter);
                 if (count != 0)
                 {
-                    Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.Status), ErrorCode.WarehouseHasInventory);
+                    Warehouse.AddError(nameof(WarehouseValidator), nameof(Warehouse.Id), ErrorCode.WarehouseHasInventory);
                 }
             }
             return Warehouse.IsValidated;

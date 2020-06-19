@@ -1,7 +1,8 @@
 ﻿{
   "Warehouse": {
     "Id": {
-      "IdNotExisted": "Id không tồn tại"
+      "IdNotExisted": "Id không tồn tại",
+      "WarehouseHasInventory": "Kho đã có sản phẩm tồn kho"
     },
     "Code": {
       "CodeEmpty": "Chưa nhập Code",
@@ -30,9 +31,6 @@
     },
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
-    },
-    "Warehouse": {
-      "WarehouseHasInventory": "Kho đã có hàng tồn"
     }
   }
 }
