@@ -22,9 +22,6 @@
     "EditedPriceStatus": {
       "EditedPriceStatusNotExisted": "Trạng thái sửa giá không tồn tại"
     },
-    "Amount": {
-      "PriceOutOfRange": "Giá tiền ngoài khoảng cho phép"
-    },
     "IndirectSalesOrderContent": {
       "Item": {
         "ItemNotExisted": "Phiên bản sản phẩm không tồn tại"
@@ -36,6 +33,9 @@
       "UnitOfMeasure": {
         "UnitOfMeasureNotExisted": "Đơn vị tính không tồn tại",
         "UnitOfMeasureEmpty": "Chưa chọn đơn vị tính"
+      },
+      "SalePrice": {
+        "PriceOutOfRange": "Giá tiền ngoài khoảng cho phép"
       }
     },
     "IndirectSalesOrderPromotion": {
