@@ -31,6 +31,9 @@
       "UnitOfMeasureNotExisted": "Đơn vị tính không tồn tại",
       "UnitOfMeasureEmpty": "Chưa chọn đơn vị tính "
     },
+    "SalePrice": {
+      "SalePriceInvalid": "Chưa nhập giá bán"
+    },
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
     },
@@ -55,6 +58,9 @@
       },
       "Id": {
         "ItemInUsed": "phiên bản sản phẩm đang được sử dụng"
+      },
+      "SalePrice": {
+        "SalePriceInvalid": "Chưa nhập giá bán"
       }
     }
   }
