@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 {
-    public class KpiPeriodGeneralReport_SaleEmployeeDetailDTO : DataDTO
+    public class KpiGeneralPeriodReport_SaleEmployeeDetailDTO : DataDTO
     {
         public string Username { get; set; }
         public string DisplayName { get; set; }

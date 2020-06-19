@@ -3,7 +3,7 @@ using DMS.Entities;
 
 namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 {
-    public class KpiPeriodGeneralReport_OrganizationDTO : DataDTO
+    public class KpiGeneralPeriodReport_OrganizationDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -15,8 +15,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
-        public KpiPeriodGeneralReport_OrganizationDTO() { }
-        public KpiPeriodGeneralReport_OrganizationDTO(Organization Organization)
+        public KpiGeneralPeriodReport_OrganizationDTO() { }
+        public KpiGeneralPeriodReport_OrganizationDTO(Organization Organization)
         {
             this.Id = Organization.Id;
             this.Code = Organization.Code;
@@ -32,7 +32,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         }
     }
 
-    public class KpiPeriodGeneralReport_OrganizationFilterDTO : FilterDTO
+    public class KpiGeneralPeriodReport_OrganizationFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }

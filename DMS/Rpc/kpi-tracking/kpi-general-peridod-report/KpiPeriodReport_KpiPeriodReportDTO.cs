@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 {
-    public class KpiPeriodGeneralReport_KpiPeriodGeneralReportDTO : DataDTO
+    public class KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO : DataDTO
     {
         public string OrganizationName { get; set; }
-        public List<KpiPeriodGeneralReport_SaleEmployeeDTO> SaleEmployees { get; set; }
+        public List<KpiGeneralPeriodReport_SaleEmployeeDTO> SaleEmployees { get; set; }
     }
 
 
-    public class KpiPeriodGeneralReport_KpiPeriodGeneralReportFilterDTO : FilterDTO
+    public class KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO : FilterDTO
     {
         public IdFilter OrganizationId { get; set; }
         public IdFilter SaleEmployeeId { get; set; }
@@ -23,7 +23,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum KpiPeriodGeneralReportOrder
+    public enum KpiGeneralPeriodReportOrder
     {
         Username = 1,
         DisplayName = 2,
