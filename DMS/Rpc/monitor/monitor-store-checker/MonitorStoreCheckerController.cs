@@ -311,7 +311,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 List<ProblemDAO> StoreProblems = ProblemDAOs.Where(p => SubStoreCheckingIds.Contains(p.StoreCheckingId.Value) && p.ProblemTypeId == ProblemTypeEnum.STORE.Id).ToList();
                 List<StoreCheckingImageMappingDAO> SubStoreCheckingImageMappingDAOs = StoreCheckingImageMappingDAOs.Where(sc => SubStoreCheckingIds.Contains(sc.StoreCheckingId)).ToList();
 
-                int Max = 0;
+                int Max = 1;
                 Max = SubIndirectSalesOrderDAOs.Count > Max ? IndirectSalesOrderDAOs.Count : Max;
                 Max = CompetitorProblems.Count > Max ? CompetitorProblems.Count : Max;
                 Max = StoreProblems.Count > Max ? StoreProblems.Count : Max;
