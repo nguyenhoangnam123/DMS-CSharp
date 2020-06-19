@@ -22,27 +22,31 @@
     "EditedPriceStatus": {
       "EditedPriceStatusNotExisted": "Trạng thái sửa giá không tồn tại"
     },
-    "Amount": {
-      "PriceOutOfRange": "Giá tiền ngoài khoảng cho phép"
-    },
     "IndirectSalesOrderContent": {
       "Item": {
         "ItemNotExisted": "Phiên bản sản phẩm không tồn tại"
       },
+      "Quantity": {
+        "QuantityEmpty": "Chưa nhập số lượng",
+        "QuantityInvalid": "Số lượng không hợp lệ"
+      },
       "UnitOfMeasure": {
         "UnitOfMeasureNotExisted": "Đơn vị tính không tồn tại",
         "UnitOfMeasureEmpty": "Chưa chọn đơn vị tính"
+      },
+      "SalePrice": {
+        "PriceOutOfRange": "Giá tiền ngoài khoảng cho phép"
       }
     },
     "IndirectSalesOrderPromotion": {
       "UnitOfMeasure": {
         "UnitOfMeasureNotExisted": "Đơn vị tính không tồn tại",
         "UnitOfMeasureEmpty": "Chưa chọn đơn vị tính"
+      },
+      "Quantity": {
+        "QuantityEmpty": "Chưa nhập số lượng",
+        "QuantityInvalid": "Số lượng không hợp lệ"
       }
-    },
-    "Quantity": {
-      "QuantityEmpty": "Chưa nhập số lượng",
-      "QuantityInvalid": "Số lượng không hợp lệ"
     }
   }
 }
