@@ -35,7 +35,7 @@ namespace DMS.Rpc.monitor_store_problems
 
         public DateTime? Birthday { get; set; }
 
-
+        public MonitorStoreProblem_OrganizationDTO Organization { get; set; }
         public MonitorStoreProblem_AppUserDTO() { }
         public MonitorStoreProblem_AppUserDTO(AppUser AppUser)
         {
@@ -67,7 +67,7 @@ namespace DMS.Rpc.monitor_store_problems
             this.SexId = AppUser.SexId;
 
             this.Birthday = AppUser.Birthday;
-
+            this.Organization = AppUser.Organization == null ? null : new MonitorStoreProblem_OrganizationDTO(AppUser.Organization);
             this.Errors = AppUser.Errors;
         }
     }
