@@ -234,7 +234,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     foreach (StoreCheckingDAO Checked in ListChecked)
                     {
                         MonitorStoreChecker_StoreCheckingDTO.PlanCounter = ERoutePerformanceDAOs
-                            .Where(ep => ep.SaleEmployeeId == Checked.SaleEmployeeId && ep.Date == Checked.CheckInAt.Value.Date).Select(ep => ep.PlanCounter).FirstOrDefault();
+                            .Where(ep => ep.SaleEmployeeId == Checked.SaleEmployeeId && ep.Date == Checked.CheckOutAt.Value.Date).Select(ep => ep.PlanCounter).FirstOrDefault();
 
                         if (Checked.Planned)
                             MonitorStoreChecker_StoreCheckingDTO.Internal.Add(Checked.StoreId);
@@ -286,9 +286,9 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc =>
-                    sc.CheckOutAt.HasValue && sc.CheckInAt.HasValue &&
+                    sc.CheckOutAt.HasValue &&
                     sc.SaleEmployeeId == SaleEmployeeId &&
-                    Start <= sc.CheckInAt.Value && sc.CheckInAt.Value <= End)
+                    Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
             List<long> StoreIds = StoreCheckingDAOs.Select(s => s.StoreId).Distinct().ToList();
             List<long> StoreCheckingIds = StoreCheckingDAOs.Select(s => s.Id).Distinct().ToList();
