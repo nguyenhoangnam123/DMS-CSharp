@@ -16,22 +16,16 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.monitor.monitor_store_checker
 {
-    public class MonitorStoreCheckerController : RpcController
+    public class MonitorStoreCheckerController : MonitorController
     {
         private DataContext DataContext;
-        private IOrganizationService OrganizationService;
-        private IAppUserService AppUserService;
-        private ICurrentContext CurrentContext;
         public MonitorStoreCheckerController(
             DataContext DataContext,
             IOrganizationService OrganizationService,
             IAppUserService AppUserService,
-            ICurrentContext CurrentContext)
+            ICurrentContext CurrentContext) : base(AppUserService, OrganizationService, CurrentContext)
         {
             this.DataContext = DataContext;
-            this.OrganizationService = OrganizationService;
-            this.AppUserService = AppUserService;
-            this.CurrentContext = CurrentContext;
         }
 
         [Route(MonitorStoreCheckerRoute.FilterListAppUser), HttpPost]
@@ -291,14 +285,15 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             DateTime End = Start.AddDays(1).AddSeconds(-1);
 
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(sc => 
+                .Where(sc =>
                     sc.CheckOutAt.HasValue && sc.CheckInAt.HasValue &&
                     sc.SaleEmployeeId == SaleEmployeeId &&
                     Start <= sc.CheckInAt.Value && sc.CheckInAt.Value <= End)
-                .Include(sc => sc.Store)
                 .ToListAsync();
-            List<long> StoreCheckingIds = StoreCheckingDAOs.Select(s => s.Id).ToList();
+            List<long> StoreIds = StoreCheckingDAOs.Select(s => s.StoreId).Distinct().ToList();
+            List<long> StoreCheckingIds = StoreCheckingDAOs.Select(s => s.Id).Distinct().ToList();
 
+            List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id)).ToListAsync();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(o => Start <= o.OrderDate && o.OrderDate <= End && o.SaleEmployeeId == SaleEmployeeId)
                 .ToListAsync();
@@ -308,23 +303,25 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 .ToListAsync();
 
             List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO> MonitorStoreChecker_MonitorStoreCheckerDetailDTOs = new List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO>();
-            foreach (StoreCheckingDAO StoreCheckingDAO in StoreCheckingDAOs)
+            foreach (long StoreId in StoreIds)
             {
-                List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == StoreCheckingDAO.Store.Id).ToList();
-                List<ProblemDAO> CompetitorProblems = ProblemDAOs.Where(p => p.StoreCheckingId.Value == StoreCheckingDAO.Id && p.ProblemTypeId == ProblemTypeEnum.COMPETITOR.Id).ToList();
-                List<ProblemDAO> StoreProblems = ProblemDAOs.Where(p => p.StoreCheckingId.Value == StoreCheckingDAO.Id && p.ProblemTypeId == ProblemTypeEnum.STORE.Id).ToList();
-                List<StoreCheckingImageMappingDAO> SubStoreCheckingImageMappingDAOs = StoreCheckingImageMappingDAOs.Where(sc => sc.StoreCheckingId == StoreCheckingDAO.Id).ToList();
+                List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == StoreId).ToList();
+                List<long> SubStoreCheckingIds = StoreCheckingDAOs.Where(sc => sc.StoreId == StoreId).Select(sc => sc.Id).ToList();
+                List<ProblemDAO> CompetitorProblems = ProblemDAOs.Where(p => SubStoreCheckingIds.Contains(p.StoreCheckingId.Value) && p.ProblemTypeId == ProblemTypeEnum.COMPETITOR.Id).ToList();
+                List<ProblemDAO> StoreProblems = ProblemDAOs.Where(p => SubStoreCheckingIds.Contains(p.StoreCheckingId.Value) && p.ProblemTypeId == ProblemTypeEnum.STORE.Id).ToList();
+                List<StoreCheckingImageMappingDAO> SubStoreCheckingImageMappingDAOs = StoreCheckingImageMappingDAOs.Where(sc => SubStoreCheckingIds.Contains(sc.StoreCheckingId)).ToList();
 
                 int Max = 0;
                 Max = SubIndirectSalesOrderDAOs.Count > Max ? IndirectSalesOrderDAOs.Count : Max;
                 Max = CompetitorProblems.Count > Max ? CompetitorProblems.Count : Max;
                 Max = StoreProblems.Count > Max ? StoreProblems.Count : Max;
+                StoreDAO storeDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
                 for (int i = 0; i < Max; i++)
                 {
                     MonitorStoreChecker_MonitorStoreCheckerDetailDTO MonitorStoreChecker_MonitorStoreCheckerDetailDTO = new MonitorStoreChecker_MonitorStoreCheckerDetailDTO
                     {
-                        StoreCode = StoreCheckingDAO.Store.Code,
-                        StoreName = StoreCheckingDAO.Store.Name,
+                        StoreCode = storeDAO.Code,
+                        StoreName = storeDAO.Name,
                     };
                     if (i == 0)
                     {
@@ -348,63 +345,6 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 }
             }
             return MonitorStoreChecker_MonitorStoreCheckerDetailDTOs;
-        }
-
-        private async Task<List<long>> FilterOrganization()
-        {
-            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return new List<long>();
-
-            List<long> In = new List<long>();
-            List<long> NotIn = new List<long>();
-            foreach (var currentFilter in CurrentContext.Filters)
-            {
-
-                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
-                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
-                {
-                    if (FilterPermissionDefinition.Name == nameof(MonitorStoreChecker_MonitorStoreCheckerFilterDTO.OrganizationId))
-                    {
-                        if (FilterPermissionDefinition.IdFilter.Equal != null)
-                            In.Add(FilterPermissionDefinition.IdFilter.Equal.Value);
-                        if (FilterPermissionDefinition.IdFilter.In != null)
-                            In.AddRange(FilterPermissionDefinition.IdFilter.In);
-
-                        if (FilterPermissionDefinition.IdFilter.NotEqual != null)
-                            NotIn.Add(FilterPermissionDefinition.IdFilter.NotEqual.Value);
-                        if (FilterPermissionDefinition.IdFilter.NotIn != null)
-                            NotIn.AddRange(FilterPermissionDefinition.IdFilter.NotIn);
-                    }
-                }
-            }
-            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = OrganizationSelect.ALL,
-                OrderBy = OrganizationOrder.Id,
-                OrderType = OrderType.ASC
-            });
-            List<string> InPaths = Organizations.Where(o => In.Contains(o.Id)).Select(o => o.Path).ToList();
-            List<string> NotInPaths = Organizations.Where(o => NotIn.Contains(o.Id)).Select(o => o.Path).ToList();
-            Organizations = Organizations.Where(o => InPaths.Any(p => o.Path.StartsWith(p))).ToList();
-            Organizations = Organizations.Where(o => !NotInPaths.Any(p => o.Path.StartsWith(p))).ToList();
-
-            List<long> organizationIds = Organizations.Select(o => o.Id).ToList();
-
-            return organizationIds;
-        }
-        private async Task<List<long>> FilterAppUser()
-        {
-            List<long> organizationIds = await FilterOrganization();
-            List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
-            {
-                OrganizationId = new IdFilter { In = organizationIds },
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = AppUserSelect.Id,
-            });
-            List<long> AppUserIds = AppUsers.Select(a => a.Id).ToList();
-            return AppUserIds;
         }
     }
 }

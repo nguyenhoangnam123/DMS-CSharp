@@ -1,6 +1,7 @@
 using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Rpc.monitor;
 using DMS.Services.MAppUser;
 using DMS.Services.MImage;
 using DMS.Services.MOrganization;
@@ -18,16 +19,13 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.monitor_store_problems
 {
-    public class MonitorStoreProblemController : RpcController
+    public class MonitorStoreProblemController : MonitorController
     {
-        private IAppUserService AppUserService;
-        private IOrganizationService OrganizationService;
         private IProblemStatusService ProblemStatusService;
         private IProblemTypeService ProblemTypeService;
         private IProblemHistoryService ProblemHistoryService;
         private IStoreService StoreService;
         private IProblemService ProblemService;
-        private ICurrentContext CurrentContext;
         public MonitorStoreProblemController(
             IAppUserService AppUserService,
             IOrganizationService OrganizationService,
@@ -37,16 +35,13 @@ namespace DMS.Rpc.monitor_store_problems
             IStoreService StoreService,
             IProblemService ProblemService,
             ICurrentContext CurrentContext
-        )
+        ) : base(AppUserService, OrganizationService, CurrentContext)
         {
-            this.AppUserService = AppUserService;
-            this.OrganizationService = OrganizationService;
             this.ProblemStatusService = ProblemStatusService;
             this.ProblemTypeService = ProblemTypeService;
             this.ProblemHistoryService = ProblemHistoryService;
             this.StoreService = StoreService;
             this.ProblemService = ProblemService;
-            this.CurrentContext = CurrentContext;
         }
 
         [Route(MonitorStoreProblemRoute.Count), HttpPost]
