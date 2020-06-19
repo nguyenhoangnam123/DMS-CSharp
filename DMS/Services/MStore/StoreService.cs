@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Handlers;
 using DMS.Repositories;
 using DMS.Rpc.store;
 using DMS.Rpc.store_scouting;
@@ -41,6 +42,7 @@ namespace DMS.Services.MStore
         private IStoreValidator StoreValidator;
         private IWorkflowService WorkflowService;
         private IImageService ImageService;
+        private IRabbitManager RabbitManager;
         public StoreService(
             IUOW UOW,
             ILogging Logging,
@@ -48,7 +50,8 @@ namespace DMS.Services.MStore
             ICurrentContext CurrentContext,
             IImageService ImageService,
             IWorkflowService WorkflowService,
-            IStoreValidator StoreValidator
+            IStoreValidator StoreValidator,
+            IRabbitManager RabbitManager
         )
         {
             this.UOW = UOW;
@@ -58,6 +61,7 @@ namespace DMS.Services.MStore
             this.WorkflowService = WorkflowService;
             this.StoreValidator = StoreValidator;
             this.ImageService = ImageService;
+            this.RabbitManager = RabbitManager;
         }
         public async Task<int> Count(StoreFilter StoreFilter)
         {
@@ -179,6 +183,8 @@ namespace DMS.Services.MStore
                 await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
                 await UOW.Commit();
 
+                NotifyUsed(Store);
+
                 var RecipientIds = await ListAppUserInOrgs();
                 foreach (var Id in RecipientIds)
                 {
@@ -222,6 +228,8 @@ namespace DMS.Services.MStore
                 await UOW.Begin();
                 await UOW.StoreRepository.Update(Store);
                 await UOW.Commit();
+
+                NotifyUsed(Store);
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 var RecipientIds = await ListAppUserInOrgs();
@@ -479,6 +487,20 @@ namespace DMS.Services.MStore
 
             }
             return Ids;
+        }
+
+        private void NotifyUsed(Store Store)
+        {
+            {
+                EventMessage<StoreType> StoreTypeMessage = new EventMessage<StoreType>
+                {
+                    Content = new StoreType { Id = Store.StoreTypeId },
+                    EntityName = nameof(Item),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                RabbitManager.PublishSingle(StoreTypeMessage, RoutingKeyEnum.StoreTypeUsed);
+            }
         }
     }
 }
