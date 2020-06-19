@@ -336,11 +336,11 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     }
                     if (CompetitorProblems.Count > i)
                     {
-                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.CompetitorProblemId = CompetitorProblems[i].Id;
+                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.CompetitorProblemCode = CompetitorProblems[i].Code;
                     }
                     if (StoreProblems.Count > i)
                     {
-                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.StoreProblemId = StoreProblems[i].Id;
+                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.StoreProblemCode = StoreProblems[i].Code;
                     }
                 }
             }
