@@ -69,11 +69,16 @@ namespace DMS.Services.MStoreType
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<StoreType> Get(long Id)
@@ -101,11 +106,16 @@ namespace DMS.Services.MStoreType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -128,11 +138,16 @@ namespace DMS.Services.MStoreType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -152,11 +167,16 @@ namespace DMS.Services.MStoreType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -176,11 +196,16 @@ namespace DMS.Services.MStoreType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -228,11 +253,16 @@ namespace DMS.Services.MStoreType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
