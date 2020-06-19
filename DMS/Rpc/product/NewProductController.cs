@@ -69,6 +69,7 @@ namespace DMS.Rpc.product
             List<Product> Products = await ProductService.List(ProductFilter);
             List<Product_ProductDTO> Product_ProductDTOs = Products
                 .Select(c => new Product_ProductDTO(c)).ToList();
+            Product_ProductDTOs.ForEach(p => p.Used = false);
             return Product_ProductDTOs;
         }
 
