@@ -285,14 +285,15 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             DateTime End = Start.AddDays(1).AddSeconds(-1);
 
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(sc => 
+                .Where(sc =>
                     sc.CheckOutAt.HasValue && sc.CheckInAt.HasValue &&
                     sc.SaleEmployeeId == SaleEmployeeId &&
                     Start <= sc.CheckInAt.Value && sc.CheckInAt.Value <= End)
-                .Include(sc => sc.Store)
                 .ToListAsync();
-            List<long> StoreCheckingIds = StoreCheckingDAOs.Select(s => s.Id).ToList();
+            List<long> StoreIds = StoreCheckingDAOs.Select(s => s.StoreId).Distinct().ToList();
+            List<long> StoreCheckingIds = StoreCheckingDAOs.Select(s => s.Id).Distinct().ToList();
 
+            List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id)).ToListAsync();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(o => Start <= o.OrderDate && o.OrderDate <= End && o.SaleEmployeeId == SaleEmployeeId)
                 .ToListAsync();
@@ -302,23 +303,25 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 .ToListAsync();
 
             List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO> MonitorStoreChecker_MonitorStoreCheckerDetailDTOs = new List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO>();
-            foreach (StoreCheckingDAO StoreCheckingDAO in StoreCheckingDAOs)
+            foreach (long StoreId in StoreIds)
             {
-                List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == StoreCheckingDAO.Store.Id).ToList();
-                List<ProblemDAO> CompetitorProblems = ProblemDAOs.Where(p => p.StoreCheckingId.Value == StoreCheckingDAO.Id && p.ProblemTypeId == ProblemTypeEnum.COMPETITOR.Id).ToList();
-                List<ProblemDAO> StoreProblems = ProblemDAOs.Where(p => p.StoreCheckingId.Value == StoreCheckingDAO.Id && p.ProblemTypeId == ProblemTypeEnum.STORE.Id).ToList();
-                List<StoreCheckingImageMappingDAO> SubStoreCheckingImageMappingDAOs = StoreCheckingImageMappingDAOs.Where(sc => sc.StoreCheckingId == StoreCheckingDAO.Id).ToList();
+                List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == StoreId).ToList();
+                List<long> SubStoreCheckingIds = StoreCheckingDAOs.Where(sc => sc.StoreId == StoreId).Select(sc => sc.Id).ToList();
+                List<ProblemDAO> CompetitorProblems = ProblemDAOs.Where(p => SubStoreCheckingIds.Contains(p.StoreCheckingId.Value) && p.ProblemTypeId == ProblemTypeEnum.COMPETITOR.Id).ToList();
+                List<ProblemDAO> StoreProblems = ProblemDAOs.Where(p => SubStoreCheckingIds.Contains(p.StoreCheckingId.Value) && p.ProblemTypeId == ProblemTypeEnum.STORE.Id).ToList();
+                List<StoreCheckingImageMappingDAO> SubStoreCheckingImageMappingDAOs = StoreCheckingImageMappingDAOs.Where(sc => SubStoreCheckingIds.Contains(sc.StoreCheckingId)).ToList();
 
                 int Max = 0;
                 Max = SubIndirectSalesOrderDAOs.Count > Max ? IndirectSalesOrderDAOs.Count : Max;
                 Max = CompetitorProblems.Count > Max ? CompetitorProblems.Count : Max;
                 Max = StoreProblems.Count > Max ? StoreProblems.Count : Max;
+                StoreDAO storeDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
                 for (int i = 0; i < Max; i++)
                 {
                     MonitorStoreChecker_MonitorStoreCheckerDetailDTO MonitorStoreChecker_MonitorStoreCheckerDetailDTO = new MonitorStoreChecker_MonitorStoreCheckerDetailDTO
                     {
-                        StoreCode = StoreCheckingDAO.Store.Code,
-                        StoreName = StoreCheckingDAO.Store.Name,
+                        StoreCode = storeDAO.Code,
+                        StoreName = storeDAO.Name,
                     };
                     if (i == 0)
                     {
