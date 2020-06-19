@@ -1,0 +1,17 @@
+﻿using Common;
+using System.Collections.Generic;
+
+namespace DMS.Rpc.kpi_tracking.kpi_period_report
+{
+    public class KpiPeriodReport_SaleEmployeeDetailDTO : DataDTO
+    {
+        public string Username { get; set; }
+        public string DisplayName { get; set; }
+        public long SaleEmployeeId { get; set; }
+        public long KpiCriteriaGeneralId { get; set; }
+        public decimal Value { get; set; }
+
+
+        //public List<MonitorStoreChecker_StoreCheckingDTO> StoreCheckings { get; set; }
+    }
+}
