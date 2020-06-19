@@ -208,8 +208,9 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
-            List<long> StoreIds = StoreCheckingDAOs.Select(sc => sc.StoreId).ToList();
-            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.Where(o => Start <= o.OrderDate && o.OrderDate <= End && StoreIds.Contains(o.BuyerStoreId)).ToListAsync();
+
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.Where(o => Start <= o.OrderDate && o.OrderDate <= End && AppUserIds.Contains(o.SaleEmployeeId)).ToListAsync();
+
             // khởi tạo kế hoạch
             foreach (MonitorStoreChecker_SaleEmployeeDTO MonitorStoreChecker_SaleEmployeeDTO in MonitorStoreChecker_SaleEmployeeDTOs)
             {
@@ -229,7 +230,6 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                                s.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId &&
                                s.CheckOutAt.Value.Date == i
                            ).ToList();
-                    List<long> StoreCheckingIds = ListChecked.Select(sc => sc.Id).ToList();
 
                     foreach (StoreCheckingDAO Checked in ListChecked)
                     {
@@ -299,7 +299,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 .ToListAsync();
             List<long> SalesOrder_StoreIds = IndirectSalesOrderDAOs.Select(o => o.BuyerStoreId).ToList();
             StoreIds.AddRange(SalesOrder_StoreIds);
-
+            StoreIds = StoreIds.Distinct().ToList();
             List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id)).ToListAsync();
 
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem.Where(p => p.StoreCheckingId.HasValue && StoreCheckingIds.Contains(p.StoreCheckingId.Value)).ToListAsync();
