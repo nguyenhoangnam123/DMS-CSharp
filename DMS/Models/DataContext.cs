@@ -2497,6 +2497,11 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StoreGroupingId)
                     .HasConstraintName("FK_Store_StoreGrouping");
 
+                entity.HasOne(d => d.StoreScouting)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.StoreScoutingId)
+                    .HasConstraintName("FK_Store_StoreScouting");
+
                 entity.HasOne(d => d.StoreType)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.StoreTypeId)

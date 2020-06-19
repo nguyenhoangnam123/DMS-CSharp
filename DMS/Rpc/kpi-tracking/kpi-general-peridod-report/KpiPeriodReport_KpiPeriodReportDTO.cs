@@ -3,16 +3,16 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 
-namespace DMS.Rpc.kpi_tracking.kpi_period_report
+namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 {
-    public class KpiPeriodReport_KpiPeriodReportDTO : DataDTO
+    public class KpiPeriodGeneralReport_KpiPeriodGeneralReportDTO : DataDTO
     {
         public string OrganizationName { get; set; }
-        public List<KpiPeriodReport_SaleEmployeeDTO> SaleEmployees { get; set; }
+        public List<KpiPeriodGeneralReport_SaleEmployeeDTO> SaleEmployees { get; set; }
     }
 
 
-    public class KpiPeriodReport_KpiPeriodReportFilterDTO : FilterDTO
+    public class KpiPeriodGeneralReport_KpiPeriodGeneralReportFilterDTO : FilterDTO
     {
         public IdFilter OrganizationId { get; set; }
         public IdFilter SaleEmployeeId { get; set; }
@@ -23,7 +23,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_period_report
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum KpiPeriodReportOrder
+    public enum KpiPeriodGeneralReportOrder
     {
         Username = 1,
         DisplayName = 2,

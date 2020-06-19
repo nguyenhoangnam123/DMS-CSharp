@@ -1,9 +1,9 @@
 ﻿using Common;
 using System.Collections.Generic;
 
-namespace DMS.Rpc.kpi_tracking.kpi_period_report
+namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 {
-    public class KpiPeriodReportRoute : Root
+    public class KpiPeriodGeneralReportRoute : Root
     {
         public const string Master = Module + "/kpi-period-report/kpi-period-report-master";
 
