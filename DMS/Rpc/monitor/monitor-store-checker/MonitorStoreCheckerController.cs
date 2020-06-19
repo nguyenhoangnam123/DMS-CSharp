@@ -283,20 +283,25 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.Date;
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
-
+            List<long> StoreIds = new List<long>();
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc =>
                     sc.CheckOutAt.HasValue &&
                     sc.SaleEmployeeId == SaleEmployeeId &&
                     Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
-            List<long> StoreIds = StoreCheckingDAOs.Select(s => s.StoreId).Distinct().ToList();
+            List<long> StoreChecking_StoreIds = StoreCheckingDAOs.Select(s => s.StoreId).Distinct().ToList();
+            StoreIds.AddRange(StoreChecking_StoreIds);
             List<long> StoreCheckingIds = StoreCheckingDAOs.Select(s => s.Id).Distinct().ToList();
 
-            List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id)).ToListAsync();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(o => Start <= o.OrderDate && o.OrderDate <= End && o.SaleEmployeeId == SaleEmployeeId)
                 .ToListAsync();
+            List<long> SalesOrder_StoreIds = IndirectSalesOrderDAOs.Select(o => o.BuyerStoreId).ToList();
+            StoreIds.AddRange(SalesOrder_StoreIds);
+
+            List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id)).ToListAsync();
+
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem.Where(p => p.StoreCheckingId.HasValue && StoreCheckingIds.Contains(p.StoreCheckingId.Value)).ToListAsync();
             List<StoreCheckingImageMappingDAO> StoreCheckingImageMappingDAOs = await DataContext.StoreCheckingImageMapping.Where(sc => StoreCheckingIds.Contains(sc.StoreCheckingId))
                 .Include(sc => sc.Image)
