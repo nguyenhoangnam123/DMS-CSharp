@@ -2,11 +2,13 @@
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
+using DMS.Rpc.monitor;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,21 +16,15 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.Monitor.monitor_salesman
 {
-    public class MonitorSalesmanController : RpcController
+    public class MonitorSalesmanController : MonitorController
     {
         private DataContext DataContext;
-        private IOrganizationService OrganizationService;
-        private IAppUserService AppUserService;
-        private ICurrentContext CurrentContext;
         public MonitorSalesmanController(DataContext DataContext,
-            IOrganizationService OrganizationService, 
+            IOrganizationService OrganizationService,
             IAppUserService AppUserService,
-            ICurrentContext CurrentContext)
+            ICurrentContext CurrentContext) : base(AppUserService, OrganizationService, CurrentContext)
         {
             this.DataContext = DataContext;
-            this.OrganizationService = OrganizationService;
-            this.AppUserService = AppUserService;
-            this.CurrentContext = CurrentContext;
         }
         [Route(MonitorSalesmanRoute.FilterListAppUser), HttpPost]
         public async Task<List<MonitorSalesman_AppUserDTO>> FilterListAppUser([FromBody] SalesmanMonitor_AppUserFilterDTO SalesmanMonitor_AppUserFilterDTO)
@@ -192,61 +188,5 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             return MonitorSalesman_MonitorSalesmanDTOs;
         }
 
-        private async Task<List<long>> FilterOrganization()
-        {
-            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return new List<long>();
-
-            List<long> In = new List<long>();
-            List<long> NotIn = new List<long>();
-            foreach (var currentFilter in CurrentContext.Filters)
-            {
-
-                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
-                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
-                {
-                    if (FilterPermissionDefinition.Name == nameof(MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId))
-                    {
-                        if (FilterPermissionDefinition.IdFilter.Equal != null)
-                            In.Add(FilterPermissionDefinition.IdFilter.Equal.Value);
-                        if (FilterPermissionDefinition.IdFilter.In != null)
-                            In.AddRange(FilterPermissionDefinition.IdFilter.In);
-
-                        if (FilterPermissionDefinition.IdFilter.NotEqual != null)
-                            NotIn.Add(FilterPermissionDefinition.IdFilter.NotEqual.Value);
-                        if (FilterPermissionDefinition.IdFilter.NotIn != null)
-                            NotIn.AddRange(FilterPermissionDefinition.IdFilter.NotIn);
-                    }
-                }
-            }
-            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = OrganizationSelect.ALL,
-                OrderBy = OrganizationOrder.Id,
-                OrderType = OrderType.ASC
-            });
-            List<string> InPaths = Organizations.Where(o => In.Contains(o.Id)).Select(o => o.Path).ToList();
-            List<string> NotInPaths = Organizations.Where(o => NotIn.Contains(o.Id)).Select(o => o.Path).ToList();
-            Organizations = Organizations.Where(o => InPaths.Any(p => o.Path.StartsWith(p))).ToList();
-            Organizations = Organizations.Where(o => !NotInPaths.Any(p => o.Path.StartsWith(p))).ToList();
-
-            List<long> organizationIds = Organizations.Select(o => o.Id).ToList();
-
-            return organizationIds;
-        }
-        private async Task<List<long>> FilterAppUser()
-        {
-            List<long> organizationIds = await FilterOrganization();
-            List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
-            {
-                OrganizationId = new IdFilter { In = organizationIds },
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = AppUserSelect.Id,
-            });
-            List<long> AppUserIds = AppUsers.Select(a => a.Id).ToList();
-            return AppUserIds;
-        }
     }
 }
