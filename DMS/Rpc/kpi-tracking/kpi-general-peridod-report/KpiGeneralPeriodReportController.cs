@@ -40,7 +40,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
             AppUserFilter.OrderType = OrderType.ASC;
             AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName;
             AppUserFilter.Id = KpiGeneralPeriodReport_AppUserFilterDTO.Id;
-            AppUserFilter.Id = KpiGeneralPeriodReport_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.OrganizationId = KpiGeneralPeriodReport_AppUserFilterDTO.OrganizationId;
             AppUserFilter.Username = KpiGeneralPeriodReport_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = KpiGeneralPeriodReport_AppUserFilterDTO.DisplayName;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
@@ -162,7 +162,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                         Quantity = c.Quantity
                     }).ToList(),
                 })
-                .ToListAsync(); // to do x.OrderDate
+                .ToListAsync(); // to do 
 
             var StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && x.CheckOutAt.HasValue && x.CheckOutAt.Value >= StartDate && x.CheckOutAt.Value <= EndDate)
@@ -177,7 +177,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
 
             var StoreScoutingDAOs = await DataContext.StoreScouting
-                .Where(x => SaleEmployeeIds.Contains(x.CreatorId))
+                .Where(x => SaleEmployeeIds.Contains(x.CreatorId) && x.CreatedAt >= StartDate)
                 .Select(x => new StoreScoutingDAO
                 {
                     CreatorId = x.CreatorId,
@@ -199,7 +199,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 SaleEmployeeDTO.TotalIndirectOrders = IndirectSalesOrderDAOs
                     .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
                     .Count();
-                SaleEmployeeDTO.TotalIndirectOrdersRatio = Math.Round(SaleEmployeeDTO.TotalIndirectOrders / SaleEmployeeDTO.TotalIndirectOrdersPLanned, 2);
+                SaleEmployeeDTO.TotalIndirectOrdersRatio = SaleEmployeeDTO.TotalIndirectOrdersPLanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.TotalIndirectOrders / SaleEmployeeDTO.TotalIndirectOrdersPLanned, 2);
 
 
                 // TOTALINDIRECTOUTPUT
@@ -211,7 +211,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     .SelectMany(iso => iso.IndirectSalesOrderContents)
                     .Select(z => z.Quantity)
                     .DefaultIfEmpty(0).Sum();
-                SaleEmployeeDTO.TotalIndirectOutputRatio = Math.Round(SaleEmployeeDTO.TotalIndirectOutput / SaleEmployeeDTO.TotalIndirectOutputPlanned, 2);
+                SaleEmployeeDTO.TotalIndirectOutputRatio = SaleEmployeeDTO.TotalIndirectOutputPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.TotalIndirectOutput / SaleEmployeeDTO.TotalIndirectOutputPlanned, 2);
 
                 // TOTALINDIRECTSALESAMOUNT
                 SaleEmployeeDTO.TotalIndirectSalesAmountPlanned = SaleEmployeeDetailDTOs
@@ -220,14 +220,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 SaleEmployeeDTO.TotalIndirectSalesAmount = IndirectSalesOrderDAOs
                     .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
                     .Sum(iso => iso.Total);
-                SaleEmployeeDTO.TotalIndirectSalesAmountRatio = Math.Round(SaleEmployeeDTO.TotalIndirectSalesAmount / SaleEmployeeDTO.TotalIndirectSalesAmountPlanned, 2);
+                SaleEmployeeDTO.TotalIndirectSalesAmountRatio = SaleEmployeeDTO.TotalIndirectSalesAmountPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.TotalIndirectSalesAmount / SaleEmployeeDTO.TotalIndirectSalesAmountPlanned, 2);
 
                 // SKUINDIRECTORDER
                 SaleEmployeeDTO.SkuIndirectOrderPlanned = SaleEmployeeDetailDTOs
                         .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == GeneralCriteriaEnum.SKUINDIRECTORDER.Id)
                         .Select(sed => sed.Value).FirstOrDefault();
-                SaleEmployeeDTO.SkuIndirectOrder = SaleEmployeeDTO.TotalIndirectOutput / SaleEmployeeDTO.TotalIndirectOrders;
-                SaleEmployeeDTO.SkuIndirectOrder = Math.Round(SaleEmployeeDTO.SkuIndirectOrder / SaleEmployeeDTO.SkuIndirectOrderPlanned, 2);
+                SaleEmployeeDTO.SkuIndirectOrder = SaleEmployeeDTO.TotalIndirectOrders == 0 ? 0 : SaleEmployeeDTO.TotalIndirectOutput / SaleEmployeeDTO.TotalIndirectOrders;
+                SaleEmployeeDTO.SkuIndirectOrder = SaleEmployeeDTO.SkuIndirectOrderPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.SkuIndirectOrder / SaleEmployeeDTO.SkuIndirectOrderPlanned, 2);
 
                 // STORESVISITED
                 SaleEmployeeDTO.StoresVisitedPLanned= SaleEmployeeDetailDTOs
@@ -236,7 +236,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 SaleEmployeeDTO.StoresVisited = StoreCheckingDAOs
                     .Where(sc => sc.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
                     .Count();
-                SaleEmployeeDTO.StoresVisitedRatio = Math.Round(SaleEmployeeDTO.StoresVisited / SaleEmployeeDTO.NewStoreCreatedPlanned, 2);
+                SaleEmployeeDTO.StoresVisitedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.StoresVisited / SaleEmployeeDTO.NewStoreCreatedPlanned, 2);
 
                 // NEWSTORECREATED
                 SaleEmployeeDTO.NewStoreCreatedPlanned = SaleEmployeeDetailDTOs
@@ -247,7 +247,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     .SelectMany(sc => sc.Stores)
                     .Select(z => z.StoreScoutingId.HasValue)
                     .Count();
-                SaleEmployeeDTO.NewStoreCreatedRatio = Math.Round(SaleEmployeeDTO.NewStoreCreated / SaleEmployeeDTO.NewStoreCreatedPlanned, 2);
+                SaleEmployeeDTO.NewStoreCreatedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.NewStoreCreated / SaleEmployeeDTO.NewStoreCreatedPlanned, 2);
             };
 
             List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO> kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs = new List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO>();
