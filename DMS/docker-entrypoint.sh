@@ -40,7 +40,7 @@ while [ 1 ]; do
     if [ $? -eq 0 ]; then
         break
     fi
-    dotnet ${PROJECT_NAME}.dll --urls http://0.0.0.0:80 --environment Production &
+    dotnet ${PROJECT_NAME}.dll --urls http://0.0.0.0:80 --environment ${MODE} &
     sleep 5
 done
 
