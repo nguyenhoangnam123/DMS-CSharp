@@ -173,10 +173,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 })
                 .ToListAsync();
 
-            //var query_store = from a in DataContext.Store
-            //                  join b in DataContext.StoreScouting on a.StoreScoutingId equals b.Id
-            //                  where (SaleEmployeeIds.Contains(b.CreatorId))
-            //                  select new StoreScoutingDAO
 
             var StoreScoutingDAOs = await DataContext.StoreScouting
                 .Where(x => SaleEmployeeIds.Contains(x.CreatorId))
@@ -254,41 +250,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
             List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO> KpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs = new List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO>();
 
-            #region delete
-            //List < KpiGeneralPeriodReport_SaleEmployeeDTO > KpiGeneralPeriodReport_SaleEmployeeDTOs = await query.Distinct().OrderBy(q => q.DisplayName)
-            //    .Skip(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Skip)
-            //    .Take(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Take)
-            //    .ToListAsync(); // to do
-
-            //List<KpiGeneralDAO> KpiGeneralDAOs = await DataContext.KpiGeneral.ToListAsync();
-            //List<KpiGeneralContentDAO> KpiGeneralContentDAOs = await DataContext.KpiGeneralContent.ToListAsync();
-            //List<KpiGeneralContentKpiPeriodMappingDAO> KpiGeneralContentKpiPeriodMappingDAOs = await DataContext.KpiGeneralContentKpiPeriodMapping.ToListAsync();
-            //foreach (var KpiGeneralPeriodReport_SaleEmployeeDTO in KpiGeneralPeriodReport_SaleEmployeeDTOs)
-            //{
-            //    // get KPI General
-            //    var KpiGeneralDTO = KpiGeneralDAOs.Where(x => x.EmployeeId == KpiGeneralPeriodReport_SaleEmployeeDTO.SaleEmployeeId && x.KpiYearId == KpiYearId).FirstOrDefault();
-            //    //Get KPI General Content (6 for each employee)
-            //    var KpiGeneralContentDTOS = KpiGeneralContentDAOs.Where(x => x.KpiGeneralId == KpiGeneralDTO.Id);
-            //    //get value for each employee
-            //    foreach (var KpiGeneralContentDTO in KpiGeneralContentDTOS)
-            //    {
-            //        var KpiGeneralContentKpiPeriodMappingDTO = KpiGeneralContentKpiPeriodMappingDAOs.Where(x => x.KpiGeneralContentId == KpiGeneralContentDTO.Id && x.KpiPeriodId == KpiPeriodId).FirstOrDefault();
-
-            //        if (KpiGeneralContentDTO.KpiCriteriaGeneralId == GeneralCriteriaEnum.TOTALINDIRECTORDERS.Id)
-            //            KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectOrdersPLanned = KpiGeneralContentKpiPeriodMappingDTO.Value.Value;
-            //        if (KpiGeneralContentDTO.KpiCriteriaGeneralId == GeneralCriteriaEnum.TOTALINDIRECTOUTPUT.Id)
-            //            KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectOutputPlanned = KpiGeneralContentKpiPeriodMappingDTO.Value.Value;
-            //        if (KpiGeneralContentDTO.KpiCriteriaGeneralId == GeneralCriteriaEnum.TOTALINDIRECTSALESAMOUNT.Id)
-            //            KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectSalesAmountPlanned = KpiGeneralContentKpiPeriodMappingDTO.Value.Value;
-            //        if (KpiGeneralContentDTO.KpiCriteriaGeneralId == GeneralCriteriaEnum.SKUINDIRECTORDER.Id)
-            //            KpiGeneralPeriodReport_SaleEmployeeDTO.SkuIndirectOrderPlanned = KpiGeneralContentKpiPeriodMappingDTO.Value.Value;
-            //        if (KpiGeneralContentDTO.KpiCriteriaGeneralId == GeneralCriteriaEnum.STORESVISITED.Id)
-            //            KpiGeneralPeriodReport_SaleEmployeeDTO.StoresVisitedPLanned = KpiGeneralContentKpiPeriodMappingDTO.Value.Value;
-            //        if (KpiGeneralContentDTO.KpiCriteriaGeneralId == GeneralCriteriaEnum.NEWSTORECREATED.Id)
-            //            KpiGeneralPeriodReport_SaleEmployeeDTO.NewStoreCreatedPlanned = KpiGeneralContentKpiPeriodMappingDTO.Value.Value;
-            //    }
-            //}
-            #endregion
 
             return null;
         }

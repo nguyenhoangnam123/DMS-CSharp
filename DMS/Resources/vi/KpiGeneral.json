@@ -1,0 +1,21 @@
+﻿{
+  "KpiGeneral": {
+    "Id": {
+      "IdNotExisted": "Kpi chung không tồn tại"
+    },
+    "Organization": {
+      "OrganizationIdNotExisted": "Cơ cấu tổ chức không tồn tại"
+    },
+    "EmployeeIds": {
+      "EmployeeIdsEmpty": "Chưa chọn nhân viên",
+      "IdNotExisted": "Nhân viên không tồn tại"
+    },
+    "Status": {
+      "StatusNotExisted": "Trạng thái không tồn tại"
+    },
+    "KpiYear": {
+      "KpiYearIdNotExisted": "Năm Kpi không tồn tại",
+      "KpiYearExisted": "Năm Kpi đã tồn tại"
+    }
+  }
+}
