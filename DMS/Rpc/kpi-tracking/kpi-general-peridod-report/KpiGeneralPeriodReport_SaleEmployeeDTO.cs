@@ -8,7 +8,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         public long SaleEmployeeId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
-        public string OrganizationName { get; set; }
+        public string? OrganizationName { get; set; }
+        public long? OrganizationId { get; set; }
         public decimal TotalIndirectOrders { get; set; }
         public decimal TotalIndirectOrdersPLanned { get; set; }
         public decimal TotalIndirectOrdersRatio { get; set; }

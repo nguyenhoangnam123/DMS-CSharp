@@ -150,7 +150,6 @@ namespace DMS.Rpc.warehouse
                 return Forbid();
 
             Warehouse Warehouse = ConvertDTOToEntity(Warehouse_WarehouseDTO);
-            //Warehouse.Inventories.
             Warehouse = await WarehouseService.Update(Warehouse);
             Warehouse_WarehouseDTO = new Warehouse_WarehouseDTO(Warehouse);
             if (Warehouse.IsValidated)
@@ -204,7 +203,7 @@ namespace DMS.Rpc.warehouse
                 throw new BindException(ModelState);
             Warehouse Warehouse = await WarehouseService.Get(WarehouseId);
             if (Warehouse == null)
-                return BadRequest(WarehouseId);
+                return BadRequest("Kho không tồn tại");
 
             ItemFilter ItemFilter = new ItemFilter
             {
@@ -212,6 +211,13 @@ namespace DMS.Rpc.warehouse
                 Take = int.MaxValue,
                 Selects = ItemSelect.ALL
             };
+
+            List<Warehouse> warehouses = await WarehouseService.List(new WarehouseFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = WarehouseSelect.ALL
+            });
             List<Item> Items = await ItemService.List(ItemFilter);
 
             Warehouse.Inventories = new List<Inventory>();
@@ -241,6 +247,16 @@ namespace DMS.Rpc.warehouse
                     string SaleStockValue = worksheet.Cells[i + StartRow, SaleStockColumn].Value?.ToString();
                     string AccountingStockValue = worksheet.Cells[i + StartRow, AccountingStockColumn].Value?.ToString();
 
+                    if (string.IsNullOrWhiteSpace(WarehouseCodeValue))
+                    {
+                        return BadRequest($"Dòng {i}: Mã kho không hợp lệ");
+                    }
+                    else
+                    {
+                        Warehouse WarehouseInDB = warehouses.Where(x => x.Code == WarehouseCodeValue.Trim()).FirstOrDefault();
+                        if(WarehouseInDB.Id != Warehouse.Id)
+                            return BadRequest($"Dòng {i}: Mã kho không hợp lệ");
+                    }
                     var InventoryItem = Items.Where(x => x.Code == ItemCodeValue).FirstOrDefault();
 
                     Inventory Inventory = new Inventory();

@@ -308,6 +308,7 @@ namespace DMS.Repositories
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
                     StatusId = x.StatusId,
+                    RowId = x.RowId,
                     Organization = x.Organization == null ? null : new Organization
                     {
                         Id = x.Organization.Id,
@@ -414,11 +415,13 @@ namespace DMS.Repositories
             WarehouseDAO.DistrictId = Warehouse.DistrictId;
             WarehouseDAO.WardId = Warehouse.WardId;
             WarehouseDAO.StatusId = Warehouse.StatusId;
+            WarehouseDAO.RowId = Warehouse.RowId;
             WarehouseDAO.CreatedAt = StaticParams.DateTimeNow;
             WarehouseDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.Warehouse.Add(WarehouseDAO);
             await DataContext.SaveChangesAsync();
             Warehouse.Id = WarehouseDAO.Id;
+            Warehouse.RowId = WarehouseDAO.RowId;
             await SaveReference(Warehouse);
             return true;
         }
@@ -464,6 +467,7 @@ namespace DMS.Repositories
                 WarehouseDAO.DistrictId = Warehouse.DistrictId;
                 WarehouseDAO.WardId = Warehouse.WardId;
                 WarehouseDAO.StatusId = Warehouse.StatusId;
+                WarehouseDAO.RowId = Warehouse.RowId;
                 WarehouseDAO.CreatedAt = StaticParams.DateTimeNow;
                 WarehouseDAO.UpdatedAt = StaticParams.DateTimeNow;
                 WarehouseDAOs.Add(WarehouseDAO);
@@ -486,12 +490,18 @@ namespace DMS.Repositories
             List<InventoryDAO> InventoryDAOs = await DataContext.Inventory
                 .Where(x => x.WarehouseId == Warehouse.Id).ToListAsync();
             InventoryDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
+
+            List<long> InventoryIds = InventoryDAOs.Select(x => x.Id).ToList();
+            List<InventoryHistoryDAO> InventoryHistoryDAOs = await DataContext.InventoryHistory
+                .Where(x => InventoryIds.Contains(x.InventoryId)).ToListAsync();
+            InventoryHistoryDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
+
             if (Warehouse.Inventories != null)
             {
                 foreach (Inventory Inventory in Warehouse.Inventories)
                 {
                     InventoryDAO InventoryDAO = InventoryDAOs
-                        .Where(x => x.WarehouseId == Inventory.WarehouseId && x.ItemId == Inventory.ItemId && x.Id != 0).FirstOrDefault();
+                        .Where(x => x.RowId == Inventory.RowId).FirstOrDefault();
                     if (InventoryDAO == null)
                     {
                         InventoryDAO = new InventoryDAO();
@@ -500,12 +510,12 @@ namespace DMS.Repositories
                         InventoryDAO.ItemId = Inventory.ItemId;
                         InventoryDAO.SaleStock = Inventory.SaleStock;
                         InventoryDAO.AccountingStock = Inventory.AccountingStock;
-                        //InventoryDAO.RowId = Guid.NewGuid();
+                        InventoryDAO.RowId = Guid.NewGuid();
                         InventoryDAO.CreatedAt = StaticParams.DateTimeNow;
                         InventoryDAO.UpdatedAt = StaticParams.DateTimeNow;
                         InventoryDAO.DeletedAt = null;
                         InventoryDAOs.Add(InventoryDAO);
-                        //Inventory.RowId = InventoryDAO.RowId; to do
+                        Inventory.RowId = InventoryDAO.RowId;
                     }
                     else
                     {
@@ -515,40 +525,42 @@ namespace DMS.Repositories
                         InventoryDAO.AccountingStock = Inventory.AccountingStock;
                         InventoryDAO.UpdatedAt = StaticParams.DateTimeNow;
                         InventoryDAO.DeletedAt = null;
+                        Inventory.RowId = InventoryDAO.RowId;
                     }
                 }
                 await DataContext.Inventory.BulkMergeAsync(InventoryDAOs);
 
-                List<InventoryHistoryDAO> InventoryHistoryDAOs = new List<InventoryHistoryDAO>();
                 foreach (Inventory Inventory in Warehouse.Inventories)
                 {
                     InventoryDAO InventoryDAO = InventoryDAOs
-                       .Where(x => x.Id == Inventory.Id && x.Id != 0).FirstOrDefault();
+                       .Where(x => x.RowId == Inventory.RowId).FirstOrDefault();
                     if (InventoryDAO != null)
                     {
-                        //Inventory.Id = InventoryDAO.Id;
                         if (Inventory.InventoryHistories != null)
                         {
                             foreach (InventoryHistory inventoryHistory in Inventory.InventoryHistories)
                             {
-                                InventoryHistoryDAO InventoryHistoryDAO = new InventoryHistoryDAO
+                                InventoryHistoryDAO InventoryHistoryDAO = InventoryHistoryDAOs.Where(x => x.Id == inventoryHistory.Id).FirstOrDefault();
+                                if(InventoryHistoryDAO == null)
                                 {
-                                    InventoryId = InventoryDAO.Id,
-                                    AppUserId = inventoryHistory.AppUserId,
-                                    SaleStock = inventoryHistory.SaleStock,
-                                    AccountingStock = inventoryHistory.AccountingStock,
-                                    OldAccountingStock = inventoryHistory.OldAccountingStock,
-                                    OldSaleStock = inventoryHistory.OldSaleStock,
-                                    CreatedAt = StaticParams.DateTimeNow,
-                                    UpdatedAt = StaticParams.DateTimeNow,
-                                    DeletedAt = null,
-                                };
-                                InventoryHistoryDAOs.Add(InventoryHistoryDAO);
+                                    InventoryHistoryDAO = new InventoryHistoryDAO
+                                    {
+                                        InventoryId = InventoryDAO.Id,
+                                        AppUserId = inventoryHistory.AppUserId,
+                                        SaleStock = inventoryHistory.SaleStock,
+                                        AccountingStock = inventoryHistory.AccountingStock,
+                                        OldAccountingStock = inventoryHistory.OldAccountingStock,
+                                        OldSaleStock = inventoryHistory.OldSaleStock,
+                                        CreatedAt = StaticParams.DateTimeNow,
+                                        UpdatedAt = StaticParams.DateTimeNow,
+                                        DeletedAt = null,
+                                    };
+                                    InventoryHistoryDAOs.Add(InventoryHistoryDAO);
+                                }
                             }
                         }
                     }
                 }
-
                 await DataContext.InventoryHistory.BulkMergeAsync(InventoryHistoryDAOs);
             }
         }

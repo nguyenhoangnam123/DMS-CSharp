@@ -256,16 +256,18 @@ namespace DMS.Services.MWarehouse
                     Warehouse.Inventories.Add(Inventory);
                 }
             }
-            Warehouse ExistedWarehouse = await UOW.WarehouseRepository.Get(Warehouse.Id); // get laij gia tri warehouse
-            if (ExistedWarehouse != null)
+            Warehouse oldData = await UOW.WarehouseRepository.Get(Warehouse.Id); // get laij gia tri warehouse
+            if (oldData != null)
             {
                 foreach (Inventory inventory in Warehouse.Inventories)
                 {
-                    if (inventory.InventoryHistories == null) inventory.InventoryHistories = new List<InventoryHistory>();
-                    Inventory ExistedInventory = ExistedWarehouse.Inventories.Where(i => i.ItemId != null && i.ItemId == inventory.ItemId).FirstOrDefault();
-                    if (ExistedInventory == null)
+                    if (inventory.InventoryHistories == null) 
+                        inventory.InventoryHistories = new List<InventoryHistory>();
+                    Inventory InventoryInDB = oldData.Inventories.Where(i => i.ItemId == inventory.ItemId).FirstOrDefault();
+                    if (InventoryInDB == null)
                     {
                         InventoryHistory InventoryHistory = new InventoryHistory();
+                        InventoryHistory.InventoryId = inventory.Id;
                         InventoryHistory.SaleStock = inventory.SaleStock;
                         InventoryHistory.AccountingStock = inventory.AccountingStock;
                         InventoryHistory.OldSaleStock = 0;
@@ -275,14 +277,15 @@ namespace DMS.Services.MWarehouse
                     }
                     else
                     {
-                        inventory.Id = ExistedInventory.Id;
-                        if (inventory.SaleStock != ExistedInventory.SaleStock || inventory.AccountingStock != ExistedInventory.AccountingStock)
+                        inventory.Id = InventoryInDB.Id;
+                        if (inventory.SaleStock != InventoryInDB.SaleStock || inventory.AccountingStock != InventoryInDB.AccountingStock)
                         {
                             InventoryHistory InventoryHistory = new InventoryHistory();
+                            InventoryHistory.InventoryId = inventory.Id;
                             InventoryHistory.SaleStock = inventory.SaleStock;
                             InventoryHistory.AccountingStock = inventory.AccountingStock;
-                            InventoryHistory.OldSaleStock = ExistedInventory.SaleStock;
-                            InventoryHistory.OldAccountingStock = ExistedInventory.AccountingStock;
+                            InventoryHistory.OldSaleStock = InventoryInDB.SaleStock;
+                            InventoryHistory.OldAccountingStock = InventoryInDB.AccountingStock;
                             InventoryHistory.AppUserId = CurrentContext.UserId;
                             inventory.InventoryHistories.Add(InventoryHistory);
                         }
