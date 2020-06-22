@@ -279,7 +279,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     OrganizationName = Organization.Name,
                     SaleEmployees = SaleEmployeeDTOs.Where(x => x.OrganizationName.Equals(Organization.Name)).ToList()
                 };
-                kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs.Add(KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO);
+                if (KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO.SaleEmployees.Count() > 0) kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs.Add(KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO);
             }
             return kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs;
         }
