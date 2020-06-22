@@ -13,6 +13,7 @@ namespace DMS.Rpc.product
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string GetItem = Default + "/get-item";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
@@ -64,11 +65,11 @@ namespace DMS.Rpc.product
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
+                Master, Count, List, Get, GetItem, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping, CountItem, ListItem,  } },
 
             { "Thêm", new List<string> {
-                Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
+                Master, Count, List, Get,GetItem, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping,
                 Detail, Create, SaveImage, SaveItemImage,
                 CountItem, ListItem, ListItemHistory, CountItemHistory,
@@ -76,7 +77,7 @@ namespace DMS.Rpc.product
                 SingleListUsedVariation, SingleListItem, SingleListImage, SingleListProductGrouping,  } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
+                Master, Count, List, Get,GetItem, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping,
                 Detail, Update, SaveImage, SaveItemImage,
                 CountItem, ListItem, ListItemHistory, CountItemHistory,
@@ -84,28 +85,28 @@ namespace DMS.Rpc.product
                 SingleListUsedVariation, SingleListItem, SingleListImage, SingleListProductGrouping,  } },
 
             { "Xoá", new List<string> {
-                Master, Count, List, Get, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
+                Master, Count, List, Get,GetItem, FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping,
                 Delete,
                 CountItem, ListItem, ListItemHistory, CountItemHistory,
                 SingleListBrand, SingleListProductType, SingleListStatus, SingleListSupplier, SingleListTaxType, SingleListUnitOfMeasure, SingleListUnitOfMeasureGrouping,
                 SingleListUsedVariation, SingleListItem, SingleListImage, SingleListProductGrouping, } },
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get,
+                Master, Count, List, Get,GetItem,
                 CountItem, ListItem, ListItemHistory, CountItemHistory,
                 FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping,
                 BulkDelete } },
 
             { "Xuất excel", new List<string> {
-                Master, Count, List, Get,
+                Master, Count, List, Get,GetItem,
                 CountItem, ListItem, ListItemHistory, CountItemHistory,
                 FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping,
                 Export } },
 
             { "Nhập excel", new List<string> {
-                Master, Count, List, Get,
+                Master, Count, List, Get,GetItem,
                 CountItem, ListItem, ListItemHistory, CountItemHistory,
                 FilterListBrand, FilterListProductType, FilterListStatus, FilterListSupplier, FilterListTaxType, FilterListUnitOfMeasure,
                 FilterListUnitOfMeasureGrouping, FilterListUsedVariation, FilterListItem, FilterListImage, FilterListProductGrouping,

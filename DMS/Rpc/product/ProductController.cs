@@ -126,6 +126,16 @@ namespace DMS.Rpc.product
             return new Product_ProductDTO(Product);
         }
 
+        [Route(ProductRoute.GetItem), HttpPost]
+        public async Task<ActionResult<Product_ItemDTO>> GetItem([FromBody] Product_ItemDTO Product_ItemDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            Item Item = await ItemService.Get(Product_ItemDTO.Id);
+            return new Product_ItemDTO(Item);
+        }
+
         [Route(ProductRoute.Create), HttpPost]
         public async Task<ActionResult<Product_ProductDTO>> Create([FromBody] Product_ProductDTO Product_ProductDTO)
         {
