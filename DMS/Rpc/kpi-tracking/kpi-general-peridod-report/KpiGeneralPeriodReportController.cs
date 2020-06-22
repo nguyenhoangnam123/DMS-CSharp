@@ -8,6 +8,7 @@ using Hangfire.Annotations;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RestSharp.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -131,8 +132,24 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                             SaleEmployeeId = ap.Id,
                             Username = ap.Username,
                             DisplayName = ap.DisplayName,
+                            OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
+                            OrganizationId = ap.OrganizationId.Value
                         };
-            List<KpiGeneralPeriodReport_SaleEmployeeDTO> SaleEmployeeDTOs = await query.Distinct().ToListAsync();
+            List<KpiGeneralPeriodReport_SaleEmployeeDTO> SaleEmployeeDTOs = await query.Distinct()
+                .OrderBy(q => q.DisplayName)
+                .Skip(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Skip)
+                .Take(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Take)
+                .ToListAsync();
+            
+            //get organization
+            List<long> OrganizationIds = SaleEmployeeDTOs.Where(x => x.OrganizationId.HasValue).Select(x => x.OrganizationId.Value).ToList();
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Id | OrganizationSelect.Name,
+                Id = new IdFilter { In = OrganizationIds }
+            });
 
             List<long> SaleEmployeeIds = SaleEmployeeDTOs.Select(x => x.SaleEmployeeId).ToList();
             var query_detail = from a in DataContext.KpiGeneralContentKpiPeriodMapping
@@ -148,6 +165,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                                    Value = a.Value.Value,
                                };
             List<KpiGeneralPeriodReport_SaleEmployeeDetailDTO> SaleEmployeeDetailDTOs = await query_detail.Distinct().ToListAsync();
+
+            
 
             var IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && x.OrderDate >= StartDate && x.OrderDate <= EndDate)
@@ -251,11 +270,15 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
             };
 
             List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO> kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs = new List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO>();
-            kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs.Add(new KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO
+            foreach (Organization Organization in Organizations)
             {
-                OrganizationName = OrganizationDAO.Name,
-                SaleEmployees = SaleEmployeeDTOs
-            });
+                KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO = new KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO()
+                {
+                    OrganizationName = Organization.Name,
+                    SaleEmployees = SaleEmployeeDTOs.Where(x => x.OrganizationName.Equals(Organization.Name)).ToList()
+                };
+                kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs.Add(KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO);
+            }
             return kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs;
         }
 

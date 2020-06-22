@@ -16,9 +16,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
     {
         public IdFilter OrganizationId { get; set; }
         public IdFilter SaleEmployeeId { get; set; }
-        public DateFilter KpiPeriod { get; set; }
         public IdFilter KpiPeriodId { get; set; }
-        public DateFilter KpiYear { get; set; }
         public IdFilter KpiYearId { get; set; }
     }
 
