@@ -7,6 +7,7 @@ using DMS.Services.MOrganization;
 using Hangfire.Annotations;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using RestSharp.Extensions;
 using System;
@@ -104,11 +105,12 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         }
 
         [Route(KpiGeneralPeriodReportRoute.List), HttpPost]
-        public async Task<List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO>> List([FromBody] KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO)
+        public async Task<ActionResult<List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO>>> List([FromBody] KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId == null) return BadRequest("Chưa chọn kì KPI");
+            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId == null) return BadRequest("Chưa chọn năm KPI");
 
             OrganizationDAO OrganizationDAO = null;
             DateTime StartDate, EndDate;
