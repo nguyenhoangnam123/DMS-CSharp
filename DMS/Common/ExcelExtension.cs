@@ -2,6 +2,7 @@
 using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Common
 {
@@ -17,6 +18,11 @@ namespace Common
         {
             int headerLine = headers.Count;
             string headerRange = $"A{headerLine}:" + Char.ConvertFromUtf32(headers[0].Length + 64) + headerLine;
+            if (headers.FirstOrDefault().Length > 26)
+            {
+                headerRange = $"A{headerLine}:A" + Char.ConvertFromUtf32((headers[0].Length + 64) - 26) + headerLine;
+            }
+            
             worksheet.Cells[headerRange].LoadFromArrays(headers);
             worksheet.Cells[headerRange].Style.Font.Bold = true;
             worksheet.Cells[headerRange].Style.Font.Size = 13;
@@ -28,7 +34,12 @@ namespace Common
         private static void SetData(this ExcelWorksheet worksheet, List<string[]> headers, IEnumerable<object[]> data)
         {
             int startFromLine = headers.Count + 1;
+            int headerLine = headers.Count;
             var headerRange = $"A{startFromLine}:" + Char.ConvertFromUtf32(headers[0].Length + 64) + startFromLine;
+            if (headers.FirstOrDefault().Length > 26)
+            {
+                headerRange = $"A{startFromLine}:A" + Char.ConvertFromUtf32((headers[0].Length + 64) - 26) + startFromLine;
+            }
             worksheet.Cells[headerRange].LoadFromArrays(data);
         }
     }

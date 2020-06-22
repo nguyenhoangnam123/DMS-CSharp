@@ -490,13 +490,19 @@ namespace DMS.Services.MProduct
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.ProductType), ErrorCode.ProductTypeNotExisted);
                 }
-                if (!listSupplierCodeInDB.Contains(Product.Supplier.Code))
+                if (Product.Supplier != null)
                 {
-                    Product.AddError(nameof(ProductValidator), nameof(Product.Supplier), ErrorCode.SupplierNotExisted);
+                    if (!listSupplierCodeInDB.Contains(Product.Supplier.Code))
+                    {
+                        Product.AddError(nameof(ProductValidator), nameof(Product.Supplier), ErrorCode.SupplierNotExisted);
+                    }
                 }
-                if (!listBrandCodeInDB.Contains(Product.Brand.Code))
+                if(Product.Brand != null)
                 {
-                    Product.AddError(nameof(ProductValidator), nameof(Product.Brand), ErrorCode.BrandNotExisted);
+                    if (!listBrandCodeInDB.Contains(Product.Brand.Code))
+                    {
+                        Product.AddError(nameof(ProductValidator), nameof(Product.Brand), ErrorCode.BrandNotExisted);
+                    }
                 }
                 if (!listTaxTypeCodeInDB.Contains(Product.TaxType.Code))
                 {
@@ -506,14 +512,15 @@ namespace DMS.Services.MProduct
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
                 }
-                if (!listUOMGroupingCodeInDB.Contains(Product.UnitOfMeasureGrouping.Code))
+                if(Product.UnitOfMeasureGrouping != null)
                 {
-                    Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
+                    if (!listUOMGroupingCodeInDB.Contains(Product.UnitOfMeasureGrouping.Code))
+                    {
+                        Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
+                    }
                 }
-                if (!listUsedVariationCodeInDB.Contains(Product.UsedVariation.Code))
-                {
+                if (UsedVariationEnum.USED.Id != Product.UsedVariationId && UsedVariationEnum.NOTUSED.Id != Product.UsedVariationId)
                     Product.AddError(nameof(ProductValidator), nameof(Product.UsedVariation), ErrorCode.UsedVariationNotExisted);
-                }
 
                 await ValidateName(Product);
             }

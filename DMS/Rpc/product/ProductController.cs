@@ -372,22 +372,31 @@ namespace DMS.Rpc.product
                     {
                         Code = UoMCodeValue
                     };
-                    Product.Brand = new Brand()
+                    if (!string.IsNullOrWhiteSpace(BrandCodeValue))
                     {
-                        Code = BrandCodeValue
-                    };
+                        Product.Brand = new Brand()
+                        {
+                            Code = BrandCodeValue
+                        };
+                    }
                     Product.UsedVariation = new UsedVariation()
                     {
                         Code = UsedVariationCodeValue
                     };
-                    Product.UnitOfMeasureGrouping = new UnitOfMeasureGrouping()
+                    if (!string.IsNullOrWhiteSpace(UoMGroupCodeValue))
                     {
-                        Code = UoMGroupCodeValue
-                    };
-                    Product.Supplier = new Supplier()
+                        Product.UnitOfMeasureGrouping = new UnitOfMeasureGrouping()
+                        {
+                            Code = UoMGroupCodeValue
+                        };
+                    }
+                    if (!string.IsNullOrWhiteSpace(SupplierCodeValue))
                     {
-                        Code = SupplierCodeValue
-                    };
+                        Product.Supplier = new Supplier()
+                        {
+                            Code = SupplierCodeValue
+                        };
+                    }
                     Product.TaxType = new TaxType()
                     {
                         Code = TaxTypeCodeValue
@@ -400,9 +409,20 @@ namespace DMS.Rpc.product
 
                     Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.Equals(UoMCodeValue)).Select(x => x.Id).FirstOrDefault();
                     Product.ProductTypeId = ProductTypes.Where(x => x.Code.Equals(ProductTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
-                    Product.UnitOfMeasureGroupingId = UnitOfMeasureGroupings.Where(x => x.Code.Equals(UoMGroupCodeValue)).Select(x => x.Id).FirstOrDefault();
-                    Product.SupplierId = Suppliers.Where(x => x.Code.Equals(SupplierCodeValue)).Select(x => x.Id).FirstOrDefault();
-                    Product.BrandId = Brands.Where(x => x.Code.Equals(BrandCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    if (!string.IsNullOrWhiteSpace(UoMGroupCodeValue))
+                    {
+                        Product.UnitOfMeasureGroupingId = UnitOfMeasureGroupings.Where(x => x.Code.Equals(UoMGroupCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    }
+                    
+                    if (!string.IsNullOrWhiteSpace(SupplierCodeValue))
+                    {
+                        Product.SupplierId = Suppliers.Where(x => x.Code.Equals(SupplierCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    }
+                    
+                    if (!string.IsNullOrWhiteSpace(BrandCodeValue))
+                    {
+                        Product.BrandId = Brands.Where(x => x.Code.Equals(BrandCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    }
 
                     Product.ERPCode = ERPCodeValue;
                     Product.ScanCode = ScanCodeValue;
@@ -410,7 +430,7 @@ namespace DMS.Rpc.product
                     Product.OtherName = OtherNameValue;
                     Product.TechnicalName = TechnicalNameValue;
                     Product.TaxTypeId = TaxTypes.Where(x => x.Code.Equals(TaxTypeCodeValue == null ? string.Empty : TaxTypeCodeValue.Trim())).Select(x => x.Id).FirstOrDefault();
-                    Product.UsedVariationId = UsedVariations.Where(x => x.Code.ToLower().Equals(UsedVariationCodeValue == null ? string.Empty : UsedVariationCodeValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
+                    Product.UsedVariationId = UsedVariations.Where(x => x.Name.ToLower().Equals(UsedVariationCodeValue == null ? string.Empty : UsedVariationCodeValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
                     Product.Description = DescriptionValue;
                     Product.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : long.Parse(RetailPriceValue);
                     Product.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : long.Parse(SalePriceValue);
@@ -652,23 +672,24 @@ namespace DMS.Rpc.product
                 var ProductHeader = new List<string[]>()
                 {
                     new string[] { "STT",
-                        "Mã sản phẩm*",
-                        "Tên sản phẩm*",
+                        "Mã sản phẩm",
+                        "Tên sản phẩm",
                         "Nhóm sản phẩm",
-                        "Loại sản phẩm*",
+                        "Loại sản phẩm",
                         "Đơn vị tính*",
                         "Nhóm đơn vị chuyển đổi",
                         "Nhà cung cấp",
-                        "Mã từ ERP*",
-                        "Mã nhận diện sản phẩm*",
+                        "Mã từ ERP",
+                        "Mã nhận diện sản phẩm",
                         "Nhãn hiệu",
                         "Tên khác",
                         "Tên kỹ thuật",
-                        "% VAT*",
+                        "% VAT",
                         "Mô tả",
                         "Giá bán",
                         "Giá bán lẻ đề xuất",
-                        "Có tạo phiên bản*",
+                        "Trạng thái",
+                        "Có tạo phiên bản",
                         "Thuộc tính 1",
                         "Giá trị 1",
                         "Thuộc tính 2",
@@ -686,6 +707,10 @@ namespace DMS.Rpc.product
                     string ProductGroupingName = "";
                     if (Product.ProductProductGroupingMappings != null)
                     {
+                        foreach (var ProductProductGroupingMapping in Product.ProductProductGroupingMappings)
+                        {
+                            ProductGroupingName = string.Join(',', Product.ProductProductGroupingMappings.Select(x => x.ProductGrouping.Name).ToList());
+                        }
                         ProductGroupingName = Product.ProductProductGroupingMappings.FirstOrDefault() == null ? null : Product.ProductProductGroupingMappings.FirstOrDefault().ProductGrouping.Name;
                     }
                     string VariationGrouping1 = "";
@@ -742,7 +767,8 @@ namespace DMS.Rpc.product
                         Product.Description,
                         Product.SalePrice,
                         Product.RetailPrice,
-                        Product.UsedVariation.Code,
+                        Product.Status?.Name,
+                        Product.UsedVariation?.Name,
                         VariationGrouping1,
                         VariationValue1,
                         VariationGrouping2,
