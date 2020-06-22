@@ -5,9 +5,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 {
     public class KpiGeneralPeriodReportRoute : Root
     {
-        public const string Master = Module + "/kpi-period-report/kpi-period-report-master";
+        public const string Master = Module + "/kpi-general-period-report/kpi-general-period-report-master";
 
-        private const string Default = Rpc + Module + "/kpi-period-report";
+        private const string Default = Rpc + Module + "/kpi-general-period-report";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Export = Default + "/export";
