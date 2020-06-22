@@ -107,6 +107,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            
+
             OrganizationDAO OrganizationDAO = null;
             DateTime StartDate, EndDate;
             long? SaleEmployeeId = KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.SaleEmployeeId?.Equal;
@@ -248,10 +250,13 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 SaleEmployeeDTO.NewStoreCreatedRatio = Math.Round(SaleEmployeeDTO.NewStoreCreated / SaleEmployeeDTO.NewStoreCreatedPlanned, 2);
             };
 
-            List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO> KpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs = new List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO>();
-
-
-            return null;
+            List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO> kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs = new List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO>();
+            kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs.Add(new KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO
+            {
+                OrganizationName = OrganizationDAO.Name,
+                SaleEmployees = SaleEmployeeDTOs
+            });
+            return kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs;
         }
 
         private Tuple<DateTime, DateTime> DateTimeConvert(long KpiPeriodId, long KpiYearId)
