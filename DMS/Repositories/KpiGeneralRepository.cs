@@ -310,19 +310,18 @@ namespace DMS.Repositories
                     KpiGeneralId = x.KpiGeneralId,
                     KpiCriteriaGeneralId = x.KpiCriteriaGeneralId,
                     StatusId = x.StatusId,
+                    Status = x.Status == null ? null :new Status
+                    { 
+                        Id = x.Status.Id,
+                        Name = x.Status.Name,
+                        Code = x.Status.Code,
+                    },
                     KpiCriteriaGeneral = new KpiCriteriaGeneral
                     {
                         Id = x.KpiCriteriaGeneral.Id,
                         Code = x.KpiCriteriaGeneral.Code,
                         Name = x.KpiCriteriaGeneral.Name,
                     },
-                    Status = new Status
-                    {
-                        Id = x.Status.Id,
-                        Code = x.Status.Code,
-                        Name = x.Status.Name,
-                    },
-                    //KpiGeneralContentKpiPeriodMappings
                 }).ToListAsync();
             var KpiGeneralContentIds = KpiGeneral.KpiGeneralContents.Select(x => x.Id).ToList();
             List<KpiGeneralContentKpiPeriodMapping> KpiGeneralContentKpiPeriodMappings = await DataContext.KpiGeneralContentKpiPeriodMapping
@@ -417,6 +416,13 @@ namespace DMS.Repositories
                             KpiGeneralContentId = 0, // se duoc gan luc sau
                         }).ToList(),
                         RowId = Guid.NewGuid(),
+                        Status = new StatusDAO
+                        {
+                            Id = Enums.StatusEnum.ACTIVE.Id,
+                            Name = Enums.StatusEnum.ACTIVE.Name,
+                            Code = Enums.StatusEnum.ACTIVE.Code,
+                        },
+                        StatusId = Enums.StatusEnum.ACTIVE.Id,
                     }).ToList();
                     KpiGeneralContentDAOs.AddRange(listContent);
                 }
