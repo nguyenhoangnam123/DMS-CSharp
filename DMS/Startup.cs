@@ -137,6 +137,8 @@ namespace DMS
                     policy.Requirements.Add(new SimpleRequirement()));
             });
 
+            InternalServices.UTILS = Configuration["InternalServices:UTILS"];
+            InternalServices.ES = Configuration["InternalServices:ES"];
             Action onChange = () =>
             {
                 InternalServices.UTILS = Configuration["InternalServices:UTILS"];
@@ -144,7 +146,6 @@ namespace DMS
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily);
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily);
             };
-            onChange();
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);
         }
 
