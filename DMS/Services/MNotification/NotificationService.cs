@@ -302,17 +302,16 @@ namespace DMS.Services.MNotification
 
         public async Task<List<UserNotification>> BulkSend(List<UserNotification> UserNotifications)
         {
-            RestClient restClient = new RestClient($"http://localhost:{Modules.Utils}");
+            RestClient restClient = new RestClient(InternalServices.UTILS);
             RestRequest restRequest = new RestRequest("/rpc/utils/notification/bulk-create");
             restRequest.RequestFormat = DataFormat.Json;
             restRequest.Method = Method.POST;
             restRequest.AddCookie("Token", CurrentContext.Token);
             restRequest.AddCookie("X-Language", CurrentContext.Language);
-            restRequest.AddHeader("Content-Type", "multipart/form-data");
-            restRequest.AddBody(UserNotifications);
+            restRequest.AddJsonBody(UserNotifications);
             try
             {
-                var response = restClient.Execute<List<UserNotification>>(restRequest);
+                var response = await restClient.ExecuteAsync<List<UserNotification>>(restRequest);
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     return UserNotifications;

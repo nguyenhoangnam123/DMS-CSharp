@@ -1,5 +1,6 @@
 using Common;
 using DMS.Handlers;
+using DMS.Helpers;
 using DMS.Models;
 using DMS.Rpc;
 using DMS.Services;
@@ -138,10 +139,13 @@ namespace DMS
 
             Action onChange = () =>
             {
-                RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily);
-                RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily);
+                InternalServices.UTILS = Configuration["InternalServices:UTILS"];
+                InternalServices.ES = Configuration["InternalServices:ES"];
             };
+            onChange();
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);
+            RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily);
+            RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
