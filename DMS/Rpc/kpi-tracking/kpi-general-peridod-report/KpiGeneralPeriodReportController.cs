@@ -169,7 +169,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                                };
             List<KpiGeneralPeriodReport_SaleEmployeeDTO> SaleEmployeeDTOs = await query_detail.Distinct().ToListAsync();
 
-            
+            foreach (var SaleEmployeeDTO in SaleEmployeeDTOs)
+            {
+                AppUserDAO appUserDAO = AppUserDAOs.Where(x => x.Id == SaleEmployeeDTO.SaleEmployeeId).FirstOrDefault();
+                SaleEmployeeDTO.OrganizationName = appUserDAO.Organization.Name;
+                SaleEmployeeDTO.OrganizationId = appUserDAO.OrganizationId;
+                SaleEmployeeDTO.DisplayName = appUserDAO.DisplayName;
+                SaleEmployeeDTO.Username = appUserDAO.Username;
+            }
 
             var IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && x.OrderDate >= StartDate && x.OrderDate <= EndDate)

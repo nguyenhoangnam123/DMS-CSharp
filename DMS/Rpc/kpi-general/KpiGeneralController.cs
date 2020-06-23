@@ -178,6 +178,7 @@ namespace DMS.Rpc.kpi_general
                     Code = Enums.StatusEnum.ACTIVE.Code,
                     Name = Enums.StatusEnum.ACTIVE.Name
                 },
+                StatusId = Enums.StatusEnum.ACTIVE.Id
             }).ToList();
             (KpiGeneral_KpiGeneralDTO.CurrentMonth, KpiGeneral_KpiGeneralDTO.CurrentQuarter) = ConvertDateTime(StaticParams.DateTimeNow);
             return KpiGeneral_KpiGeneralDTO;
