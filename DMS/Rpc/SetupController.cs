@@ -1,8 +1,11 @@
 ﻿using Common;
+using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
 using DMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +25,360 @@ namespace DMS.Rpc
         public ActionResult Init()
         {
             InitEnum();
+            InitData();
             InitRoute();
             InitAdmin();
             return Ok();
         }
 
+        #region sync
+        public ActionResult InitData()
+        {
+            RestClient RestClient = new RestClient(InternalServices.ES);
+            InitPosition(RestClient);
+            InitProvince(RestClient);
+            InitDistrict(RestClient);
+            InitWard(RestClient);
+            InitOrganization(RestClient);
+            InitAppUser(RestClient);
+            return Ok();
+        }
+
+        private void InitPosition(RestClient RestClient)
+        {
+            IRestRequest RestRequest = new RestRequest("rpc/es/position/list");
+            RestRequest.RequestFormat = DataFormat.Json;
+            RestRequest.Method = Method.POST;
+            IRestResponse<List<Position>> RestResponse = RestClient.Post<List<Position>>(RestRequest);
+            if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                List<PositionDAO> PositionInDB = DataContext.Position.AsNoTracking().ToList();
+                List<Position> Positions = RestResponse.Data;
+                foreach (Position Position in Positions)
+                {
+                    PositionDAO PositionDAO = PositionInDB.Where(x => x.Id == Position.Id).FirstOrDefault();
+                    if (PositionDAO == null)
+                    {
+                        PositionDAO = new PositionDAO
+                        {
+                            Id = Position.Id,
+                        };
+                        PositionInDB.Add(PositionDAO);
+                    }
+                    PositionDAO.Code = Position.Code;
+                    PositionDAO.Name = Position.Name;
+                    PositionDAO.StatusId = Position.StatusId;
+                    PositionDAO.CreatedAt = Position.CreatedAt;
+                    PositionDAO.UpdatedAt = Position.UpdatedAt;
+                    PositionDAO.DeletedAt = Position.DeletedAt;
+                    PositionDAO.RowId = Position.RowId;
+                }
+                DataContext.Position.BulkMerge(PositionInDB);
+            }
+        }
+
+        private void InitOrganization(RestClient RestClient)
+        {
+            IRestRequest RestRequest = new RestRequest("rpc/es/organization/list");
+            RestRequest.RequestFormat = DataFormat.Json;
+            RestRequest.Method = Method.POST;
+            IRestResponse<List<Organization>> RestResponse = RestClient.Post<List<Organization>>(RestRequest);
+            if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                List<OrganizationDAO> OrganizationInDB = DataContext.Organization.AsNoTracking().ToList();
+                List<Organization> Organizations = RestResponse.Data;
+                foreach (Organization Organization in Organizations)
+                {
+                    OrganizationDAO OrganizationDAO = OrganizationInDB.Where(x => x.Id == Organization.Id).FirstOrDefault();
+                    if (OrganizationDAO == null)
+                    {
+                        OrganizationDAO = new OrganizationDAO
+                        {
+                            Id = Organization.Id,
+                        };
+                        OrganizationInDB.Add(OrganizationDAO);
+                    }
+                    OrganizationDAO.Code = Organization.Code;
+                    OrganizationDAO.Name = Organization.Name;
+                    OrganizationDAO.StatusId = Organization.StatusId;
+                    OrganizationDAO.CreatedAt = Organization.CreatedAt;
+                    OrganizationDAO.UpdatedAt = Organization.UpdatedAt;
+                    OrganizationDAO.DeletedAt = Organization.DeletedAt;
+                    OrganizationDAO.RowId = Organization.RowId;
+                }
+                DataContext.Organization.BulkMerge(OrganizationInDB);
+            }
+
+        }
+
+        private void InitAppUser(RestClient RestClient)
+        {
+            IRestRequest RestRequest = new RestRequest("rpc/es/app-user/list");
+            RestRequest.RequestFormat = DataFormat.Json;
+            RestRequest.Method = Method.POST;
+            IRestResponse<List<AppUser>> RestResponse = RestClient.Post<List<AppUser>>(RestRequest);
+            if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                List<AppUserDAO> AppUserInDB = DataContext.AppUser.AsNoTracking().ToList();
+                List<AppUser> AppUsers = RestResponse.Data;
+                foreach (AppUser AppUser in AppUsers)
+                {
+                    AppUserDAO AppUserDAO = AppUserInDB.Where(x => x.Id == AppUser.Id).FirstOrDefault();
+                    if (AppUserDAO == null)
+                    {
+                        AppUserDAO = new AppUserDAO
+                        {
+                            Id = AppUser.Id,
+
+                        };
+                        AppUserInDB.Add(AppUserDAO);
+                    }
+                    AppUserDAO.Username = AppUser.Username;
+                    AppUserDAO.DisplayName = AppUser.DisplayName;
+                    AppUserDAO.Address = AppUser.Address;
+                    AppUserDAO.Email = AppUser.Email;
+                    AppUserDAO.Phone = AppUser.Phone;
+                    AppUserDAO.ProvinceId = AppUser.ProvinceId;
+                    AppUserDAO.PositionId = AppUser.PositionId;
+                    AppUserDAO.Department = AppUser.Department;
+                    AppUserDAO.OrganizationId = AppUser.OrganizationId;
+                    AppUserDAO.SexId = AppUser.SexId;
+                    AppUserDAO.StatusId = AppUser.StatusId;
+                    AppUserDAO.CreatedAt = AppUser.CreatedAt;
+                    AppUserDAO.UpdatedAt = AppUser.UpdatedAt;
+                    AppUserDAO.DeletedAt = AppUser.DeletedAt;
+                    AppUserDAO.Avatar = AppUser.Avatar;
+                    AppUserDAO.Birthday = AppUser.Birthday;
+                    AppUserDAO.RowId = AppUser.RowId;
+                }
+                DataContext.AppUser.BulkMerge(AppUserInDB);
+            }
+        }
+
+        private void InitProvince(RestClient RestClient)
+        {
+            IRestRequest RestRequest = new RestRequest("rpc/es/province/list");
+            RestRequest.RequestFormat = DataFormat.Json;
+            RestRequest.Method = Method.POST;
+            IRestResponse<List<Province>> RestResponse = RestClient.Post<List<Province>>(RestRequest);
+            if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                List<ProvinceDAO> ProvinceInDB = DataContext.Province.AsNoTracking().ToList();
+                List<Province> Provinces = RestResponse.Data;
+                foreach (Province Province in Provinces)
+                {
+                    ProvinceDAO ProvinceDAO = ProvinceInDB.Where(x => x.Id == Province.Id).FirstOrDefault();
+                    if (ProvinceDAO == null)
+                    {
+                        ProvinceDAO = new ProvinceDAO
+                        {
+                            Id = Province.Id,
+                        };
+                        ProvinceInDB.Add(ProvinceDAO);
+                    }
+                    ProvinceDAO.Code = Province.Code;
+                    ProvinceDAO.Name = Province.Name;
+                    ProvinceDAO.StatusId = Province.StatusId;
+                    ProvinceDAO.CreatedAt = Province.CreatedAt;
+                    ProvinceDAO.UpdatedAt = Province.UpdatedAt;
+                    ProvinceDAO.DeletedAt = Province.DeletedAt;
+                    ProvinceDAO.RowId = Province.RowId;
+                }
+                DataContext.Province.BulkMerge(ProvinceInDB);
+            }
+        }
+
+        private void InitDistrict(RestClient RestClient)
+        {
+            IRestRequest RestRequest = new RestRequest("rpc/es/district/list");
+            RestRequest.RequestFormat = DataFormat.Json;
+            RestRequest.Method = Method.POST;
+            IRestResponse<List<District>> RestResponse = RestClient.Post<List<District>>(RestRequest);
+            if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                List<DistrictDAO> DistrictInDB = DataContext.District.AsNoTracking().ToList();
+                List<District> Districts = RestResponse.Data;
+                foreach (District District in Districts)
+                {
+                    DistrictDAO DistrictDAO = DistrictInDB.Where(x => x.Id == District.Id).FirstOrDefault();
+                    if (DistrictDAO == null)
+                    {
+                        DistrictDAO = new DistrictDAO
+                        {
+                            Id = District.Id,
+                        };
+                        DistrictInDB.Add(DistrictDAO);
+                    }
+                    DistrictDAO.Code = District.Code;
+                    DistrictDAO.Name = District.Name;
+                    DistrictDAO.ProvinceId = District.ProvinceId;
+                    DistrictDAO.StatusId = District.StatusId;
+                    DistrictDAO.CreatedAt = District.CreatedAt;
+                    DistrictDAO.UpdatedAt = District.UpdatedAt;
+                    DistrictDAO.DeletedAt = District.DeletedAt;
+                    DistrictDAO.RowId = District.RowId;
+                }
+                DataContext.District.BulkMerge(DistrictInDB);
+            }
+        }
+
+        private void InitWard(RestClient RestClient)
+        {
+            IRestRequest RestRequest = new RestRequest("rpc/es/ward/list");
+            RestRequest.RequestFormat = DataFormat.Json;
+            RestRequest.Method = Method.POST;
+            IRestResponse<List<Ward>> RestResponse = RestClient.Post<List<Ward>>(RestRequest);
+            if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                List<WardDAO> WardInDB = DataContext.Ward.AsNoTracking().ToList();
+                List<Ward> Wards = RestResponse.Data;
+                foreach (Ward Ward in Wards)
+                {
+                    WardDAO WardDAO = WardInDB.Where(x => x.Id == Ward.Id).FirstOrDefault();
+                    if (WardDAO == null)
+                    {
+                        WardDAO = new WardDAO
+                        {
+                            Id = Ward.Id,
+                        };
+                        WardInDB.Add(WardDAO);
+                    }
+                    WardDAO.Code = Ward.Code;
+                    WardDAO.Name = Ward.Name;
+                    WardDAO.DistrictId = Ward.DistrictId;
+                    WardDAO.StatusId = Ward.StatusId;
+                    WardDAO.CreatedAt = Ward.CreatedAt;
+                    WardDAO.UpdatedAt = Ward.UpdatedAt;
+                    WardDAO.DeletedAt = Ward.DeletedAt;
+                    WardDAO.RowId = Ward.RowId;
+                }
+                DataContext.Ward.BulkMerge(WardInDB);
+            }
+        }
+        #endregion
+
+        #region permission
+        [HttpGet, Route("rpc/dms/setup/init-route")]
+        public ActionResult InitRoute()
+        {
+            List<Type> routeTypes = typeof(SetupController).Assembly.GetTypes()
+               .Where(x => typeof(Root).IsAssignableFrom(x) && x.IsClass)
+               .ToList();
+
+            InitMenu(routeTypes);
+            InitPage(routeTypes);
+            InitField(routeTypes);
+            InitAction(routeTypes);
+
+            DataContext.ActionPageMapping.Where(ap => ap.Action.IsDeleted || ap.Page.IsDeleted).DeleteFromQuery();
+            DataContext.PermissionActionMapping.Where(ap => ap.Action.IsDeleted).DeleteFromQuery();
+            DataContext.Action.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
+            DataContext.Page.Where(p => p.IsDeleted).DeleteFromQuery();
+            DataContext.PermissionContent.Where(f => f.Field.IsDeleted == true || f.Field.Menu.IsDeleted).DeleteFromQuery();
+            DataContext.Field.Where(pf => pf.IsDeleted || pf.Menu.IsDeleted).DeleteFromQuery();
+            DataContext.Permission.Where(p => p.Menu.IsDeleted).DeleteFromQuery();
+            DataContext.Menu.Where(v => v.IsDeleted).DeleteFromQuery();
+            return Ok();
+        }
+        [HttpGet, Route("rpc/dms/setup/init-admin")]
+        public ActionResult InitAdmin()
+        {
+            RoleDAO Admin = DataContext.Role
+               .Where(r => r.Name == "ADMIN")
+               .FirstOrDefault();
+            if (Admin == null)
+            {
+                Admin = new RoleDAO
+                {
+                    Name = "ADMIN",
+                };
+                DataContext.Role.Add(Admin);
+                DataContext.SaveChanges();
+            }
+
+            AppUserDAO AppUser = DataContext.AppUser
+                .Where(au => au.Username.ToLower() == "Administrator".ToLower())
+                .FirstOrDefault();
+            if (AppUser == null)
+            {
+                return Ok();
+            }
+
+            AppUserRoleMappingDAO AppUserRoleMappingDAO = DataContext.AppUserRoleMapping
+                .Where(ur => ur.RoleId == Admin.Id && ur.AppUserId == AppUser.Id)
+                .FirstOrDefault();
+            if (AppUserRoleMappingDAO == null)
+            {
+                AppUserRoleMappingDAO = new AppUserRoleMappingDAO
+                {
+                    AppUserId = AppUser.Id,
+                    RoleId = Admin.Id,
+                };
+                DataContext.AppUserRoleMapping.Add(AppUserRoleMappingDAO);
+                DataContext.SaveChanges();
+            }
+
+            List<MenuDAO> Menus = DataContext.Menu.AsNoTracking()
+                .Include(v => v.Actions)
+                .ToList();
+            List<PermissionDAO> permissions = DataContext.Permission.AsNoTracking()
+                .Include(p => p.PermissionActionMappings)
+                .ToList();
+            foreach (MenuDAO Menu in Menus)
+            {
+                PermissionDAO permission = permissions
+                    .Where(p => p.MenuId == Menu.Id && p.RoleId == Admin.Id)
+                    .FirstOrDefault();
+                if (permission == null)
+                {
+                    permission = new PermissionDAO
+                    {
+                        Code = Admin + "_" + Menu.Name,
+                        Name = Admin + "_" + Menu.Name,
+                        MenuId = Menu.Id,
+                        RoleId = Admin.Id,
+                        StatusId = StatusEnum.ACTIVE.Id,
+                        PermissionActionMappings = new List<PermissionActionMappingDAO>(),
+                    };
+                    permissions.Add(permission);
+                }
+                else
+                {
+                    permission.StatusId = StatusEnum.ACTIVE.Id;
+                    if (permission.PermissionActionMappings == null)
+                        permission.PermissionActionMappings = new List<PermissionActionMappingDAO>();
+                }
+                foreach (ActionDAO action in Menu.Actions)
+                {
+                    PermissionActionMappingDAO PermissionActionMappingDAO = permission.PermissionActionMappings
+                        .Where(ppm => ppm.ActionId == action.Id).FirstOrDefault();
+                    if (PermissionActionMappingDAO == null)
+                    {
+                        PermissionActionMappingDAO = new PermissionActionMappingDAO
+                        {
+                            ActionId = action.Id
+                        };
+                        permission.PermissionActionMappings.Add(PermissionActionMappingDAO);
+                    }
+                }
+
+            }
+            DataContext.Permission.BulkMerge(permissions);
+            permissions.ForEach(p =>
+            {
+                foreach (var action in p.PermissionActionMappings)
+                {
+                    action.PermissionId = p.Id;
+                }
+            });
+
+            List<PermissionActionMappingDAO> PermissionActionMappingDAOs = permissions
+                .SelectMany(p => p.PermissionActionMappings).ToList();
+            DataContext.PermissionContent.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
+            DataContext.PermissionActionMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
+            DataContext.PermissionActionMapping.BulkMerge(PermissionActionMappingDAOs);
+            return Ok();
+        }
         private void InitMenu(List<Type> routeTypes)
         {
             List<MenuDAO> Menus = DataContext.Menu.AsNoTracking().ToList();
@@ -201,30 +553,9 @@ namespace DMS.Rpc
             ActionPageMappingDAOs = ActionPageMappingDAOs.Distinct().ToList();
             DataContext.BulkMerge(ActionPageMappingDAOs);
         }
+        #endregion
 
-        [HttpGet, Route("rpc/dms/setup/init-route")]
-        public ActionResult InitRoute()
-        {
-            List<Type> routeTypes = typeof(SetupController).Assembly.GetTypes()
-               .Where(x => typeof(Root).IsAssignableFrom(x) && x.IsClass)
-               .ToList();
-
-            InitMenu(routeTypes);
-            InitPage(routeTypes);
-            InitField(routeTypes);
-            InitAction(routeTypes);
-
-            DataContext.ActionPageMapping.Where(ap => ap.Action.IsDeleted || ap.Page.IsDeleted).DeleteFromQuery();
-            DataContext.PermissionActionMapping.Where(ap => ap.Action.IsDeleted).DeleteFromQuery();
-            DataContext.Action.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
-            DataContext.Page.Where(p => p.IsDeleted).DeleteFromQuery();
-            DataContext.PermissionContent.Where(f => f.Field.IsDeleted == true || f.Field.Menu.IsDeleted).DeleteFromQuery();
-            DataContext.Field.Where(pf => pf.IsDeleted || pf.Menu.IsDeleted).DeleteFromQuery();
-            DataContext.Permission.Where(p => p.Menu.IsDeleted).DeleteFromQuery();
-            DataContext.Menu.Where(v => v.IsDeleted).DeleteFromQuery();
-            return Ok();
-        }
-
+        #region enum
         [HttpGet, Route("rpc/dms/setup/init-enum")]
         public ActionResult InitEnum()
         {
@@ -245,109 +576,9 @@ namespace DMS.Rpc
             InitKpiEnum();
             InitPermissionEnum();
             InitStoreScoutingStatusEnum();
+            InitSexEnum();
             return Ok();
         }
-
-        [HttpGet, Route("rpc/dms/setup/init-admin")]
-        public ActionResult InitAdmin()
-        {
-            RoleDAO Admin = DataContext.Role
-               .Where(r => r.Name == "ADMIN")
-               .FirstOrDefault();
-            if (Admin == null)
-            {
-                Admin = new RoleDAO
-                {
-                    Name = "ADMIN",
-                };
-                DataContext.Role.Add(Admin);
-                DataContext.SaveChanges();
-            }
-
-            AppUserDAO AppUser = DataContext.AppUser
-                .Where(au => au.Username.ToLower() == "Administrator".ToLower())
-                .FirstOrDefault();
-            if (AppUser == null)
-            {
-                return Ok();
-            }
-
-            AppUserRoleMappingDAO AppUserRoleMappingDAO = DataContext.AppUserRoleMapping
-                .Where(ur => ur.RoleId == Admin.Id && ur.AppUserId == AppUser.Id)
-                .FirstOrDefault();
-            if (AppUserRoleMappingDAO == null)
-            {
-                AppUserRoleMappingDAO = new AppUserRoleMappingDAO
-                {
-                    AppUserId = AppUser.Id,
-                    RoleId = Admin.Id,
-                };
-                DataContext.AppUserRoleMapping.Add(AppUserRoleMappingDAO);
-                DataContext.SaveChanges();
-            }
-
-            List<MenuDAO> Menus = DataContext.Menu.AsNoTracking()
-                .Include(v => v.Actions)
-                .ToList();
-            List<PermissionDAO> permissions = DataContext.Permission.AsNoTracking()
-                .Include(p => p.PermissionActionMappings)
-                .ToList();
-            foreach (MenuDAO Menu in Menus)
-            {
-                PermissionDAO permission = permissions
-                    .Where(p => p.MenuId == Menu.Id && p.RoleId == Admin.Id)
-                    .FirstOrDefault();
-                if (permission == null)
-                {
-                    permission = new PermissionDAO
-                    {
-                        Code = Admin + "_" + Menu.Name,
-                        Name = Admin + "_" + Menu.Name,
-                        MenuId = Menu.Id,
-                        RoleId = Admin.Id,
-                        StatusId = StatusEnum.ACTIVE.Id,
-                        PermissionActionMappings = new List<PermissionActionMappingDAO>(),
-                    };
-                    permissions.Add(permission);
-                }
-                else
-                {
-                    permission.StatusId = StatusEnum.ACTIVE.Id;
-                    if (permission.PermissionActionMappings == null)
-                        permission.PermissionActionMappings = new List<PermissionActionMappingDAO>();
-                }
-                foreach (ActionDAO action in Menu.Actions)
-                {
-                    PermissionActionMappingDAO PermissionActionMappingDAO = permission.PermissionActionMappings
-                        .Where(ppm => ppm.ActionId == action.Id).FirstOrDefault();
-                    if (PermissionActionMappingDAO == null)
-                    {
-                        PermissionActionMappingDAO = new PermissionActionMappingDAO
-                        {
-                            ActionId = action.Id
-                        };
-                        permission.PermissionActionMappings.Add(PermissionActionMappingDAO);
-                    }
-                }
-
-            }
-            DataContext.Permission.BulkMerge(permissions);
-            permissions.ForEach(p =>
-            {
-                foreach (var action in p.PermissionActionMappings)
-                {
-                    action.PermissionId = p.Id;
-                }
-            });
-
-            List<PermissionActionMappingDAO> PermissionActionMappingDAOs = permissions
-                .SelectMany(p => p.PermissionActionMappings).ToList();
-            DataContext.PermissionContent.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
-            DataContext.PermissionActionMapping.Where(pf => pf.Permission.RoleId == Admin.Id).DeleteFromQuery();
-            DataContext.PermissionActionMapping.BulkMerge(PermissionActionMappingDAOs);
-            return Ok();
-        }
-
         private void InitStatusEnum()
         {
             List<StatusDAO> StatusEnumList = StatusEnum.StatusEnumList.Select(item => new StatusDAO
@@ -603,5 +834,29 @@ namespace DMS.Rpc
 
             DataContext.PermissionOperator.BulkSynchronize(PermissionOperatorDAOs);
         }
+        private void InitSexEnum()
+        {
+            List<SexDAO> Sexes = DataContext.Sex.ToList();
+            if (!Sexes.Any(pt => pt.Id == SexEnum.Male.Id))
+            {
+                DataContext.Sex.Add(new SexDAO
+                {
+                    Id = SexEnum.Male.Id,
+                    Code = SexEnum.Male.Code,
+                    Name = SexEnum.Male.Name,
+                });
+            }
+
+            if (!Sexes.Any(pt => pt.Id == SexEnum.Female.Id))
+            {
+                DataContext.Sex.Add(new SexDAO
+                {
+                    Id = SexEnum.Female.Id,
+                    Code = SexEnum.Female.Code,
+                    Name = SexEnum.Female.Name,
+                });
+            }
+        }
+        #endregion
     }
 }

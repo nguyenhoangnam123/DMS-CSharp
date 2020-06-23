@@ -284,6 +284,7 @@ namespace DMS.Services.MKpiGeneral
                     Username = AppUserFilter.Username,
                     Phone = AppUserFilter.Phone,
                     Email = AppUserFilter.Email,
+                    OrganizationId = AppUserFilter.OrganizationId,
                 };
 
                 var count = await UOW.AppUserRepository.Count(AppUserFilter);
