@@ -26,6 +26,7 @@ namespace DMS.Models
         public virtual AppUserDAO Creator { get; set; }
         public virtual AppUserDAO Employee { get; set; }
         public virtual KpiPeriodDAO KpiPeriod { get; set; }
+        public virtual KpiYearDAO KpiYear { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<KpiItemContentDAO> KpiItemContents { get; set; }

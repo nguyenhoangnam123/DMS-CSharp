@@ -90,59 +90,59 @@ namespace DMS.Rpc.kpi_general
             KpiGeneral KpiGeneral = await KpiGeneralService.Get(KpiGeneral_KpiGeneralDTO.Id);
             return new KpiGeneral_KpiGeneralDTO(KpiGeneral);
         }
-        private Tuple<string, string> ConvertDateTime(DateTime date)
+        private Tuple<GenericEnum, GenericEnum> ConvertDateTime(DateTime date)
         {
-            string monthName = "Tháng 1";
-            string quarterName = "Quý 1";
+            GenericEnum monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01;
+            GenericEnum quarterName = Enums.KpiPeriodEnum.PERIOD_MONTH01;
             switch(date.Month)
             {
                 case 1:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01.Name;
-                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER01.Name;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER01;
                     break;
                 case 2:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH02.Name;
-                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER01.Name;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH02;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER01;
                     break;
                 case 3:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH03.Name;
-                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER01.Name;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH03;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER01;
                     break;
                 case 4:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH04.Name;
-                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02.Name;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH04;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02;
                     break;
                 case 5:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01.Name;
-                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02.Name;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02;
                     break;
                 case 6:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01.Name;
-                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02.Name;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02;
                     break;
                 case 7:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH06.Name;
-                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03.Name;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH06;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03;
                     break;
                 case 8:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01.Name;
-                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03.Name;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03;
                     break;
                 case 9:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH09.Name;
-                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03.Name;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH09;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03;
                     break;
                 case 10:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH10.Name;
-                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER04.Name;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH10;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER04;
                     break;
                 case 11:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH11.Name;
-                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER04.Name;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH11;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER04;
                     break;
                 case 12:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH12.Name;
-                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER04.Name;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH12;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER04;
                     break;
             }
             return Tuple.Create(monthName, quarterName);
@@ -172,8 +172,15 @@ namespace DMS.Rpc.kpi_general
                 KpiCriteriaGeneralId = x.Id,
                 KpiCriteriaGeneral = new KpiGeneral_KpiCriteriaGeneralDTO(x),
                 KpiGeneralContentKpiPeriodMappings = KpiPeriods.ToDictionary(x => x.Id, y => 0L),
+                Status = new KpiGeneral_StatusDTO
+                {
+                    Id = Enums.StatusEnum.ACTIVE.Id,
+                    Code = Enums.StatusEnum.ACTIVE.Code,
+                    Name = Enums.StatusEnum.ACTIVE.Name
+                },
+                StatusId = Enums.StatusEnum.ACTIVE.Id
             }).ToList();
-            (KpiGeneral_KpiGeneralDTO.CurrentMonthName, KpiGeneral_KpiGeneralDTO.CurrentQuarterName) = ConvertDateTime(StaticParams.DateTimeNow);
+            (KpiGeneral_KpiGeneralDTO.CurrentMonth, KpiGeneral_KpiGeneralDTO.CurrentQuarter) = ConvertDateTime(StaticParams.DateTimeNow);
             return KpiGeneral_KpiGeneralDTO;
         }
         [Route(KpiGeneralRoute.Create), HttpPost]

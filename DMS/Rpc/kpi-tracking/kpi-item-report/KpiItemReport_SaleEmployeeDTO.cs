@@ -10,6 +10,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         public string DisplayName { get; set; }
         public string? OrganizationName { get; set; }
         public long? OrganizationId { get; set; }
-        public List<KpiItemReport_ItemDTO> KpiItemReport_ItemDTOs { get; set; }
+        //public List<KpiItemReport_ItemDTO> KpiItemReport_ItemDTOs { get; set; }
     }
 }

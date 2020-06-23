@@ -18,6 +18,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         public IdFilter SaleEmployeeId { get; set; }
         public IdFilter KpiPeriodId { get; set; }
         public IdFilter KpiYearId { get; set; }
+        public IdFilter ItemId { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]

@@ -1540,6 +1540,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_KpiItem_KpiPeriod");
 
+                entity.HasOne(d => d.KpiYear)
+                    .WithMany(p => p.KpiItems)
+                    .HasForeignKey(d => d.KpiYearId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiItem_KpiYear");
+
                 entity.HasOne(d => d.Organization)
                     .WithMany(p => p.KpiItems)
                     .HasForeignKey(d => d.OrganizationId)
