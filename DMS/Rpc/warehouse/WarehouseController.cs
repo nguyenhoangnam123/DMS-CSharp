@@ -239,8 +239,6 @@ namespace DMS.Rpc.warehouse
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, StartColumn].Value?.ToString()))
-                        break;
                     string WarehouseCodeValue = worksheet.Cells[i + StartRow, WarehouseCodeColumn].Value?.ToString();
                     string WarehouseNameValue = worksheet.Cells[i + StartRow, WarehouseNameColumn].Value?.ToString();
                     string ItemCodeValue = worksheet.Cells[i + StartRow, ItemCodeColumn].Value?.ToString();
