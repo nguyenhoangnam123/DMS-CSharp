@@ -6,7 +6,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
     public class KpiItemReport_AppUserDTO : DataDTO
     {
         public long Id { get; set; }
-        public long OrganizationId { get; set; }
+        public long? OrganizationId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
 
@@ -14,7 +14,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         public KpiItemReport_AppUserDTO(AppUser AppUser)
         {
             this.Id = AppUser.Id;
-            this.OrganizationId = AppUser.OrganizationId.Value;
+            this.OrganizationId = AppUser.OrganizationId;
             this.Username = AppUser.Username;
             this.DisplayName = AppUser.DisplayName;
             this.Errors = AppUser.Errors;

@@ -14,13 +14,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListAppUser = Default + "/filter-list-app-user";
+        public const string FilterListItem = Default + "/filter-list-item";
         public const string FilterListKpiPeriod = Default + "/filter-list-kpi-period";
         public const string FilterListKpiYear = Default + "/filter-list-kpi-year";
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Export, FilterListOrganization,FilterListAppUser,FilterListKpiYear, FilterListKpiPeriod} },
+                Master, Count, List, Export, FilterListOrganization,FilterListAppUser,FilterListKpiYear, FilterListKpiPeriod, FilterListItem} },
 
         };
     }
