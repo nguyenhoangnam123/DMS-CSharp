@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.warehouse
@@ -272,6 +273,19 @@ namespace DMS.Rpc.warehouse
             Warehouse = await WarehouseService.Update(Warehouse);
             List<Warehouse_InventoryDTO> Warehouse_InventoryDTOs = Warehouse.Inventories
                  .Select(c => new Warehouse_InventoryDTO(c)).ToList();
+            StringBuilder errorContent = new StringBuilder();
+            for (int i = 0; i < Warehouse.Inventories.Count; i++)
+            {
+                if (!Warehouse.Inventories[i].IsValidated)
+                {
+                    foreach (var Error in Warehouse.Inventories[i].Errors)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: {Error.Value}");
+                    }
+                }
+            }
+            if (Warehouse.Inventories.Any(x => !x.IsValidated))
+                return BadRequest(errorContent);
             return Warehouse_InventoryDTOs;
         }
 

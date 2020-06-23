@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.product
@@ -433,7 +434,7 @@ namespace DMS.Rpc.product
                     Product.UsedVariationId = UsedVariations.Where(x => x.Name.ToLower().Equals(UsedVariationCodeValue == null ? string.Empty : UsedVariationCodeValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
                     Product.Description = DescriptionValue;
                     Product.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : long.Parse(RetailPriceValue);
-                    Product.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : long.Parse(SalePriceValue);
+                    Product.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : -1;
                     if (!string.IsNullOrEmpty(StatusIdValue))
                     {
                         int StatusId = 0;
@@ -442,6 +443,10 @@ namespace DMS.Rpc.product
                             Product.StatusId = StatusEnum.ACTIVE.Id;
                         else
                             Product.StatusId = StatusEnum.INACTIVE.Id;
+                    }
+                    else
+                    {
+                        Product.StatusId = -1;
                     }
 
                     if (Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
@@ -595,8 +600,20 @@ namespace DMS.Rpc.product
             Products = await ProductService.Import(Products);
             List<Product_ProductDTO> Product_ProductDTOs = Products
                 .Select(c => new Product_ProductDTO(c)).ToList();
+            StringBuilder errorContent = new StringBuilder();
+            for (int i = 0; i < Products.Count; i++)
+            {
+                if (!Products[i].IsValidated)
+                {
+                    foreach (var Error in Products[i].Errors)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: {Error.Value}");
+                    }
+                }
+            }
+
             if (Products.Any(x => !x.IsValidated))
-                return BadRequest(Products.Where(x => !x.IsValidated));
+                return BadRequest(errorContent);
             return Product_ProductDTOs;
         }
 
@@ -1107,12 +1124,6 @@ namespace DMS.Rpc.product
                 }
                 #endregion
 
-                var nameexcel = "Export sản phẩm" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff");
-                xlPackage.Workbook.Properties.Title = string.Format("{0}", nameexcel);
-                xlPackage.Workbook.Properties.Author = "Sonhx5";
-                xlPackage.Workbook.Properties.Subject = string.Format("{0}", "RD-DMS");
-                xlPackage.Workbook.Properties.Category = "RD-DMS";
-                xlPackage.Workbook.Properties.Company = "FPT-FIS-ERP-ESC";
                 xlPackage.SaveAs(MemoryStream);
             }
 

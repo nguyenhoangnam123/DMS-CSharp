@@ -696,7 +696,7 @@ namespace DMS.Repositories
             StoreDAO.LegalEntity = Store.LegalEntity;
             StoreDAO.StatusId = Store.StatusId;
             StoreDAO.StoreScoutingId = Store.StoreScoutingId;
-            StoreDAO.RowId = Store.RowId;
+            StoreDAO.RowId = Guid.NewGuid();
             StoreDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
             StoreDAO.Used = false;
@@ -782,6 +782,7 @@ namespace DMS.Repositories
                 StoreDAO.LegalEntity = Store.LegalEntity;
                 StoreDAO.StatusId = Store.StatusId;
                 StoreDAO.StoreScoutingId = Store.StoreScoutingId;
+                StoreDAO.RowId = Store.RowId;
                 StoreDAO.CreatedAt = StaticParams.DateTimeNow;
                 StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
                 StoreDAOs.Add(StoreDAO);

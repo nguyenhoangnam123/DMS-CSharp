@@ -17,6 +17,7 @@ namespace DMS.Rpc.store_checking
         public DateTime NoteAt { get; set; }
         public DateTime? CompletedAt { get; set; }
         public string Content { get; set; }
+        public Guid RowId { get; set; }
         public StoreChecking_AppUserDTO Creator { get; set; }
         public StoreChecking_ProblemTypeDTO ProblemType { get; set; }
         public StoreChecking_ProblemStatusDTO ProblemStatus { get; set; }
@@ -35,6 +36,7 @@ namespace DMS.Rpc.store_checking
             this.NoteAt = Problem.NoteAt;
             this.CompletedAt = Problem.CompletedAt;
             this.Content = Problem.Content;
+            this.RowId = Problem.RowId;
             this.Creator = Problem.Creator == null ? null : new StoreChecking_AppUserDTO(Problem.Creator);
             this.ProblemType = Problem.ProblemType == null ? null : new StoreChecking_ProblemTypeDTO(Problem.ProblemType);
             this.ProblemStatus = Problem.ProblemStatus == null ? null : new StoreChecking_ProblemStatusDTO(Problem.ProblemStatus);

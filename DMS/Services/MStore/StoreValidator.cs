@@ -562,21 +562,33 @@ namespace DMS.Services.MStore
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Organization), ErrorCode.OrganizationNotExisted);
                 }
-                if (!listProvinceCodeInDB.Contains(Store.Province.Code))
+                if (Store.Province != null)
                 {
-                    Store.AddError(nameof(StoreValidator), nameof(Store.Province), ErrorCode.ProvinceNotExisted);
+                    if (!listProvinceCodeInDB.Contains(Store.Province.Code))
+                    {
+                        Store.AddError(nameof(StoreValidator), nameof(Store.Province), ErrorCode.ProvinceNotExisted);
+                    }
                 }
-                if (!listDistrictCodeInDB.Contains(Store.District.Code))
+                if (Store.District != null)
                 {
-                    Store.AddError(nameof(StoreValidator), nameof(Store.District), ErrorCode.DistrictNotExisted);
+                    if (!listDistrictCodeInDB.Contains(Store.District.Code))
+                    {
+                        Store.AddError(nameof(StoreValidator), nameof(Store.District), ErrorCode.DistrictNotExisted);
+                    }
                 }
-                if (!listWardCodeInDB.Contains(Store.Ward.Code))
+                if (Store.Ward != null)
                 {
-                    Store.AddError(nameof(StoreValidator), nameof(Store.Ward), ErrorCode.WardNotExisted);
+                    if (!listWardCodeInDB.Contains(Store.Ward.Code))
+                    {
+                        Store.AddError(nameof(StoreValidator), nameof(Store.Ward), ErrorCode.WardNotExisted);
+                    }
                 }
-                if (!listStoreGroupingCodeInDB.Contains(Store.StoreGrouping.Code))
+                if (Store.StoreGrouping != null)
                 {
-                    Store.AddError(nameof(StoreValidator), nameof(Store.StoreGrouping), ErrorCode.StoreGroupingNotExisted);
+                    if (!listStoreGroupingCodeInDB.Contains(Store.StoreGrouping.Code))
+                    {
+                        Store.AddError(nameof(StoreValidator), nameof(Store.StoreGrouping), ErrorCode.StoreGroupingNotExisted);
+                    }
                 }
                 if (!listStoreTypeCodeInDB.Contains(Store.StoreType.Code))
                 {
