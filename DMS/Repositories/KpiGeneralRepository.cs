@@ -453,30 +453,51 @@ namespace DMS.Repositories
             return true;
         }
 
-        private async Task SaveReference(KpiGeneral KpiGeneral)  // to do save reference nhung bang nao
+        private async Task SaveReference(KpiGeneral KpiGeneral) 
         {
+            var KpiGeneralContentIds = KpiGeneral.KpiGeneralContents.Select(x => x.Id).ToList();
+            await DataContext.KpiGeneralContentKpiPeriodMapping
+                .Where(x => KpiGeneralContentIds
+                .Contains(x.KpiGeneralContentId))
+                .DeleteFromQueryAsync();
             await DataContext.KpiGeneralContent
-                .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                .Where(x => KpiGeneralContentIds.Contains(x.Id))
                 .DeleteFromQueryAsync();
             List<KpiGeneralContentDAO> KpiGeneralContentDAOs = new List<KpiGeneralContentDAO>();
+            List<KpiGeneralContentKpiPeriodMappingDAO> KpiGeneralContentKpiCriteriaItemMappingDAOs = new List<KpiGeneralContentKpiPeriodMappingDAO>();
             if (KpiGeneral.KpiGeneralContents != null)
             {
+                KpiGeneral.KpiGeneralContents.ForEach(x => x.RowId = Guid.NewGuid());
                 foreach (KpiGeneralContent KpiGeneralContent in KpiGeneral.KpiGeneralContents)
                 {
                     KpiGeneralContentDAO KpiGeneralContentDAO = new KpiGeneralContentDAO();
                     KpiGeneralContentDAO.Id = KpiGeneralContent.Id;
                     KpiGeneralContentDAO.KpiGeneralId = KpiGeneral.Id;
                     KpiGeneralContentDAO.KpiCriteriaGeneralId = KpiGeneralContent.KpiCriteriaGeneralId;
-                    KpiGeneralContentDAO.StatusId = KpiGeneralContent.StatusId;
-                    KpiGeneralContentDAO.KpiGeneralContentKpiPeriodMappings = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Select(x => new KpiGeneralContentKpiPeriodMappingDAO
-                    {
-                        KpiPeriodId = x.KpiPeriodId,
-                        Value = x.Value,
-                        KpiGeneralContentId = KpiGeneralContent.Id
-                    }).ToList();
+                    KpiGeneralContentDAO.RowId = KpiGeneralContent.RowId;
                     KpiGeneralContentDAOs.Add(KpiGeneralContentDAO);
                 }
                 await DataContext.KpiGeneralContent.BulkMergeAsync(KpiGeneralContentDAOs);
+
+                foreach (KpiGeneralContent KpiGeneralContent in KpiGeneral.KpiGeneralContents)
+                {
+                    KpiGeneralContent.Id = KpiGeneralContentDAOs.Where(x => x.RowId == KpiGeneralContent.RowId).Select(x => x.Id).FirstOrDefault();
+                    if (KpiGeneralContent.KpiGeneralContentKpiPeriodMappings != null)
+                    {
+                        foreach (KpiGeneralContentKpiPeriodMapping KpiGeneralContentKpiPeriodMapping in KpiGeneralContent.KpiGeneralContentKpiPeriodMappings)
+                        {
+                            KpiGeneralContentKpiPeriodMappingDAO KpiGeneralContentKpiCriteriaItemMappingDAO = new KpiGeneralContentKpiPeriodMappingDAO
+                            {
+                                KpiGeneralContentId = KpiGeneralContent.Id,
+                                KpiPeriodId = KpiGeneralContentKpiPeriodMapping.KpiPeriodId,
+                                Value = KpiGeneralContentKpiPeriodMapping.Value
+                            };
+                            KpiGeneralContentKpiCriteriaItemMappingDAOs.Add(KpiGeneralContentKpiCriteriaItemMappingDAO);
+                        }
+                    }
+                }
+
+                await DataContext.KpiGeneralContentKpiPeriodMapping.BulkMergeAsync(KpiGeneralContentKpiCriteriaItemMappingDAOs);
             }
         }
         

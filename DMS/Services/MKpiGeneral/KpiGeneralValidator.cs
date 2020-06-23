@@ -154,7 +154,7 @@ namespace DMS.Services.MKpiGeneral
             {
                 await ValidateOrganization(KpiGeneral);
                 await ValidateStatus(KpiGeneral);
-                await ValidateKpiGeneral(KpiGeneral);
+                //await ValidateKpiGeneral(KpiGeneral);
             }
             return KpiGeneral.IsValidated;
         }
