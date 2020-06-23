@@ -322,8 +322,21 @@ namespace DMS.Repositories
                         Code = x.Status.Code,
                         Name = x.Status.Name,
                     },
+                    //KpiGeneralContentKpiPeriodMappings
                 }).ToListAsync();
-
+            var KpiGeneralContentIds = KpiGeneral.KpiGeneralContents.Select(x => x.Id).ToList();
+            List<KpiGeneralContentKpiPeriodMapping> KpiGeneralContentKpiPeriodMappings = await DataContext.KpiGeneralContentKpiPeriodMapping
+                .Where(x => KpiGeneralContentIds.Contains(x.KpiGeneralContentId))
+                .Select(x => new KpiGeneralContentKpiPeriodMapping
+                {
+                    KpiGeneralContentId = x.KpiGeneralContentId,
+                    KpiPeriodId = x.KpiPeriodId,
+                    Value = x.Value,
+                }).ToListAsync();
+            foreach (KpiGeneralContent KpiGeneralContent in KpiGeneral.KpiGeneralContents)
+            {
+                KpiGeneralContent.KpiGeneralContentKpiPeriodMappings = KpiGeneralContentKpiPeriodMappings.Where(x => x.KpiGeneralContentId == KpiGeneralContent.Id).ToList();
+            }
             return KpiGeneral;
         }
         public async Task<bool> Create(KpiGeneral KpiGeneral)

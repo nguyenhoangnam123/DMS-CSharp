@@ -74,20 +74,20 @@
 //        }
 
 //        [Route(KpiItemReportRoute.FilterListItem), HttpPost] // to do
-//        public async Task<List<KpiItemReport_OrganizationDTO>> FilterListItem([FromBody] KpiItemReport_OrganizationFilterDTO KpiItemReport_OrganizationFilterDTO)
+//        public async Task<List<KpiItemReport_OrganizationDTO>> FilterListItem([FromBody] KpiItemReport_ItemFilterDTO KpiItemReport_ItemFilterDTO)
 //        {
 //            if (!ModelState.IsValid)
 //                throw new BindException(ModelState);
 
-//            OrganizationFilter OrganizationFilter = new OrganizationFilter();
-//            OrganizationFilter.Skip = 0;
-//            OrganizationFilter.Take = int.MaxValue;
-//            OrganizationFilter.OrderBy = OrganizationOrder.Id;
-//            OrganizationFilter.OrderType = OrderType.ASC;
-//            OrganizationFilter.Selects = OrganizationSelect.ALL;
-//            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+//            ItemFilter ItemFilter = new ItemFilter();
+//            ItemFilter.Skip = 0;
+//            ItemFilter.Take = int.MaxValue;
+//            ItemFilter.OrderBy = ItemOrder.Id;
+//            ItemFilter.OrderType = OrderType.ASC;
+//            ItemFilter.Selects = ItemSelect.ALL;
+//            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
-//            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+//            List<Organization> Organizations = await ItemService.List(ItemFilter);
 //            List<KpiItemReport_OrganizationDTO> KpiItemReport_OrganizationDTOs = Organizations
 //                .Select(x => new KpiItemReport_OrganizationDTO(x)).ToList();
 //            return KpiItemReport_OrganizationDTOs;
