@@ -172,6 +172,12 @@ namespace DMS.Rpc.kpi_general
                 KpiCriteriaGeneralId = x.Id,
                 KpiCriteriaGeneral = new KpiGeneral_KpiCriteriaGeneralDTO(x),
                 KpiGeneralContentKpiPeriodMappings = KpiPeriods.ToDictionary(x => x.Id, y => 0L),
+                Status = new KpiGeneral_StatusDTO
+                {
+                    Id = Enums.StatusEnum.ACTIVE.Id,
+                    Code = Enums.StatusEnum.ACTIVE.Code,
+                    Name = Enums.StatusEnum.ACTIVE.Name
+                },
             }).ToList();
             (KpiGeneral_KpiGeneralDTO.CurrentMonth, KpiGeneral_KpiGeneralDTO.CurrentQuarter) = ConvertDateTime(StaticParams.DateTimeNow);
             return KpiGeneral_KpiGeneralDTO;

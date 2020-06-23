@@ -157,9 +157,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
             var query_detail = from a in DataContext.KpiGeneralContentKpiPeriodMapping
                                join b in DataContext.KpiGeneralContent on a.KpiGeneralContentId equals b.Id
                                join c in DataContext.KpiGeneral on b.KpiGeneralId equals c.Id
-                               where (SaleEmployeeIds.Contains(c.EmployeeId) &&
-                                      c.KpiYearId == KpiYearId &&
-                                      a.KpiPeriodId == KpiPeriodId)
+                               where (SaleEmployeeIds.Contains(c.EmployeeId)
+                                      && c.KpiYearId == KpiYearId
+                                      && a.KpiPeriodId == KpiPeriodId)
                                select new KpiGeneralPeriodReport_SaleEmployeeDetailDTO
                                {
                                    SaleEmployeeId = c.EmployeeId,
