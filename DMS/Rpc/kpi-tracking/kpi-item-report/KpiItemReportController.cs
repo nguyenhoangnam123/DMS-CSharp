@@ -183,14 +183,14 @@
 //                                      c.KpiYearId == KpiYearId &&
 //                                      c.KpiPeriodId == KpiPeriodId &&
 //                                      (ItemId == null || d.Id == ItemId)) // to do
-//                               select new KpiItemReport_ItemDTO
+//                               select new KpiItemReport_SaleEmployeeItemDTO
 //                               {
 //                                   SaleEmployeeId = c.EmployeeId,
 //                                   KpiCriteriaItemId = a.KpiCriteriaItemId,
 //                                   Value = a.Value,
 //                                   ItemId = c.Id,
 //                               };
-//            List<KpiItemReport_ItemDTO> KpiItemReport_ItemDTOs = await query_detail.Distinct().ToListAsync();
+//            List<KpiItemReport_SaleEmployeeItemDTO> KpiItemReport_ItemDTOs = await query_detail.Distinct().ToListAsync();
 
 
 

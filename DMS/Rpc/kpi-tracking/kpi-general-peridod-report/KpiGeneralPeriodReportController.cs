@@ -96,11 +96,12 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
             {
                 OrganizationDAO = DataContext.Organization.Where(o => o.Id == KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.OrganizationId.Equal.Value).FirstOrDefault();
             }
-            var query = from ap in DataContext.AppUser
+            var query = from k in DataContext.KpiGeneral
+                        join ap in DataContext.AppUser on k.EmployeeId equals ap.Id
                         join o in DataContext.Organization on ap.OrganizationId equals o.Id
                         where (OrganizationDAO == null || o.Path.StartsWith(OrganizationDAO.Path)) &&
                         (SaleEmployeeId == null || ap.Id == SaleEmployeeId.Value)
-                        select ap.Id;
+                        select k.Id;
             return await query.Distinct().CountAsync();
         }
 
