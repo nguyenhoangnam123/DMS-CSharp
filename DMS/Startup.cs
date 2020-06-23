@@ -1,5 +1,6 @@
 using Common;
 using DMS.Handlers;
+using DMS.Helpers;
 using DMS.Models;
 using DMS.Rpc;
 using DMS.Services;
@@ -136,8 +137,12 @@ namespace DMS
                     policy.Requirements.Add(new SimpleRequirement()));
             });
 
+            InternalServices.UTILS = Configuration["InternalServices:UTILS"];
+            InternalServices.ES = Configuration["InternalServices:ES"];
             Action onChange = () =>
             {
+                InternalServices.UTILS = Configuration["InternalServices:UTILS"];
+                InternalServices.ES = Configuration["InternalServices:ES"];
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily);
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily);
             };

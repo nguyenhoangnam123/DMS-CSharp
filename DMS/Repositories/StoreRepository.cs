@@ -79,7 +79,8 @@ namespace DMS.Repositories
             if (filter.StoreTypeId != null)
                 query = query.Where(q => q.StoreTypeId, filter.StoreTypeId);
             if (filter.StoreGroupingId != null && filter.StoreGroupingId.HasValue)
-                query = query.Where(q => q.StoreGroupingId.HasValue).Where(q => q.StoreGroupingId.Value, filter.StoreGroupingId);
+                query = query.Where(q => q.StoreGroupingId.HasValue)
+                    .Where(q => q.StoreGroupingId.Value, filter.StoreGroupingId);
             if (filter.ResellerId != null)
                 query = query.Where(q => q.ResellerId, filter.ResellerId);
             if (filter.Telephone != null)

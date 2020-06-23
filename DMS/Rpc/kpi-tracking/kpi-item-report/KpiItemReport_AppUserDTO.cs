@@ -1,17 +1,17 @@
 ﻿using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
+namespace DMS.Rpc.kpi_tracking.kpi_item_report
 {
-    public class KpiGeneralPeriodReport_AppUserDTO : DataDTO
+    public class KpiItemReport_AppUserDTO : DataDTO
     {
         public long Id { get; set; }
         public long? OrganizationId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
 
-        public KpiGeneralPeriodReport_AppUserDTO() { }
-        public KpiGeneralPeriodReport_AppUserDTO(AppUser AppUser)
+        public KpiItemReport_AppUserDTO() { }
+        public KpiItemReport_AppUserDTO(AppUser AppUser)
         {
             this.Id = AppUser.Id;
             this.OrganizationId = AppUser.OrganizationId;
@@ -21,7 +21,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         }
     }
 
-    public class KpiGeneralPeriodReport_AppUserFilterDTO : FilterDTO
+    public class KpiItemReport_AppUserFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public IdFilter OrganizationId { get; set; }

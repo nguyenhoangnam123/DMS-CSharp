@@ -105,7 +105,7 @@ namespace DMS.Services.MImage
 
         public async Task<Image> Create(Image Image, string path)
         {
-            RestClient restClient = new RestClient($"http://localhost:{Modules.Utils}");
+            RestClient restClient = new RestClient(InternalServices.UTILS);
             RestRequest restRequest = new RestRequest("/rpc/utils/file/upload");
             restRequest.RequestFormat = DataFormat.Json;
             restRequest.Method = Method.POST;

@@ -10,6 +10,10 @@
         "proxy": {
           "upstreams": [
             {
+              "destination_name": "es",
+              "local_bind_port": 10008
+            },
+            {
               "destination_name": "windows-mssql",
               "local_bind_port": 1433
             },
