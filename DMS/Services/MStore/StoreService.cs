@@ -155,8 +155,6 @@ namespace DMS.Services.MStore
             try
             {
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                Store.Id = 0;
-                Store.RowId = Guid.NewGuid();
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
                 List<UserNotification> UserNotifications = new List<UserNotification>();
@@ -355,11 +353,13 @@ namespace DMS.Services.MStore
                     if (Store != null)
                     {
                         item.Id = Store.Id;
+                        item.RowId = Store.RowId;
                         item.StatusId = StatusEnum.ACTIVE.Id;
                     }
                     else
                     {
                         item.Id = 0;
+                        item.RowId = Guid.NewGuid();
                         item.StatusId = StatusEnum.ACTIVE.Id;
                     }
                 }
