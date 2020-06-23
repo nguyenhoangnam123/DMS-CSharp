@@ -17,6 +17,7 @@ using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
 using DMS.Services.MKpiCriteriaGeneral;
 using DMS.Services.MKpiPeriod;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace DMS.Rpc.kpi_general
 {
@@ -89,7 +90,63 @@ namespace DMS.Rpc.kpi_general
             KpiGeneral KpiGeneral = await KpiGeneralService.Get(KpiGeneral_KpiGeneralDTO.Id);
             return new KpiGeneral_KpiGeneralDTO(KpiGeneral);
         }
-
+        private Tuple<string, string> ConvertDateTime(DateTime date)
+        {
+            string monthName = "Tháng 1";
+            string quarterName = "Quý 1";
+            switch(date.Month)
+            {
+                case 1:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01.Name;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER01.Name;
+                    break;
+                case 2:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH02.Name;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER01.Name;
+                    break;
+                case 3:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH03.Name;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER01.Name;
+                    break;
+                case 4:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH04.Name;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02.Name;
+                    break;
+                case 5:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01.Name;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02.Name;
+                    break;
+                case 6:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01.Name;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02.Name;
+                    break;
+                case 7:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH06.Name;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03.Name;
+                    break;
+                case 8:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01.Name;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03.Name;
+                    break;
+                case 9:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH09.Name;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03.Name;
+                    break;
+                case 10:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH10.Name;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER04.Name;
+                    break;
+                case 11:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH11.Name;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER04.Name;
+                    break;
+                case 12:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH12.Name;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER04.Name;
+                    break;
+            }
+            return Tuple.Create(monthName, quarterName);
+        }
         [Route(KpiGeneralRoute.GetDraft), HttpPost]
         public async Task<ActionResult<KpiGeneral_KpiGeneralDTO>> GetDraft()
         {
@@ -116,6 +173,7 @@ namespace DMS.Rpc.kpi_general
                 KpiCriteriaGeneral = new KpiGeneral_KpiCriteriaGeneralDTO(x),
                 KpiGeneralContentKpiPeriodMappings = KpiPeriods.ToDictionary(x => x.Id, y => 0L),
             }).ToList();
+            (KpiGeneral_KpiGeneralDTO.CurrentMonthName, KpiGeneral_KpiGeneralDTO.CurrentQuarterName) = ConvertDateTime(StaticParams.DateTimeNow);
             return KpiGeneral_KpiGeneralDTO;
         }
         [Route(KpiGeneralRoute.Create), HttpPost]

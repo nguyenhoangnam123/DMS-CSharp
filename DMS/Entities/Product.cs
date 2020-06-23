@@ -137,5 +137,6 @@ namespace DMS.Entities
         ProductProductGroupingMapping = E._19,
         IsNew = E._20,
         UsedVariation = E._21,
+        VariationGrouping = E._22,
     }
 }

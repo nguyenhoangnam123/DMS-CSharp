@@ -438,11 +438,17 @@ namespace DMS.Services.MProduct
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProductService));
+                
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProductService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProductService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 

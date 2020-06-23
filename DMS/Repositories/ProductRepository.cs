@@ -343,6 +343,7 @@ namespace DMS.Repositories
                 Name = filter.Selects.Contains(ProductSelect.Name) ? q.Name : default(string),
                 Description = filter.Selects.Contains(ProductSelect.Description) ? q.Description : default(string),
                 ScanCode = filter.Selects.Contains(ProductSelect.ScanCode) ? q.ScanCode : default(string),
+                ERPCode = filter.Selects.Contains(ProductSelect.ERPCode) ? q.ERPCode : default(string),
                 ProductTypeId = filter.Selects.Contains(ProductSelect.ProductType) ? q.ProductTypeId : default(long),
                 SupplierId = filter.Selects.Contains(ProductSelect.Supplier) ? q.SupplierId : default(long?),
                 BrandId = filter.Selects.Contains(ProductSelect.Brand) ? q.BrandId : default(long?),
@@ -431,6 +432,14 @@ namespace DMS.Repositories
                         Description = p.ProductGrouping.Description,
                     },
                 }).ToList() : null,
+                VariationGroupings = filter.Selects.Contains(ProductSelect.VariationGrouping) && q.VariationGroupings != null ?
+                q.VariationGroupings.Select(v => new VariationGrouping
+                {
+                    ProductId = v.ProductId,
+                    Name = v.Name,
+                    Id = v.Id,
+                    RowId = v.RowId,
+                }).ToList() : null,
                 Used = q.Used,
             }).ToListAsync();
 
@@ -458,6 +467,29 @@ namespace DMS.Repositories
                 }
             }
 
+            var VariationGroupingIds = Products.Where(x => x.VariationGroupings != null)
+                .SelectMany(x => x.VariationGroupings).Select(x => x.Id).Distinct().ToList();
+            if(VariationGroupingIds != null)
+            {
+                List<Variation> Variations = await DataContext.Variation.Where(x => VariationGroupingIds.Contains(x.VariationGroupingId))
+                    .Select(x => new Variation
+                    {
+                        Id = x.Id,
+                        Code = x.Code,
+                        Name = x.Name,
+                        VariationGroupingId = x.VariationGroupingId,
+                    }).ToListAsync();
+                foreach (var Product in Products)
+                {
+                    if(Product.VariationGroupings != null)
+                    {
+                        foreach (var VariationGrouping in Product.VariationGroupings)
+                        {
+                            VariationGrouping.Variations = Variations.Where(x => x.VariationGroupingId == VariationGrouping.Id).ToList();
+                        }
+                    }
+                }
+            }
             return Products;
         }
 

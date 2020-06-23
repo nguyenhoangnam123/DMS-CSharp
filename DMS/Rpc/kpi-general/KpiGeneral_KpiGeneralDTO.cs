@@ -12,6 +12,8 @@ namespace DMS.Rpc.kpi_general
         public long OrganizationId { get; set; }
         public long EmployeeId { get; set; }
         public long KpiYearId { get; set; }
+        public string CurrentMonthName { get; set; }
+        public string CurrentQuarterName { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
         public KpiGeneral_AppUserDTO Creator { get; set; }
