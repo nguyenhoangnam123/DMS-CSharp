@@ -197,6 +197,9 @@ namespace DMS.Rpc.product
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            if (!FileInfo.Extension.Equals(".xlsx"))
+                return BadRequest("Định dạng file không hợp lệ");
 
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
             {
@@ -246,82 +249,67 @@ namespace DMS.Rpc.product
                 Take = int.MaxValue,
                 Selects = UsedVariationSelect.ALL
             });
+            List<Status> Statuses = await StatusService.List(new StatusFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StatusSelect.ALL
+            });
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
                 Content = file.OpenReadStream(),
             };
             List<Product> Products = new List<Product>();
+            StringBuilder errorContent = new StringBuilder();
             using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
             {
                 #region ProductSheet
                 ExcelWorksheet ProductSheet = excelPackage.Workbook.Worksheets["Product"];
                 if (ProductSheet == null)
-                    return null;
+                    return BadRequest("File không đúng biểu mẫu import");
 
                 #region Khai báo thứ tự các cột trong Exel file 
                 int StartColumn = 1;
                 int StartRow = 1;
-                //Mã sản phẩm
                 int CodeColumn = 1 + StartColumn;
-                //Tên sản phẩm
                 int NameColumn = 2 + StartColumn;
-                //Nhóm sản phẩm
                 int ProductGroupCodeColumn = 3 + StartColumn;
-                //Loại sản phẩm
                 int ProductTypeCodeColumn = 4 + StartColumn;
-                //Đơn vị tính
                 int UoMCodeColumn = 5 + StartColumn;
-                //NHóm đơn vị tính
                 int UoMGroupCodeColumn = 6 + StartColumn;
-                //Nhà cung cấp
                 int SupplierCodeColumn = 7 + StartColumn;
-                //Mã ERP
                 int ERPCodeColumn = 8 + StartColumn;
-                //Mã nhận diện sản phẩm
                 int ScanCodeColumn = 9 + StartColumn;
-                //Nhãn hiệu
                 int BrandCodeColumn = 10 + StartColumn;
-                //Tên khác
                 int OtherNameColumn = 11 + StartColumn;
-                //Tên kỹ thuật
                 int TechnicalNameColumn = 12 + StartColumn;
-                //Mã thuế
                 int TaxTypeCodeColumn = 13 + StartColumn;
-                //Mô tả
                 int DescriptionColumn = 14 + StartColumn;
-                //Giá bánr
-                int RetailPriceColumn = 15 + StartColumn;
-                //Giá bán đề xuất
-                int SalePriceColumn = 16 + StartColumn;
+                int SalePriceColumn = 15 + StartColumn;
+                int RetailPriceColumn = 16 + StartColumn;
 
-                //Trạng thái
                 int StatusIdColumn = 17 + StartColumn;
-                //Có tạo phiên bản
                 int UsedVariationCodeColumn = 18 + StartColumn;
-                //Thuộc tính 1
                 int Property1Column = 19 + StartColumn;
-                //Giá trị 1
                 int PropertyValue1Column = 20 + StartColumn;
-                //Thuộc tính 2
                 int Property2Column = 21 + StartColumn;
-                //Giá trị 2
                 int PropertyValue2Column = 22 + StartColumn;
-                //Thuộc tính 3
                 int Property3Column = 23 + StartColumn;
-                //Giá trị 3
                 int PropertyValue3Column = 24 + StartColumn;
-                //Thuộc tính 4
                 int Property4Column = 25 + StartColumn;
-                //Giá trị 4
                 int PropertyValue4Column = 26 + StartColumn;
                 #endregion
 
                 for (int i = StartRow; i <= ProductSheet.Dimension.End.Row; i++)
                 {
-                    if (string.IsNullOrEmpty(ProductSheet.Cells[i + StartRow, CodeColumn].Value?.ToString()))
-                        break;
                     string CodeValue = ProductSheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                    if (string.IsNullOrWhiteSpace(CodeValue) && i != ProductSheet.Dimension.End.Row)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã sản phẩm");
+                    }
+                    else if (string.IsNullOrWhiteSpace(CodeValue) && i == ProductSheet.Dimension.End.Row)
+                        break;
                     string NameValue = ProductSheet.Cells[i + StartRow, NameColumn].Value?.ToString();
                     string ProductGroupCodeValue = ProductSheet.Cells[i + StartRow, ProductGroupCodeColumn].Value?.ToString();
                     string ProductTypeCodeValue = ProductSheet.Cells[i + StartRow, ProductTypeCodeColumn].Value?.ToString();
@@ -335,10 +323,10 @@ namespace DMS.Rpc.product
                     string TechnicalNameValue = ProductSheet.Cells[i + StartRow, TechnicalNameColumn].Value?.ToString();
                     string TaxTypeCodeValue = ProductSheet.Cells[i + StartRow, TaxTypeCodeColumn].Value?.ToString();
                     string DescriptionValue = ProductSheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
-                    string RetailPriceValue = ProductSheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
                     string SalePriceValue = ProductSheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
+                    string RetailPriceValue = ProductSheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
 
-                    string StatusIdValue = ProductSheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
+                    string StatusNameValue = ProductSheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
                     string UsedVariationCodeValue = ProductSheet.Cells[i + StartRow, UsedVariationCodeColumn].Value?.ToString();
                     //Thuộc tính
                     string Property1Value = ProductSheet.Cells[i + StartRow, Property1Column].Value?.ToString();
@@ -380,10 +368,6 @@ namespace DMS.Rpc.product
                             Code = BrandCodeValue
                         };
                     }
-                    Product.UsedVariation = new UsedVariation()
-                    {
-                        Code = UsedVariationCodeValue
-                    };
                     if (!string.IsNullOrWhiteSpace(UoMGroupCodeValue))
                     {
                         Product.UnitOfMeasureGrouping = new UnitOfMeasureGrouping()
@@ -432,35 +416,47 @@ namespace DMS.Rpc.product
                     Product.TechnicalName = TechnicalNameValue;
                     Product.TaxTypeId = TaxTypes.Where(x => x.Code.Equals(TaxTypeCodeValue == null ? string.Empty : TaxTypeCodeValue.Trim())).Select(x => x.Id).FirstOrDefault();
                     Product.UsedVariationId = UsedVariations.Where(x => x.Name.ToLower().Equals(UsedVariationCodeValue == null ? string.Empty : UsedVariationCodeValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
+                    Product.StatusId = Statuses.Where(x => x.Name.ToLower().Equals(StatusNameValue == null ? string.Empty : StatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
                     Product.Description = DescriptionValue;
-                    Product.RetailPrice = string.IsNullOrEmpty(RetailPriceValue) ? 0 : long.Parse(RetailPriceValue);
-                    Product.SalePrice = string.IsNullOrEmpty(SalePriceValue) ? 0 : -1;
-                    if (!string.IsNullOrEmpty(StatusIdValue))
+                    
+                    if (long.TryParse(SalePriceValue, out long SalePrice))
                     {
-                        int StatusId = 0;
-                        int.TryParse(StatusIdValue.Trim(), out StatusId);
-                        if (StatusId == Enums.StatusEnum.ACTIVE.Id)
-                            Product.StatusId = StatusEnum.ACTIVE.Id;
-                        else
-                            Product.StatusId = StatusEnum.INACTIVE.Id;
+                        Product.SalePrice = SalePrice;
                     }
                     else
                     {
+                        Product.SalePrice = -1;
+                    }
+                    if (long.TryParse(RetailPriceValue, out long RetailPrice))
+                    {
+                        Product.RetailPrice = RetailPrice;
+                    }
+                    else
+                    {
+                        Product.RetailPrice = -1;
+                    }
+
+                    if (string.IsNullOrEmpty(StatusNameValue))
+                    {
                         Product.StatusId = -1;
+                    }
+                    if (string.IsNullOrEmpty(UsedVariationCodeValue))
+                    {
+                        Product.UsedVariationId = -1;
                     }
 
                     if (Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
                     {
                         #region Variation
-                        if (!string.IsNullOrEmpty(Property1Value))
+                        Product.VariationGroupings = new List<VariationGrouping>();
+                        if (!string.IsNullOrWhiteSpace(Property1Value))
                         {
-                            Product.VariationGroupings = new List<VariationGrouping>();
                             VariationGrouping VariationGrouping = new VariationGrouping
                             {
                                 Name = Property1Value
                             };
                             VariationGrouping.Variations = new List<Variation>();
-                            if (!string.IsNullOrEmpty(PropertyValue1Value))
+                            if (!string.IsNullOrWhiteSpace(PropertyValue1Value))
                             {
                                 var Values = PropertyValue1Value.Split(';');
                                 foreach (var Value in Values)
@@ -475,17 +471,24 @@ namespace DMS.Rpc.product
                                 }
                                 Product.VariationGroupings.Add(VariationGrouping);
                             }
+                            else
+                            {
+                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập giá trị cho thuộc tính 1");
+                            }
+                        }
+                        else if (!string.IsNullOrWhiteSpace(PropertyValue1Value))
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 1");
                         }
 
-                        if (!string.IsNullOrEmpty(Property2Value))
+                        if (!string.IsNullOrWhiteSpace(Property2Value))
                         {
-                            Product.VariationGroupings = new List<VariationGrouping>();
                             VariationGrouping VariationGrouping = new VariationGrouping
                             {
                                 Name = Property2Value
                             };
                             VariationGrouping.Variations = new List<Variation>();
-                            if (!string.IsNullOrEmpty(PropertyValue2Value))
+                            if (!string.IsNullOrWhiteSpace(PropertyValue2Value))
                             {
                                 var Values = PropertyValue2Value.Split(';');
                                 foreach (var Value in Values)
@@ -500,17 +503,24 @@ namespace DMS.Rpc.product
                                 }
                                 Product.VariationGroupings.Add(VariationGrouping);
                             }
+                            else
+                            {
+                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập giá trị cho thuộc tính 2");
+                            }
+                        }
+                        else if (!string.IsNullOrWhiteSpace(PropertyValue2Value))
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 2");
                         }
 
-                        if (!string.IsNullOrEmpty(Property3Value))
+                        if (!string.IsNullOrWhiteSpace(Property3Value))
                         {
-                            Product.VariationGroupings = new List<VariationGrouping>();
                             VariationGrouping VariationGrouping = new VariationGrouping
                             {
                                 Name = Property3Value
                             };
                             VariationGrouping.Variations = new List<Variation>();
-                            if (!string.IsNullOrEmpty(PropertyValue3Value))
+                            if (!string.IsNullOrWhiteSpace(PropertyValue3Value))
                             {
                                 var Values = PropertyValue3Value.Split(';');
                                 foreach (var Value in Values)
@@ -525,17 +535,24 @@ namespace DMS.Rpc.product
                                 }
                                 Product.VariationGroupings.Add(VariationGrouping);
                             }
+                            else
+                            {
+                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập giá trị cho thuộc tính 3");
+                            }
+                        }
+                        else if (!string.IsNullOrWhiteSpace(PropertyValue3Value))
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 3");
                         }
 
-                        if (!string.IsNullOrEmpty(Property4Value))
+                        if (!string.IsNullOrWhiteSpace(Property4Value))
                         {
-                            Product.VariationGroupings = new List<VariationGrouping>();
                             VariationGrouping VariationGrouping = new VariationGrouping
                             {
                                 Name = Property3Value
                             };
                             VariationGrouping.Variations = new List<Variation>();
-                            if (!string.IsNullOrEmpty(PropertyValue3Value))
+                            if (!string.IsNullOrWhiteSpace(PropertyValue3Value))
                             {
                                 var Values = PropertyValue3Value.Split(';');
                                 foreach (var Value in Values)
@@ -550,11 +567,25 @@ namespace DMS.Rpc.product
                                 }
                                 Product.VariationGroupings.Add(VariationGrouping);
                             }
+                            else
+                            {
+                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập giá trị cho thuộc tính 4");
+                            }
                         }
+                        else if (!string.IsNullOrWhiteSpace(PropertyValue4Value))
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 4");
+                        }
+
+                        if(Product.VariationGroupings == null || !Product.VariationGroupings.Any())
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính cho sản phẩm");
                         #endregion
                     }
                     Products.Add(Product);
                 }
+
+                if (errorContent.Length > 0)
+                    return BadRequest(errorContent);
                 #endregion
             }
             #region Item
@@ -600,7 +631,7 @@ namespace DMS.Rpc.product
             Products = await ProductService.Import(Products);
             List<Product_ProductDTO> Product_ProductDTOs = Products
                 .Select(c => new Product_ProductDTO(c)).ToList();
-            StringBuilder errorContent = new StringBuilder();
+            
             for (int i = 0; i < Products.Count; i++)
             {
                 if (!Products[i].IsValidated)
@@ -681,6 +712,7 @@ namespace DMS.Rpc.product
                 Selects = TaxTypeSelect.ALL,
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
             MemoryStream MemoryStream = new MemoryStream();
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using (ExcelPackage excel = new ExcelPackage(MemoryStream))
@@ -782,8 +814,8 @@ namespace DMS.Rpc.product
                         Product.TechnicalName,
                         Product.TaxType.Code,
                         Product.Description,
-                        Product.SalePrice,
-                        Product.RetailPrice,
+                        Product.SalePrice.ToString("NO", culture),
+                        Product.RetailPrice?.ToString("NO", culture),
                         Product.Status?.Name,
                         Product.UsedVariation?.Name,
                         VariationGrouping1,
@@ -822,8 +854,8 @@ namespace DMS.Rpc.product
                                 Item.Code,
                                 Item.Name,
                                 Item.ScanCode,
-                                Item.SalePrice,
-                                Item.RetailPrice,
+                                Item.SalePrice.ToString("NO", culture),
+                                Item.RetailPrice?.ToString("NO", culture),
                                 });
                 }
                 excel.GenerateWorksheet("Item", ItemHeader, data);

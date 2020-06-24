@@ -347,8 +347,6 @@ namespace DMS.Rpc.store
                     string OwnerNameValue = worksheet.Cells[i + StartRow, OwnerNameColumn].Value?.ToString();
                     string OwnerPhoneValue = worksheet.Cells[i + StartRow, OwnerPhoneColumn].Value?.ToString();
                     string OwnerEmailValue = worksheet.Cells[i + StartRow, OwnerEmailColumn].Value?.ToString();
-                    if (string.IsNullOrEmpty(CodeValue))
-                        continue;
 
                     Store Store = new Store();
                     Store.Code = CodeValue;

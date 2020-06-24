@@ -45,8 +45,11 @@ namespace DMS.Services.MProduct
             ItemInUsed,
             ProductInUsed,
             UsedVariationNotExisted,
+            RetailPriceInvalid,
             SalePriceInvalid,
-            VariationGroupingsEmpty
+            SalePriceEmpty,
+            VariationGroupingsEmpty,
+            VariationsEmpty
         }
 
         private IUOW UOW;
@@ -244,13 +247,14 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateUnitOfMeasureGrouping(Product Product)
         {
-            if (Product.UnitOfMeasureGroupingId != 0)
+            if (Product.UnitOfMeasureGroupingId.HasValue)
             {
                 UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter
                 {
                     Skip = 0,
                     Take = 10,
-                    Id = new IdFilter { Equal = Product.UnitOfMeasureGroupingId },
+                    Id = new IdFilter { Equal = Product.UnitOfMeasureGroupingId.Value },
+                    UnitOfMeasureId = new IdFilter { Equal = Product.UnitOfMeasureId },
                     Selects = UnitOfMeasureGroupingSelect.Id
                 };
 
@@ -273,8 +277,20 @@ namespace DMS.Services.MProduct
         {
             if (UsedVariationEnum.USED.Id != Product.UsedVariationId && UsedVariationEnum.NOTUSED.Id != Product.UsedVariationId)
                 Product.AddError(nameof(ProductValidator), nameof(Product.UsedVariation), ErrorCode.UsedVariationNotExisted);
-            if(UsedVariationEnum.USED.Id == Product.UsedVariationId && Product.VariationGroupings == null)
-                Product.AddError(nameof(ProductValidator), nameof(Product.VariationGroupings), ErrorCode.VariationGroupingsEmpty);
+            if(UsedVariationEnum.USED.Id == Product.UsedVariationId )
+            {
+                if(Product.VariationGroupings == null)
+                    Product.AddError(nameof(ProductValidator), nameof(Product.VariationGroupings), ErrorCode.VariationGroupingsEmpty);
+                else
+                {
+                    foreach (var VariationGrouping in Product.VariationGroupings)
+                    {
+                        if(VariationGrouping.Variations == null || !VariationGrouping.Variations.Any())
+                            VariationGrouping.AddError(nameof(ProductValidator), nameof(VariationGrouping.Variations), ErrorCode.VariationsEmpty);
+                    }
+                }
+            }
+                
             return Product.IsValidated;
         }
 
@@ -317,7 +333,11 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateSalePrice(Product Product)
         {
-            if (Product.SalePrice <= 0)
+            if (Product.SalePrice == 0)
+            {
+                Product.AddError(nameof(ProductValidator), nameof(Product.SalePrice), ErrorCode.SalePriceEmpty);
+            }
+            else if (Product.SalePrice < 0)
             {
                 Product.AddError(nameof(ProductValidator), nameof(Product.SalePrice), ErrorCode.SalePriceInvalid);
             }
@@ -326,10 +346,42 @@ namespace DMS.Services.MProduct
             {
                 foreach (var item in Product.Items)
                 {
-                    if (item.SalePrice <= 0)
+                    if (item.SalePrice == 0)
+                    {
+                        item.AddError(nameof(ProductValidator), nameof(item.SalePrice), ErrorCode.SalePriceEmpty);
+                    }
+                    if (item.SalePrice < 0)
                     {
                         item.AddError(nameof(ProductValidator), nameof(item.SalePrice), ErrorCode.SalePriceInvalid);
                     }
+                }
+            }
+            return Product.IsValidated;
+        }
+
+        private async Task<bool> ValidateRetailPrice(Product Product)
+        {
+            if (Product.RetailPrice.HasValue)
+            {
+                if (Product.RetailPrice < 0)
+                {
+                    Product.AddError(nameof(ProductValidator), nameof(Product.RetailPrice), ErrorCode.RetailPriceInvalid);
+                }
+            }
+            
+
+            if (Product.Items != null)
+            {
+                foreach (var item in Product.Items)
+                {
+                    if (item.RetailPrice.HasValue)
+                    {
+                        if (item.RetailPrice < 0)
+                        {
+                            item.AddError(nameof(ProductValidator), nameof(item.RetailPrice), ErrorCode.RetailPriceInvalid);
+                        }
+                    }
+                        
                 }
             }
             return Product.IsValidated;
@@ -378,6 +430,7 @@ namespace DMS.Services.MProduct
             await ValidateItem(Product);
             await ValidateUsedVariation(Product);
             await ValidateSalePrice(Product);
+            await ValidateRetailPrice(Product);
             return Product.IsValidated;
         }
 
@@ -406,6 +459,7 @@ namespace DMS.Services.MProduct
                 await ValidateItem(Product);
                 await ValidateUsedVariation(Product);
                 await ValidateSalePrice(Product);
+                await ValidateRetailPrice(Product);
             }
             return Product.IsValidated;
         }
@@ -467,18 +521,20 @@ namespace DMS.Services.MProduct
                 Take = int.MaxValue,
                 Selects = UsedVariationSelect.Code
             })).Select(e => e.Code);
-            var listUOMCodeInDB = (await UOW.UnitOfMeasureRepository.List(new UnitOfMeasureFilter
+            var UOMs = await UOW.UnitOfMeasureRepository.List(new UnitOfMeasureFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = UnitOfMeasureSelect.Code
-            })).Select(e => e.Code);
-            var listUOMGroupingCodeInDB = (await UOW.UnitOfMeasureGroupingRepository.List(new UnitOfMeasureGroupingFilter
+                Selects = UnitOfMeasureSelect.Code | UnitOfMeasureSelect.Id
+            });
+            var listUOMCodeInDB = UOMs.Select(e => e.Code);
+            var UOMGs = await UOW.UnitOfMeasureGroupingRepository.List(new UnitOfMeasureGroupingFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = UnitOfMeasureGroupingSelect.Code
-            })).Select(e => e.Code);
+                Selects = UnitOfMeasureGroupingSelect.Code | UnitOfMeasureGroupingSelect.Id | UnitOfMeasureGroupingSelect.UnitOfMeasure
+            });
+            var listUOMGroupingCodeInDB = UOMGs.Select(e => e.Code);
 
             foreach (var Product in Products)
             {
@@ -518,11 +574,18 @@ namespace DMS.Services.MProduct
                     {
                         Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
                     }
+                    var UOMG = UOMGs.Where(x => x.Code == Product.UnitOfMeasureGrouping.Code && x.UnitOfMeasureId == Product.UnitOfMeasureId);
+                    if(UOMG == null)
+                    {
+                        Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
+                    }
                 }
                 if (UsedVariationEnum.USED.Id != Product.UsedVariationId && UsedVariationEnum.NOTUSED.Id != Product.UsedVariationId)
                     Product.AddError(nameof(ProductValidator), nameof(Product.UsedVariation), ErrorCode.UsedVariationNotExisted);
 
                 await ValidateName(Product);
+                await ValidateSalePrice(Product); 
+                await ValidateRetailPrice(Product); 
             }
             return Products.Any(s => !s.IsValidated) ? false : true;
         }

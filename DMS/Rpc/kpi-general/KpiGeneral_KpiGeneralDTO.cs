@@ -41,6 +41,7 @@ namespace DMS.Rpc.kpi_general
             this.KpiYear = KpiGeneral.KpiYear == null ? null : new KpiGeneral_KpiYearDTO(KpiGeneral.KpiYear);
             this.Organization = KpiGeneral.Organization == null ? null : new KpiGeneral_OrganizationDTO(KpiGeneral.Organization);
             this.Status = KpiGeneral.Status == null ? null : new KpiGeneral_StatusDTO(KpiGeneral.Status);
+
             this.KpiGeneralContents = KpiGeneral.KpiGeneralContents?.Select(x => new KpiGeneral_KpiGeneralContentDTO(x)).ToList();
             this.CreatedAt = KpiGeneral.CreatedAt;
             this.UpdatedAt = KpiGeneral.UpdatedAt;

@@ -142,11 +142,17 @@ namespace DMS.Services.MKpiGeneral
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiGeneralService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiGeneralService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiGeneralService));
                     throw new MessageException(ex.InnerException);
+                }
+                    
             }
         }
 

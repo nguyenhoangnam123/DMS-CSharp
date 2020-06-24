@@ -32,7 +32,11 @@
       "UnitOfMeasureEmpty": "Chưa chọn đơn vị tính "
     },
     "SalePrice": {
-      "SalePriceInvalid": "Chưa nhập giá bán"
+      "SalePriceInvalid": "Giá bán không hợp lệ",
+      "SalePriceEmpty": "Chưa nhập giá bán"
+    },
+    "RetailPrice": {
+      "RetailPriceInvalid": "Giá bán lẻ đề xuất không hợp lệ"
     },
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
@@ -40,6 +44,11 @@
     "VariationGroupings": {
       "VariationGroupingsEmpty": "Chưa tạo phiên bản cho sản phẩm",
       "VariationGroupingExisted": "Nhóm phiên bản đã tồn tại"
+    },
+    "VariationGrouping": {
+      "Variations": {
+        "VariationsEmpty" : "Chưa nhập giá trị cho thuộc tính"
+      }
     },
     "Variation": {
       "Code": {

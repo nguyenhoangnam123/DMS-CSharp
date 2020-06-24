@@ -88,7 +88,9 @@ namespace DMS.Rpc.kpi_general
                 return Forbid();
 
             KpiGeneral KpiGeneral = await KpiGeneralService.Get(KpiGeneral_KpiGeneralDTO.Id);
-            return new KpiGeneral_KpiGeneralDTO(KpiGeneral);
+            var kpiGeneral_KpiGeneralDTO = new KpiGeneral_KpiGeneralDTO(KpiGeneral);
+            (kpiGeneral_KpiGeneralDTO.CurrentMonth,kpiGeneral_KpiGeneralDTO.CurrentQuarter) = ConvertDateTime(StaticParams.DateTimeNow);
+            return kpiGeneral_KpiGeneralDTO;
         }
         private Tuple<GenericEnum, GenericEnum> ConvertDateTime(DateTime date)
         {
@@ -113,19 +115,19 @@ namespace DMS.Rpc.kpi_general
                     quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02;
                     break;
                 case 5:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH05;
                     quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02;
                     break;
                 case 6:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH06;
                     quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02;
                     break;
                 case 7:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH06;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH07;
                     quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03;
                     break;
                 case 8:
-                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01;
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH08;
                     quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03;
                     break;
                 case 9:
@@ -181,6 +183,13 @@ namespace DMS.Rpc.kpi_general
                 StatusId = Enums.StatusEnum.ACTIVE.Id
             }).ToList();
             (KpiGeneral_KpiGeneralDTO.CurrentMonth, KpiGeneral_KpiGeneralDTO.CurrentQuarter) = ConvertDateTime(StaticParams.DateTimeNow);
+            KpiGeneral_KpiGeneralDTO.Status = new KpiGeneral_StatusDTO
+            {
+                Code = Enums.StatusEnum.ACTIVE.Code,
+                Id = Enums.StatusEnum.ACTIVE.Id,
+                Name = Enums.StatusEnum.ACTIVE.Name
+            };
+            KpiGeneral_KpiGeneralDTO.StatusId = Enums.StatusEnum.ACTIVE.Id;
             return KpiGeneral_KpiGeneralDTO;
         }
         [Route(KpiGeneralRoute.Create), HttpPost]
