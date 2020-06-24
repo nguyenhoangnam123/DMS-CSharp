@@ -291,6 +291,8 @@ namespace DMS.Rpc
                 Admin = new RoleDAO
                 {
                     Name = "ADMIN",
+                    Code = "ADMIN",
+                    StatusId = StatusEnum.ACTIVE.Id,
                 };
                 DataContext.Role.Add(Admin);
                 DataContext.SaveChanges();
