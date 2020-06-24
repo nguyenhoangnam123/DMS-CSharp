@@ -836,26 +836,13 @@ namespace DMS.Rpc
         }
         private void InitSexEnum()
         {
-            List<SexDAO> Sexes = DataContext.Sex.ToList();
-            if (!Sexes.Any(pt => pt.Id == SexEnum.Male.Id))
+            List<SexDAO> SexDAOs = SexEnum.SexEnumList.Select(item => new SexDAO
             {
-                DataContext.Sex.Add(new SexDAO
-                {
-                    Id = SexEnum.Male.Id,
-                    Code = SexEnum.Male.Code,
-                    Name = SexEnum.Male.Name,
-                });
-            }
-
-            if (!Sexes.Any(pt => pt.Id == SexEnum.Female.Id))
-            {
-                DataContext.Sex.Add(new SexDAO
-                {
-                    Id = SexEnum.Female.Id,
-                    Code = SexEnum.Female.Code,
-                    Name = SexEnum.Female.Name,
-                });
-            }
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.Sex.BulkSynchronize(SexDAOs);
         }
         #endregion
     }
