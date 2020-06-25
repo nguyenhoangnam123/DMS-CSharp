@@ -10,6 +10,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
         public string OrganizationName { get; set; }
         public long SaleEmployeeId { get; set; }
         public long KpiCriteriaGeneralId { get; set; }
+        public long KpiPeriodId { get; set; }
         public decimal Value { get; set; }
 
 
