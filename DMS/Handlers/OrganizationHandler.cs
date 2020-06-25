@@ -41,15 +41,15 @@ namespace DMS.Handlers
             }
             List<OrganizationDAO> OrganizationDAOs = Organizations.Select(o => new OrganizationDAO
             {
+                Id = o.Id,
+                Code = o.Code,
+                Name = o.Name,
                 Address = o.Address,
-                Code = o.Address,
                 CreatedAt = o.CreatedAt,
                 UpdatedAt = o.UpdatedAt,
                 DeletedAt = o.DeletedAt,
                 Email = o.Email,
-                Id = o.Id,
                 Level = o.Level,
-                Name = o.Name,
                 ParentId = o.ParentId,
                 Path = o.Path,
                 Phone = o.Phone,
