@@ -485,7 +485,7 @@ namespace DMS.Rpc.store
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StoreSelect.Code | StoreSelect.Name
+                Selects = StoreSelect.Code | StoreSelect.Name | StoreSelect.Address | StoreSelect.Telephone
             });
 
             List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
@@ -633,6 +633,8 @@ namespace DMS.Rpc.store
                     {
                         "Mã",
                         "Tên",
+                        "Địa chỉ",
+                        "Số điện thoại",
                     }
                 };
                 data = new List<object[]>();
@@ -643,6 +645,8 @@ namespace DMS.Rpc.store
                     {
                         ParentStore.Code,
                         ParentStore.Name,
+                        ParentStore.Address,
+                        ParentStore.Telephone,
                     });
                 }
                 excel.GenerateWorksheet("StoreParent", ParentStoreHeaders, data);
@@ -776,7 +780,7 @@ namespace DMS.Rpc.store
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StoreSelect.Code | StoreSelect.Name,
+                Selects = StoreSelect.Code | StoreSelect.Name | StoreSelect.Address | StoreSelect.Telephone,
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
 
@@ -855,6 +859,8 @@ namespace DMS.Rpc.store
                     Store Store = ParentStores[i];
                     worksheet_ParentStore.Cells[startRow_ParentStore + i, numberCell_ParentStores].Value = Store.Code;
                     worksheet_ParentStore.Cells[startRow_ParentStore + i, numberCell_ParentStores + 1].Value = Store.Name;
+                    worksheet_ParentStore.Cells[startRow_ParentStore + i, numberCell_ParentStores + 2].Value = Store.Address;
+                    worksheet_ParentStore.Cells[startRow_ParentStore + i, numberCell_ParentStores + 3].Value = Store.Telephone;
                 }
                 #endregion
 
