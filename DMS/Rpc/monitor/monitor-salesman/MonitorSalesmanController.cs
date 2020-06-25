@@ -88,20 +88,21 @@ namespace DMS.Rpc.Monitor.monitor_salesman
 
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
-            OrganizationDAO OrganizationDAO = null;
-            if (OrganizationId != null)
-            {
-                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == OrganizationId.Value).FirstOrDefaultAsync();
-            }
 
-            var query = from ap in DataContext.AppUser
-                        join o in DataContext.Organization on ap.OrganizationId equals o.Id
-                        join sc in DataContext.StoreChecking on ap.Id equals sc.SaleEmployeeId
-                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                        (OrganizationDAO == null || o.Path.StartsWith(OrganizationDAO.Path)) &&
-                        (SaleEmployeeId == null || ap.Id == SaleEmployeeId.Value)
-                        select ap.Id;
-            int count = await query.Distinct().CountAsync();
+            List<long> OrganizationIds = await FilterOrganization();
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            int count = await DataContext.AppUser.Where(au =>
+                au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value) &&
+                (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value)
+            ).CountAsync();
             return count;
         }
 
@@ -119,15 +120,30 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow :
                     MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value;
+            long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
+            long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization();
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
-            var query = from ap in DataContext.AppUser
-                        select new MonitorSalesman_SaleEmployeeDTO
-                        {
-                            SaleEmployeeId = ap.Id,
-                            Username = ap.Username,
-                            DisplayName = ap.DisplayName,
-                            OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
-                        };
+
+            var query = DataContext.AppUser
+                .Where(au =>
+                    au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value) &&
+                    (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value))
+                .Select(ap => new MonitorSalesman_SaleEmployeeDTO
+                {
+                    SaleEmployeeId = ap.Id,
+                    Username = ap.Username,
+                    DisplayName = ap.DisplayName,
+                    OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
+                });
 
             List<MonitorSalesman_SaleEmployeeDTO> MonitorSalesman_SaleEmployeeDTOs = await query.Distinct()
                 .OrderBy(q => q.DisplayName)
@@ -176,19 +192,19 @@ namespace DMS.Rpc.Monitor.monitor_salesman
                            s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId &&
                            Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End
                        ).ToList();
-                
+
                 List<long> StoreCheckingIds = ListChecked.Select(sc => sc.Id).ToList();
                 foreach (StoreCheckingDAO Checked in ListChecked)
                 {
                     if (Checked.Planned)
                     {
-                        if (MonitorSalesman_SaleEmployeeDTO.Internal == null) 
+                        if (MonitorSalesman_SaleEmployeeDTO.Internal == null)
                             MonitorSalesman_SaleEmployeeDTO.Internal = new HashSet<long>();
                         MonitorSalesman_SaleEmployeeDTO.Internal.Add(Checked.StoreId);
                     }
                     else
                     {
-                        if (MonitorSalesman_SaleEmployeeDTO.External == null) 
+                        if (MonitorSalesman_SaleEmployeeDTO.External == null)
                             MonitorSalesman_SaleEmployeeDTO.External = new HashSet<long>();
                         MonitorSalesman_SaleEmployeeDTO.External.Add(Checked.StoreId);
                     }
@@ -201,7 +217,7 @@ namespace DMS.Rpc.Monitor.monitor_salesman
                         StoreCode = Checked.Store?.Code,
                         StoreName = Checked.Store?.Name,
                     };
-                
+
                     MonitorSalesman_SaleEmployeeDTO.StoreCheckings.Add(MonitorSalesman_StoreCheckingDTO);
                 }
             }
