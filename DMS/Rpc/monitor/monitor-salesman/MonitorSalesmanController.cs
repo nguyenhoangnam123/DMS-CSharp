@@ -41,6 +41,7 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             AppUserFilter.Id = SalesmanMonitor_AppUserFilterDTO.Id;
             AppUserFilter.Username = SalesmanMonitor_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = SalesmanMonitor_AppUserFilterDTO.DisplayName;
+            AppUserFilter.OrganizationId = SalesmanMonitor_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             AppUserFilter.Id.In = await FilterAppUser();
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);

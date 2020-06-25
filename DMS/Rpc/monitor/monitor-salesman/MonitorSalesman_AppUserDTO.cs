@@ -24,6 +24,7 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         public IdFilter Id { get; set; }
         public StringFilter Username { get; set; }
         public StringFilter DisplayName { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public AppUserOrder OrderBy { get; set; }
     }
 }
