@@ -124,9 +124,15 @@ namespace DMS.Rpc.kpi_item
                 Selects = KpiCriteriaItemSelect.ALL,
             });
             var KpiItem_KpiItemDTO = new KpiItem_KpiItemDTO();
-            KpiItem_KpiItemDTO.KpiCriteriaItems = KpiCriteriaItems.Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
             KpiItem_KpiItemDTO.KpiCriteriaTotals = KpiCriteriaTotals.Select(x => new KpiItem_KpiCriteriaTotalDTO(x)).ToList();
             KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings = KpiCriteriaTotals.ToDictionary(x => x.Id, y => 0L);
+            KpiItem_KpiItemDTO.KpiCriteriaItems = KpiCriteriaItems.Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
+            KpiItem_KpiItemDTO.KpiItemContents = KpiCriteriaItems.Select(x => new KpiItem_KpiItemContentDTO
+            {
+                ItemId = x.Id,
+                //Item = new KpiItem_ItemDTO(x),
+                KpiItemContentKpiCriteriaItemMappings = KpiCriteriaItems.ToDictionary(x => x.Id, y => 0L),
+            }).ToList();
             return KpiItem_KpiItemDTO;
         }
 
@@ -1348,6 +1354,38 @@ namespace DMS.Rpc.kpi_item
             List<KpiItem_AppUserDTO> KpiItem_AppUserDTOs = AppUsers
                 .Select(x => new KpiItem_AppUserDTO(x)).ToList();
             return KpiItem_AppUserDTOs;
+        }
+
+        [Route(KpiItemRoute.CountItem), HttpPost]
+        public async Task<long> CountItem([FromBody] KpiItem_ItemFilterDTO KpiItem_ItemFilterDTO)
+        {
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Id = KpiItem_ItemFilterDTO.Id;
+            ItemFilter.Code = KpiItem_ItemFilterDTO.Code;
+            ItemFilter.Name = KpiItem_ItemFilterDTO.Name;
+
+            ItemFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            return await ItemService.Count(ItemFilter);
+        }
+        [Route(KpiItemRoute.ListItem), HttpPost]
+        public async Task<List<KpiItem_ItemDTO>> ListItem([FromBody] KpiItem_ItemFilterDTO KpiItem_ItemFilterDTO)
+        {
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Skip = KpiItem_ItemFilterDTO.Skip;
+            ItemFilter.Take = KpiItem_ItemFilterDTO.Take;
+            ItemFilter.OrderBy = ItemOrder.Id;
+            ItemFilter.OrderType = OrderType.ASC;
+            ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Id = KpiItem_ItemFilterDTO.Id;
+            ItemFilter.Code = KpiItem_ItemFilterDTO.Code;
+            ItemFilter.Name = KpiItem_ItemFilterDTO.Name;
+            ItemFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<Item> Items = await ItemService.List(ItemFilter);
+            List<KpiItem_ItemDTO> KpiItem_ItemDTOs = Items
+                .Select(x => new KpiItem_ItemDTO(x)).ToList();
+            return KpiItem_ItemDTOs;
         }
     }
 }
