@@ -1030,6 +1030,7 @@ namespace DMS.Rpc.product
                     new string[] {
                         "Mã nhóm đơn vị chuyển đổi",
                         "Tên nhóm đơn vị chuyển đổi",
+                        "Đơn vị cơ bản"
                     }
                 };
                 foreach (var UnitOfMeasureGrouping in UnitOfMeasureGroupings)
@@ -1037,7 +1038,8 @@ namespace DMS.Rpc.product
                     data.Add(new object[]
                     {
                         UnitOfMeasureGrouping.Code,
-                        UnitOfMeasureGrouping.Name
+                        UnitOfMeasureGrouping.Name,
+                        UnitOfMeasureGrouping.UnitOfMeasure?.Name
                     });
                 }
                 excel.GenerateWorksheet("UnitOfMeasureGrouping", UOMGroupingHeader, data);
