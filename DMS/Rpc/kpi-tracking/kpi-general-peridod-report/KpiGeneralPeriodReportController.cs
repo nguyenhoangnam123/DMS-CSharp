@@ -191,7 +191,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 .Take(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Take)
                 .ToListAsync();
 
-            //get organization distinc for employee
+            //get organization distinct for employee
             List<long> OrganizationIds = KpiGeneralPeriodReport_SaleEmployeeDTOs.Where(x => x.OrganizationId.HasValue).Select(x => x.OrganizationId.Value).Distinct().ToList();
             List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
             {

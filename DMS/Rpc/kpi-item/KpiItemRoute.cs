@@ -46,6 +46,8 @@ namespace DMS.Rpc.kpi_item
 
         public const string CountAppUser = Default + "/count-app-user";
         public const string ListAppUser = Default + "/list-app-user";
+        public const string ListItem = Default + "/list-item";
+        public const string CountItem = Default + "/count-item";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(KpiItemFilter.Id), FieldTypeEnum.ID.Id },
@@ -63,13 +65,13 @@ namespace DMS.Rpc.kpi_item
                 FilterListAppUser, FilterListKpiPeriod,FilterListKpiYear, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier} },
 
             { "Thêm", new List<string> {
-                Master, Count, List, Get, CountAppUser, ListAppUser,
+                Master, Count, List, Get, CountAppUser, ListAppUser, ListItem, CountItem,
                 FilterListAppUser, FilterListKpiPeriod, FilterListKpiYear, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
                 Detail, Create, GetDraft,
                 SingleListAppUser, SingleListKpiPeriod, SingleListKpiYear, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get, CountAppUser, ListAppUser,
+                Master, Count, List, Get, CountAppUser, ListAppUser, ListItem, CountItem,
                 FilterListAppUser, FilterListKpiPeriod, FilterListKpiYear, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
                 Detail, Update, GetDraft,
                 SingleListAppUser, SingleListKpiPeriod, SingleListKpiYear, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, } },
