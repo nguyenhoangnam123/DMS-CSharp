@@ -5,6 +5,7 @@ using DMS.Services.MKpiCriteriaItem;
 using DMS.Services.MKpiCriteriaTotal;
 using DMS.Services.MKpiItem;
 using DMS.Services.MKpiPeriod;
+using DMS.Services.MKpiYear;
 using DMS.Services.MOrganization;
 using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
@@ -26,6 +27,7 @@ namespace DMS.Rpc.kpi_item
     {
         private IAppUserService AppUserService;
         private IKpiPeriodService KpiPeriodService;
+        private IKpiYearService KpiYearService;
         private IOrganizationService OrganizationService;
         private IKpiCriteriaItemService KpiCriteriaItemService;
         private IKpiCriteriaTotalService KpiCriteriaTotalService;
@@ -39,6 +41,7 @@ namespace DMS.Rpc.kpi_item
         public KpiItemController(
             IAppUserService AppUserService,
             IKpiPeriodService KpiPeriodService,
+            IKpiYearService KpiYearService,
             IOrganizationService OrganizationService,
             IKpiCriteriaItemService KpiCriteriaItemService,
             IKpiCriteriaTotalService KpiCriteriaTotalService,
@@ -53,6 +56,7 @@ namespace DMS.Rpc.kpi_item
         {
             this.AppUserService = AppUserService;
             this.KpiPeriodService = KpiPeriodService;
+            this.KpiYearService = KpiYearService;
             this.OrganizationService = OrganizationService;
             this.KpiCriteriaItemService = KpiCriteriaItemService;
             this.KpiCriteriaTotalService = KpiCriteriaTotalService;
@@ -938,6 +942,29 @@ namespace DMS.Rpc.kpi_item
                 .Select(x => new KpiItem_KpiPeriodDTO(x)).ToList();
             return KpiItem_KpiPeriodDTOs;
         }
+
+        [Route(KpiItemRoute.FilterListKpiYear), HttpPost]
+        public async Task<List<KpiItem_KpiYearDTO>> FilterListKpiYear([FromBody] KpiItem_KpiYearFilterDTO KpiItem_KpiYearFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            KpiYearFilter KpiYearFilter = new KpiYearFilter();
+            KpiYearFilter.Skip = 0;
+            KpiYearFilter.Take = 20;
+            KpiYearFilter.OrderBy = KpiYearOrder.Id;
+            KpiYearFilter.OrderType = OrderType.ASC;
+            KpiYearFilter.Selects = KpiYearSelect.ALL;
+            KpiYearFilter.Id = KpiItem_KpiYearFilterDTO.Id;
+            KpiYearFilter.Code = KpiItem_KpiYearFilterDTO.Code;
+            KpiYearFilter.Name = KpiItem_KpiYearFilterDTO.Name;
+
+            List<KpiYear> KpiYears = await KpiYearService.List(KpiYearFilter);
+            List<KpiItem_KpiYearDTO> KpiItem_KpiYearDTOs = KpiYears
+                .Select(x => new KpiItem_KpiYearDTO(x)).ToList();
+            return KpiItem_KpiYearDTOs;
+        }
+
         [Route(KpiItemRoute.FilterListOrganization), HttpPost]
         public async Task<List<KpiItem_OrganizationDTO>> FilterListOrganization([FromBody] KpiItem_OrganizationFilterDTO KpiItem_OrganizationFilterDTO)
         {
@@ -1152,6 +1179,27 @@ namespace DMS.Rpc.kpi_item
             List<KpiItem_KpiPeriodDTO> KpiItem_KpiPeriodDTOs = KpiPeriods
                 .Select(x => new KpiItem_KpiPeriodDTO(x)).ToList();
             return KpiItem_KpiPeriodDTOs;
+        }
+        [Route(KpiItemRoute.SingleListKpiYear), HttpPost]
+        public async Task<List<KpiItem_KpiYearDTO>> SingleListKpiYear([FromBody] KpiItem_KpiYearFilterDTO KpiItem_KpiYearFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            KpiYearFilter KpiYearFilter = new KpiYearFilter();
+            KpiYearFilter.Skip = 0;
+            KpiYearFilter.Take = 20;
+            KpiYearFilter.OrderBy = KpiYearOrder.Id;
+            KpiYearFilter.OrderType = OrderType.ASC;
+            KpiYearFilter.Selects = KpiYearSelect.ALL;
+            KpiYearFilter.Id = KpiItem_KpiYearFilterDTO.Id;
+            KpiYearFilter.Code = KpiItem_KpiYearFilterDTO.Code;
+            KpiYearFilter.Name = KpiItem_KpiYearFilterDTO.Name;
+
+            List<KpiYear> KpiYears = await KpiYearService.List(KpiYearFilter);
+            List<KpiItem_KpiYearDTO> KpiItem_KpiYearDTOs = KpiYears
+                .Select(x => new KpiItem_KpiYearDTO(x)).ToList();
+            return KpiItem_KpiYearDTOs;
         }
         [Route(KpiItemRoute.SingleListOrganization), HttpPost]
         public async Task<List<KpiItem_OrganizationDTO>> SingleListOrganization([FromBody] KpiItem_OrganizationFilterDTO KpiItem_OrganizationFilterDTO)
