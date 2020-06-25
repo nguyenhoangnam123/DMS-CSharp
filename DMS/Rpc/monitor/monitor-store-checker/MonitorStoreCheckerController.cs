@@ -43,6 +43,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             AppUserFilter.Id = StoreCheckerMonitor_AppUserFilterDTO.Id;
             AppUserFilter.Username = StoreCheckerMonitor_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = StoreCheckerMonitor_AppUserFilterDTO.DisplayName;
+            AppUserFilter.OrganizationId = StoreCheckerMonitor_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             AppUserFilter.Id.In = await FilterAppUser();
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);

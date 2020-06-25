@@ -1,7 +1,7 @@
 ﻿using Common;
 using System.Collections.Generic;
 
-namespace DMS.Rpc.Monitor.monitor_salesman
+namespace DMS.Rpc.monitor.monitor_salesman
 {
     public class MonitorSalesmanRoute : Root
     {

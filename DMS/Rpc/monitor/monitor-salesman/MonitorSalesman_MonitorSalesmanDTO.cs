@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DMS.Rpc.Monitor.monitor_salesman
+namespace DMS.Rpc.monitor.monitor_salesman
 {
     public class MonitorSalesman_MonitorSalesmanDTO : DataDTO
     {
@@ -33,9 +33,29 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         public long Id { get; set; }
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
+        public string Address { get; set; }
+        public DateTime? CheckIn { get; set; }
+        public DateTime? CheckOut { get; set; }
+        public List<MonitorSalesman_IndirectSalesOrderDTO> IndirectSalesOrders { get; set; }
+        public List<MonitorSalesman_ProblemDTO> StoreProblems { get; set; }
+        public List<MonitorSalesman_ProblemDTO> CompetitorProblems { get; set; }
+        public string Image { get; set; }
         public decimal Longitude { get; set; }
         public decimal Latitude { get; set; }
     }
+    public class MonitorSalesman_IndirectSalesOrderDTO : DataDTO
+    {
+        public long Id { get; set; }
+        public string Code { get; set; }
+
+    }
+
+    public class MonitorSalesman_ProblemDTO : DataDTO
+    {
+        public long Id { get; set; }
+        public string Code { get; set; }
+    }
+
 
     public class MonitorSalesman_MonitorSalesmanFilterDTO : FilterDTO
     {

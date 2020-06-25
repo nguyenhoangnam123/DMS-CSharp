@@ -1,7 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.Monitor.monitor_salesman
+namespace DMS.Rpc.monitor.monitor_salesman
 {
     public class MonitorSalesman_AppUserDTO : DataDTO
     {
@@ -24,6 +24,7 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         public IdFilter Id { get; set; }
         public StringFilter Username { get; set; }
         public StringFilter DisplayName { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public AppUserOrder OrderBy { get; set; }
     }
 }

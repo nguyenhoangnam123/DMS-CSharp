@@ -22,6 +22,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
     public class StoreCheckerMonitor_AppUserFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public StringFilter Username { get; set; }
         public StringFilter DisplayName { get; set; }
         public AppUserOrder OrderBy { get; set; }
