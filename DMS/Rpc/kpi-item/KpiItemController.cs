@@ -109,11 +109,8 @@ namespace DMS.Rpc.kpi_item
         }
 
         [Route(KpiItemRoute.GetDraft), HttpPost]
-        public async Task<ActionResult<KpiItem_KpiItemDTO>> GetDraft([FromBody]KpiItem_KpiItemDTO KpiItem_KpiItemDTO)
+        public async Task<ActionResult<KpiItem_KpiItemDTO>> GetDraft()
         {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
             List<KpiCriteriaTotal> KpiCriteriaTotals = await KpiCriteriaTotalService.List(new KpiCriteriaTotalFilter
             {
                 Skip = 0,
@@ -126,7 +123,7 @@ namespace DMS.Rpc.kpi_item
                 Take = int.MaxValue,
                 Selects = KpiCriteriaItemSelect.ALL,
             });
-            KpiItem_KpiItemDTO = new KpiItem_KpiItemDTO();
+            var KpiItem_KpiItemDTO = new KpiItem_KpiItemDTO();
             KpiItem_KpiItemDTO.KpiCriteriaItems = KpiCriteriaItems.Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
             KpiItem_KpiItemDTO.KpiCriteriaTotals = KpiCriteriaTotals.Select(x => new KpiItem_KpiCriteriaTotalDTO(x)).ToList();
             KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings = KpiCriteriaTotals.ToDictionary(x => x.Id, y => 0L);
