@@ -37,7 +37,10 @@ namespace DMS.Services.MProduct
             UnitOfMeasureNotExisted,
             UnitOfMeasureEmpty,
             UnitOfMeasureGroupingNotExisted,
+            UnitOfMeasureGroupingInvalid,
             StatusEmpty,
+            ERPCodeHasSpecialCharacter,
+            ScanCodeHasSpecialCharacter,
             VariationGroupingExisted,
             VariationCodeExisted,
             VariationNameExisted,
@@ -197,6 +200,32 @@ namespace DMS.Services.MProduct
                     Product.AddError(nameof(ProductValidator), nameof(Product.Brand), ErrorCode.BrandNotExisted);
             }
 
+            return Product.IsValidated;
+        }
+
+        private async Task<bool> ValidateERPCode(Product Product)
+        {
+            if (!string.IsNullOrWhiteSpace(Product.ERPCode))
+            {
+                var ERPCode = Product.ERPCode;
+                if (Product.ERPCode.Contains(" ") || !FilterExtension.ChangeToEnglishChar(ERPCode).Equals(Product.ERPCode))
+                {
+                    Product.AddError(nameof(ProductValidator), nameof(Product.ERPCode), ErrorCode.ERPCodeHasSpecialCharacter);
+                }
+            }
+            return Product.IsValidated;
+        }
+
+        private async Task<bool> ValidateScanCode(Product Product)
+        {
+            if (!string.IsNullOrWhiteSpace(Product.ScanCode))
+            {
+                var ScanCode = Product.ScanCode;
+                if (Product.ScanCode.Contains(" ") || !FilterExtension.ChangeToEnglishChar(ScanCode).Equals(Product.ScanCode))
+                {
+                    Product.AddError(nameof(ProductValidator), nameof(Product.ScanCode), ErrorCode.ScanCodeHasSpecialCharacter);
+                }
+            }
             return Product.IsValidated;
         }
 
@@ -436,6 +465,8 @@ namespace DMS.Services.MProduct
             await ValidateBrand(Product);
             await ValidateTaxType(Product);
             await ValidateUnitOfMeasure(Product);
+            await ValidateERPCode(Product);
+            await ValidateScanCode(Product);
             await ValidateUnitOfMeasureGrouping(Product);
             await ValidateStatusId(Product);
             await ValidateItem(Product);
@@ -464,6 +495,8 @@ namespace DMS.Services.MProduct
                 await ValidateSupplier(Product);
                 await ValidateBrand(Product);
                 await ValidateTaxType(Product);
+                await ValidateERPCode(Product);
+                await ValidateScanCode(Product);
                 await ValidateUnitOfMeasure(Product);
                 await ValidateUnitOfMeasureGrouping(Product);
                 await ValidateStatusId(Product);
@@ -549,6 +582,11 @@ namespace DMS.Services.MProduct
 
             foreach (var Product in Products)
             {
+                var Code = Product.Code;
+                if (Product.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Product.Code))
+                {
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeHasSpecialCharacter);
+                }
                 if (listCodeInDB.Contains(Product.Code))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeExisted);
@@ -585,14 +623,16 @@ namespace DMS.Services.MProduct
                     {
                         Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
                     }
-                    var UOMG = UOMGs.Where(x => x.Code == Product.UnitOfMeasureGrouping.Code && x.UnitOfMeasureId == Product.UnitOfMeasureId);
+                    var UOMG = UOMGs.Where(x => x.Code == Product.UnitOfMeasureGrouping.Code && x.UnitOfMeasureId == Product.UnitOfMeasureId).FirstOrDefault();
                     if(UOMG == null)
                     {
-                        Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
+                        Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingInvalid);
                     }
                 }
 
                 await ValidateName(Product);
+                await ValidateERPCode(Product);
+                await ValidateScanCode(Product);
                 await ValidateSalePrice(Product); 
                 await ValidateRetailPrice(Product); 
                 await ValidateUsedVariation(Product); 

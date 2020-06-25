@@ -308,7 +308,7 @@ namespace DMS.Rpc.product
                     string CodeValue = ProductSheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
                     if (string.IsNullOrWhiteSpace(CodeValue) && i != ProductSheet.Dimension.End.Row)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã sản phẩm");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã sản phẩm");
                     }
                     else if (string.IsNullOrWhiteSpace(CodeValue) && i == ProductSheet.Dimension.End.Row)
                         break;
@@ -345,15 +345,24 @@ namespace DMS.Rpc.product
                     Product.Name = NameValue;
                     if (!string.IsNullOrEmpty(ProductGroupCodeValue))
                     {
-                        ProductGrouping ProductGrouping = ProductGroupings.Where(pg => pg.Code.Equals(ProductGroupCodeValue)).FirstOrDefault();
-                        if (ProductGrouping != null)
+                        var ProductGroupCodes = ProductGroupCodeValue.Split(';');
+                        foreach (var ProductGroupCode in ProductGroupCodes)
                         {
-                            ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
-                            Product.ProductProductGroupingMappings = new List<ProductProductGroupingMapping>();
-                            ProductProductGroupingMapping.ProductGroupingId = ProductGrouping.Id;
-                            ProductProductGroupingMapping.ProductGrouping = ProductGrouping;
-                            Product.ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
+                            ProductGrouping ProductGrouping = ProductGroupings.Where(pg => pg.Code.Equals(ProductGroupCode.Trim())).FirstOrDefault();
+                            if (ProductGrouping != null)
+                            {
+                                ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
+                                Product.ProductProductGroupingMappings = new List<ProductProductGroupingMapping>();
+                                ProductProductGroupingMapping.ProductGroupingId = ProductGrouping.Id;
+                                ProductProductGroupingMapping.ProductGrouping = ProductGrouping;
+                                Product.ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
+                            }
+                            else
+                            {
+                                errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhóm sản phẩm không tồn tại");
+                            }
                         }
+                        
                     }
                     Product.ProductType = new ProductType()
                     {
@@ -392,7 +401,6 @@ namespace DMS.Rpc.product
                     {
                         Code = UsedVariationCodeValue
                     };
-
 
                     Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.Equals(UoMCodeValue)).Select(x => x.Id).FirstOrDefault();
                     Product.ProductTypeId = ProductTypes.Where(x => x.Code.Equals(ProductTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
@@ -478,12 +486,12 @@ namespace DMS.Rpc.product
                                     };
                                     VariationGrouping.Variations.Add(Variation);
                                 }
-                                Product.VariationGroupings.Add(VariationGrouping);
                             }
+                            Product.VariationGroupings.Add(VariationGrouping);
                         }
                         else if (!string.IsNullOrWhiteSpace(PropertyValue1Value))
                         {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 1");
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập thuộc tính 1");
                         }
 
                         if (!string.IsNullOrWhiteSpace(Property2Value))
@@ -506,12 +514,12 @@ namespace DMS.Rpc.product
                                     };
                                     VariationGrouping.Variations.Add(Variation);
                                 }
-                                Product.VariationGroupings.Add(VariationGrouping);
                             }
+                            Product.VariationGroupings.Add(VariationGrouping);
                         }
                         else if (!string.IsNullOrWhiteSpace(PropertyValue2Value))
                         {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 2");
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập thuộc tính 2");
                         }
 
                         if (!string.IsNullOrWhiteSpace(Property3Value))
@@ -534,12 +542,12 @@ namespace DMS.Rpc.product
                                     };
                                     VariationGrouping.Variations.Add(Variation);
                                 }
-                                Product.VariationGroupings.Add(VariationGrouping);
                             }
+                            Product.VariationGroupings.Add(VariationGrouping);
                         }
                         else if (!string.IsNullOrWhiteSpace(PropertyValue3Value))
                         {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 3");
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập thuộc tính 3");
                         }
 
                         if (!string.IsNullOrWhiteSpace(Property4Value))
@@ -562,12 +570,12 @@ namespace DMS.Rpc.product
                                     };
                                     VariationGrouping.Variations.Add(Variation);
                                 }
-                                Product.VariationGroupings.Add(VariationGrouping);
                             }
+                            Product.VariationGroupings.Add(VariationGrouping);
                         }
                         else if (!string.IsNullOrWhiteSpace(PropertyValue4Value))
                         {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 4");
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập thuộc tính 4");
                         }
                         #endregion
                     }
