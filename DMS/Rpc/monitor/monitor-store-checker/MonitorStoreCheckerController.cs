@@ -231,16 +231,15 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                         .Where(o => o.OrderDate.Date == i && o.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
                         .Select(o => o.Total).DefaultIfEmpty(0).Sum();
 
+                    MonitorStoreChecker_StoreCheckingDTO.PlanCounter = CountPlan(i, MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId, ERouteContentDAOs);
+
                     List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
                            .Where(s =>
                                s.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId &&
                                s.CheckOutAt.Value.Date == i
                            ).ToList();
-
                     foreach (StoreCheckingDAO Checked in ListChecked)
                     {
-                        MonitorStoreChecker_StoreCheckingDTO.PlanCounter = CountPlan(i, MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId,  ERouteContentDAOs);
-
                         if (Checked.Planned)
                             MonitorStoreChecker_StoreCheckingDTO.Internal.Add(Checked.StoreId);
                         else

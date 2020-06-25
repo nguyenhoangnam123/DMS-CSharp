@@ -176,10 +176,23 @@ namespace DMS.Rpc.Monitor.monitor_salesman
                            s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId &&
                            Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End
                        ).ToList();
-
+                
                 List<long> StoreCheckingIds = ListChecked.Select(sc => sc.Id).ToList();
                 foreach (StoreCheckingDAO Checked in ListChecked)
                 {
+                    if (Checked.Planned)
+                    {
+                        if (MonitorSalesman_SaleEmployeeDTO.Internal == null) 
+                            MonitorSalesman_SaleEmployeeDTO.Internal = new HashSet<long>();
+                        MonitorSalesman_SaleEmployeeDTO.Internal.Add(Checked.StoreId);
+                    }
+                    else
+                    {
+                        if (MonitorSalesman_SaleEmployeeDTO.External == null) 
+                            MonitorSalesman_SaleEmployeeDTO.External = new HashSet<long>();
+                        MonitorSalesman_SaleEmployeeDTO.External.Add(Checked.StoreId);
+                    }
+
                     MonitorSalesman_StoreCheckingDTO MonitorSalesman_StoreCheckingDTO = new MonitorSalesman_StoreCheckingDTO
                     {
                         Id = Checked.Id,
@@ -188,6 +201,7 @@ namespace DMS.Rpc.Monitor.monitor_salesman
                         StoreCode = Checked.Store?.Code,
                         StoreName = Checked.Store?.Name,
                     };
+                
                     MonitorSalesman_SaleEmployeeDTO.StoreCheckings.Add(MonitorSalesman_StoreCheckingDTO);
                 }
             }

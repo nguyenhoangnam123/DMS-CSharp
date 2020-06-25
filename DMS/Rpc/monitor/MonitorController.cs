@@ -114,8 +114,11 @@ namespace DMS.Rpc.monitor
             foreach (var ERouteContent in ERouteContentDAOs)
             {
                 var index = (Date - ERouteContent.ERoute.RealStartDate).Days % 28;
-                if (ERouteContent.ERouteContentDays.ElementAt(index).Planned == true)
-                    PlanCounter++;
+                if (index >= 0 && ERouteContent.ERouteContentDays.Count > index)
+                {
+                    if (ERouteContent.ERouteContentDays.ElementAt(index).Planned == true)
+                        PlanCounter++;
+                }
             }
             return PlanCounter;
         }
