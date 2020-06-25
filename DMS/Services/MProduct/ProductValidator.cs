@@ -37,7 +37,7 @@ namespace DMS.Services.MProduct
             UnitOfMeasureNotExisted,
             UnitOfMeasureEmpty,
             UnitOfMeasureGroupingNotExisted,
-            StatusNotExisted,
+            StatusEmpty,
             VariationGroupingExisted,
             VariationCodeExisted,
             VariationNameExisted,
@@ -269,7 +269,7 @@ namespace DMS.Services.MProduct
         private async Task<bool> ValidateStatusId(Product Product)
         {
             if (StatusEnum.ACTIVE.Id != Product.StatusId && StatusEnum.INACTIVE.Id != Product.StatusId)
-                Product.AddError(nameof(ProductValidator), nameof(Product.Status), ErrorCode.StatusNotExisted);
+                Product.AddError(nameof(ProductValidator), nameof(Product.Status), ErrorCode.StatusEmpty);
             return Product.IsValidated;
         }
 
@@ -287,6 +287,17 @@ namespace DMS.Services.MProduct
                     {
                         if(VariationGrouping.Variations == null || !VariationGrouping.Variations.Any())
                             VariationGrouping.AddError(nameof(ProductValidator), nameof(VariationGrouping.Variations), ErrorCode.VariationsEmpty);
+                        else
+                        {
+                            foreach (var Variation in VariationGrouping.Variations)
+                            {
+                                var Code = Variation.Code;
+                                if (Variation.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Variation.Code))
+                                {
+                                    Variation.AddError(nameof(ProductValidator), nameof(Variation.Code), ErrorCode.CodeHasSpecialCharacter);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -580,12 +591,12 @@ namespace DMS.Services.MProduct
                         Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
                     }
                 }
-                if (UsedVariationEnum.USED.Id != Product.UsedVariationId && UsedVariationEnum.NOTUSED.Id != Product.UsedVariationId)
-                    Product.AddError(nameof(ProductValidator), nameof(Product.UsedVariation), ErrorCode.UsedVariationNotExisted);
 
                 await ValidateName(Product);
                 await ValidateSalePrice(Product); 
                 await ValidateRetailPrice(Product); 
+                await ValidateUsedVariation(Product); 
+                await ValidateStatusId(Product); 
             }
             return Products.Any(s => !s.IsValidated) ? false : true;
         }

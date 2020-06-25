@@ -894,7 +894,7 @@ namespace DMS.Repositories
             #endregion
 
             #region merge VariationGroupings
-            List<VariationGrouping> VariationGroupings = Products.SelectMany(p => p.VariationGroupings).ToList();
+            List<VariationGrouping> VariationGroupings = Products.Where(x => x.VariationGroupings != null).SelectMany(p => p.VariationGroupings).ToList();
             VariationGroupings.ForEach(x => x.RowId = Guid.NewGuid());
             List<VariationGroupingDAO> VariationGroupingDAOs = new List<VariationGroupingDAO>();
             foreach (var VariationGrouping in VariationGroupings)
@@ -923,7 +923,7 @@ namespace DMS.Repositories
                 if (VariationGrouping.Variations != null)
                     VariationGrouping.Variations.ForEach(v => v.VariationGroupingId = VariationGroupingId);
             }
-            List<Variation> Variations = VariationGroupings.SelectMany(p => p.Variations).ToList();
+            List<Variation> Variations = VariationGroupings.Where(x => x.Variations != null).SelectMany(p => p.Variations).ToList();
             List<VariationDAO> VariationDAOs = new List<VariationDAO>();
             foreach (var Variation in Variations)
             {

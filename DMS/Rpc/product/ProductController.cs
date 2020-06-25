@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
 using DMS.Services.MBrand;
 using DMS.Services.MImage;
 using DMS.Services.MInventory;
@@ -115,7 +116,7 @@ namespace DMS.Rpc.product
         }
 
         [Route(ProductRoute.Get), HttpPost]
-        public async Task<ActionResult<Product_ProductDTO>> Get([FromBody]Product_ProductDTO Product_ProductDTO)
+        public async Task<ActionResult<Product_ProductDTO>> Get([FromBody] Product_ProductDTO Product_ProductDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -303,10 +304,11 @@ namespace DMS.Rpc.product
 
                 for (int i = StartRow; i <= ProductSheet.Dimension.End.Row; i++)
                 {
+                    string EndOfFile = ProductSheet.Cells[i + StartRow, 1].Value?.ToString();
                     string CodeValue = ProductSheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
                     if (string.IsNullOrWhiteSpace(CodeValue) && i != ProductSheet.Dimension.End.Row)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã sản phẩm");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã sản phẩm");
                     }
                     else if (string.IsNullOrWhiteSpace(CodeValue) && i == ProductSheet.Dimension.End.Row)
                         break;
@@ -398,12 +400,12 @@ namespace DMS.Rpc.product
                     {
                         Product.UnitOfMeasureGroupingId = UnitOfMeasureGroupings.Where(x => x.Code.Equals(UoMGroupCodeValue)).Select(x => x.Id).FirstOrDefault();
                     }
-                    
+
                     if (!string.IsNullOrWhiteSpace(SupplierCodeValue))
                     {
                         Product.SupplierId = Suppliers.Where(x => x.Code.Equals(SupplierCodeValue)).Select(x => x.Id).FirstOrDefault();
                     }
-                    
+
                     if (!string.IsNullOrWhiteSpace(BrandCodeValue))
                     {
                         Product.BrandId = Brands.Where(x => x.Code.Equals(BrandCodeValue)).Select(x => x.Id).FirstOrDefault();
@@ -415,10 +417,9 @@ namespace DMS.Rpc.product
                     Product.OtherName = OtherNameValue;
                     Product.TechnicalName = TechnicalNameValue;
                     Product.TaxTypeId = TaxTypes.Where(x => x.Code.Equals(TaxTypeCodeValue == null ? string.Empty : TaxTypeCodeValue.Trim())).Select(x => x.Id).FirstOrDefault();
-                    Product.UsedVariationId = UsedVariations.Where(x => x.Name.ToLower().Equals(UsedVariationCodeValue == null ? string.Empty : UsedVariationCodeValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
-                    Product.StatusId = Statuses.Where(x => x.Name.ToLower().Equals(StatusNameValue == null ? string.Empty : StatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
-                    Product.Description = DescriptionValue;
                     
+                    Product.Description = DescriptionValue;
+
                     if (long.TryParse(SalePriceValue, out long SalePrice))
                     {
                         Product.SalePrice = SalePrice;
@@ -440,9 +441,17 @@ namespace DMS.Rpc.product
                     {
                         Product.StatusId = -1;
                     }
+                    else
+                    {
+                        Product.StatusId = Statuses.Where(x => x.Name.ToLower().Equals(StatusNameValue == null ? string.Empty : StatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
+                    }
                     if (string.IsNullOrEmpty(UsedVariationCodeValue))
                     {
                         Product.UsedVariationId = -1;
+                    }
+                    else
+                    {
+                        Product.UsedVariationId = UsedVariations.Where(x => x.Name.ToLower().Equals(UsedVariationCodeValue == null ? string.Empty : UsedVariationCodeValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
                     }
 
                     if (Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
@@ -470,10 +479,6 @@ namespace DMS.Rpc.product
                                     VariationGrouping.Variations.Add(Variation);
                                 }
                                 Product.VariationGroupings.Add(VariationGrouping);
-                            }
-                            else
-                            {
-                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập giá trị cho thuộc tính 1");
                             }
                         }
                         else if (!string.IsNullOrWhiteSpace(PropertyValue1Value))
@@ -503,10 +508,6 @@ namespace DMS.Rpc.product
                                 }
                                 Product.VariationGroupings.Add(VariationGrouping);
                             }
-                            else
-                            {
-                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập giá trị cho thuộc tính 2");
-                            }
                         }
                         else if (!string.IsNullOrWhiteSpace(PropertyValue2Value))
                         {
@@ -534,10 +535,6 @@ namespace DMS.Rpc.product
                                     VariationGrouping.Variations.Add(Variation);
                                 }
                                 Product.VariationGroupings.Add(VariationGrouping);
-                            }
-                            else
-                            {
-                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập giá trị cho thuộc tính 3");
                             }
                         }
                         else if (!string.IsNullOrWhiteSpace(PropertyValue3Value))
@@ -567,18 +564,11 @@ namespace DMS.Rpc.product
                                 }
                                 Product.VariationGroupings.Add(VariationGrouping);
                             }
-                            else
-                            {
-                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập giá trị cho thuộc tính 4");
-                            }
                         }
                         else if (!string.IsNullOrWhiteSpace(PropertyValue4Value))
                         {
                             errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 4");
                         }
-
-                        if(Product.VariationGroupings == null || !Product.VariationGroupings.Any())
-                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính cho sản phẩm");
                         #endregion
                     }
                     Products.Add(Product);
@@ -591,7 +581,7 @@ namespace DMS.Rpc.product
             #region Item
             foreach (var Product in Products)
             {
-                if(Product.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
+                if (Product.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
                 {
                     Product.Items = new List<Item>();
                     Product.Items.Add(new Item
@@ -608,22 +598,92 @@ namespace DMS.Rpc.product
                 if (Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
                 {
                     Product.Items = new List<Item>();
-                    foreach (var VariationGrouping in Product.VariationGroupings)
+                    var items1 = new List<Item>();
+                    var items2 = new List<Item>();
+                    var items3 = new List<Item>();
+                    var items4 = new List<Item>();
+                    //thuộc tính đầu tiên
+                    if(Product.VariationGroupings != null && Product.VariationGroupings.Any())
                     {
-                        foreach (var Variation in VariationGrouping.Variations)
+                        var VariationGrouping1 = Product.VariationGroupings[0];
+                        if (VariationGrouping1 != null)
                         {
-                            Item Item = new Item
+                            foreach (var Variation in VariationGrouping1.Variations)
                             {
-                                Code = $"{Product.Code}-{Variation.Code}",
-                                Name = $"{Product.Name} - {Variation.Name}",
-                                ScanCode = Product.ScanCode,
-                                RetailPrice = Product.RetailPrice,
-                                SalePrice = Product.SalePrice,
-                                StatusId = Product.StatusId
-                            };
-                            Product.Items.Add(Item);
+                                Item Item = new Item
+                                {
+                                    Code = $"{Product.Code}-{Variation.Code}",
+                                    Name = $"{Product.Name} - {Variation.Name}",
+                                    ScanCode = Product.ScanCode,
+                                    RetailPrice = Product.RetailPrice,
+                                    SalePrice = Product.SalePrice,
+                                    StatusId = Product.StatusId
+                                };
+                                items1.Add(Item);
+                            }
+                        }
+                        if(Product.VariationGroupings.Count > 1)
+                        {
+                            var VariationGrouping2 = Product.VariationGroupings[1];
+                            if (VariationGrouping2 != null)
+                            {
+                                foreach (var Variation in VariationGrouping2.Variations)
+                                {
+                                    foreach (var item in items1)
+                                    {
+                                        var newObj = Utils.Clone(item);
+                                        newObj.Code = newObj.Code + "-" + Variation.Code;
+                                        newObj.Name = newObj.Name + " - " + Variation.Name;
+                                        items2.Add(newObj);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (Product.VariationGroupings.Count > 2)
+                        {
+                            var VariationGrouping3 = Product.VariationGroupings[2];
+                            if (VariationGrouping3 != null)
+                            {
+                                foreach (var Variation in VariationGrouping3.Variations)
+                                {
+                                    foreach (var item in items2)
+                                    {
+                                        var newObj = Utils.Clone(item);
+                                        newObj.Code = newObj.Code + "-" + Variation.Code;
+                                        newObj.Name = newObj.Name + " - " + Variation.Name;
+                                        items3.Add(newObj);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (Product.VariationGroupings.Count > 3)
+                        {
+                            var VariationGrouping4 = Product.VariationGroupings[3];
+                            if (VariationGrouping4 != null)
+                            {
+                                foreach (var Variation in VariationGrouping4.Variations)
+                                {
+                                    foreach (var item in items3)
+                                    {
+                                        var newObj = Utils.Clone(item);
+                                        newObj.Code = newObj.Code + "-" + Variation.Code;
+                                        newObj.Name = newObj.Name + " - " + Variation.Name;
+                                        items4.Add(newObj);
+                                    }
+                                }
+                            }
                         }
                     }
+                    if (items4.Count > 0)
+                        Product.Items = items4;
+                    else if(items3.Count > 0)
+                        Product.Items = items3;
+                    else if (items2.Count > 0)
+                        Product.Items = items2;
+                    else
+                        Product.Items = items1;
                 }
             }
             #endregion
@@ -631,14 +691,56 @@ namespace DMS.Rpc.product
             Products = await ProductService.Import(Products);
             List<Product_ProductDTO> Product_ProductDTOs = Products
                 .Select(c => new Product_ProductDTO(c)).ToList();
-            
+
             for (int i = 0; i < Products.Count; i++)
             {
                 if (!Products[i].IsValidated)
                 {
-                    foreach (var Error in Products[i].Errors)
+                    if(Products[i].Errors != null)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: {Error.Value}");
+                        foreach (var Error in Products[i].Errors)
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
+                        }
+                    }
+                    if (Products[i].Items != null)
+                    {
+                        foreach (var item in Products[i].Items)
+                        {
+                            if(item.Errors != null)
+                            {
+                                foreach (var Error in item.Errors)
+                                {
+                                    errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
+                                }
+                            }
+                        }
+                    }
+                    if (Products[i].VariationGroupings != null)
+                    {
+                        foreach (var VariationGrouping in Products[i].VariationGroupings)
+                        {
+                            if (VariationGrouping.Errors != null)
+                            {
+                                foreach (var Error in VariationGrouping.Errors)
+                                {
+                                    errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
+                                }
+                            }
+                            if (VariationGrouping.Variations != null)
+                            {
+                                foreach (var Variation in VariationGrouping.Variations)
+                                {
+                                    if (Variation.Errors != null)
+                                    {
+                                        foreach (var Error in Variation.Errors)
+                                        {
+                                            errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1159,7 +1261,7 @@ namespace DMS.Rpc.product
                 xlPackage.SaveAs(MemoryStream);
             }
 
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Template_Product.xlsx");
         }
 
         [Route(ProductRoute.BulkDelete), HttpPost]
