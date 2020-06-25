@@ -390,6 +390,19 @@ namespace DMS.Services.MStore
             return Store.IsValidated;
         }
 
+        private async Task<bool> ValidateTaxCode(Store Store)
+        {
+            if (!string.IsNullOrWhiteSpace(Store.TaxCode))
+            {
+                var TaxCode = Store.TaxCode;
+                if (Store.TaxCode.Contains(" ") || !FilterExtension.ChangeToEnglishChar(TaxCode).Equals(Store.TaxCode))
+                {
+                    Store.AddError(nameof(StoreValidator), nameof(Store.TaxCode), ErrorCode.CodeHasSpecialCharacter);
+                }
+            }
+            return Store.IsValidated;
+        }
+
         private bool IsValidEmail(string email)
         {
             try
@@ -448,6 +461,7 @@ namespace DMS.Services.MStore
             await ValidateStoreTypeId(Store);
             await ValidateStoreGroupingId(Store);
             await ValidatePhone(Store);
+            await ValidateTaxCode(Store);
             await ValidateResellerId(Store);
             await ValidateProvinceId(Store);
             await ValidateDistrictId(Store);
@@ -474,6 +488,7 @@ namespace DMS.Services.MStore
                 await ValidateStoreTypeId(Store);
                 await ValidateStoreGroupingId(Store);
                 await ValidatePhone(Store);
+                await ValidateTaxCode(Store);
                 await ValidateResellerId(Store);
                 await ValidateProvinceId(Store);
                 await ValidateDistrictId(Store);
@@ -554,6 +569,11 @@ namespace DMS.Services.MStore
             })).Select(e => e.Code);
             foreach (var Store in Stores)
             {
+                var Code = Store.Code;
+                if (Store.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Store.Code))
+                {
+                    Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeHasSpecialCharacter);
+                }
                 if (listCodeInDB.Contains(Store.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeExisted);
@@ -595,14 +615,15 @@ namespace DMS.Services.MStore
                     Store.AddError(nameof(StoreValidator), nameof(Store.StoreType), ErrorCode.StoreTypeNotExisted);
                 }
 
-                await (ValidateName(Store));
-                await (ValidateAddress(Store));
-                await (ValidatePhone(Store));
-                await (ValidateDeliveryAddress(Store));
-                await (ValidateLocation(Store));
-                await (ValidateOwnerName(Store));
-                await (ValidateOwnerPhone(Store));
-                await (ValidateOwnerEmail(Store));
+                await ValidateName(Store);
+                await ValidateAddress(Store);
+                await ValidateDeliveryAddress(Store);
+                await ValidateLocation(Store);
+                await ValidatePhone(Store);
+                await ValidateTaxCode(Store);
+                await ValidateOwnerName(Store);
+                await ValidateOwnerPhone(Store);
+                await ValidateOwnerEmail(Store);
 
             }
             return Stores.Any(s => !s.IsValidated) ? false : true;

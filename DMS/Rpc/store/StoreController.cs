@@ -232,12 +232,22 @@ namespace DMS.Rpc.store
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            if (!FileInfo.Extension.Equals(".xlsx"))
+                return BadRequest("Định dạng file không hợp lệ");
 
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
                 Content = file.OpenReadStream(),
             };
+            #region MDM
+            List<Store> ParentStores = await StoreService.List(new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.Code | StoreSelect.Name | StoreSelect.Id
+            });
             List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
             {
                 Skip = 0,
@@ -284,52 +294,62 @@ namespace DMS.Rpc.store
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StatusSelect.Id | StatusSelect.Code
+                Selects = StatusSelect.Id | StatusSelect.Code | StatusSelect.Name
             });
+            #endregion
 
             List<Store> Stores = new List<Store>();
+            StringBuilder errorContent = new StringBuilder();
             using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
             {
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Store"];
                 if (worksheet == null)
-                    return null;
+                    return BadRequest("File không đúng biểu mẫu import");
+
+                #region khai báo các cột
                 int StartColumn = 1;
                 int StartRow = 1;
-
                 int CodeColumn = 1 + StartColumn;
                 int NameColumn = 2 + StartColumn;
-
                 int OrganizationCodeColumn = 3 + StartColumn;
                 int ParentStoreCodeColumn = 4 + StartColumn;
                 int StoreTypeCodeColumn = 5 + StartColumn;
                 int StoreGroupingCodeColumn = 6 + StartColumn;
-
-                int ProvinceCodeColumn = 7 + StartColumn;
-                int DistrictCodeColumn = 8 + StartColumn;
-                int WardCodeColumn = 9 + StartColumn;
-
-                int AddressColumn = 10 + StartColumn;
-                int LatitudeColumn = 11 + StartColumn;
-                int LongitudeColumn = 12 + StartColumn;
-
-                int DeliveryAddressColumn = 13 + StartColumn;
-                int DeliveryLatitudeColumn = 14 + StartColumn;
-                int DeliveryLongitudeColumn = 15 + StartColumn;
-
-                int TelephoneColumn = 16 + StartColumn;
-                int OwnerNameColumn = 17 + StartColumn;
-                int OwnerPhoneColumn = 18 + StartColumn;
-                int OwnerEmailColumn = 19 + StartColumn;
+                int LegalEntityColumn = 7 + StartColumn;
+                int TaxCodeColumn = 8 + StartColumn;
+                int ProvinceCodeColumn = 9 + StartColumn;
+                int DistrictCodeColumn = 10 + StartColumn;
+                int WardCodeColumn = 11 + StartColumn;
+                int AddressColumn = 12 + StartColumn;
+                int LatitudeColumn = 13 + StartColumn;
+                int LongitudeColumn = 14 + StartColumn;
+                int DeliveryAddressColumn = 15 + StartColumn;
+                int DeliveryLatitudeColumn = 16 + StartColumn;
+                int DeliveryLongitudeColumn = 17 + StartColumn;
+                int TelephoneColumn = 18 + StartColumn;
+                int OwnerNameColumn = 19 + StartColumn;
+                int OwnerPhoneColumn = 20 + StartColumn;
+                int OwnerEmailColumn = 21 + StartColumn;
+                int StatusColumn = 22 + StartColumn;
+                #endregion
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
-                    // Lấy thông tin từng dòng
+                    #region Lấy thông tin từng dòng
                     string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                    if (string.IsNullOrWhiteSpace(CodeValue) && i != worksheet.Dimension.End.Row)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã sản phẩm");
+                    }
+                    else if (string.IsNullOrWhiteSpace(CodeValue) && i == worksheet.Dimension.End.Row)
+                        break;
                     string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
                     string OrganizationCodeValue = worksheet.Cells[i + StartRow, OrganizationCodeColumn].Value?.ToString();
                     string ParentStoreCodeValue = worksheet.Cells[i + StartRow, ParentStoreCodeColumn].Value?.ToString();
                     string StoreTypeCodeValue = worksheet.Cells[i + StartRow, StoreTypeCodeColumn].Value?.ToString();
                     string StoreGroupingCodeValue = worksheet.Cells[i + StartRow, StoreGroupingCodeColumn].Value?.ToString();
+                    string LegalEntityValue = worksheet.Cells[i + StartRow, LegalEntityColumn].Value?.ToString();
+                    string TaxCodeValue = worksheet.Cells[i + StartRow, TaxCodeColumn].Value?.ToString();
 
                     string ProvinceCodeValue = worksheet.Cells[i + StartRow, ProvinceCodeColumn].Value?.ToString();
                     string DistrictCodeValue = worksheet.Cells[i + StartRow, DistrictCodeColumn].Value?.ToString();
@@ -347,68 +367,92 @@ namespace DMS.Rpc.store
                     string OwnerNameValue = worksheet.Cells[i + StartRow, OwnerNameColumn].Value?.ToString();
                     string OwnerPhoneValue = worksheet.Cells[i + StartRow, OwnerPhoneColumn].Value?.ToString();
                     string OwnerEmailValue = worksheet.Cells[i + StartRow, OwnerEmailColumn].Value?.ToString();
+                    string StatusNameValue = worksheet.Cells[i + StartRow, StatusColumn].Value?.ToString();
+                    #endregion
 
                     Store Store = new Store();
                     Store.Code = CodeValue;
                     Store.Name = NameValue;
+                    Store.LegalEntity = LegalEntityValue;
+                    Store.TaxCode = TaxCodeValue;
                     Store.Telephone = TelephoneValue;
                     Store.Address = AddressValue;
                     Store.DeliveryAddress = DeliveryAddressValue;
-                    Store.Latitude = decimal.TryParse(LatitudeValue, out decimal Latitude) ? Latitude : 0;
-                    Store.Longitude = decimal.TryParse(LongitudeValue, out decimal Longitude) ? Longitude : 0;
-                    Store.DeliveryLatitude = decimal.TryParse(DeliveryLatitudeValue, out decimal DeliveryLatitude) ? DeliveryLatitude : 0;
-                    Store.DeliveryLongitude = decimal.TryParse(DeliveryLongitudeValue, out decimal DeliveryLongitude) ? DeliveryLongitude : 0;
+                    //set mặc định vĩ độ kinh độ tại HN
+                    Store.Latitude = decimal.TryParse(LatitudeValue, out decimal Latitude) ? Latitude : 21;
+                    Store.Longitude = decimal.TryParse(LongitudeValue, out decimal Longitude) ? Longitude : 106;
+                    Store.DeliveryLatitude = decimal.TryParse(DeliveryLatitudeValue, out decimal DeliveryLatitude) ? DeliveryLatitude : 21;
+                    Store.DeliveryLongitude = decimal.TryParse(DeliveryLongitudeValue, out decimal DeliveryLongitude) ? DeliveryLongitude : 106;
                     Store.OwnerName = OwnerNameValue;
                     Store.OwnerPhone = OwnerPhoneValue;
                     Store.OwnerEmail = OwnerEmailValue;
 
-                    if (!string.IsNullOrEmpty(ParentStoreCodeValue))
+                    
+                    Store.Organization = new Organization()
+                    {
+                        Code = OrganizationCodeValue
+                    };
+                    Store.OrganizationId = Organizations.Where(x => x.Code.Equals(OrganizationCodeValue)).Select(x => x.Id).FirstOrDefault();
+
+                    if (!string.IsNullOrWhiteSpace(ParentStoreCodeValue))
                     {
                         Store.ParentStore = new Store
                         {
                             Code = ParentStoreCodeValue
                         };
+                        Store.ParentStoreId = ParentStores.Where(x => x.Code.Equals(ParentStoreCodeValue)).Select(x => x.Id).FirstOrDefault();
                     }
-                    Store.StoreTypeId = StoreTypes.Where(x => x.Code.Equals(StoreTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
-                    Store.StoreType = new StoreType()
+
+                    Store.StoreType = new StoreType
                     {
                         Code = StoreTypeCodeValue
                     };
-                    Store.OrganizationId = Organizations.Where(x => x.Code.Equals(OrganizationCodeValue)).Select(x => x.Id).FirstOrDefault();
-                    Store.Organization = new Organization()
-                    {
-                        Code = OrganizationCodeValue
-                    };
+                    Store.StoreTypeId = StoreTypes.Where(x => x.Code.Equals(StoreTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
 
                     if (!string.IsNullOrWhiteSpace(StoreGroupingCodeValue))
                     {
-                        Store.StoreGrouping = new StoreGrouping()
+                        Store.StoreGrouping = new StoreGrouping
                         {
                             Code = StoreGroupingCodeValue
                         };
+                        Store.StoreGroupingId = StoreGroupings.Where(x => x.Code.Equals(StoreGroupingCodeValue)).Select(x => x.Id).FirstOrDefault();
                     }
+
                     if (!string.IsNullOrWhiteSpace(ProvinceCodeValue))
                     {
-                        Store.Province = new Province()
+                        Store.Province = new Province
                         {
                             Code = ProvinceCodeValue
                         };
+                        Store.ProvinceId = Provinces.Where(x => x.Code.Equals(ProvinceCodeValue)).Select(x => x.Id).FirstOrDefault();
                     }
+
                     if (!string.IsNullOrWhiteSpace(DistrictCodeValue))
                     {
-                        Store.District = new District()
+                        Store.District = new District
                         {
                             Code = DistrictCodeValue
                         };
+                        Store.DistrictId = Districts.Where(x => x.Code.Equals(DistrictCodeValue)).Select(x => x.Id).FirstOrDefault();
                     }
+
                     if (!string.IsNullOrWhiteSpace(WardCodeValue))
                     {
-                        Store.Ward = new Ward()
+                        Store.Ward = new Ward
                         {
                             Code = WardCodeValue
                         };
+                        Store.WardId = Wards.Where(x => x.Code.Equals(WardCodeValue)).Select(x => x.Id).FirstOrDefault();
                     }
-                    Store.StatusId = StatusEnum.ACTIVE.Id;
+
+                    if (string.IsNullOrEmpty(StatusNameValue))
+                    {
+                        Store.StatusId = -1;
+                    }
+                    else
+                    {
+                        Store.StatusId = Statuses.Where(x => x.Name.ToLower().Equals(StatusNameValue == null ? string.Empty : StatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
+                    }
                     Stores.Add(Store);
                 }
             }
@@ -416,7 +460,6 @@ namespace DMS.Rpc.store
             Stores = await StoreService.Import(Stores);
             List<Store_StoreDTO> Store_StoreDTOs = Stores
                 .Select(c => new Store_StoreDTO(c)).ToList();
-            StringBuilder errorContent = new StringBuilder();
             for (int i = 0; i < Stores.Count; i++)
             {
                 if (!Stores[i].IsValidated)
@@ -477,14 +520,14 @@ namespace DMS.Rpc.store
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = DistrictSelect.Id | DistrictSelect.Code | DistrictSelect.Name
+                Selects = DistrictSelect.Id | DistrictSelect.Code | DistrictSelect.Name | DistrictSelect.Province
             });
 
             List<Ward> Wards = await WardService.List(new WardFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = WardSelect.Id | WardSelect.Code | WardSelect.Name
+                Selects = WardSelect.Id | WardSelect.Code | WardSelect.Name | WardSelect.District
             });
 
             StoreFilter StoreFilter = ConvertFilterDTOToFilterEntity(Store_StoreFilterDTO);
@@ -509,6 +552,8 @@ namespace DMS.Rpc.store
                         "Cửa Hàng Cha",
                         "Cấp Cửa Hàng" ,
                         "Nhóm Cửa Hàng",
+                        "Tư cách pháp nhân",
+                        "Mã số thuế",
                         "Tỉnh/Thành phố",
                         "Quận/Huyện",
                         "Phường/Xã",
@@ -521,7 +566,8 @@ namespace DMS.Rpc.store
                         "Điện Thoại",
                         "Tên Chủ Cửa Hàng",
                         "Điện Thoại Liên Hệ",
-                        "Email"
+                        "Email",
+                        "Trạng thái"
                     }
                 };
                 List<object[]> data = new List<object[]>();
@@ -533,13 +579,15 @@ namespace DMS.Rpc.store
                         i+1,
                         Store.Code,
                         Store.Name,
-                        Store.Organization == null ? string.Empty : Store.Organization.Name,
-                        Store.ParentStore == null ? string.Empty : Store.ParentStore.Name,
-                        Store.StoreType == null ? string.Empty : Store.StoreType.Name,
-                        Store.StoreGrouping== null ? string.Empty : Store.StoreGrouping.Name,
-                        Store.Province == null ? string.Empty : Store.Province.Name,
-                        Store.District == null ? string.Empty : Store.District.Name,
-                        Store.Ward == null ? string.Empty : Store.Ward.Name,
+                        Store.Organization?.Name,
+                        Store.ParentStore?.Name,
+                        Store.StoreType?.Name,
+                        Store.StoreGrouping?.Name,
+                        Store.LegalEntity,
+                        Store.TaxCode,
+                        Store.Province?.Name,
+                        Store.District?.Name,
+                        Store.Ward?.Name,
                         Store.Address,
                         Store.Latitude,
                         Store.Longitude,
@@ -549,7 +597,8 @@ namespace DMS.Rpc.store
                         Store.Telephone,
                         Store.OwnerName,
                         Store.OwnerPhone,
-                        Store.OwnerEmail
+                        Store.OwnerEmail,
+                        Store.Status?.Name
                     });
                 }
                 excel.GenerateWorksheet("Store", StoreHeaders, data);
@@ -672,6 +721,7 @@ namespace DMS.Rpc.store
                     {
                         "Mã",
                         "Tên",
+                        "Tên tỉnh/thành phố"
                     }
                 };
                 data = new List<object[]>();
@@ -682,6 +732,7 @@ namespace DMS.Rpc.store
                     {
                         District.Code,
                         District.Name,
+                        District.Province?.Name,
                     });
                 }
                 excel.GenerateWorksheet("District", DistrictHeaders, data);
@@ -694,6 +745,8 @@ namespace DMS.Rpc.store
                     {
                         "Mã",
                         "Tên",
+                        "Tên quận/huyện",
+                        "Tên tỉnh/thành phố",
                     }
                 };
                 data = new List<object[]>();
@@ -704,6 +757,8 @@ namespace DMS.Rpc.store
                     {
                         Ward.Code,
                         Ward.Name,
+                        Ward.District?.Name,
+                        Ward.District?.Province?.Name,
                     });
                 }
                 excel.GenerateWorksheet("Ward", WardHeaders, data);
@@ -711,7 +766,7 @@ namespace DMS.Rpc.store
                 excel.Save();
             }
 
-            return File(memoryStream.ToArray(), "application/octet-stream", "Store.xlsx");
+            return File(memoryStream.ToArray(), "application/octet-stream", "Store" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
         }
 
         [Route(StoreRoute.ExportTemplate), HttpPost]
@@ -721,49 +776,56 @@ namespace DMS.Rpc.store
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StoreSelect.Code | StoreSelect.Name
+                Selects = StoreSelect.Code | StoreSelect.Name,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
 
             List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = OrganizationSelect.Code | OrganizationSelect.Name | OrganizationSelect.Path
+                Selects = OrganizationSelect.Code | OrganizationSelect.Name | OrganizationSelect.Path,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
 
             List<StoreType> StoreTypes = await StoreTypeService.List(new StoreTypeFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StoreTypeSelect.Id | StoreTypeSelect.Code | StoreTypeSelect.Name
+                Selects = StoreTypeSelect.Id | StoreTypeSelect.Code | StoreTypeSelect.Name,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
 
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(new StoreGroupingFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StoreGroupingSelect.Id | StoreGroupingSelect.Code | StoreGroupingSelect.Name
+                Selects = StoreGroupingSelect.Id | StoreGroupingSelect.Code | StoreGroupingSelect.Name,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
 
             List<Province> Provinces = await ProvinceService.List(new ProvinceFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = ProvinceSelect.Id | ProvinceSelect.Code | ProvinceSelect.Name
+                Selects = ProvinceSelect.Id | ProvinceSelect.Code | ProvinceSelect.Name,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
 
             List<District> Districts = await DistrictService.List(new DistrictFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = DistrictSelect.Id | DistrictSelect.Code | DistrictSelect.Name
+                Selects = DistrictSelect.Id | DistrictSelect.Code | DistrictSelect.Name | DistrictSelect.Province,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
 
             List<Ward> Wards = await WardService.List(new WardFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = WardSelect.Id | WardSelect.Code | WardSelect.Name
+                Selects = WardSelect.Id | WardSelect.Code | WardSelect.Name | WardSelect.District,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             MemoryStream MemoryStream = new MemoryStream();
@@ -845,6 +907,7 @@ namespace DMS.Rpc.store
                     District District = Districts[i];
                     worksheet_District.Cells[startRow_District + i, numberCell_Districts].Value = District.Code;
                     worksheet_District.Cells[startRow_District + i, numberCell_Districts + 1].Value = District.Name;
+                    worksheet_District.Cells[startRow_District + i, numberCell_Districts + 2].Value = District.Province?.Name;
                 }
                 #endregion
 
@@ -858,12 +921,14 @@ namespace DMS.Rpc.store
                     Ward Ward = Wards[i];
                     worksheet_Ward.Cells[startRow_Ward + i, numberCell_Wards].Value = Ward.Code;
                     worksheet_Ward.Cells[startRow_Ward + i, numberCell_Wards + 1].Value = Ward.Name;
+                    worksheet_Ward.Cells[startRow_Ward + i, numberCell_Wards + 2].Value = Ward.District?.Name;
+                    worksheet_Ward.Cells[startRow_Ward + i, numberCell_Wards + 3].Value = Ward.District?.Province?.Name;
                 }
                 #endregion
                 xlPackage.SaveAs(MemoryStream);
             }
 
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Store" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Template_Store.xlsx");
         }
 
         [Route(StoreRoute.BulkDelete), HttpPost]
