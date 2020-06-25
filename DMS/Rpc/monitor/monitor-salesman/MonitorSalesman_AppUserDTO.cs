@@ -1,7 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.Monitor.monitor_salesman
+namespace DMS.Rpc.monitor.monitor_salesman
 {
     public class MonitorSalesman_AppUserDTO : DataDTO
     {
