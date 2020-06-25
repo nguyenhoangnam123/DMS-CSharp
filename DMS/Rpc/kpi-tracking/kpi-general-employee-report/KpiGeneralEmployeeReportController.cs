@@ -131,30 +131,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState); // to do kpi year and period
-            OrganizationDAO OrganizationDAO = null;
-            long? SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.SaleEmployeeId?.Equal;
-            if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.OrganizationId?.Equal != null)
-            {
-                OrganizationDAO = DataContext.Organization.Where(o => o.Id == KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.OrganizationId.Equal.Value).FirstOrDefault();
-            }
-            var query = from k in DataContext.KpiGeneral
-                        join ap in DataContext.AppUser on k.EmployeeId equals ap.Id
-                        join o in DataContext.Organization on ap.OrganizationId equals o.Id
-                        where (OrganizationDAO == null || o.Path.StartsWith(OrganizationDAO.Path)) &&
-                        (SaleEmployeeId == null || ap.Id == SaleEmployeeId.Value)
-                        select k.Id;
-            return await query.Distinct().CountAsync();
-        }
 
-        [Route(KpiGeneralEmployeeReportRoute.List), HttpPost]
-        public async Task<ActionResult<List<KpiGeneralEmployeeReport_SaleEmployeeDTO>>> List([FromBody] KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-            if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.OrganizationId.Equal == null) return BadRequest("Chưa chọn cơ cấu tổ chức");
-            if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.SaleEmployeeId.Equal == null) return BadRequest("Chưa chọn nhân viên");
-
-            OrganizationDAO OrganizationDAO = null;
             DateTime StartDate, EndDate;
             long SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.SaleEmployeeId.Equal ?? 1;
             long? KpiPeriodId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.KpiPeriodId?.Equal;
@@ -165,6 +142,35 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                                join b in DataContext.KpiGeneralContent on a.KpiGeneralContentId equals b.Id
                                join c in DataContext.KpiGeneral on b.KpiGeneralId equals c.Id
                                where (SaleEmployeeId == c.EmployeeId
+                                      && (KpiYearId == null || c.KpiYearId == KpiYearId)
+                                      && (KpiPeriodId == null || a.KpiPeriodId == KpiPeriodId))
+                               select new KpiGeneralEmployeeReport_SaleEmployeeDetailDTO
+                               {
+                                   SaleEmployeeId = c.EmployeeId,
+                                   KpiCriteriaGeneralId = b.KpiCriteriaGeneralId,
+                                   KpiPeriodId = a.KpiPeriodId,
+                                   Value = a.Value.Value,
+                               };
+            return await query_detail.Distinct().CountAsync();
+        }
+
+        [Route(KpiGeneralEmployeeReportRoute.List), HttpPost]
+        public async Task<ActionResult<List<KpiGeneralEmployeeReport_SaleEmployeeDTO>>> List([FromBody] KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.SaleEmployeeId == null) return BadRequest("Chưa chọn nhân viên");
+
+            DateTime StartDate, EndDate;
+            long SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.SaleEmployeeId.Equal ?? 1;
+            long? KpiPeriodId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.KpiPeriodId?.Equal;
+            long? KpiYearId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.KpiYearId?.Equal;
+            (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
+
+            var query_detail = from a in DataContext.KpiGeneralContentKpiPeriodMapping
+                               join b in DataContext.KpiGeneralContent on a.KpiGeneralContentId equals b.Id
+                               join c in DataContext.KpiGeneral on b.KpiGeneralId equals c.Id
+                               where (c.EmployeeId == SaleEmployeeId
                                       && (KpiYearId == null || c.KpiYearId == KpiYearId)
                                       && (KpiPeriodId == null || a.KpiPeriodId == KpiPeriodId))
                                select new KpiGeneralEmployeeReport_SaleEmployeeDetailDTO
@@ -306,8 +312,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             if (KpiYearId == null) KpiYearId = startDate.Year;
             if (KpiPeriodId == null)
             {
-                startDate = DateTime.MinValue;
-                endDate = DateTime.MaxValue;
+                startDate = new DateTime(2019, 1, 1);
+                endDate = new DateTime(2040, 12, 12);
             }
             else 
             if (KpiPeriodId <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
