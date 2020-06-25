@@ -9,6 +9,9 @@ namespace DMS.Rpc.kpi_item
         public long Id { get; set; }
 
         public long ProductId { get; set; }
+        public string ProductGroupName { get; set; }
+        public string ProductTypeCode { get; set; }
+        public string Su { get; set; }
 
         public string Code { get; set; }
 
@@ -21,6 +24,8 @@ namespace DMS.Rpc.kpi_item
         public decimal? RetailPrice { get; set; }
 
         public long StatusId { get; set; }
+        public KpiItem_ProductDTO Product { get; set; }
+
 
 
         public KpiItem_ItemDTO() { }
@@ -42,6 +47,7 @@ namespace DMS.Rpc.kpi_item
             this.RetailPrice = Item.RetailPrice;
 
             this.StatusId = Item.StatusId;
+            this.Product = Item.Product == null ? null : new KpiItem_ProductDTO(Item.Product);
 
             this.Errors = Item.Errors;
         }
@@ -53,6 +59,9 @@ namespace DMS.Rpc.kpi_item
         public IdFilter Id { get; set; }
 
         public IdFilter ProductId { get; set; }
+        public IdFilter ProductGroupingId { get; set; }
+        public IdFilter ProductTypeId { get; set; }
+        public IdFilter SupplierId { get; set; }
 
         public StringFilter Code { get; set; }
 

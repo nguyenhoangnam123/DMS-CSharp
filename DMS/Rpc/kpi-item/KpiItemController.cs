@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Services.MAppUser;
 using DMS.Services.MKpiCriteriaItem;
 using DMS.Services.MKpiCriteriaTotal;
@@ -127,12 +128,7 @@ namespace DMS.Rpc.kpi_item
             KpiItem_KpiItemDTO.KpiCriteriaTotals = KpiCriteriaTotals.Select(x => new KpiItem_KpiCriteriaTotalDTO(x)).ToList();
             KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings = KpiCriteriaTotals.ToDictionary(x => x.Id, y => 0L);
             KpiItem_KpiItemDTO.KpiCriteriaItems = KpiCriteriaItems.Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
-            KpiItem_KpiItemDTO.KpiItemContents = KpiCriteriaItems.Select(x => new KpiItem_KpiItemContentDTO
-            {
-                ItemId = x.Id,
-                //Item = new KpiItem_ItemDTO(x),
-                KpiItemContentKpiCriteriaItemMappings = KpiCriteriaItems.ToDictionary(x => x.Id, y => 0L),
-            }).ToList();
+            
             return KpiItem_KpiItemDTO;
         }
 
@@ -1360,11 +1356,16 @@ namespace DMS.Rpc.kpi_item
         public async Task<long> CountItem([FromBody] KpiItem_ItemFilterDTO KpiItem_ItemFilterDTO)
         {
             ItemFilter ItemFilter = new ItemFilter();
-            ItemFilter.Id = KpiItem_ItemFilterDTO.Id;
             ItemFilter.Code = KpiItem_ItemFilterDTO.Code;
             ItemFilter.Name = KpiItem_ItemFilterDTO.Name;
-
-            ItemFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            ItemFilter.ProductGroupingId = KpiItem_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductId = KpiItem_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = KpiItem_ItemFilterDTO.ProductTypeId;
+            ItemFilter.RetailPrice = KpiItem_ItemFilterDTO.RetailPrice;
+            ItemFilter.SalePrice = KpiItem_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = KpiItem_ItemFilterDTO.ScanCode;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            ItemFilter.SupplierId = KpiItem_ItemFilterDTO.SupplierId;
 
             return await ItemService.Count(ItemFilter);
         }
@@ -1377,10 +1378,16 @@ namespace DMS.Rpc.kpi_item
             ItemFilter.OrderBy = ItemOrder.Id;
             ItemFilter.OrderType = OrderType.ASC;
             ItemFilter.Selects = ItemSelect.ALL;
-            ItemFilter.Id = KpiItem_ItemFilterDTO.Id;
             ItemFilter.Code = KpiItem_ItemFilterDTO.Code;
             ItemFilter.Name = KpiItem_ItemFilterDTO.Name;
-            ItemFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            ItemFilter.ProductGroupingId = KpiItem_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductId = KpiItem_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = KpiItem_ItemFilterDTO.ProductTypeId;
+            ItemFilter.RetailPrice = KpiItem_ItemFilterDTO.RetailPrice;
+            ItemFilter.SalePrice = KpiItem_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = KpiItem_ItemFilterDTO.ScanCode;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            ItemFilter.SupplierId = KpiItem_ItemFilterDTO.SupplierId;
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<KpiItem_ItemDTO> KpiItem_ItemDTOs = Items
