@@ -46,6 +46,7 @@ namespace DMS.Services.MProduct
             VariationNameExisted,
             TaxTypeEmpty,
             ItemInUsed,
+            ItemsEmpty,
             ProductInUsed,
             UsedVariationNotExisted,
             RetailPriceInvalid,
@@ -329,6 +330,9 @@ namespace DMS.Services.MProduct
                         }
                     }
                 }
+
+                if(Product.Items == null || !Product.Items.Any())
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Items), ErrorCode.ItemsEmpty);
             }
                 
             return Product.IsValidated;
