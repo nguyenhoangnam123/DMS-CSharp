@@ -146,13 +146,17 @@ namespace DMS.Rpc.Monitor.monitor_salesman
                     .ToList();
             }
 
-
             List<long> AppUserIds = MonitorSalesman_SaleEmployeeDTOs.Select(s => s.SaleEmployeeId).ToList();
 
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
-            List<ERoutePerformanceDAO> ERoutePerformanceDAOs = await DataContext.ERoutePerformance.Where(ep => Start <= ep.Date && ep.Date <= End).ToListAsync();
+            List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
+               .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && AppUserIds.Contains(ec.ERoute.SaleEmployeeId))
+               .Include(ec => ec.ERouteContentDays)
+               .Include(ec => ec.ERoute)
+               .ToListAsync();
+
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(o => Start <= o.OrderDate && o.OrderDate <= End && AppUserIds.Contains(o.SaleEmployeeId))
                 .ToListAsync();
@@ -162,14 +166,12 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             {
                 if (MonitorSalesman_SaleEmployeeDTO.StoreCheckings == null)
                     MonitorSalesman_SaleEmployeeDTO.StoreCheckings = new List<MonitorSalesman_StoreCheckingDTO>();
-                MonitorSalesman_SaleEmployeeDTO.PlanCounter = ERoutePerformanceDAOs
-                            .Where(ep => ep.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId && Start <= ep.Date && ep.Date <= End)
-                            .Select(ep => ep.PlanCounter).FirstOrDefault();
+                MonitorSalesman_SaleEmployeeDTO.PlanCounter = CountPlan(Start, MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId, ERouteContentDAOs);
 
                 MonitorSalesman_SaleEmployeeDTO.SalesOrderCounter = IndirectSalesOrderDAOs.Count();
                 MonitorSalesman_SaleEmployeeDTO.Revenue = IndirectSalesOrderDAOs.Select(o => o.Total).DefaultIfEmpty(0).Sum();
 
-                List < StoreCheckingDAO > ListChecked = StoreCheckingDAOs
+                List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
                        .Where(s =>
                            s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId &&
                            Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End
@@ -191,6 +193,5 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             }
             return MonitorSalesman_MonitorSalesmanDTOs;
         }
-
     }
 }

@@ -204,7 +204,13 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings.Add(StoreCheckerMonitor_StoreCheckingDTO);
                 }
             }
-            List<ERoutePerformanceDAO> ERoutePerformanceDAOs = await DataContext.ERoutePerformance.Where(ep => Start <= ep.Date && ep.Date <= End).ToListAsync();
+
+            List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
+                .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && AppUserIds.Contains(ec.ERoute.SaleEmployeeId) )
+                .Include(ec => ec.ERouteContentDays)
+                .Include(ec => ec.ERoute)
+                .ToListAsync();
+
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
@@ -233,8 +239,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
                     foreach (StoreCheckingDAO Checked in ListChecked)
                     {
-                        MonitorStoreChecker_StoreCheckingDTO.PlanCounter = ERoutePerformanceDAOs
-                            .Where(ep => ep.SaleEmployeeId == Checked.SaleEmployeeId && ep.Date == Checked.CheckOutAt.Value.Date).Select(ep => ep.PlanCounter).FirstOrDefault();
+                        MonitorStoreChecker_StoreCheckingDTO.PlanCounter = CountPlan(i, MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId,  ERouteContentDAOs);
 
                         if (Checked.Planned)
                             MonitorStoreChecker_StoreCheckingDTO.Internal.Add(Checked.StoreId);
