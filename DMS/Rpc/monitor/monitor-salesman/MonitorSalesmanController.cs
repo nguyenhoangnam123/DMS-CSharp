@@ -95,11 +95,6 @@ namespace DMS.Rpc.Monitor.monitor_salesman
             }
 
             var query = from ap in DataContext.AppUser
-                        join o in DataContext.Organization on ap.OrganizationId equals o.Id
-                        join sc in DataContext.StoreChecking on ap.Id equals sc.SaleEmployeeId
-                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                        (OrganizationDAO == null || o.Path.StartsWith(OrganizationDAO.Path)) &&
-                        (SaleEmployeeId == null || ap.Id == SaleEmployeeId.Value)
                         select ap.Id;
             int count = await query.Distinct().CountAsync();
             return count;
