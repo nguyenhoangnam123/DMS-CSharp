@@ -115,14 +115,8 @@ namespace DMS.Services.MStoreChecking
                 {
                     StoreChecking.Planned = false;
                 }
-                ERoutePerformance ERoutePerformance = new ERoutePerformance
-                {
-                    SaleEmployeeId = CurrentContext.UserId,
-                    Date = StaticParams.DateTimeNow,
-                    PlanCounter = await CountStorePlanned(new StoreFilter { }, null)
-                };
+               
                 await UOW.Begin();
-                await UOW.ERoutePerformanceRepository.Save(ERoutePerformance);
                 await UOW.StoreCheckingRepository.Create(StoreChecking);
                 await UOW.Commit();
 

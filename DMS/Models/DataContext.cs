@@ -29,7 +29,6 @@ namespace DMS.Models
         public virtual DbSet<ERouteChangeRequestContentDAO> ERouteChangeRequestContent { get; set; }
         public virtual DbSet<ERouteContentDAO> ERouteContent { get; set; }
         public virtual DbSet<ERouteContentDayDAO> ERouteContentDay { get; set; }
-        public virtual DbSet<ERoutePerformanceDAO> ERoutePerformance { get; set; }
         public virtual DbSet<ERouteTypeDAO> ERouteType { get; set; }
         public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
@@ -827,17 +826,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.ERouteContentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ERouteContentDay_ERouteContent");
-            });
-
-            modelBuilder.Entity<ERoutePerformanceDAO>(entity =>
-            {
-                entity.Property(e => e.Date).HasColumnType("date");
-
-                entity.HasOne(d => d.SaleEmployee)
-                    .WithMany(p => p.ERoutePerformances)
-                    .HasForeignKey(d => d.SaleEmployeeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ERoutePerformance_AppUser");
             });
 
             modelBuilder.Entity<ERouteTypeDAO>(entity =>

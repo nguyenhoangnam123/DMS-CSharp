@@ -12,7 +12,6 @@ namespace DMS.Models
             DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
             ERouteChangeRequests = new HashSet<ERouteChangeRequestDAO>();
             ERouteCreators = new HashSet<ERouteDAO>();
-            ERoutePerformances = new HashSet<ERoutePerformanceDAO>();
             ERouteSaleEmployees = new HashSet<ERouteDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
             InventoryHistories = new HashSet<InventoryHistoryDAO>();
@@ -68,7 +67,6 @@ namespace DMS.Models
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
         public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }
         public virtual ICollection<ERouteDAO> ERouteCreators { get; set; }
-        public virtual ICollection<ERoutePerformanceDAO> ERoutePerformances { get; set; }
         public virtual ICollection<ERouteDAO> ERouteSaleEmployees { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
         public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
