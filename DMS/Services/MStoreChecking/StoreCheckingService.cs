@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
@@ -115,14 +115,8 @@ namespace DMS.Services.MStoreChecking
                 {
                     StoreChecking.Planned = false;
                 }
-                ERoutePerformance ERoutePerformance = new ERoutePerformance
-                {
-                    SaleEmployeeId = CurrentContext.UserId,
-                    Date = StaticParams.DateTimeNow,
-                    PlanCounter = await CountStorePlanned(new StoreFilter { }, null)
-                };
+               
                 await UOW.Begin();
-                await UOW.ERoutePerformanceRepository.Save(ERoutePerformance);
                 await UOW.StoreCheckingRepository.Create(StoreChecking);
                 await UOW.Commit();
 
@@ -262,6 +256,7 @@ namespace DMS.Services.MStoreChecking
 
         public async Task<List<Store>> ListStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId)
         {
+            // lấy danh sách tất cả các cửa hàng trong kế hoạch
             List<long> StoreIds = await ListStoreIds(ERouteId, true);
 
             StoreFilter.Id = new IdFilter { In = StoreIds };
@@ -276,6 +271,7 @@ namespace DMS.Services.MStoreChecking
                 SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
                 CheckOutAt = new DateFilter { GreaterEqual = StaticParams.DateTimeNow.Date, Less = StaticParams.DateTimeNow.Date.AddDays(1) }
             };
+            // Lấy tất cả các cửa hàng đã được checkin trong ngày hôm nay và đánh dấu xem cửa hàng nào đã được checkin hay chưa.
             List<StoreChecking> StoreCheckings = await UOW.StoreCheckingRepository.List(StoreCheckingFilter);
             foreach (var Store in Stores)
             {
@@ -372,6 +368,7 @@ namespace DMS.Services.MStoreChecking
             return Image;
         }
 
+        // Lấy danh sách tất cả các cửa hàng theo kế hoạch
         private async Task<List<long>> ListStoreIds(IdFilter ERouteId, bool Planned)
         {
             DateTime Now = StaticParams.DateTimeNow.Date;

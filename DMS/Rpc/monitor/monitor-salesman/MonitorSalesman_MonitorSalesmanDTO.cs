@@ -18,10 +18,13 @@ namespace DMS.Rpc.Monitor.monitor_salesman
         public string DisplayName { get; set; }
         public string OrganizationName { get; set; }
         public long PlanCounter { get; set; }
-        public long CheckinCounter { get; set; }
+        public long InternalCounter { get { return Internal == null ? 0 : Internal.Count; } }
+        public long ExternalCounter { get { return External == null ? 0 : External.Count; } }
         public long ImageCounter { get; set; }
         public long SalesOrderCounter { get; set; }
         public decimal Revenue { get; set; }
+        internal HashSet<long> Internal { get; set; }
+        internal HashSet<long> External { get; set; }
         public List<MonitorSalesman_StoreCheckingDTO> StoreCheckings { get; set; }
     }
 
