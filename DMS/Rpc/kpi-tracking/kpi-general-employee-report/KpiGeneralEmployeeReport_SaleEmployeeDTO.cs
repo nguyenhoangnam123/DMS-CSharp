@@ -6,8 +6,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
     public class KpiGeneralEmployeeReport_SaleEmployeeDTO : DataDTO
     {
         public long SaleEmployeeId { get; set; }
-        public string Username { get; set; }
-        public string DisplayName { get; set; }
+        public string KpiPeriodName { get; set; }
+        public long KpiPeriodId { get; set; }
         public string? OrganizationName { get; set; }
         public long? OrganizationId { get; set; }
         public decimal TotalIndirectOrders { get; set; }
@@ -29,7 +29,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
         public decimal NewStoreCreatedPlanned { get; set; }
         public decimal NewStoreCreatedRatio { get; set; }
 
-        
+        public KpiGeneralEmployeeReport_SaleEmployeeDTO()
+        {
+
+        }
         //public List<MonitorStoreChecker_StoreCheckingDTO> StoreCheckings { get; set; }
     }
 }
