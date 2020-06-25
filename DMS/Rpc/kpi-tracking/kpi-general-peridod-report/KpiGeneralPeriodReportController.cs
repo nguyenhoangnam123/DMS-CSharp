@@ -3,6 +3,8 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
 using DMS.Services.MAppUser;
+using DMS.Services.MKpiPeriod;
+using DMS.Services.MKpiYear;
 using DMS.Services.MOrganization;
 using Hangfire.Annotations;
 using Helpers;
@@ -22,11 +24,19 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         private DataContext DataContext;
         private IOrganizationService OrganizationService;
         private IAppUserService AppUserService;
-        public KpiGeneralPeriodReportController(DataContext DataContext, IOrganizationService OrganizationService, IAppUserService AppUserService)
+        private IKpiYearService KpiYearService;
+        private IKpiPeriodService KpiPeriodService;
+        public KpiGeneralPeriodReportController(DataContext DataContext, 
+            IOrganizationService OrganizationService, 
+            IAppUserService AppUserService,
+            IKpiYearService KpiYearService,
+            IKpiPeriodService KpiPeriodService)
         {
             this.DataContext = DataContext;
             this.OrganizationService = OrganizationService;
             this.AppUserService = AppUserService;
+            this.KpiPeriodService = KpiPeriodService;
+            this.KpiYearService = KpiYearService;
         }
 
         [Route(KpiGeneralPeriodReportRoute.FilterListAppUser), HttpPost]
@@ -72,17 +82,48 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 .Select(x => new KpiGeneralPeriodReport_OrganizationDTO(x)).ToList();
             return KpiGeneralPeriodReport_OrganizationDTOs;
         }
-
         [Route(KpiGeneralPeriodReportRoute.FilterListKpiPeriod), HttpPost]
-        public List<GenericEnum> FilterListKpiPeriod()
+        public async Task<List<KpiGeneralPeriodReport_KpiPeriodDTO>> FilterListKpiPeriod([FromBody] KpiGeneralPeriodReport_KpiPeriodFilterDTO KpiGeneralPeriodReport_KpiPeriodFilterDTO)
         {
-            return KpiPeriodEnum.KpiPeriodEnumList;
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            KpiPeriodFilter KpiPeriodFilter = new KpiPeriodFilter();
+            KpiPeriodFilter.Skip = 0;
+            KpiPeriodFilter.Take = 20;
+            KpiPeriodFilter.OrderBy = KpiPeriodOrder.Id;
+            KpiPeriodFilter.OrderType = OrderType.ASC;
+            KpiPeriodFilter.Selects = KpiPeriodSelect.ALL;
+            KpiPeriodFilter.Id = KpiGeneralPeriodReport_KpiPeriodFilterDTO.Id;
+            KpiPeriodFilter.Code = KpiGeneralPeriodReport_KpiPeriodFilterDTO.Code;
+            KpiPeriodFilter.Name = KpiGeneralPeriodReport_KpiPeriodFilterDTO.Name;
+
+            List<KpiPeriod> KpiPeriods = await KpiPeriodService.List(KpiPeriodFilter);
+            List<KpiGeneralPeriodReport_KpiPeriodDTO> KpiGeneralPeriodReport_KpiPeriodDTOs = KpiPeriods
+                .Select(x => new KpiGeneralPeriodReport_KpiPeriodDTO(x)).ToList();
+            return KpiGeneralPeriodReport_KpiPeriodDTOs;
         }
 
         [Route(KpiGeneralPeriodReportRoute.FilterListKpiYear), HttpPost]
-        public List<GenericEnum> FilterListKpiYear()
+        public async Task<List<KpiGeneralPeriodReport_KpiYearDTO>> FilterListKpiYear([FromBody] KpiGeneralPeriodReport_KpiYearFilterDTO KpiGeneralPeriodReport_KpiYearFilterDTO)
         {
-            return KpiYearEnum.KpiYearEnumList;
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            KpiYearFilter KpiYearFilter = new KpiYearFilter();
+            KpiYearFilter.Skip = 0;
+            KpiYearFilter.Take = 20;
+            KpiYearFilter.OrderBy = KpiYearOrder.Id;
+            KpiYearFilter.OrderType = OrderType.ASC;
+            KpiYearFilter.Selects = KpiYearSelect.ALL;
+            KpiYearFilter.Id = KpiGeneralPeriodReport_KpiYearFilterDTO.Id;
+            KpiYearFilter.Code = KpiGeneralPeriodReport_KpiYearFilterDTO.Code;
+            KpiYearFilter.Name = KpiGeneralPeriodReport_KpiYearFilterDTO.Name;
+
+            List<KpiYear> KpiYears = await KpiYearService.List(KpiYearFilter);
+            List<KpiGeneralPeriodReport_KpiYearDTO> KpiGeneralPeriodReport_KpiYearDTOs = KpiYears
+                .Select(x => new KpiGeneralPeriodReport_KpiYearDTO(x)).ToList();
+            return KpiGeneralPeriodReport_KpiYearDTOs;
         }
 
         [Route(KpiGeneralPeriodReportRoute.Count), HttpPost]
@@ -139,7 +180,11 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                             OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
                             OrganizationId = ap.OrganizationId.Value
                         };
-            List<KpiGeneralPeriodReport_SaleEmployeeDTO> KpiGeneralPeriodReport_SaleEmployeeDTOs = await query.Distinct().ToListAsync();
+            List<KpiGeneralPeriodReport_SaleEmployeeDTO> KpiGeneralPeriodReport_SaleEmployeeDTOs = await query
+                .Distinct()
+                .Skip(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Skip)
+                .Take(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Take)
+                .ToListAsync();
 
             //get organization distinc for employee
             List<long> OrganizationIds = KpiGeneralPeriodReport_SaleEmployeeDTOs.Where(x => x.OrganizationId.HasValue).Select(x => x.OrganizationId.Value).Distinct().ToList();
