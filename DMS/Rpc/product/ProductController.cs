@@ -3,7 +3,6 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Helpers;
 using DMS.Services.MBrand;
-using DMS.Services.MImage;
 using DMS.Services.MInventory;
 using DMS.Services.MItemHistory;
 using DMS.Services.MProduct;
@@ -43,10 +42,8 @@ namespace DMS.Rpc.product
         private IUnitOfMeasureGroupingService UnitOfMeasureGroupingService;
         private IItemService ItemService;
         private IItemHistoryService ItemHistoryService;
-        private IImageService ImageService;
         private IInventoryService InventoryService;
         private IProductGroupingService ProductGroupingService;
-        private IVariationGroupingService VariationGroupingService;
         private IProductService ProductService;
         private IUsedVariationService UsedVariationService;
         private ICurrentContext CurrentContext;
@@ -61,10 +58,8 @@ namespace DMS.Rpc.product
             IUnitOfMeasureGroupingService UnitOfMeasureGroupingService,
             IItemService ItemService,
             IItemHistoryService ItemHistoryService,
-            IImageService ImageService,
             IInventoryService InventoryService,
             IProductGroupingService ProductGroupingService,
-            IVariationGroupingService VariationGroupingService,
             IProductService ProductService,
             IUsedVariationService UsedVariationService,
             ICurrentContext CurrentContext
@@ -80,10 +75,8 @@ namespace DMS.Rpc.product
             this.UnitOfMeasureGroupingService = UnitOfMeasureGroupingService;
             this.ItemService = ItemService;
             this.ItemHistoryService = ItemHistoryService;
-            this.ImageService = ImageService;
             this.InventoryService = InventoryService;
             this.ProductGroupingService = ProductGroupingService;
-            this.VariationGroupingService = VariationGroupingService;
             this.ProductService = ProductService;
             this.UsedVariationService = UsedVariationService;
             this.CurrentContext = CurrentContext;
@@ -1581,6 +1574,7 @@ namespace DMS.Rpc.product
             ItemFilter.SalePrice = Product_ItemFilterDTO.SalePrice;
             ItemFilter.ScanCode = Product_ItemFilterDTO.ScanCode;
             ItemFilter.RetailPrice = Product_ItemFilterDTO.RetailPrice;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             return await ItemService.Count(ItemFilter);
         }
 
@@ -1600,6 +1594,7 @@ namespace DMS.Rpc.product
             ItemFilter.SalePrice = Product_ItemFilterDTO.SalePrice;
             ItemFilter.ScanCode = Product_ItemFilterDTO.ScanCode;
             ItemFilter.RetailPrice = Product_ItemFilterDTO.RetailPrice;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<Product_ItemDTO> Product_ItemDTOs = Items
