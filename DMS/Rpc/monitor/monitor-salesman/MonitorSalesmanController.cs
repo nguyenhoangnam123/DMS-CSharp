@@ -194,9 +194,9 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 if (MonitorSalesman_SaleEmployeeDTO.StoreCheckings == null)
                     MonitorSalesman_SaleEmployeeDTO.StoreCheckings = new List<MonitorSalesman_StoreCheckingDTO>();
                 MonitorSalesman_SaleEmployeeDTO.PlanCounter = CountPlan(Start, MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId, ERouteContentDAOs);
-
-                MonitorSalesman_SaleEmployeeDTO.SalesOrderCounter = IndirectSalesOrderDAOs.Count();
-                MonitorSalesman_SaleEmployeeDTO.Revenue = IndirectSalesOrderDAOs.Select(o => o.Total).DefaultIfEmpty(0).Sum();
+                List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).ToList();
+                MonitorSalesman_SaleEmployeeDTO.SalesOrderCounter = SubIndirectSalesOrderDAOs.Count();
+                MonitorSalesman_SaleEmployeeDTO.Revenue = SubIndirectSalesOrderDAOs.Select(o => o.Total).DefaultIfEmpty(0).Sum();
 
                 List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
                        .Where(s =>

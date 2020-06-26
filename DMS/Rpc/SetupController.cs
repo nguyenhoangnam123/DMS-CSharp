@@ -100,11 +100,17 @@ namespace DMS.Rpc
                     }
                     OrganizationDAO.Code = Organization.Code;
                     OrganizationDAO.Name = Organization.Name;
+                    OrganizationDAO.Path = Organization.Path;
+                    OrganizationDAO.Level = Organization.Level;
+                    OrganizationDAO.Address = Organization.Address;
+                    OrganizationDAO.Email = Organization.Email;
+                    OrganizationDAO.ParentId = Organization.ParentId;
                     OrganizationDAO.StatusId = Organization.StatusId;
                     OrganizationDAO.CreatedAt = Organization.CreatedAt;
                     OrganizationDAO.UpdatedAt = Organization.UpdatedAt;
                     OrganizationDAO.DeletedAt = Organization.DeletedAt;
                     OrganizationDAO.RowId = Organization.RowId;
+                    
                 }
                 DataContext.Organization.BulkMerge(OrganizationInDB);
             }

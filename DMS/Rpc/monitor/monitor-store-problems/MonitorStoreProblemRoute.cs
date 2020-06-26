@@ -44,20 +44,22 @@ namespace DMS.Rpc.monitor_store_problems
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore, } },
+                Master, Count, List, Get, FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
+                CountProblemHistory, ListProblemHistory } },
 
             { "Sửa", new List<string> {
                 Master, Count, List, Get,  FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
                 Detail, Update,
-                 SingleListAppUser, SingleListOrganization, SingleListProblemStatus, SingleListProblemType, SingleListStore, } },
+                SingleListAppUser, SingleListOrganization, SingleListProblemStatus, SingleListProblemType, SingleListStore, } },
 
             { "Xoá", new List<string> {
                 Master, Count, List, Get,  FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
                 Detail, Delete,
-                 SingleListAppUser, SingleListOrganization, SingleListProblemStatus, SingleListProblemType, SingleListStore, } },
+                SingleListAppUser, SingleListOrganization, SingleListProblemStatus, SingleListProblemType, SingleListStore, } },
 
             { "Xoá nhiều", new List<string> {
                 Master, Count, List, Get, FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
+                CountProblemHistory, ListProblemHistory,
                 BulkDelete } },
 
         };
