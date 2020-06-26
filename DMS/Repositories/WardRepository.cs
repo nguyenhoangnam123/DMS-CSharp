@@ -141,6 +141,14 @@ namespace DMS.Repositories
                     Priority = q.District.Priority,
                     ProvinceId = q.District.ProvinceId,
                     StatusId = q.District.StatusId,
+                    Province = q.District.Province == null ? null : new Province
+                    {
+                        Id = q.District.Province.Id,
+                        Code = q.District.Province.Code,
+                        Name = q.District.Province.Name,
+                        Priority = q.District.Province.Priority,
+                        StatusId = q.District.Province.StatusId,
+                    }
                 } : null,
                 Status = filter.Selects.Contains(WardSelect.Status) && q.Status != null ? new Status
                 {
