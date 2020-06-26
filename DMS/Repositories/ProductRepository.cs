@@ -433,7 +433,7 @@ namespace DMS.Repositories
                     },
                 }).ToList() : null,
                 VariationGroupings = filter.Selects.Contains(ProductSelect.VariationGrouping) && q.VariationGroupings != null ?
-                q.VariationGroupings.Select(v => new VariationGrouping
+                q.VariationGroupings.Where(x => x.DeletedAt == null).Select(v => new VariationGrouping
                 {
                     ProductId = v.ProductId,
                     Name = v.Name,

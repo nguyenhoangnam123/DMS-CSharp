@@ -304,8 +304,17 @@ namespace DMS.Services.MProduct
                 var oldData = await UOW.ProductRepository.Get(Product.Id);
                 var Items = Product.Items;
                 var OldItems = oldData.Items;
+                var OldItemIds = OldItems.Select(x => x.Id).ToList();
+                var ItemHistories = await UOW.ItemHistoryRepository.List(new ItemHistoryFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = ItemHistorySelect.ALL,
+                    ItemId = new IdFilter { In = OldItemIds }
+                });
                 foreach (var item in Items)
                 {
+                    item.ItemHistories = ItemHistories.Where(x => x.ItemId == item.Id).ToList();
                     var oldItem = OldItems.Where(x => x.Id == item.Id).FirstOrDefault();
                     if (oldItem != null)
                     {
@@ -319,7 +328,7 @@ namespace DMS.Services.MProduct
                                 OldPrice = oldItem.SalePrice,
                                 NewPrice = item.SalePrice,
                             };
-                            if (item.ItemHistories == null)
+                            if (item.ItemHistories == null || !item.ItemHistories.Any())
                             {
                                 item.ItemHistories = new List<ItemHistory>();
                                 item.ItemHistories.Add(ItemHistory);
