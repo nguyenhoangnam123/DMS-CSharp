@@ -12,7 +12,6 @@ namespace DMS.Rpc.kpi_item
         public long OrganizationId { get; set; }
         public long KpiYearId { get; set; }
         public long KpiPeriodId { get; set; }
-        public long KpiYearId { get; set; }
         public long StatusId { get; set; }
         public long EmployeeId { get; set; }
         public long CreatorId { get; set; }
@@ -20,7 +19,6 @@ namespace DMS.Rpc.kpi_item
         public KpiItem_AppUserDTO Employee { get; set; }
         public KpiItem_KpiYearDTO KpiYear { get; set; }
         public KpiItem_KpiPeriodDTO KpiPeriod { get; set; }
-        public KpiItem_KpiYearDTO KpiYear { get; set; }
         public KpiItem_OrganizationDTO Organization { get; set; }
         public KpiItem_StatusDTO Status { get; set; }
         public List<KpiItem_KpiItemContentDTO> KpiItemContents { get; set; }
