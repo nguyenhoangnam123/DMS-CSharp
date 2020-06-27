@@ -113,11 +113,16 @@ namespace DMS.Services.MKpiItem
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiItemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
