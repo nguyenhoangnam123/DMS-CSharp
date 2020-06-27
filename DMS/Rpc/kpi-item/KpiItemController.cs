@@ -875,7 +875,7 @@ namespace DMS.Rpc.kpi_item
                         Value = p.Value,
                     }).ToList(),
                 }).ToList();
-            KpiItem.KpiItemKpiCriteriaTotalMappings = KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings.Select(p => new KpiItemKpiCriteriaTotalMapping
+            KpiItem.KpiItemKpiCriteriaTotalMappings = KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings?.Select(p => new KpiItemKpiCriteriaTotalMapping
             {
                 KpiCriteriaTotalId = p.Key,
                 Value = p.Value
