@@ -509,7 +509,7 @@ namespace DMS.Repositories
             var KpiItemContentIds = KpiItem.KpiItemContents.Select(x => x.Id).ToList();
             await DataContext.KpiItemContentKpiCriteriaItemMapping
                 .Where(x => KpiItemContentIds
-                .Contains(x.KpiCriteriaItemId))
+                .Contains(x.KpiItemContentId))
                 .DeleteFromQueryAsync();
             await DataContext.KpiItemContent
                 .Where(x => KpiItemContentIds.Contains(x.Id))
