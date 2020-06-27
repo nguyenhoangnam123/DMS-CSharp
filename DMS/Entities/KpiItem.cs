@@ -11,12 +11,14 @@ namespace DMS.Entities
         public long Id { get; set; }
         public long OrganizationId { get; set; }
         public long KpiPeriodId { get; set; }
+        public long KpiYearId { get; set; }
         public long StatusId { get; set; }
         public long EmployeeId { get; set; }
         public long CreatorId { get; set; }
         public AppUser Creator { get; set; }
         public AppUser Employee { get; set; }
         public KpiPeriod KpiPeriod { get; set; }
+        public KpiYear KpiYear { get; set; }
         public Organization Organization { get; set; }
         public Status Status { get; set; }
         public List<long> EmployeeIds { get; set; }

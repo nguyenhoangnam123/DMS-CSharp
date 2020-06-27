@@ -236,6 +236,7 @@ namespace DMS.Repositories
                 Id = x.Id,
                 OrganizationId = x.OrganizationId,
                 KpiPeriodId = x.KpiPeriodId,
+                KpiYearId = x.KpiYearId,
                 StatusId = x.StatusId,
                 EmployeeId = x.EmployeeId,
                 CreatorId = x.CreatorId,
@@ -278,6 +279,12 @@ namespace DMS.Repositories
                     Id = x.KpiPeriod.Id,
                     Code = x.KpiPeriod.Code,
                     Name = x.KpiPeriod.Name,
+                },
+                KpiYear = x.KpiYear == null ? null : new KpiYear
+                {
+                    Id = x.KpiYear.Id,
+                    Code = x.KpiYear.Code,
+                    Name = x.KpiYear.Name,
                 },
                 Organization = x.Organization == null ? null : new Organization
                 {

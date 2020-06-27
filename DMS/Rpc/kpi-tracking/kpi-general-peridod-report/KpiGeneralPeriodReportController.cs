@@ -203,6 +203,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
             List<long> SaleEmployeeIds = KpiGeneralPeriodReport_SaleEmployeeDTOs.Select(x => x.SaleEmployeeId).ToList();
 
+            // list toan bo mapping value and criteria
             var query_detail = from a in DataContext.KpiGeneralContentKpiPeriodMapping
                                join b in DataContext.KpiGeneralContent on a.KpiGeneralContentId equals b.Id
                                join c in DataContext.KpiGeneral on b.KpiGeneralId equals c.Id

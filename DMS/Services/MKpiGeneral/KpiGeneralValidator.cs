@@ -25,6 +25,7 @@ namespace DMS.Services.MKpiGeneral
         {
             IdNotExisted,
             OrganizationIdNotExisted,
+            OrganizationEmpty,
             EmployeeIdsEmpty,
             StatusNotExisted,
             KpiYearIdNotExisted,
@@ -59,14 +60,21 @@ namespace DMS.Services.MKpiGeneral
 
         private async Task<bool> ValidateOrganization(KpiGeneral KpiGeneral)
         {
-            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            if (KpiGeneral.OrganizationId == 0)
             {
-                Id = new IdFilter { Equal = KpiGeneral.OrganizationId }
-            };
+                KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.Organization), ErrorCode.OrganizationEmpty);
+            }
+            else
+            {
+                OrganizationFilter OrganizationFilter = new OrganizationFilter
+                {
+                    Id = new IdFilter { Equal = KpiGeneral.OrganizationId }
+                };
 
-            var count = await UOW.OrganizationRepository.Count(OrganizationFilter);
-            if (count == 0)
-                KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.Organization), ErrorCode.OrganizationIdNotExisted);
+                var count = await UOW.OrganizationRepository.Count(OrganizationFilter);
+                if (count == 0)
+                    KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.Organization), ErrorCode.OrganizationIdNotExisted);
+            }
             return KpiGeneral.IsValidated;
         }
 
