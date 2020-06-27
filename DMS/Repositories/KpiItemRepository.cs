@@ -466,11 +466,35 @@ namespace DMS.Repositories
                     {
                         ItemId = x.ItemId,
                         KpiItemId = KpiItem.Id,
+                        KpiItemContentKpiCriteriaItemMappings = x.KpiItemContentKpiCriteriaItemMappings.Select(x => new KpiItemContentKpiCriteriaItemMappingDAO
+                        {
+                            KpiCriteriaItemId = x.KpiCriteriaItemId,
+                            Value = x.Value,
+                            KpiItemContentId = 0
+                        }).ToList(),
+                        RowId = Guid.NewGuid()
                     }).ToList();
                     KpiItemContentDAOs.AddRange(listContent);
                 }
-
             }
+            await DataContext.KpiItemContent.BulkMergeAsync(KpiItemContentDAOs);
+
+            var KpiItemContentKpiCriteriaItemMappingDAOs = new List<KpiItemContentKpiCriteriaItemMappingDAO>();
+            foreach (var KpiItemContent in KpiItemContentDAOs)
+            {
+                KpiItemContent.Id = KpiItemContentDAOs.Where(x => x.RowId == KpiItemContent.RowId).Select(x => x.Id).FirstOrDefault(); // get Id dua vao RowId
+                if (KpiItemContent.KpiItemContentKpiCriteriaItemMappings != null && KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Any())
+                {
+                    var listMappings = KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Select(x => new KpiItemContentKpiCriteriaItemMappingDAO
+                    {
+                        KpiCriteriaItemId = x.KpiCriteriaItemId,
+                        Value = x.Value,
+                        KpiItemContentId = KpiItemContent.Id
+                    }).ToList();
+                    KpiItemContentKpiCriteriaItemMappingDAOs.AddRange(listMappings);
+                }
+            }
+            await DataContext.KpiItemContentKpiCriteriaItemMapping.BulkMergeAsync(KpiItemContentKpiCriteriaItemMappingDAOs);
 
             var KpiItemKpiCriteriaTotalMappingDAOs = new List<KpiItemKpiCriteriaTotalMappingDAO>();
             foreach (var KpiItem in KpiItems)
@@ -485,10 +509,7 @@ namespace DMS.Repositories
                     }).ToList();
                     KpiItemKpiCriteriaTotalMappingDAOs.AddRange(listTotal);
                 }
-
             }
-
-            await DataContext.KpiItemContent.BulkMergeAsync(KpiItemContentDAOs);
             await DataContext.KpiItemKpiCriteriaTotalMapping.BulkMergeAsync(KpiItemKpiCriteriaTotalMappingDAOs);
             return true;
         }
