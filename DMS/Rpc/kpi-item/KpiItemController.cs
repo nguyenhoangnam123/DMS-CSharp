@@ -128,7 +128,13 @@ namespace DMS.Rpc.kpi_item
             KpiItem_KpiItemDTO.KpiCriteriaTotals = KpiCriteriaTotals.Select(x => new KpiItem_KpiCriteriaTotalDTO(x)).ToList();
             KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings = KpiCriteriaTotals.ToDictionary(x => x.Id, y => 0L);
             KpiItem_KpiItemDTO.KpiCriteriaItems = KpiCriteriaItems.Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
-            
+            KpiItem_KpiItemDTO.Status = new KpiItem_StatusDTO
+            {
+                Code = Enums.StatusEnum.ACTIVE.Code,
+                Id = Enums.StatusEnum.ACTIVE.Id,
+                Name = Enums.StatusEnum.ACTIVE.Name
+            };
+            KpiItem_KpiItemDTO.StatusId = Enums.StatusEnum.ACTIVE.Id;
             return KpiItem_KpiItemDTO;
         }
 
