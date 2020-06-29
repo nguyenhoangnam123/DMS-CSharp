@@ -94,7 +94,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Id);
                             break;
                         case KpiItemOrder.Organization:
-                            query = query.OrderBy(q => q.OrganizationId);
+                            query = query.OrderBy(q => q.Organization.Name);
                             break;
                         case KpiItemOrder.KpiYear:
                             query = query.OrderBy(q => q.KpiYearId);
@@ -106,10 +106,10 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.StatusId);
                             break;
                         case KpiItemOrder.Employee:
-                            query = query.OrderBy(q => q.EmployeeId);
+                            query = query.OrderBy(q => q.Employee.DisplayName);
                             break;
                         case KpiItemOrder.Creator:
-                            query = query.OrderBy(q => q.CreatorId);
+                            query = query.OrderBy(q => q.Creator.DisplayName);
                             break;
                     }
                     break;
@@ -120,7 +120,7 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Id);
                             break;
                         case KpiItemOrder.Organization:
-                            query = query.OrderByDescending(q => q.OrganizationId);
+                            query = query.OrderByDescending(q => q.Organization.Name);
                             break;
                         case KpiItemOrder.KpiYear:
                             query = query.OrderByDescending(q => q.KpiYearId);
@@ -132,10 +132,10 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.StatusId);
                             break;
                         case KpiItemOrder.Employee:
-                            query = query.OrderByDescending(q => q.EmployeeId);
+                            query = query.OrderByDescending(q => q.Employee.DisplayName);
                             break;
                         case KpiItemOrder.Creator:
-                            query = query.OrderByDescending(q => q.CreatorId);
+                            query = query.OrderByDescending(q => q.Creator.DisplayName);
                             break;
                     }
                     break;
