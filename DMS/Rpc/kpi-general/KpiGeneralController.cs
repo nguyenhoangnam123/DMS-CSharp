@@ -173,7 +173,7 @@ namespace DMS.Rpc.kpi_general
             {
                 KpiCriteriaGeneralId = x.Id,
                 KpiCriteriaGeneral = new KpiGeneral_KpiCriteriaGeneralDTO(x),
-                KpiGeneralContentKpiPeriodMappings = KpiPeriods.ToDictionary(x => x.Id, y => 0L),
+                KpiGeneralContentKpiPeriodMappings = KpiPeriods.ToDictionary(x => x.Id, y => (long?)null),
                 Status = new KpiGeneral_StatusDTO
                 {
                     Id = Enums.StatusEnum.ACTIVE.Id,
