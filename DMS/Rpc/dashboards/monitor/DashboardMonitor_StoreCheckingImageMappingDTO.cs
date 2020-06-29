@@ -9,10 +9,10 @@ namespace DMS.Rpc.dashboards.monitor
     public class DashboardMonitor_StoreCheckingImageMappingDTO : DataDTO
     {
         public long Sum => StoreCheckingImageMappingHours.Sum(x => x.Counter);
-        public List<Dashboard_StoreCheckingImageMappingHourDTO> StoreCheckingImageMappingHours { get; set; }
+        public List<DashboardMonitor_StoreCheckingImageMappingHourDTO> StoreCheckingImageMappingHours { get; set; }
     }
 
-    public class Dashboard_StoreCheckingImageMappingHourDTO : DataDTO
+    public class DashboardMonitor_StoreCheckingImageMappingHourDTO : DataDTO
     {
         public string Hour { get; set; }
         public long Counter { get; set; }

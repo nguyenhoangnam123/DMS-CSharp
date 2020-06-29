@@ -16,7 +16,7 @@ using DMS.Services.MOrganization;
 
 namespace DMS.Rpc.dashboards.monitor
 {
-    public partial class DashboardMonitorController : SimpleController
+    public class DashboardMonitorController : SimpleController
     {
         private const long TODAY = 0;
         private const long THIS_WEEK = 1;
@@ -59,7 +59,7 @@ namespace DMS.Rpc.dashboards.monitor
         [Route(DashboardMonitorRoute.StoreChecking), HttpPost]
         public async Task<DashboardMonitor_StoreCheckingDTO> StoreChecking()
         {
-            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
 
@@ -73,14 +73,14 @@ namespace DMS.Rpc.dashboards.monitor
             };
 
             List<StoreChecking> StoreCheckings = await StoreCheckingService.List(StoreCheckingFilter);
-            List<Dashboard_StoreCheckingHourDTO> NumberCheckingHours = StoreCheckings.GroupBy(x => x.CheckOutAt.Value.Hour)
-                .Select(x => new Dashboard_StoreCheckingHourDTO { Hour = x.Key.ToString(), Counter = x.Count() }).ToList();
+            List<DashboardMonitor_StoreCheckingHourDTO> NumberCheckingHours = StoreCheckings.GroupBy(x => x.CheckOutAt.Value.Hour)
+                .Select(x => new DashboardMonitor_StoreCheckingHourDTO { Hour = x.Key.ToString(), Counter = x.Count() }).ToList();
 
-            DashboardMonitor_StoreCheckingDTO Dashboard_StoreCheckingDTO = new DashboardMonitor_StoreCheckingDTO();
-            Dashboard_StoreCheckingDTO.StoreCheckingHours = new List<Dashboard_StoreCheckingHourDTO>();
+            DashboardMonitor_StoreCheckingDTO DashboardMonitor_StoreCheckingDTO = new DashboardMonitor_StoreCheckingDTO();
+            DashboardMonitor_StoreCheckingDTO.StoreCheckingHours = new List<DashboardMonitor_StoreCheckingHourDTO>();
             for (int i = 0; i < 24; i++)
             {
-                Dashboard_StoreCheckingDTO.StoreCheckingHours.Add(new Dashboard_StoreCheckingHourDTO
+                DashboardMonitor_StoreCheckingDTO.StoreCheckingHours.Add(new DashboardMonitor_StoreCheckingHourDTO
                 {
                     Counter = 0,
                     Hour = i.ToString()
@@ -88,11 +88,11 @@ namespace DMS.Rpc.dashboards.monitor
             }
             foreach (var NumberCheckingHour in NumberCheckingHours)
             {
-                var x = Dashboard_StoreCheckingDTO.StoreCheckingHours.Where(x => x.Hour == NumberCheckingHour.Hour).FirstOrDefault();
+                var x = DashboardMonitor_StoreCheckingDTO.StoreCheckingHours.Where(x => x.Hour == NumberCheckingHour.Hour).FirstOrDefault();
                 x.Counter = NumberCheckingHour.Counter;
             }
             
-            return Dashboard_StoreCheckingDTO;
+            return DashboardMonitor_StoreCheckingDTO;
         }
 
         [Route(DashboardMonitorRoute.SaleEmployeeOnline), HttpPost]
@@ -107,36 +107,36 @@ namespace DMS.Rpc.dashboards.monitor
                         o.Path.StartsWith(AppUser.Organization.Path) &&
                         au.UpdatedAt > OnlineTime
                         group au by au.UpdatedAt.Hour into x
-                        select new Dashboard_SaleEmployeeOnlineHourDTO
+                        select new DashboardMonitor_SaleEmployeeOnlineHourDTO
                         {
                             Hour = x.Key.ToString(),
                             Counter = x.Count()
                         };
 
-            List<Dashboard_SaleEmployeeOnlineHourDTO> Dashboard_SaleEmployeeOnlineHourDTOs = await query.ToListAsync();
-            DashboardMonitor_SaleEmployeeOnlineDTO Dashboard_SaleEmployeeOnlineDTO = new DashboardMonitor_SaleEmployeeOnlineDTO();
+            List<DashboardMonitor_SaleEmployeeOnlineHourDTO> DashboardMonitor_SaleEmployeeOnlineHourDTOs = await query.ToListAsync();
+            DashboardMonitor_SaleEmployeeOnlineDTO DashboardMonitor_SaleEmployeeOnlineDTO = new DashboardMonitor_SaleEmployeeOnlineDTO();
 
-            Dashboard_SaleEmployeeOnlineDTO.SaleEmployeeOnlineHours = new List<Dashboard_SaleEmployeeOnlineHourDTO>();
+            DashboardMonitor_SaleEmployeeOnlineDTO.SaleEmployeeOnlineHours = new List<DashboardMonitor_SaleEmployeeOnlineHourDTO>();
             for (int i = 0; i < 24; i++)
             {
-                Dashboard_SaleEmployeeOnlineDTO.SaleEmployeeOnlineHours.Add(new Dashboard_SaleEmployeeOnlineHourDTO
+                DashboardMonitor_SaleEmployeeOnlineDTO.SaleEmployeeOnlineHours.Add(new DashboardMonitor_SaleEmployeeOnlineHourDTO
                 {
                     Counter = 0,
                     Hour = i.ToString()
                 });
             }
-            foreach (var SaleEmployeeOnlineHour in Dashboard_SaleEmployeeOnlineHourDTOs)
+            foreach (var SaleEmployeeOnlineHour in DashboardMonitor_SaleEmployeeOnlineHourDTOs)
             {
-                var x = Dashboard_SaleEmployeeOnlineDTO.SaleEmployeeOnlineHours.Where(x => x.Hour == SaleEmployeeOnlineHour.Hour).FirstOrDefault();
+                var x = DashboardMonitor_SaleEmployeeOnlineDTO.SaleEmployeeOnlineHours.Where(x => x.Hour == SaleEmployeeOnlineHour.Hour).FirstOrDefault();
                 x.Counter = SaleEmployeeOnlineHour.Counter;
             }
-            return Dashboard_SaleEmployeeOnlineDTO;
+            return DashboardMonitor_SaleEmployeeOnlineDTO;
         }
 
         [Route(DashboardMonitorRoute.StatisticIndirectSalesOrder), HttpPost]
         public async Task<DashboardMonitor_StatisticIndirectSalesOrderDTO> StatisticIndirectSalesOrder()
         {
-            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
 
@@ -150,32 +150,32 @@ namespace DMS.Rpc.dashboards.monitor
             };
 
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
-            List<Dashboard_StatisticIndirectSalesOrderHourDTO> Dashboard_StatisticIndirectSalesOrderHourDTOs = IndirectSalesOrders.GroupBy(x => x.OrderDate.Hour)
-                .Select(x => new Dashboard_StatisticIndirectSalesOrderHourDTO { Hour = x.Key.ToString(), Counter = x.Count() }).ToList();
+            List<DashboardMonitor_StatisticIndirectSalesOrderHourDTO> DashboardMonitor_StatisticIndirectSalesOrderHourDTOs = IndirectSalesOrders.GroupBy(x => x.OrderDate.Hour)
+                .Select(x => new DashboardMonitor_StatisticIndirectSalesOrderHourDTO { Hour = x.Key.ToString(), Counter = x.Count() }).ToList();
 
-            DashboardMonitor_StatisticIndirectSalesOrderDTO Dashboard_StatisticIndirectSalesOrderDTO = new DashboardMonitor_StatisticIndirectSalesOrderDTO();
-            Dashboard_StatisticIndirectSalesOrderDTO.StatisticIndirectSalesOrderHours = new List<Dashboard_StatisticIndirectSalesOrderHourDTO>();
+            DashboardMonitor_StatisticIndirectSalesOrderDTO DashboardMonitor_StatisticIndirectSalesOrderDTO = new DashboardMonitor_StatisticIndirectSalesOrderDTO();
+            DashboardMonitor_StatisticIndirectSalesOrderDTO.StatisticIndirectSalesOrderHours = new List<DashboardMonitor_StatisticIndirectSalesOrderHourDTO>();
 
             for (int i = 0; i < 24; i++)
             {
-                Dashboard_StatisticIndirectSalesOrderDTO.StatisticIndirectSalesOrderHours.Add(new Dashboard_StatisticIndirectSalesOrderHourDTO
+                DashboardMonitor_StatisticIndirectSalesOrderDTO.StatisticIndirectSalesOrderHours.Add(new DashboardMonitor_StatisticIndirectSalesOrderHourDTO
                 {
                     Counter = 0,
                     Hour = i.ToString()
                 });
             }
-            foreach (var IndirectSalesOrderHour in Dashboard_StatisticIndirectSalesOrderHourDTOs)
+            foreach (var IndirectSalesOrderHour in DashboardMonitor_StatisticIndirectSalesOrderHourDTOs)
             {
-                var x = Dashboard_StatisticIndirectSalesOrderDTO.StatisticIndirectSalesOrderHours.Where(x => x.Hour == IndirectSalesOrderHour.Hour).FirstOrDefault();
+                var x = DashboardMonitor_StatisticIndirectSalesOrderDTO.StatisticIndirectSalesOrderHours.Where(x => x.Hour == IndirectSalesOrderHour.Hour).FirstOrDefault();
                 x.Counter = IndirectSalesOrderHour.Counter;
             }
-            return Dashboard_StatisticIndirectSalesOrderDTO;
+            return DashboardMonitor_StatisticIndirectSalesOrderDTO;
         }
 
         [Route(DashboardMonitorRoute.ImageStoreCheking), HttpPost]
         public async Task<DashboardMonitor_StoreCheckingImageMappingDTO> ImageStoreCheking()
         {
-            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
 
@@ -183,36 +183,36 @@ namespace DMS.Rpc.dashboards.monitor
                         where scim.SaleEmployeeId == CurrentContext.UserId &&
                         Now <= scim.ShootingAt && scim.ShootingAt <= End
                         group scim by scim.ShootingAt.Hour into i
-                        select new Dashboard_StoreCheckingImageMappingHourDTO
+                        select new DashboardMonitor_StoreCheckingImageMappingHourDTO
                         {
                             Hour = i.Key.ToString(),
                             Counter = i.Count()
                         };
 
-            List<Dashboard_StoreCheckingImageMappingHourDTO> Dashboard_StoreCheckingImageMappingHourDTOs = await query.ToListAsync();
-            DashboardMonitor_StoreCheckingImageMappingDTO Dashboard_StoreCheckingImageMappingDTO = new DashboardMonitor_StoreCheckingImageMappingDTO();
+            List<DashboardMonitor_StoreCheckingImageMappingHourDTO> DashboardMonitor_StoreCheckingImageMappingHourDTOs = await query.ToListAsync();
+            DashboardMonitor_StoreCheckingImageMappingDTO DashboardMonitor_StoreCheckingImageMappingDTO = new DashboardMonitor_StoreCheckingImageMappingDTO();
 
-            Dashboard_StoreCheckingImageMappingDTO.StoreCheckingImageMappingHours = new List<Dashboard_StoreCheckingImageMappingHourDTO>();
+            DashboardMonitor_StoreCheckingImageMappingDTO.StoreCheckingImageMappingHours = new List<DashboardMonitor_StoreCheckingImageMappingHourDTO>();
             for (int i = 0; i < 24; i++)
             {
-                Dashboard_StoreCheckingImageMappingDTO.StoreCheckingImageMappingHours.Add(new Dashboard_StoreCheckingImageMappingHourDTO
+                DashboardMonitor_StoreCheckingImageMappingDTO.StoreCheckingImageMappingHours.Add(new DashboardMonitor_StoreCheckingImageMappingHourDTO
                 {
                     Counter = 0,
                     Hour = i.ToString()
                 });
             }
-            foreach (var StoreCheckingImageMappingHour in Dashboard_StoreCheckingImageMappingHourDTOs)
+            foreach (var StoreCheckingImageMappingHour in DashboardMonitor_StoreCheckingImageMappingHourDTOs)
             {
-                var x = Dashboard_StoreCheckingImageMappingDTO.StoreCheckingImageMappingHours.Where(x => x.Hour == StoreCheckingImageMappingHour.Hour).FirstOrDefault();
+                var x = DashboardMonitor_StoreCheckingImageMappingDTO.StoreCheckingImageMappingHours.Where(x => x.Hour == StoreCheckingImageMappingHour.Hour).FirstOrDefault();
                 x.Counter = StoreCheckingImageMappingHour.Counter;
             }
-            return Dashboard_StoreCheckingImageMappingDTO;
+            return DashboardMonitor_StoreCheckingImageMappingDTO;
         }
 
         [Route(DashboardMonitorRoute.StoreCheckingCoverage), HttpPost]
         public async Task<List<DashboardMonitor_StoreDTO>> StoreCheckingCoverage()
         {
-            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
 
@@ -227,8 +227,8 @@ namespace DMS.Rpc.dashboards.monitor
                             Longitude = s.Longitude,
                             Telephone = s.Telephone,
                         };
-            List<DashboardMonitor_StoreDTO> Dashboard_StoreDTOs = await query.Distinct().ToListAsync();
-            return Dashboard_StoreDTOs;
+            List<DashboardMonitor_StoreDTO> DashboardMonitor_StoreDTOs = await query.Distinct().ToListAsync();
+            return DashboardMonitor_StoreDTOs;
         }
 
         [Route(DashboardMonitorRoute.SaleEmployeeLocation), HttpPost]
@@ -248,8 +248,8 @@ namespace DMS.Rpc.dashboards.monitor
                             Latitude = au.Latitude,
                         };
 
-            List<DashboardMonitor_AppUserDTO> Dashboard_AppUserDTOs = await query.Distinct().ToListAsync();
-            return Dashboard_AppUserDTOs;
+            List<DashboardMonitor_AppUserDTO> DashboardMonitor_AppUserDTOs = await query.Distinct().ToListAsync();
+            return DashboardMonitor_AppUserDTOs;
         }
 
         [Route(DashboardMonitorRoute.ListIndirectSalesOrder), HttpPost]
@@ -286,42 +286,42 @@ namespace DMS.Rpc.dashboards.monitor
             };
 
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
-            List<DashboardMonitor_IndirectSalesOrderDTO> Dashboard_IndirectSalesOrderDTOs = IndirectSalesOrders
+            List<DashboardMonitor_IndirectSalesOrderDTO> DashboardMonitor_IndirectSalesOrderDTOs = IndirectSalesOrders
                 .Select(x => new DashboardMonitor_IndirectSalesOrderDTO(x)).ToList();
 
-            return Dashboard_IndirectSalesOrderDTOs;
+            return DashboardMonitor_IndirectSalesOrderDTOs;
         }
 
         [Route(DashboardMonitorRoute.TopSaleEmployeeStoreChecking), HttpPost]
-        public async Task<List<DashboardMonitor_TopSaleEmployeeStoreCheckingDTO>> TopSaleEmployeeStoreChecking([FromBody] Dashboard_TopSaleEmployeeStoreCheckingFilterDTO Dashboard_TopSaleEmployeeStoreCheckingFilterDTO)
+        public async Task<List<DashboardMonitor_TopSaleEmployeeStoreCheckingDTO>> TopSaleEmployeeStoreChecking([FromBody] DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO)
         {
-            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
 
-            if (Dashboard_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.HasValue == false)
+            if (DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.HasValue == false)
             {
-                Dashboard_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal = 0;
+                DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal = 0;
                 Start = new DateTime(Now.Year, Now.Month, Now.Day);
                 End = Start.AddDays(1).AddSeconds(-1);
             }
-            else if (Dashboard_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == TODAY)
+            else if (DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == TODAY)
             {
                 Start = new DateTime(Now.Year, Now.Month, Now.Day);
                 End = Start.AddDays(1).AddSeconds(-1);
             }
-            else if (Dashboard_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == THIS_WEEK)
+            else if (DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == THIS_WEEK)
             {
                 int diff = (7 + (Now.DayOfWeek - DayOfWeek.Monday)) % 7;
                 Start = Now.AddDays(-1 * diff);
                 End = Start.AddDays(7).AddSeconds(-1);
             }
-            else if (Dashboard_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == THIS_MONTH)
+            else if (DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
                 Start = new DateTime(Now.Year, Now.Month, 1);
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
-            else if (Dashboard_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == LAST_MONTH)
+            else if (DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == LAST_MONTH)
             {
                 Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1);
                 End = Start.AddMonths(1).AddSeconds(-1);
@@ -347,19 +347,19 @@ namespace DMS.Rpc.dashboards.monitor
             };
             var AppUsers = await AppUserService.List(AppUserFilter);
 
-            List<DashboardMonitor_TopSaleEmployeeStoreCheckingDTO> Dashboard_TopSaleEmployeeStoreCheckingDTOs = StoreCheckings.GroupBy(x => x.SaleEmployeeId)
+            List<DashboardMonitor_TopSaleEmployeeStoreCheckingDTO> DashboardMonitor_TopSaleEmployeeStoreCheckingDTOs = StoreCheckings.GroupBy(x => x.SaleEmployeeId)
                 .Select(x => new DashboardMonitor_TopSaleEmployeeStoreCheckingDTO
                 {
                     SaleEmployeeId = x.Key,
                     Counter = x.Count()
                 }).ToList();
-            foreach (var Dashboard_TopSaleEmployeeStoreCheckingDTO in Dashboard_TopSaleEmployeeStoreCheckingDTOs)
+            foreach (var DashboardMonitor_TopSaleEmployeeStoreCheckingDTO in DashboardMonitor_TopSaleEmployeeStoreCheckingDTOs)
             {
-                Dashboard_TopSaleEmployeeStoreCheckingDTO.DisplayName = AppUsers.Where(x => x.Id == Dashboard_TopSaleEmployeeStoreCheckingDTO.SaleEmployeeId)
+                DashboardMonitor_TopSaleEmployeeStoreCheckingDTO.DisplayName = AppUsers.Where(x => x.Id == DashboardMonitor_TopSaleEmployeeStoreCheckingDTO.SaleEmployeeId)
                     .Select(x => x.DisplayName).FirstOrDefault();
             }
 
-            return Dashboard_TopSaleEmployeeStoreCheckingDTOs;
+            return DashboardMonitor_TopSaleEmployeeStoreCheckingDTOs;
         }
     }
 }

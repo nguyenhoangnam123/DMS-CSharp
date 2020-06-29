@@ -13,7 +13,7 @@ namespace DMS.Rpc.dashboards.monitor
         public long Counter { get; set; }
     }
 
-    public class Dashboard_TopSaleEmployeeStoreCheckingFilterDTO : FilterDTO
+    public class DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO : FilterDTO
     {
         public IdFilter Time { get; set; }
     }

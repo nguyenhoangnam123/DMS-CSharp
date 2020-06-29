@@ -9,10 +9,10 @@ namespace DMS.Rpc.dashboards.monitor
     public class DashboardMonitor_StatisticIndirectSalesOrderDTO : DataDTO
     {
         public long Sum => StatisticIndirectSalesOrderHours.Sum(x => x.Counter);
-        public List<Dashboard_StatisticIndirectSalesOrderHourDTO> StatisticIndirectSalesOrderHours { get; set; }
+        public List<DashboardMonitor_StatisticIndirectSalesOrderHourDTO> StatisticIndirectSalesOrderHours { get; set; }
     }
 
-    public class Dashboard_StatisticIndirectSalesOrderHourDTO : DataDTO
+    public class DashboardMonitor_StatisticIndirectSalesOrderHourDTO : DataDTO
     {
         public string Hour { get; set; }
         public long Counter { get; set; }
