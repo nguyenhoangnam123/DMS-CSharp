@@ -639,7 +639,28 @@ namespace DMS.Services.MProduct
                 await ValidateScanCode(Product);
                 await ValidateSalePrice(Product); 
                 await ValidateRetailPrice(Product); 
-                await ValidateUsedVariation(Product); 
+                await ValidateUsedVariation(Product);
+                if (UsedVariationEnum.USED.Id != Product.UsedVariationId && UsedVariationEnum.NOTUSED.Id != Product.UsedVariationId)
+                    Product.AddError(nameof(ProductValidator), nameof(Product.UsedVariation), ErrorCode.UsedVariationNotExisted);
+                if(Product.VariationGroupings != null)
+                {
+                    foreach (var VariationGrouping in Product.VariationGroupings)
+                    {
+                        if (VariationGrouping.Variations == null || !VariationGrouping.Variations.Any())
+                            VariationGrouping.AddError(nameof(ProductValidator), nameof(VariationGrouping.Variations), ErrorCode.VariationsEmpty);
+                        else
+                        {
+                            foreach (var Variation in VariationGrouping.Variations)
+                            {
+                                var vgCode = Variation.Code;
+                                if (Variation.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(vgCode).Equals(Variation.Code))
+                                {
+                                    Variation.AddError(nameof(ProductValidator), nameof(Variation.Code), ErrorCode.CodeHasSpecialCharacter);
+                                }
+                            }
+                        }
+                    }
+                }
                 await ValidateStatusId(Product); 
             }
             return Products.Any(s => !s.IsValidated) ? false : true;

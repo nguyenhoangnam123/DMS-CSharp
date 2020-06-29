@@ -128,7 +128,13 @@ namespace DMS.Rpc.kpi_item
             KpiItem_KpiItemDTO.KpiCriteriaTotals = KpiCriteriaTotals.Select(x => new KpiItem_KpiCriteriaTotalDTO(x)).ToList();
             KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings = KpiCriteriaTotals.ToDictionary(x => x.Id, y => 0L);
             KpiItem_KpiItemDTO.KpiCriteriaItems = KpiCriteriaItems.Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
-            
+            KpiItem_KpiItemDTO.Status = new KpiItem_StatusDTO
+            {
+                Code = Enums.StatusEnum.ACTIVE.Code,
+                Id = Enums.StatusEnum.ACTIVE.Id,
+                Name = Enums.StatusEnum.ACTIVE.Name
+            };
+            KpiItem_KpiItemDTO.StatusId = Enums.StatusEnum.ACTIVE.Id;
             return KpiItem_KpiItemDTO;
         }
 
@@ -806,6 +812,7 @@ namespace DMS.Rpc.kpi_item
             KpiItem KpiItem = new KpiItem();
             KpiItem.Id = KpiItem_KpiItemDTO.Id;
             KpiItem.OrganizationId = KpiItem_KpiItemDTO.OrganizationId;
+            KpiItem.KpiYearId = KpiItem_KpiItemDTO.KpiYearId;
             KpiItem.KpiPeriodId = KpiItem_KpiItemDTO.KpiPeriodId;
             KpiItem.StatusId = KpiItem_KpiItemDTO.StatusId;
             KpiItem.EmployeeId = KpiItem_KpiItemDTO.EmployeeId;
@@ -827,6 +834,12 @@ namespace DMS.Rpc.kpi_item
                 Address = KpiItem_KpiItemDTO.Employee.Address,
                 Email = KpiItem_KpiItemDTO.Employee.Email,
                 Phone = KpiItem_KpiItemDTO.Employee.Phone,
+            };
+            KpiItem.KpiYear = KpiItem_KpiItemDTO.KpiYear == null ? null : new KpiYear
+            {
+                Id = KpiItem_KpiItemDTO.KpiYear.Id,
+                Code = KpiItem_KpiItemDTO.KpiYear.Code,
+                Name = KpiItem_KpiItemDTO.KpiYear.Name,
             };
             KpiItem.KpiPeriod = KpiItem_KpiItemDTO.KpiPeriod == null ? null : new KpiPeriod
             {
@@ -868,7 +881,7 @@ namespace DMS.Rpc.kpi_item
                         Value = p.Value,
                     }).ToList(),
                 }).ToList();
-            KpiItem.KpiItemKpiCriteriaTotalMappings = KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings.Select(p => new KpiItemKpiCriteriaTotalMapping
+            KpiItem.KpiItemKpiCriteriaTotalMappings = KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings?.Select(p => new KpiItemKpiCriteriaTotalMapping
             {
                 KpiCriteriaTotalId = p.Key,
                 Value = p.Value
@@ -888,6 +901,7 @@ namespace DMS.Rpc.kpi_item
 
             KpiItemFilter.Id = KpiItem_KpiItemFilterDTO.Id;
             KpiItemFilter.OrganizationId = KpiItem_KpiItemFilterDTO.OrganizationId;
+            KpiItemFilter.KpiYearId = KpiItem_KpiItemFilterDTO.KpiYearId;
             KpiItemFilter.KpiPeriodId = KpiItem_KpiItemFilterDTO.KpiPeriodId;
             KpiItemFilter.StatusId = KpiItem_KpiItemFilterDTO.StatusId;
             KpiItemFilter.EmployeeId = KpiItem_KpiItemFilterDTO.EmployeeId;

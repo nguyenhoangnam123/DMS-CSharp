@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.dashboards
+namespace DMS.Rpc.dashboards.monitor
 {
-    public class DashboardRoute : Root
+    public class DashboardMonitorRoute : Root
     {
-        private const string Default = Rpc + Module + "/dashboards";
+        private const string Default = Rpc + Module + "/dashboards/monitor";
         public const string StoreChecking = Default + "/store-checking";
         public const string SaleEmployeeOnline = Default + "/sale-employee-online";
         public const string StatisticIndirectSalesOrder = Default + "/statistic-indirect-sales-order";

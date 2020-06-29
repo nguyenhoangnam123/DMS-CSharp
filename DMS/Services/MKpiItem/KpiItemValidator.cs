@@ -23,6 +23,7 @@ namespace DMS.Services.MKpiItem
         {
             IdNotExisted,
             OrganizationIdNotExisted,
+            OrganizationEmpty,
             EmployeeIdsEmpty,
             StatusNotExisted,
             KpiPeriodIdNotExisted,
@@ -57,14 +58,22 @@ namespace DMS.Services.MKpiItem
 
         private async Task<bool> ValidateOrganization(KpiItem KpiItem)
         {
-            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            if(KpiItem.OrganizationId == 0)
             {
-                Id = new IdFilter { Equal = KpiItem.OrganizationId }
-            };
+                KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.Organization), ErrorCode.OrganizationEmpty);
+            }
+            else
+            {
+                OrganizationFilter OrganizationFilter = new OrganizationFilter
+                {
+                    Id = new IdFilter { Equal = KpiItem.OrganizationId }
+                };
 
-            var count = await UOW.OrganizationRepository.Count(OrganizationFilter);
-            if (count == 0)
-                KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.Organization), ErrorCode.OrganizationIdNotExisted);
+                var count = await UOW.OrganizationRepository.Count(OrganizationFilter);
+                if (count == 0)
+                    KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.Organization), ErrorCode.OrganizationIdNotExisted);
+            }
+            
             return KpiItem.IsValidated;
         }
 

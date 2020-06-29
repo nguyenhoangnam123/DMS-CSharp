@@ -5,17 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.dashboards
+namespace DMS.Rpc.dashboards.monitor
 {
-    public class Dashboard_StoreDTO : DataDTO
+    public class DashboardMonitor_StoreDTO : DataDTO
     {
         public long Id { get; set; }
         public decimal? Longitude { get; set; }
         public decimal? Latitude { get; set; }
         public string Name { get; set; }
         public string Telephone { get; set; }
-        public Dashboard_StoreDTO() { }
-        public Dashboard_StoreDTO(Store Store)
+        public DashboardMonitor_StoreDTO() { }
+        public DashboardMonitor_StoreDTO(Store Store)
         {
             this.Id = Store.Id;
             this.Longitude = Store.Longitude;

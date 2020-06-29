@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.dashboards
+namespace DMS.Rpc.dashboards.monitor
 {
-    public class Dashboard_AppUserDTO : DataDTO
+    public class DashboardMonitor_AppUserDTO : DataDTO
     {
         public long Id { get; set; }
         public string Username { get; set; }
@@ -15,8 +15,8 @@ namespace DMS.Rpc.dashboards
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
 
-        public Dashboard_AppUserDTO() { }
-        public Dashboard_AppUserDTO(AppUser AppUser)
+        public DashboardMonitor_AppUserDTO() { }
+        public DashboardMonitor_AppUserDTO(AppUser AppUser)
         {
             this.Id = AppUser.Id;
             this.Username = AppUser.Username;

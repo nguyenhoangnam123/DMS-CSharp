@@ -14,9 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
 
-namespace DMS.Rpc.dashboards
+namespace DMS.Rpc.dashboards.monitor
 {
-    public partial class DashboardController : SimpleController
+    public partial class DashboardMonitorController : SimpleController
     {
         private const long TODAY = 0;
         private const long THIS_WEEK = 1;
@@ -29,7 +29,7 @@ namespace DMS.Rpc.dashboards
         private IOrganizationService OrganizationService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
         private IStoreCheckingService StoreCheckingService;
-        public DashboardController(
+        public DashboardMonitorController(
             DataContext DataContext,
             IAppUserService AppUserService,
             ICurrentContext CurrentContext,
@@ -45,19 +45,19 @@ namespace DMS.Rpc.dashboards
             this.StoreCheckingService = StoreCheckingService;
         }
 
-        [Route(DashboardRoute.FilterListTime), HttpPost]
-        public List<Dashborad_EnumList> FilterListTime()
+        [Route(DashboardMonitorRoute.FilterListTime), HttpPost]
+        public List<DashboardMonitor_EnumList> FilterListTime()
         {
-            List<Dashborad_EnumList> Dashborad_EnumLists = new List<Dashborad_EnumList>();
-            Dashborad_EnumLists.Add(new Dashborad_EnumList { Id = TODAY, Name = "Hôm nay" });
-            Dashborad_EnumLists.Add(new Dashborad_EnumList { Id = THIS_WEEK, Name = "Tuần này" });
-            Dashborad_EnumLists.Add(new Dashborad_EnumList { Id = THIS_MONTH, Name = "Tháng này" });
-            Dashborad_EnumLists.Add(new Dashborad_EnumList { Id = LAST_MONTH, Name = "Tháng trước" });
+            List<DashboardMonitor_EnumList> Dashborad_EnumLists = new List<DashboardMonitor_EnumList>();
+            Dashborad_EnumLists.Add(new DashboardMonitor_EnumList { Id = TODAY, Name = "Hôm nay" });
+            Dashborad_EnumLists.Add(new DashboardMonitor_EnumList { Id = THIS_WEEK, Name = "Tuần này" });
+            Dashborad_EnumLists.Add(new DashboardMonitor_EnumList { Id = THIS_MONTH, Name = "Tháng này" });
+            Dashborad_EnumLists.Add(new DashboardMonitor_EnumList { Id = LAST_MONTH, Name = "Tháng trước" });
             return Dashborad_EnumLists;
         }
 
-        [Route(DashboardRoute.StoreChecking), HttpPost]
-        public async Task<Dashboard_StoreCheckingDTO> StoreChecking()
+        [Route(DashboardMonitorRoute.StoreChecking), HttpPost]
+        public async Task<DashboardMonitor_StoreCheckingDTO> StoreChecking()
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
@@ -76,7 +76,7 @@ namespace DMS.Rpc.dashboards
             List<Dashboard_StoreCheckingHourDTO> NumberCheckingHours = StoreCheckings.GroupBy(x => x.CheckOutAt.Value.Hour)
                 .Select(x => new Dashboard_StoreCheckingHourDTO { Hour = x.Key.ToString(), Counter = x.Count() }).ToList();
 
-            Dashboard_StoreCheckingDTO Dashboard_StoreCheckingDTO = new Dashboard_StoreCheckingDTO();
+            DashboardMonitor_StoreCheckingDTO Dashboard_StoreCheckingDTO = new DashboardMonitor_StoreCheckingDTO();
             Dashboard_StoreCheckingDTO.StoreCheckingHours = new List<Dashboard_StoreCheckingHourDTO>();
             for (int i = 0; i < 24; i++)
             {
@@ -95,8 +95,8 @@ namespace DMS.Rpc.dashboards
             return Dashboard_StoreCheckingDTO;
         }
 
-        [Route(DashboardRoute.SaleEmployeeOnline), HttpPost]
-        public async Task<Dashboard_SaleEmployeeOnlineDTO> SaleEmployeeOnline()
+        [Route(DashboardMonitorRoute.SaleEmployeeOnline), HttpPost]
+        public async Task<DashboardMonitor_SaleEmployeeOnlineDTO> SaleEmployeeOnline()
         {
             var AppUser = await AppUserService.Get(CurrentContext.UserId);
             var OnlineTime = StaticParams.DateTimeNow.AddMinutes(-30);
@@ -114,7 +114,7 @@ namespace DMS.Rpc.dashboards
                         };
 
             List<Dashboard_SaleEmployeeOnlineHourDTO> Dashboard_SaleEmployeeOnlineHourDTOs = await query.ToListAsync();
-            Dashboard_SaleEmployeeOnlineDTO Dashboard_SaleEmployeeOnlineDTO = new Dashboard_SaleEmployeeOnlineDTO();
+            DashboardMonitor_SaleEmployeeOnlineDTO Dashboard_SaleEmployeeOnlineDTO = new DashboardMonitor_SaleEmployeeOnlineDTO();
 
             Dashboard_SaleEmployeeOnlineDTO.SaleEmployeeOnlineHours = new List<Dashboard_SaleEmployeeOnlineHourDTO>();
             for (int i = 0; i < 24; i++)
@@ -133,8 +133,8 @@ namespace DMS.Rpc.dashboards
             return Dashboard_SaleEmployeeOnlineDTO;
         }
 
-        [Route(DashboardRoute.StatisticIndirectSalesOrder), HttpPost]
-        public async Task<Dashboard_StatisticIndirectSalesOrderDTO> StatisticIndirectSalesOrder()
+        [Route(DashboardMonitorRoute.StatisticIndirectSalesOrder), HttpPost]
+        public async Task<DashboardMonitor_StatisticIndirectSalesOrderDTO> StatisticIndirectSalesOrder()
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
@@ -153,7 +153,7 @@ namespace DMS.Rpc.dashboards
             List<Dashboard_StatisticIndirectSalesOrderHourDTO> Dashboard_StatisticIndirectSalesOrderHourDTOs = IndirectSalesOrders.GroupBy(x => x.OrderDate.Hour)
                 .Select(x => new Dashboard_StatisticIndirectSalesOrderHourDTO { Hour = x.Key.ToString(), Counter = x.Count() }).ToList();
 
-            Dashboard_StatisticIndirectSalesOrderDTO Dashboard_StatisticIndirectSalesOrderDTO = new Dashboard_StatisticIndirectSalesOrderDTO();
+            DashboardMonitor_StatisticIndirectSalesOrderDTO Dashboard_StatisticIndirectSalesOrderDTO = new DashboardMonitor_StatisticIndirectSalesOrderDTO();
             Dashboard_StatisticIndirectSalesOrderDTO.StatisticIndirectSalesOrderHours = new List<Dashboard_StatisticIndirectSalesOrderHourDTO>();
 
             for (int i = 0; i < 24; i++)
@@ -172,8 +172,8 @@ namespace DMS.Rpc.dashboards
             return Dashboard_StatisticIndirectSalesOrderDTO;
         }
 
-        [Route(DashboardRoute.ImageStoreCheking), HttpPost]
-        public async Task<Dashboard_StoreCheckingImageMappingDTO> ImageStoreCheking()
+        [Route(DashboardMonitorRoute.ImageStoreCheking), HttpPost]
+        public async Task<DashboardMonitor_StoreCheckingImageMappingDTO> ImageStoreCheking()
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
@@ -190,7 +190,7 @@ namespace DMS.Rpc.dashboards
                         };
 
             List<Dashboard_StoreCheckingImageMappingHourDTO> Dashboard_StoreCheckingImageMappingHourDTOs = await query.ToListAsync();
-            Dashboard_StoreCheckingImageMappingDTO Dashboard_StoreCheckingImageMappingDTO = new Dashboard_StoreCheckingImageMappingDTO();
+            DashboardMonitor_StoreCheckingImageMappingDTO Dashboard_StoreCheckingImageMappingDTO = new DashboardMonitor_StoreCheckingImageMappingDTO();
 
             Dashboard_StoreCheckingImageMappingDTO.StoreCheckingImageMappingHours = new List<Dashboard_StoreCheckingImageMappingHourDTO>();
             for (int i = 0; i < 24; i++)
@@ -209,8 +209,8 @@ namespace DMS.Rpc.dashboards
             return Dashboard_StoreCheckingImageMappingDTO;
         }
 
-        [Route(DashboardRoute.StoreCheckingCoverage), HttpPost]
-        public async Task<List<Dashboard_StoreDTO>> StoreCheckingCoverage()
+        [Route(DashboardMonitorRoute.StoreCheckingCoverage), HttpPost]
+        public async Task<List<DashboardMonitor_StoreDTO>> StoreCheckingCoverage()
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1);
@@ -219,7 +219,7 @@ namespace DMS.Rpc.dashboards
             var query = from s in DataContext.Store
                         join sc in DataContext.StoreChecking on s.Id equals sc.StoreId
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End
-                        select new Dashboard_StoreDTO 
+                        select new DashboardMonitor_StoreDTO 
                         {
                             Id = s.Id,
                             Name = s.Name,
@@ -227,19 +227,19 @@ namespace DMS.Rpc.dashboards
                             Longitude = s.Longitude,
                             Telephone = s.Telephone,
                         };
-            List<Dashboard_StoreDTO> Dashboard_StoreDTOs = await query.Distinct().ToListAsync();
+            List<DashboardMonitor_StoreDTO> Dashboard_StoreDTOs = await query.Distinct().ToListAsync();
             return Dashboard_StoreDTOs;
         }
 
-        [Route(DashboardRoute.SaleEmployeeLocation), HttpPost]
-        public async Task<List<Dashboard_AppUserDTO>> SaleEmployeeLocation()
+        [Route(DashboardMonitorRoute.SaleEmployeeLocation), HttpPost]
+        public async Task<List<DashboardMonitor_AppUserDTO>> SaleEmployeeLocation()
         {
             var AppUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from au in DataContext.AppUser
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where au.DeletedAt.HasValue == false && au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
                         o.Path.StartsWith(AppUser.Organization.Path)
-                        select new Dashboard_AppUserDTO
+                        select new DashboardMonitor_AppUserDTO
                         {
                             Id = au.Id,
                             DisplayName = au.DisplayName,
@@ -248,12 +248,12 @@ namespace DMS.Rpc.dashboards
                             Latitude = au.Latitude,
                         };
 
-            List<Dashboard_AppUserDTO> Dashboard_AppUserDTOs = await query.Distinct().ToListAsync();
+            List<DashboardMonitor_AppUserDTO> Dashboard_AppUserDTOs = await query.Distinct().ToListAsync();
             return Dashboard_AppUserDTOs;
         }
 
-        [Route(DashboardRoute.ListIndirectSalesOrder), HttpPost]
-        public async Task<List<Dashboard_IndirectSalesOrderDTO>> ListIndirectSalesOrder()
+        [Route(DashboardMonitorRoute.ListIndirectSalesOrder), HttpPost]
+        public async Task<List<DashboardMonitor_IndirectSalesOrderDTO>> ListIndirectSalesOrder()
         {
             var appUser = await AppUserService.Get(CurrentContext.UserId);
             var OrganizationIds = (await OrganizationService.List(new OrganizationFilter
@@ -286,14 +286,14 @@ namespace DMS.Rpc.dashboards
             };
 
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
-            List<Dashboard_IndirectSalesOrderDTO> Dashboard_IndirectSalesOrderDTOs = IndirectSalesOrders
-                .Select(x => new Dashboard_IndirectSalesOrderDTO(x)).ToList();
+            List<DashboardMonitor_IndirectSalesOrderDTO> Dashboard_IndirectSalesOrderDTOs = IndirectSalesOrders
+                .Select(x => new DashboardMonitor_IndirectSalesOrderDTO(x)).ToList();
 
             return Dashboard_IndirectSalesOrderDTOs;
         }
 
-        [Route(DashboardRoute.TopSaleEmployeeStoreChecking), HttpPost]
-        public async Task<List<Dashboard_TopSaleEmployeeStoreCheckingDTO>> TopSaleEmployeeStoreChecking([FromBody] Dashboard_TopSaleEmployeeStoreCheckingFilterDTO Dashboard_TopSaleEmployeeStoreCheckingFilterDTO)
+        [Route(DashboardMonitorRoute.TopSaleEmployeeStoreChecking), HttpPost]
+        public async Task<List<DashboardMonitor_TopSaleEmployeeStoreCheckingDTO>> TopSaleEmployeeStoreChecking([FromBody] Dashboard_TopSaleEmployeeStoreCheckingFilterDTO Dashboard_TopSaleEmployeeStoreCheckingFilterDTO)
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
@@ -347,8 +347,8 @@ namespace DMS.Rpc.dashboards
             };
             var AppUsers = await AppUserService.List(AppUserFilter);
 
-            List<Dashboard_TopSaleEmployeeStoreCheckingDTO> Dashboard_TopSaleEmployeeStoreCheckingDTOs = StoreCheckings.GroupBy(x => x.SaleEmployeeId)
-                .Select(x => new Dashboard_TopSaleEmployeeStoreCheckingDTO
+            List<DashboardMonitor_TopSaleEmployeeStoreCheckingDTO> Dashboard_TopSaleEmployeeStoreCheckingDTOs = StoreCheckings.GroupBy(x => x.SaleEmployeeId)
+                .Select(x => new DashboardMonitor_TopSaleEmployeeStoreCheckingDTO
                 {
                     SaleEmployeeId = x.Key,
                     Counter = x.Count()

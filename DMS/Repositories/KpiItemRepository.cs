@@ -42,6 +42,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.OrganizationId != null)
                 query = query.Where(q => q.OrganizationId, filter.OrganizationId);
+            if (filter.KpiYearId != null)
+                query = query.Where(q => q.KpiYearId, filter.KpiYearId);
             if (filter.KpiPeriodId != null)
                 query = query.Where(q => q.KpiPeriodId, filter.KpiPeriodId);
             if (filter.StatusId != null)
@@ -66,6 +68,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, KpiItemFilter.Id);
                 if (KpiItemFilter.OrganizationId != null)
                     queryable = queryable.Where(q => q.OrganizationId, KpiItemFilter.OrganizationId);
+                if (KpiItemFilter.KpiYearId != null)
+                    queryable = queryable.Where(q => q.KpiYearId, KpiItemFilter.KpiYearId);
                 if (KpiItemFilter.KpiPeriodId != null)
                     queryable = queryable.Where(q => q.KpiPeriodId, KpiItemFilter.KpiPeriodId);
                 if (KpiItemFilter.StatusId != null)
@@ -90,7 +94,10 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Id);
                             break;
                         case KpiItemOrder.Organization:
-                            query = query.OrderBy(q => q.OrganizationId);
+                            query = query.OrderBy(q => q.Organization.Name);
+                            break;
+                        case KpiItemOrder.KpiYear:
+                            query = query.OrderBy(q => q.KpiYearId);
                             break;
                         case KpiItemOrder.KpiPeriod:
                             query = query.OrderBy(q => q.KpiPeriodId);
@@ -99,10 +106,10 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.StatusId);
                             break;
                         case KpiItemOrder.Employee:
-                            query = query.OrderBy(q => q.EmployeeId);
+                            query = query.OrderBy(q => q.Employee.DisplayName);
                             break;
                         case KpiItemOrder.Creator:
-                            query = query.OrderBy(q => q.CreatorId);
+                            query = query.OrderBy(q => q.Creator.DisplayName);
                             break;
                     }
                     break;
@@ -113,7 +120,10 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Id);
                             break;
                         case KpiItemOrder.Organization:
-                            query = query.OrderByDescending(q => q.OrganizationId);
+                            query = query.OrderByDescending(q => q.Organization.Name);
+                            break;
+                        case KpiItemOrder.KpiYear:
+                            query = query.OrderByDescending(q => q.KpiYearId);
                             break;
                         case KpiItemOrder.KpiPeriod:
                             query = query.OrderByDescending(q => q.KpiPeriodId);
@@ -122,10 +132,10 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.StatusId);
                             break;
                         case KpiItemOrder.Employee:
-                            query = query.OrderByDescending(q => q.EmployeeId);
+                            query = query.OrderByDescending(q => q.Employee.DisplayName);
                             break;
                         case KpiItemOrder.Creator:
-                            query = query.OrderByDescending(q => q.CreatorId);
+                            query = query.OrderByDescending(q => q.Creator.DisplayName);
                             break;
                     }
                     break;
@@ -140,6 +150,7 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(KpiItemSelect.Id) ? q.Id : default(long),
                 OrganizationId = filter.Selects.Contains(KpiItemSelect.Organization) ? q.OrganizationId : default(long),
+                KpiYearId = filter.Selects.Contains(KpiItemSelect.KpiYear) ? q.KpiYearId : default(long),
                 KpiPeriodId = filter.Selects.Contains(KpiItemSelect.KpiPeriod) ? q.KpiPeriodId : default(long),
                 StatusId = filter.Selects.Contains(KpiItemSelect.Status) ? q.StatusId : default(long),
                 EmployeeId = filter.Selects.Contains(KpiItemSelect.Employee) ? q.EmployeeId : default(long),
@@ -235,6 +246,7 @@ namespace DMS.Repositories
                 UpdatedAt = x.UpdatedAt,
                 Id = x.Id,
                 OrganizationId = x.OrganizationId,
+                KpiYearId = x.KpiYearId,
                 KpiPeriodId = x.KpiPeriodId,
                 StatusId = x.StatusId,
                 EmployeeId = x.EmployeeId,
@@ -272,6 +284,12 @@ namespace DMS.Repositories
                     ProvinceId = x.Employee.ProvinceId,
                     SexId = x.Employee.SexId,
                     Birthday = x.Employee.Birthday,
+                },
+                KpiYear = x.KpiYear == null ? null : new KpiYear
+                {
+                    Id = x.KpiYear.Id,
+                    Code = x.KpiYear.Code,
+                    Name = x.KpiYear.Name,
                 },
                 KpiPeriod = x.KpiPeriod == null ? null : new KpiPeriod
                 {
@@ -374,6 +392,7 @@ namespace DMS.Repositories
             KpiItemDAO KpiItemDAO = new KpiItemDAO();
             KpiItemDAO.Id = KpiItem.Id;
             KpiItemDAO.OrganizationId = KpiItem.OrganizationId;
+            KpiItemDAO.KpiYearId = KpiItem.KpiYearId;
             KpiItemDAO.KpiPeriodId = KpiItem.KpiPeriodId;
             KpiItemDAO.StatusId = KpiItem.StatusId;
             KpiItemDAO.EmployeeId = KpiItem.EmployeeId;
@@ -396,6 +415,7 @@ namespace DMS.Repositories
                 return false;
             KpiItemDAO.Id = KpiItem.Id;
             KpiItemDAO.OrganizationId = KpiItem.OrganizationId;
+            KpiItemDAO.KpiYearId = KpiItem.KpiYearId;
             KpiItemDAO.KpiPeriodId = KpiItem.KpiPeriodId;
             KpiItemDAO.StatusId = KpiItem.StatusId;
             KpiItemDAO.EmployeeId = KpiItem.EmployeeId;
@@ -423,6 +443,7 @@ namespace DMS.Repositories
                 KpiItemDAO KpiItemDAO = new KpiItemDAO();
                 KpiItemDAO.Id = KpiItem.Id;
                 KpiItemDAO.OrganizationId = KpiItem.OrganizationId;
+                KpiItemDAO.KpiYearId = KpiItem.KpiYearId;
                 KpiItemDAO.KpiPeriodId = KpiItem.KpiPeriodId;
                 KpiItemDAO.StatusId = KpiItem.StatusId;
                 KpiItemDAO.EmployeeId = KpiItem.EmployeeId;
@@ -445,11 +466,35 @@ namespace DMS.Repositories
                     {
                         ItemId = x.ItemId,
                         KpiItemId = KpiItem.Id,
+                        KpiItemContentKpiCriteriaItemMappings = x.KpiItemContentKpiCriteriaItemMappings.Select(x => new KpiItemContentKpiCriteriaItemMappingDAO
+                        {
+                            KpiCriteriaItemId = x.KpiCriteriaItemId,
+                            Value = x.Value,
+                            KpiItemContentId = 0
+                        }).ToList(),
+                        RowId = Guid.NewGuid()
                     }).ToList();
                     KpiItemContentDAOs.AddRange(listContent);
                 }
-
             }
+            await DataContext.KpiItemContent.BulkMergeAsync(KpiItemContentDAOs);
+
+            var KpiItemContentKpiCriteriaItemMappingDAOs = new List<KpiItemContentKpiCriteriaItemMappingDAO>();
+            foreach (var KpiItemContent in KpiItemContentDAOs)
+            {
+                KpiItemContent.Id = KpiItemContentDAOs.Where(x => x.RowId == KpiItemContent.RowId).Select(x => x.Id).FirstOrDefault(); // get Id dua vao RowId
+                if (KpiItemContent.KpiItemContentKpiCriteriaItemMappings != null && KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Any())
+                {
+                    var listMappings = KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Select(x => new KpiItemContentKpiCriteriaItemMappingDAO
+                    {
+                        KpiCriteriaItemId = x.KpiCriteriaItemId,
+                        Value = x.Value,
+                        KpiItemContentId = KpiItemContent.Id
+                    }).ToList();
+                    KpiItemContentKpiCriteriaItemMappingDAOs.AddRange(listMappings);
+                }
+            }
+            await DataContext.KpiItemContentKpiCriteriaItemMapping.BulkMergeAsync(KpiItemContentKpiCriteriaItemMappingDAOs);
 
             var KpiItemKpiCriteriaTotalMappingDAOs = new List<KpiItemKpiCriteriaTotalMappingDAO>();
             foreach (var KpiItem in KpiItems)
@@ -464,10 +509,7 @@ namespace DMS.Repositories
                     }).ToList();
                     KpiItemKpiCriteriaTotalMappingDAOs.AddRange(listTotal);
                 }
-
             }
-
-            await DataContext.KpiItemContent.BulkMergeAsync(KpiItemContentDAOs);
             await DataContext.KpiItemKpiCriteriaTotalMapping.BulkMergeAsync(KpiItemKpiCriteriaTotalMappingDAOs);
             return true;
         }
@@ -488,7 +530,7 @@ namespace DMS.Repositories
             var KpiItemContentIds = KpiItem.KpiItemContents.Select(x => x.Id).ToList();
             await DataContext.KpiItemContentKpiCriteriaItemMapping
                 .Where(x => KpiItemContentIds
-                .Contains(x.KpiCriteriaItemId))
+                .Contains(x.KpiItemContentId))
                 .DeleteFromQueryAsync();
             await DataContext.KpiItemContent
                 .Where(x => KpiItemContentIds.Contains(x.Id))

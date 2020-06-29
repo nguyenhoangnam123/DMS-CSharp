@@ -34,13 +34,19 @@ namespace DMS.Repositories
                 {
                     OrganizationDAO OrganizationDAO = DataContext.Organization
                         .Where(o => o.Id == filter.Id.Equal.Value).FirstOrDefault();
-                    query = query.Where(q => q.Path.StartsWith(OrganizationDAO.Path));
+                    if(OrganizationDAO == null)
+                        return query.Where(q => false);
+                    else
+                        query = query.Where(q => q.Path.StartsWith(OrganizationDAO.Path));
                 }
                 if (filter.Id.NotEqual != null)
                 {
                     OrganizationDAO OrganizationDAO = DataContext.Organization
                         .Where(o => o.Id == filter.Id.NotEqual.Value).FirstOrDefault();
-                    query = query.Where(q => !q.Path.StartsWith(OrganizationDAO.Path));
+                    if (OrganizationDAO == null)
+                        return query.Where(q => false);
+                    else
+                        query = query.Where(q => !q.Path.StartsWith(OrganizationDAO.Path));
                 }
                 if (filter.Id.In != null)
                 {

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.dashboards
+namespace DMS.Rpc.dashboards.monitor
 {
-    public class Dashboard_TopSaleEmployeeStoreCheckingDTO : DataDTO
+    public class DashboardMonitor_TopSaleEmployeeStoreCheckingDTO : DataDTO
     {
         public long SaleEmployeeId { get; set; }
         public string DisplayName { get; set; }

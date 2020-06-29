@@ -820,7 +820,7 @@ namespace DMS.Rpc.product
                         "Tên sản phẩm",
                         "Nhóm sản phẩm",
                         "Loại sản phẩm",
-                        "Đơn vị tính*",
+                        "Đơn vị tính",
                         "Nhóm đơn vị chuyển đổi",
                         "Nhà cung cấp",
                         "Mã từ ERP",
@@ -853,9 +853,8 @@ namespace DMS.Rpc.product
                     {
                         foreach (var ProductProductGroupingMapping in Product.ProductProductGroupingMappings)
                         {
-                            ProductGroupingName = string.Join(',', Product.ProductProductGroupingMappings.Select(x => x.ProductGrouping.Name).ToList());
+                            ProductGroupingName = string.Join(';', Product.ProductProductGroupingMappings.Select(x => x.ProductGrouping.Name).ToList());
                         }
-                        ProductGroupingName = Product.ProductProductGroupingMappings.FirstOrDefault() == null ? null : Product.ProductProductGroupingMappings.FirstOrDefault().ProductGrouping.Name;
                     }
                     string VariationGrouping1 = "";
                     string VariationValue1 = "";
@@ -909,8 +908,8 @@ namespace DMS.Rpc.product
                         Product.TechnicalName,
                         Product.TaxType.Code,
                         Product.Description,
-                        Product.SalePrice.ToString("NO", culture),
-                        Product.RetailPrice?.ToString("NO", culture),
+                        Product.SalePrice.ToString("N0", culture),
+                        Product.RetailPrice?.ToString("N0", culture),
                         Product.Status?.Name,
                         Product.UsedVariation?.Name,
                         VariationGrouping1,
@@ -938,6 +937,7 @@ namespace DMS.Rpc.product
                         "Mã nhận diện sản phẩm",
                         "Giá bán",
                         "Giá bán lẻ đề xuất",
+                        "Trạng thái",
                     }
                 };
                 for (int i = 0; i < Items.Count; i++)
@@ -945,12 +945,13 @@ namespace DMS.Rpc.product
                     Item Item = Items[i];
                     data.Add(new object[] {
                                 i+1,
-                                Item.Product.Code,
+                                Item.Product?.Code,
                                 Item.Code,
                                 Item.Name,
                                 Item.ScanCode,
-                                Item.SalePrice.ToString("NO", culture),
-                                Item.RetailPrice?.ToString("NO", culture),
+                                Item.SalePrice.ToString("N0", culture),
+                                Item.RetailPrice?.ToString("N0", culture),
+                                Item.Status?.Name,
                                 });
                 }
                 excel.GenerateWorksheet("Item", ItemHeader, data);
