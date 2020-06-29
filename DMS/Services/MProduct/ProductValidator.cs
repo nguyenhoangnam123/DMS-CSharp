@@ -34,26 +34,24 @@ namespace DMS.Services.MProduct
             SupplierNotExisted,
             BrandNotExisted,
             TaxTypeNotExisted,
+            TaxTypeEmpty,
             UnitOfMeasureNotExisted,
             UnitOfMeasureEmpty,
             UnitOfMeasureGroupingNotExisted,
             UnitOfMeasureGroupingInvalid,
+            SalePriceInvalid,
+            SalePriceEmpty,
+            RetailPriceInvalid,
             StatusEmpty,
             ERPCodeHasSpecialCharacter,
             ScanCodeHasSpecialCharacter,
-            VariationGroupingExisted,
-            VariationCodeExisted,
-            VariationNameExisted,
-            TaxTypeEmpty,
-            ItemInUsed,
+            VariationGroupingsEmpty,
+            VariationsEmpty,
             ItemsEmpty,
             ProductInUsed,
             UsedVariationNotExisted,
-            RetailPriceInvalid,
-            SalePriceInvalid,
-            SalePriceEmpty,
-            VariationGroupingsEmpty,
-            VariationsEmpty
+            
+            
         }
 
         private IUOW UOW;
@@ -307,7 +305,7 @@ namespace DMS.Services.MProduct
         {
             if (UsedVariationEnum.USED.Id != Product.UsedVariationId && UsedVariationEnum.NOTUSED.Id != Product.UsedVariationId)
                 Product.AddError(nameof(ProductValidator), nameof(Product.UsedVariation), ErrorCode.UsedVariationNotExisted);
-            if(UsedVariationEnum.USED.Id == Product.UsedVariationId )
+            else if(UsedVariationEnum.USED.Id == Product.UsedVariationId )
             {
                 if(Product.VariationGroupings == null)
                     Product.AddError(nameof(ProductValidator), nameof(Product.VariationGroupings), ErrorCode.VariationGroupingsEmpty);
@@ -592,7 +590,7 @@ namespace DMS.Services.MProduct
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
-                if (listCodeInDB.Contains(Product.Code))
+                else if (listCodeInDB.Contains(Product.Code))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeExisted);
                 }
@@ -640,7 +638,6 @@ namespace DMS.Services.MProduct
                 await ValidateScanCode(Product);
                 await ValidateSalePrice(Product); 
                 await ValidateRetailPrice(Product); 
-                await ValidateUsedVariation(Product);
                 if (UsedVariationEnum.USED.Id != Product.UsedVariationId && UsedVariationEnum.NOTUSED.Id != Product.UsedVariationId)
                     Product.AddError(nameof(ProductValidator), nameof(Product.UsedVariation), ErrorCode.UsedVariationNotExisted);
                 if(Product.VariationGroupings != null)

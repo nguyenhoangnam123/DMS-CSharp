@@ -3,15 +3,15 @@
     "Id": {
       "IdNotExisted": "Id không tồn tại"
     },
+    "Code": {
+      "CodeEmpty": "Chưa nhập Code",
+      "CodeOverLength": "Code quá dài",
+      "CodeHasSpecialCharacter": "Code chứa kí tự không hợp lệ"
+    },
     "Name": {
       "NameEmpty": "Chưa nhập tên",
       "NameOverLength": "Tên quá dài",
       "NameExisted": "Tên đã tồn tại"
-    },
-    "Code": {
-      "CodeEmpty": "Chưa nhập Code",
-      "CodeOverLength": "Code quá dài",
-      "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
     },
     "ProductType": {
       "ProductTypeEmpty": "Chưa chọn loại sản phẩm",
@@ -31,6 +31,10 @@
       "UnitOfMeasureNotExisted": "Đơn vị tính không tồn tại",
       "UnitOfMeasureEmpty": "Chưa chọn đơn vị tính "
     },
+    "UnitOfMeasureGrouping": {
+      "UnitOfMeasureGroupingNotExisted": "Nhóm đơn vị chuyển đổi không tồn tại",
+      "UnitOfMeasureGroupingInvalid": "Nhóm đơn vị chuyển đổi không hợp lệ với đơn vị tính"
+    },
     "SalePrice": {
       "SalePriceInvalid": "Giá bán không hợp lệ",
       "SalePriceEmpty": "Chưa nhập giá bán"
@@ -41,36 +45,22 @@
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
     },
+    "ERPCode": {
+      "ERPCodeHasSpecialCharacter": "Mã ERP chứa kí tự không hợp lệ"
+    },
+    "ScanCode": {
+      "ScanCodeHasSpecialCharacter": "Mã nhận diện chứa kí tự không hợp lệ"
+    }
     "VariationGroupings": {
-      "VariationGroupingsEmpty": "Chưa tạo phiên bản cho sản phẩm",
-      "VariationGroupingExisted": "Nhóm phiên bản đã tồn tại"
+      "VariationGroupingsEmpty": "Chưa tạo thuộc tính cho phiên bản của sản phẩm"
     },
     "VariationGrouping": {
       "Variations": {
-        "VariationsEmpty" : "Chưa nhập giá trị cho thuộc tính"
+        "VariationsEmpty": "Chưa nhập giá trị cho thuộc tính"
       }
     },
-    "Variation": {
-      "Code": {
-        "VariationCodeExisted": "Phiên bản code đã tồn tại"
-      },
-      "Name": {
-        "VariationNameExisted": "Tên phiên bản đã tồn tại"
-      }
-    },
-    "Item": {
-      "Code": {
-        "CodeExisted": "Code của phiên bản sản phẩm đã tồn tại"
-      },
-      "Name": {
-        "NameExisted": "Tên của phiên bản sản phẩm đã tồn tại"
-      },
-      "Id": {
-        "ItemInUsed": "phiên bản sản phẩm đang được sử dụng"
-      },
-      "SalePrice": {
-        "SalePriceInvalid": "Chưa nhập giá bán"
-      }
+    "Items": {
+      "ItemsEmpty": "Chưa tạo phiên bản cho sản phẩm"
     }
   }
 }
