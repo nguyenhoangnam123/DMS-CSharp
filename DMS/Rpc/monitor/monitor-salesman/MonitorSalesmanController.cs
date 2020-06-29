@@ -273,8 +273,8 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     sc.SaleEmployeeId == SaleEmployeeId &&
                     Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
-            List<long> StoreChecking_StoreIds = StoreCheckingDAOs.Select(s => s.StoreId).Distinct().ToList();
-            StoreIds.AddRange(StoreChecking_StoreIds);
+            List<long> Mobile_StoreIds = StoreCheckingDAOs.Select(s => s.StoreId).Distinct().ToList();
+            StoreIds.AddRange(Mobile_StoreIds);
             List<long> StoreCheckingIds = StoreCheckingDAOs.Select(s => s.Id).Distinct().ToList();
 
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
