@@ -122,7 +122,7 @@ namespace DMS.Services.MProblem
                 await UOW.Commit();
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var RecipientIds = await UOW.PermissionRepository.ListAppUserPermission(ProblemRoute.Update);
+                var RecipientIds = await UOW.PermissionRepository.ListAppUser(ProblemRoute.Update);
 
                 DateTime Now = StaticParams.DateTimeNow;
                 List<UserNotification> UserNotifications = new List<UserNotification>();

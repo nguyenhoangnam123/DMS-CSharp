@@ -19,7 +19,8 @@ namespace DMS.Repositories
         Task<bool> Delete(Permission Permission);
         Task<bool> BulkMerge(List<Permission> Permissions);
         Task<bool> BulkDelete(List<Permission> Permissions);
-        Task<List<long>> ListAppUserPermission(string Path);
+        Task<List<long>> ListAppUser(string Path);
+        Task<List<string>> ListPath(long AppUserId);
     }
     public class PermissionRepository : IPermissionRepository
     {
@@ -353,11 +354,21 @@ namespace DMS.Repositories
             }
         }
 
-        public async Task<List<long>> ListAppUserPermission(string Path)
+        public async Task<List<long>> ListAppUser(string Path)
         {
             var Ids = new List<long>();
             Ids = await DataContext.AppUserPermission.Where(x => x.Path.StartsWith(Path)).Select(x => x.AppUserId).Distinct().ToListAsync();
             return Ids;
+        }
+
+        public async Task<List<string>> ListPath(long AppUserId)
+        {
+            List<string> Paths = await DataContext.AppUserPermission
+                .AsNoTracking()
+                .Where(x => x.AppUserId == AppUserId).Select(x => x.Path)
+                .Distinct()
+                .ToListAsync();
+            return Paths;
         }
     }
 }

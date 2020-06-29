@@ -112,7 +112,7 @@ namespace DMS.Services.MStoreScouting
                 await UOW.StoreScoutingRepository.Update(StoreScouting);
                 await UOW.Commit();
 
-                var RecipientIds = await UOW.PermissionRepository.ListAppUserPermission(StoreScoutingRoute.Reject);
+                var RecipientIds = await UOW.PermissionRepository.ListAppUser(StoreScoutingRoute.Reject);
 
                 DateTime Now = StaticParams.DateTimeNow;
                 List<UserNotification> UserNotifications = new List<UserNotification>();

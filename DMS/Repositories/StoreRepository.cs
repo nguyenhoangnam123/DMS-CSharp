@@ -551,6 +551,13 @@ namespace DMS.Repositories
                     StatusId = x.StatusId,
                     RowId = x.RowId,
                     Used = x.Used,
+                    StoreScoutingId = x.StoreScoutingId,
+                    StoreScouting = x.StoreScouting == null ? null : new StoreScouting
+                    {
+                        Id = x.StoreScouting.Id,
+                        Code = x.StoreScouting.Code,
+                        Name = x.StoreScouting.Name,
+                    },
                     District = x.District == null ? null : new District
                     {
                         Id = x.District.Id,

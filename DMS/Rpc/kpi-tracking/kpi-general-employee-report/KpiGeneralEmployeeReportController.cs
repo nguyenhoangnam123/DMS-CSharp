@@ -215,7 +215,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
 
 
             var StoreScoutingDAOs = await DataContext.StoreScouting
-                .Where(x => x.CreatorId == SaleEmployeeId && x.CreatedAt >= StartDate)
+                .Where(x => x.CreatorId == SaleEmployeeId && x.CreatedAt >= StartDate && x.CreatedAt <= EndDate)
                 .Select(x => new StoreScoutingDAO
                 {
                     CreatorId = x.CreatorId,

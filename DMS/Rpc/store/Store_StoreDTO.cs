@@ -77,6 +77,7 @@ namespace DMS.Rpc.store
             this.HasEroute = Store.HasEroute;
             this.HasChecking = Store.HasChecking;
             this.Used = Store.Used;
+            this.StoreScoutingId = Store.StoreScoutingId;
             this.District = Store.District == null ? null : new Store_DistrictDTO(Store.District);
             this.Organization = Store.Organization == null ? null : new Store_OrganizationDTO(Store.Organization);
             this.ParentStore = Store.ParentStore == null ? null : new Store_StoreDTO(Store.ParentStore);
@@ -86,6 +87,7 @@ namespace DMS.Rpc.store
             this.StoreGrouping = Store.StoreGrouping == null ? null : new Store_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new Store_StoreTypeDTO(Store.StoreType);
             this.Ward = Store.Ward == null ? null : new Store_WardDTO(Store.Ward);
+            this.StoreScouting = Store.StoreScouting == null ? null : new Store_StoreScoutingDTO(Store.StoreScouting);
             this.StoreImageMappings = Store.StoreImageMappings?.Select(x => new Store_StoreImageMappingDTO(x)).ToList();
             this.StoreCheckings = Store.StoreCheckings?.Select(x => new Store_StoreCheckingDTO(x)).ToList();
             this.Errors = Store.Errors;
