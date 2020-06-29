@@ -151,24 +151,37 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             return KpiItemReport_KpiYearDTOs;
         }
 
-        //[Route(KpiItemReportRoute.Count), HttpPost]
-        //public async Task<int> Count([FromBody] KpiItemReport_KpiItemReportFilterDTO KpiItemReport_KpiItemReportFilterDTO)
-        //{
-        //    if (!ModelState.IsValid)
-        //        throw new BindException(ModelState); // to do kpi year and period
-        //    OrganizationDAO OrganizationDAO = null;
-        //    long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.SaleEmployeeId?.Equal;
-        //    if (KpiItemReport_KpiItemReportFilterDTO.OrganizationId?.Equal != null)
-        //    {
-        //        OrganizationDAO = DataContext.Organization.Where(o => o.Id == KpiItemReport_KpiItemReportFilterDTO.OrganizationId.Equal.Value).FirstOrDefault();
-        //    }
-        //    var query = from ap in DataContext.AppUser
-        //                join o in DataContext.Organization on ap.OrganizationId equals o.Id
-        //                where (OrganizationDAO == null || o.Path.StartsWith(OrganizationDAO.Path)) &&
-        //                (SaleEmployeeId == null || ap.Id == SaleEmployeeId.Value)
-        //                select ap.Id;
-        //    return await query.Distinct().CountAsync();
-        //}
+        [Route(KpiItemReportRoute.Count), HttpPost]
+        public async Task<int> Count([FromBody] KpiItemReport_KpiItemReportFilterDTO KpiItemReport_KpiItemReportFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState); // to do kpi year and period
+            OrganizationDAO OrganizationDAO = null;
+            DateTime StartDate, EndDate;
+            long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.SaleEmployeeId?.Equal;
+            long? ItemId = KpiItemReport_KpiItemReportFilterDTO.ItemId?.Equal;
+            long KpiPeriodId = KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal ?? KpiPeriodEnum.PERIOD_MONTH01.Id;
+            long KpiYearId = KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal ?? KpiYearEnum.YEAR_2020.Id;
+            (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
+
+            if (KpiItemReport_KpiItemReportFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = DataContext.Organization.Where(o => o.Id == KpiItemReport_KpiItemReportFilterDTO.OrganizationId.Equal.Value).FirstOrDefault();
+            }
+
+            // list toan bo nhan vien sau khi chay qua filter
+            var query = from ki in DataContext.KpiItem
+                        join ap in DataContext.AppUser on ki.EmployeeId equals ap.Id
+                        join o in DataContext.Organization on ki.OrganizationId equals o.Id
+                        join kic in DataContext.KpiItemContent on ki.Id equals kic.KpiItemId
+                        join i in DataContext.Item on kic.ItemId equals i.Id
+                        where (OrganizationDAO == null || o.Path.StartsWith(OrganizationDAO.Path))
+                        && (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value)
+                        && (ItemId == null || i.Id == ItemId.Value)
+                        && (ki.KpiYearId == KpiYearId)
+                        select ki.Id;
+            return await query.Distinct().CountAsync();
+        }
 
         [Route(KpiItemReportRoute.List), HttpPost]
         public async Task<ActionResult<List<KpiItemReport_KpiItemReportDTO>>> List([FromBody] KpiItemReport_KpiItemReportFilterDTO KpiItemReport_KpiItemReportFilterDTO)
