@@ -340,6 +340,7 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateItem(Product Product)
         {
+            return Product.IsValidated;
             if (Product.Items != null)
             {
                 foreach (var item in Product.Items)
