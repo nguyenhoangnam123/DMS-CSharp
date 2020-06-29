@@ -22,7 +22,7 @@ namespace DMS.Rpc.dashboards.monitor
         }
     }
 
-    public class Dashboard_RequestStateFilterDTO : FilterDTO
+    public class DashboardMonitor_RequestStateFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }

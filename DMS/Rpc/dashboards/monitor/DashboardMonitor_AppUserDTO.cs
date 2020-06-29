@@ -27,7 +27,7 @@ namespace DMS.Rpc.dashboards.monitor
         }
     }
 
-    public class Dashboard_AppUserFilterDTO : FilterDTO
+    public class DashboardMonitor_AppUserFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public StringFilter Username { get; set; }
