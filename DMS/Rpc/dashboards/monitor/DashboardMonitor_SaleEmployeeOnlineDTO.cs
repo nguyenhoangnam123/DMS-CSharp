@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.dashboards
+namespace DMS.Rpc.dashboards.monitor
 {
-    public class Dashboard_SaleEmployeeOnlineDTO : DataDTO
+    public class DashboardMonitor_SaleEmployeeOnlineDTO : DataDTO
     {
         public long Sum => SaleEmployeeOnlineHours.Sum(x => x.Counter);
         public List<Dashboard_SaleEmployeeOnlineHourDTO> SaleEmployeeOnlineHours { get; set; }

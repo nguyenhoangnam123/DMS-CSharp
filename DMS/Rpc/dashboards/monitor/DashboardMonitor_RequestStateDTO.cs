@@ -5,15 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.dashboards
+namespace DMS.Rpc.dashboards.monitor
 {
-    public class Dashboard_RequestStateDTO : DataDTO
+    public class DashboardMonitor_RequestStateDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public Dashboard_RequestStateDTO() { }
-        public Dashboard_RequestStateDTO(RequestState RequestState)
+        public DashboardMonitor_RequestStateDTO() { }
+        public DashboardMonitor_RequestStateDTO(RequestState RequestState)
         {
             this.Id = RequestState.Id;
             this.Code = RequestState.Code;

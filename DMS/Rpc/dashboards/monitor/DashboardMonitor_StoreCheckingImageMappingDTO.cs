@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.dashboards
+namespace DMS.Rpc.dashboards.monitor
 {
-    public class Dashboard_StoreCheckingImageMappingDTO : DataDTO
+    public class DashboardMonitor_StoreCheckingImageMappingDTO : DataDTO
     {
         public long Sum => StoreCheckingImageMappingHours.Sum(x => x.Counter);
         public List<Dashboard_StoreCheckingImageMappingHourDTO> StoreCheckingImageMappingHours { get; set; }

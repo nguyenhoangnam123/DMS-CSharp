@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.dashboards
+namespace DMS.Rpc.dashboards.monitor
 {
-    public class Dashboard_IndirectSalesOrderDTO : DataDTO
+    public class DashboardMonitor_IndirectSalesOrderDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -15,11 +15,11 @@ namespace DMS.Rpc.dashboards
         public long RequestStateId { get; set; }
         public long SaleEmployeeId { get; set; }
         public decimal Total { get; set; }
-        public Dashboard_AppUserDTO SaleEmployee { get; set; }
-        public Dashboard_RequestStateDTO RequestState { get; set; }
+        public DashboardMonitor_AppUserDTO SaleEmployee { get; set; }
+        public DashboardMonitor_RequestStateDTO RequestState { get; set; }
 
-        public Dashboard_IndirectSalesOrderDTO() { }
-        public Dashboard_IndirectSalesOrderDTO(IndirectSalesOrder IndirectSalesOrder)
+        public DashboardMonitor_IndirectSalesOrderDTO() { }
+        public DashboardMonitor_IndirectSalesOrderDTO(IndirectSalesOrder IndirectSalesOrder)
         {
             this.Id = IndirectSalesOrder.Id;
             this.Code = IndirectSalesOrder.Code;
@@ -27,8 +27,8 @@ namespace DMS.Rpc.dashboards
             this.RequestStateId = IndirectSalesOrder.RequestStateId;
             this.SaleEmployeeId = IndirectSalesOrder.SaleEmployeeId;
             this.Total = IndirectSalesOrder.Total;
-            this.SaleEmployee = IndirectSalesOrder.SaleEmployee == null ? null : new Dashboard_AppUserDTO(IndirectSalesOrder.SaleEmployee);
-            this.RequestState = IndirectSalesOrder.RequestState == null ? null : new Dashboard_RequestStateDTO(IndirectSalesOrder.RequestState);
+            this.SaleEmployee = IndirectSalesOrder.SaleEmployee == null ? null : new DashboardMonitor_AppUserDTO(IndirectSalesOrder.SaleEmployee);
+            this.RequestState = IndirectSalesOrder.RequestState == null ? null : new DashboardMonitor_RequestStateDTO(IndirectSalesOrder.RequestState);
         }
     }
 }
