@@ -455,6 +455,8 @@ namespace DMS.Rpc.store
                     }
                     Stores.Add(Store);
                 }
+                if (errorContent.Length > 0)
+                    return BadRequest(errorContent);
             }
 
             Stores = await StoreService.Import(Stores);
