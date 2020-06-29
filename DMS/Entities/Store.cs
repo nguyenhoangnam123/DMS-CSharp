@@ -65,6 +65,7 @@ namespace DMS.Entities
 
     public class StoreFilter : FilterEntity
     {
+        public string Search { get; set; }
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }

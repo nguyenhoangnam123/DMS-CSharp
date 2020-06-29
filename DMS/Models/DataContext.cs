@@ -2520,13 +2520,13 @@ namespace DMS.Models
                     .WithMany(p => p.StoreCheckings)
                     .HasForeignKey(d => d.SaleEmployeeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreChecking_AppUser");
+                    .HasConstraintName("FK_Mobile_AppUser");
 
                 entity.HasOne(d => d.Store)
                     .WithMany(p => p.StoreCheckings)
                     .HasForeignKey(d => d.StoreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreChecking_Store");
+                    .HasConstraintName("FK_Mobile_Store");
             });
 
             modelBuilder.Entity<StoreCheckingImageMappingDAO>(entity =>

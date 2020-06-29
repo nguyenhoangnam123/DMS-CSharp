@@ -36,6 +36,7 @@ namespace DMS.Entities
 
     public class ItemFilter : FilterEntity
     {
+        public string Search { get; set; }
         public IdFilter Id { get; set; }
         public IdFilter ProductId { get; set; }
         public StringFilter Code { get; set; }

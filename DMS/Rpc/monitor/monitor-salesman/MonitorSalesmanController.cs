@@ -273,8 +273,8 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     sc.SaleEmployeeId == SaleEmployeeId &&
                     Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
-            List<long> StoreChecking_StoreIds = StoreCheckingDAOs.Select(s => s.StoreId).Distinct().ToList();
-            StoreIds.AddRange(StoreChecking_StoreIds);
+            List<long> Mobile_StoreIds = StoreCheckingDAOs.Select(s => s.StoreId).Distinct().ToList();
+            StoreIds.AddRange(Mobile_StoreIds);
             List<long> StoreCheckingIds = StoreCheckingDAOs.Select(s => s.Id).Distinct().ToList();
 
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
@@ -285,7 +285,10 @@ namespace DMS.Rpc.monitor.monitor_salesman
             StoreIds = StoreIds.Distinct().ToList();
             List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id)).ToListAsync();
 
-            List<ProblemDAO> ProblemDAOs = await DataContext.Problem.Where(p => p.StoreCheckingId.HasValue && StoreCheckingIds.Contains(p.StoreCheckingId.Value)).ToListAsync();
+            List<ProblemDAO> ProblemDAOs = await DataContext.Problem.Where(p =>
+                StoreIds.Contains(p.StoreId) &&
+                p.NoteAt >= Start && p.NoteAt <= End
+            ).ToListAsync();
             List<StoreCheckingImageMappingDAO> StoreCheckingImageMappingDAOs = await DataContext.StoreCheckingImageMapping.Where(sc => StoreCheckingIds.Contains(sc.StoreCheckingId))
                 .Include(sc => sc.Image)
                 .ToListAsync();
