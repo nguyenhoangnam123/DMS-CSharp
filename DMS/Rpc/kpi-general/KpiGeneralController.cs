@@ -98,8 +98,8 @@ namespace DMS.Rpc.kpi_general
             (kpiGeneral_KpiGeneralDTO.CurrentMonth,kpiGeneral_KpiGeneralDTO.CurrentQuarter) = ConvertDateTime(StaticParams.DateTimeNow);
             foreach (var KpiGeneralContent in kpiGeneral_KpiGeneralDTO.KpiGeneralContents)
             {
-                KpiGeneralContent.KpiGeneralContentKpiPeriodMappingEnables = KpiPeriods.ToDictionary(x => x.Id, y => ((y.Id < KpiGeneral_KpiGeneralDTO.CurrentMonth.Id && y.Id <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
-                                                                                                || (y.Id > Enums.KpiPeriodEnum.PERIOD_MONTH12.Id && y.Id < KpiGeneral_KpiGeneralDTO.CurrentQuarter.Id && y.Id <= Enums.KpiPeriodEnum.PERIOD_QUATER04.Id)) == true
+                KpiGeneralContent.KpiGeneralContentKpiPeriodMappingEnables = KpiPeriods.ToDictionary(x => x.Id, y => ((y.Id < kpiGeneral_KpiGeneralDTO.CurrentMonth.Id && y.Id <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
+                                                                                                || (y.Id > Enums.KpiPeriodEnum.PERIOD_MONTH12.Id && y.Id < kpiGeneral_KpiGeneralDTO.CurrentQuarter.Id && y.Id <= Enums.KpiPeriodEnum.PERIOD_QUATER04.Id)) == true
                                                                                                 ? false : true);
             }
             return kpiGeneral_KpiGeneralDTO;
