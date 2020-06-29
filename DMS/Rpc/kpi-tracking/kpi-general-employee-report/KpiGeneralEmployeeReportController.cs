@@ -213,7 +213,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 })
                 .ToListAsync();
 
-
             var StoreScoutingDAOs = await DataContext.StoreScouting
                 .Where(x => x.CreatorId == SaleEmployeeId && x.CreatedAt >= StartDate && x.CreatedAt <= EndDate)
                 .Select(x => new StoreScoutingDAO
@@ -227,7 +226,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     }).ToList()
                 })
                 .ToListAsync();
-
 
             List<KpiGeneralEmployeeReport_SaleEmployeeDTO> kpiGeneralEmployeeReport_SaleEmployeeDTOs = new List<KpiGeneralEmployeeReport_SaleEmployeeDTO>();   
             foreach (var SaleEmployeeDetailDTO in KpiGeneralEmployeeReport_SaleEmployeeDetailDTOs)

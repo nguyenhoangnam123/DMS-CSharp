@@ -15,6 +15,7 @@ namespace DMS.Rpc.kpi_general
         public KpiGeneral_KpiCriteriaGeneralDTO KpiCriteriaGeneral { get; set; }   
         public KpiGeneral_StatusDTO Status { get; set; }
         public Dictionary<long, long?> KpiGeneralContentKpiPeriodMappings { get; set; }
+        public Dictionary<long, bool> KpiGeneralContentKpiPeriodMappingEnables { get; set; }
 
 
         public KpiGeneral_KpiGeneralContentDTO() {}
@@ -27,7 +28,6 @@ namespace DMS.Rpc.kpi_general
             this.KpiCriteriaGeneral = KpiGeneralContent.KpiCriteriaGeneral == null ? null : new KpiGeneral_KpiCriteriaGeneralDTO(KpiGeneralContent.KpiCriteriaGeneral);
             this.Status = KpiGeneralContent.Status == null ? null : new KpiGeneral_StatusDTO(KpiGeneralContent.Status);
             this.KpiGeneralContentKpiPeriodMappings = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings?.ToDictionary(x => x.KpiPeriodId, y => (long?)Convert.ToInt64(y.Value));
-            this.Errors = KpiGeneralContent.Errors;
         }
     }
 

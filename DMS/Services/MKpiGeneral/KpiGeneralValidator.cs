@@ -31,6 +31,7 @@ namespace DMS.Services.MKpiGeneral
             KpiYearIdNotExisted,
             KpiYearExisted,
             KpiGeneralContentsEmpty,
+            ValueCannotBeNull
         }
 
         private IUOW UOW;
@@ -128,6 +129,9 @@ namespace DMS.Services.MKpiGeneral
         }
         private async Task<bool> ValidateKpiGeneral(KpiGeneral KpiGeneral)
         {
+            if (KpiGeneral.EmployeeIds == null || !KpiGeneral.EmployeeIds.Any())
+                    KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.EmployeeIds), ErrorCode.EmployeeIdsEmpty);
+            else
             foreach (var id in KpiGeneral.EmployeeIds)
             {
                 KpiGeneralFilter KpiGeneralFilter = new KpiGeneralFilter
@@ -145,13 +149,26 @@ namespace DMS.Services.MKpiGeneral
             return KpiGeneral.IsValidated;
         }
 
-
+        private async Task<bool> ValidateValue(KpiGeneral KpiGeneral)
+        {
+            bool flag = false;
+            foreach (var KpiGeneralContent in KpiGeneral.KpiGeneralContents)
+            {
+                foreach (var item in KpiGeneralContent.KpiGeneralContentKpiPeriodMappings)
+                {
+                    if (item.Value != null) flag = true;
+                }
+            }
+            if (!flag) KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.Id), ErrorCode.ValueCannotBeNull);
+            return KpiGeneral.IsValidated;
+        }
         public async Task<bool> Create(KpiGeneral KpiGeneral)
         {
             await ValidateOrganization(KpiGeneral);
             await ValidateEmployees(KpiGeneral);
             await ValidateStatus(KpiGeneral);
             await ValidateKpiYear(KpiGeneral);
+            await ValidateValue(KpiGeneral);
             await ValidateKpiGeneral(KpiGeneral);
             return KpiGeneral.IsValidated;
         }
@@ -162,6 +179,7 @@ namespace DMS.Services.MKpiGeneral
             {
                 await ValidateOrganization(KpiGeneral);
                 await ValidateStatus(KpiGeneral);
+                await ValidateValue(KpiGeneral);
                 //await ValidateKpiGeneral(KpiGeneral);
             }
             return KpiGeneral.IsValidated;

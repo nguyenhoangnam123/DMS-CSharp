@@ -1,10 +1,12 @@
 ﻿{
   "KpiGeneral": {
     "Id": {
-      "IdNotExisted": "Kpi chung không tồn tại"
+      "IdNotExisted": "Kpi chung không tồn tại",
+      "ValueCannotBeNull": "Giá trị không thể null"
     },
     "Organization": {
-      "OrganizationIdNotExisted": "Cơ cấu tổ chức không tồn tại"
+      "OrganizationIdNotExisted": "Cơ cấu tổ chức không tồn tại",
+      "OrganizationEmpty":  "Chưa nhập cơ cấu tổ chức"
     },
     "EmployeeIds": {
       "EmployeeIdsEmpty": "Chưa chọn nhân viên",

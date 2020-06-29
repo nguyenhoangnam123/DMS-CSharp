@@ -86,10 +86,22 @@ namespace DMS.Rpc.kpi_general
 
             if (!await HasPermission(KpiGeneral_KpiGeneralDTO.Id))
                 return Forbid();
-
+            List<KpiPeriod> KpiPeriods = await KpiPeriodService.List(new KpiPeriodFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiPeriodSelect.ALL,
+            });
             KpiGeneral KpiGeneral = await KpiGeneralService.Get(KpiGeneral_KpiGeneralDTO.Id);
+
             var kpiGeneral_KpiGeneralDTO = new KpiGeneral_KpiGeneralDTO(KpiGeneral);
             (kpiGeneral_KpiGeneralDTO.CurrentMonth,kpiGeneral_KpiGeneralDTO.CurrentQuarter) = ConvertDateTime(StaticParams.DateTimeNow);
+            foreach (var KpiGeneralContent in kpiGeneral_KpiGeneralDTO.KpiGeneralContents)
+            {
+                KpiGeneralContent.KpiGeneralContentKpiPeriodMappingEnables = KpiPeriods.ToDictionary(x => x.Id, y => ((y.Id < KpiGeneral_KpiGeneralDTO.CurrentMonth.Id && y.Id <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
+                                                                                                || (y.Id > Enums.KpiPeriodEnum.PERIOD_MONTH12.Id && y.Id < KpiGeneral_KpiGeneralDTO.CurrentQuarter.Id && y.Id <= Enums.KpiPeriodEnum.PERIOD_QUATER04.Id)) == true
+                                                                                                ? false : true);
+            }
             return kpiGeneral_KpiGeneralDTO;
         }
         private Tuple<GenericEnum, GenericEnum> ConvertDateTime(DateTime date)
@@ -168,21 +180,24 @@ namespace DMS.Rpc.kpi_general
                 Selects = KpiPeriodSelect.ALL,
             });
             var KpiGeneral_KpiGeneralDTO = new KpiGeneral_KpiGeneralDTO();
+            (KpiGeneral_KpiGeneralDTO.CurrentMonth, KpiGeneral_KpiGeneralDTO.CurrentQuarter) = ConvertDateTime(StaticParams.DateTimeNow);
             KpiGeneral_KpiGeneralDTO.KpiPeriods = KpiPeriods.Select(x => new KpiGeneral_KpiPeriodDTO(x)).ToList();
             KpiGeneral_KpiGeneralDTO.KpiGeneralContents = KpiCriteriaGenerals.Select(x => new KpiGeneral_KpiGeneralContentDTO
             {
                 KpiCriteriaGeneralId = x.Id,
                 KpiCriteriaGeneral = new KpiGeneral_KpiCriteriaGeneralDTO(x),
                 KpiGeneralContentKpiPeriodMappings = KpiPeriods.ToDictionary(x => x.Id, y => (long?)null),
+                KpiGeneralContentKpiPeriodMappingEnables = KpiPeriods.ToDictionary(x => x.Id, y => ((y.Id < KpiGeneral_KpiGeneralDTO.CurrentMonth.Id && y.Id <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id) 
+                                                                                                || (y.Id > Enums.KpiPeriodEnum.PERIOD_MONTH12.Id && y.Id < KpiGeneral_KpiGeneralDTO.CurrentQuarter.Id && y.Id <= Enums.KpiPeriodEnum.PERIOD_QUATER04.Id)) == true
+                                                                                                ? false : true),
                 Status = new KpiGeneral_StatusDTO
                 {
                     Id = Enums.StatusEnum.ACTIVE.Id,
                     Code = Enums.StatusEnum.ACTIVE.Code,
                     Name = Enums.StatusEnum.ACTIVE.Name
                 },
-                StatusId = Enums.StatusEnum.ACTIVE.Id
+                StatusId = Enums.StatusEnum.ACTIVE.Id,
             }).ToList();
-            (KpiGeneral_KpiGeneralDTO.CurrentMonth, KpiGeneral_KpiGeneralDTO.CurrentQuarter) = ConvertDateTime(StaticParams.DateTimeNow);
             KpiGeneral_KpiGeneralDTO.Status = new KpiGeneral_StatusDTO
             {
                 Code = Enums.StatusEnum.ACTIVE.Code,
@@ -190,6 +205,7 @@ namespace DMS.Rpc.kpi_general
                 Name = Enums.StatusEnum.ACTIVE.Name
             };
             KpiGeneral_KpiGeneralDTO.StatusId = Enums.StatusEnum.ACTIVE.Id;
+
             return KpiGeneral_KpiGeneralDTO;
         }
         [Route(KpiGeneralRoute.Create), HttpPost]
