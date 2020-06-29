@@ -99,7 +99,7 @@ namespace DMS.Rpc.mobile
         }
 
         [Route(MobileRoute.CountStoreChecking), HttpPost]
-        public async Task<ActionResult<int>> Count([FromBody] Mobile_StoreCheckingFilterDTO Mobile_StoreCheckingFilterDTO)
+        public async Task<ActionResult<int>> CountStoreChecking([FromBody] Mobile_StoreCheckingFilterDTO Mobile_StoreCheckingFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -111,7 +111,7 @@ namespace DMS.Rpc.mobile
         }
 
         [Route(MobileRoute.ListStoreChecking), HttpPost]
-        public async Task<ActionResult<List<Mobile_StoreCheckingDTO>>> List([FromBody] Mobile_StoreCheckingFilterDTO Mobile_StoreCheckingFilterDTO)
+        public async Task<ActionResult<List<Mobile_StoreCheckingDTO>>> ListStoreChecking([FromBody] Mobile_StoreCheckingFilterDTO Mobile_StoreCheckingFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -125,7 +125,7 @@ namespace DMS.Rpc.mobile
         }
 
         [Route(MobileRoute.GetStoreChecking), HttpPost]
-        public async Task<ActionResult<Mobile_StoreCheckingDTO>> Get([FromBody]Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
+        public async Task<ActionResult<Mobile_StoreCheckingDTO>> GetStoreChecking([FromBody]Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);

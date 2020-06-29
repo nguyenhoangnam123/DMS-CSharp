@@ -817,6 +817,7 @@ namespace DMS.Rpc.mobile
             return await StoreScoutingService.Count(StoreScoutingFilter);
         }
 
+        [Route(MobileRoute.ListStoreScouting), HttpPost]
         public async Task<List<Mobile_StoreScoutingDTO>> ListStoreScouting([FromBody] Mobile_StoreScoutingFilterDTO Mobile_StoreScoutingFilterDTO)
         {
             AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
