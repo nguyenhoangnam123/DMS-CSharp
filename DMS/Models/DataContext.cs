@@ -1549,8 +1549,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<KpiItemContentDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.HasOne(d => d.Item)
                     .WithMany(p => p.KpiItemContents)
                     .HasForeignKey(d => d.ItemId)
