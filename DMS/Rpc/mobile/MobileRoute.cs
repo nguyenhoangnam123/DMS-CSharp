@@ -8,11 +8,11 @@ namespace DMS.Rpc.mobile
         public const string Master = Module + "/mobile/store-checking-master";
         public const string Detail = Module + "/mobile/store-checking-detail";
         private const string Default = Rpc + Module + "/mobile";
-        public const string Count = Default + "/count";
-        public const string List = Default + "/list";
-        public const string Get = Default + "/get";
+        public const string CountStoreChecking = Default + "/count-store-checking";
+        public const string ListStoreChecking = Default + "/list-store-checking";
+        public const string GetStoreChecking = Default + "/get-store-checking";
+        public const string UpdateStoreChecking = Default + "/update-store-checking";
         public const string CheckIn = Default + "/check-in";
-        public const string Update = Default + "/update";
         public const string CheckOut = Default + "/check-out";
         public const string CreateIndirectSalesOrder = Default + "/create-indirect-sales-order";
         public const string CreateProblem = Default + "/create-problem";
@@ -59,12 +59,12 @@ namespace DMS.Rpc.mobile
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get,
+                Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
                 FilterListAppUser, FilterListStore, } },
             { "Checkin", new List<string> {
-                Master, Count, List, Get,
+                Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
                 FilterListAppUser, FilterListStore,
-                Detail, CheckIn,  Update, CheckOut,
+                Detail, CheckIn,  UpdateStoreChecking, CheckOut,
                 CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListProvince, SingleListDistrict, SingleListWard, } },
