@@ -52,8 +52,9 @@ namespace DMS.Rpc.dashboards.director
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from i in DataContext.IndirectSalesOrder
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                        where i.OrderDate <= Start && i.OrderDate >= End &&
-                        au.OrganizationId.HasValue && au.Organization.Path.StartsWith(CurrentUser.Organization.Path)
+                        join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        where i.OrderDate >= Start && i.OrderDate <= End &&
+                        au.OrganizationId.HasValue && o.Path.StartsWith(CurrentUser.Organization.Path)
                         select i;
 
             return query.Count();
@@ -68,8 +69,9 @@ namespace DMS.Rpc.dashboards.director
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from i in DataContext.IndirectSalesOrder
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                        where i.OrderDate <= Start && i.OrderDate >= End &&
-                        au.OrganizationId.HasValue && au.Organization.Path.StartsWith(CurrentUser.Organization.Path)
+                        join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        where i.OrderDate >= Start && i.OrderDate <= End &&
+                        au.OrganizationId.HasValue && o.Path.StartsWith(CurrentUser.Organization.Path)
                         select i;
 
             var RevenueTotal = query.Select(x => x.Total).Sum();
@@ -86,8 +88,9 @@ namespace DMS.Rpc.dashboards.director
             var query = from ic in DataContext.IndirectSalesOrderContent
                         join i in DataContext.IndirectSalesOrder on ic.IndirectSalesOrderId equals i.Id
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                        where i.OrderDate <= Start && i.OrderDate >= End &&
-                        au.OrganizationId.HasValue && au.Organization.Path.StartsWith(CurrentUser.Organization.Path)
+                        join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        where i.OrderDate >= Start && i.OrderDate <= End &&
+                        au.OrganizationId.HasValue && o.Path.StartsWith(CurrentUser.Organization.Path)
                         select ic;
 
             var ItemSalesTotal = query.Select(x => x.RequestedQuantity).Sum();
@@ -103,8 +106,9 @@ namespace DMS.Rpc.dashboards.director
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from sc in DataContext.StoreChecking
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
-                        where sc.CheckOutAt.HasValue && sc.CheckOutAt <= Start && sc.CheckOutAt >= End &&
-                        au.OrganizationId.HasValue && au.Organization.Path.StartsWith(CurrentUser.Organization.Path)
+                        join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
+                        au.OrganizationId.HasValue && o.Path.StartsWith(CurrentUser.Organization.Path)
                         select sc;
 
             var StoreCheckingCounter = query.Count();
