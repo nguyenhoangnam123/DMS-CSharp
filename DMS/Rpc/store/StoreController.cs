@@ -481,13 +481,6 @@ namespace DMS.Rpc.store
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            List<Store> ParentStores = await StoreService.List(new StoreFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StoreSelect.Code | StoreSelect.Name | StoreSelect.Address | StoreSelect.Telephone
-            });
-
             List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
             {
                 Skip = 0,
@@ -624,32 +617,6 @@ namespace DMS.Rpc.store
                     });
                 }
                 excel.GenerateWorksheet("Organization", OrganizationHeaders, data);
-                #endregion
-
-                #region ParentStore
-                var ParentStoreHeaders = new List<string[]>()
-                {
-                    new string[]
-                    {
-                        "Mã",
-                        "Tên",
-                        "Địa chỉ",
-                        "Số điện thoại",
-                    }
-                };
-                data = new List<object[]>();
-                for (int i = 0; i < ParentStores.Count; i++)
-                {
-                    var ParentStore = ParentStores[i];
-                    data.Add(new Object[]
-                    {
-                        ParentStore.Code,
-                        ParentStore.Name,
-                        ParentStore.Address,
-                        ParentStore.Telephone,
-                    });
-                }
-                excel.GenerateWorksheet("StoreParent", ParentStoreHeaders, data);
                 #endregion
 
                 #region StoreType
