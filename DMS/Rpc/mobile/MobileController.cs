@@ -239,6 +239,20 @@ namespace DMS.Rpc.mobile
             return Mobile_IndirectSalesOrderDTOs;
         }
 
+
+        [Route(MobileRoute.GetIndirectSalesOrder), HttpPost]
+        public async Task<ActionResult<Mobile_IndirectSalesOrderDTO>> GetIndirectSalesOrder([FromBody] Mobile_IndirectSalesOrderDTO Mobile_IndirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Mobile_IndirectSalesOrderDTO.Id))
+                return Forbid();
+
+            IndirectSalesOrder IndirectSalesOrder = await IndirectSalesOrderService.Get(Mobile_IndirectSalesOrderDTO.Id);
+            return new Mobile_IndirectSalesOrderDTO(IndirectSalesOrder);
+        }
+
         [Route(MobileRoute.CreateIndirectSalesOrder), HttpPost]
         public async Task<ActionResult<Mobile_IndirectSalesOrderDTO>> CreateIndirectSalesOrder([FromBody] Mobile_IndirectSalesOrderDTO Mobile_IndirectSalesOrderDTO)
         {
