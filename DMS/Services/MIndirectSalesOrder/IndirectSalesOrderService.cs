@@ -146,8 +146,8 @@ namespace DMS.Services.MIndirectSalesOrder
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var RecipientIds = await UOW.PermissionRepository.ListAppUserPermission(IndirectSalesOrderRoute.Approve);
-                RecipientIds.AddRange(await UOW.PermissionRepository.ListAppUserPermission(IndirectSalesOrderRoute.Reject));
+                var RecipientIds = await UOW.PermissionRepository.ListAppUser(IndirectSalesOrderRoute.Approve);
+                RecipientIds.AddRange(await UOW.PermissionRepository.ListAppUser(IndirectSalesOrderRoute.Reject));
                 RecipientIds.Add(CurrentContext.UserId);
                 RecipientIds = RecipientIds.Distinct().ToList();
                 
@@ -204,8 +204,8 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.Commit();
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var RecipientIds = await UOW.PermissionRepository.ListAppUserPermission(IndirectSalesOrderRoute.Approve);
-                RecipientIds.AddRange(await UOW.PermissionRepository.ListAppUserPermission(IndirectSalesOrderRoute.Reject));
+                var RecipientIds = await UOW.PermissionRepository.ListAppUser(IndirectSalesOrderRoute.Approve);
+                RecipientIds.AddRange(await UOW.PermissionRepository.ListAppUser(IndirectSalesOrderRoute.Reject));
                 RecipientIds.Add(CurrentContext.UserId);
                 RecipientIds = RecipientIds.Distinct().ToList();
 
@@ -261,8 +261,8 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.Commit();
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var RecipientIds = await UOW.PermissionRepository.ListAppUserPermission(IndirectSalesOrderRoute.Approve);
-                RecipientIds.AddRange(await UOW.PermissionRepository.ListAppUserPermission(IndirectSalesOrderRoute.Reject));
+                var RecipientIds = await UOW.PermissionRepository.ListAppUser(IndirectSalesOrderRoute.Approve);
+                RecipientIds.AddRange(await UOW.PermissionRepository.ListAppUser(IndirectSalesOrderRoute.Reject));
                 RecipientIds.Add(CurrentContext.UserId);
                 RecipientIds = RecipientIds.Distinct().ToList();
 

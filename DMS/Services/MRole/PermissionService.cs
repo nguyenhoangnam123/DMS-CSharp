@@ -17,6 +17,7 @@ namespace DMS.Services.MRole
         Task<Permission> Create(Permission Permission);
         Task<Permission> Update(Permission Permission);
         Task<Permission> Delete(Permission Permission);
+        Task<List<string>> ListPath(long AppUserId);
     }
     public class PermissionService : IPermissionService
     {
@@ -51,12 +52,12 @@ namespace DMS.Services.MRole
             {
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, nameof(RoleService));
+                    await Logging.CreateSystemLog(ex, nameof(PermissionService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionService));
                     throw new MessageException(ex.InnerException);
                 }
             }
@@ -75,12 +76,12 @@ namespace DMS.Services.MRole
             {
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, nameof(RoleService));
+                    await Logging.CreateSystemLog(ex, nameof(PermissionService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionService));
                     throw new MessageException(ex.InnerException);
                 }
             }
@@ -99,12 +100,12 @@ namespace DMS.Services.MRole
             {
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, nameof(RoleService));
+                    await Logging.CreateSystemLog(ex, nameof(PermissionService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionService));
                     throw new MessageException(ex.InnerException);
                 }
             }
@@ -124,12 +125,34 @@ namespace DMS.Services.MRole
             {
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, nameof(RoleService));
+                    await Logging.CreateSystemLog(ex, nameof(PermissionService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<List<string>> ListPath(long AppUserId)
+        {
+            try
+            {
+                List<string> Paths = await UOW.PermissionRepository.ListPath(AppUserId);
+                return Paths;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PermissionService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionService));
                     throw new MessageException(ex.InnerException);
                 }
             }
