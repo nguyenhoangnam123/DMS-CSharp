@@ -98,7 +98,7 @@ namespace DMS.Rpc.mobile
             this.CurrentContext = CurrentContext;
         }
 
-        [Route(MobileRoute.Count), HttpPost]
+        [Route(MobileRoute.CountStoreChecking), HttpPost]
         public async Task<ActionResult<int>> Count([FromBody] Mobile_StoreCheckingFilterDTO Mobile_StoreCheckingFilterDTO)
         {
             if (!ModelState.IsValid)
@@ -110,7 +110,7 @@ namespace DMS.Rpc.mobile
             return count;
         }
 
-        [Route(MobileRoute.List), HttpPost]
+        [Route(MobileRoute.ListStoreChecking), HttpPost]
         public async Task<ActionResult<List<Mobile_StoreCheckingDTO>>> List([FromBody] Mobile_StoreCheckingFilterDTO Mobile_StoreCheckingFilterDTO)
         {
             if (!ModelState.IsValid)
@@ -124,7 +124,7 @@ namespace DMS.Rpc.mobile
             return Mobile_StoreCheckingDTOs;
         }
 
-        [Route(MobileRoute.Get), HttpPost]
+        [Route(MobileRoute.GetStoreChecking), HttpPost]
         public async Task<ActionResult<Mobile_StoreCheckingDTO>> Get([FromBody]Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
         {
             if (!ModelState.IsValid)
@@ -155,7 +155,7 @@ namespace DMS.Rpc.mobile
                 return BadRequest(Mobile_StoreCheckingDTO);
         }
 
-        [Route(MobileRoute.Update), HttpPost]
+        [Route(MobileRoute.UpdateStoreChecking), HttpPost]
         public async Task<ActionResult<Mobile_StoreCheckingDTO>> Update([FromBody] Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
         {
             if (!ModelState.IsValid)
