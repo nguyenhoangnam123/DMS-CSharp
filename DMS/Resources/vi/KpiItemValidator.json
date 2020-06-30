@@ -1,5 +1,5 @@
 ﻿{
-  "KpiGeneral": {
+  "KpiItem": {
     "Id": {
       "IdNotExisted": "Kpi chung không tồn tại",
       "ValueCannotBeNull": "Giá trị không thể null"
