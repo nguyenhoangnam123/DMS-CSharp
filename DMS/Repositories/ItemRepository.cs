@@ -351,6 +351,8 @@ namespace DMS.Repositories
                 Used = q.Used,
             }).ToListAsync();
             var Ids = Items.Select(x => x.Id).ToList();
+            var ProductIds = Items.Select(x => x.ProductId).ToList();
+            var ProductImageMappings = DataContext.ProductImageMapping.Include(x => x.Image).Where(x => ProductIds.Contains(x.ProductId)).ToList();
             var ItemImageMappings = DataContext.ItemImageMapping.Include(x => x.Image).Where(x => Ids.Contains(x.ItemId)).ToList();
             foreach (var Item in Items)
             {
@@ -371,6 +373,25 @@ namespace DMS.Repositories
                     };
                     Item.ItemImageMappings.Add(ItemImageMapping);
                 }
+                if (Item.ItemImageMappings.Count == 0)
+                {
+                    var ProductImageMappingDAO = ProductImageMappings.Where(x => x.ProductId == Item.ProductId).FirstOrDefault();
+                    if (ItemImageMappingDAO != null)
+                    {
+                        ItemImageMapping ItemImageMapping = new ItemImageMapping
+                        {
+                            ImageId = ProductImageMappingDAO.ImageId,
+                            ItemId = Item.Id,
+                            Image = ProductImageMappingDAO.Image == null ? null : new Image
+                            {
+                                Id = ProductImageMappingDAO.Image.Id,
+                                Name = ProductImageMappingDAO.Image.Name,
+                                Url = ProductImageMappingDAO.Image.Url
+                            }
+                        };
+                        Item.ItemImageMappings.Add(ItemImageMapping);
+                    }
+                }    
             }
             return Items;
         }
