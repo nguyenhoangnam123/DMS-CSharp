@@ -22,9 +22,6 @@ namespace DMS.Rpc.mobile
         public const string CreateProblem = Default + "/create-problem";
         public const string SaveImage = Default + "/save-image";
 
-        public const string FilterListAppUser = Default + "/filter-list-app-user";
-        public const string FilterListStore = Default + "/filter-list-store";
-
         public const string SingleListAlbum = Default + "/single-list-album";
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListEroute = Default + "/single-list-e-route";
@@ -37,6 +34,10 @@ namespace DMS.Rpc.mobile
         public const string SingleListProvince = Default + "/single-list-province";
         public const string SingleListDistrict = Default + "/single-list-district";
         public const string SingleListWard = Default + "/single-list-ward";
+
+        public const string SingleListBrand = Default + "/single-list-brand";
+        public const string SingleListSupplier = Default + "/single-list-supplier";
+        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
 
         public const string CountBanner = Default + "/count-banner";
         public const string ListBanner = Default + "/list-banner";
@@ -64,10 +65,9 @@ namespace DMS.Rpc.mobile
         {
             { "Tìm kiếm", new List<string> {
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
-                FilterListAppUser, FilterListStore, } },
+                } },
             { "Checkin", new List<string> {
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
-                FilterListAppUser, FilterListStore,
                 Detail, CheckIn,  UpdateStoreChecking, CheckOut,
                 CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,

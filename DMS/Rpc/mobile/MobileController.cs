@@ -28,12 +28,16 @@ using DMS.Services.MStoreScouting;
 using DMS.Services.MProvince;
 using DMS.Services.MDistrict;
 using DMS.Services.MWard;
+using DMS.Services.MBrand;
+using DMS.Services.MSupplier;
+using DMS.Services.MProductGrouping;
 
 namespace DMS.Rpc.mobile
 {
     public partial class MobileController : SimpleController
     {
         private IAlbumService AlbumService;
+        private IBrandService BrandService;
         private IBannerService BannerService;
         private IAppUserService AppUserService;
         private IERouteService ERouteService;
@@ -52,10 +56,13 @@ namespace DMS.Rpc.mobile
         private IProvinceService ProvinceService;
         private IDistrictService DistrictService;
         private IWardService WardService;
+        private ISupplierService SupplierService;
+        private IProductGroupingService ProductGroupingService;
         private ICurrentContext CurrentContext;
         public MobileController(
             IAlbumService AlbumService,
             IBannerService BannerService,
+            IBrandService BrandService,
             IAppUserService AppUserService,
             IERouteService ERouteService,
             IIndirectSalesOrderService IndirectSalesOrderService,
@@ -73,11 +80,14 @@ namespace DMS.Rpc.mobile
             IProvinceService ProvinceService,
             IDistrictService DistrictService,
             IWardService WardService,
+            ISupplierService SupplierService,
+            IProductGroupingService ProductGroupingService,
             ICurrentContext CurrentContext
         )
         {
             this.AlbumService = AlbumService;
             this.BannerService = BannerService;
+            this.BrandService = BrandService;
             this.AppUserService = AppUserService;
             this.ERouteService = ERouteService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
@@ -95,6 +105,8 @@ namespace DMS.Rpc.mobile
             this.ProvinceService = ProvinceService;
             this.DistrictService = DistrictService;
             this.WardService = WardService;
+            this.SupplierService = SupplierService;
+            this.ProductGroupingService = ProductGroupingService;
             this.CurrentContext = CurrentContext;
         }
 

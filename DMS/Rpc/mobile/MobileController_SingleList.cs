@@ -25,80 +25,6 @@ namespace DMS.Rpc.mobile
 {
     public partial class MobileController
     {
-        [Route(MobileRoute.FilterListAppUser), HttpPost]
-        public async Task<List<Mobile_AppUserDTO>> FilterListAppUser([FromBody] Mobile_AppUserFilterDTO Mobile_AppUserFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            AppUserFilter AppUserFilter = new AppUserFilter();
-            AppUserFilter.Skip = 0;
-            AppUserFilter.Take = 20;
-            AppUserFilter.OrderBy = AppUserOrder.Id;
-            AppUserFilter.OrderType = OrderType.ASC;
-            AppUserFilter.Selects = AppUserSelect.ALL;
-            AppUserFilter.Id = Mobile_AppUserFilterDTO.Id;
-            AppUserFilter.Username = Mobile_AppUserFilterDTO.Username;
-            AppUserFilter.Password = Mobile_AppUserFilterDTO.Password;
-            AppUserFilter.DisplayName = Mobile_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = Mobile_AppUserFilterDTO.Address;
-            AppUserFilter.Email = Mobile_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = Mobile_AppUserFilterDTO.Phone;
-            AppUserFilter.PositionId = Mobile_AppUserFilterDTO.PositionId;
-            AppUserFilter.Department = Mobile_AppUserFilterDTO.Department;
-            AppUserFilter.OrganizationId = Mobile_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.SexId = Mobile_AppUserFilterDTO.SexId;
-            AppUserFilter.StatusId = Mobile_AppUserFilterDTO.StatusId;
-            AppUserFilter.Birthday = Mobile_AppUserFilterDTO.Birthday;
-            AppUserFilter.ProvinceId = Mobile_AppUserFilterDTO.ProvinceId;
-
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-            List<Mobile_AppUserDTO> Mobile_AppUserDTOs = AppUsers
-                .Select(x => new Mobile_AppUserDTO(x)).ToList();
-            return Mobile_AppUserDTOs;
-        }
-
-        [Route(MobileRoute.FilterListStore), HttpPost]
-        public async Task<List<Mobile_StoreDTO>> FilterListStore([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            StoreFilter StoreFilter = new StoreFilter();
-            StoreFilter.Skip = 0;
-            StoreFilter.Take = 20;
-            StoreFilter.OrderBy = StoreOrder.Id;
-            StoreFilter.OrderType = OrderType.ASC;
-            StoreFilter.Selects = StoreSelect.ALL;
-            StoreFilter.Id = Mobile_StoreFilterDTO.Id;
-            StoreFilter.Code = Mobile_StoreFilterDTO.Code;
-            StoreFilter.Name = Mobile_StoreFilterDTO.Name;
-            StoreFilter.ParentStoreId = Mobile_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = Mobile_StoreFilterDTO.OrganizationId;
-            StoreFilter.StoreTypeId = Mobile_StoreFilterDTO.StoreTypeId;
-            StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
-            StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
-            StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = Mobile_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = Mobile_StoreFilterDTO.WardId;
-            StoreFilter.Address = Mobile_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = Mobile_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = Mobile_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = Mobile_StoreFilterDTO.Longitude;
-            StoreFilter.DeliveryLatitude = Mobile_StoreFilterDTO.DeliveryLatitude;
-            StoreFilter.DeliveryLongitude = Mobile_StoreFilterDTO.DeliveryLongitude;
-            StoreFilter.OwnerName = Mobile_StoreFilterDTO.OwnerName;
-            StoreFilter.OwnerPhone = Mobile_StoreFilterDTO.OwnerPhone;
-            StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = Mobile_StoreFilterDTO.StatusId;
-
-            List<Store> Stores = await StoreService.List(StoreFilter);
-            List<Mobile_StoreDTO> Mobile_StoreDTOs = Stores
-                .Select(x => new Mobile_StoreDTO(x)).ToList();
-            return Mobile_StoreDTOs;
-        }
-
         [Route(MobileRoute.SingleListAlbum), HttpPost]
         public async Task<List<Mobile_AlbumDTO>> SingleListAlbum([FromBody] Mobile_AlbumFilterDTO Mobile_AlbumFilterDTO)
         {
@@ -303,6 +229,66 @@ namespace DMS.Rpc.mobile
 
                 .Select(x => new Mobile_ProblemTypeDTO(x)).ToList();
             return Mobile_ProblemTypeDTOs;
+        }
+
+        [Route(MobileRoute.SingleListBrand), HttpPost]
+        public async Task<List<Mobile_BrandDTO>> SingleListBrand([FromBody] Mobile_BrandFilterDTO Mobile_BrandFilterDTO)
+        {
+            BrandFilter BrandFilter = new BrandFilter();
+            BrandFilter.Skip = 0;
+            BrandFilter.Take = 20;
+            BrandFilter.OrderBy = BrandOrder.Id;
+            BrandFilter.OrderType = OrderType.ASC;
+            BrandFilter.Selects = BrandSelect.ALL;
+            BrandFilter.Id = Mobile_BrandFilterDTO.Id;
+            BrandFilter.Code = Mobile_BrandFilterDTO.Code;
+            BrandFilter.Name = Mobile_BrandFilterDTO.Name;
+            BrandFilter.Description = Mobile_BrandFilterDTO.Description;
+            BrandFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            BrandFilter.UpdateTime = Mobile_BrandFilterDTO.UpdateTime;
+
+            List<Brand> Brands = await BrandService.List(BrandFilter);
+            List<Mobile_BrandDTO> Mobile_BrandDTOs = Brands
+                .Select(x => new Mobile_BrandDTO(x)).ToList();
+            return Mobile_BrandDTOs;
+        }
+
+        [Route(MobileRoute.SingleListSupplier), HttpPost]
+        public async Task<List<Mobile_SupplierDTO>> SingleListSupplier([FromBody] Mobile_SupplierFilterDTO Mobile_SupplierFilterDTO)
+        {
+            SupplierFilter SupplierFilter = new SupplierFilter();
+            SupplierFilter.Skip = 0;
+            SupplierFilter.Take = 20;
+            SupplierFilter.OrderBy = SupplierOrder.Id;
+            SupplierFilter.OrderType = OrderType.ASC;
+            SupplierFilter.Selects = SupplierSelect.ALL;
+            SupplierFilter.Id = Mobile_SupplierFilterDTO.Id;
+            SupplierFilter.Code = Mobile_SupplierFilterDTO.Code;
+            SupplierFilter.Name = Mobile_SupplierFilterDTO.Name;
+            SupplierFilter.TaxCode = Mobile_SupplierFilterDTO.TaxCode;
+            SupplierFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
+            List<Mobile_SupplierDTO> Mobile_SupplierDTOs = Suppliers
+                .Select(x => new Mobile_SupplierDTO(x)).ToList();
+            return Mobile_SupplierDTOs;
+        }
+
+        [Route(MobileRoute.SingleListProductGrouping), HttpPost]
+        public async Task<List<Mobile_ProductGroupingDTO>> SingleListProductGrouping([FromBody] Mobile_ProductGroupingFilterDTO Mobile_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<Mobile_ProductGroupingDTO> Mobile_ProductGroupingDTOs = ProductGroupings
+                .Select(x => new Mobile_ProductGroupingDTO(x)).ToList();
+            return Mobile_ProductGroupingDTOs;
         }
 
         [Route(MobileRoute.SingleListProvince), HttpPost]
