@@ -10,6 +10,12 @@ namespace DMS.Rpc.role
 {
     public partial class RoleController : RpcController
     {
+
+        [Route(RoleRoute.SingleListCurrentUser), HttpPost]
+        public async Task<List<GenericEnum>> SingleListCurrentUser()
+        {
+            return CurrentUserEnum.CurrentUserEnumList;
+        }
         [Route(RoleRoute.SingleListAppUser), HttpPost]
         public async Task<List<Role_AppUserDTO>> SingleListAppUser([FromBody] Role_AppUserFilterDTO Role_AppUserFilterDTO)
         {

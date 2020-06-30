@@ -13,7 +13,6 @@ namespace Common
         public LongFilter LongFilter { get; private set; }
         public DateFilter DateFilter { get; private set; }
         public StringFilter StringFilter { get; private set; }
-
         public FilterPermissionDefinition(string name)
         {
             this.Name = name;

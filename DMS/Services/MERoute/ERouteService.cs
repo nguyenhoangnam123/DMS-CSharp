@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Repositories;
 using DMS.Rpc.e_route;
 using DMS.Services.MNotification;
@@ -297,6 +298,21 @@ namespace DMS.Services.MERoute
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.RequestStateId))
                         subFilter.RequestStateId = FilterPermissionDefinition.IdFilter;
+
+                    if (FilterPermissionDefinition.Name == nameof(CurrentContext.UserId) && FilterPermissionDefinition.IdFilter != null)
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.IS.Id)
+                        {
+                            if (subFilter.SaleEmployeeId == null) subFilter.SaleEmployeeId = new IdFilter { };
+                            subFilter.SaleEmployeeId.Equal = CurrentContext.UserId;
+                        }
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.ISNT.Id)
+                        {
+                            if (subFilter.SaleEmployeeId == null) subFilter.SaleEmployeeId = new IdFilter { };
+                            subFilter.SaleEmployeeId.NotEqual = CurrentContext.UserId;
+                        }
+                    }
+
 
                 }
             }

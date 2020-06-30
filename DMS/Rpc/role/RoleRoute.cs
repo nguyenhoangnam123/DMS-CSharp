@@ -19,6 +19,7 @@ namespace DMS.Rpc.role
         public const string GetMenu = Default + "/get-menu";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
+        public const string SingleListCurrentUser = Default + "/single-list-current-user";
 
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListMenu = Default + "/single-list-menu";

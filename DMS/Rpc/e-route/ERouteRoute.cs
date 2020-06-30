@@ -44,6 +44,7 @@ namespace DMS.Rpc.e_route
             { nameof(StoreFilter.OrganizationId), FieldTypeEnum.ID.Id },
             { nameof(StoreFilter.StoreGroupingId), FieldTypeEnum.ID.Id },
             { nameof(StoreFilter.StoreTypeId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
 
