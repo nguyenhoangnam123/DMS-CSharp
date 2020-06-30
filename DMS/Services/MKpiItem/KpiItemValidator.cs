@@ -2,6 +2,8 @@ using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
+using Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,7 +31,8 @@ namespace DMS.Services.MKpiItem
             KpiPeriodIdNotExisted,
             KpiYearIdNotExisted,
             KpiItemContentsEmpty,
-            ItemIdNotExisted
+            ItemIdNotExisted,
+            KpiYearAndKpiPeriodMustInTheFuture
         }
 
         private IUOW UOW;
@@ -169,13 +172,65 @@ namespace DMS.Services.MKpiItem
             return KpiItem.IsValidated;
         }
 
+        private Tuple<DateTime, DateTime> DateTimeConvert(long KpiPeriodId, long KpiYearId)
+        {
+            DateTime startDate = StaticParams.DateTimeNow;
+            DateTime endDate = StaticParams.DateTimeNow;
+            if (KpiPeriodId <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
+            {
+                startDate = new DateTime((int)KpiYearId, (int)(KpiPeriodId % 100), 1);
+                endDate = startDate.AddMonths(1).AddSeconds(-1);
+            }
+            else
+            {
+                if (KpiPeriodId == Enums.KpiPeriodEnum.PERIOD_QUATER01.Id)
+                {
+                    startDate = new DateTime((int)KpiYearId, 1, 1);
+                    endDate = startDate.AddMonths(3).AddSeconds(-1);
+                }
+                if (KpiPeriodId == Enums.KpiPeriodEnum.PERIOD_QUATER02.Id)
+                {
+                    startDate = new DateTime((int)KpiYearId, 4, 1);
+                    endDate = startDate.AddMonths(3).AddSeconds(-1);
+                }
+                if (KpiPeriodId == Enums.KpiPeriodEnum.PERIOD_QUATER03.Id)
+                {
+                    startDate = new DateTime((int)KpiYearId, 7, 1);
+                    endDate = startDate.AddMonths(3).AddSeconds(-1);
+                }
+                if (KpiPeriodId == Enums.KpiPeriodEnum.PERIOD_QUATER04.Id)
+                {
+                    startDate = new DateTime((int)KpiYearId, 10, 1);
+                    endDate = startDate.AddMonths(3).AddSeconds(-1);
+                }
+                if (KpiPeriodId == Enums.KpiPeriodEnum.PERIOD_YEAR01.Id)
+                {
+                    startDate = new DateTime((int)KpiYearId, 1, 1);
+                    endDate = startDate.AddYears(1).AddSeconds(-1);
+                }
+            }
+
+            return Tuple.Create(startDate, endDate);
+        }
+        private async Task<bool> ValidateTime(KpiItem KpiItem)
+        {
+            await ValidateKpiPeriod(KpiItem);
+            await ValidateKpiYear(KpiItem);
+            if (!KpiItem.IsValidated) return false;
+            DateTime now = StaticParams.DateTimeNow;
+            DateTime StartDate, EndDate;
+            (StartDate, EndDate) = DateTimeConvert(KpiItem.KpiPeriodId, KpiItem.KpiYearId);
+            if (now > EndDate)
+                KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.KpiYear), ErrorCode.KpiYearAndKpiPeriodMustInTheFuture);
+            return KpiItem.IsValidated;
+        }
+
         public async Task<bool> Create(KpiItem KpiItem)
         {
             await ValidateOrganization(KpiItem);
             await ValidateEmployees(KpiItem);
             await ValidateStatus(KpiItem);
-            await ValidateKpiPeriod(KpiItem);
-            await ValidateKpiYear(KpiItem);
+            await ValidateTime(KpiItem);
             await ValidateItem(KpiItem);
             return KpiItem.IsValidated;
         }
@@ -186,8 +241,7 @@ namespace DMS.Services.MKpiItem
             {
                 await ValidateOrganization(KpiItem);
                 await ValidateStatus(KpiItem);
-                await ValidateKpiPeriod(KpiItem);
-                await ValidateKpiYear(KpiItem);
+                await ValidateTime(KpiItem);
             }
             return KpiItem.IsValidated;
         }
