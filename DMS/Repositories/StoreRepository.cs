@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Models;
 using Helpers;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,19 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.ParentStoreId != null && filter.ParentStoreId.HasValue)
                 query = query.Where(q => q.ParentStoreId.HasValue).Where(q => q.ParentStoreId.Value, filter.ParentStoreId);
+            if (filter.StoreCheckingStatusId != null && filter.ParentStoreId.HasValue)
+            {
+                if (filter.StoreCheckingStatusId.Equal.HasValue)
+                {
+                    List<long> storeIds = DataContext.StoreChecking
+                           .Where(sc => sc.CheckInAt.HasValue && sc.CheckOutAt.HasValue && sc.CheckOutAt.Value.Date == StaticParams.DateTimeNow.Date)
+                           .Select(sc => sc.StoreId).ToList();
+                    if (filter.StoreCheckingStatusId.Equal.Value == StoreCheckingStatusEnum.CHECKED.Id)
+                        query = query.Where(q => storeIds.Contains(q.Id));
+                    if (filter.StoreCheckingStatusId.Equal.Value == StoreCheckingStatusEnum.NOTCHECKED.Id)
+                        query = query.Where(q => !storeIds.Contains(q.Id));
+                }    
+            }
             if (filter.OrganizationId != null)
             {
                 if (filter.OrganizationId.Equal != null)

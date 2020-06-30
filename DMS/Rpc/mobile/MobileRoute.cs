@@ -38,6 +38,7 @@ namespace DMS.Rpc.mobile
         public const string SingleListBrand = Default + "/single-list-brand";
         public const string SingleListSupplier = Default + "/single-list-supplier";
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
+        public const string SingleListStoreCheckingStatus = Default + "/single-list-store-checking-status";
 
         public const string CountBanner = Default + "/count-banner";
         public const string ListBanner = Default + "/list-banner";

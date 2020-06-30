@@ -126,6 +126,7 @@ namespace DMS.Rpc.mobile
         public IdFilter StoreTypeId { get; set; }
 
         public IdFilter StoreGroupingId { get; set; }
+        public IdFilter StoreCheckingStatusId { get; set; }
 
         public IdFilter ResellerId { get; set; }
 

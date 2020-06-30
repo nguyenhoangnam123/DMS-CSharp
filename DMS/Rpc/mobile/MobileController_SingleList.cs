@@ -348,6 +348,12 @@ namespace DMS.Rpc.mobile
             return Mobile_WardDTOs;
         }
 
+        [Route(MobileRoute.SingleListStoreCheckingStatus), HttpPost]
+        public async Task<List<GenericEnum>> SingleListStoreCheckingStatus()
+        {
+            return StoreCheckingStatusEnum.StoreCheckingStatusEnumList;
+        }
+
         [Route(MobileRoute.CountBanner), HttpPost]
         public async Task<ActionResult<int>> Count([FromBody] Mobile_BannerFilterDTO Mobile_BannerFilterDTO)
         {
@@ -407,6 +413,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreFilter.StoreTypeId = Mobile_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
             StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
@@ -445,6 +452,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreFilter.StoreTypeId = Mobile_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
             StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
@@ -486,6 +494,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreFilter.StoreTypeId = Mobile_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
             StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
@@ -524,6 +533,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreFilter.StoreTypeId = Mobile_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
             StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
@@ -565,6 +575,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreFilter.StoreTypeId = Mobile_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
             StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
@@ -603,6 +614,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreFilter.StoreTypeId = Mobile_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
             StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
