@@ -1,5 +1,5 @@
 ﻿{
-  "KpiGeneral": {
+  "KpiItem": {
     "Id": {
       "IdNotExisted": "Kpi chung không tồn tại",
       "ValueCannotBeNull": "Giá trị không thể null"
@@ -17,14 +17,15 @@
     },
     "KpiYear": {
       "KpiYearIdNotExisted": "Năm Kpi không tồn tại",
-      "KpiYearExisted": "Chưa chọn năm Kpi"
+      "KpiYearExisted": "Chưa chọn năm Kpi",
+      "KpiYearAndKpiPeriodMustInTheFuture":  "Không thể chọn thời gian trong quá khứ"
     },
     "KpiPeriod": {
       "KpiPeriodIdNotExisted": "Kì Kpi không tồn tại"
     },
     "KpiItemContents": {
       "KpiItemContentsEmpty": "Chưa chọn sản phẩm kpi",
-      "ItemIdNotExisted":  "Chưa chọn sản phẩm"
+      "ItemIdNotExisted": "Chưa chọn sản phẩm"
     }
   }
 }
