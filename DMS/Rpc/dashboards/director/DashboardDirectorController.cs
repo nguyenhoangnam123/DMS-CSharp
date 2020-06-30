@@ -58,7 +58,7 @@ namespace DMS.Rpc.dashboards.director
             return Dashborad_EnumLists;
         }
 
-        [Route(DashboardDirectorRoute.FilterListTime1), HttpPost]
+        [Route(DashboardDirectorRoute.FilterListTime2), HttpPost]
         public List<DashboardDirector_EnumList> FilterListTime2()
         {
             List<DashboardDirector_EnumList> Dashborad_EnumLists = new List<DashboardDirector_EnumList>();
