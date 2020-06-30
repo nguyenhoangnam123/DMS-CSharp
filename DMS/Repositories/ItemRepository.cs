@@ -376,7 +376,7 @@ namespace DMS.Repositories
                 if (Item.ItemImageMappings.Count == 0)
                 {
                     var ProductImageMappingDAO = ProductImageMappings.Where(x => x.ProductId == Item.ProductId).FirstOrDefault();
-                    if (ItemImageMappingDAO != null)
+                    if (ProductImageMappingDAO != null)
                     {
                         ItemImageMapping ItemImageMapping = new ItemImageMapping
                         {
