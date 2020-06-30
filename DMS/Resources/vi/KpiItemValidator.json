@@ -6,7 +6,7 @@
     },
     "Organization": {
       "OrganizationIdNotExisted": "Cơ cấu tổ chức không tồn tại",
-      "OrganizationEmpty":  "Chưa chọn cơ cấu tổ chức"
+      "OrganizationEmpty": "Chưa chọn cơ cấu tổ chức"
     },
     "EmployeeIds": {
       "EmployeeIdsEmpty": "Chưa chọn nhân viên",
@@ -18,6 +18,13 @@
     "KpiYear": {
       "KpiYearIdNotExisted": "Năm Kpi không tồn tại",
       "KpiYearExisted": "Chưa chọn năm Kpi"
+    },
+    "KpiPeriod": {
+      "KpiPeriodIdNotExisted": "Kì Kpi không tồn tại"
+    },
+    "KpiItemContents": {
+      "KpiItemContentsEmpty": "Chưa chọn sản phẩm kpi",
+      "ItemIdNotExisted":  "Chưa chọn sản phẩm"
     }
   }
 }
