@@ -468,7 +468,7 @@ namespace DMS.Rpc.store
                 {
                     foreach (var Error in Stores[i].Errors)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: {Error.Value}");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
                     }
                 }
             }
