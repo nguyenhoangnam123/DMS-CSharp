@@ -24,7 +24,7 @@
     },
     "KpiItemContents": {
       "KpiItemContentsEmpty": "Chưa chọn sản phẩm kpi",
-      "ItemIdNotExisted":  "Chưa chọn sản phẩm"
+      "ItemIdNotExisted": "Chưa chọn sản phẩm"
     }
   }
 }
