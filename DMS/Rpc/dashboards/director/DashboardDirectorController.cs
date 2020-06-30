@@ -70,7 +70,20 @@ namespace DMS.Rpc.dashboards.director
             return Dashborad_EnumLists;
         }
 
-        [Route(DashboardDirectorRoute.IndirectSalesOrderCounter), HttpPost]
+        [Route(DashboardDirectorRoute.CountStore), HttpPost]
+        public async Task<long> CountStore()
+        {
+            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+            var query = from s in DataContext.Store
+                        join o in DataContext.Organization on s.OrganizationId equals o.Id
+                        where o.Path.StartsWith(CurrentUser.Organization.Path)
+                        select s;
+
+            var StoreCounter = query.Count();
+            return StoreCounter;
+        }
+
+        [Route(DashboardDirectorRoute.CountIndirectSalesOrder), HttpPost]
         public async Task<long> CountIndirectSalesOrder()
         {
             DateTime Now = StaticParams.DateTimeNow;
@@ -124,7 +137,7 @@ namespace DMS.Rpc.dashboards.director
             return ItemSalesTotal;
         }
 
-        [Route(DashboardDirectorRoute.StoreCheckingCounter), HttpPost]
+        [Route(DashboardDirectorRoute.CountStoreChecking), HttpPost]
         public async Task<long> CountStoreChecking()
         {
             DateTime Now = StaticParams.DateTimeNow;
@@ -142,11 +155,63 @@ namespace DMS.Rpc.dashboards.director
             return StoreCheckingCounter;
         }
 
-        [Route(DashboardDirectorRoute.StatisticDaily), HttpPost]
-        public async Task<DashboardDirector_StatisticDailyDTO> StatisticDaily()
+        [Route(DashboardDirectorRoute.StatisticToday), HttpPost]
+        public async Task<DashboardDirector_StatisticDailyDTO> StatisticToday()
         {
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime End = Start.AddDays(1).AddSeconds(-1);
+            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+
+            var queryRevenue = from i in DataContext.IndirectSalesOrder
+                               join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
+                               join o in DataContext.Organization on au.OrganizationId equals o.Id
+                               where i.OrderDate >= Start && i.OrderDate <= End &&
+                               au.OrganizationId.HasValue && o.Path.StartsWith(CurrentUser.Organization.Path)
+                               select i;
+
+            var queryIndirectSalesOrder = from i in DataContext.IndirectSalesOrder
+                                          join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
+                                          join o in DataContext.Organization on au.OrganizationId equals o.Id
+                                          where i.OrderDate >= Start && i.OrderDate <= End &&
+                                          au.OrganizationId.HasValue && o.Path.StartsWith(CurrentUser.Organization.Path)
+                                          select i;
+
+            var queryItem = from ic in DataContext.IndirectSalesOrderContent
+                            join i in DataContext.IndirectSalesOrder on ic.IndirectSalesOrderId equals i.Id
+                            join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
+                            join o in DataContext.Organization on au.OrganizationId equals o.Id
+                            where i.OrderDate >= Start && i.OrderDate <= End &&
+                            au.OrganizationId.HasValue && o.Path.StartsWith(CurrentUser.Organization.Path)
+                            select ic;
+
+            var queryStoreChecking = from sc in DataContext.StoreChecking
+                                     join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
+                                     join o in DataContext.Organization on au.OrganizationId equals o.Id
+                                     where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
+                                     au.OrganizationId.HasValue && o.Path.StartsWith(CurrentUser.Organization.Path)
+                                     select sc;
+
+            var RevenueTotal = queryRevenue.Select(x => x.Total).Sum();
+            var IndirectSalesOrderCounter = queryIndirectSalesOrder.Count();
+            var SaledItemCounter = queryItem.Select(x => x.RequestedQuantity).Sum();
+            var StoreCheckingCounter = queryStoreChecking.Count();
+
+            DashboardDirector_StatisticDailyDTO DashboardDirector_StatisticDailyDTO = new DashboardDirector_StatisticDailyDTO()
+            {
+                Revenue = RevenueTotal,
+                IndirectSalesOrderCounter = IndirectSalesOrderCounter,
+                SaledItemCounter = SaledItemCounter,
+                StoreCheckingCounter = StoreCheckingCounter
+            };
+            return DashboardDirector_StatisticDailyDTO;
+        }
+
+        [Route(DashboardDirectorRoute.StatisticYesterday), HttpPost]
+        public async Task<DashboardDirector_StatisticDailyDTO> StatisticYesterday()
+        {
+            DateTime Now = StaticParams.DateTimeNow.Date;
+            DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day).AddDays(-1);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
 
