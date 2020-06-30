@@ -262,7 +262,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
             foreach (var SaleEmployeeDTO in KpiGeneralPeriodReport_SaleEmployeeDTOs)
             {
-                // TOTALINDIRECTORDERS
+                // TOTALINDIRECTORDERS - Số đơn hàng gián tiếp
                 SaleEmployeeDTO.TotalIndirectOrdersPLanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
                         .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == GeneralCriteriaEnum.TOTALINDIRECTORDERS.Id)
                         .Select(sed => sed.Value).FirstOrDefault();
@@ -272,7 +272,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 SaleEmployeeDTO.TotalIndirectOrdersRatio = SaleEmployeeDTO.TotalIndirectOrdersPLanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.TotalIndirectOrders / SaleEmployeeDTO.TotalIndirectOrdersPLanned, 2);
 
 
-                // TOTALINDIRECTOUTPUT
+                // TOTALINDIRECTOUTPUT - Tổng sản lượng đơn hàng gián tiếp
                 SaleEmployeeDTO.TotalIndirectOutputPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
                         .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == GeneralCriteriaEnum.TOTALINDIRECTOUTPUT.Id)
                         .Select(sed => sed.Value).FirstOrDefault();
@@ -283,7 +283,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     .DefaultIfEmpty(0).Sum();
                 SaleEmployeeDTO.TotalIndirectOutputRatio = SaleEmployeeDTO.TotalIndirectOutputPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.TotalIndirectOutput / SaleEmployeeDTO.TotalIndirectOutputPlanned, 2);
 
-                // TOTALINDIRECTSALESAMOUNT
+                // TOTALINDIRECTSALESAMOUNT - Doanh số đơn hàng gián tiếp
                 SaleEmployeeDTO.TotalIndirectSalesAmountPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
                         .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == GeneralCriteriaEnum.TOTALINDIRECTSALESAMOUNT.Id)
                         .Select(sed => sed.Value).FirstOrDefault();
@@ -292,14 +292,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     .Sum(iso => iso.Total);
                 SaleEmployeeDTO.TotalIndirectSalesAmountRatio = SaleEmployeeDTO.TotalIndirectSalesAmountPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.TotalIndirectSalesAmount / SaleEmployeeDTO.TotalIndirectSalesAmountPlanned, 2);
 
-                // SKUINDIRECTORDER
+                // SKUINDIRECTORDER - SKU/ Đơn hàng gián tiếp
                 SaleEmployeeDTO.SkuIndirectOrderPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
                         .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == GeneralCriteriaEnum.SKUINDIRECTORDER.Id)
                         .Select(sed => sed.Value).FirstOrDefault();
                 SaleEmployeeDTO.SkuIndirectOrder = SaleEmployeeDTO.TotalIndirectOrders == 0 ? 0 : SaleEmployeeDTO.TotalIndirectOutput / SaleEmployeeDTO.TotalIndirectOrders;
                 SaleEmployeeDTO.SkuIndirectOrder = SaleEmployeeDTO.SkuIndirectOrderPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.SkuIndirectOrder / SaleEmployeeDTO.SkuIndirectOrderPlanned, 2);
 
-                // STORESVISITED
+                // STORESVISITED - Số KH viếng thăm
                 SaleEmployeeDTO.StoresVisitedPLanned= KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == GeneralCriteriaEnum.STORESVISITED.Id)
                        .Select(sed => sed.Value).FirstOrDefault();
@@ -308,7 +308,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     .Count();
                 SaleEmployeeDTO.StoresVisitedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.StoresVisited / SaleEmployeeDTO.NewStoreCreatedPlanned, 2);
 
-                // NEWSTORECREATED
+                // NEWSTORECREATED - Số KH tạo mới
                 SaleEmployeeDTO.NewStoreCreatedPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
                         .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == GeneralCriteriaEnum.NEWSTORECREATED.Id)
                         .Select(sed => sed.Value).FirstOrDefault();
