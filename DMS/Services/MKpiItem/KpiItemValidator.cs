@@ -227,10 +227,10 @@ namespace DMS.Services.MKpiItem
 
         public async Task<bool> Create(KpiItem KpiItem)
         {
+            await ValidateTime(KpiItem);
             await ValidateOrganization(KpiItem);
             await ValidateEmployees(KpiItem);
             await ValidateStatus(KpiItem);
-            await ValidateTime(KpiItem);
             await ValidateItem(KpiItem);
             return KpiItem.IsValidated;
         }
@@ -239,9 +239,9 @@ namespace DMS.Services.MKpiItem
         {
             if (await ValidateId(KpiItem))
             {
+                await ValidateTime(KpiItem);
                 await ValidateOrganization(KpiItem);
                 await ValidateStatus(KpiItem);
-                await ValidateTime(KpiItem);
             }
             return KpiItem.IsValidated;
         }
