@@ -476,7 +476,18 @@ namespace DMS.Repositories
                         StatusId = x.Product.UnitOfMeasureGrouping.StatusId,
                         UnitOfMeasureId = x.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
                     },
-
+                    Brand = x.Product.Brand == null ? null : new Brand
+                    {
+                        Id = x.Product.Brand.Id,
+                        Code = x.Product.Brand.Code,
+                        Name = x.Product.Brand.Name,
+                    },
+                    Supplier = x.Product.Supplier == null ? null : new Supplier
+                    {
+                        Id = x.Product.Supplier.Id,
+                        Code = x.Product.Supplier.Code,
+                        Name = x.Product.Supplier.Name,
+                    },
                 },
             }).FirstOrDefaultAsync();
 
@@ -495,6 +506,25 @@ namespace DMS.Repositories
                         Url = x.Image.Url,
                     },
                 }).ToListAsync();
+            if (Item.ItemImageMappings.Count == 0)
+            {
+                var ProductImageMappingDAO = await DataContext.ProductImageMapping.Where(x => x.ProductId == Item.ProductId).FirstOrDefaultAsync();
+                if (ProductImageMappingDAO != null)
+                {
+                    ItemImageMapping ItemImageMapping = new ItemImageMapping
+                    {
+                        ImageId = ProductImageMappingDAO.ImageId,
+                        ItemId = Item.Id,
+                        Image = ProductImageMappingDAO.Image == null ? null : new Image
+                        {
+                            Id = ProductImageMappingDAO.Image.Id,
+                            Name = ProductImageMappingDAO.Image.Name,
+                            Url = ProductImageMappingDAO.Image.Url
+                        }
+                    };
+                    Item.ItemImageMappings.Add(ItemImageMapping);
+                }
+            }
             return Item;
         }
         public async Task<bool> Create(Item Item)

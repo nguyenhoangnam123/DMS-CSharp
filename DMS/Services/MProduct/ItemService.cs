@@ -101,6 +101,15 @@ namespace DMS.Services.MProduct
             Item Item = await UOW.ItemRepository.Get(Id);
             if (Item == null)
                 return null;
+            InventoryFilter InventoryFilter = new InventoryFilter
+            {
+                ItemId = new IdFilter { Equal = Item.Id },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = InventorySelect.ALL,
+            };
+            List<Inventory> Inventories = await UOW.InventoryRepository.List(InventoryFilter);
+            Item.Inventories = Inventories;
             return Item;
         }
 

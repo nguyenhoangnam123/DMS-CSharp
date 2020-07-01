@@ -1,6 +1,7 @@
 using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Repositories;
 using DMS.Services.MAlbum;
 using DMS.Services.MAppUser;
 using DMS.Services.MERoute;
@@ -700,6 +701,18 @@ namespace DMS.Rpc.mobile
                     .Select(x => new Mobile_ItemDTO(x)).ToList();
                 return Mobile_ItemDTOs;
             }
+        }
+
+        [Route(MobileRoute.GetItem), HttpPost]
+        public async Task<Mobile_ItemDTO> GetItem([FromBody] Mobile_ItemDTO Mobile_ItemDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            Item Item = await ItemService.Get(Mobile_ItemDTO.Id);
+            if (Item == null)
+                return null;
+            Mobile_ItemDTO = new Mobile_ItemDTO(Item);
+            return Mobile_ItemDTO;
         }
 
         [Route(MobileRoute.CountProblem), HttpPost]

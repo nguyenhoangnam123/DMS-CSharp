@@ -22,6 +22,7 @@ namespace DMS.Entities
         public bool Used { get; set; }
         public Product Product { get; set; }
         public Status Status { get; set; }
+        public List<Inventory> Inventories { get; set; }
         public List<ItemImageMapping> ItemImageMappings { get; set; }
         public List<ItemHistory> ItemHistories { get; set; }
         public bool Equals(Item other)

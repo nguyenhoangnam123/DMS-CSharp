@@ -62,5 +62,6 @@ namespace DMS.Rpc.monitor.monitor_salesman
         public IdFilter OrganizationId { get; set; }
         public IdFilter AppUserId { get; set; }
         public DateFilter CheckIn { get; set; }
+        public List<MonitorSalesman_MonitorSalesmanFilterDTO> OrFilters { get; set; }
     }
 }

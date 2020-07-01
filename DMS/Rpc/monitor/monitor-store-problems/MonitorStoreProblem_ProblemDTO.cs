@@ -65,5 +65,6 @@ namespace DMS.Rpc.monitor_store_problems
         public StringFilter Content { get; set; }
         public IdFilter ProblemStatusId { get; set; }
         public ProblemOrder OrderBy { get; set; }
+        public List<MonitorStoreProblem_ProblemFilterDTO> OrFilters { get; set; }
     }
 }

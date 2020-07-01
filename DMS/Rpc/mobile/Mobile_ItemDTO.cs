@@ -19,6 +19,7 @@ namespace DMS.Rpc.mobile
         public bool HasInventory { get; set; }
         public Mobile_ProductDTO Product { get; set; }
         public List<Mobile_ImageDTO> Images { get; set; }
+        public List<Mobile_InventoryDTO> Inventories { get; set; }
         public Mobile_ItemDTO() { }
         public Mobile_ItemDTO(Item Item)
         {
@@ -34,6 +35,7 @@ namespace DMS.Rpc.mobile
             this.HasInventory = Item.HasInventory;
             this.Product = Item.Product == null ? null : new Mobile_ProductDTO(Item.Product);
             this.Images = Item.ItemImageMappings?.Where(iim => iim.Image != null).Select(iim => new Mobile_ImageDTO(iim.Image)).ToList();
+            this.Inventories = Item.Inventories?.Select(iv => new Mobile_InventoryDTO(iv)).ToList();
             this.Errors = Item.Errors;
         }
     }

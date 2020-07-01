@@ -20,6 +20,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         public IdFilter Checking { get; set; }
         public IdFilter Image { get; set; }
         public IdFilter SalesOrder { get; set; }
+        public List<MonitorStoreChecker_MonitorStoreCheckerFilterDTO> OrFilters { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
