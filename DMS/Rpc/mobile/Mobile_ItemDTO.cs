@@ -16,6 +16,7 @@ namespace DMS.Rpc.mobile
         public decimal? RetailPrice { get; set; }
         public long SaleStock { get; set; }
         public long StatusId { get; set; }
+        public bool HasInventory { get; set; }
         public Mobile_ProductDTO Product { get; set; }
         public List<Mobile_ImageDTO> Images { get; set; }
         public Mobile_ItemDTO() { }
@@ -30,6 +31,7 @@ namespace DMS.Rpc.mobile
             this.RetailPrice = Item.RetailPrice;
             this.SaleStock = Item.SaleStock;
             this.StatusId = Item.StatusId;
+            this.HasInventory = Item.HasInventory;
             this.Product = Item.Product == null ? null : new Mobile_ProductDTO(Item.Product);
             this.Images = Item.ItemImageMappings?.Where(iim => iim.Image != null).Select(iim => new Mobile_ImageDTO(iim.Image)).ToList();
             this.Errors = Item.Errors;
