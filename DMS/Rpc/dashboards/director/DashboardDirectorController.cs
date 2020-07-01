@@ -571,7 +571,9 @@ namespace DMS.Rpc.dashboards.director
                 var DashboardDirector_RevenueFluctuationByQuarterDTOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters = new List<DashboardDirector_RevenueFluctuationByQuarterDTO>();
-                for (int i = 1; i <= 4; i++)
+                int start = 3 * (this_quarter - 1) + 1;
+                int end = start + 3;
+                for (int i = start; i < end; i++)
                 {
                     DashboardDirector_RevenueFluctuationByQuarterDTO RevenueFluctuationByQuarter = new DashboardDirector_RevenueFluctuationByQuarterDTO
                     {
@@ -612,7 +614,9 @@ namespace DMS.Rpc.dashboards.director
                 var DashboardDirector_RevenueFluctuationByQuarterDTOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters = new List<DashboardDirector_RevenueFluctuationByQuarterDTO>();
-                for (int i = 1; i <= 4; i++)
+                int start = 3 * (this_quarter - 1) + 1;
+                int end = start + 3;
+                for (int i = start; i < end; i++)
                 {
                     DashboardDirector_RevenueFluctuationByQuarterDTO RevenueFluctuationByQuarter = new DashboardDirector_RevenueFluctuationByQuarterDTO
                     {
@@ -784,7 +788,9 @@ namespace DMS.Rpc.dashboards.director
                 var DashboardDirector_IndirectSalesOrderFluctuationByQuarterDTOs = await query.ToListAsync();
                 DashboardDirector_IndirectSalesOrderFluctuationDTO DashboardDirector_IndirectSalesOrderFluctuationDTO = new DashboardDirector_IndirectSalesOrderFluctuationDTO();
                 DashboardDirector_IndirectSalesOrderFluctuationDTO.IndirectSalesOrderFluctuationByQuaters = new List<DashboardDirector_IndirectSalesOrderFluctuationByQuarterDTO>();
-                for (int i = 1; i <= 4; i++)
+                int start = 3 * (this_quarter - 1) + 1;
+                int end = start + 3;
+                for (int i = start; i < end; i++)
                 {
                     DashboardDirector_IndirectSalesOrderFluctuationByQuarterDTO IndirectSalesOrderFluctuationByQuarter = new DashboardDirector_IndirectSalesOrderFluctuationByQuarterDTO
                     {
@@ -824,7 +830,9 @@ namespace DMS.Rpc.dashboards.director
                 var DashboardDirector_IndirectSalesOrderFluctuationByQuarterDTOs = await query.ToListAsync();
                 DashboardDirector_IndirectSalesOrderFluctuationDTO DashboardDirector_IndirectSalesOrderFluctuationDTO = new DashboardDirector_IndirectSalesOrderFluctuationDTO();
                 DashboardDirector_IndirectSalesOrderFluctuationDTO.IndirectSalesOrderFluctuationByQuaters = new List<DashboardDirector_IndirectSalesOrderFluctuationByQuarterDTO>();
-                for (int i = 1; i <= 4; i++)
+                int start = 3 * (this_quarter - 1) + 1;
+                int end = start + 3;
+                for (int i = start; i < end; i++)
                 {
                     DashboardDirector_IndirectSalesOrderFluctuationByQuarterDTO IndirectSalesOrderFluctuationByQuarter = new DashboardDirector_IndirectSalesOrderFluctuationByQuarterDTO
                     {
@@ -998,7 +1006,9 @@ namespace DMS.Rpc.dashboards.director
                 var DashboardDirector_SaledItemFluctuationByQuarterDTOs = await query.ToListAsync();
                 DashboardDirector_SaledItemFluctuationDTO DashboardDirector_SaledItemFluctuationDTO = new DashboardDirector_SaledItemFluctuationDTO();
                 DashboardDirector_SaledItemFluctuationDTO.SaledItemFluctuationByQuaters = new List<DashboardDirector_SaledItemFluctuationByQuarterDTO>();
-                for (int i = 1; i <= 4; i++)
+                int start = 3 * (this_quarter - 1) + 1;
+                int end = start + 3;
+                for (int i = start; i < end; i++)
                 {
                     DashboardDirector_SaledItemFluctuationByQuarterDTO SaledItemFluctuationByQuarter = new DashboardDirector_SaledItemFluctuationByQuarterDTO
                     {
@@ -1039,7 +1049,9 @@ namespace DMS.Rpc.dashboards.director
                 var DashboardDirector_SaledItemFluctuationByQuarterDTOs = await query.ToListAsync();
                 DashboardDirector_SaledItemFluctuationDTO DashboardDirector_SaledItemFluctuationDTO = new DashboardDirector_SaledItemFluctuationDTO();
                 DashboardDirector_SaledItemFluctuationDTO.SaledItemFluctuationByQuaters = new List<DashboardDirector_SaledItemFluctuationByQuarterDTO>();
-                for (int i = 1; i <= 4; i++)
+                int start = 3 * (this_quarter - 1) + 1;
+                int end = start + 3;
+                for (int i = start; i < end; i++)
                 {
                     DashboardDirector_SaledItemFluctuationByQuarterDTO SaledItemFluctuationByQuarter = new DashboardDirector_SaledItemFluctuationByQuarterDTO
                     {
