@@ -303,7 +303,7 @@ namespace DMS.Services.MNotification
         public async Task<List<UserNotification>> BulkSend(List<UserNotification> UserNotifications)
         {
             RestClient restClient = new RestClient(InternalServices.UTILS);
-            RestRequest restRequest = new RestRequest("/rpc/utils/notification/bulk-create");
+            RestRequest restRequest = new RestRequest("/rpc/utils/user-notification/bulk-create");
             restRequest.RequestFormat = DataFormat.Json;
             restRequest.Method = Method.POST;
             restRequest.AddCookie("Token", CurrentContext.Token);
