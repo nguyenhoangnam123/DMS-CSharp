@@ -306,19 +306,19 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                 foreach (var SaleEmployeeItemDTO in SaleEmployeeDTO.KpiItemReport_SaleEmployeeItemDTOs)
                 {
                     // INDIRECT_ORDERS_OF_KEY_ITEM - Sản lượng theo đơn gián tiếp
-                    SaleEmployeeItemDTO.INDIRECT_ORDERS_OF_KEY_ITEM_PLANNED = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
+                    SaleEmployeeItemDTO.IndirectOutputOfkeyItemPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
                             .Where(sed => sed.SaleEmployeeId == SaleEmployeeItemDTO.SaleEmployeeId && sed.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_ORDERS_OF_KEY_ITEM.Id)
                             .Select(sed => sed.Value).FirstOrDefault();
-                    SaleEmployeeItemDTO.INDIRECT_ORDERS_OF_KEY_ITEM_PLANNED = IndirectSalesOrderDAOs
+                    SaleEmployeeItemDTO.IndirectOutputOfKeyItem = IndirectSalesOrderDAOs
                         .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
                         .SelectMany(iso => iso.IndirectSalesOrderContents)
                         .Where(z => z.ItemId == ItemId)
                         .Select(z => z.Quantity)
                         .DefaultIfEmpty(0).Sum();
-                    SaleEmployeeItemDTO.INDIRECT_ORDERS_OF_KEY_ITEM_RATIO = SaleEmployeeItemDTO.INDIRECT_ORDERS_OF_KEY_ITEM_PLANNED == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.INDIRECT_ORDERS_OF_KEY_ITEM / SaleEmployeeItemDTO.INDIRECT_ORDERS_OF_KEY_ITEM_PLANNED, 2);
+                    SaleEmployeeItemDTO.IndirectOutputOfkeyItemRatio = SaleEmployeeItemDTO.IndirectOutputOfkeyItemPlanned == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.IndirectOutputOfKeyItem / SaleEmployeeItemDTO.IndirectOutputOfkeyItemPlanned, 2);
 
                     // INDIRECT_SALES_OF_KEY_ITEM - Doanh số theo đơn gián tiếp
-                    SaleEmployeeItemDTO.INDIRECT_SALES_OF_KEY_ITEM_PLANNED = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
+                    SaleEmployeeItemDTO.IndirectSalesOfKeyItemPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
                             .Where(sed => sed.SaleEmployeeId == SaleEmployeeItemDTO.SaleEmployeeId && sed.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_SALES_OF_KEY_ITEM.Id)
                             .Select(sed => sed.Value).FirstOrDefault();
 
@@ -328,31 +328,31 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         .Where(z => z.ItemId == ItemId)
                         .Select(z => z.IndirectSalesOrderId)
                         .ToList();  // list Id
-                    SaleEmployeeItemDTO.INDIRECT_SALES_OF_KEY_ITEM_PLANNED = IndirectSalesOrderDAOs
+                    SaleEmployeeItemDTO.IndirectSalesOfKeyItem = IndirectSalesOrderDAOs
                         .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && IndirectSalesOrderIds.Contains(iso.Id))
                         .Select(iso => iso.Total)
                         .DefaultIfEmpty(0).Sum();
-                    SaleEmployeeItemDTO.INDIRECT_SALES_OF_KEY_ITEM_RATIO = SaleEmployeeItemDTO.INDIRECT_SALES_OF_KEY_ITEM_PLANNED == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.INDIRECT_SALES_OF_KEY_ITEM / SaleEmployeeItemDTO.INDIRECT_SALES_OF_KEY_ITEM_PLANNED, 2);
+                    SaleEmployeeItemDTO.IndirectSalesOfKeyItemRatio = SaleEmployeeItemDTO.IndirectSalesOfKeyItemPlanned == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.IndirectSalesOfKeyItem / SaleEmployeeItemDTO.IndirectSalesOfKeyItemPlanned, 2);
 
                     // INDIRECT_ORDERS_OF_KEY_ITEM - Đơn hàng gián tiếp
-                    SaleEmployeeItemDTO.INDIRECT_ORDERS_OF_KEY_ITEM_PLANNED = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
+                    SaleEmployeeItemDTO.IndirectOrdersOfKeyItemPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
                             .Where(sed => sed.SaleEmployeeId == SaleEmployeeItemDTO.SaleEmployeeId && sed.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_ORDERS_OF_KEY_ITEM.Id)
                             .Select(sed => sed.Value).FirstOrDefault();
-                    SaleEmployeeItemDTO.INDIRECT_ORDERS_OF_KEY_ITEM_PLANNED = IndirectSalesOrderDAOs
+                    SaleEmployeeItemDTO.IndirectOrdersOfKeyItem = IndirectSalesOrderDAOs
                         .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
                         .SelectMany(iso => iso.IndirectSalesOrderContents)
                         .Where(z => z.ItemId == ItemId)
                         .Count();
-                    SaleEmployeeItemDTO.INDIRECT_ORDERS_OF_KEY_ITEM_RATIO = SaleEmployeeItemDTO.INDIRECT_ORDERS_OF_KEY_ITEM_PLANNED == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.INDIRECT_ORDERS_OF_KEY_ITEM / SaleEmployeeItemDTO.INDIRECT_ORDERS_OF_KEY_ITEM_PLANNED, 2);
+                    SaleEmployeeItemDTO.IndirectOrdersOfKeyItemRatio = SaleEmployeeItemDTO.IndirectOrdersOfKeyItemPlanned == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.IndirectOrdersOfKeyItem / SaleEmployeeItemDTO.IndirectOrdersOfKeyItemPlanned, 2);
 
                     // INDIRECT_STORES_OF_KEY_ITEM - khách hàng theo đơn gián tiếp
-                    SaleEmployeeItemDTO.INDIRECT_STORES_OF_KEY_ITEM_PLANNED = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
+                    SaleEmployeeItemDTO.IndirectStoresOfKeyItemPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
                             .Where(sed => sed.SaleEmployeeId == SaleEmployeeItemDTO.SaleEmployeeId && sed.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORES_OF_KEY_ITEM.Id)
                             .Select(sed => sed.Value).FirstOrDefault();
-                    SaleEmployeeItemDTO.INDIRECT_STORES_OF_KEY_ITEM_PLANNED = IndirectSalesOrderDAOs
+                    SaleEmployeeItemDTO.IndirectStoresOfKeyItem = IndirectSalesOrderDAOs
                         .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && IndirectSalesOrderIds.Contains(iso.Id))
                         .Count();
-                    SaleEmployeeItemDTO.INDIRECT_STORES_OF_KEY_ITEM_RATIO = SaleEmployeeItemDTO.INDIRECT_STORES_OF_KEY_ITEM_PLANNED == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.INDIRECT_STORES_OF_KEY_ITEM / SaleEmployeeItemDTO.INDIRECT_STORES_OF_KEY_ITEM_PLANNED, 2);
+                    SaleEmployeeItemDTO.IndirectStoresOfKeyItem = SaleEmployeeItemDTO.IndirectStoresOfKeyItemPlanned == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.IndirectStoresOfKeyItem / SaleEmployeeItemDTO.IndirectStoresOfKeyItem, 2);
 
                 }
             };
