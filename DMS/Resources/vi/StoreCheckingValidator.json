@@ -9,6 +9,9 @@
     },
     "CheckOutAt": {
       "HasCheckOut": "Cửa hàng đã viếng thăm"
+    },
+    "CheckInAt": {
+      "HasCheckin": "Cửa hàng đã viếng thăm"
     }
   }
 }

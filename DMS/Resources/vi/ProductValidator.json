@@ -59,6 +59,11 @@
         "VariationsEmpty": "Chưa nhập giá trị cho thuộc tính"
       }
     },
+    "Variation": {
+      "Code": {
+        "CodeHasSpecialCharacter": "Mã giá trị chứa kí tự đặc biệt"
+      }
+    },
     "Items": {
       "ItemsEmpty": "Chưa tạo phiên bản cho sản phẩm"
     }
