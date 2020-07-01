@@ -250,6 +250,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                 KpiItemReport_SaleEmployeeDTO KpiItemReport_SaleEmployeeDTO = new KpiItemReport_SaleEmployeeDTO()
                 {
                     SaleEmployeeId = EmployeeId,
+                    DisplayName = KpiItemReport_SaleEmployeeItemDTOs.Where(x => x.SaleEmployeeId == EmployeeId).Select(x => x.DisplayName).FirstOrDefault(),
+                    OrganizationName = KpiItemReport_SaleEmployeeItemDTOs.Where(x => x.SaleEmployeeId == EmployeeId).Select(x => x.OrganizationName).FirstOrDefault(),
+                    OrganizationId = KpiItemReport_SaleEmployeeItemDTOs.Where(x => x.SaleEmployeeId == EmployeeId).Select(x => x.OrganizationId).FirstOrDefault(),
+                    Username = KpiItemReport_SaleEmployeeItemDTOs.Where(x => x.SaleEmployeeId == EmployeeId).Select(x => x.Username).FirstOrDefault(),
                     KpiItemReport_SaleEmployeeItemDTOs = KpiItemReport_SaleEmployeeItemDTOs.Select(x => new KpiItemReport_SaleEmployeeItemDTO
                     {
                         ItemId = x.ItemId,
@@ -257,6 +261,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         ItemName = x.ItemName,
                         ItemCode = x.ItemCode,
                         DisplayName = x.DisplayName,
+                        Username = x.Username,
                         OrganizationName = x.OrganizationName,
                         OrganizationId = x.OrganizationId
                     })
