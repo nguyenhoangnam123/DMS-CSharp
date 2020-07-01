@@ -385,7 +385,28 @@ namespace DMS.Repositories
                         Url = x.Image.Url,
                     },
                 }).ToListAsync();
-
+            Problem.ProblemHistorys = await DataContext.ProblemHistory.AsNoTracking()
+                .Where(x => x.ProblemId == Problem.Id)
+                .Select(x => new ProblemHistory
+                {
+                    Id = x.Id,
+                    ModifierId = x.ModifierId,
+                    ProblemId = x.ProblemId,
+                    ProblemStatusId = x.ProblemStatusId,
+                    Time = x.Time,
+                    ProblemStatus = x.ProblemStatus == null ? null : new ProblemStatus
+                    {
+                        Id = x.ProblemStatus.Id,
+                        Code = x.ProblemStatus.Code,
+                        Name = x.ProblemStatus.Name,
+                    },
+                    Modifier = x.Modifier == null ? null : new AppUser
+                    {
+                        Id = x.Modifier.Id,
+                        Username = x.Modifier.Username,
+                        DisplayName = x.Modifier.DisplayName,
+                    }
+                }).ToListAsync();
             return Problem;
         }
         public async Task<bool> Create(Problem Problem)

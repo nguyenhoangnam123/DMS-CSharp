@@ -185,6 +185,8 @@ namespace DMS.Services.MProblem
                     {
                         ProblemHistory.ProblemStatusId = Enums.ProblemStatusEnum.DONE.Id;
                     }
+                    if (Problem.ProblemHistorys == null)
+                        Problem.ProblemHistorys = new List<ProblemHistory>();
                     Problem.ProblemHistorys.Add(ProblemHistory);
                 }
                 await UOW.Begin();
