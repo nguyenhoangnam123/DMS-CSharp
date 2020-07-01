@@ -19,5 +19,6 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         public IdFilter AppUserId { get; set; }
         public DateFilter CheckIn { get; set; }
         public IdFilter StoreId { get; set; }
+        public List<MonitorStoreAlbum_MonitorStoreAlbumFilterDTO> OrFilters { get; set; }
     }
 }
