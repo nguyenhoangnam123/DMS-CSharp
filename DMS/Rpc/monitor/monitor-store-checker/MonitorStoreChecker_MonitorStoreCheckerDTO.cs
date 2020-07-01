@@ -15,7 +15,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
     public class MonitorStoreChecker_MonitorStoreCheckerFilterDTO : FilterDTO
     {
         public IdFilter OrganizationId { get; set; }
-        public IdFilter SaleEmployeeId { get; set; }
+        public IdFilter AppUserId { get; set; }
         public DateFilter CheckIn { get; set; }
         public IdFilter Checking { get; set; }
         public IdFilter Image { get; set; }

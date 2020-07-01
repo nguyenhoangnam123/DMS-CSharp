@@ -32,7 +32,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
     public class MonitorStoreImage_MonitorStoreImageFilterDTO : FilterDTO 
     {
         public IdFilter OrganizationId { get; set; }
-        public IdFilter SaleEmployeeId { get; set; }
+        public IdFilter AppUserId { get; set; }
         public DateFilter CheckIn { get; set; }
         public IdFilter StoreId { get; set; }
         public IdFilter HasImage { get; set; }

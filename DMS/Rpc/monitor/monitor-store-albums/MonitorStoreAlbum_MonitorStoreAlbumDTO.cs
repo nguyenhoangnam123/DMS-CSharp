@@ -16,7 +16,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
     {
         public IdFilter AlbumId { get; set; }
         public IdFilter OrganizationId { get; set; }
-        public IdFilter SaleEmployeeId { get; set; }
+        public IdFilter AppUserId { get; set; }
         public DateFilter CheckIn { get; set; }
         public IdFilter StoreId { get; set; }
     }

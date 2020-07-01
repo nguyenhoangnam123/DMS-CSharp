@@ -21,6 +21,12 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListStore = Default + "/filter-list-store";
 
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
+        {
+            { nameof(MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
+        };
+
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {

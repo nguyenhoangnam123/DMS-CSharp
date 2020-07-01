@@ -271,7 +271,7 @@ namespace DMS.Rpc.monitor_store_problems
             ProblemFilter.Code = MonitorStoreProblem_ProblemFilterDTO.Code;
             ProblemFilter.StoreCheckingId = MonitorStoreProblem_ProblemFilterDTO.StoreCheckingId;
             ProblemFilter.StoreId = MonitorStoreProblem_ProblemFilterDTO.StoreId;
-            ProblemFilter.CreatorId = MonitorStoreProblem_ProblemFilterDTO.CreatorId;
+            ProblemFilter.CreatorId = MonitorStoreProblem_ProblemFilterDTO.AppUserId;
             ProblemFilter.ProblemTypeId = MonitorStoreProblem_ProblemFilterDTO.ProblemTypeId;
             ProblemFilter.NoteAt = MonitorStoreProblem_ProblemFilterDTO.NoteAt;
             ProblemFilter.CompletedAt = MonitorStoreProblem_ProblemFilterDTO.CompletedAt;

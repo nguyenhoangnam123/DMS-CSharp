@@ -22,6 +22,12 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public const string FilterListHasImage = Default + "/filter-list-has-image";
         public const string FilterListHasOrder = Default + "/filter-list-has-order";
 
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
+        {
+            { nameof(MonitorStoreImage_MonitorStoreImageFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(MonitorStoreImage_MonitorStoreImageFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
+        };
+
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {

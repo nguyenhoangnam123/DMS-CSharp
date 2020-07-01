@@ -33,12 +33,8 @@ namespace DMS.Rpc.monitor_store_problems
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(ProblemFilter.Id), FieldTypeEnum.ID.Id },
-            { nameof(ProblemFilter.StoreCheckingId), FieldTypeEnum.ID.Id },
-            { nameof(ProblemFilter.StoreId), FieldTypeEnum.ID.Id },
-            { nameof(ProblemFilter.CreatorId), FieldTypeEnum.ID.Id },
-            { nameof(ProblemFilter.ProblemTypeId), FieldTypeEnum.ID.Id },
-            { nameof(ProblemFilter.ProblemStatusId), FieldTypeEnum.ID.Id },
+            { nameof(MonitorStoreProblem_ProblemFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(MonitorStoreProblem_ProblemFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

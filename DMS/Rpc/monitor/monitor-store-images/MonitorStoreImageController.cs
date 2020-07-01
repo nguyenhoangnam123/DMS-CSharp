@@ -148,7 +148,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 throw new BindException(ModelState);
 
             long? OrganizationId = MonitorStoreImage_MonitorStoreImageFilterDTO.OrganizationId?.Equal;
-            long? SaleEmployeeId = MonitorStoreImage_MonitorStoreImageFilterDTO.SaleEmployeeId?.Equal;
+            long? SaleEmployeeId = MonitorStoreImage_MonitorStoreImageFilterDTO.AppUserId?.Equal;
             long? StoreId = MonitorStoreImage_MonitorStoreImageFilterDTO.StoreId?.Equal;
             long? HasImage = MonitorStoreImage_MonitorStoreImageFilterDTO.HasImage?.Equal;
             long? HasOrder = MonitorStoreImage_MonitorStoreImageFilterDTO.HasOrder?.Equal;
@@ -191,7 +191,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 throw new BindException(ModelState);
 
             long? OrganizationId = MonitorStoreImage_MonitorStoreImageFilterDTO.OrganizationId?.Equal;
-            long? SaleEmployeeId = MonitorStoreImage_MonitorStoreImageFilterDTO.SaleEmployeeId?.Equal;
+            long? SaleEmployeeId = MonitorStoreImage_MonitorStoreImageFilterDTO.AppUserId?.Equal;
             long? StoreId = MonitorStoreImage_MonitorStoreImageFilterDTO.StoreId?.Equal;
             long? HasImage = MonitorStoreImage_MonitorStoreImageFilterDTO.HasImage?.Equal;
             long? HasOrder = MonitorStoreImage_MonitorStoreImageFilterDTO.HasOrder?.Equal;

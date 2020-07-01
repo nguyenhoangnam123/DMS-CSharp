@@ -159,7 +159,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             long? AlbumId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.AlbumId?.Equal;
             if (!AlbumId.HasValue) return 0;
             long? OrganizationId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.OrganizationId?.Equal;
-            long? SaleEmployeeId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.SaleEmployeeId?.Equal;
+            long? SaleEmployeeId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.AppUserId?.Equal;
             long? StoreId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.StoreId?.Equal;
 
             DateTime Start = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.GreaterEqual == null ?
@@ -210,7 +210,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             long? AlbumId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.AlbumId?.Equal;
             if (!AlbumId.HasValue) return new MonitorStoreAlbum_MonitorStoreAlbumDTO();
             long? OrganizationId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.OrganizationId?.Equal;
-            long? SaleEmployeeId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.SaleEmployeeId?.Equal;
+            long? SaleEmployeeId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.AppUserId?.Equal;
             long? StoreId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.StoreId?.Equal;
             
             DateTime Start = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.GreaterEqual == null ?

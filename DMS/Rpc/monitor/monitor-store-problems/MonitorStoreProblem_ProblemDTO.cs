@@ -58,7 +58,7 @@ namespace DMS.Rpc.monitor_store_problems
         public IdFilter OrganizationId { get; set; }
         public IdFilter StoreCheckingId { get; set; }
         public IdFilter StoreId { get; set; }
-        public IdFilter CreatorId { get; set; }
+        public IdFilter AppUserId { get; set; }
         public IdFilter ProblemTypeId { get; set; }
         public DateFilter NoteAt { get; set; }
         public DateFilter CompletedAt { get; set; }
