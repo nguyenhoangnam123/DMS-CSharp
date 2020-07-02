@@ -305,6 +305,13 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     .Count();
                 SaleEmployeeDTO.NewStoreCreatedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.NewStoreCreated / SaleEmployeeDTO.NewStoreCreatedPlanned, 2);
 
+                // NumberOfStoreVisitsPlanned
+                SaleEmployeeDTO.NumberOfStoreVisitsPlanned = KpiGeneralEmployeeReport_SaleEmployeeDetailDTOs
+                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == GeneralCriteriaEnum.NUMBEROFSTOREVISITS.Id)
+                        .Select(sed => sed.Value).FirstOrDefault();
+                SaleEmployeeDTO.NumberOfStoreVisits = 0; // to do
+                SaleEmployeeDTO.NumberOfStoreVisitsRatio = SaleEmployeeDTO.NumberOfStoreVisitsPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.NumberOfStoreVisits / SaleEmployeeDTO.NumberOfStoreVisitsPlanned, 2);
+
                 //
                 kpiGeneralEmployeeReport_SaleEmployeeDTOs.Add(SaleEmployeeDTO);
             };
