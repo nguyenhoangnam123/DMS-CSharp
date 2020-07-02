@@ -22,6 +22,8 @@ namespace DMS.Services.MStoreChecking
         Task<StoreChecking> Update(StoreChecking StoreChecking);
         Task<StoreChecking> CheckOut(StoreChecking StoreChecking);
         Task<Image> SaveImage(Image Image);
+        Task<long> CountStore(StoreFilter StoreFilter, IdFilter ERouteId);
+        Task<List<Store>> ListStore(StoreFilter StoreFilter, IdFilter ERouteId);
         Task<long> CountStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId);
         Task<List<Store>> ListStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId);
         Task<long> CountStoreUnPlanned(StoreFilter StoreFilter, IdFilter ERouteId);
@@ -244,6 +246,78 @@ namespace DMS.Services.MStoreChecking
                     throw new MessageException(ex.InnerException);
                 }
             }
+        }
+
+        public async Task<long> CountStore(StoreFilter StoreFilter, IdFilter ERouteId)
+        {
+            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            if (AppUser.ERouteScopeId.HasValue)
+            {
+                List<long> OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = OrganizationSelect.Id,
+                    Path = new StringFilter { StartWith = AppUser.ERouteScope.Path },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+                })).Select(x => x.Id).ToList();
+
+                StoreFilter.OrganizationId = new IdFilter { In = OrganizationIds };
+            }
+            List<long> StoreIds;
+            if (ERouteId != null && ERouteId.HasValue)
+            {
+                StoreIds = await ListStoreIds(ERouteId);
+                StoreFilter.Id = new IdFilter { In = StoreIds };
+            }
+
+            int count = await UOW.StoreRepository.Count(StoreFilter);
+            return count;
+        }
+
+        public async Task<List<Store>> ListStore(StoreFilter StoreFilter, IdFilter ERouteId)
+        {
+            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            
+            if (AppUser.ERouteScopeId.HasValue)
+            {
+                List<long> OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = OrganizationSelect.Id,
+                    Path = new StringFilter { StartWith = AppUser.ERouteScope.Path },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+                })).Select(x => x.Id).ToList();
+
+                StoreFilter.OrganizationId = new IdFilter { In = OrganizationIds };
+            }
+            List<long> StoreIds;
+            if (ERouteId != null && ERouteId.HasValue)
+            {
+                StoreIds = await ListStoreIds(ERouteId);
+                StoreFilter.Id = new IdFilter { In = StoreIds };
+            }    
+
+            List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+            StoreIds = Stores.Select(s => s.Id).ToList();
+            // Lấy tất cả các cửa hàng đã được checkin trong ngày hôm nay và đánh dấu xem cửa hàng nào đã được checkin hay chưa.
+            StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreCheckingSelect.ALL,
+                StoreId = new IdFilter { In = StoreIds },
+                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                CheckOutAt = new DateFilter { GreaterEqual = StaticParams.DateTimeNow.Date, Less = StaticParams.DateTimeNow.Date.AddDays(1) }
+            };
+            List<StoreChecking> StoreCheckings = await UOW.StoreCheckingRepository.List(StoreCheckingFilter);
+            foreach (var Store in Stores)
+            {
+                var count = StoreCheckings.Where(x => x.StoreId == Store.Id).Count();
+                Store.HasChecking = count != 0 ? true : false;
+            }
+            return Stores;
         }
 
         public async Task<long> CountStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId)

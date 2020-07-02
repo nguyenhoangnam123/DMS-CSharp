@@ -431,7 +431,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
-            return await StoreService.Count(StoreFilter);
+            return await StoreCheckingService.CountStore(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
         }
 
         [Route(MobileRoute.ListStore), HttpPost]
@@ -470,7 +470,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
-            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<Store> Stores = await StoreCheckingService.ListStore(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
             List<Mobile_StoreDTO> Mobile_StoreDTOs = Stores
                 .Select(x => new Mobile_StoreDTO(x)).ToList();
             return Mobile_StoreDTOs;
