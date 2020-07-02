@@ -1175,21 +1175,10 @@ namespace DMS.Rpc.store
             OrganizationFilter.OrderBy = OrganizationOrder.Id;
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
-            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
-            if (CurrentContext.Filters != null)
-            {
-                foreach (var currentFilter in CurrentContext.Filters)
-                {
-                    OrganizationFilter subFilter = new OrganizationFilter();
-                    OrganizationFilter.OrFilter.Add(subFilter);
-                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
-                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
-                    {
-                        if (FilterPermissionDefinition.Name == nameof(StoreFilter.OrganizationId))
-                            subFilter.Id = FilterPermissionDefinition.IdFilter;
-                    }
-                }
-            }
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<Store_OrganizationDTO> Store_OrganizationDTOs = Organizations
                 .Select(x => new Store_OrganizationDTO(x)).ToList();
@@ -1296,21 +1285,10 @@ namespace DMS.Rpc.store
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
-            if (CurrentContext.Filters != null)
-            {
-                foreach (var currentFilter in CurrentContext.Filters)
-                {
-                    OrganizationFilter subFilter = new OrganizationFilter();
-                    OrganizationFilter.OrFilter.Add(subFilter);
-                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
-                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
-                    {
-                        if (FilterPermissionDefinition.Name == nameof(StoreFilter.OrganizationId))
-                            subFilter.Id = FilterPermissionDefinition.IdFilter;
-                    }
-                }
-            }
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<Store_OrganizationDTO> Store_OrganizationDTOs = Organizations
                 .Select(x => new Store_OrganizationDTO(x)).ToList();

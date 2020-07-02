@@ -1260,6 +1260,9 @@ namespace DMS.Rpc.indirect_price_list
             OrganizationFilter.Email = IndirectPriceList_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = IndirectPriceList_OrganizationFilterDTO.Address;
 
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<IndirectPriceList_OrganizationDTO> IndirectPriceList_OrganizationDTOs = Organizations
                 .Select(x => new IndirectPriceList_OrganizationDTO(x)).ToList();

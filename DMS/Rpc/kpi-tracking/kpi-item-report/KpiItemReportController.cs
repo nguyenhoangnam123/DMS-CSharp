@@ -28,12 +28,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         private IKpiYearService KpiYearService;
         private IKpiPeriodService KpiPeriodService;
         private IItemService ItemService;
+        private ICurrentContext CurrentContext;
         public KpiItemReportController(DataContext DataContext,
             IOrganizationService OrganizationService,
             IAppUserService AppUserService,
             IKpiYearService KpiYearService,
             IKpiPeriodService KpiPeriodService,
-            IItemService ItemService)
+            IItemService ItemService,
+            ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
             this.OrganizationService = OrganizationService;
@@ -41,6 +43,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             this.KpiPeriodService = KpiPeriodService;
             this.KpiYearService = KpiYearService;
             this.ItemService = ItemService;
+            this.CurrentContext = CurrentContext;
         }
 
         [Route(KpiItemReportRoute.FilterListAppUser), HttpPost]
@@ -61,6 +64,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             AppUserFilter.DisplayName = KpiItemReport_AppUserFilterDTO.DisplayName;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<KpiItemReport_AppUserDTO> KpiItemReport_AppUserDTOs = AppUsers
                 .Select(x => new KpiItemReport_AppUserDTO(x)).ToList();
@@ -80,6 +86,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<KpiItemReport_OrganizationDTO> KpiItemReport_OrganizationDTOs = Organizations

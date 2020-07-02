@@ -387,6 +387,9 @@ namespace DMS.Rpc.e_route_change_request
             AppUserFilter.Birthday = ERouteChangeRequest_AppUserFilterDTO.Birthday;
             AppUserFilter.ProvinceId = ERouteChangeRequest_AppUserFilterDTO.ProvinceId;
 
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<ERouteChangeRequest_AppUserDTO> ERouteChangeRequest_AppUserDTOs = AppUsers
                 .Select(x => new ERouteChangeRequest_AppUserDTO(x)).ToList();
@@ -498,6 +501,9 @@ namespace DMS.Rpc.e_route_change_request
             AppUserFilter.Birthday = ERouteChangeRequest_AppUserFilterDTO.Birthday;
             AppUserFilter.ProvinceId = ERouteChangeRequest_AppUserFilterDTO.ProvinceId;
 
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<ERouteChangeRequest_AppUserDTO> ERouteChangeRequest_AppUserDTOs = AppUsers
                 .Select(x => new ERouteChangeRequest_AppUserDTO(x)).ToList();
@@ -565,6 +571,9 @@ namespace DMS.Rpc.e_route_change_request
             OrganizationFilter.Phone = ERouteChangeRequest_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = ERouteChangeRequest_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = ERouteChangeRequest_OrganizationFilterDTO.Email;
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<ERouteChangeRequest_OrganizationDTO> ERouteChangeRequest_OrganizationDTOs = Organizations

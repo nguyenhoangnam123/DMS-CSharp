@@ -26,17 +26,20 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
         private IAppUserService AppUserService;
         private IKpiYearService KpiYearService;
         private IKpiPeriodService KpiPeriodService;
+        private ICurrentContext CurrentContext;
         public KpiGeneralEmployeeReportController(DataContext DataContext, 
             IOrganizationService OrganizationService, 
             IAppUserService AppUserService,
             IKpiYearService KpiYearService,
-            IKpiPeriodService KpiPeriodService)
+            IKpiPeriodService KpiPeriodService,
+            ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
             this.OrganizationService = OrganizationService;
             this.AppUserService = AppUserService;
             this.KpiPeriodService = KpiPeriodService;
             this.KpiYearService = KpiYearService;
+            this.CurrentContext = CurrentContext;
         }
 
         [Route(KpiGeneralEmployeeReportRoute.FilterListAppUser), HttpPost]
@@ -57,6 +60,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             AppUserFilter.DisplayName = KpiGeneralEmployeeReport_AppUserFilterDTO.DisplayName;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
+
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<KpiGeneralEmployeeReport_AppUserDTO> KpiGeneralEmployeeReport_AppUserDTOs = AppUsers
                 .Select(x => new KpiGeneralEmployeeReport_AppUserDTO(x)).ToList();
@@ -76,6 +83,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<KpiGeneralEmployeeReport_OrganizationDTO> KpiGeneralEmployeeReport_OrganizationDTOs = Organizations
@@ -294,6 +304,13 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     .Select(z => z.StoreScoutingId.HasValue)
                     .Count();
                 SaleEmployeeDTO.NewStoreCreatedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.NewStoreCreated / SaleEmployeeDTO.NewStoreCreatedPlanned, 2);
+
+                // NumberOfStoreVisitsPlanned
+                SaleEmployeeDTO.NumberOfStoreVisitsPlanned = KpiGeneralEmployeeReport_SaleEmployeeDetailDTOs
+                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == GeneralCriteriaEnum.NUMBEROFSTOREVISITS.Id)
+                        .Select(sed => sed.Value).FirstOrDefault();
+                SaleEmployeeDTO.NumberOfStoreVisits = 0; // to do
+                SaleEmployeeDTO.NumberOfStoreVisitsRatio = SaleEmployeeDTO.NumberOfStoreVisitsPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.NumberOfStoreVisits / SaleEmployeeDTO.NumberOfStoreVisitsPlanned, 2);
 
                 //
                 kpiGeneralEmployeeReport_SaleEmployeeDTOs.Add(SaleEmployeeDTO);
