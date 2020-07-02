@@ -4,6 +4,7 @@ using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MOrganization
@@ -44,11 +45,16 @@ namespace DMS.Services.MOrganization
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(OrganizationService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(OrganizationService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(OrganizationService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -57,15 +63,30 @@ namespace DMS.Services.MOrganization
             try
             {
                 List<Organization> Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
+                foreach (Organization Organization in Organizations)
+                {
+                    if (Organization.ParentId.HasValue)
+                    {
+                        Organization Parent = Organizations.Where(o => o.Id == Organization.ParentId.Value).FirstOrDefault();
+                        if (Parent == null)
+                            Organization.ParentId = null;
+                    }
+                }
+
                 return Organizations;
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(OrganizationService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(OrganizationService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(OrganizationService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<Organization> Get(long Id)
