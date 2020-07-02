@@ -113,10 +113,8 @@ namespace DMS.Services.MERoute
                 DateTime Now = StaticParams.DateTimeNow;
                 UserNotification NotificationUtils = new UserNotification
                 {
-                    TitleWeb = $"Thêm tuyến",
+                    TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được thêm mới cho anh/chị bởi {CurrentUser.DisplayName} vào lúc {Now}",
-                    TitleMobile = $"Thêm tuyến",
-                    ContentMobile = "",
                     LinkWebsite = $"{ERouteRoute.Master}/{ERoute.Id}",
                     Time = Now,
                     Unread = false,
@@ -162,6 +160,7 @@ namespace DMS.Services.MERoute
                 DateTime Now = StaticParams.DateTimeNow;
                 UserNotification NotificationUtils = new UserNotification
                 {
+                    TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được cập nhật cho anh/chị bởi {CurrentUser.DisplayName} vào lúc {Now}",
                     LinkWebsite = $"{ERouteRoute.Master}/{ERoute.Id}",
                     Time = Now,
@@ -201,6 +200,7 @@ namespace DMS.Services.MERoute
                 DateTime Now = StaticParams.DateTimeNow;
                 UserNotification NotificationUtils = new UserNotification
                 {
+                    TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
                     Time = Now,
                     Unread = false,

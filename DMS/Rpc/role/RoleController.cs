@@ -49,6 +49,8 @@ namespace DMS.Rpc.role
         private IPermissionOperatorService PermissionOperatorService;
         private IERouteTypeService ERouteTypeService;
         private IRequestStateService RequestStateService;
+        private ICurrentContext CurrentContext;
+
 
         public RoleController(
             IAppUserService AppUserService,
@@ -70,7 +72,8 @@ namespace DMS.Rpc.role
             IPermissionOperatorService PermissionOperatorService,
             IERouteTypeService ERouteTypeService,
             IRequestStateService RequestStateService,
-            IStatusService StatusService
+            IStatusService StatusService,
+            ICurrentContext CurrentContext
         )
         {
             this.AppUserService = AppUserService;
@@ -93,6 +96,7 @@ namespace DMS.Rpc.role
             this.PermissionOperatorService = PermissionOperatorService;
             this.ERouteTypeService = ERouteTypeService;
             this.RequestStateService = RequestStateService;
+            this.CurrentContext = CurrentContext;
         }
 
         [Route(RoleRoute.Count), HttpPost]
@@ -237,6 +241,7 @@ namespace DMS.Rpc.role
                     AppUserId = x.AppUserId,
                     RoleId = x.RoleId
                 }).ToList();
+            Role.BaseLanguage = CurrentContext.Language;
             return Role;
         }
 

@@ -111,6 +111,7 @@ namespace DMS.Services.MSurvey
                 {
                     UserNotification UserNotification = new UserNotification
                     {
+                        TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Khảo sát {Survey.Title} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}, có hiệu lực từ {Survey.StartAt} - {Survey.EndAt}",
                         LinkWebsite = $"{SurveyRoute.Master}/{Survey.Id}",
                         RecipientId = Id,
@@ -162,6 +163,7 @@ namespace DMS.Services.MSurvey
                 {
                     UserNotification UserNotification = new UserNotification
                     {
+                        TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Khảo sát {Survey.Title} đã được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}, có hiệu lực từ {Survey.StartAt} - {Survey.EndAt}",
                         LinkWebsite = $"{SurveyRoute.Master}/{Survey.Id}",
                         RecipientId = Id,
@@ -245,6 +247,7 @@ namespace DMS.Services.MSurvey
                 {
                     UserNotification UserNotification = new UserNotification
                     {
+                        TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Khảo sát {Survey.Title} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,

@@ -8,6 +8,8 @@ namespace DMS.Rpc.notification
     {
         public const string Master = Module + "/notification/notification-master";
         public const string Detail = Module + "/notification/notification-detail";
+        public const string Mobile = Module + "/notification/notification-detail";
+
         private const string Default = Rpc + Module + "/notification";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
