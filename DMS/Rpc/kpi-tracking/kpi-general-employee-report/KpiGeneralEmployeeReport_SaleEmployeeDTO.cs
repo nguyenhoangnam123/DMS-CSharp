@@ -28,7 +28,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
         public decimal NewStoreCreated { get; set; }
         public decimal NewStoreCreatedPlanned { get; set; }
         public decimal NewStoreCreatedRatio { get; set; }
-
+        public decimal NumberOfStoreVisits { get; set; }
+        public decimal NumberOfStoreVisitsPlanned { get; set; }
+        public decimal NumberOfStoreVisitsRatio { get; set; }
         public KpiGeneralEmployeeReport_SaleEmployeeDTO()
         {
 

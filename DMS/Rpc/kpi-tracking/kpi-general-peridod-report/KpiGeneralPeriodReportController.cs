@@ -318,6 +318,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     .Select(z => z.StoreScoutingId.HasValue)
                     .Count();
                 SaleEmployeeDTO.NewStoreCreatedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.NewStoreCreated / SaleEmployeeDTO.NewStoreCreatedPlanned, 2);
+
+                // NumberOfStoreVisits - số lần viếng thăm cửa hàng
+                SaleEmployeeDTO.NumberOfStoreVisitsPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == GeneralCriteriaEnum.NUMBEROFSTOREVISITS.Id)
+                        .Select(sed => sed.Value).FirstOrDefault();
+                SaleEmployeeDTO.NumberOfStoreVisits = 0; // to do
+                SaleEmployeeDTO.NumberOfStoreVisitsRatio = SaleEmployeeDTO.NumberOfStoreVisitsPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.NumberOfStoreVisits / SaleEmployeeDTO.NumberOfStoreVisitsPlanned, 2);
+
             };
 
             List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO> kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs = new List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO>();

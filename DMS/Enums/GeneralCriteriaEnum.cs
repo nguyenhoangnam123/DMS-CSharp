@@ -11,6 +11,7 @@ namespace DMS.Enums
         public static GenericEnum SKUINDIRECTORDER = new GenericEnum { Id = 4, Code = "SKUIndirectOrder", Name = "SKU/ Đơn hàng gián tiếp" };
         public static GenericEnum STORESVISITED = new GenericEnum { Id = 5, Code = "StoresVisited", Name = "Số cửa hàng viếng thăm" };
         public static GenericEnum NEWSTORECREATED = new GenericEnum { Id = 6, Code = "NewStoresCreated", Name = "Số cửa hàng tạo mới" };
+        public static GenericEnum NUMBEROFSTOREVISITS = new GenericEnum { Id = 7, Code = "NumberOfStoreVisits", Name = "Số lần viếng thăm cửa hàng" };
 
         public static List<GenericEnum> KpiCriteriaEnumList = new List<GenericEnum>()
         {
