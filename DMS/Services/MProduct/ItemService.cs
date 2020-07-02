@@ -136,6 +136,7 @@ namespace DMS.Services.MProduct
                 }
                 Item.Inventories.Add(Inventory);
             }
+            Item.HasInventory = Item.Inventories.Select(i => i.SaleStock).Count() > 0;
             return Item;
         }
 
