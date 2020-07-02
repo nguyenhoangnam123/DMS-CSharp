@@ -24,6 +24,7 @@ namespace DMS.Services.MStoreScouting
         Task<StoreScouting> Get(long Id);
         Task<StoreScouting> Create(StoreScouting StoreScouting);
         Task<StoreScouting> Update(StoreScouting StoreScouting);
+        Task<StoreScouting> Delete(StoreScouting StoreScouting);
         Task<StoreScouting> Reject(StoreScouting StoreScouting);
         StoreScoutingFilter ToFilter(StoreScoutingFilter StoreScoutingFilter);
     }
@@ -62,11 +63,16 @@ namespace DMS.Services.MStoreScouting
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -79,11 +85,16 @@ namespace DMS.Services.MStoreScouting
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<StoreScouting> Get(long Id)
@@ -139,11 +150,16 @@ namespace DMS.Services.MStoreScouting
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -166,11 +182,47 @@ namespace DMS.Services.MStoreScouting
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                     throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<StoreScouting> Delete(StoreScouting StoreScouting)
+        {
+            if (!await StoreScoutingValidator.Delete(StoreScouting))
+                return StoreScouting;
+            try
+            {
+                var oldData = await UOW.StoreScoutingRepository.Get(StoreScouting.Id);
+
+                await UOW.Begin();
+                await UOW.StoreScoutingRepository.Delete(StoreScouting);
+                await UOW.Commit();
+
+                await Logging.CreateAuditLog(StoreScouting, oldData, nameof(StoreScoutingService));
+                return StoreScouting;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
+                    throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -215,11 +267,16 @@ namespace DMS.Services.MStoreScouting
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -239,6 +296,5 @@ namespace DMS.Services.MStoreScouting
             }
             return filter;
         }
-
     }
 }

@@ -13,6 +13,7 @@ namespace DMS.Services.MStoreScouting
     {
         Task<bool> Create(StoreScouting StoreScouting);
         Task<bool> Update(StoreScouting StoreScouting);
+        Task<bool> Delete(StoreScouting StoreScouting);
         Task<bool> Reject(StoreScouting StoreScouting);
         Task<bool> BulkDelete(List<StoreScouting> StoreScoutings);
         Task<bool> Import(List<StoreScouting> StoreScoutings);
@@ -185,6 +186,14 @@ namespace DMS.Services.MStoreScouting
                 await ValidateDistrictId(StoreScouting);
                 await ValidateWardId(StoreScouting);
                 await ValidateStatus(StoreScouting);
+            }
+            return StoreScouting.IsValidated;
+        }
+
+        public async Task<bool> Delete(StoreScouting StoreScouting)
+        {
+            if (await ValidateId(StoreScouting))
+            {
             }
             return StoreScouting.IsValidated;
         }

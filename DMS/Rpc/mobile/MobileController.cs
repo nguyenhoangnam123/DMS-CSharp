@@ -840,6 +840,73 @@ namespace DMS.Rpc.mobile
         }
 
 
+        [Route(MobileRoute.GetStoreScouting), HttpPost]
+        public async Task<ActionResult<Mobile_StoreScoutingDTO>> GetStoreScouting([FromBody] Mobile_StoreScoutingDTO Mobile_StoreScoutingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Mobile_StoreScoutingDTO.Id))
+                return Forbid();
+
+            StoreScouting StoreScouting = await StoreScoutingService.Get(Mobile_StoreScoutingDTO.Id);
+            return new Mobile_StoreScoutingDTO(StoreScouting);
+        }
+
+        [Route(MobileRoute.CreateStoreScouting), HttpPost]
+        public async Task<ActionResult<Mobile_StoreScoutingDTO>> CreateStoreScouting([FromBody] Mobile_StoreScoutingDTO Mobile_StoreScoutingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Mobile_StoreScoutingDTO.Id))
+                return Forbid();
+
+            StoreScouting StoreScouting = ConvertStoreScoutingToEntity(Mobile_StoreScoutingDTO);
+            StoreScouting = await StoreScoutingService.Create(StoreScouting);
+            Mobile_StoreScoutingDTO = new Mobile_StoreScoutingDTO(StoreScouting);
+            if (StoreScouting.IsValidated)
+                return Mobile_StoreScoutingDTO;
+            else
+                return BadRequest(Mobile_StoreScoutingDTO);
+        }
+
+        [Route(MobileRoute.UpdateStoreScouting), HttpPost]
+        public async Task<ActionResult<Mobile_StoreScoutingDTO>> UpdateStoreScouting([FromBody] Mobile_StoreScoutingDTO Mobile_StoreScoutingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Mobile_StoreScoutingDTO.Id))
+                return Forbid();
+
+            StoreScouting StoreScouting = ConvertStoreScoutingToEntity(Mobile_StoreScoutingDTO);
+            StoreScouting = await StoreScoutingService.Update(StoreScouting);
+            Mobile_StoreScoutingDTO = new Mobile_StoreScoutingDTO(StoreScouting);
+            if (StoreScouting.IsValidated)
+                return Mobile_StoreScoutingDTO;
+            else
+                return BadRequest(Mobile_StoreScoutingDTO);
+        }
+
+        [Route(MobileRoute.DeleteStoreScouting), HttpPost]
+        public async Task<ActionResult<Mobile_StoreScoutingDTO>> DeleteStoreScouting([FromBody] Mobile_StoreScoutingDTO Mobile_StoreScoutingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Mobile_StoreScoutingDTO.Id))
+                return Forbid();
+
+            StoreScouting StoreScouting = ConvertStoreScoutingToEntity(Mobile_StoreScoutingDTO);
+            StoreScouting = await StoreScoutingService.Delete(StoreScouting);
+            Mobile_StoreScoutingDTO = new Mobile_StoreScoutingDTO(StoreScouting);
+            if (StoreScouting.IsValidated)
+                return Mobile_StoreScoutingDTO;
+            else
+                return BadRequest(Mobile_StoreScoutingDTO);
+        }
+
         [Route(MobileRoute.SaveImage), HttpPost]
         public async Task<ActionResult<Mobile_ImageDTO>> SaveImage(IFormFile file)
         {
@@ -959,7 +1026,88 @@ namespace DMS.Rpc.mobile
             StoreChecking.BaseLanguage = CurrentContext.Language;
             return StoreChecking;
         }
-
+        
+        private StoreScouting ConvertStoreScoutingToEntity(Mobile_StoreScoutingDTO Mobile_StoreScoutingDTO)
+        {
+            StoreScouting StoreScouting = new StoreScouting();
+            StoreScouting.Id = Mobile_StoreScoutingDTO.Id;
+            StoreScouting.Code = Mobile_StoreScoutingDTO.Code;
+            StoreScouting.Name = Mobile_StoreScoutingDTO.Name;
+            StoreScouting.OwnerPhone = Mobile_StoreScoutingDTO.OwnerPhone;
+            StoreScouting.ProvinceId = Mobile_StoreScoutingDTO.ProvinceId;
+            StoreScouting.DistrictId = Mobile_StoreScoutingDTO.DistrictId;
+            StoreScouting.WardId = Mobile_StoreScoutingDTO.WardId;
+            StoreScouting.OrganizationId = Mobile_StoreScoutingDTO.OrganizationId;
+            StoreScouting.Address = Mobile_StoreScoutingDTO.Address;
+            StoreScouting.Latitude = Mobile_StoreScoutingDTO.Latitude;
+            StoreScouting.Longitude = Mobile_StoreScoutingDTO.Longitude;
+            StoreScouting.CreatorId = Mobile_StoreScoutingDTO.CreatorId;
+            StoreScouting.StoreScoutingStatusId = Mobile_StoreScoutingDTO.StoreScoutingStatusId;
+            StoreScouting.Creator = Mobile_StoreScoutingDTO.Creator == null ? null : new AppUser
+            {
+                Id = Mobile_StoreScoutingDTO.Creator.Id,
+                Username = Mobile_StoreScoutingDTO.Creator.Username,
+                DisplayName = Mobile_StoreScoutingDTO.Creator.DisplayName,
+                Address = Mobile_StoreScoutingDTO.Creator.Address,
+                Email = Mobile_StoreScoutingDTO.Creator.Email,
+                Phone = Mobile_StoreScoutingDTO.Creator.Phone,
+                PositionId = Mobile_StoreScoutingDTO.Creator.PositionId,
+                Department = Mobile_StoreScoutingDTO.Creator.Department,
+                OrganizationId = Mobile_StoreScoutingDTO.Creator.OrganizationId,
+                StatusId = Mobile_StoreScoutingDTO.Creator.StatusId,
+                Avatar = Mobile_StoreScoutingDTO.Creator.Avatar,
+                ProvinceId = Mobile_StoreScoutingDTO.Creator.ProvinceId,
+                SexId = Mobile_StoreScoutingDTO.Creator.SexId,
+                Birthday = Mobile_StoreScoutingDTO.Creator.Birthday,
+            };
+            StoreScouting.District = Mobile_StoreScoutingDTO.District == null ? null : new District
+            {
+                Id = Mobile_StoreScoutingDTO.District.Id,
+                Code = Mobile_StoreScoutingDTO.District.Code,
+                Name = Mobile_StoreScoutingDTO.District.Name,
+                Priority = Mobile_StoreScoutingDTO.District.Priority,
+                ProvinceId = Mobile_StoreScoutingDTO.District.ProvinceId,
+                StatusId = Mobile_StoreScoutingDTO.District.StatusId,
+            };
+            StoreScouting.Organization = Mobile_StoreScoutingDTO.Organization == null ? null : new Organization
+            {
+                Id = Mobile_StoreScoutingDTO.Organization.Id,
+                Code = Mobile_StoreScoutingDTO.Organization.Code,
+                Name = Mobile_StoreScoutingDTO.Organization.Name,
+                ParentId = Mobile_StoreScoutingDTO.Organization.ParentId,
+                Path = Mobile_StoreScoutingDTO.Organization.Path,
+                Level = Mobile_StoreScoutingDTO.Organization.Level,
+                StatusId = Mobile_StoreScoutingDTO.Organization.StatusId,
+                Phone = Mobile_StoreScoutingDTO.Organization.Phone,
+                Email = Mobile_StoreScoutingDTO.Organization.Email,
+                Address = Mobile_StoreScoutingDTO.Organization.Address,
+            };
+            StoreScouting.Province = Mobile_StoreScoutingDTO.Province == null ? null : new Province
+            {
+                Id = Mobile_StoreScoutingDTO.Province.Id,
+                Code = Mobile_StoreScoutingDTO.Province.Code,
+                Name = Mobile_StoreScoutingDTO.Province.Name,
+                Priority = Mobile_StoreScoutingDTO.Province.Priority,
+                StatusId = Mobile_StoreScoutingDTO.Province.StatusId,
+            };
+            StoreScouting.StoreScoutingStatus = Mobile_StoreScoutingDTO.StoreScoutingStatus == null ? null : new StoreScoutingStatus
+            {
+                Id = Mobile_StoreScoutingDTO.StoreScoutingStatus.Id,
+                Code = Mobile_StoreScoutingDTO.StoreScoutingStatus.Code,
+                Name = Mobile_StoreScoutingDTO.StoreScoutingStatus.Name,
+            };
+            StoreScouting.Ward = Mobile_StoreScoutingDTO.Ward == null ? null : new Ward
+            {
+                Id = Mobile_StoreScoutingDTO.Ward.Id,
+                Code = Mobile_StoreScoutingDTO.Ward.Code,
+                Name = Mobile_StoreScoutingDTO.Ward.Name,
+                Priority = Mobile_StoreScoutingDTO.Ward.Priority,
+                DistrictId = Mobile_StoreScoutingDTO.Ward.DistrictId,
+                StatusId = Mobile_StoreScoutingDTO.Ward.StatusId,
+            };
+            StoreScouting.BaseLanguage = CurrentContext.Language;
+            return StoreScouting;
+        }
         private StoreCheckingFilter ConvertFilterDTOToFilterEntity(Mobile_StoreCheckingFilterDTO Mobile_StoreCheckingFilterDTO)
         {
             StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter();

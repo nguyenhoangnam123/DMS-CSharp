@@ -22,6 +22,7 @@ namespace DMS.Rpc.mobile
         public decimal? Longitude { get; set; }
         public long CreatorId { get; set; }
         public long StoreScoutingStatusId { get; set; }
+        public Mobile_OrganizationDTO Organization { get; set; }
         public Mobile_AppUserDTO Creator { get; set; }
         public Mobile_DistrictDTO District { get; set; }
         public Mobile_ProvinceDTO Province { get; set; }
@@ -48,6 +49,7 @@ namespace DMS.Rpc.mobile
             this.Creator = StoreScouting.Creator == null ? null : new Mobile_AppUserDTO(StoreScouting.Creator);
             this.District = StoreScouting.District == null ? null : new Mobile_DistrictDTO(StoreScouting.District);
             this.Province = StoreScouting.Province == null ? null : new Mobile_ProvinceDTO(StoreScouting.Province);
+            this.Organization = StoreScouting.Organization == null ? null : new Mobile_OrganizationDTO(StoreScouting.Organization);
             this.StoreScoutingStatus = StoreScouting.StoreScoutingStatus == null ? null : new Mobile_StoreScoutingStatusDTO(StoreScouting.StoreScoutingStatus);
             this.Ward = StoreScouting.Ward == null ? null : new Mobile_WardDTO(StoreScouting.Ward);
             this.CreatedAt = StoreScouting.CreatedAt;
