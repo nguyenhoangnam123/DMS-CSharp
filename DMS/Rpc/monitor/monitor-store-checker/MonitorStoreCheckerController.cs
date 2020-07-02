@@ -19,13 +19,19 @@ namespace DMS.Rpc.monitor.monitor_store_checker
     public class MonitorStoreCheckerController : MonitorController
     {
         private DataContext DataContext;
+        private IAppUserService AppUserService;
+        private IOrganizationService OrganizationService;
+        private ICurrentContext CurrentContext;
         public MonitorStoreCheckerController(
             DataContext DataContext,
             IOrganizationService OrganizationService,
             IAppUserService AppUserService,
-            ICurrentContext CurrentContext) : base(AppUserService, OrganizationService, CurrentContext)
+            ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
+            this.AppUserService = AppUserService;
+            this.OrganizationService = OrganizationService;
+            this.CurrentContext = CurrentContext;
         }
 
         [Route(MonitorStoreCheckerRoute.FilterListAppUser), HttpPost]
@@ -45,7 +51,8 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             AppUserFilter.DisplayName = StoreCheckerMonitor_AppUserFilterDTO.DisplayName;
             AppUserFilter.OrganizationId = StoreCheckerMonitor_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            AppUserFilter.Id.In = await FilterAppUser();
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<MonitorStoreChecker_AppUserDTO> StoreCheckerMonitor_AppUserDTOs = AppUsers
                 .Select(x => new MonitorStoreChecker_AppUserDTO(x)).ToList();
@@ -70,7 +77,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             OrganizationFilter.Name = StoreCheckerMonitor_OrganizationFilterDTO.Name;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
-            OrganizationFilter.Id.In = await FilterOrganization();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<MonitorStoreChecker_OrganizationDTO> StoreCheckerMonitor_OrganizationDTOs = Organizations
                 .Select(x => new MonitorStoreChecker_OrganizationDTO(x)).ToList();
@@ -112,7 +119,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
             long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.AppUserId?.Equal;
 
-            List<long> OrganizationIds = await FilterOrganization();
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
             if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.OrganizationId?.Equal != null)
@@ -148,7 +155,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
             long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.AppUserId?.Equal;
 
-            List<long> OrganizationIds = await FilterOrganization();
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
             if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.OrganizationId?.Equal != null)
@@ -207,7 +214,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             }
 
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
-                .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && AppUserIds.Contains(ec.ERoute.SaleEmployeeId) )
+                .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && AppUserIds.Contains(ec.ERoute.SaleEmployeeId))
                 .Include(ec => ec.ERouteContentDays)
                 .Include(ec => ec.ERoute)
                 .ToListAsync();

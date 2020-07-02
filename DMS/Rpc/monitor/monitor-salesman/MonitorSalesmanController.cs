@@ -19,12 +19,18 @@ namespace DMS.Rpc.monitor.monitor_salesman
     public class MonitorSalesmanController : MonitorController
     {
         private DataContext DataContext;
+        private IAppUserService AppUserService;
+        private IOrganizationService OrganizationService;
+        private ICurrentContext CurrentContext;
         public MonitorSalesmanController(DataContext DataContext,
             IOrganizationService OrganizationService,
             IAppUserService AppUserService,
-            ICurrentContext CurrentContext) : base(AppUserService, OrganizationService, CurrentContext)
+            ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
+            this.AppUserService = AppUserService;
+            this.OrganizationService = OrganizationService;
+            this.CurrentContext = CurrentContext;
         }
         [Route(MonitorSalesmanRoute.FilterListAppUser), HttpPost]
         public async Task<List<MonitorSalesman_AppUserDTO>> FilterListAppUser([FromBody] SalesmanMonitor_AppUserFilterDTO SalesmanMonitor_AppUserFilterDTO)
@@ -43,7 +49,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             AppUserFilter.DisplayName = SalesmanMonitor_AppUserFilterDTO.DisplayName;
             AppUserFilter.OrganizationId = SalesmanMonitor_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            AppUserFilter.Id.In = await FilterAppUser();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<MonitorSalesman_AppUserDTO> SalesmanMonitor_AppUserDTOs = AppUsers
                 .Select(x => new MonitorSalesman_AppUserDTO(x)).ToList();
@@ -65,7 +71,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
-            OrganizationFilter.Id.In = await FilterOrganization();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<MonitorSalesman_OrganizationDTO> SalesmanMonitor_OrganizationDTOs = Organizations
@@ -90,7 +96,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
 
-            List<long> OrganizationIds = await FilterOrganization();
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
             if (MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal != null)
@@ -123,7 +129,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value;
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
-            List<long> OrganizationIds = await FilterOrganization();
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
             if (MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal != null)

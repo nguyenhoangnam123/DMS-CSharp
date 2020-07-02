@@ -55,8 +55,14 @@ namespace DMS.Rpc.mobile
         public const string ListProblem = Default + "/list-problem";
         public const string CountSurvey = Default + "/count-survey";
         public const string ListSurvey = Default + "/list-survey";
+
         public const string CountStoreScouting = Default + "/count-store-scouting";
         public const string ListStoreScouting = Default + "/list-store-scouting";
+        public const string GetStoreScouting = Default + "/get-store-scouting";
+        public const string CreateStoreScouting = Default + "/create-store-scouting";
+        public const string UpdateStoreScouting = Default + "/update-store-scouting";
+        public const string DeleteStoreScouting = Default + "/delete-store-scouting";
+
         public const string GetSurveyForm = Default + "/get-survey-form";
         public const string SaveSurveyForm = Default + "/save-survey-form";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>

@@ -620,21 +620,8 @@ namespace DMS.Rpc.warehouse
             OrganizationFilter.Path = Warehouse_OrganizationFilterDTO.Path;
             OrganizationFilter.Level = Warehouse_OrganizationFilterDTO.Level;
 
-            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
-            if (CurrentContext.Filters != null)
-            {
-                foreach (var currentFilter in CurrentContext.Filters)
-                {
-                    OrganizationFilter subFilter = new OrganizationFilter();
-                    OrganizationFilter.OrFilter.Add(subFilter);
-                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
-                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
-                    {
-                        if (FilterPermissionDefinition.Name == nameof(WarehouseFilter.OrganizationId))
-                            subFilter.Id = FilterPermissionDefinition.IdFilter;
-                    }
-                }
-            }
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<Warehouse_OrganizationDTO> Warehouse_OrganizationDTOs = Organizations
@@ -786,21 +773,8 @@ namespace DMS.Rpc.warehouse
             OrganizationFilter.Path = Warehouse_OrganizationFilterDTO.Path;
             OrganizationFilter.Level = Warehouse_OrganizationFilterDTO.Level;
 
-            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
-            if (CurrentContext.Filters != null)
-            {
-                foreach (var currentFilter in CurrentContext.Filters)
-                {
-                    OrganizationFilter subFilter = new OrganizationFilter();
-                    OrganizationFilter.OrFilter.Add(subFilter);
-                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
-                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
-                    {
-                        if (FilterPermissionDefinition.Name == nameof(WarehouseFilter.OrganizationId))
-                            subFilter.Id = FilterPermissionDefinition.IdFilter;
-                    }
-                }
-            }
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<Warehouse_OrganizationDTO> Warehouse_OrganizationDTOs = Organizations
