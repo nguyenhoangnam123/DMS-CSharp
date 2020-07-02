@@ -12,7 +12,7 @@
       "NameEmpty": "Chưa nhập tên",
       "NameOverLength": "Tên nhập quá dài"
     },
-    "Organization": {
+    "OrganizationId": {
       "OrganizationNotExisted": "Cơ cấu tổ chức không tồn tại",
       "OrganizationEmpty": "Chưa nhập cơ cấu tổ chức"
     },

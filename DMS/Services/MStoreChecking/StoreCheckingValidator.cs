@@ -73,30 +73,8 @@ namespace DMS.Services.MStoreChecking
             return StoreChecking.IsValidated;
         }
 
-        private async Task<bool> ValidateHasCheckin(StoreChecking StoreChecking)
-        {
-            DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
-            DateTime End = Start.AddDays(1).AddSeconds(-1);
-            StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
-            {
-                Id = new IdFilter { NotEqual = StoreChecking.Id },
-                StoreId = new IdFilter { Equal = StoreChecking.StoreId },
-                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
-                CheckInAt = new DateFilter { GreaterEqual = Start, LessEqual = End }
-            };
-
-            int count = await UOW.StoreCheckingRepository.Count(StoreCheckingFilter);
-            if (count > 0)
-            {
-                StoreChecking.AddError(nameof(StoreCheckingValidator), nameof(StoreChecking.CheckInAt), ErrorCode.HasCheckin);
-            }
-            return StoreChecking.IsValidated;
-        }
-
         public async Task<bool> CheckIn(StoreChecking StoreChecking)
         {
-            await ValidateHasCheckin(StoreChecking);
             await ValidateGPS(StoreChecking);
             return StoreChecking.IsValidated;
         }
