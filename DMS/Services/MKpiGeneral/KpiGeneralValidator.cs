@@ -7,6 +7,7 @@ using DMS.Entities;
 using DMS;
 using DMS.Repositories;
 using DMS.Enums;
+using Helpers;
 
 namespace DMS.Services.MKpiGeneral
 {
@@ -29,6 +30,7 @@ namespace DMS.Services.MKpiGeneral
             EmployeeIdsEmpty,
             StatusNotExisted,
             KpiYearIdNotExisted,
+            KpiYearIdIsInThePast,
             KpiYearExisted,
             KpiGeneralContentsEmpty,
             ValueCannotBeNull
@@ -125,6 +127,8 @@ namespace DMS.Services.MKpiGeneral
             int count = await UOW.KpiYearRepository.Count(KpiYearFilter);
             if (count == 0)
                 KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.KpiYear), ErrorCode.KpiYearIdNotExisted);
+            if (KpiGeneral.KpiYearId < StaticParams.DateTimeNow.Year)
+                KpiGeneral.AddError(nameof(KpiGeneralValidator), nameof(KpiGeneral.KpiYear), ErrorCode.KpiYearIdIsInThePast);
             return KpiGeneral.IsValidated;
         }
         private async Task<bool> ValidateKpiGeneral(KpiGeneral KpiGeneral)

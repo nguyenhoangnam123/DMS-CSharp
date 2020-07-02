@@ -14,6 +14,7 @@ namespace DMS.Rpc.kpi_general
         public long KpiYearId { get; set; }
         public GenericEnum CurrentMonth { get; set; }
         public GenericEnum CurrentQuarter { get; set; }
+        public GenericEnum CurrentYear { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
         public KpiGeneral_AppUserDTO Creator { get; set; }
