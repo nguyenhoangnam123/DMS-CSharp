@@ -256,40 +256,34 @@ namespace DMS.Rpc.dashboards.monitor
         public async Task<List<DashboardMonitor_IndirectSalesOrderDTO>> ListIndirectSalesOrder()
         {
             var appUser = await AppUserService.Get(CurrentContext.UserId);
-            var OrganizationIds = (await OrganizationService.List(new OrganizationFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Id = new IdFilter { NotEqual = appUser.OrganizationId },
-                Path = new StringFilter { StartWith = appUser.Organization.Path },
-                Selects = OrganizationSelect.Id
-            })).Select(x => x.Id).ToList();
-            var AppUserIds = (await AppUserService.List(new AppUserFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = AppUserSelect.Id,
-                OrganizationId = new IdFilter { In = OrganizationIds }
-            })).Select(x => x.Id).ToList();
-            AppUserIds.Add(appUser.Id);
-            AppUserIds = AppUserIds.Distinct().ToList();
-            IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter
-            {
-                Skip = 0,
-                Take = 5,
-                Selects = IndirectSalesOrderSelect.Id | IndirectSalesOrderSelect.OrderDate
-                | IndirectSalesOrderSelect.Code | IndirectSalesOrderSelect.SaleEmployee
-                | IndirectSalesOrderSelect.RequestState | IndirectSalesOrderSelect.Total,
-                OrderBy = IndirectSalesOrderOrder.OrderDate,
-                OrderType = OrderType.DESC,
-                SaleEmployeeId = new IdFilter { In = AppUserIds },
-            };
+            var query = from i in DataContext.IndirectSalesOrder
+                        join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
+                        join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        where appUser.OrganizationId.HasValue && o.Path.StartsWith(appUser.Organization.Path)
+                        orderby i.OrderDate descending
+                        select new DashboardMonitor_IndirectSalesOrderDTO
+                        {
+                            Id = i.Id,
+                            Code = i.Code,
+                            OrderDate = i.OrderDate,
+                            RequestStateId = i.RequestStateId,
+                            SaleEmployeeId = i.SaleEmployeeId,
+                            Total = i.Total,
+                            SaleEmployee = i.SaleEmployee == null ? null : new DashboardMonitor_AppUserDTO
+                            {
+                                Id = i.SaleEmployee.Id,
+                                DisplayName = i.SaleEmployee.DisplayName,
+                                Username = i.SaleEmployee.Username,
+                            },
+                            RequestState = i.RequestState == null ? null : new DashboardMonitor_RequestStateDTO
+                            {
+                                Id = i.RequestState.Id,
+                                Code = i.RequestState.Code,
+                                Name = i.RequestState.Name,
+                            }
+                        };
 
-            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
-            List<DashboardMonitor_IndirectSalesOrderDTO> DashboardMonitor_IndirectSalesOrderDTOs = IndirectSalesOrders
-                .Select(x => new DashboardMonitor_IndirectSalesOrderDTO(x)).ToList();
-
-            return DashboardMonitor_IndirectSalesOrderDTOs;
+            return await query.Skip(0).Take(5).ToListAsync();
         }
 
         [Route(DashboardMonitorRoute.TopSaleEmployeeStoreChecking), HttpPost]
