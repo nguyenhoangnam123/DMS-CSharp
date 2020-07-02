@@ -1634,8 +1634,8 @@ namespace DMS.Rpc.product
             ItemHistoryFilter ItemHistoryFilter = new ItemHistoryFilter();
             ItemHistoryFilter.Skip = Product_ItemHistoryFilterDTO.Skip;
             ItemHistoryFilter.Take = Product_ItemHistoryFilterDTO.Take;
-            ItemHistoryFilter.OrderBy = ItemHistoryOrder.Id;
-            ItemHistoryFilter.OrderType = OrderType.ASC;
+            ItemHistoryFilter.OrderBy = ItemHistoryOrder.Time;
+            ItemHistoryFilter.OrderType = OrderType.DESC;
             ItemHistoryFilter.Selects = ItemHistorySelect.ALL;
             ItemHistoryFilter.ItemId = Product_ItemHistoryFilterDTO.ItemId;
             ItemHistoryFilter.Time = Product_ItemHistoryFilterDTO.Time;
