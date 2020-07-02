@@ -85,6 +85,7 @@ namespace DMS.Services.MProduct
                 foreach (var item in Items)
                 {
                     item.SaleStock = list.Where(i => i.ItemId == item.Id).Select(i => i.SaleStock).FirstOrDefault();
+                    item.HasInventory = item.SaleStock > 0;
                 }
                 return Items;
             }
