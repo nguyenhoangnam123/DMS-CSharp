@@ -81,7 +81,7 @@ namespace DMS.Rpc.e_route
         }
 
         [Route(ERouteRoute.Get), HttpPost]
-        public async Task<ActionResult<ERoute_ERouteDTO>> Get([FromBody]ERoute_ERouteDTO ERoute_ERouteDTO)
+        public async Task<ActionResult<ERoute_ERouteDTO>> Get([FromBody] ERoute_ERouteDTO ERoute_ERouteDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -347,7 +347,8 @@ namespace DMS.Rpc.e_route
             AppUserFilter.StatusId = ERoute_AppUserFilterDTO.StatusId;
             AppUserFilter.Birthday = ERoute_AppUserFilterDTO.Birthday;
             AppUserFilter.ProvinceId = ERoute_AppUserFilterDTO.ProvinceId;
-
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<ERoute_AppUserDTO> ERoute_AppUserDTOs = AppUsers
                 .Select(x => new ERoute_AppUserDTO(x)).ToList();
@@ -449,6 +450,9 @@ namespace DMS.Rpc.e_route
             AppUserFilter.Birthday = ERoute_AppUserFilterDTO.Birthday;
             AppUserFilter.ProvinceId = ERoute_AppUserFilterDTO.ProvinceId;
 
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<ERoute_AppUserDTO> ERoute_AppUserDTOs = AppUsers
                 .Select(x => new ERoute_AppUserDTO(x)).ToList();
@@ -491,6 +495,9 @@ namespace DMS.Rpc.e_route
             OrganizationFilter.Phone = ERoute_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = ERoute_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = ERoute_OrganizationFilterDTO.Email;
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<ERoute_OrganizationDTO> ERoute_OrganizationDTOs = Organizations

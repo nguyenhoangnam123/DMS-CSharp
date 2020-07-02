@@ -26,6 +26,9 @@ namespace DMS.Rpc.monitor_store_problems
         private IProblemHistoryService ProblemHistoryService;
         private IStoreService StoreService;
         private IProblemService ProblemService;
+        private ICurrentContext CurrentContext;
+        private IAppUserService AppUserService;
+        private IOrganizationService OrganizationService;
         public MonitorStoreProblemController(
             IAppUserService AppUserService,
             IOrganizationService OrganizationService,
@@ -35,13 +38,16 @@ namespace DMS.Rpc.monitor_store_problems
             IStoreService StoreService,
             IProblemService ProblemService,
             ICurrentContext CurrentContext
-        ) : base(AppUserService, OrganizationService, CurrentContext)
+        ) 
         {
+            this.AppUserService = AppUserService;
+            this.OrganizationService = OrganizationService;
             this.ProblemStatusService = ProblemStatusService;
             this.ProblemTypeService = ProblemTypeService;
             this.ProblemHistoryService = ProblemHistoryService;
             this.StoreService = StoreService;
             this.ProblemService = ProblemService;
+            this.CurrentContext = CurrentContext;
         }
 
         [Route(MonitorStoreProblemRoute.Count), HttpPost]

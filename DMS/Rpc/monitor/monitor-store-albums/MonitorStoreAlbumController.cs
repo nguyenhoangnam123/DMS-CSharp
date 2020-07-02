@@ -23,9 +23,12 @@ namespace DMS.Rpc.monitor.monitor_store_albums
     {
         private DataContext DataContext;
         private IAlbumService AlbumService;
+        private IAppUserService AppUserService;
+        private IOrganizationService OrganizationService;
         private IImageService ImageService;
         private IStoreService StoreService;
         private IStoreCheckingService StoreCheckingService;
+        private ICurrentContext CurrentContext;
 
         public MonitorStoreAlbumController
             (DataContext DataContext,
@@ -35,10 +38,13 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             IImageService ImageService,
             IStoreService StoreService,
             IStoreCheckingService StoreCheckingService,
-            ICurrentContext CurrentContext) :  base(AppUserService, OrganizationService, CurrentContext)
+            ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
             this.AlbumService = AlbumService;
+            this.AppUserService = AppUserService;
+            this.OrganizationService = OrganizationService;
+            this.CurrentContext = CurrentContext;
             this.ImageService = ImageService;
             this.StoreService = StoreService;
             this.StoreCheckingService = StoreCheckingService;
@@ -80,7 +86,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             AppUserFilter.Username = MonitorStoreAlbum_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = MonitorStoreAlbum_AppUserFilterDTO.DisplayName;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            AppUserFilter.Id.In = await FilterAppUser();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService,OrganizationService,CurrentContext);
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<MonitorStoreAlbum_AppUserDTO> MonitorStoreAlbum_AppUserDTOs = AppUsers
@@ -102,7 +108,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
-            OrganizationFilter.Id.In = await FilterOrganization();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<MonitorStoreAlbum_OrganizationDTO> StoreCheckerMonitor_OrganizationDTOs = Organizations

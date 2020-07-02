@@ -21,18 +21,23 @@ namespace DMS.Rpc.monitor.monitor_store_images
         private DataContext DataContext;
         private IStoreService StoreService;
         private IStoreCheckingService StoreCheckingService;
-
+        private IAppUserService AppUserService;
+        private IOrganizationService OrganizationService;
+        private ICurrentContext CurrentContext;
         public MonitorStoreImageController
             (DataContext DataContext,
             IOrganizationService OrganizationService,
             IAppUserService AppUserService,
             IStoreService StoreService,
             IStoreCheckingService StoreCheckingService,
-            ICurrentContext CurrentContext) : base(AppUserService, OrganizationService, CurrentContext)
+            ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
             this.StoreService = StoreService;
             this.StoreCheckingService = StoreCheckingService;
+            this.AppUserService = AppUserService;
+            this.OrganizationService = OrganizationService;
+            this.CurrentContext = CurrentContext;
         }
 
         [Route(MonitorStoreImageRoute.FilterListAppUser), HttpPost]
@@ -51,7 +56,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
             AppUserFilter.Username = MonitorStoreImage_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = MonitorStoreImage_AppUserFilterDTO.DisplayName;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            AppUserFilter.Id.In = await FilterAppUser();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService,OrganizationService,CurrentContext);
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<MonitorStoreImage_AppUserDTO> StoreCheckerMonitor_AppUserDTOs = AppUsers
@@ -74,7 +79,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
-            OrganizationFilter.Id.In = await FilterOrganization();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<MonitorStoreImage_OrganizationDTO> StoreCheckerMonitor_OrganizationDTOs = Organizations
