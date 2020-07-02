@@ -16,7 +16,7 @@
       "StatusNotExisted": "Trạng thái không tồn tại"
     },
     "KpiYear": {
-      "KpiYearIdNotExisted": "Năm Kpi không tồn tại",
+      "KpiYearIdNotExisted": "Chưa chọn năm Kpi",
       "KpiYearExisted": "Chưa chọn năm Kpi"
     }
   }
