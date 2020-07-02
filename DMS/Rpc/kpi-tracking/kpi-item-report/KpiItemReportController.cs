@@ -179,7 +179,16 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         && (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value)
                         && (ItemId == null || i.Id == ItemId.Value)
                         && (ki.KpiYearId == KpiYearId)
-                        select ki.Id;
+                        select new KpiItemReport_SaleEmployeeItemDTO
+                        {
+                            SaleEmployeeId = ap.Id,
+                            Username = ap.Username,
+                            DisplayName = ap.DisplayName,
+                            OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
+                            OrganizationId = ap.OrganizationId.Value,
+                            ItemId = i.Id,
+                            ItemName = i.Name,
+                        };
             return await query.Distinct().CountAsync();
         }
 
@@ -357,7 +366,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                     SaleEmployeeItemDTO.IndirectStoresOfKeyItem = IndirectSalesOrderDAOs
                         .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && IndirectSalesOrderIds.Contains(iso.Id))
                         .Count();
-                    SaleEmployeeItemDTO.IndirectStoresOfKeyItem = SaleEmployeeItemDTO.IndirectStoresOfKeyItemPlanned == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.IndirectStoresOfKeyItem / SaleEmployeeItemDTO.IndirectStoresOfKeyItem, 2);
+                    SaleEmployeeItemDTO.IndirectStoresOfKeyItem = SaleEmployeeItemDTO.IndirectStoresOfKeyItemPlanned == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.IndirectStoresOfKeyItem / SaleEmployeeItemDTO.IndirectStoresOfKeyItemPlanned, 2);
 
                 }
             };
