@@ -1,5 +1,5 @@
 ﻿{
-  "Eroute": {
+  "ERoute": {
     "Id": {
       "IdNotExisted": "Id không tồn tại",
       "ERouteInUsed": "Nội dung tuyến đang được sử dụng"
@@ -16,7 +16,7 @@
     },
     "SaleEmployee": {
       "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại",
-      "SaleEmployeeEmpty": "Chưa chọn nhân viên kinh"
+      "SaleEmployeeEmpty": "Chưa chọn nhân viên kinh doanh"
     },
     "ERouteType": {
       "ERouteTypeEmpty": "Chưa chọn loại tuyến"
