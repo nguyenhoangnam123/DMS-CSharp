@@ -290,8 +290,8 @@ namespace DMS.Services.MERoute
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
                         subFilter.Id = FilterPermissionDefinition.IdFilter;
 
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleEmployeeId))
-                        subFilter.SaleEmployeeId = FilterPermissionDefinition.IdFilter;
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
+                        subFilter.AppUserId = FilterPermissionDefinition.IdFilter;
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.StoreId))
                         subFilter.StoreId = FilterPermissionDefinition.IdFilter;
@@ -306,13 +306,13 @@ namespace DMS.Services.MERoute
                     {
                         if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.IS.Id)
                         {
-                            if (subFilter.SaleEmployeeId == null) subFilter.SaleEmployeeId = new IdFilter { };
-                            subFilter.SaleEmployeeId.Equal = CurrentContext.UserId;
+                            if (subFilter.AppUserId == null) subFilter.AppUserId = new IdFilter { };
+                            subFilter.AppUserId.Equal = CurrentContext.UserId;
                         }
                         if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.ISNT.Id)
                         {
-                            if (subFilter.SaleEmployeeId == null) subFilter.SaleEmployeeId = new IdFilter { };
-                            subFilter.SaleEmployeeId.NotEqual = CurrentContext.UserId;
+                            if (subFilter.AppUserId == null) subFilter.AppUserId = new IdFilter { };
+                            subFilter.AppUserId.NotEqual = CurrentContext.UserId;
                         }
                     }
 

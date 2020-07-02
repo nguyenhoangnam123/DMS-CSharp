@@ -44,9 +44,9 @@ namespace DMS.Rpc
         {
             RestClient RestClient = new RestClient(InternalServices.ES);
             InitPosition(RestClient);
-            InitProvince(RestClient);
-            InitDistrict(RestClient);
-            InitWard(RestClient);
+            //InitProvince(RestClient);
+            //InitDistrict(RestClient);
+            //InitWard(RestClient);
             InitOrganization(RestClient);
             InitAppUser(RestClient);
             return Ok();

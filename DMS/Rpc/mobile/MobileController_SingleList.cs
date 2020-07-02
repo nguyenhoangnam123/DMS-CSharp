@@ -87,7 +87,7 @@ namespace DMS.Rpc.mobile
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                AppUserId = new IdFilter { Equal = CurrentContext.UserId },
                 Selects = ERouteSelect.Id | ERouteSelect.Name | ERouteSelect.Code
             };
 

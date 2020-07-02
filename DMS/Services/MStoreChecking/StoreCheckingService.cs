@@ -453,7 +453,7 @@ namespace DMS.Services.MStoreChecking
                 StartDate = new DateFilter { LessEqual = Now },
                 EndDate = new DateFilter { GreaterEqual = Now },
                 Id = ERouteId,
-                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                AppUserId = new IdFilter { Equal = CurrentContext.UserId },
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                 Selects = ERouteSelect.Id
             })).Select(x => x.Id).ToList();

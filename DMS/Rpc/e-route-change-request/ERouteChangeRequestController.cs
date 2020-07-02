@@ -407,7 +407,7 @@ namespace DMS.Rpc.e_route_change_request
             ERouteFilter.Id = ERouteChangeRequest_ERouteFilterDTO.Id;
             ERouteFilter.Code = ERouteChangeRequest_ERouteFilterDTO.Code;
             ERouteFilter.Name = ERouteChangeRequest_ERouteFilterDTO.Name;
-            ERouteFilter.SaleEmployeeId = ERouteChangeRequest_ERouteFilterDTO.SaleEmployeeId;
+            ERouteFilter.AppUserId = ERouteChangeRequest_ERouteFilterDTO.SaleEmployeeId;
             ERouteFilter.StartDate = ERouteChangeRequest_ERouteFilterDTO.StartDate;
             ERouteFilter.EndDate = ERouteChangeRequest_ERouteFilterDTO.EndDate;
             ERouteFilter.ERouteTypeId = ERouteChangeRequest_ERouteFilterDTO.ERouteTypeId;
@@ -521,7 +521,7 @@ namespace DMS.Rpc.e_route_change_request
             ERouteFilter.Id = ERouteChangeRequest_ERouteFilterDTO.Id;
             ERouteFilter.Code = ERouteChangeRequest_ERouteFilterDTO.Code;
             ERouteFilter.Name = ERouteChangeRequest_ERouteFilterDTO.Name;
-            ERouteFilter.SaleEmployeeId = ERouteChangeRequest_ERouteFilterDTO.SaleEmployeeId;
+            ERouteFilter.AppUserId = ERouteChangeRequest_ERouteFilterDTO.SaleEmployeeId;
             ERouteFilter.StartDate = ERouteChangeRequest_ERouteFilterDTO.StartDate;
             ERouteFilter.EndDate = ERouteChangeRequest_ERouteFilterDTO.EndDate;
             ERouteFilter.ERouteTypeId = ERouteChangeRequest_ERouteFilterDTO.ERouteTypeId;

@@ -82,14 +82,52 @@ namespace DMS.Rpc
         protected async Task<List<long>> FilterAppUser(IAppUserService AppUserService, IOrganizationService OrganizationService, ICurrentContext CurrentContext)
         {
             List<long> organizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+
+
+            List<long> In = null;
+            List<long> NotIn = null;
+            foreach (var currentFilter in CurrentContext.Filters)
+            {
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == "AppUserId")
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal != null)
+                        {
+                            if (In == null) In = new List<long>();
+                            In.Add(FilterPermissionDefinition.IdFilter.Equal.Value);
+                        }
+                        if (FilterPermissionDefinition.IdFilter.In != null)
+                        {
+                            if (In == null) In = new List<long>();
+                            In.AddRange(FilterPermissionDefinition.IdFilter.In);
+                        }
+
+                        if (FilterPermissionDefinition.IdFilter.NotEqual != null)
+                        {
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.Add(FilterPermissionDefinition.IdFilter.NotEqual.Value);
+                        }
+                        if (FilterPermissionDefinition.IdFilter.NotIn != null)
+                        {
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.AddRange(FilterPermissionDefinition.IdFilter.NotIn);
+                        }
+                    }
+                }
+            }
+
             List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
             {
+                Id = new IdFilter { In = In, NotIn = NotIn },
                 OrganizationId = new IdFilter { In = organizationIds },
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = AppUserSelect.Id,
             });
             List<long> AppUserIds = AppUsers.Select(a => a.Id).ToList();
+
             return AppUserIds;
         }
 

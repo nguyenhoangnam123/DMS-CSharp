@@ -44,8 +44,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
-            if (filter.SaleEmployeeId != null)
-                query = query.Where(q => q.SaleEmployeeId, filter.SaleEmployeeId);
+            if (filter.AppUserId != null)
+                query = query.Where(q => q.SaleEmployeeId, filter.AppUserId);
             if (filter.StartDate != null)
                 query = query.Where(q => q.StartDate, filter.StartDate);
             if (filter.EndDate != null)
@@ -87,8 +87,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Code, ERouteFilter.Code);
                 if (ERouteFilter.Name != null)
                     queryable = queryable.Where(q => q.Name, ERouteFilter.Name);
-                if (ERouteFilter.SaleEmployeeId != null)
-                    queryable = queryable.Where(q => q.SaleEmployeeId, ERouteFilter.SaleEmployeeId);
+                if (ERouteFilter.AppUserId != null)
+                    queryable = queryable.Where(q => q.SaleEmployeeId, ERouteFilter.AppUserId);
                 if (ERouteFilter.StartDate != null)
                     queryable = queryable.Where(q => q.StartDate, ERouteFilter.StartDate);
                 if (ERouteFilter.EndDate != null)

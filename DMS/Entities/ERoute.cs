@@ -43,7 +43,7 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
-        public IdFilter SaleEmployeeId { get; set; }
+        public IdFilter AppUserId { get; set; }
         public DateFilter StartDate { get; set; }
         public DateFilter EndDate { get; set; }
         public IdFilter ERouteTypeId { get; set; }
