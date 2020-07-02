@@ -83,7 +83,6 @@ namespace DMS.Rpc
         {
             List<long> organizationIds = await FilterOrganization(OrganizationService, CurrentContext);
 
-
             List<long> In = null;
             List<long> NotIn = null;
             foreach (var currentFilter in CurrentContext.Filters)

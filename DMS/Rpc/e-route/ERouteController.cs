@@ -61,7 +61,7 @@ namespace DMS.Rpc.e_route
                 throw new BindException(ModelState);
 
             ERouteFilter ERouteFilter = ConvertFilterDTOToFilterEntity(ERoute_ERouteFilterDTO);
-            ERouteFilter = ERouteService.ToFilter(ERouteFilter);
+            ERouteFilter = await ERouteService.ToFilter(ERouteFilter);
             int count = await ERouteService.Count(ERouteFilter);
             return count;
         }
@@ -73,7 +73,7 @@ namespace DMS.Rpc.e_route
                 throw new BindException(ModelState);
 
             ERouteFilter ERouteFilter = ConvertFilterDTOToFilterEntity(ERoute_ERouteFilterDTO);
-            ERouteFilter = ERouteService.ToFilter(ERouteFilter);
+            ERouteFilter = await ERouteService.ToFilter(ERouteFilter);
             List<ERoute> ERoutes = await ERouteService.List(ERouteFilter);
             List<ERoute_ERouteDTO> ERoute_ERouteDTOs = ERoutes
                 .Select(c => new ERoute_ERouteDTO(c)).ToList();
@@ -154,7 +154,7 @@ namespace DMS.Rpc.e_route
                 throw new BindException(ModelState);
 
             ERouteFilter ERouteFilter = new ERouteFilter();
-            ERouteFilter = ERouteService.ToFilter(ERouteFilter);
+            ERouteFilter = await ERouteService.ToFilter(ERouteFilter);
             ERouteFilter.Id = new IdFilter { In = Ids };
             ERouteFilter.Selects = ERouteSelect.Id | ERouteSelect.RequestState;
             ERouteFilter.Skip = 0;
@@ -170,7 +170,7 @@ namespace DMS.Rpc.e_route
         private async Task<bool> HasPermission(long Id)
         {
             ERouteFilter ERouteFilter = new ERouteFilter();
-            ERouteFilter = ERouteService.ToFilter(ERouteFilter);
+            ERouteFilter = await ERouteService.ToFilter(ERouteFilter);
             if (Id == 0)
             {
 

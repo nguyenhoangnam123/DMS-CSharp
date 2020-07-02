@@ -3,7 +3,9 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
 using DMS.Rpc.e_route;
+using DMS.Services.MAppUser;
 using DMS.Services.MNotification;
+using DMS.Services.MOrganization;
 using DMS.Services.MStore;
 using Helpers;
 using System;
@@ -23,7 +25,7 @@ namespace DMS.Services.MERoute
         Task<ERoute> Delete(ERoute ERoute);
         Task<List<ERoute>> BulkDelete(List<ERoute> ERoutes);
         Task<List<ERoute>> Import(List<ERoute> ERoutes);
-        ERouteFilter ToFilter(ERouteFilter ERouteFilter);
+        Task<ERouteFilter> ToFilter(ERouteFilter ERouteFilter);
 
         Task<List<Store>> ListStore(StoreFilter StoreFilter);
     }
@@ -36,6 +38,8 @@ namespace DMS.Services.MERoute
         private ICurrentContext CurrentContext;
         private IERouteValidator ERouteValidator;
         private IStoreService StoreService;
+        private IOrganizationService OrganizationService;
+        private IAppUserService AppUserService;
 
         public ERouteService(
             IUOW UOW,
@@ -43,6 +47,8 @@ namespace DMS.Services.MERoute
             INotificationService NotificationService,
             ICurrentContext CurrentContext,
             IStoreService StoreService,
+            IOrganizationService OrganizationService,
+            IAppUserService AppUserService,
             IERouteValidator ERouteValidator
         )
         {
@@ -51,6 +57,8 @@ namespace DMS.Services.MERoute
             this.NotificationService = NotificationService;
             this.CurrentContext = CurrentContext;
             this.StoreService = StoreService;
+            this.OrganizationService = OrganizationService;
+            this.AppUserService = AppUserService;
             this.ERouteValidator = ERouteValidator;
         }
         public async Task<int> Count(ERouteFilter ERouteFilter)
@@ -276,10 +284,25 @@ namespace DMS.Services.MERoute
             }
         }
 
-        public ERouteFilter ToFilter(ERouteFilter filter)
+        public async Task<ERouteFilter> ToFilter(ERouteFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ERouteFilter>();
             if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL,
+                OrderBy = OrganizationOrder.Id,
+                OrderType = OrderType.ASC
+            });
+            List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id,
+            });
+            List<long> AppUserIds = AppUsers.Select(a => a.Id).ToList();
             foreach (var currentFilter in CurrentContext.Filters)
             {
                 ERouteFilter subFilter = new ERouteFilter();
@@ -290,6 +313,12 @@ namespace DMS.Services.MERoute
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
                         subFilter.Id = FilterPermissionDefinition.IdFilter;
 
+                    List<long> organizationIds = new List<long>();
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
+                    {
+                        organizationIds = FilterOrganization(Organizations, FilterPermissionDefinition.IdFilter);
+                        subFilter.OrganizationId = new IdFilter { In = organizationIds };
+                    }
                     if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
                         subFilter.AppUserId = FilterPermissionDefinition.IdFilter;
 
