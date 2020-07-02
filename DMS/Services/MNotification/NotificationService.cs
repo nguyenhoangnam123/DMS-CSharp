@@ -133,7 +133,7 @@ namespace DMS.Services.MNotification
 
                     List<UserNotification> NotificationUtilss = AppUserIds.Select(x => new UserNotification
                     {
-                        Content = Notification.Content,
+                        ContentWeb = Notification.Content,
                         Time = StaticParams.DateTimeNow,
                         Unread = false,
                         SenderId = CurrentContext.UserId,

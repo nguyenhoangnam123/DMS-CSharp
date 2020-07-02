@@ -242,7 +242,7 @@ namespace DMS.Services.MProduct
                     {
                         UserNotification UserNotification = new UserNotification
                         {
-                            Content = $"Sản phẩm {Product.Code} - {Product.Name} đã được đưa vào danh sách sản phẩm mới bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                            ContentWeb = $"Sản phẩm {Product.Code} - {Product.Name} đã được đưa vào danh sách sản phẩm mới bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
                             LinkWebsite = $"{ProductRoute.Master}/{Product.Id}",
                             LinkMobile = $"{ProductRoute.Mobile}/{Product.Id}",
                             RecipientId = Id,

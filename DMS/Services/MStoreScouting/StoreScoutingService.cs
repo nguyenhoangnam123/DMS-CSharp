@@ -120,7 +120,7 @@ namespace DMS.Services.MStoreScouting
                 {
                     UserNotification NotificationUtils = new UserNotification
                     {
-                        Content = $"Cửa hàng cắm cờ {StoreScouting.Code} - {StoreScouting.Name} vừa được thêm mới vào hệ thống bởi {User.DisplayName} vào lúc {Now}",
+                        ContentWeb = $"Cửa hàng cắm cờ {StoreScouting.Code} - {StoreScouting.Name} vừa được thêm mới vào hệ thống bởi {User.DisplayName} vào lúc {Now}",
                         LinkWebsite = $"{StoreScouting.Link}",
                         Time = Now,
                         Unread = false,
@@ -191,7 +191,7 @@ namespace DMS.Services.MStoreScouting
                 DateTime Now = StaticParams.DateTimeNow;
                 UserNotification NotificationUtils = new UserNotification
                 {
-                    Content = $"{oldData.Name} đã bị từ chối bởi {CurrentUser.DisplayName} vào lúc {Now}. Chi tiết xem tại {StoreScouting.Link}",
+                    ContentWeb = $"{oldData.Name} đã bị từ chối bởi {CurrentUser.DisplayName} vào lúc {Now}. Chi tiết xem tại {StoreScouting.Link}",
                     Time = Now,
                     Unread = false,
                     SenderId = CurrentContext.UserId,
