@@ -169,7 +169,7 @@ namespace DMS.Services.MStore
 
                     UserNotification Notification = new UserNotification
                     {
-                        Content = $"Cửa hàng cắm cờ {StoreScouting.Code} - {StoreScouting.Name} đã được mở cửa hàng bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        ContentWeb = $"Cửa hàng cắm cờ {StoreScouting.Code} - {StoreScouting.Name} đã được mở cửa hàng bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
                         LinkWebsite = $"{StoreScoutingRoute.Master}/{StoreScouting.Id}",
                         RecipientId = StoreScouting.CreatorId,
                         SenderId = CurrentContext.UserId,
@@ -188,7 +188,7 @@ namespace DMS.Services.MStore
                 {
                     UserNotification UserNotification = new UserNotification
                     {
-                        Content = $"Cửa hàng {Store.Code} - {Store.Name} vừa được thêm mới vào hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        ContentWeb = $"Cửa hàng {Store.Code} - {Store.Name} vừa được thêm mới vào hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
                         LinkWebsite = $"{StoreRoute.Master}/{Store.Id}",
                         LinkMobile = $"{StoreRoute.Mobile}/{Store.Id}",
                         RecipientId = Id,
@@ -236,7 +236,7 @@ namespace DMS.Services.MStore
                 {
                     UserNotification UserNotification = new UserNotification
                     {
-                        Content = $"Cửa hàng {Store.Code} - {Store.Name} vừa được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        ContentWeb = $"Cửa hàng {Store.Code} - {Store.Name} vừa được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
                         LinkWebsite = $"{StoreRoute.Master}/{Store.Id}",
                         LinkMobile = $"{StoreRoute.Mobile}/{Store.Id}",
                         RecipientId = Id,
@@ -282,7 +282,7 @@ namespace DMS.Services.MStore
                 {
                     UserNotification UserNotification = new UserNotification
                     {
-                        Content = $"Cửa hàng {Store.Code} - {Store.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        ContentWeb = $"Cửa hàng {Store.Code} - {Store.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,

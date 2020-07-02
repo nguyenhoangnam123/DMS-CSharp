@@ -111,7 +111,7 @@ namespace DMS.Services.MSurvey
                 {
                     UserNotification UserNotification = new UserNotification
                     {
-                        Content = $"Khảo sát {Survey.Title} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}, có hiệu lực từ {Survey.StartAt} - {Survey.EndAt}",
+                        ContentWeb = $"Khảo sát {Survey.Title} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}, có hiệu lực từ {Survey.StartAt} - {Survey.EndAt}",
                         LinkWebsite = $"{SurveyRoute.Master}/{Survey.Id}",
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
@@ -162,7 +162,7 @@ namespace DMS.Services.MSurvey
                 {
                     UserNotification UserNotification = new UserNotification
                     {
-                        Content = $"Khảo sát {Survey.Title} đã được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}, có hiệu lực từ {Survey.StartAt} - {Survey.EndAt}",
+                        ContentWeb = $"Khảo sát {Survey.Title} đã được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}, có hiệu lực từ {Survey.StartAt} - {Survey.EndAt}",
                         LinkWebsite = $"{SurveyRoute.Master}/{Survey.Id}",
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
@@ -245,7 +245,7 @@ namespace DMS.Services.MSurvey
                 {
                     UserNotification UserNotification = new UserNotification
                     {
-                        Content = $"Khảo sát {Survey.Title} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        ContentWeb = $"Khảo sát {Survey.Title} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,
