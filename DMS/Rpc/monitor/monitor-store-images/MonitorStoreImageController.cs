@@ -271,13 +271,15 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     SaleEmployeeId = SalesEmployee.Id,
                     OrganizationName = SalesEmployee.Organization.Name
                 };
-                MonitorStoreImage_SaleEmployeeDTO.StoreCheckings = StoreCheckingDAOs.OrderBy(x => x.CheckOutAt).Where(x => x.SaleEmployeeId == SalesEmployee.Id)
-                    .Select(x => new MonitorStoreImage_StoreCheckingDTO
+
+                MonitorStoreImage_SaleEmployeeDTO.StoreCheckings = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.Id)
+                    .GroupBy(x => new { x.CheckOutAt.Value.Date, x.StoreId, x.Store.Name })
+                    .Select(y => new MonitorStoreImage_StoreCheckingDTO
                     {
-                        Id = x.Id,
-                        Date = x.CheckOutAt.Value.Date,
-                        StoreName = x.Store?.Name,
-                        ImageCounter = x.ImageCounter ?? 0
+                        StoreId = y.Key.StoreId,
+                        Date = y.Key.Date,
+                        StoreName = y.Key.Name,
+                        ImageCounter = y.Select(i => i.ImageCounter ?? 0).DefaultIfEmpty().Sum()
                     }).ToList();
 
                 MonitorStoreImage_SaleEmployeeDTOs.Add(MonitorStoreImage_SaleEmployeeDTO);
