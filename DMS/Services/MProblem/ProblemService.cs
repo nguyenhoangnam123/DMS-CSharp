@@ -130,6 +130,7 @@ namespace DMS.Services.MProblem
                 {
                     UserNotification NotificationUtils = new UserNotification
                     {
+                        TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Vấn đề {Problem.Code} của cửa hàng {Problem.Store.Code} - {Problem.Store.Name} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
                         LinkWebsite = $"{ProblemRoute.Master}/{Problem.Id}",
                         Time = Now,

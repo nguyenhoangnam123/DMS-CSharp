@@ -10,8 +10,24 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string TitleWeb { get; set; }
         public string ContentWeb { get; set; }
-        public string TitleMobile { get; set; }
-        public string ContentMobile { get; set; }
+        public string TitleMobile
+        {
+            get
+            {
+                var pageDoc = new HtmlAgilityPack.HtmlDocument();
+                pageDoc.LoadHtml(TitleWeb);
+                return pageDoc.DocumentNode.InnerText;
+            }
+        }
+        public string ContentMobile
+        {
+            get
+            {
+                var pageDoc = new HtmlAgilityPack.HtmlDocument();
+                pageDoc.LoadHtml(ContentWeb);
+                return pageDoc.DocumentNode.InnerText;
+            }
+        }
         public long SenderId { get; set; }
         public long RecipientId { get; set; }
         public bool Unread { get; set; }
