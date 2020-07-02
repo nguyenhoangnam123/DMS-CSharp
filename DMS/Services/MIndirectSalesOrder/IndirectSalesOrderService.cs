@@ -157,6 +157,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 {
                     UserNotification NotificationUtils = new UserNotification
                     {
+                        TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
                         LinkWebsite = $"{IndirectSalesOrderRoute.Master}/{IndirectSalesOrder.Id}",
                         LinkMobile = $"{IndirectSalesOrderRoute.Mobile}/{IndirectSalesOrder.Id}",
@@ -215,6 +216,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 {
                     UserNotification NotificationUtils = new UserNotification
                     {
+                        TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {Now}",
                         LinkWebsite = $"{IndirectSalesOrderRoute.Master}/{IndirectSalesOrder.Id}",
                         LinkMobile = $"{IndirectSalesOrderRoute.Mobile}/{IndirectSalesOrder.Id}",
@@ -272,6 +274,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 {
                     UserNotification NotificationUtils = new UserNotification
                     {
+                        TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
                         Time = Now,
                         Unread = false,

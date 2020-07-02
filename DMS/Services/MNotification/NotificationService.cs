@@ -1,7 +1,8 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Helpers;
 using DMS.Repositories;
+using DMS.Rpc.notification;
 using Helpers;
 using RestSharp;
 using System;
@@ -133,7 +134,10 @@ namespace DMS.Services.MNotification
 
                     List<UserNotification> NotificationUtilss = AppUserIds.Select(x => new UserNotification
                     {
+                        TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = Notification.Content,
+                        LinkWebsite = $"{NotificationRoute.Master}/{Notification.Id}",
+                        LinkMobile = $"{NotificationRoute.Mobile}/{Notification.Id}",
                         Time = StaticParams.DateTimeNow,
                         Unread = false,
                         SenderId = CurrentContext.UserId,
