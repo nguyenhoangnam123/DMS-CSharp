@@ -1001,16 +1001,9 @@ namespace DMS.Rpc.kpi_general
             AppUserFilter.Id = KpiGeneral_AppUserFilterDTO.Id;
             AppUserFilter.Username = KpiGeneral_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = KpiGeneral_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = KpiGeneral_AppUserFilterDTO.Address;
-            AppUserFilter.Email = KpiGeneral_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = KpiGeneral_AppUserFilterDTO.Phone;
-            AppUserFilter.PositionId = KpiGeneral_AppUserFilterDTO.PositionId;
-            AppUserFilter.Department = KpiGeneral_AppUserFilterDTO.Department;
-            AppUserFilter.OrganizationId = KpiGeneral_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.StatusId = KpiGeneral_AppUserFilterDTO.StatusId;
-            AppUserFilter.ProvinceId = KpiGeneral_AppUserFilterDTO.ProvinceId;
-            AppUserFilter.SexId = KpiGeneral_AppUserFilterDTO.SexId;
-            AppUserFilter.Birthday = KpiGeneral_AppUserFilterDTO.Birthday;
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<KpiGeneral_AppUserDTO> KpiGeneral_AppUserDTOs = AppUsers
@@ -1051,13 +1044,9 @@ namespace DMS.Rpc.kpi_general
             OrganizationFilter.Id = KpiGeneral_OrganizationFilterDTO.Id;
             OrganizationFilter.Code = KpiGeneral_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = KpiGeneral_OrganizationFilterDTO.Name;
-            OrganizationFilter.ParentId = KpiGeneral_OrganizationFilterDTO.ParentId;
-            OrganizationFilter.Path = KpiGeneral_OrganizationFilterDTO.Path;
-            OrganizationFilter.Level = KpiGeneral_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = KpiGeneral_OrganizationFilterDTO.StatusId;
-            OrganizationFilter.Phone = KpiGeneral_OrganizationFilterDTO.Phone;
-            OrganizationFilter.Email = KpiGeneral_OrganizationFilterDTO.Email;
-            OrganizationFilter.Address = KpiGeneral_OrganizationFilterDTO.Address;
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<KpiGeneral_OrganizationDTO> KpiGeneral_OrganizationDTOs = Organizations
@@ -1119,16 +1108,9 @@ namespace DMS.Rpc.kpi_general
             AppUserFilter.Id = KpiGeneral_AppUserFilterDTO.Id;
             AppUserFilter.Username = KpiGeneral_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = KpiGeneral_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = KpiGeneral_AppUserFilterDTO.Address;
-            AppUserFilter.Email = KpiGeneral_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = KpiGeneral_AppUserFilterDTO.Phone;
-            AppUserFilter.PositionId = KpiGeneral_AppUserFilterDTO.PositionId;
-            AppUserFilter.Department = KpiGeneral_AppUserFilterDTO.Department;
-            AppUserFilter.OrganizationId = KpiGeneral_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.StatusId = KpiGeneral_AppUserFilterDTO.StatusId;
-            AppUserFilter.ProvinceId = KpiGeneral_AppUserFilterDTO.ProvinceId;
-            AppUserFilter.SexId = KpiGeneral_AppUserFilterDTO.SexId;
-            AppUserFilter.Birthday = KpiGeneral_AppUserFilterDTO.Birthday;
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<KpiGeneral_AppUserDTO> KpiGeneral_AppUserDTOs = AppUsers
@@ -1169,13 +1151,9 @@ namespace DMS.Rpc.kpi_general
             OrganizationFilter.Id = KpiGeneral_OrganizationFilterDTO.Id;
             OrganizationFilter.Code = KpiGeneral_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = KpiGeneral_OrganizationFilterDTO.Name;
-            OrganizationFilter.ParentId = KpiGeneral_OrganizationFilterDTO.ParentId;
-            OrganizationFilter.Path = KpiGeneral_OrganizationFilterDTO.Path;
-            OrganizationFilter.Level = KpiGeneral_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = KpiGeneral_OrganizationFilterDTO.StatusId;
-            OrganizationFilter.Phone = KpiGeneral_OrganizationFilterDTO.Phone;
-            OrganizationFilter.Email = KpiGeneral_OrganizationFilterDTO.Email;
-            OrganizationFilter.Address = KpiGeneral_OrganizationFilterDTO.Address;
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<KpiGeneral_OrganizationDTO> KpiGeneral_OrganizationDTOs = Organizations

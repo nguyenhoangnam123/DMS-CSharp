@@ -4,6 +4,7 @@ using DMS.Enums;
 using DMS.Services.MAppUser;
 using DMS.Services.MEditedPriceStatus;
 using DMS.Services.MIndirectSalesOrder;
+using DMS.Services.MOrganization;
 using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
@@ -26,6 +27,7 @@ namespace DMS.Rpc.indirect_sales_order
         private IEditedPriceStatusService EditedPriceStatusService;
         private IStoreService StoreService;
         private IAppUserService AppUserService;
+        private IOrganizationService OrganizationService;
         private IUnitOfMeasureService UnitOfMeasureService;
         private IUnitOfMeasureGroupingService UnitOfMeasureGroupingService;
         private IItemService ItemService;
@@ -39,6 +41,7 @@ namespace DMS.Rpc.indirect_sales_order
         private IStoreTypeService StoreTypeService;
         private ICurrentContext CurrentContext;
         public IndirectSalesOrderController(
+            IOrganizationService OrganizationService,
             IEditedPriceStatusService EditedPriceStatusService,
             IStoreService StoreService,
             IAppUserService AppUserService,
@@ -56,6 +59,7 @@ namespace DMS.Rpc.indirect_sales_order
             ICurrentContext CurrentContext
         )
         {
+            this.OrganizationService = OrganizationService;
             this.EditedPriceStatusService = EditedPriceStatusService;
             this.StoreService = StoreService;
             this.AppUserService = AppUserService;
@@ -607,6 +611,9 @@ namespace DMS.Rpc.indirect_sales_order
             AppUserFilter.Birthday = IndirectSalesOrder_AppUserFilterDTO.Birthday;
             AppUserFilter.ProvinceId = IndirectSalesOrder_AppUserFilterDTO.ProvinceId;
 
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<IndirectSalesOrder_AppUserDTO> IndirectSalesOrder_AppUserDTOs = AppUsers
                 .Select(x => new IndirectSalesOrder_AppUserDTO(x)).ToList();
@@ -751,6 +758,9 @@ namespace DMS.Rpc.indirect_sales_order
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             AppUserFilter.Birthday = IndirectSalesOrder_AppUserFilterDTO.Birthday;
             AppUserFilter.ProvinceId = IndirectSalesOrder_AppUserFilterDTO.ProvinceId;
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<IndirectSalesOrder_AppUserDTO> IndirectSalesOrder_AppUserDTOs = AppUsers

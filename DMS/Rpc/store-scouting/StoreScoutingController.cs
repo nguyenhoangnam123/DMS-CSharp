@@ -292,16 +292,9 @@ namespace DMS.Rpc.store_scouting
             AppUserFilter.Id = StoreScouting_AppUserFilterDTO.Id;
             AppUserFilter.Username = StoreScouting_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = StoreScouting_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = StoreScouting_AppUserFilterDTO.Address;
-            AppUserFilter.Email = StoreScouting_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = StoreScouting_AppUserFilterDTO.Phone;
-            AppUserFilter.PositionId = StoreScouting_AppUserFilterDTO.PositionId;
-            AppUserFilter.Department = StoreScouting_AppUserFilterDTO.Department;
-            AppUserFilter.OrganizationId = StoreScouting_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.StatusId = StoreScouting_AppUserFilterDTO.StatusId;
-            AppUserFilter.ProvinceId = StoreScouting_AppUserFilterDTO.ProvinceId;
-            AppUserFilter.SexId = StoreScouting_AppUserFilterDTO.SexId;
-            AppUserFilter.Birthday = StoreScouting_AppUserFilterDTO.Birthday;
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<StoreScouting_AppUserDTO> StoreScouting_AppUserDTOs = AppUsers
@@ -347,13 +340,9 @@ namespace DMS.Rpc.store_scouting
             OrganizationFilter.Id = StoreScouting_OrganizationFilterDTO.Id;
             OrganizationFilter.Code = StoreScouting_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = StoreScouting_OrganizationFilterDTO.Name;
-            OrganizationFilter.ParentId = StoreScouting_OrganizationFilterDTO.ParentId;
-            OrganizationFilter.Path = StoreScouting_OrganizationFilterDTO.Path;
-            OrganizationFilter.Level = StoreScouting_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = StoreScouting_OrganizationFilterDTO.StatusId;
-            OrganizationFilter.Phone = StoreScouting_OrganizationFilterDTO.Phone;
-            OrganizationFilter.Email = StoreScouting_OrganizationFilterDTO.Email;
-            OrganizationFilter.Address = StoreScouting_OrganizationFilterDTO.Address;
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<StoreScouting_OrganizationDTO> StoreScouting_OrganizationDTOs = Organizations
@@ -484,16 +473,9 @@ namespace DMS.Rpc.store_scouting
             AppUserFilter.Id = StoreScouting_AppUserFilterDTO.Id;
             AppUserFilter.Username = StoreScouting_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = StoreScouting_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = StoreScouting_AppUserFilterDTO.Address;
-            AppUserFilter.Email = StoreScouting_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = StoreScouting_AppUserFilterDTO.Phone;
-            AppUserFilter.PositionId = StoreScouting_AppUserFilterDTO.PositionId;
-            AppUserFilter.Department = StoreScouting_AppUserFilterDTO.Department;
-            AppUserFilter.OrganizationId = StoreScouting_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.StatusId = StoreScouting_AppUserFilterDTO.StatusId;
-            AppUserFilter.ProvinceId = StoreScouting_AppUserFilterDTO.ProvinceId;
-            AppUserFilter.SexId = StoreScouting_AppUserFilterDTO.SexId;
-            AppUserFilter.Birthday = StoreScouting_AppUserFilterDTO.Birthday;
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<StoreScouting_AppUserDTO> StoreScouting_AppUserDTOs = AppUsers
@@ -539,13 +521,9 @@ namespace DMS.Rpc.store_scouting
             OrganizationFilter.Id = StoreScouting_OrganizationFilterDTO.Id;
             OrganizationFilter.Code = StoreScouting_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = StoreScouting_OrganizationFilterDTO.Name;
-            OrganizationFilter.ParentId = StoreScouting_OrganizationFilterDTO.ParentId;
-            OrganizationFilter.Path = StoreScouting_OrganizationFilterDTO.Path;
-            OrganizationFilter.Level = StoreScouting_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = StoreScouting_OrganizationFilterDTO.StatusId;
-            OrganizationFilter.Phone = StoreScouting_OrganizationFilterDTO.Phone;
-            OrganizationFilter.Email = StoreScouting_OrganizationFilterDTO.Email;
-            OrganizationFilter.Address = StoreScouting_OrganizationFilterDTO.Address;
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<StoreScouting_OrganizationDTO> StoreScouting_OrganizationDTOs = Organizations
