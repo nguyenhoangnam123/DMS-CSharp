@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Repositories;
 using DMS.Services.MImage;
 using Helpers;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -84,6 +85,7 @@ namespace DMS.Services.MProduct
                 foreach (var item in Items)
                 {
                     item.SaleStock = list.Where(i => i.ItemId == item.Id).Select(i => i.SaleStock).FirstOrDefault();
+                    item.HasInventory = item.SaleStock > 0;
                 }
                 return Items;
             }
@@ -109,7 +111,33 @@ namespace DMS.Services.MProduct
                 Selects = InventorySelect.ALL,
             };
             List<Inventory> Inventories = await UOW.InventoryRepository.List(InventoryFilter);
-            Item.Inventories = Inventories;
+            WarehouseFilter warehouseFilter = new WarehouseFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                OrderBy = WarehouseOrder.Code,
+                OrderType = OrderType.ASC,
+                Selects = WarehouseSelect.Id | WarehouseSelect.Code | WarehouseSelect.Name,
+            };
+            List<Warehouse> Warehouses = await UOW.WarehouseRepository.List(warehouseFilter);
+            Item.Inventories = new List<Inventory>();
+            foreach (Warehouse Warehouse in Warehouses)
+            {
+                Inventory Inventory = Inventories.Where(i => i.WarehouseId == Warehouse.Id).FirstOrDefault();
+                if (Inventory == null)
+                {
+                    Inventory = new Inventory
+                    {
+                        Warehouse = Warehouse,
+                        ItemId = Id,
+                        SaleStock = 0,
+                        AccountingStock = 0,
+                        WarehouseId = Warehouse.Id,
+                    };
+                }
+                Item.Inventories.Add(Inventory);
+            }
+            Item.HasInventory = Item.Inventories.Select(i => i.SaleStock).Count() > 0;
             return Item;
         }
 

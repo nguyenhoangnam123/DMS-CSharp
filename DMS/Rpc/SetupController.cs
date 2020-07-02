@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Helpers;
 using DMS.Models;
+using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestSharp;
@@ -19,6 +20,13 @@ namespace DMS.Rpc
         public SetupController(DataContext DataContext)
         {
             this.DataContext = DataContext;
+        }
+
+        [HttpGet, Route("rpc/dms/setup/year/{year}")]
+        public bool ChangeYear(int year)
+        {
+            StaticParams.ChangeYear = year;
+            return true;
         }
 
         [HttpGet, Route("rpc/dms/setup/init")]
