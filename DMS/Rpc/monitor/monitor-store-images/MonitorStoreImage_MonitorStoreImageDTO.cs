@@ -28,6 +28,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public long StoreId { get; set; }
         public string StoreName { get; set; }
         public long ImageCounter { get; set; }
+        public long SaleEmployeeId { get; set; }
     }
 
     public class MonitorStoreImage_MonitorStoreImageFilterDTO : FilterDTO 

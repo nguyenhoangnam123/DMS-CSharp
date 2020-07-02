@@ -306,18 +306,47 @@ namespace DMS.Rpc.monitor.monitor_store_images
         }
 
         [Route(MonitorStoreImageRoute.Get), HttpPost]
-        public async Task<StoreChecking> Get([FromBody] MonitorStoreImage_StoreCheckingDTO MonitorStoreImage_StoreCheckingDTO)
+        public async Task<List<MonitorStoreImage_StoreCheckingImageMappingDTO>> Get([FromBody] MonitorStoreImage_StoreCheckingDTO MonitorStoreImage_StoreCheckingDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            StoreChecking StoreChecking = new StoreChecking
-            {
-                Id = MonitorStoreImage_StoreCheckingDTO.Id
-            };
+            var query = from scim in DataContext.StoreCheckingImageMapping
+                        join sc in DataContext.StoreChecking on scim.StoreCheckingId equals sc.Id
+                        join s in DataContext.Store on sc.StoreId equals s.Id
+                        join a in DataContext.Album on scim.AlbumId equals a.Id
+                        join i in DataContext.Image on scim.ImageId equals i.Id
+                        join au in DataContext.AppUser on scim.SaleEmployeeId equals au.Id
+                        where scim.StoreId == MonitorStoreImage_StoreCheckingDTO.StoreId &&
+                        scim.SaleEmployeeId == MonitorStoreImage_StoreCheckingDTO.SaleEmployeeId &&
+                        sc.CheckOutAt.Value.Date == MonitorStoreImage_StoreCheckingDTO.Date.Date
+                        select new MonitorStoreImage_StoreCheckingImageMappingDTO
+                        {
+                            AlbumId = scim.AlbumId,
+                            ImageId = scim.ImageId,
+                            SaleEmployeeId = scim.SaleEmployeeId,
+                            ShootingAt = scim.ShootingAt,
+                            StoreCheckingId = scim.StoreCheckingId,
+                            StoreId = scim.StoreId,
+                            Album = new MonitorStoreImage_AlbumDTO
+                            {
+                                Name = a.Name
+                            },
+                            Image = new MonitorStoreImage_ImageDTO
+                            {
+                                Url = i.Url
+                            },
+                            SaleEmployee = new MonitorStoreImage_AppUserDTO
+                            {
+                                DisplayName = au.DisplayName
+                            },
+                            Store = new MonitorStoreImage_StoreDTO
+                            {
+                                Name = s.Name
+                            }
+                        };
 
-            StoreChecking = await StoreCheckingService.Get(StoreChecking.Id);
-            return StoreChecking;
+            return await query.ToListAsync();
         }
     }
 }
