@@ -34,6 +34,7 @@ namespace DMS.Rpc.survey
             this.CreatorId = Survey.CreatorId;
             this.EndAt = Survey.EndAt;
             this.StatusId = Survey.StatusId;
+            this.ResultCounter = Survey.ResultCounter;
             this.SurveyQuestions = Survey.SurveyQuestions?.Select(x => new Survey_SurveyQuestionDTO(x)).ToList();
             this.CreatedAt = Survey.CreatedAt;
             this.UpdatedAt = Survey.UpdatedAt;
