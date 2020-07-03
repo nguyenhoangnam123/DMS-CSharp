@@ -15,6 +15,7 @@ namespace DMS.Services.MRole
         Task<List<Role>> List(RoleFilter RoleFilter);
         Task<Role> Get(long Id);
         Task<Role> Create(Role Role);
+        Task<Role> Clone(long Id);
         Task<Role> Update(Role Role);
         Task<Role> AssignAppUser(Role Role);
         Task<Role> Delete(Role Role);
@@ -83,6 +84,52 @@ namespace DMS.Services.MRole
             return Role;
         }
 
+        public async Task<Role> Clone(long Id)
+        {
+            try
+            {
+                Role Role = await UOW.RoleRepository.Get(Id);
+                var listPermissionsInDb = await UOW.PermissionRepository.List(new PermissionFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    RoleId = new IdFilter { Equal = Role .Id},
+                    Selects = PermissionSelect.ALL
+                });
+                var listRolesInDb = await UOW.RoleRepository.List(new RoleFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Code = new StringFilter { StartWith = Role.Code + "_Clone"},
+                    Name = new StringFilter { StartWith = Role.Name + "_Clone"},
+                    Selects = RoleSelect.ALL
+                });
+                for (int index = 1; index < 1000; index++)
+                {
+                    if (listRolesInDb.Any(x => x.Code == Role.Code + "_Clone" + index.ToString() && x.Name == Role.Name + "_Clone" + index.ToString()))
+                        continue;
+                    Role.Code = Role.Code + "_Clone" + index.ToString();
+                    Role.Name = Role.Name + "_Clone" + index.ToString();
+                    break;
+                }
+                Role.Id = 0;
+                await UOW.Begin();
+                await UOW.RoleRepository.Create(Role);
+                await UOW.Commit();
+
+                await Logging.CreateAuditLog(Role, new { }, nameof(RoleService));
+                return await UOW.RoleRepository.Get(Role.Id);
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
+                if (ex.InnerException == null)
+                    throw new MessageException(ex);
+                else
+                    throw new MessageException(ex.InnerException);
+            }
+        }
         public async Task<Role> Create(Role Role)
         {
             if (!await RoleValidator.Create(Role))

@@ -138,6 +138,23 @@ namespace DMS.Rpc.role
             return new Role_RoleDTO(Role);
         }
 
+        [Route(RoleRoute.Clone), HttpPost]
+        public async Task<ActionResult<Role_RoleDTO>> Clone([FromBody]Role_RoleDTO Role_RoleDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Role_RoleDTO.Id))
+                return Forbid();
+
+            var Role = await RoleService.Clone(Role_RoleDTO.Id);
+            Role_RoleDTO = new Role_RoleDTO(Role);
+            if (Role.IsValidated)
+                return Role_RoleDTO;
+            else
+                return BadRequest(Role_RoleDTO);
+        }
+
         [Route(RoleRoute.Create), HttpPost]
         public async Task<ActionResult<Role_RoleDTO>> Create([FromBody] Role_RoleDTO Role_RoleDTO)
         {

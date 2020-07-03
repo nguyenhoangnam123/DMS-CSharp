@@ -12,6 +12,7 @@ namespace DMS.Rpc.role
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string Clone = Default + "/clone";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
@@ -59,36 +60,36 @@ namespace DMS.Rpc.role
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get,
+                Master, Count, List, Get, Clone,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, SingleListCurrentUser } },
             { "Thêm", new List<string> {
-                Master, Count, List, Get, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
+                Master, Count, List, Get, Clone, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, SingleListERouteType, SingleListRequestState,
                 Detail, Create, GetMenu,
                 SingleListStatus ,SingleListCurrentUser} },
             { "Sửa", new List<string> {
-                Master, Count, List, Get, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
+                Master, Count, List, Get, Clone, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, SingleListERouteType, 
                 SingleListRequestState, SingleListCurrentUser,
                 Detail, Update, GetMenu, 
                  } },
              { "Gán người dùng", new List<string> {
-                Master, Count, List, Get,
+                Master, Count, List, Get, Clone,
                 CountAppUser, ListAppUser,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, SingleListCurrentUser,
                 Detail, AssignAppUser,
                 } },
              { "Tạo nhanh quyền", new List<string> {
-                Master, Count, List, Get,
+                Master, Count, List, Get, Clone,
                 Detail, CreatePermission, GetMenu, Master, Count, List, Get, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                  SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, SingleListCurrentUser,} },
             { "Xoá", new List<string> {
-                Master, Count, List, Get,
+                Master, Count, List, Get, Clone,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator,SingleListCurrentUser,
                 Detail, Delete,

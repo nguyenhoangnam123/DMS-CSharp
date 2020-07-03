@@ -1,6 +1,7 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -156,6 +157,27 @@ namespace DMS.Repositories
                     StatusId = q.StatusId
                 } : null,
             }).ToListAsync();
+            if (filter.Selects.Contains(PermissionSelect.PermissionContent))
+            {
+                List<long> Ids = Permissions.Select(x => x.Id).ToList();
+                List<PermissionContent> PermissionContents = await DataContext.PermissionContent
+                    .Where(x => Ids.Contains(x.PermissionId))
+                    .Select(x => new PermissionContent
+                    {
+                        PermissionId = x.PermissionId,
+                        FieldId = x.FieldId,
+                        PermissionOperatorId = x.PermissionOperatorId,
+                        Value = x.Value,
+                        Id = x.Id
+                    }).ToListAsync();
+                foreach(Permission Permission in Permissions)
+                {
+                    Permission.PermissionContents = PermissionContents
+                        .Where(x => x.PermissionId == Permission.Id)
+                        .ToList();
+                }
+            }
+
             return Permissions;
         }
 

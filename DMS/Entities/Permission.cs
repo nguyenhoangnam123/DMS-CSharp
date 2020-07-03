@@ -63,7 +63,8 @@ namespace DMS.Entities
         Name = E._2,
         Role = E._3,
         Menu = E._4,
-        Status = E._5
+        Status = E._5,
+        PermissionContent = E._6,
     }
 
     public class FieldType : DataEntity
