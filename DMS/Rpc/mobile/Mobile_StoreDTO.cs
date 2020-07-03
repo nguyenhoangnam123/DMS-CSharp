@@ -1,110 +1,91 @@
 using Common;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.mobile
 {
     public class Mobile_StoreDTO : DataDTO
     {
-
         public long Id { get; set; }
-
         public string Code { get; set; }
-
         public string Name { get; set; }
-
         public long? ParentStoreId { get; set; }
-
         public long OrganizationId { get; set; }
-
         public long StoreTypeId { get; set; }
-
         public long? StoreGroupingId { get; set; }
-
-        public long? ResellerId { get; set; }
-
         public string Telephone { get; set; }
-
+        public long? ResellerId { get; set; }
         public long? ProvinceId { get; set; }
-
         public long? DistrictId { get; set; }
-
         public long? WardId { get; set; }
-
         public string Address { get; set; }
-
         public string DeliveryAddress { get; set; }
-
         public decimal? Latitude { get; set; }
-
         public decimal? Longitude { get; set; }
-
         public decimal? DeliveryLatitude { get; set; }
-
         public decimal? DeliveryLongitude { get; set; }
-
         public string OwnerName { get; set; }
-
         public string OwnerPhone { get; set; }
-
         public string OwnerEmail { get; set; }
-
         public string TaxCode { get; set; }
-
         public string LegalEntity { get; set; }
-
         public long StatusId { get; set; }
+        public bool HasEroute { get; set; }
         public bool HasChecking { get; set; }
-
-
+        public bool Used { get; set; }
+        public long? StoreScoutingId { get; set; }
+        public Mobile_DistrictDTO District { get; set; }
+        public Mobile_OrganizationDTO Organization { get; set; }
+        public Mobile_StoreDTO ParentStore { get; set; }
+        public Mobile_ProvinceDTO Province { get; set; }
+        public Mobile_StoreGroupingDTO StoreGrouping { get; set; }
+        public Mobile_StoreTypeDTO StoreType { get; set; }
+        public Mobile_WardDTO Ward { get; set; }
+        public Mobile_StoreScoutingDTO StoreScouting { get; set; }
+        public List<Mobile_StoreImageMappingDTO> StoreImageMappings { get; set; }
+        public List<Mobile_StoreCheckingDTO> StoreCheckings { get; set; }
         public Mobile_StoreDTO() { }
         public Mobile_StoreDTO(Store Store)
         {
-
             this.Id = Store.Id;
-
             this.Code = Store.Code;
-
             this.Name = Store.Name;
-
             this.ParentStoreId = Store.ParentStoreId;
-
             this.OrganizationId = Store.OrganizationId;
-
             this.StoreTypeId = Store.StoreTypeId;
-
             this.StoreGroupingId = Store.StoreGroupingId;
-
-            this.ResellerId = Store.ResellerId;
-
             this.Telephone = Store.Telephone;
-
+            this.ResellerId = Store.ResellerId;
             this.ProvinceId = Store.ProvinceId;
-
             this.DistrictId = Store.DistrictId;
-
             this.WardId = Store.WardId;
-
             this.Address = Store.Address;
-
             this.DeliveryAddress = Store.DeliveryAddress;
-
             this.Latitude = Store.Latitude;
-
             this.Longitude = Store.Longitude;
-
             this.DeliveryLatitude = Store.DeliveryLatitude;
-
             this.DeliveryLongitude = Store.DeliveryLongitude;
-
             this.OwnerName = Store.OwnerName;
-
             this.OwnerPhone = Store.OwnerPhone;
-
             this.OwnerEmail = Store.OwnerEmail;
-
+            this.TaxCode = Store.TaxCode;
+            this.LegalEntity = Store.LegalEntity;
             this.StatusId = Store.StatusId;
+            this.HasEroute = Store.HasEroute;
             this.HasChecking = Store.HasChecking;
-
+            this.Used = Store.Used;
+            this.StoreScoutingId = Store.StoreScoutingId;
+            this.District = Store.District == null ? null : new Mobile_DistrictDTO(Store.District);
+            this.Organization = Store.Organization == null ? null : new Mobile_OrganizationDTO(Store.Organization);
+            this.ParentStore = Store.ParentStore == null ? null : new Mobile_StoreDTO(Store.ParentStore);
+            this.Province = Store.Province == null ? null : new Mobile_ProvinceDTO(Store.Province);
+            this.StoreGrouping = Store.StoreGrouping == null ? null : new Mobile_StoreGroupingDTO(Store.StoreGrouping);
+            this.StoreType = Store.StoreType == null ? null : new Mobile_StoreTypeDTO(Store.StoreType);
+            this.Ward = Store.Ward == null ? null : new Mobile_WardDTO(Store.Ward);
+            this.StoreScouting = Store.StoreScouting == null ? null : new Mobile_StoreScoutingDTO(Store.StoreScouting);
+            this.StoreImageMappings = Store.StoreImageMappings?.Select(x => new Mobile_StoreImageMappingDTO(x)).ToList();
+            this.StoreCheckings = Store.StoreCheckings?.Select(x => new Mobile_StoreCheckingDTO(x)).ToList();
             this.Errors = Store.Errors;
         }
     }
