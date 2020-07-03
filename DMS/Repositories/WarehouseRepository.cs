@@ -523,7 +523,6 @@ namespace DMS.Repositories
                         InventoryDAO.ItemId = Inventory.ItemId;
                         InventoryDAO.SaleStock = Inventory.SaleStock;
                         InventoryDAO.AccountingStock = Inventory.AccountingStock;
-                        InventoryDAO.UpdatedAt = StaticParams.DateTimeNow;
                         InventoryDAO.DeletedAt = null;
                         Inventory.RowId = InventoryDAO.RowId;
                     }
@@ -541,7 +540,7 @@ namespace DMS.Repositories
                             foreach (InventoryHistory inventoryHistory in Inventory.InventoryHistories)
                             {
                                 InventoryHistoryDAO InventoryHistoryDAO = InventoryHistoryDAOs.Where(x => x.Id == inventoryHistory.Id).FirstOrDefault();
-                                if(InventoryHistoryDAO == null)
+                                if (InventoryHistoryDAO == null)
                                 {
                                     InventoryHistoryDAO = new InventoryHistoryDAO
                                     {
@@ -555,8 +554,18 @@ namespace DMS.Repositories
                                         UpdatedAt = StaticParams.DateTimeNow,
                                         DeletedAt = null,
                                     };
-                                    InventoryHistoryDAOs.Add(InventoryHistoryDAO);
                                 }
+                                else
+                                {
+                                    InventoryHistoryDAO.InventoryId = InventoryDAO.Id;
+                                    InventoryHistoryDAO.AppUserId = inventoryHistory.AppUserId;
+                                    InventoryHistoryDAO.SaleStock = inventoryHistory.SaleStock;
+                                    InventoryHistoryDAO.AccountingStock = inventoryHistory.AccountingStock;
+                                    InventoryHistoryDAO.OldAccountingStock = inventoryHistory.OldAccountingStock;
+                                    InventoryHistoryDAO.OldSaleStock = inventoryHistory.OldSaleStock;
+                                    InventoryHistoryDAO.DeletedAt = null;
+                                }
+                                InventoryHistoryDAOs.Add(InventoryHistoryDAO);
                             }
                         }
                     }

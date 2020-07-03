@@ -409,6 +409,7 @@ namespace DMS.Rpc.role
                     ActionId = pp.ActionId,
                 }).ToList(),
             };
+            Permission.BaseLanguage = CurrentContext.Language;
             return Permission;
         }
 
