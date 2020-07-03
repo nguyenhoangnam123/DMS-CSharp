@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
 using DMS.Entities;
+using DMS.Services.MStore;
 
 namespace DMS.Rpc
 {
@@ -128,6 +129,57 @@ namespace DMS.Rpc
             List<long> AppUserIds = AppUsers.Select(a => a.Id).ToList();
 
             return AppUserIds;
+        }
+
+        protected async Task<List<long>> FilterStore(IStoreService StoreService, IOrganizationService OrganizationService, ICurrentContext CurrentContext)
+        {
+            List<long> organizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+
+            List<long> In = null;
+            List<long> NotIn = null;
+            foreach (var currentFilter in CurrentContext.Filters)
+            {
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == "StoreId")
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal != null)
+                        {
+                            if (In == null) In = new List<long>();
+                            In.Add(FilterPermissionDefinition.IdFilter.Equal.Value);
+                        }
+                        if (FilterPermissionDefinition.IdFilter.In != null)
+                        {
+                            if (In == null) In = new List<long>();
+                            In.AddRange(FilterPermissionDefinition.IdFilter.In);
+                        }
+
+                        if (FilterPermissionDefinition.IdFilter.NotEqual != null)
+                        {
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.Add(FilterPermissionDefinition.IdFilter.NotEqual.Value);
+                        }
+                        if (FilterPermissionDefinition.IdFilter.NotIn != null)
+                        {
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.AddRange(FilterPermissionDefinition.IdFilter.NotIn);
+                        }
+                    }
+                }
+            }
+
+            List<Store> Stores = await StoreService.List(new StoreFilter
+            {
+                Id = new IdFilter { In = In, NotIn = NotIn },
+                OrganizationId = new IdFilter { In = organizationIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.Id,
+            });
+            List<long> StoreIds = Stores.Select(a => a.Id).ToList();
+
+            return StoreIds;
         }
 
     }

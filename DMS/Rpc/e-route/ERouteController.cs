@@ -347,8 +347,10 @@ namespace DMS.Rpc.e_route
             AppUserFilter.StatusId = ERoute_AppUserFilterDTO.StatusId;
             AppUserFilter.Birthday = ERoute_AppUserFilterDTO.Birthday;
             AppUserFilter.ProvinceId = ERoute_AppUserFilterDTO.ProvinceId;
+
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<ERoute_AppUserDTO> ERoute_AppUserDTOs = AppUsers
                 .Select(x => new ERoute_AppUserDTO(x)).ToList();
@@ -385,6 +387,9 @@ namespace DMS.Rpc.e_route
             StoreFilter.OwnerPhone = ERoute_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = ERoute_StoreFilterDTO.StatusId;
+
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<ERoute_StoreDTO> ERoute_StoreDTOs = Stores
@@ -582,10 +587,14 @@ namespace DMS.Rpc.e_route
             StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
+
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<ERoute_StoreDTO> ERoute_StoreDTOs = Stores
                 .Select(x => new ERoute_StoreDTO(x)).ToList();
             return ERoute_StoreDTOs;
+
         }
         [Route(ERouteRoute.SingleListStoreGrouping), HttpPost]
         public async Task<List<ERoute_StoreGroupingDTO>> SingleListStoreGrouping([FromBody] ERoute_StoreGroupingFilterDTO ERoute_StoreGroupingFilterDTO)
