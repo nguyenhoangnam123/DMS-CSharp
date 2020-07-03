@@ -395,6 +395,19 @@ namespace DMS.Rpc.mobile
             return Mobile_BannerDTOs;
         }
 
+        [Route(MobileRoute.GetStore), HttpPost]
+        public async Task<ActionResult<Mobile_StoreDTO>> Get([FromBody] Mobile_StoreDTO Mobile_StoreDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Mobile_StoreDTO.Id))
+                return Forbid();
+
+            Store Store = await StoreService.Get(Mobile_StoreDTO.Id);
+            return new Mobile_StoreDTO(Store);
+        }
+
         [Route(MobileRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
