@@ -45,7 +45,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.ParentStoreId != null && filter.ParentStoreId.HasValue)
                 query = query.Where(q => q.ParentStoreId.HasValue).Where(q => q.ParentStoreId.Value, filter.ParentStoreId);
-            if (filter.StoreCheckingStatusId != null && filter.ParentStoreId.HasValue)
+            if (filter.StoreCheckingStatusId != null)
             {
                 if (filter.StoreCheckingStatusId.Equal.HasValue)
                 {
