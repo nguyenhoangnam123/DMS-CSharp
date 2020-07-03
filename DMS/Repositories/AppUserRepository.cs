@@ -83,7 +83,6 @@ namespace DMS.Repositories
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
                     query = query.Where(q => q.OrganizationId.HasValue && !Ids.Contains(q.OrganizationId.Value));
                 }
-
             }
             if (filter.ProvinceId != null)
                 query = query.Where(q => q.ProvinceId, filter.OrganizationId);

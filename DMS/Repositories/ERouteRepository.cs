@@ -44,6 +44,40 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
+            if (filter.OrganizationId != null)
+            {
+                query = query.Where(q => q.SaleEmployee.OrganizationId.HasValue);
+                if (filter.OrganizationId.Equal != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.Equal.Value).FirstOrDefault();
+                    query = query.Where(q => q.SaleEmployee.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.NotEqual != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                    query = query.Where(q => !q.SaleEmployee.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.In != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q =>  Ids.Contains(q.SaleEmployee.OrganizationId.Value));
+                }
+                if (filter.OrganizationId.NotIn != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => !Ids.Contains(q.SaleEmployee.OrganizationId.Value));
+                }
+            }
             if (filter.AppUserId != null)
                 query = query.Where(q => q.SaleEmployeeId, filter.AppUserId);
             if (filter.StartDate != null)
@@ -87,6 +121,10 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Code, ERouteFilter.Code);
                 if (ERouteFilter.Name != null)
                     queryable = queryable.Where(q => q.Name, ERouteFilter.Name);
+                if (ERouteFilter.OrganizationId != null)
+                    queryable = queryable
+                        .Where(q => q.SaleEmployee.OrganizationId.HasValue)
+                        .Where(q => q.SaleEmployee.OrganizationId.Value, ERouteFilter.OrganizationId);
                 if (ERouteFilter.AppUserId != null)
                     queryable = queryable.Where(q => q.SaleEmployeeId, ERouteFilter.AppUserId);
                 if (ERouteFilter.StartDate != null)
