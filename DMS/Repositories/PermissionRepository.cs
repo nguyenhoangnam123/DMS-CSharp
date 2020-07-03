@@ -170,9 +170,19 @@ namespace DMS.Repositories
                         Value = x.Value,
                         Id = x.Id
                     }).ToListAsync();
-                foreach(Permission Permission in Permissions)
+                List<PermissionActionMapping> PermissionActionMappings = await DataContext.PermissionActionMapping
+                    .Where(x => Ids.Contains(x.PermissionId))
+                    .Select(x => new PermissionActionMapping
+                    {
+                        ActionId = x.ActionId,
+                        PermissionId = x.PermissionId,
+                    }).ToListAsync();
+                foreach (Permission Permission in Permissions)
                 {
                     Permission.PermissionContents = PermissionContents
+                        .Where(x => x.PermissionId == Permission.Id)
+                        .ToList();
+                    Permission.PermissionActionMappings = PermissionActionMappings
                         .Where(x => x.PermissionId == Permission.Id)
                         .ToList();
                 }
@@ -320,7 +330,6 @@ namespace DMS.Repositories
             foreach (Permission Permission in Permissions)
             {
                 PermissionDAO PermissionDAO = new PermissionDAO();
-                PermissionDAO.Id = Permission.Id;
                 PermissionDAO.Code = Permission.Code;
                 PermissionDAO.Name = Permission.Name;
                 PermissionDAO.RoleId = Permission.RoleId;
@@ -329,6 +338,30 @@ namespace DMS.Repositories
                 PermissionDAOs.Add(PermissionDAO);
             }
             await DataContext.BulkMergeAsync(PermissionDAOs);
+            foreach (Permission Permission in Permissions)
+            {
+                PermissionDAO PermissionDAO = PermissionDAOs.Where(p => p.Code == Permission.Code).FirstOrDefault();
+                Permission.Id = PermissionDAO.Id;
+                Permission.PermissionActionMappings.ForEach(x => x.PermissionId = PermissionDAO.Id);
+                Permission.PermissionContents.ForEach(x => x.PermissionId = PermissionDAO.Id);
+            }
+            List<PermissionActionMapping> PermissionActionMappings = Permissions.SelectMany(x => x.PermissionActionMappings).ToList();
+            List<PermissionContent> PermissionContents = Permissions.SelectMany(x => x.PermissionContents).ToList();
+            List<PermissionActionMappingDAO> PermissionActionMappingDAOs = PermissionActionMappings.Select(x => new PermissionActionMappingDAO
+            {
+                ActionId = x.ActionId,
+                PermissionId = x.PermissionId,
+            }).ToList();
+            List<PermissionContentDAO> PermissionContentDAOs = PermissionContents.Select(x => new PermissionContentDAO
+            {
+                FieldId = x.FieldId,
+                PermissionOperatorId = x.PermissionOperatorId,
+                Value = x.Value,
+                PermissionId = x.PermissionId,
+            }).ToList();
+            await DataContext.BulkMergeAsync(PermissionActionMappingDAOs);
+            await DataContext.BulkMergeAsync(PermissionContentDAOs);
+
             return true;
         }
 

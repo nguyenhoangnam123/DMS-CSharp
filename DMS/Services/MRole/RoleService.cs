@@ -28,18 +28,21 @@ namespace DMS.Services.MRole
     {
         private IUOW UOW;
         private ILogging Logging;
+        private IPermissionRepository PermissionRepository;
         private ICurrentContext CurrentContext;
         private IRoleValidator RoleValidator;
 
         public RoleService(
             IUOW UOW,
             ILogging Logging,
+            IPermissionRepository PermissionRepository,
             ICurrentContext CurrentContext,
             IRoleValidator RoleValidator
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
+            this.PermissionRepository = PermissionRepository;
             this.CurrentContext = CurrentContext;
             this.RoleValidator = RoleValidator;
         }
@@ -52,11 +55,16 @@ namespace DMS.Services.MRole
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -69,11 +77,16 @@ namespace DMS.Services.MRole
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<Role> Get(long Id)
@@ -89,6 +102,15 @@ namespace DMS.Services.MRole
             try
             {
                 Role Role = await UOW.RoleRepository.Get(Id);
+                var listRolesInDb = await UOW.RoleRepository.List(new RoleFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Code = new StringFilter { StartWith = Role.Code + "_Clone" },
+                    Name = new StringFilter { StartWith = Role.Name + "_Clone" },
+                    Selects = RoleSelect.ALL
+                });
+
                 var listPermissionsInDb = await UOW.PermissionRepository.List(new PermissionFilter
                 {
                     Skip = 0,
@@ -96,14 +118,7 @@ namespace DMS.Services.MRole
                     RoleId = new IdFilter { Equal = Role .Id},
                     Selects = PermissionSelect.ALL
                 });
-                var listRolesInDb = await UOW.RoleRepository.List(new RoleFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Code = new StringFilter { StartWith = Role.Code + "_Clone"},
-                    Name = new StringFilter { StartWith = Role.Name + "_Clone"},
-                    Selects = RoleSelect.ALL
-                });
+               
                 for (int index = 1; index < 1000; index++)
                 {
                     if (listRolesInDb.Any(x => x.Code == Role.Code + "_Clone" + index.ToString() && x.Name == Role.Name + "_Clone" + index.ToString()))
@@ -115,6 +130,11 @@ namespace DMS.Services.MRole
                 Role.Id = 0;
                 await UOW.Begin();
                 await UOW.RoleRepository.Create(Role);
+                foreach(Permission Permission in listPermissionsInDb)
+                {
+                    Permission.RoleId = Role.Id;
+                }
+                await PermissionRepository.BulkMerge(listPermissionsInDb);
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(Role, new { }, nameof(RoleService));
@@ -123,11 +143,16 @@ namespace DMS.Services.MRole
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<Role> Create(Role Role)
@@ -148,11 +173,16 @@ namespace DMS.Services.MRole
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -176,11 +206,16 @@ namespace DMS.Services.MRole
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -203,11 +238,16 @@ namespace DMS.Services.MRole
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -227,11 +267,16 @@ namespace DMS.Services.MRole
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -251,11 +296,16 @@ namespace DMS.Services.MRole
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -301,11 +351,16 @@ namespace DMS.Services.MRole
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RoleService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RoleService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
