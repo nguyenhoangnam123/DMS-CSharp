@@ -494,7 +494,7 @@ namespace DMS.Repositories
             List<long> InventoryIds = InventoryDAOs.Select(x => x.Id).ToList();
             List<InventoryHistoryDAO> InventoryHistoryDAOs = await DataContext.InventoryHistory
                 .Where(x => InventoryIds.Contains(x.InventoryId)).ToListAsync();
-            InventoryHistoryDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
+            //InventoryHistoryDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
 
             if (Warehouse.Inventories != null)
             {
@@ -554,18 +554,8 @@ namespace DMS.Repositories
                                         UpdatedAt = StaticParams.DateTimeNow,
                                         DeletedAt = null,
                                     };
+                                    InventoryHistoryDAOs.Add(InventoryHistoryDAO);
                                 }
-                                else
-                                {
-                                    InventoryHistoryDAO.InventoryId = InventoryDAO.Id;
-                                    InventoryHistoryDAO.AppUserId = inventoryHistory.AppUserId;
-                                    InventoryHistoryDAO.SaleStock = inventoryHistory.SaleStock;
-                                    InventoryHistoryDAO.AccountingStock = inventoryHistory.AccountingStock;
-                                    InventoryHistoryDAO.OldAccountingStock = inventoryHistory.OldAccountingStock;
-                                    InventoryHistoryDAO.OldSaleStock = inventoryHistory.OldSaleStock;
-                                    InventoryHistoryDAO.DeletedAt = null;
-                                }
-                                InventoryHistoryDAOs.Add(InventoryHistoryDAO);
                             }
                         }
                     }
