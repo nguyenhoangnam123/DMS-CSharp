@@ -1,6 +1,7 @@
 using Common;
 using DMS.Entities;
 using DMS.Repositories;
+using Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,9 @@ namespace DMS.Services.MSurvey
             QuestionIsMandatory,
             ContentEmpty,
             SurveyInUsed,
-            ContentSurveyOptionsEmpty
+            ContentSurveyOptionsEmpty,
+            SurveyQuestionsEmpty,
+            SurveyOptionsEmpty
         }
 
         private IUOW UOW;
@@ -58,15 +61,20 @@ namespace DMS.Services.MSurvey
 
         private async Task<bool> ValidateSurveyQuestions(Survey Survey)
         {
-            if (Survey.SurveyQuestions == null) Survey.SurveyQuestions = new List<SurveyQuestion>();
+            if (Survey.SurveyQuestions == null || !Survey.SurveyQuestions.Any()) 
+            {
+                Survey.AddError(nameof(SurveyValidator), nameof(Survey.SurveyQuestions), ErrorCode.SurveyQuestionsEmpty);
+            }
             else
             {
                 foreach (var SurveyQuestion in Survey.SurveyQuestions)
                 {
-                    if (SurveyQuestion.SurveyOptions == null) SurveyQuestion.SurveyOptions = new List<SurveyOption>();
                     if (string.IsNullOrWhiteSpace(SurveyQuestion.Content))
                         SurveyQuestion.AddError(nameof(SurveyValidator), nameof(SurveyQuestion.Content), ErrorCode.ContentEmpty);
-                    if (SurveyQuestion.SurveyOptions == null) SurveyQuestion.SurveyOptions = new List<SurveyOption>();
+                    if (SurveyQuestion.SurveyOptions == null || !SurveyQuestion.SurveyOptions.Any()) 
+                    {
+                        SurveyQuestion.AddError(nameof(SurveyValidator), nameof(SurveyQuestion.SurveyOptions), ErrorCode.SurveyOptionsEmpty);
+                    }
                     else
                         foreach (var SurveyOption in SurveyQuestion.SurveyOptions)
                         {
@@ -95,10 +103,18 @@ namespace DMS.Services.MSurvey
             }
             else
             {
-                if (Survey.EndAt.HasValue && Survey.EndAt.Value < Survey.StartAt)
+                if (Survey.EndAt.HasValue )
                 {
-                    Survey.AddError(nameof(SurveyValidator), nameof(Survey.EndAt), ErrorCode.EndDateWrong);
+                    if(Survey.EndAt.Value.Date < StaticParams.DateTimeNow.Date)
+                    {
+                        Survey.AddError(nameof(SurveyValidator), nameof(Survey.EndAt), ErrorCode.EndDateWrong);
+                    }
+                    else if(Survey.EndAt.Value < Survey.StartAt)
+                    {
+                        Survey.AddError(nameof(SurveyValidator), nameof(Survey.EndAt), ErrorCode.EndDateWrong);
+                    }
                 }
+                
             }
             return Survey.IsValidated;
         }

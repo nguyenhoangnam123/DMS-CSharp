@@ -16,7 +16,7 @@ namespace DMS.Entities
         public DateTime? EndAt { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
-
+        public long ResultCounter { get; set; }
         public DateTime AnswerAt { get; set; }
         public long StoreId { get; set; }
         public AppUser Creator { get; set; }

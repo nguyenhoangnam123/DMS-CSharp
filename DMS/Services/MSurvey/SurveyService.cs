@@ -83,6 +83,15 @@ namespace DMS.Services.MSurvey
         public async Task<Survey> Get(long Id)
         {
             Survey Survey = await UOW.SurveyRepository.Get(Id);
+            if(Survey != null)
+            {
+                SurveyResultFilter SurveyResultFilter = new SurveyResultFilter
+                {
+                    SurveyId = new IdFilter { Equal = Survey.Id }
+                };
+
+                Survey.ResultCounter = await UOW.SurveyResultRepository.Count(SurveyResultFilter);
+            }
             return Survey;
         }
 
@@ -265,11 +274,17 @@ namespace DMS.Services.MSurvey
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
+                
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SurveyService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 

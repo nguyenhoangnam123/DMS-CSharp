@@ -786,6 +786,9 @@ namespace DMS.Rpc.mobile
             SurveyFilter.Id = Mobile_SurveyFilterDTO.Id;
             SurveyFilter.Title = Mobile_SurveyFilterDTO.Title;
             SurveyFilter.Description = Mobile_SurveyFilterDTO.Description;
+            SurveyFilter.StartAt = Mobile_SurveyFilterDTO.StartAt;
+            SurveyFilter.EndAt = Mobile_SurveyFilterDTO.EndAt;
+            SurveyFilter.CreatorId = Mobile_SurveyFilterDTO.CreatorId;
             SurveyFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             return await SurveyService.Count(SurveyFilter);
@@ -806,6 +809,9 @@ namespace DMS.Rpc.mobile
             SurveyFilter.Id = Mobile_SurveyFilterDTO.Id;
             SurveyFilter.Title = Mobile_SurveyFilterDTO.Title;
             SurveyFilter.Description = Mobile_SurveyFilterDTO.Description;
+            SurveyFilter.StartAt = Mobile_SurveyFilterDTO.StartAt;
+            SurveyFilter.EndAt = Mobile_SurveyFilterDTO.EndAt;
+            SurveyFilter.CreatorId = Mobile_SurveyFilterDTO.CreatorId;
             SurveyFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Survey> Surveys = await SurveyService.List(SurveyFilter);
