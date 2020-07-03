@@ -311,6 +311,7 @@ namespace DMS.Rpc.e_route
             ERouteFilter.Id = ERoute_ERouteFilterDTO.Id;
             ERouteFilter.Code = ERoute_ERouteFilterDTO.Code;
             ERouteFilter.Name = ERoute_ERouteFilterDTO.Name;
+            ERouteFilter.OrganizationId = ERoute_ERouteFilterDTO.OrganizationId;
             ERouteFilter.AppUserId = ERoute_ERouteFilterDTO.AppUserId;
             ERouteFilter.StartDate = ERoute_ERouteFilterDTO.StartDate;
             ERouteFilter.EndDate = ERoute_ERouteFilterDTO.EndDate;
