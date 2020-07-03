@@ -70,11 +70,16 @@ namespace DMS.Services.MERoute
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ERouteService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -87,11 +92,16 @@ namespace DMS.Services.MERoute
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ERouteService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<ERoute> Get(long Id)
@@ -185,11 +195,16 @@ namespace DMS.Services.MERoute
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ERouteService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -223,11 +238,16 @@ namespace DMS.Services.MERoute
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ERouteService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -276,11 +296,16 @@ namespace DMS.Services.MERoute
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ERouteService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -296,13 +321,7 @@ namespace DMS.Services.MERoute
                 OrderBy = OrganizationOrder.Id,
                 OrderType = OrderType.ASC
             });
-            List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = AppUserSelect.Id,
-            });
-            List<long> AppUserIds = AppUsers.Select(a => a.Id).ToList();
+
             foreach (var currentFilter in CurrentContext.Filters)
             {
                 ERouteFilter subFilter = new ERouteFilter();

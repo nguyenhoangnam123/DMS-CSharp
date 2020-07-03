@@ -425,6 +425,34 @@ namespace DMS.Rpc.e_route
                 .Select(x => new ERoute_StatusDTO(x)).ToList();
             return ERoute_StatusDTOs;
         }
+        [Route(ERouteRoute.FilterListOrganization), HttpPost]
+        public async Task<List<ERoute_OrganizationDTO>> FilterListOrganization([FromBody] ERoute_OrganizationFilterDTO ERoute_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = 99999;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.Id = ERoute_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = ERoute_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = ERoute_OrganizationFilterDTO.Name;
+            OrganizationFilter.ParentId = ERoute_OrganizationFilterDTO.ParentId;
+            OrganizationFilter.Path = ERoute_OrganizationFilterDTO.Path;
+            OrganizationFilter.Level = ERoute_OrganizationFilterDTO.Level;
+            OrganizationFilter.StatusId = null;
+            OrganizationFilter.Phone = ERoute_OrganizationFilterDTO.Phone;
+            OrganizationFilter.Address = ERoute_OrganizationFilterDTO.Address;
+            OrganizationFilter.Email = ERoute_OrganizationFilterDTO.Email;
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<ERoute_OrganizationDTO> ERoute_OrganizationDTOs = Organizations
+                .Select(x => new ERoute_OrganizationDTO(x)).ToList();
+            return ERoute_OrganizationDTOs;
+        }
 
         [Route(ERouteRoute.SingleListAppUser), HttpPost]
         public async Task<List<ERoute_AppUserDTO>> SingleListAppUser([FromBody] ERoute_AppUserFilterDTO ERoute_AppUserFilterDTO)

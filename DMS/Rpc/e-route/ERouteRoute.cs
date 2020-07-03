@@ -18,6 +18,7 @@ namespace DMS.Rpc.e_route
         public const string BulkDelete = Default + "/bulk-delete";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
+        public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListERouteType = Default + "/filter-list-eroute-type";
         public const string FilterListRequestState = Default + "/filter-list-request-state";
         public const string FilterListStore = Default + "/filter-list-store";
