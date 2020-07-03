@@ -833,7 +833,7 @@ namespace DMS.Repositories
                 foreach (StoreImageMapping StoreImageMapping in Store.StoreImageMappings)
                 {
                     StoreImageMappingDAO StoreImageMappingDAO = new StoreImageMappingDAO();
-                    StoreImageMappingDAO.StoreId = StoreImageMapping.StoreId;
+                    StoreImageMappingDAO.StoreId = Store.Id;
                     StoreImageMappingDAO.ImageId = StoreImageMapping.ImageId;
                     StoreImageMappingDAOs.Add(StoreImageMappingDAO);
                 }
