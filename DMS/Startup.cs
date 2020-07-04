@@ -5,6 +5,7 @@ using DMS.Models;
 using DMS.Rpc;
 using DMS.Services;
 using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -36,7 +37,7 @@ namespace DMS
             var builder = new ConfigurationBuilder()
             .SetBasePath(env.ContentRootPath)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", reloadOnChange: true, optional: true)
             .AddEnvironmentVariables();
 
             if (env.EnvironmentName == "Production")
@@ -77,6 +78,21 @@ namespace DMS
                 DataContext DataContext = new DataContext(optionsBuilder.Options);
                 return DataContext;
             };
+
+            services.AddHangfire(configuration => configuration
+             .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+             .UseSimpleAssemblyNameTypeSerializer()
+             .UseRecommendedSerializerSettings()
+             .UseSqlServerStorage(Configuration.GetConnectionString("DataContext"), new SqlServerStorageOptions
+             {
+                 SlidingInvisibilityTimeout = TimeSpan.FromMinutes(2),
+                 QueuePollInterval = TimeSpan.FromSeconds(10),
+                 CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                 UseRecommendedIsolationLevel = true,
+                 UsePageLocksOnDequeue = true,
+                 DisableGlobalLocks = true
+             }));
+            services.AddHangfireServer();
 
             services.Scan(scan => scan
              .FromAssemblyOf<IServiceScoped>()
@@ -137,15 +153,17 @@ namespace DMS
                     policy.Requirements.Add(new SimpleRequirement()));
             });
 
-            InternalServices.UTILS = Configuration["InternalServices:UTILS"];
-            InternalServices.ES = Configuration["InternalServices:ES"];
+          
             Action onChange = () =>
             {
                 InternalServices.UTILS = Configuration["InternalServices:UTILS"];
                 InternalServices.ES = Configuration["InternalServices:ES"];
-                RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily);
-                RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily);
+                JobStorage.Current = new SqlServerStorage(Configuration.GetConnectionString("DataContext"));
+                TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily, tzi);
+                RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily, tzi);
             };
+            onChange();
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);
         }
 
@@ -170,6 +188,7 @@ namespace DMS
                 c.RoutePrefix = "rpc/dms/swagger";
             });
             app.UseDeveloperExceptionPage();
+            app.UseHangfireDashboard("/rpc/dms/hangfire");
 
         }
     }

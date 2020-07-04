@@ -60,7 +60,7 @@ namespace DMS.Rpc.role
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, Clone,
+                Master, Count, List, Get, Clone, 
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, SingleListCurrentUser } },
             { "Thêm", new List<string> {
