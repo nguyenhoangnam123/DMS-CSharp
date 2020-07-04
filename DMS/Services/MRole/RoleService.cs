@@ -28,21 +28,18 @@ namespace DMS.Services.MRole
     {
         private IUOW UOW;
         private ILogging Logging;
-        private IPermissionRepository PermissionRepository;
         private ICurrentContext CurrentContext;
         private IRoleValidator RoleValidator;
 
         public RoleService(
             IUOW UOW,
             ILogging Logging,
-            IPermissionRepository PermissionRepository,
             ICurrentContext CurrentContext,
             IRoleValidator RoleValidator
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
-            this.PermissionRepository = PermissionRepository;
             this.CurrentContext = CurrentContext;
             this.RoleValidator = RoleValidator;
         }
@@ -134,7 +131,7 @@ namespace DMS.Services.MRole
                 {
                     Permission.RoleId = Role.Id;
                 }
-                await PermissionRepository.BulkMerge(listPermissionsInDb);
+                await UOW.PermissionRepository.BulkMerge(listPermissionsInDb);
                 await UOW.Commit();
 
                 await Logging.CreateAuditLog(Role, new { }, nameof(RoleService));
