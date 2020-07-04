@@ -23,6 +23,7 @@ using OfficeOpenXml;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Winton.Extensions.Configuration.Consul;
@@ -153,13 +154,18 @@ namespace DMS
                     policy.Requirements.Add(new SimpleRequirement()));
             });
 
-          
+
             Action onChange = () =>
             {
                 InternalServices.UTILS = Configuration["InternalServices:UTILS"];
                 InternalServices.ES = Configuration["InternalServices:ES"];
                 JobStorage.Current = new SqlServerStorage(Configuration.GetConnectionString("DataContext"));
-                TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                TimeZoneInfo tzi;
+                if (isWindows)
+                    tzi = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                else
+                    tzi = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily, tzi);
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily, tzi);
             };
