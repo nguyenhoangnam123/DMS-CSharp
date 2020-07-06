@@ -86,12 +86,12 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 throw new BindException(ModelState);
 
             DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value;
+                             StaticParams.DateTimeNow.Date :
+                             MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value.Date;
 
             DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value;
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
 
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
@@ -121,12 +121,13 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 throw new BindException(ModelState);
 
             DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
-                   StaticParams.DateTimeNow :
-                   MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value;
+                   StaticParams.DateTimeNow.Date :
+                   MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value.Date;
 
             DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value;
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
@@ -269,8 +270,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
             long SaleEmployeeId = MonitorSalesman_MonitorSalesmanDetailFilterDTO.SaleEmployeeId;
-            DateTime Start = MonitorSalesman_MonitorSalesmanDetailFilterDTO.Date;
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
+            DateTime Start = MonitorSalesman_MonitorSalesmanDetailFilterDTO.Date.Date;
             DateTime End = Start.AddDays(1).AddSeconds(-1);
             List<long> StoreIds = new List<long>();
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
