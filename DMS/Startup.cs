@@ -168,6 +168,7 @@ namespace DMS
                     tzi = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily, tzi);
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily, tzi);
+                RecurringJob.AddOrUpdate<MaintenanceService>("CompleteStoreCheckout", x => x.CompleteStoreCheckout(), Cron.Daily, tzi);
             };
             onChange();
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);

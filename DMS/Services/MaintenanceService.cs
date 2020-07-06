@@ -3,6 +3,7 @@ using DMS.Models;
 using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ namespace DMS.Services
     {
         Task CleanEventMessage();
         Task CleanHangfire();
+        Task CompleteStoreCheckout();
     }
     public class MaintenanceService : IMaintenanceService
     {
@@ -40,6 +42,17 @@ namespace DMS.Services
                 DBCC CHECKIDENT('[HangFire].[Job]', reseed, 0)
                 UPDATE[HangFire].[Hash] SET Value = 1 WHERE Field = 'LastJobId'";
             var result = await DataContext.Database.ExecuteSqlRawAsync(commandText);
+        }
+
+        public async Task CompleteStoreCheckout()
+        {
+            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
+                .Where(sc => sc.CheckOutAt.HasValue == false && sc.CheckInAt.HasValue).ToListAsync();
+            foreach(StoreCheckingDAO StoreCheckingDAO in StoreCheckingDAOs)
+            {
+                StoreCheckingDAO.CheckOutAt = StoreCheckingDAO.CheckInAt.Value.Date.AddDays(1).AddSeconds(-1);
+            }
+            await DataContext.SaveChangesAsync();
         }
     }
 }

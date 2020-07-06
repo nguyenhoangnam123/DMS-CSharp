@@ -169,15 +169,12 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             long? StoreId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.StoreId?.Equal;
 
             DateTime Start = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.GreaterEqual.Value;
+                     StaticParams.DateTimeNow.Date :
+                     MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.GreaterEqual.Value.Date;
 
             DateTime End = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value;
-
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
 
             var query = from sc in DataContext.StoreChecking
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
@@ -218,17 +215,14 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             long? OrganizationId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.AppUserId?.Equal;
             long? StoreId = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.StoreId?.Equal;
-            
+
             DateTime Start = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.GreaterEqual.Value;
+            StaticParams.DateTimeNow.Date :
+            MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.GreaterEqual.Value.Date;
 
             DateTime End = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value;
-
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
 
             var query = from sc in DataContext.StoreChecking
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id

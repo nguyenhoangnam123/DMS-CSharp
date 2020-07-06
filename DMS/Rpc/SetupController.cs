@@ -44,9 +44,9 @@ namespace DMS.Rpc
         {
             RestClient RestClient = new RestClient(InternalServices.ES);
             InitPosition(RestClient);
-            //InitProvince(RestClient);
-            //InitDistrict(RestClient);
-            //InitWard(RestClient);
+            InitProvince(RestClient);
+            InitDistrict(RestClient);
+            InitWard(RestClient);
             InitOrganization(RestClient);
             InitAppUser(RestClient);
             return Ok();
@@ -172,7 +172,6 @@ namespace DMS.Rpc
         private void InitProvince(RestClient RestClient)
         {
             IRestRequest RestRequest = new RestRequest("rpc/es/province/list");
-            RestRequest.RequestFormat = DataFormat.Json;
             RestRequest.Method = Method.POST;
             IRestResponse<List<Province>> RestResponse = RestClient.Post<List<Province>>(RestRequest);
             if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
@@ -642,6 +641,14 @@ namespace DMS.Rpc
 
         private void InitKpiEnum()
         {
+            List<KpiCriteriaGeneralDAO> KpiCriteriaGeneralDAOs = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Select(item => new KpiCriteriaGeneralDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.KpiCriteriaGeneral.BulkSynchronize(KpiCriteriaGeneralDAOs);
+
             List<KpiCriteriaItemDAO> KpiCriteriaItemDAOs = KpiCriteriaItemEnum.KpiCriteriaItemEnumList.Select(item => new KpiCriteriaItemDAO
             {
                 Id = item.Id,

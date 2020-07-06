@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DMS.Enums
 {
-    public class GeneralCriteriaEnum
+    public class KpiCriteriaGeneralEnum
     {
         public static GenericEnum TOTALINDIRECTORDERS = new GenericEnum { Id = 1, Code = "TotalIndirectOrders", Name = "Số đơn hàng gián tiếp" };
         public static GenericEnum TOTALINDIRECTOUTPUT = new GenericEnum { Id = 2, Code = "TotalIndirectOutput", Name = "Tổng sản lượng đơn hàng gián tiếp" };
@@ -13,7 +13,7 @@ namespace DMS.Enums
         public static GenericEnum NEWSTORECREATED = new GenericEnum { Id = 6, Code = "NewStoresCreated", Name = "Số cửa hàng tạo mới" };
         public static GenericEnum NUMBEROFSTOREVISITS = new GenericEnum { Id = 7, Code = "NumberOfStoreVisits", Name = "Số lần viếng thăm cửa hàng" };
 
-        public static List<GenericEnum> KpiCriteriaEnumList = new List<GenericEnum>()
+        public static List<GenericEnum> KpiCriteriaGeneralEnumList = new List<GenericEnum>()
         {
             TOTALINDIRECTORDERS, TOTALINDIRECTOUTPUT, TOTALINDIRECTSALESAMOUNT, SKUINDIRECTORDER, STORESVISITED, NEWSTORECREATED
         };

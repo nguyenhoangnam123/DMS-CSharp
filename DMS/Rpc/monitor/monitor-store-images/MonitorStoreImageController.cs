@@ -157,16 +157,14 @@ namespace DMS.Rpc.monitor.monitor_store_images
             long? StoreId = MonitorStoreImage_MonitorStoreImageFilterDTO.StoreId?.Equal;
             long? HasImage = MonitorStoreImage_MonitorStoreImageFilterDTO.HasImage?.Equal;
             long? HasOrder = MonitorStoreImage_MonitorStoreImageFilterDTO.HasOrder?.Equal;
+
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value;
+                    StaticParams.DateTimeNow.Date :
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value.Date;
 
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value;
-
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
 
             var query = from au in DataContext.AppUser
                         join sc in DataContext.StoreChecking on au.Id equals sc.SaleEmployeeId
@@ -202,15 +200,12 @@ namespace DMS.Rpc.monitor.monitor_store_images
             long? HasOrder = MonitorStoreImage_MonitorStoreImageFilterDTO.HasOrder?.Equal;
 
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value;
+                    StaticParams.DateTimeNow.Date :
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value.Date;
 
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value;
-
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
 
             var query = from au in DataContext.AppUser
                         join sc in DataContext.StoreChecking on au.Id equals sc.SaleEmployeeId
