@@ -205,33 +205,6 @@ namespace DMS.Services.MSurvey
             }
         }
 
-        public async Task<Survey> CreateSurveyResult(Survey Survey)
-        {
-            if (!await SurveyValidator.CreateSurveyResult(Survey))
-                return Survey;
-            try
-            {
-                var oldData = await UOW.SurveyRepository.Get(Survey.Id);
-
-                await UOW.Begin();
-                await UOW.SurveyRepository.Update(Survey);
-                await UOW.Commit();
-
-                var newData = await UOW.SurveyRepository.Get(Survey.Id);
-                await Logging.CreateAuditLog(newData, oldData, nameof(SurveyService));
-                return newData;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
-                if (ex.InnerException == null)
-                    throw new MessageException(ex);
-                else
-                    throw new MessageException(ex.InnerException);
-            }
-        }
-
         public async Task<Survey> Delete(Survey Survey)
         {
             if (!await SurveyValidator.Delete(Survey))
@@ -351,56 +324,62 @@ namespace DMS.Services.MSurvey
 
         public async Task<Survey> SaveForm(Survey Survey)
         {
-            SurveyResult SurveyResult = new SurveyResult();
-            SurveyResult.SurveyId = Survey.Id;
-            SurveyResult.AppUserId = CurrentContext.UserId;
-            SurveyResult.StoreId = Survey.StoreId;
-            SurveyResult.Time = StaticParams.DateTimeNow;
-            SurveyResult.SurveyResultSingles = new List<SurveyResultSingle>();
-            SurveyResult.SurveyResultCells = new List<SurveyResultCell>();
-            if (Survey.SurveyQuestions != null)
+            if (!await SurveyValidator.SaveForm(Survey))
+                return Survey;
+
+            try
             {
-                foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
+                SurveyResult SurveyResult = new SurveyResult();
+                SurveyResult.SurveyId = Survey.Id;
+                SurveyResult.AppUserId = CurrentContext.UserId;
+                SurveyResult.StoreId = Survey.StoreId;
+                SurveyResult.Time = StaticParams.DateTimeNow;
+                SurveyResult.SurveyResultSingles = new List<SurveyResultSingle>();
+                SurveyResult.SurveyResultCells = new List<SurveyResultCell>();
+                if (Survey.SurveyQuestions != null)
                 {
-                    if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id ||
-                        SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id)
+                    foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
                     {
-                        foreach (SurveyOption SurveyOption in SurveyQuestion.SurveyOptions)
+                        if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id ||
+                            SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id)
                         {
-                            if (SurveyQuestion.ListResult.ContainsKey(SurveyOption.Id) && SurveyQuestion.ListResult[SurveyOption.Id])
+                            foreach (SurveyOption SurveyOption in SurveyQuestion.SurveyOptions)
                             {
-                                SurveyResultSingle SurveyResultSingle = new SurveyResultSingle
+                                if (SurveyQuestion.ListResult.ContainsKey(SurveyOption.Id) && SurveyQuestion.ListResult[SurveyOption.Id])
                                 {
-                                    SurveyOptionId = SurveyOption.Id,
-                                    SurveyQuestionId = SurveyQuestion.Id,
-                                };
-                                SurveyResult.SurveyResultSingles.Add(SurveyResultSingle);
+                                    SurveyResultSingle SurveyResultSingle = new SurveyResultSingle
+                                    {
+                                        SurveyOptionId = SurveyOption.Id,
+                                        SurveyQuestionId = SurveyQuestion.Id,
+                                    };
+                                    SurveyResult.SurveyResultSingles.Add(SurveyResultSingle);
+                                }
                             }
                         }
-                    }
-                    if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id ||
-                        SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
-                    {
-                        if (SurveyQuestion.SurveyOptions != null)
+                        if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id ||
+                            SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
                         {
-                            List<SurveyOption> Columns = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.COLUMN.Id).ToList();
-                            List<SurveyOption> Rows = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.ROW.Id).ToList();
-                            foreach (SurveyOption Row in Rows)
+                            if (SurveyQuestion.SurveyOptions != null)
                             {
-                                if (SurveyQuestion.TableResult.ContainsKey(Row.Id))
+                                List<SurveyOption> Columns = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.COLUMN.Id).ToList();
+                                List<SurveyOption> Rows = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.ROW.Id).ToList();
+                                foreach (SurveyOption Row in Rows)
                                 {
-                                    Dictionary<long, bool> ColumnResult = SurveyQuestion.TableResult[Row.Id];
-                                    foreach (SurveyOption Column in Columns)
+                                    if (SurveyQuestion.TableResult.ContainsKey(Row.Id))
                                     {
-                                        if (ColumnResult.ContainsKey(Column.Id) && ColumnResult[Column.Id])
+                                        Dictionary<long, bool> ColumnResult = SurveyQuestion.TableResult[Row.Id];
+                                        foreach (SurveyOption Column in Columns)
                                         {
-                                            SurveyResultCell SurveyResultCell = new SurveyResultCell
+                                            if (ColumnResult.ContainsKey(Column.Id) && ColumnResult[Column.Id])
                                             {
-                                                SurveyQuestionId = SurveyQuestion.Id,
-                                                ColumnOptionId = Column.Id,
-                                                RowOptionId = Row.Id,
-                                            };
-                                            SurveyResult.SurveyResultCells.Add(SurveyResultCell);
+                                                SurveyResultCell SurveyResultCell = new SurveyResultCell
+                                                {
+                                                    SurveyQuestionId = SurveyQuestion.Id,
+                                                    ColumnOptionId = Column.Id,
+                                                    RowOptionId = Row.Id,
+                                                };
+                                                SurveyResult.SurveyResultCells.Add(SurveyResultCell);
+                                            }
                                         }
                                     }
                                 }
@@ -408,9 +387,24 @@ namespace DMS.Services.MSurvey
                         }
                     }
                 }
+                await UOW.SurveyResultRepository.Create(SurveyResult);
+                return await GetForm(Survey.Id);
             }
-            await UOW.SurveyResultRepository.Create(SurveyResult);
-            return await GetForm(Survey.Id);
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SurveyService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
         }
     }
 }

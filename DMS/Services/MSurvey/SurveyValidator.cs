@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Repositories;
 using Helpers;
 using System;
@@ -13,9 +14,8 @@ namespace DMS.Services.MSurvey
     {
         Task<bool> Create(Survey Survey);
         Task<bool> Update(Survey Survey);
-        Task<bool> CreateSurveyResult(Survey Survey);
         Task<bool> Delete(Survey Survey);
-        Task<bool> SaveResult(Survey Survey);
+        Task<bool> SaveForm(Survey Survey);
     }
 
     public class SurveyValidator : ISurveyValidator
@@ -61,7 +61,7 @@ namespace DMS.Services.MSurvey
 
         private async Task<bool> ValidateSurveyQuestions(Survey Survey)
         {
-            if (Survey.SurveyQuestions == null || !Survey.SurveyQuestions.Any()) 
+            if (Survey.SurveyQuestions == null || !Survey.SurveyQuestions.Any())
             {
                 Survey.AddError(nameof(SurveyValidator), nameof(Survey.SurveyQuestions), ErrorCode.SurveyQuestionsEmpty);
             }
@@ -71,7 +71,7 @@ namespace DMS.Services.MSurvey
                 {
                     if (string.IsNullOrWhiteSpace(SurveyQuestion.Content))
                         SurveyQuestion.AddError(nameof(SurveyValidator), nameof(SurveyQuestion.Content), ErrorCode.ContentEmpty);
-                    if (SurveyQuestion.SurveyOptions == null || !SurveyQuestion.SurveyOptions.Any()) 
+                    if (SurveyQuestion.SurveyOptions == null || !SurveyQuestion.SurveyOptions.Any())
                     {
                         SurveyQuestion.AddError(nameof(SurveyValidator), nameof(SurveyQuestion.SurveyOptions), ErrorCode.SurveyOptionsEmpty);
                     }
@@ -103,18 +103,18 @@ namespace DMS.Services.MSurvey
             }
             else
             {
-                if (Survey.EndAt.HasValue )
+                if (Survey.EndAt.HasValue)
                 {
-                    if(Survey.EndAt.Value.Date < StaticParams.DateTimeNow.Date)
+                    if (Survey.EndAt.Value.Date < StaticParams.DateTimeNow.Date)
                     {
                         Survey.AddError(nameof(SurveyValidator), nameof(Survey.EndAt), ErrorCode.EndDateWrong);
                     }
-                    else if(Survey.EndAt.Value < Survey.StartAt)
+                    else if (Survey.EndAt.Value < Survey.StartAt)
                     {
                         Survey.AddError(nameof(SurveyValidator), nameof(Survey.EndAt), ErrorCode.EndDateWrong);
                     }
                 }
-                
+
             }
             return Survey.IsValidated;
         }
@@ -127,13 +127,18 @@ namespace DMS.Services.MSurvey
                 if (MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id
                 || MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id)
                 {
-                    if (MandatoryQuestion.SurveyOptions.All(x => x.Result == false))
+                    if (MandatoryQuestion.ListResult.All(x => x.Value == false))
                         MandatoryQuestion.AddError(nameof(SurveyValidator), nameof(MandatoryQuestion.IsMandatory), ErrorCode.QuestionIsMandatory);
                 }
                 else if (MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id
                 || MandatoryQuestion.SurveyQuestionTypeId == Enums.SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
                 {
-
+                    foreach (var Row in MandatoryQuestion.TableResult)
+                    {
+                        if (Row.Value.All(x => x.Value == false))
+                            MandatoryQuestion.AddError(nameof(SurveyValidator), nameof(MandatoryQuestion.IsMandatory), ErrorCode.QuestionIsMandatory);
+                        break;
+                    }
                 }
             }
             return Survey.IsValidated;
@@ -172,15 +177,6 @@ namespace DMS.Services.MSurvey
             return Survey.IsValidated;
         }
 
-        public async Task<bool> CreateSurveyResult(Survey Survey)
-        {
-            if (await ValidateId(Survey))
-            {
-                await ValidateMandatoryQuestion(Survey);
-            }
-            return Survey.IsValidated;
-        }
-
         public async Task<bool> Delete(Survey Survey)
         {
             if (await ValidateId(Survey))
@@ -189,9 +185,13 @@ namespace DMS.Services.MSurvey
             return Survey.IsValidated;
         }
 
-        public Task<bool> SaveResult(Survey Survey)
+        public async Task<bool> SaveForm(Survey Survey)
         {
-            throw new NotImplementedException();
+            if (await ValidateId(Survey))
+            {
+                await ValidateMandatoryQuestion(Survey);
+            }
+            return Survey.IsValidated;
         }
     }
 }
