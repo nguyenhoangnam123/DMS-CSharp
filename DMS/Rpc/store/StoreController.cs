@@ -309,6 +309,7 @@ namespace DMS.Rpc.store
                 #region khai báo các cột
                 int StartColumn = 1;
                 int StartRow = 1;
+                int SttColumnn = 0 + StartColumn;
                 int CodeColumn = 1 + StartColumn;
                 int NameColumn = 2 + StartColumn;
                 int OrganizationCodeColumn = 3 + StartColumn;
@@ -336,6 +337,10 @@ namespace DMS.Rpc.store
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
                     #region Lấy thông tin từng dòng
+                    string stt = worksheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
+                    if (stt != null && stt.ToLower() == "END".ToLower())
+                        break;
+
                     string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
                     if (string.IsNullOrWhiteSpace(CodeValue) && i != worksheet.Dimension.End.Row)
                     {
