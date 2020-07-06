@@ -15,6 +15,7 @@ namespace DMS.Entities
         public long StatusId { get; set; }
         public long EmployeeId { get; set; }
         public long CreatorId { get; set; }
+        public bool ReadOnly { get; set; }
         public AppUser Creator { get; set; }
         public AppUser Employee { get; set; }
         public KpiYear KpiYear { get; set; }
