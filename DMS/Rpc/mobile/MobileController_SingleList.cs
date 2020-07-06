@@ -669,6 +669,7 @@ namespace DMS.Rpc.mobile
             ItemFilter.RetailPrice = Mobile_ItemFilterDTO.RetailPrice;
             ItemFilter.SalePrice = Mobile_ItemFilterDTO.SalePrice;
             ItemFilter.ScanCode = Mobile_ItemFilterDTO.ScanCode;
+            ItemFilter.IsNew = Mobile_ItemFilterDTO.IsNew;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = Mobile_ItemFilterDTO.SupplierId;
             return await ItemService.Count(ItemFilter);
@@ -697,6 +698,7 @@ namespace DMS.Rpc.mobile
             ItemFilter.RetailPrice = Mobile_ItemFilterDTO.RetailPrice;
             ItemFilter.SalePrice = Mobile_ItemFilterDTO.SalePrice;
             ItemFilter.ScanCode = Mobile_ItemFilterDTO.ScanCode;
+            ItemFilter.IsNew = Mobile_ItemFilterDTO.IsNew;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = Mobile_ItemFilterDTO.SupplierId;
 

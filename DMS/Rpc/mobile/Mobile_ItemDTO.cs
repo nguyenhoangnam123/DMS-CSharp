@@ -56,6 +56,7 @@ namespace DMS.Rpc.mobile
         public IdFilter SupplierId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter StoreId { get; set; }
+        public bool? IsNew { get; set; }
         public ItemOrder OrderBy { get; set; }
     }
 }
