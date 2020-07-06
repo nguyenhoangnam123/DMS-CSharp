@@ -195,6 +195,12 @@ namespace DMS.Repositories
                     Code = q.KpiPeriod.Code,
                     Name = q.KpiPeriod.Name,
                 } : null,
+                KpiYear = filter.Selects.Contains(KpiItemSelect.KpiYear) && q.KpiYear != null ? new KpiYear
+                {
+                    Id = q.KpiYear.Id,
+                    Code = q.KpiYear.Code,
+                    Name = q.KpiYear.Name,
+                } : null,
                 Organization = filter.Selects.Contains(KpiItemSelect.Organization) && q.Organization != null ? new Organization
                 {
                     Id = q.Organization.Id,
