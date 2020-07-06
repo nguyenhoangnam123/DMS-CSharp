@@ -15,6 +15,7 @@ namespace DMS.Rpc.kpi_item
         public long StatusId { get; set; }
         public long EmployeeId { get; set; }
         public long CreatorId { get; set; }
+        public bool ReadOnly { get; set; }
         public KpiItem_AppUserDTO Creator { get; set; }
         public KpiItem_AppUserDTO Employee { get; set; }
         public KpiItem_KpiYearDTO KpiYear { get; set; }
@@ -38,6 +39,7 @@ namespace DMS.Rpc.kpi_item
             this.StatusId = KpiItem.StatusId;
             this.EmployeeId = KpiItem.EmployeeId;
             this.CreatorId = KpiItem.CreatorId;
+            this.ReadOnly = KpiItem.ReadOnly;
             this.Creator = KpiItem.Creator == null ? null : new KpiItem_AppUserDTO(KpiItem.Creator);
             this.Employee = KpiItem.Employee == null ? null : new KpiItem_AppUserDTO(KpiItem.Employee);
             this.KpiPeriod = KpiItem.KpiPeriod == null ? null : new KpiItem_KpiPeriodDTO(KpiItem.KpiPeriod);

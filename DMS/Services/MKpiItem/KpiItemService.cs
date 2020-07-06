@@ -66,6 +66,23 @@ namespace DMS.Services.MKpiItem
             try
             {
                 List<KpiItem> KpiItems = await UOW.KpiItemRepository.List(KpiItemFilter);
+                DateTime Now = StaticParams.DateTimeNow;
+                foreach (var KpiItem in KpiItems)
+                {
+                    if(KpiItem.KpiPeriodId < 113)
+                    {
+                        DateTime periodToDateTime = new DateTime(Convert.ToInt32(KpiItem.KpiYearId), Convert.ToInt32(KpiItem.KpiPeriodId - 100), 1).AddMonths(1).AddSeconds(-1);
+                        if (Now > periodToDateTime)
+                            KpiItem.ReadOnly = true;
+                    }
+                    else if(KpiItem.KpiPeriodId < 204)
+                    {
+                        var firstMonthOfQuarter = (KpiItem.KpiPeriodId - 200) * 3 - 2;
+                        DateTime periodToDateTime = new DateTime(Convert.ToInt32(KpiItem.KpiYearId), Convert.ToInt32(firstMonthOfQuarter), 1).AddMonths(3).AddSeconds(-1);
+                        if (Now > periodToDateTime)
+                            KpiItem.ReadOnly = true;
+                    }
+                }
                 return KpiItems;
             }
             catch (Exception ex)
