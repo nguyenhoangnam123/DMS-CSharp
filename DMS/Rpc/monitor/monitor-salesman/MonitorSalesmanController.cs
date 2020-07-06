@@ -226,6 +226,13 @@ namespace DMS.Rpc.monitor.monitor_salesman
                             MonitorSalesman_SaleEmployeeDTO.External = new HashSet<long>();
                         MonitorSalesman_SaleEmployeeDTO.External.Add(Checked.StoreId);
                     }
+                }
+                foreach (long StoreId in StoreIds)
+                {
+                    List<StoreCheckingDAO> SubStoreCheckingDAOs = StoreCheckingDAOs.Where(s => s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId &&
+                            StoreId == s.StoreId &&
+                            Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End).OrderByDescending(s => s.CheckOutAt).ToList();
+                    StoreCheckingDAO Checked = SubStoreCheckingDAOs.FirstOrDefault();
 
                     MonitorSalesman_StoreCheckingDTO MonitorSalesman_StoreCheckingDTO = new MonitorSalesman_StoreCheckingDTO
                     {
