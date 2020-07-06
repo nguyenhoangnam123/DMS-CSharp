@@ -22,6 +22,7 @@ namespace DMS.Models
         public long? ImageCounter { get; set; }
         public bool Planned { get; set; }
         public bool IsOpenedStore { get; set; }
+        public string DeviceName { get; set; }
 
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StoreDAO Store { get; set; }
