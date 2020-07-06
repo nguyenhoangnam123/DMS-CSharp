@@ -214,7 +214,8 @@ namespace DMS.Repositories
                     StatusId = q.Store.StatusId,
                 },
                 Planned = q.Planned,
-                IsOpenedStore = q.IsOpenedStore
+                IsOpenedStore = q.IsOpenedStore,
+                DeviceName = q.DeviceName,
             }).ToListAsync();
             return StoreCheckings;
         }
@@ -244,6 +245,7 @@ namespace DMS.Repositories
                 Id = x.Id,
                 StoreId = x.StoreId,
                 SaleEmployeeId = x.SaleEmployeeId,
+                DeviceName = x.DeviceName,
                 Longitude = x.Longitude,
                 Latitude = x.Latitude,
                 CheckInAt = x.CheckInAt,
@@ -351,6 +353,7 @@ namespace DMS.Repositories
             StoreCheckingDAO.StoreId = StoreChecking.StoreId;
             StoreCheckingDAO.SaleEmployeeId = StoreChecking.SaleEmployeeId;
             StoreCheckingDAO.Longitude = StoreChecking.Longitude;
+            StoreCheckingDAO.DeviceName = StoreChecking.DeviceName;
             StoreCheckingDAO.Latitude = StoreChecking.Latitude;
             StoreCheckingDAO.CheckInAt = StoreChecking.CheckInAt;
             StoreCheckingDAO.CheckOutAt = StoreChecking.CheckOutAt;
