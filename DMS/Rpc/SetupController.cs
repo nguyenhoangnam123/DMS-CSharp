@@ -583,6 +583,7 @@ namespace DMS.Rpc
             InitResellerStatusEnum();
             InitRequestStateEnum();
             InitStatusEnum();
+            InitERouteTypeEnum();
             InitNotificationStatusEnum();
             InitSurveyQuestionTypeEnum();
             InitSurveyOptionTypeEnum();
@@ -604,6 +605,17 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.Status.BulkSynchronize(StatusEnumList);
+        }
+
+        private void InitERouteTypeEnum()
+        {
+            List<ERouteTypeDAO> ERouteTypeEnumList = ERouteTypeEnum.ERouteTypeEnumList.Select(item => new ERouteTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.ERouteType.BulkSynchronize(ERouteTypeEnumList);
         }
 
         private void InitStoreScoutingStatusEnum()
