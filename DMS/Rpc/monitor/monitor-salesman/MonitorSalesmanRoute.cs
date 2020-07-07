@@ -20,6 +20,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
         {
             { nameof(MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
             { nameof(MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

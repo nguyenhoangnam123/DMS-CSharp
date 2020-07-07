@@ -21,6 +21,7 @@ namespace DMS.Rpc.indirect_sales_order
         public const string Export = Default + "/export";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
+        public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListItem = Default + "/filter-list-item";
         public const string FilterListStore = Default + "/filter-list-store";
         public const string FilterListUnitOfMeasure = Default + "/filter-list-unit-of-measure";
@@ -48,43 +49,49 @@ namespace DMS.Rpc.indirect_sales_order
         {
             { nameof(IndirectSalesOrderFilter.BuyerStoreId), FieldTypeEnum.ID.Id },
             { nameof(IndirectSalesOrderFilter.SellerStoreId), FieldTypeEnum.ID.Id },
-            { nameof(IndirectSalesOrderFilter.SaleEmployeeId), FieldTypeEnum.ID.Id },
+            { nameof(IndirectSalesOrderFilter.AppUserId), FieldTypeEnum.ID.Id },
             { nameof(IndirectSalesOrderFilter.OrderDate), FieldTypeEnum.DATE.Id },
             { nameof(IndirectSalesOrderFilter.RequestStateId), FieldTypeEnum.ID.Id },
             { nameof(IndirectSalesOrderFilter.Total), FieldTypeEnum.LONG.Id },
             { nameof(ItemFilter.ProductGroupingId), FieldTypeEnum.ID.Id },
             { nameof(ItemFilter.ProductTypeId), FieldTypeEnum.ID.Id },
             { nameof(ItemFilter.SalePrice), FieldTypeEnum.LONG.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,
+                Master, Count, List, Get, 
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 CountItem, ListItem,} },
 
             { "Thêm", new List<string> {
-                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure,
+                Master, Count, List, Get, 
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Create,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
                 CountItem, ListItem, CountStore, ListStore, } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, 
+                Master, Count, List, Get, 
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Update,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
                 CountItem, ListItem, CountStore, ListStore, } },
 
             { "Xoá", new List<string> {
-                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure,
+                Master, Count, List, Get, 
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Delete,
                 } },
 
             { "Xuất excel", new List<string> {
-                Master, Count, List, Get, FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,
+                Master, Count, List, Get, 
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Export } },
 
         };

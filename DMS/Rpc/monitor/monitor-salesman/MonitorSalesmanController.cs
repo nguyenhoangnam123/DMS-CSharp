@@ -145,6 +145,8 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 .Where(au =>
                     au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value) &&
                     (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value))
+                .OrderBy(q => q.Organization.Path).ThenBy(q => q.DisplayName)
+                .Distinct()
                 .Select(ap => new MonitorSalesman_SaleEmployeeDTO
                 {
                     SaleEmployeeId = ap.Id,
@@ -153,8 +155,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
                 });
 
-            List<MonitorSalesman_SaleEmployeeDTO> MonitorSalesman_SaleEmployeeDTOs = await query.Distinct()
-                .OrderBy(q => q.DisplayName)
+            List<MonitorSalesman_SaleEmployeeDTO> MonitorSalesman_SaleEmployeeDTOs = await query
                 .Skip(MonitorSalesman_MonitorSalesmanFilterDTO.Skip)
                 .Take(MonitorSalesman_MonitorSalesmanFilterDTO.Take)
                 .ToListAsync();

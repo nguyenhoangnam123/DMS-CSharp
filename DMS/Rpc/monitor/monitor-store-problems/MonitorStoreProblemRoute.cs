@@ -35,6 +35,7 @@ namespace DMS.Rpc.monitor_store_problems
         {
             { nameof(MonitorStoreProblem_ProblemFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
             { nameof(MonitorStoreProblem_ProblemFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

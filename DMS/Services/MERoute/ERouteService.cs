@@ -330,25 +330,25 @@ namespace DMS.Services.MERoute
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = FilterPermissionDefinition.IdFilter;
+                        subFilter.Id = FilterBuilder.Merge(subFilter.Id, FilterPermissionDefinition.IdFilter);
 
-                    List<long> organizationIds = new List<long>();
                     if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
                     {
-                        organizationIds = FilterOrganization(Organizations, FilterPermissionDefinition.IdFilter);
-                        subFilter.OrganizationId = new IdFilter { In = organizationIds };
+                        var organizationIds = FilterOrganization(Organizations, FilterPermissionDefinition.IdFilter);
+                        IdFilter IdFilter = new IdFilter { In = organizationIds };
+                        subFilter.OrganizationId = FilterBuilder.Merge(subFilter.OrganizationId, IdFilter);
                     }
                     if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
-                        subFilter.AppUserId = FilterPermissionDefinition.IdFilter;
+                        subFilter.AppUserId = FilterBuilder.Merge(subFilter.AppUserId, FilterPermissionDefinition.IdFilter);
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.StoreId))
-                        subFilter.StoreId = FilterPermissionDefinition.IdFilter;
+                        subFilter.StoreId = FilterBuilder.Merge(subFilter.StoreId, FilterPermissionDefinition.IdFilter);
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ERouteTypeId))
-                        subFilter.ERouteTypeId = FilterPermissionDefinition.IdFilter;
+                        subFilter.ERouteTypeId = FilterBuilder.Merge(subFilter.ERouteTypeId, FilterPermissionDefinition.IdFilter);
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.RequestStateId))
-                        subFilter.RequestStateId = FilterPermissionDefinition.IdFilter;
+                        subFilter.RequestStateId = FilterBuilder.Merge(subFilter.RequestStateId, FilterPermissionDefinition.IdFilter);
 
                     if (FilterPermissionDefinition.Name == nameof(CurrentContext.UserId) && FilterPermissionDefinition.IdFilter != null)
                     {
@@ -363,8 +363,6 @@ namespace DMS.Services.MERoute
                             subFilter.AppUserId.NotEqual = CurrentContext.UserId;
                         }
                     }
-
-
                 }
             }
             return filter;

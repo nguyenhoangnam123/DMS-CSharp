@@ -10,6 +10,177 @@ using System.Text;
 
 namespace Common
 {
+    public static class FilterBuilder
+    {
+        public static IdFilter Merge(IdFilter parameter1, IdFilter parameter2)
+        {
+            if (parameter1 == null)
+                parameter1 = new IdFilter();
+            if (parameter2 != null)
+            {
+                if (parameter2.Equal != null)
+                    parameter1.Equal = parameter2.Equal;
+                if (parameter2.NotEqual != null)
+                    parameter1.NotEqual = parameter2.NotEqual;
+                if (parameter2.In != null)
+                {
+                    if (parameter1.In == null)
+                        parameter1.In = parameter2.In;
+                    else
+                        parameter1.In.AddRange(parameter2.In);
+                }
+                if (parameter2.NotIn != null)
+                {
+                    if (parameter1.NotIn == null)
+                        parameter1.NotIn = parameter2.NotIn;
+                    else
+                        parameter1.NotIn.AddRange(parameter2.NotIn);
+                }
+            }
+            return parameter1;
+        }
+        public static GuidFilter Merge(GuidFilter parameter1, GuidFilter parameter2)
+        {
+            if (parameter1 == null)
+                parameter1 = new GuidFilter();
+            if (parameter2 != null)
+            {
+                if (parameter2.Equal != null)
+                    parameter1.Equal = parameter2.Equal;
+                if (parameter2.NotEqual != null)
+                    parameter1.NotEqual = parameter2.NotEqual;
+                if (parameter2.In != null)
+                {
+                    if (parameter1.In == null)
+                        parameter1.In = parameter2.In;
+                    else
+                        parameter1.In.AddRange(parameter2.In);
+                }
+                if (parameter2.NotIn != null)
+                {
+                    if (parameter1.NotIn == null)
+                        parameter1.NotIn = parameter2.NotIn;
+                    else
+                        parameter1.NotIn.AddRange(parameter2.NotIn);
+                }
+            }
+            return parameter1;
+        }
+        public static StringFilter Merge(StringFilter parameter1, StringFilter parameter2)
+        {
+            if (parameter1 == null)
+                parameter1 = new StringFilter();
+            if (parameter2 != null)
+            {
+                if (parameter2.Equal != null)
+                    parameter1.Equal = parameter1.Equal;
+
+                if (parameter2.NotEqual != null)
+                    parameter1.NotEqual = parameter1.NotEqual;
+
+                if (parameter2.Contain != null)
+                    parameter1.Contain = parameter1.Contain;
+
+                if (parameter2.NotContain != null)
+                    parameter1.NotContain = parameter1.NotContain;
+
+                if (parameter2.StartWith != null)
+                    parameter1.StartWith = parameter1.StartWith;
+
+                if (parameter2.NotStartWith != null)
+                    parameter1.NotStartWith = parameter1.NotStartWith;
+
+                if (parameter2.EndWith != null)
+                    parameter1.EndWith = parameter1.EndWith;
+
+                if (parameter2.NotEndWith != null)
+                    parameter1.NotEndWith = parameter1.NotEndWith;
+            }
+            return parameter1;
+        }
+        public static LongFilter Merge(LongFilter parameter1, LongFilter parameter2)
+        {
+            if (parameter1 == null)
+                parameter1 = new LongFilter();
+            if (parameter2 != null)
+            {
+                if (parameter2.Equal != null)
+                    parameter1.Equal = parameter1.Equal;
+
+                if (parameter2.NotEqual != null)
+                    parameter1.NotEqual = parameter1.NotEqual;
+
+                if (parameter2.Less != null)
+                    parameter1.Less = parameter1.Less;
+
+                if (parameter2.LessEqual != null)
+                    parameter1.LessEqual = parameter1.LessEqual;
+
+                if (parameter2.Greater != null)
+                    parameter1.Greater = parameter1.Greater;
+
+                if (parameter2.GreaterEqual != null)
+                    parameter1.GreaterEqual = parameter1.GreaterEqual;
+            }
+            return parameter1;
+        }
+
+        public static DecimalFilter Merge(DecimalFilter parameter1, DecimalFilter parameter2)
+        {
+            if (parameter1 == null)
+                parameter1 = new DecimalFilter();
+            if (parameter2 != null)
+            {
+                if (parameter2.Equal != null)
+                    parameter1.Equal = parameter1.Equal;
+
+                if (parameter2.NotEqual != null)
+                    parameter1.NotEqual = parameter1.NotEqual;
+
+                if (parameter2.Less != null)
+                    parameter1.Less = parameter1.Less;
+
+                if (parameter2.LessEqual != null)
+                    parameter1.LessEqual = parameter1.LessEqual;
+
+                if (parameter2.Greater != null)
+                    parameter1.Greater = parameter1.Greater;
+
+                if (parameter2.GreaterEqual != null)
+                    parameter1.GreaterEqual = parameter1.GreaterEqual;
+            }
+            return parameter1;
+        }
+
+        public static DateFilter Merge(DateFilter parameter1, DateFilter parameter2)
+        {
+            if (parameter1 == null)
+                parameter1 = new DateFilter();
+            if (parameter2 != null)
+            {
+                if (parameter2.Equal != null)
+                    parameter1.Equal = parameter1.Equal;
+
+                if (parameter2.NotEqual != null)
+                    parameter1.NotEqual = parameter1.NotEqual;
+
+                if (parameter2.Less != null)
+                    parameter1.Less = parameter1.Less;
+
+                if (parameter2.LessEqual != null)
+                    parameter1.LessEqual = parameter1.LessEqual;
+
+                if (parameter2.Greater != null)
+                    parameter1.Greater = parameter1.Greater;
+
+                if (parameter2.GreaterEqual != null)
+                    parameter1.GreaterEqual = parameter1.GreaterEqual;
+            }
+            return parameter1;
+        }
+    }
+
+
     public class StringFilter
     {
         public string Equal { get; set; }
@@ -105,6 +276,13 @@ namespace Common
         public Guid? NotEqual { get; set; }
         public List<Guid> In { get; set; }
         public List<Guid> NotIn { get; set; }
+        public bool HasValue
+        {
+            get
+            {
+                return Equal.HasValue || NotEqual.HasValue || In != null || NotIn != null;
+            }
+        }
     }
 
     public class IdFilter
@@ -194,7 +372,7 @@ namespace Common
                 source = source.Where(BuildPredicate(propertyName, "NotEndsWith", filter.NotEndWith));
             return source;
         }
-       
+
 
         public static IQueryable<TSource> Where<TSource, TKey>(this IQueryable<TSource> source, Expression<Func<TSource, TKey>> propertyName, DecimalFilter filter)
         {

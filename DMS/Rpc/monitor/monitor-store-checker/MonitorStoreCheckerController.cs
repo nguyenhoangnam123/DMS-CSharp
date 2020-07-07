@@ -143,15 +143,12 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 throw new BindException(ModelState);
 
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
+                StaticParams.DateTimeNow.Date :
+                MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value.Date;
 
             DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
-                    MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value;
-
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
 
             long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.AppUserId?.Equal;
 
@@ -170,7 +167,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value)
             )
                 .Include(au => au.Organization)
-                .OrderBy(au => au.DisplayName)
+                .OrderBy(au => au.Organization.Path).ThenBy(x => x.DisplayName)
                 .Skip(MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Skip)
                 .Take(MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Take)
                 .ToListAsync();
