@@ -21,6 +21,7 @@ namespace DMS.Rpc.indirect_sales_order
         public const string Export = Default + "/export";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
+        public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListItem = Default + "/filter-list-item";
         public const string FilterListStore = Default + "/filter-list-store";
         public const string FilterListUnitOfMeasure = Default + "/filter-list-unit-of-measure";
@@ -55,6 +56,7 @@ namespace DMS.Rpc.indirect_sales_order
             { nameof(ItemFilter.ProductGroupingId), FieldTypeEnum.ID.Id },
             { nameof(ItemFilter.ProductTypeId), FieldTypeEnum.ID.Id },
             { nameof(ItemFilter.SalePrice), FieldTypeEnum.LONG.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
 

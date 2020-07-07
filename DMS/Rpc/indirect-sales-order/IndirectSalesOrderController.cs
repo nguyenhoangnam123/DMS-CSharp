@@ -620,6 +620,35 @@ namespace DMS.Rpc.indirect_sales_order
             return IndirectSalesOrder_AppUserDTOs;
         }
 
+        [Route(IndirectSalesOrderRoute.FilterListOrganization), HttpPost]
+        public async Task<List<IndirectSalesOrder_OrganizationDTO>> FilterListOrganization([FromBody] IndirectSalesOrder_OrganizationFilterDTO IndirectSalesOrder_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = 99999;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.Id = IndirectSalesOrder_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = IndirectSalesOrder_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = IndirectSalesOrder_OrganizationFilterDTO.Name;
+            OrganizationFilter.ParentId = IndirectSalesOrder_OrganizationFilterDTO.ParentId;
+            OrganizationFilter.Path = IndirectSalesOrder_OrganizationFilterDTO.Path;
+            OrganizationFilter.Level = IndirectSalesOrder_OrganizationFilterDTO.Level;
+            OrganizationFilter.StatusId = null;
+            OrganizationFilter.Phone = IndirectSalesOrder_OrganizationFilterDTO.Phone;
+            OrganizationFilter.Address = IndirectSalesOrder_OrganizationFilterDTO.Address;
+            OrganizationFilter.Email = IndirectSalesOrder_OrganizationFilterDTO.Email;
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<IndirectSalesOrder_OrganizationDTO> IndirectSalesOrder_OrganizationDTOs = Organizations
+                .Select(x => new IndirectSalesOrder_OrganizationDTO(x)).ToList();
+            return IndirectSalesOrder_OrganizationDTOs;
+        }
+
         [Route(IndirectSalesOrderRoute.FilterListUnitOfMeasure), HttpPost]
         public async Task<List<IndirectSalesOrder_UnitOfMeasureDTO>> FilterListUnitOfMeasure([FromBody] IndirectSalesOrder_UnitOfMeasureFilterDTO IndirectSalesOrder_UnitOfMeasureFilterDTO)
         {
