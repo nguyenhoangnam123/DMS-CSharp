@@ -221,7 +221,7 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrderFilter.Code = Mobile_IndirectSalesOrderFilterDTO.Code;
             IndirectSalesOrderFilter.OrderDate = Mobile_IndirectSalesOrderFilterDTO.OrderDate;
             IndirectSalesOrderFilter.BuyerStoreId = Mobile_IndirectSalesOrderFilterDTO.BuyerStoreId;
-            IndirectSalesOrderFilter.SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+            IndirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
 
             int count = await IndirectSalesOrderService.Count(IndirectSalesOrderFilter);
             return count;
@@ -244,7 +244,7 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrderFilter.Code = Mobile_IndirectSalesOrderFilterDTO.Code;
             IndirectSalesOrderFilter.OrderDate = Mobile_IndirectSalesOrderFilterDTO.OrderDate;
             IndirectSalesOrderFilter.BuyerStoreId = Mobile_IndirectSalesOrderFilterDTO.BuyerStoreId;
-            IndirectSalesOrderFilter.SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+            IndirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
             
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
             List<Mobile_IndirectSalesOrderDTO> Mobile_IndirectSalesOrderDTOs = IndirectSalesOrders

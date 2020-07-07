@@ -49,7 +49,7 @@ namespace DMS.Rpc.indirect_sales_order
         {
             { nameof(IndirectSalesOrderFilter.BuyerStoreId), FieldTypeEnum.ID.Id },
             { nameof(IndirectSalesOrderFilter.SellerStoreId), FieldTypeEnum.ID.Id },
-            { nameof(IndirectSalesOrderFilter.SaleEmployeeId), FieldTypeEnum.ID.Id },
+            { nameof(IndirectSalesOrderFilter.AppUserId), FieldTypeEnum.ID.Id },
             { nameof(IndirectSalesOrderFilter.OrderDate), FieldTypeEnum.DATE.Id },
             { nameof(IndirectSalesOrderFilter.RequestStateId), FieldTypeEnum.ID.Id },
             { nameof(IndirectSalesOrderFilter.Total), FieldTypeEnum.LONG.Id },

@@ -46,8 +46,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.DeliveryAddress, filter.DeliveryAddress);
             if (filter.SellerStoreId != null)
                 query = query.Where(q => q.SellerStoreId, filter.SellerStoreId);
-            if (filter.SaleEmployeeId != null)
-                query = query.Where(q => q.SaleEmployeeId, filter.SaleEmployeeId);
+            if (filter.AppUserId != null)
+                query = query.Where(q => q.SaleEmployeeId, filter.AppUserId);
             if (filter.OrderDate != null)
                 query = query.Where(q => q.OrderDate, filter.OrderDate);
             if (filter.DeliveryDate != null)
@@ -94,8 +94,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.DeliveryAddress, IndirectSalesOrderFilter.DeliveryAddress);
                 if (IndirectSalesOrderFilter.SellerStoreId != null)
                     queryable = queryable.Where(q => q.SellerStoreId, IndirectSalesOrderFilter.SellerStoreId);
-                if (IndirectSalesOrderFilter.SaleEmployeeId != null)
-                    queryable = queryable.Where(q => q.SaleEmployeeId, IndirectSalesOrderFilter.SaleEmployeeId);
+                if (IndirectSalesOrderFilter.AppUserId != null)
+                    queryable = queryable.Where(q => q.SaleEmployeeId, IndirectSalesOrderFilter.AppUserId);
                 if (IndirectSalesOrderFilter.OrderDate != null)
                     queryable = queryable.Where(q => q.OrderDate, IndirectSalesOrderFilter.OrderDate);
                 if (IndirectSalesOrderFilter.DeliveryDate != null)

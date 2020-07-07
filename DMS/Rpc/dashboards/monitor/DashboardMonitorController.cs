@@ -146,7 +146,7 @@ namespace DMS.Rpc.dashboards.monitor
                 Take = int.MaxValue,
                 Selects = IndirectSalesOrderSelect.Id | IndirectSalesOrderSelect.OrderDate,
                 OrderDate = new DateFilter { GreaterEqual = Start, LessEqual = End },
-                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                AppUserId = new IdFilter { Equal = CurrentContext.UserId },
             };
 
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);

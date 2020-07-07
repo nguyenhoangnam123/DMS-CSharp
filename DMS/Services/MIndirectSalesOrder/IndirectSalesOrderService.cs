@@ -383,8 +383,8 @@ namespace DMS.Services.MIndirectSalesOrder
                     if (FilterPermissionDefinition.Name == nameof(subFilter.SellerStoreId))
                         subFilter.SellerStoreId = FilterPermissionDefinition.IdFilter;
 
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.SaleEmployeeId))
-                        subFilter.SaleEmployeeId = FilterPermissionDefinition.IdFilter;
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
+                        subFilter.AppUserId = FilterPermissionDefinition.IdFilter;
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Total))
                         subFilter.Total = FilterPermissionDefinition.DecimalFilter;

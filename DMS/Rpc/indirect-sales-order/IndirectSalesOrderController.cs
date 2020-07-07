@@ -529,7 +529,7 @@ namespace DMS.Rpc.indirect_sales_order
             IndirectSalesOrderFilter.StoreAddress = IndirectSalesOrder_IndirectSalesOrderFilterDTO.StoreAddress;
             IndirectSalesOrderFilter.DeliveryAddress = IndirectSalesOrder_IndirectSalesOrderFilterDTO.DeliveryAddress;
             IndirectSalesOrderFilter.SellerStoreId = IndirectSalesOrder_IndirectSalesOrderFilterDTO.SellerStoreId;
-            IndirectSalesOrderFilter.SaleEmployeeId = IndirectSalesOrder_IndirectSalesOrderFilterDTO.SaleEmployeeId;
+            IndirectSalesOrderFilter.AppUserId = IndirectSalesOrder_IndirectSalesOrderFilterDTO.AppUserId;
             IndirectSalesOrderFilter.OrderDate = IndirectSalesOrder_IndirectSalesOrderFilterDTO.OrderDate;
             IndirectSalesOrderFilter.DeliveryDate = IndirectSalesOrder_IndirectSalesOrderFilterDTO.DeliveryDate;
             IndirectSalesOrderFilter.RequestStateId = IndirectSalesOrder_IndirectSalesOrderFilterDTO.RequestStateId;
