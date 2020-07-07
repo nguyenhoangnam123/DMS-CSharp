@@ -1,4 +1,4 @@
-﻿namespace DMS.Rpc.monitor
+﻿namespace DMS.Enums
 {
     public class EnumList
     {

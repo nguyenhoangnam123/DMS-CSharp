@@ -159,6 +159,7 @@ namespace DMS.Rpc.mobile
                 return Forbid();
 
             StoreChecking StoreChecking = ConvertDTOToEntity(Mobile_StoreCheckingDTO);
+            StoreChecking.DeviceName = HttpContext.Request.Headers["X-Device-Model"];
             StoreChecking = await StoreCheckingService.CheckIn(StoreChecking);
             Mobile_StoreCheckingDTO = new Mobile_StoreCheckingDTO(StoreChecking);
             if (StoreChecking.IsValidated)

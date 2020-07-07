@@ -19,6 +19,7 @@ namespace DMS.Entities
         public long? ImageCounter { get; set; }
         public bool Planned { get; set; }
         public bool IsOpenedStore { get; set; }
+        public string DeviceName { get; set; }
         public Store Store { get; set; }
         public AppUser SaleEmployee { get; set; }
         public List<StoreCheckingImageMapping> StoreCheckingImageMappings { get; set; }
