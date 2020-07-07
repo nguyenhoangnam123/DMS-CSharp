@@ -363,8 +363,6 @@ namespace DMS.Services.MERoute
                             subFilter.AppUserId.NotEqual = CurrentContext.UserId;
                         }
                     }
-
-
                 }
             }
             return filter;

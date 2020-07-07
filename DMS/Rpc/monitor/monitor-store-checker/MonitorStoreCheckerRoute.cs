@@ -23,6 +23,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         {
             { nameof(MonitorStoreChecker_MonitorStoreCheckerFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
             { nameof(MonitorStoreChecker_MonitorStoreCheckerFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

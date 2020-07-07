@@ -26,6 +26,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
         {
             { nameof(MonitorStoreImage_MonitorStoreImageFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
             { nameof(MonitorStoreImage_MonitorStoreImageFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

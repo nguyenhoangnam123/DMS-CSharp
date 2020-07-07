@@ -25,6 +25,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         {
             { nameof(MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
             { nameof(MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
