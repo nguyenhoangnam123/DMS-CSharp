@@ -376,11 +376,7 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateSalePrice(Product Product)
         {
-            if (Product.SalePrice == 0)
-            {
-                Product.AddError(nameof(ProductValidator), nameof(Product.SalePrice), ErrorCode.SalePriceEmpty);
-            }
-            else if (Product.SalePrice < 0)
+            if (Product.SalePrice < 0)
             {
                 Product.AddError(nameof(ProductValidator), nameof(Product.SalePrice), ErrorCode.SalePriceInvalid);
             }
