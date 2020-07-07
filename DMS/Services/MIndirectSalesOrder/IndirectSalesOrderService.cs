@@ -150,7 +150,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 RecipientIds.AddRange(await UOW.PermissionRepository.ListAppUser(IndirectSalesOrderRoute.Reject));
                 RecipientIds.Add(CurrentContext.UserId);
                 RecipientIds = RecipientIds.Distinct().ToList();
-                
+
                 DateTime Now = StaticParams.DateTimeNow;
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 foreach (var Id in RecipientIds)
@@ -375,22 +375,36 @@ namespace DMS.Services.MIndirectSalesOrder
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = FilterPermissionDefinition.IdFilter;
+                        subFilter.Id = FilterBuilder.Merge(subFilter.Id, FilterPermissionDefinition.IdFilter);
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.BuyerStoreId))
-                        subFilter.BuyerStoreId = FilterPermissionDefinition.IdFilter;
+                        subFilter.BuyerStoreId = FilterBuilder.Merge(subFilter.BuyerStoreId, FilterPermissionDefinition.IdFilter);
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.SellerStoreId))
-                        subFilter.SellerStoreId = FilterPermissionDefinition.IdFilter;
+                        subFilter.SellerStoreId = FilterBuilder.Merge(subFilter.SellerStoreId, FilterPermissionDefinition.IdFilter);
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
-                        subFilter.AppUserId = FilterPermissionDefinition.IdFilter;
+                        subFilter.AppUserId = FilterBuilder.Merge(subFilter.AppUserId, FilterPermissionDefinition.IdFilter);
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Total))
-                        subFilter.Total = FilterPermissionDefinition.DecimalFilter;
+                        subFilter.Total = FilterBuilder.Merge(subFilter.Total, FilterPermissionDefinition.DecimalFilter);
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.OrderDate))
-                        subFilter.OrderDate = FilterPermissionDefinition.DateFilter;
+                        subFilter.OrderDate = FilterBuilder.Merge(subFilter.OrderDate, FilterPermissionDefinition.DateFilter);
+
+                    if (FilterPermissionDefinition.Name == nameof(CurrentContext.UserId) && FilterPermissionDefinition.IdFilter != null)
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.IS.Id)
+                        {
+                            if (subFilter.AppUserId == null) subFilter.AppUserId = new IdFilter { };
+                            subFilter.AppUserId.Equal = CurrentContext.UserId;
+                        }
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.ISNT.Id)
+                        {
+                            if (subFilter.AppUserId == null) subFilter.AppUserId = new IdFilter { };
+                            subFilter.AppUserId.NotEqual = CurrentContext.UserId;
+                        }
+                    }
                 }
             }
             return filter;
