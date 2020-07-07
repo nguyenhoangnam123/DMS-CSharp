@@ -10,7 +10,6 @@ namespace DMS.Rpc.reports.report_store_checker
         private const string Default = Rpc + Module + "/report-store-checker";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
-        public const string Get = Default + "/get";
         public const string Export = Default + "/export";
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
@@ -28,7 +27,7 @@ namespace DMS.Rpc.reports.report_store_checker
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, Export, FilterListOrganization,FilterListAppUser,FilterListStore, FilterListStoreType,FilterListStoreGrouping  } },
+                Master, Count, List, Export, FilterListOrganization,FilterListAppUser,FilterListStore, FilterListStoreType,FilterListStoreGrouping  } },
 
         };
     }

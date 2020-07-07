@@ -205,11 +205,9 @@ namespace DMS.Rpc.reports.report_store_checker
             
             var query = from sc in DataContext.StoreChecking
                         join s in DataContext.Store on sc.StoreId equals s.Id
-                        join st in DataContext.StoreType on s.StoreTypeId equals st.Id
-                        join sg in DataContext.StoreGrouping on s.StoreGroupingId equals sg.Id
                         join o in DataContext.Organization on s.OrganizationId equals o.Id
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
-                        where sc.CheckOutAt.HasValue && sc.CheckOutAt > Start && sc.CheckOutAt < End &&
+                        where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                         (StoreTypeId.HasValue == false || s.StoreTypeId == StoreTypeId.Value) &&
