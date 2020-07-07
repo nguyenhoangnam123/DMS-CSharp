@@ -266,8 +266,11 @@ namespace DMS.Rpc.product
                     return BadRequest("File không đúng biểu mẫu import");
 
                 #region Khai báo thứ tự các cột trong Exel file 
+                
                 int StartColumn = 1;
                 int StartRow = 1;
+
+                int SttColumnn = 0 + StartColumn;
                 int CodeColumn = 1 + StartColumn;
                 int NameColumn = 2 + StartColumn;
                 int ProductGroupCodeColumn = 3 + StartColumn;
@@ -300,11 +303,13 @@ namespace DMS.Rpc.product
                 for (int i = StartRow; i <= ProductSheet.Dimension.End.Row; i++)
                 {
                     #region đọc dữ liệu các ô
-                    string EndOfFile = ProductSheet.Cells[i + StartRow, 1].Value?.ToString();
+                    string stt = ProductSheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
+                    if (stt != null && stt.ToLower() == "END".ToLower())
+                        break;
                     string CodeValue = ProductSheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
                     if (string.IsNullOrWhiteSpace(CodeValue) && i != ProductSheet.Dimension.End.Row)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã sản phẩm");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã đơn vị");
                     }
                     else if (string.IsNullOrWhiteSpace(CodeValue) && i == ProductSheet.Dimension.End.Row)
                         break;
@@ -419,13 +424,16 @@ namespace DMS.Rpc.product
                     {
                         Product.SalePrice = -1;
                     }
-                    if (long.TryParse(RetailPriceValue, out long RetailPrice))
+                    if (!string.IsNullOrWhiteSpace(RetailPriceValue)) 
                     {
-                        Product.RetailPrice = RetailPrice;
-                    }
-                    else
-                    {
-                        Product.RetailPrice = -1;
+                        if (long.TryParse(RetailPriceValue, out long RetailPrice))
+                        {
+                            Product.RetailPrice = RetailPrice;
+                        }
+                        else
+                        {
+                            Product.RetailPrice = -1;
+                        }
                     }
 
                     if (string.IsNullOrEmpty(StatusNameValue))
