@@ -385,10 +385,6 @@ namespace DMS.Services.MProduct
             {
                 foreach (var item in Product.Items)
                 {
-                    if (item.SalePrice == 0)
-                    {
-                        item.AddError(nameof(ProductValidator), nameof(item.SalePrice), ErrorCode.SalePriceEmpty);
-                    }
                     if (item.SalePrice < 0)
                     {
                         item.AddError(nameof(ProductValidator), nameof(item.SalePrice), ErrorCode.SalePriceInvalid);
