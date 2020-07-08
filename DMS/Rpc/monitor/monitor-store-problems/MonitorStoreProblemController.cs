@@ -301,6 +301,7 @@ namespace DMS.Rpc.monitor_store_problems
             AppUserFilter.Id = MonitorStoreProblem_AppUserFilterDTO.Id;
             AppUserFilter.Username = MonitorStoreProblem_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = MonitorStoreProblem_AppUserFilterDTO.DisplayName;
+            AppUserFilter.OrganizationId = MonitorStoreProblem_AppUserFilterDTO.OrganizationId;
 
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
@@ -418,6 +419,7 @@ namespace DMS.Rpc.monitor_store_problems
             AppUserFilter.Id = MonitorStoreProblem_AppUserFilterDTO.Id;
             AppUserFilter.Username = MonitorStoreProblem_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = MonitorStoreProblem_AppUserFilterDTO.DisplayName;
+            AppUserFilter.OrganizationId = MonitorStoreProblem_AppUserFilterDTO.OrganizationId;
 
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
