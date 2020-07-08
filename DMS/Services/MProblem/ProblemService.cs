@@ -5,6 +5,7 @@ using DMS.Repositories;
 using DMS.Rpc.problem;
 using DMS.Services.MImage;
 using DMS.Services.MNotification;
+using DMS.Services.MOrganization;
 using Helpers;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace DMS.Services.MProblem
         Task<List<Problem>> BulkDelete(List<Problem> Problems);
         Task<List<Problem>> Import(List<Problem> Problems);
         Task<Image> SaveImage(Image Image);
-        ProblemFilter ToFilter(ProblemFilter ProblemFilter);
+        Task<ProblemFilter> ToFilter(ProblemFilter ProblemFilter);
     }
 
     public class ProblemService : BaseService, IProblemService
@@ -34,6 +35,7 @@ namespace DMS.Services.MProblem
         private INotificationService NotificationService;
         private ICurrentContext CurrentContext;
         private IImageService ImageService;
+        private IOrganizationService OrganizationService;
         private IProblemValidator ProblemValidator;
 
         public ProblemService(
@@ -42,6 +44,7 @@ namespace DMS.Services.MProblem
             INotificationService NotificationService,
             ICurrentContext CurrentContext,
             IImageService ImageService,
+            IOrganizationService OrganizationService,
             IProblemValidator ProblemValidator
         )
         {
@@ -50,6 +53,7 @@ namespace DMS.Services.MProblem
             this.NotificationService = NotificationService;
             this.CurrentContext = CurrentContext;
             this.ImageService = ImageService;
+            this.OrganizationService = OrganizationService;
             this.ProblemValidator = ProblemValidator;
         }
         public async Task<int> Count(ProblemFilter ProblemFilter)
@@ -165,7 +169,7 @@ namespace DMS.Services.MProblem
             {
                 var oldData = await UOW.ProblemRepository.Get(Problem.Id);
                 Problem.Code = oldData.Code;
-                if(Problem.ProblemStatusId != oldData.ProblemStatusId)
+                if (Problem.ProblemStatusId != oldData.ProblemStatusId)
                 {
                     Problem.ProblemHistorys = oldData.ProblemHistorys;
                     ProblemHistory ProblemHistory = new ProblemHistory
@@ -225,7 +229,7 @@ namespace DMS.Services.MProblem
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                
+
                 if (ex.InnerException == null)
                 {
                     await Logging.CreateSystemLog(ex, nameof(ProblemService));
@@ -287,10 +291,18 @@ namespace DMS.Services.MProblem
             }
         }
 
-        public ProblemFilter ToFilter(ProblemFilter filter)
+        public async Task<ProblemFilter> ToFilter(ProblemFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ProblemFilter>();
             if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL,
+                OrderBy = OrganizationOrder.Id,
+                OrderType = OrderType.ASC
+            });
             foreach (var currentFilter in CurrentContext.Filters)
             {
                 ProblemFilter subFilter = new ProblemFilter();
@@ -298,7 +310,27 @@ namespace DMS.Services.MProblem
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
+                        subFilter.Id = FilterBuilder.Merge(subFilter.AppUserId, FilterPermissionDefinition.IdFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
+                    {
+                        var organizationIds = FilterOrganization(Organizations, FilterPermissionDefinition.IdFilter);
+                        IdFilter IdFilter = new IdFilter { In = organizationIds };
+                        subFilter.OrganizationId = FilterBuilder.Merge(subFilter.OrganizationId, IdFilter);
+                    }
+                    if (FilterPermissionDefinition.Name == nameof(CurrentContext.UserId) && FilterPermissionDefinition.IdFilter != null)
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.IS.Id)
+                        {
+                            if (subFilter.AppUserId == null) subFilter.AppUserId = new IdFilter { };
+                            subFilter.AppUserId.Equal = CurrentContext.UserId;
+                        }
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.ISNT.Id)
+                        {
+                            if (subFilter.AppUserId == null) subFilter.AppUserId = new IdFilter { };
+                            subFilter.AppUserId.NotEqual = CurrentContext.UserId;
+                        }
+                    }
                 }
             }
             return filter;

@@ -57,7 +57,7 @@ namespace DMS.Rpc.monitor_store_problems
                 throw new BindException(ModelState);
 
             ProblemFilter ProblemFilter = ConvertFilterDTOToFilterEntity(MonitorStoreProblem_ProblemFilterDTO);
-            ProblemFilter = ProblemService.ToFilter(ProblemFilter);
+            ProblemFilter = await ProblemService.ToFilter(ProblemFilter);
             int count = await ProblemService.Count(ProblemFilter);
             return count;
         }
@@ -69,7 +69,7 @@ namespace DMS.Rpc.monitor_store_problems
                 throw new BindException(ModelState);
 
             ProblemFilter ProblemFilter = ConvertFilterDTOToFilterEntity(MonitorStoreProblem_ProblemFilterDTO);
-            ProblemFilter = ProblemService.ToFilter(ProblemFilter);
+            ProblemFilter = await ProblemService.ToFilter(ProblemFilter);
             List<Problem> Problems = await ProblemService.List(ProblemFilter);
             List<MonitorStoreProblem_ProblemDTO> Problem_ProblemDTOs = Problems
                 .Select(c => new MonitorStoreProblem_ProblemDTO(c)).ToList();
@@ -132,7 +132,7 @@ namespace DMS.Rpc.monitor_store_problems
                 throw new BindException(ModelState);
 
             ProblemFilter ProblemFilter = new ProblemFilter();
-            ProblemFilter = ProblemService.ToFilter(ProblemFilter);
+            ProblemFilter = await ProblemService.ToFilter(ProblemFilter);
             ProblemFilter.Id = new IdFilter { In = Ids };
             ProblemFilter.Selects = ProblemSelect.Id;
             ProblemFilter.Skip = 0;
@@ -146,7 +146,7 @@ namespace DMS.Rpc.monitor_store_problems
         private async Task<bool> HasPermission(long Id)
         {
             ProblemFilter ProblemFilter = new ProblemFilter();
-            ProblemFilter = ProblemService.ToFilter(ProblemFilter);
+            ProblemFilter = await ProblemService.ToFilter(ProblemFilter);
             if (Id == 0)
             {
 
@@ -277,7 +277,7 @@ namespace DMS.Rpc.monitor_store_problems
             ProblemFilter.Code = MonitorStoreProblem_ProblemFilterDTO.Code;
             ProblemFilter.StoreCheckingId = MonitorStoreProblem_ProblemFilterDTO.StoreCheckingId;
             ProblemFilter.StoreId = MonitorStoreProblem_ProblemFilterDTO.StoreId;
-            ProblemFilter.CreatorId = MonitorStoreProblem_ProblemFilterDTO.AppUserId;
+            ProblemFilter.AppUserId = MonitorStoreProblem_ProblemFilterDTO.AppUserId;
             ProblemFilter.ProblemTypeId = MonitorStoreProblem_ProblemFilterDTO.ProblemTypeId;
             ProblemFilter.NoteAt = MonitorStoreProblem_ProblemFilterDTO.NoteAt;
             ProblemFilter.CompletedAt = MonitorStoreProblem_ProblemFilterDTO.CompletedAt;

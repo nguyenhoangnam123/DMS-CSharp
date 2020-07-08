@@ -54,7 +54,7 @@ namespace DMS.Rpc.problem
                 throw new BindException(ModelState);
 
             ProblemFilter ProblemFilter = ConvertFilterDTOToFilterEntity(Problem_ProblemFilterDTO);
-            ProblemFilter = ProblemService.ToFilter(ProblemFilter);
+            ProblemFilter = await ProblemService.ToFilter(ProblemFilter);
             int count = await ProblemService.Count(ProblemFilter);
             return count;
         }
@@ -66,7 +66,7 @@ namespace DMS.Rpc.problem
                 throw new BindException(ModelState);
 
             ProblemFilter ProblemFilter = ConvertFilterDTOToFilterEntity(Problem_ProblemFilterDTO);
-            ProblemFilter = ProblemService.ToFilter(ProblemFilter);
+            ProblemFilter = await ProblemService.ToFilter(ProblemFilter);
             List<Problem> Problems = await ProblemService.List(ProblemFilter);
             List<Problem_ProblemDTO> Problem_ProblemDTOs = Problems
                 .Select(c => new Problem_ProblemDTO(c)).ToList();
@@ -168,7 +168,7 @@ namespace DMS.Rpc.problem
         private async Task<bool> HasPermission(long Id)
         {
             ProblemFilter ProblemFilter = new ProblemFilter();
-            ProblemFilter = ProblemService.ToFilter(ProblemFilter);
+            ProblemFilter = await ProblemService.ToFilter(ProblemFilter);
             if (Id == 0)
             {
 
@@ -290,7 +290,7 @@ namespace DMS.Rpc.problem
             ProblemFilter.Code = Problem_ProblemFilterDTO.Code;
             ProblemFilter.StoreCheckingId = Problem_ProblemFilterDTO.StoreCheckingId;
             ProblemFilter.StoreId = Problem_ProblemFilterDTO.StoreId;
-            ProblemFilter.CreatorId = Problem_ProblemFilterDTO.CreatorId;
+            ProblemFilter.AppUserId = Problem_ProblemFilterDTO.CreatorId;
             ProblemFilter.ProblemTypeId = Problem_ProblemFilterDTO.ProblemTypeId;
             ProblemFilter.NoteAt = Problem_ProblemFilterDTO.NoteAt;
             ProblemFilter.CompletedAt = Problem_ProblemFilterDTO.CompletedAt;

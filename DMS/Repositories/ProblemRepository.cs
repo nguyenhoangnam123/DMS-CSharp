@@ -41,8 +41,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StoreCheckingId, filter.StoreCheckingId);
             if (filter.StoreId != null)
                 query = query.Where(q => q.StoreId, filter.StoreId);
-            if (filter.CreatorId != null)
-                query = query.Where(q => q.CreatorId, filter.CreatorId);
+            if (filter.AppUserId != null)
+                query = query.Where(q => q.CreatorId, filter.AppUserId);
             if (filter.ProblemTypeId != null)
                 query = query.Where(q => q.ProblemTypeId, filter.ProblemTypeId);
             if (filter.NoteAt != null)
@@ -75,8 +75,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Code, filter.Code);
                 if (filter.StoreId != null)
                     queryable = queryable.Where(q => q.StoreId, filter.StoreId);
-                if (filter.CreatorId != null)
-                    queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
+                if (filter.AppUserId != null)
+                    queryable = queryable.Where(q => q.CreatorId, filter.AppUserId);
                 if (filter.ProblemTypeId != null)
                     queryable = queryable.Where(q => q.ProblemTypeId, filter.ProblemTypeId);
                 if (filter.NoteAt != null)

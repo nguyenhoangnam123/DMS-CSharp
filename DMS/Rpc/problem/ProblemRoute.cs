@@ -35,7 +35,7 @@ namespace DMS.Rpc.problem
             { nameof(ProblemFilter.Id), FieldTypeEnum.ID.Id },
             { nameof(ProblemFilter.StoreCheckingId), FieldTypeEnum.ID.Id },
             { nameof(ProblemFilter.StoreId), FieldTypeEnum.ID.Id },
-            { nameof(ProblemFilter.CreatorId), FieldTypeEnum.ID.Id },
+            { nameof(ProblemFilter.AppUserId), FieldTypeEnum.ID.Id },
             { nameof(ProblemFilter.ProblemTypeId), FieldTypeEnum.ID.Id },
             { nameof(ProblemFilter.ProblemStatusId), FieldTypeEnum.ID.Id },
         };
