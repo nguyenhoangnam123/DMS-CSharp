@@ -9,6 +9,7 @@ namespace DMS.Rpc.mobile
     public class Mobile_ProblemDTO : DataDTO
     {
         public long Id { get; set; }
+        public string Code { get; set; }
         public long? StoreCheckingId { get; set; }
         public long StoreId { get; set; }
         public long CreatorId { get; set; }
@@ -28,6 +29,7 @@ namespace DMS.Rpc.mobile
         public Mobile_ProblemDTO(Problem Problem)
         {
             this.Id = Problem.Id;
+            this.Code = Problem.Code;
             this.StoreCheckingId = Problem.StoreCheckingId;
             this.StoreId = Problem.StoreId;
             this.CreatorId = Problem.CreatorId;
