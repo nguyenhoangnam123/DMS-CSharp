@@ -176,11 +176,14 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
 
+            List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             var query = from sc in DataContext.StoreChecking
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         join scim in DataContext.StoreCheckingImageMapping on sc.Id equals scim.StoreCheckingId
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
+                        FilterAppUserIds.Contains(sc.SaleEmployeeId) &&
                         (OrganizationId.HasValue == false || au.OrganizationId == OrganizationId.Value) &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
@@ -224,11 +227,14 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
 
+            List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             var query = from sc in DataContext.StoreChecking
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         join scim in DataContext.StoreCheckingImageMapping on sc.Id equals scim.StoreCheckingId
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
+                        FilterAppUserIds.Contains(sc.SaleEmployeeId) &&
                         (OrganizationId.HasValue == false || au.OrganizationId == OrganizationId.Value) &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&

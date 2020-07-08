@@ -166,10 +166,11 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
 
-            var query = from au in DataContext.AppUser
-                        join sc in DataContext.StoreChecking on au.Id equals sc.SaleEmployeeId
+            List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var query = from  sc in DataContext.StoreChecking
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                        (OrganizationId.HasValue == false || au.OrganizationId == OrganizationId.Value) &&
+                        FilterAppUserIds.Contains(sc.SaleEmployeeId) &&
+                        (OrganizationId.HasValue == false || sc.SaleEmployee.OrganizationId.Value == OrganizationId.Value) &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                         (
@@ -182,7 +183,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                             (HasOrder.Value == 0 && sc.IndirectSalesOrderCounter == 0) ||
                             (HasOrder.Value == 1 && sc.IndirectSalesOrderCounter > 0)
                         )
-                        select au.Id;
+                        select sc.SaleEmployeeId;
             int count = await query.Distinct().CountAsync();
             return count;
         }
@@ -207,10 +208,12 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
 
+            List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             var query = from au in DataContext.AppUser
                         join sc in DataContext.StoreChecking on au.Id equals sc.SaleEmployeeId
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
+                        FilterAppUserIds.Contains(au.Id) &&
                         (OrganizationId.HasValue == false || au.OrganizationId == OrganizationId.Value) &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&

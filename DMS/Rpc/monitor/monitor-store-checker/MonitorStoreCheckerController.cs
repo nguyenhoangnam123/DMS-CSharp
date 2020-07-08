@@ -128,8 +128,9 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
-
+            List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             int count = await DataContext.AppUser.Where(au =>
+                FilterAppUserIds.Contains(au.Id) &&
                 au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value) &&
                 (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value)
             ).CountAsync();
@@ -161,8 +162,9 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
-
+            List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au =>
+                FilterAppUserIds.Contains(au.Id) &&
                au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value) &&
                (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value)
             )

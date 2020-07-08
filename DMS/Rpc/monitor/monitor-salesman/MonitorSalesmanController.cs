@@ -105,8 +105,9 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
-
+            List<long> AppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             int count = await DataContext.AppUser.Where(au =>
+                AppUserIds.Contains(au.Id) &&
                 au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value) &&
                 (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value)
             ).CountAsync();
@@ -139,10 +140,11 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
-
+            List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             var query = DataContext.AppUser
                 .Where(au =>
+                    FilterAppUserIds.Contains(au.Id) &&
                     au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value) &&
                     (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value))
                 .OrderBy(q => q.Organization.Path).ThenBy(q => q.DisplayName)

@@ -38,7 +38,7 @@ namespace DMS.Rpc.monitor_store_problems
             IStoreService StoreService,
             IProblemService ProblemService,
             ICurrentContext CurrentContext
-        ) 
+        )
         {
             this.AppUserService = AppUserService;
             this.OrganizationService = OrganizationService;
@@ -77,7 +77,7 @@ namespace DMS.Rpc.monitor_store_problems
         }
 
         [Route(MonitorStoreProblemRoute.Get), HttpPost]
-        public async Task<ActionResult<MonitorStoreProblem_ProblemDTO>> Get([FromBody]MonitorStoreProblem_ProblemDTO MonitorStoreProblem_ProblemDTO)
+        public async Task<ActionResult<MonitorStoreProblem_ProblemDTO>> Get([FromBody] MonitorStoreProblem_ProblemDTO MonitorStoreProblem_ProblemDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -301,16 +301,10 @@ namespace DMS.Rpc.monitor_store_problems
             AppUserFilter.Id = MonitorStoreProblem_AppUserFilterDTO.Id;
             AppUserFilter.Username = MonitorStoreProblem_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = MonitorStoreProblem_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = MonitorStoreProblem_AppUserFilterDTO.Address;
-            AppUserFilter.Email = MonitorStoreProblem_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = MonitorStoreProblem_AppUserFilterDTO.Phone;
-            AppUserFilter.PositionId = MonitorStoreProblem_AppUserFilterDTO.PositionId;
-            AppUserFilter.Department = MonitorStoreProblem_AppUserFilterDTO.Department;
-            AppUserFilter.OrganizationId = MonitorStoreProblem_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.StatusId = MonitorStoreProblem_AppUserFilterDTO.StatusId;
-            AppUserFilter.ProvinceId = MonitorStoreProblem_AppUserFilterDTO.ProvinceId;
-            AppUserFilter.SexId = MonitorStoreProblem_AppUserFilterDTO.SexId;
-            AppUserFilter.Birthday = MonitorStoreProblem_AppUserFilterDTO.Birthday;
+
+            AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<MonitorStoreProblem_AppUserDTO> Problem_AppUserDTOs = AppUsers
@@ -327,6 +321,10 @@ namespace DMS.Rpc.monitor_store_problems
             OrganizationFilter.OrderBy = OrganizationOrder.Id;
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<MonitorStoreProblem_OrganizationDTO> MonitorStoreProblem_OrganizationDTOs = Organizations
@@ -394,20 +392,10 @@ namespace DMS.Rpc.monitor_store_problems
             StoreFilter.StoreTypeId = MonitorStoreProblem_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = MonitorStoreProblem_StoreFilterDTO.StoreGroupingId;
             StoreFilter.ResellerId = MonitorStoreProblem_StoreFilterDTO.ResellerId;
-            StoreFilter.Telephone = MonitorStoreProblem_StoreFilterDTO.Telephone;
-            StoreFilter.ProvinceId = MonitorStoreProblem_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = MonitorStoreProblem_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = MonitorStoreProblem_StoreFilterDTO.WardId;
-            StoreFilter.Address = MonitorStoreProblem_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = MonitorStoreProblem_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = MonitorStoreProblem_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = MonitorStoreProblem_StoreFilterDTO.Longitude;
-            StoreFilter.DeliveryLatitude = MonitorStoreProblem_StoreFilterDTO.DeliveryLatitude;
-            StoreFilter.DeliveryLongitude = MonitorStoreProblem_StoreFilterDTO.DeliveryLongitude;
-            StoreFilter.OwnerName = MonitorStoreProblem_StoreFilterDTO.OwnerName;
-            StoreFilter.OwnerPhone = MonitorStoreProblem_StoreFilterDTO.OwnerPhone;
-            StoreFilter.OwnerEmail = MonitorStoreProblem_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = MonitorStoreProblem_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = null;
+
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<MonitorStoreProblem_StoreDTO> Problem_StoreDTOs = Stores
@@ -430,16 +418,10 @@ namespace DMS.Rpc.monitor_store_problems
             AppUserFilter.Id = MonitorStoreProblem_AppUserFilterDTO.Id;
             AppUserFilter.Username = MonitorStoreProblem_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = MonitorStoreProblem_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = MonitorStoreProblem_AppUserFilterDTO.Address;
-            AppUserFilter.Email = MonitorStoreProblem_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = MonitorStoreProblem_AppUserFilterDTO.Phone;
-            AppUserFilter.PositionId = MonitorStoreProblem_AppUserFilterDTO.PositionId;
-            AppUserFilter.Department = MonitorStoreProblem_AppUserFilterDTO.Department;
-            AppUserFilter.OrganizationId = MonitorStoreProblem_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.StatusId = MonitorStoreProblem_AppUserFilterDTO.StatusId;
-            AppUserFilter.ProvinceId = MonitorStoreProblem_AppUserFilterDTO.ProvinceId;
-            AppUserFilter.SexId = MonitorStoreProblem_AppUserFilterDTO.SexId;
-            AppUserFilter.Birthday = MonitorStoreProblem_AppUserFilterDTO.Birthday;
+
+            AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<MonitorStoreProblem_AppUserDTO> Problem_AppUserDTOs = AppUsers
@@ -457,6 +439,9 @@ namespace DMS.Rpc.monitor_store_problems
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<MonitorStoreProblem_OrganizationDTO> MonitorStoreProblem_OrganizationDTOs = Organizations
@@ -524,20 +509,10 @@ namespace DMS.Rpc.monitor_store_problems
             StoreFilter.StoreTypeId = MonitorStoreProblem_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = MonitorStoreProblem_StoreFilterDTO.StoreGroupingId;
             StoreFilter.ResellerId = MonitorStoreProblem_StoreFilterDTO.ResellerId;
-            StoreFilter.Telephone = MonitorStoreProblem_StoreFilterDTO.Telephone;
-            StoreFilter.ProvinceId = MonitorStoreProblem_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = MonitorStoreProblem_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = MonitorStoreProblem_StoreFilterDTO.WardId;
-            StoreFilter.Address = MonitorStoreProblem_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = MonitorStoreProblem_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = MonitorStoreProblem_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = MonitorStoreProblem_StoreFilterDTO.Longitude;
-            StoreFilter.DeliveryLatitude = MonitorStoreProblem_StoreFilterDTO.DeliveryLatitude;
-            StoreFilter.DeliveryLongitude = MonitorStoreProblem_StoreFilterDTO.DeliveryLongitude;
-            StoreFilter.OwnerName = MonitorStoreProblem_StoreFilterDTO.OwnerName;
-            StoreFilter.OwnerPhone = MonitorStoreProblem_StoreFilterDTO.OwnerPhone;
-            StoreFilter.OwnerEmail = MonitorStoreProblem_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = MonitorStoreProblem_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<MonitorStoreProblem_StoreDTO> Problem_StoreDTOs = Stores
