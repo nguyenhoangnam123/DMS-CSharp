@@ -247,6 +247,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                     })
                     .ToList();
             }
+            ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs.Where(x => x.Stores.Any()).ToList();
 
             List<long> StoreIds = Stores.Select(s => s.Id).ToList();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
