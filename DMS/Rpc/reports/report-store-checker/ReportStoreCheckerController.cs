@@ -284,7 +284,7 @@ namespace DMS.Rpc.reports.report_store_checker
                     .Where(se => se.OrganizationName == ReportStoreChecker_ReportStoreCheckerDTO.OrganizationName)
                     .ToList();
             }
-
+            ReportStoreChecker_ReportStoreCheckerDTOs = ReportStoreChecker_ReportStoreCheckerDTOs.Where(x => x.SaleEmployees.Any()).ToList();
             List<long> AppUserIds = AppUserDAOs.Select(s => s.Id).ToList();
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
