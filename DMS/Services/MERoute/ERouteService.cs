@@ -338,6 +338,7 @@ namespace DMS.Services.MERoute
                         IdFilter IdFilter = new IdFilter { In = organizationIds };
                         subFilter.OrganizationId = FilterBuilder.Merge(subFilter.OrganizationId, IdFilter);
                     }
+
                     if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
                         subFilter.AppUserId = FilterBuilder.Merge(subFilter.AppUserId, FilterPermissionDefinition.IdFilter);
 

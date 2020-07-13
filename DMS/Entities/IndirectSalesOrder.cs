@@ -49,6 +49,7 @@ namespace DMS.Entities
     public class IndirectSalesOrderFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public StringFilter Code { get; set; }
         public IdFilter BuyerStoreId { get; set; }
         public StringFilter PhoneNumber { get; set; }
