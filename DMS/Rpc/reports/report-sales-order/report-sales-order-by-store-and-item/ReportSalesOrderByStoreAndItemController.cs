@@ -341,8 +341,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                     }
                 }
             }
-            ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs.Where(x => x.Stores.All(x => x.Items.Any())).ToList();
-            return ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs;
+            foreach (var ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO in ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs)
+            {
+                ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO.Stores = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO.Stores.Where(x => x.Items.Any()).ToList();
+            }
+            return ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs.Where(x => x.Stores.Any()).ToList();
         }
 
         [Route(ReportSalesOrderByStoreAndItemRoute.Total), HttpPost]
