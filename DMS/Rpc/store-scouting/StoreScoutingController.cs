@@ -62,7 +62,7 @@ namespace DMS.Rpc.store_scouting
                 throw new BindException(ModelState);
 
             StoreScoutingFilter StoreScoutingFilter = ConvertFilterDTOToFilterEntity(StoreScouting_StoreScoutingFilterDTO);
-            StoreScoutingFilter = StoreScoutingService.ToFilter(StoreScoutingFilter);
+            StoreScoutingFilter = await StoreScoutingService.ToFilter(StoreScoutingFilter);
             int count = await StoreScoutingService.Count(StoreScoutingFilter);
             return count;
         }
@@ -74,7 +74,7 @@ namespace DMS.Rpc.store_scouting
                 throw new BindException(ModelState);
 
             StoreScoutingFilter StoreScoutingFilter = ConvertFilterDTOToFilterEntity(StoreScouting_StoreScoutingFilterDTO);
-            StoreScoutingFilter = StoreScoutingService.ToFilter(StoreScoutingFilter);
+            StoreScoutingFilter = await  StoreScoutingService.ToFilter(StoreScoutingFilter);
             List<StoreScouting> StoreScoutings = await StoreScoutingService.List(StoreScoutingFilter);
             List<StoreScouting_StoreScoutingDTO> StoreScouting_StoreScoutingDTOs = StoreScoutings
                 .Select(c => new StoreScouting_StoreScoutingDTO(c)).ToList();
@@ -151,7 +151,7 @@ namespace DMS.Rpc.store_scouting
         private async Task<bool> HasPermission(long Id)
         {
             StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter();
-            StoreScoutingFilter = StoreScoutingService.ToFilter(StoreScoutingFilter);
+            StoreScoutingFilter = await StoreScoutingService.ToFilter(StoreScoutingFilter);
             if (Id == 0)
             {
 
@@ -270,7 +270,7 @@ namespace DMS.Rpc.store_scouting
             StoreScoutingFilter.Address = StoreScouting_StoreScoutingFilterDTO.Address;
             StoreScoutingFilter.Latitude = StoreScouting_StoreScoutingFilterDTO.Latitude;
             StoreScoutingFilter.Longitude = StoreScouting_StoreScoutingFilterDTO.Longitude;
-            StoreScoutingFilter.CreatorId = StoreScouting_StoreScoutingFilterDTO.CreatorId;
+            StoreScoutingFilter.AppUserId = StoreScouting_StoreScoutingFilterDTO.AppUserId;
             StoreScoutingFilter.StoreScoutingStatusId = StoreScouting_StoreScoutingFilterDTO.StoreScoutingStatusId;
             StoreScoutingFilter.CreatedAt = StoreScouting_StoreScoutingFilterDTO.CreatedAt;
             StoreScoutingFilter.UpdatedAt = StoreScouting_StoreScoutingFilterDTO.UpdatedAt;

@@ -79,7 +79,7 @@ namespace DMS.Rpc.store_scouting
         public DecimalFilter Latitude { get; set; }
         public DecimalFilter Longitude { get; set; }
         public IdFilter StoreId { get; set; }
-        public IdFilter CreatorId { get; set; }
+        public IdFilter AppUserId { get; set; }
         public IdFilter StoreScoutingStatusId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
