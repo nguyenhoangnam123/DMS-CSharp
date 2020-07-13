@@ -221,8 +221,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             ItemIds = ItemIds.Distinct().ToList();
             ItemFilter ItemFilter = new ItemFilter
             {
-                Skip = 0,
-                Take = int.MaxValue,
+                Skip = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Skip,
+                Take = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Take,
                 Id = new IdFilter { In = ItemIds },
                 ProductGroupingId = new IdFilter { Equal = ProductGroupingId },
                 ProductTypeId = new IdFilter { Equal = ProductTypeId },
@@ -298,6 +298,99 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                 }
             }
             return ReportSalesOrderByItem_ReportSalesOrderByItemDTOs;
+        }
+
+        [Route(ReportSalesOrderByItemRoute.Total), HttpPost]
+        public async Task<ReportSalesOrderByItem_TotalDTO> Total()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ReportSalesOrderByItem_TotalDTO ReportSalesOrderByItem_TotalDTO = new ReportSalesOrderByItem_TotalDTO();
+
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<long> AppUserIds = await DataContext.AppUser.Where(au =>
+               au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
+                .Select(x => x.Id)
+                .ToListAsync();
+
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
+                .Where(x => AppUserIds.Contains(x.SaleEmployeeId))
+                //x.RequestStateId == RequestStateEnum.APPROVED.Id) todo
+                .ToListAsync();
+
+            List<long> IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
+            List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
+                .Where(x => IndirectSalesOrderIds.Contains(x.IndirectSalesOrderId))
+                .ToListAsync();
+            List<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotionDAOs = await DataContext.IndirectSalesOrderPromotion
+                .Where(x => IndirectSalesOrderIds.Contains(x.IndirectSalesOrderId))
+                .ToListAsync();
+            List<long> ItemIds = new List<long>();
+            ItemIds.AddRange(IndirectSalesOrderContentDAOs.Select(x => x.ItemId));
+            ItemIds.AddRange(IndirectSalesOrderPromotionDAOs.Select(x => x.ItemId));
+            ItemIds = ItemIds.Distinct().ToList();
+            List<Item> Items = await ItemService.List(new ItemFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Id = new IdFilter { In = ItemIds },
+                Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name | ItemSelect.SalePrice
+            });
+
+            List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO> ReportSalesOrderByItem_ReportSalesOrderByItemDTOs = new List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO>();
+            foreach (IndirectSalesOrderContentDAO IndirectSalesOrderContentDAO in IndirectSalesOrderContentDAOs)
+            {
+                if (IndirectSalesOrderIds.Contains(IndirectSalesOrderContentDAO.IndirectSalesOrderId))
+                {
+                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO ReportSalesOrderByItem_ReportSalesOrderByItemDTO = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs
+                        .Where(i => i.ItemId == IndirectSalesOrderContentDAO.ItemId).FirstOrDefault();
+                    if (ReportSalesOrderByItem_ReportSalesOrderByItemDTO == null)
+                    {
+                        var item = Items.Where(x => x.Id == IndirectSalesOrderContentDAO.ItemId).FirstOrDefault();
+                        if (item == null)
+                            continue;
+                        ReportSalesOrderByItem_ReportSalesOrderByItemDTO = new ReportSalesOrderByItem_ReportSalesOrderByItemDTO
+                        {
+                            ItemId = item.Id,
+                            ItemCode = item.Code,
+                            ItemName = item.Name,
+                        };
+                        ReportSalesOrderByItem_ReportSalesOrderByItemDTOs.Add(ReportSalesOrderByItem_ReportSalesOrderByItemDTO);
+                    }
+                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
+                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Revenue += IndirectSalesOrderContentDAO.Amount;
+                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Discount += (IndirectSalesOrderContentDAO.DiscountAmount ?? 0 + IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0);
+                }
+            }
+
+            foreach (IndirectSalesOrderPromotionDAO IndirectSalesOrderPromotionDAO in IndirectSalesOrderPromotionDAOs)
+            {
+                if (IndirectSalesOrderIds.Contains(IndirectSalesOrderPromotionDAO.IndirectSalesOrderId))
+                {
+                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO ReportSalesOrderByItem_ReportSalesOrderByItemDTO = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs
+                        .Where(i => i.ItemId == IndirectSalesOrderPromotionDAO.ItemId).FirstOrDefault();
+                    if (ReportSalesOrderByItem_ReportSalesOrderByItemDTO == null)
+                    {
+                        var item = Items.Where(x => x.Id == IndirectSalesOrderPromotionDAO.ItemId).FirstOrDefault();
+                        if (item == null)
+                            continue;
+                        ReportSalesOrderByItem_ReportSalesOrderByItemDTO = new ReportSalesOrderByItem_ReportSalesOrderByItemDTO
+                        {
+                            ItemId = item.Id,
+                            ItemCode = item.Code,
+                            ItemName = item.Name,
+                        };
+                        ReportSalesOrderByItem_ReportSalesOrderByItemDTOs.Add(ReportSalesOrderByItem_ReportSalesOrderByItemDTO);
+                    }
+                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.PromotionStock += IndirectSalesOrderPromotionDAO.RequestedQuantity;
+                }
+            }
+            ReportSalesOrderByItem_TotalDTO.TotalDiscount = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs.Sum(x => x.Discount);
+            ReportSalesOrderByItem_TotalDTO.TotalRevenue = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs.Sum(x => x.Revenue);
+            ReportSalesOrderByItem_TotalDTO.TotalPromotionStock = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs.Sum(x => x.PromotionStock);
+            ReportSalesOrderByItem_TotalDTO.TotalSalesStock = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs.Sum(x => x.SaleStock);
+            return ReportSalesOrderByItem_TotalDTO;
         }
     }
 }
