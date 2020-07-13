@@ -461,7 +461,7 @@ namespace DMS.Rpc.store
                     Stores.Add(Store);
                 }
                 if (errorContent.Length > 0)
-                    return BadRequest(errorContent);
+                    return BadRequest(errorContent.ToString());
             }
 
             Stores = await StoreService.Import(Stores);
@@ -478,7 +478,7 @@ namespace DMS.Rpc.store
                 }
             }
             if (Stores.Any(s => !s.IsValidated))
-                return BadRequest(errorContent);
+                return BadRequest(errorContent.ToString());
             return Ok(Store_StoreDTOs);
         }
 
