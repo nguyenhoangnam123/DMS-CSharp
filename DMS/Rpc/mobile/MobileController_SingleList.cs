@@ -835,7 +835,7 @@ namespace DMS.Rpc.mobile
             StoreScoutingFilter.Code = Mobile_StoreScoutingFilterDTO.Code;
             StoreScoutingFilter.Name = Mobile_StoreScoutingFilterDTO.Name;
             StoreScoutingFilter.CreatedAt = Mobile_StoreScoutingFilterDTO.CreatedAt;
-            StoreScoutingFilter.CreatorId = new IdFilter { Equal = appUser.Id };
+            StoreScoutingFilter.AppUserId = new IdFilter { Equal = appUser.Id };
             StoreScoutingFilter.DistrictId = Mobile_StoreScoutingFilterDTO.DistrictId;
             StoreScoutingFilter.OrganizationId = Mobile_StoreScoutingFilterDTO.OrganizationId;
             StoreScoutingFilter.ProvinceId = Mobile_StoreScoutingFilterDTO.ProvinceId;
@@ -862,7 +862,7 @@ namespace DMS.Rpc.mobile
             StoreScoutingFilter.Code = Mobile_StoreScoutingFilterDTO.Code;
             StoreScoutingFilter.Name = Mobile_StoreScoutingFilterDTO.Name;
             StoreScoutingFilter.CreatedAt = Mobile_StoreScoutingFilterDTO.CreatedAt;
-            StoreScoutingFilter.CreatorId = new IdFilter { Equal = appUser.Id };
+            StoreScoutingFilter.AppUserId = new IdFilter { Equal = appUser.Id };
             StoreScoutingFilter.DistrictId = Mobile_StoreScoutingFilterDTO.DistrictId;
             StoreScoutingFilter.OrganizationId = Mobile_StoreScoutingFilterDTO.OrganizationId;
             StoreScoutingFilter.ProvinceId = Mobile_StoreScoutingFilterDTO.ProvinceId;

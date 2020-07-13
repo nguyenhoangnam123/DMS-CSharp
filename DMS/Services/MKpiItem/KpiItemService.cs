@@ -20,8 +20,9 @@ namespace DMS.Services.MKpiItem
         Task<KpiItem> Delete(KpiItem KpiItem);
         Task<List<KpiItem>> BulkDelete(List<KpiItem> KpiItems);
         Task<List<KpiItem>> Import(List<KpiItem> KpiItems);
-        Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiPeriodId);
-        Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiPeriodId);
+        Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId);
+        Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId);
+
         KpiItemFilter ToFilter(KpiItemFilter KpiItemFilter);
     }
 
@@ -74,13 +75,13 @@ namespace DMS.Services.MKpiItem
                 DateTime Now = StaticParams.DateTimeNow;
                 foreach (var KpiItem in KpiItems)
                 {
-                    if(KpiItem.KpiPeriodId < 113)
+                    if (KpiItem.KpiPeriodId < 113)
                     {
                         DateTime periodToDateTime = new DateTime(Convert.ToInt32(KpiItem.KpiYearId), Convert.ToInt32(KpiItem.KpiPeriodId - 100), 1).AddMonths(1).AddSeconds(-1);
                         if (Now > periodToDateTime)
                             KpiItem.ReadOnly = true;
                     }
-                    else if(KpiItem.KpiPeriodId < 204)
+                    else if (KpiItem.KpiPeriodId < 204)
                     {
                         var firstMonthOfQuarter = (KpiItem.KpiPeriodId - 200) * 3 - 2;
                         DateTime periodToDateTime = new DateTime(Convert.ToInt32(KpiItem.KpiYearId), Convert.ToInt32(firstMonthOfQuarter), 1).AddMonths(3).AddSeconds(-1);
@@ -272,7 +273,7 @@ namespace DMS.Services.MKpiItem
             }
         }
 
-        public async Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiPeriodId)
+        public async Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId)
         {
             try
             {
@@ -280,6 +281,7 @@ namespace DMS.Services.MKpiItem
                 {
                     Skip = 0,
                     Take = int.MaxValue,
+                    KpiYearId = KpiYearId,
                     KpiPeriodId = KpiPeriodId,
                     Selects = KpiItemSelect.Id | KpiItemSelect.Employee
                 };
@@ -291,7 +293,7 @@ namespace DMS.Services.MKpiItem
                     Skip = 0,
                     Take = int.MaxValue,
                     Id = new IdFilter { NotIn = AppUserIds },
-                    Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email,
+                    Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName,
                     DisplayName = AppUserFilter.DisplayName,
                     Username = AppUserFilter.Username,
                     Phone = AppUserFilter.Phone,
@@ -319,7 +321,7 @@ namespace DMS.Services.MKpiItem
 
         }
 
-        public async Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiPeriodId)
+        public async Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId)
         {
             try
             {
@@ -327,6 +329,7 @@ namespace DMS.Services.MKpiItem
                 {
                     Skip = 0,
                     Take = int.MaxValue,
+                    KpiYearId = KpiYearId,
                     KpiPeriodId = KpiPeriodId,
                     Selects = KpiItemSelect.Id | KpiItemSelect.Employee
                 };

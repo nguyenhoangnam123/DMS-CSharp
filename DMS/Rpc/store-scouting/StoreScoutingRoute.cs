@@ -52,18 +52,13 @@ namespace DMS.Rpc.store_scouting
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(StoreScoutingFilter.Id), FieldTypeEnum.ID.Id },
-            { nameof(StoreScoutingFilter.Code), FieldTypeEnum.STRING.Id },
-            { nameof(StoreScoutingFilter.Name), FieldTypeEnum.STRING.Id },
-            { nameof(StoreScoutingFilter.OwnerPhone), FieldTypeEnum.STRING.Id },
             { nameof(StoreScoutingFilter.ProvinceId), FieldTypeEnum.ID.Id },
             { nameof(StoreScoutingFilter.DistrictId), FieldTypeEnum.ID.Id },
             { nameof(StoreScoutingFilter.WardId), FieldTypeEnum.ID.Id },
             { nameof(StoreScoutingFilter.OrganizationId), FieldTypeEnum.ID.Id },
-            { nameof(StoreScoutingFilter.Address), FieldTypeEnum.STRING.Id },
-            { nameof(StoreScoutingFilter.Latitude), FieldTypeEnum.DECIMAL.Id },
-            { nameof(StoreScoutingFilter.Longitude), FieldTypeEnum.DECIMAL.Id },
-            { nameof(StoreScoutingFilter.CreatorId), FieldTypeEnum.ID.Id },
+            { nameof(StoreScoutingFilter.AppUserId), FieldTypeEnum.ID.Id },
             { nameof(StoreScoutingFilter.StoreScoutingStatusId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

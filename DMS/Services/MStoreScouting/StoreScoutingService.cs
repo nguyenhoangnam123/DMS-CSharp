@@ -14,10 +14,11 @@ using DMS.Handlers;
 using DMS.Enums;
 using DMS.Services.MNotification;
 using DMS.Rpc.store_scouting;
+using DMS.Services.MOrganization;
 
 namespace DMS.Services.MStoreScouting
 {
-    public interface IStoreScoutingService :  IServiceScoped
+    public interface IStoreScoutingService : IServiceScoped
     {
         Task<int> Count(StoreScoutingFilter StoreScoutingFilter);
         Task<List<StoreScouting>> List(StoreScoutingFilter StoreScoutingFilter);
@@ -26,7 +27,7 @@ namespace DMS.Services.MStoreScouting
         Task<StoreScouting> Update(StoreScouting StoreScouting);
         Task<StoreScouting> Delete(StoreScouting StoreScouting);
         Task<StoreScouting> Reject(StoreScouting StoreScouting);
-        StoreScoutingFilter ToFilter(StoreScoutingFilter StoreScoutingFilter);
+        Task<StoreScoutingFilter> ToFilter(StoreScoutingFilter StoreScoutingFilter);
     }
 
     public class StoreScoutingService : BaseService, IStoreScoutingService
@@ -35,6 +36,7 @@ namespace DMS.Services.MStoreScouting
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private INotificationService NotificationService;
+        private IOrganizationService OrganizationService;
         private IStoreScoutingValidator StoreScoutingValidator;
         private IRabbitManager RabbitManager;
 
@@ -42,6 +44,7 @@ namespace DMS.Services.MStoreScouting
             IUOW UOW,
             ILogging Logging,
             INotificationService NotificationService,
+            IOrganizationService OrganizationService,
             ICurrentContext CurrentContext,
             IStoreScoutingValidator StoreScoutingValidator,
             IRabbitManager RabbitManager
@@ -50,6 +53,7 @@ namespace DMS.Services.MStoreScouting
             this.UOW = UOW;
             this.Logging = Logging;
             this.NotificationService = NotificationService;
+            this.OrganizationService = OrganizationService;
             this.CurrentContext = CurrentContext;
             this.StoreScoutingValidator = StoreScoutingValidator;
             this.RabbitManager = RabbitManager;
@@ -104,7 +108,7 @@ namespace DMS.Services.MStoreScouting
                 return null;
             return StoreScouting;
         }
-       
+
         public async Task<StoreScouting> Create(StoreScouting StoreScouting)
         {
             if (!await StoreScoutingValidator.Create(StoreScouting))
@@ -280,10 +284,20 @@ namespace DMS.Services.MStoreScouting
             }
         }
 
-        public StoreScoutingFilter ToFilter(StoreScoutingFilter filter)
+        public async Task<StoreScoutingFilter> ToFilter(StoreScoutingFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<StoreScoutingFilter>();
             if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
+
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL,
+                OrderBy = OrganizationOrder.Id,
+                OrderType = OrderType.ASC
+            });
+
             foreach (var currentFilter in CurrentContext.Filters)
             {
                 StoreScoutingFilter subFilter = new StoreScoutingFilter();
@@ -291,7 +305,35 @@ namespace DMS.Services.MStoreScouting
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
-                    
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = FilterBuilder.Merge(subFilter.Id, FilterPermissionDefinition.IdFilter);
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
+                    {
+                        var organizationIds = FilterOrganization(Organizations, FilterPermissionDefinition.IdFilter);
+                        IdFilter IdFilter = new IdFilter { In = organizationIds };
+                        subFilter.OrganizationId = FilterBuilder.Merge(subFilter.OrganizationId, IdFilter);
+                    }
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
+                        subFilter.AppUserId = FilterBuilder.Merge(subFilter.AppUserId, FilterPermissionDefinition.IdFilter);
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.StoreScoutingStatusId))
+                        subFilter.AppUserId = FilterBuilder.Merge(subFilter.StoreScoutingStatusId, FilterPermissionDefinition.IdFilter);
+
+                    if (FilterPermissionDefinition.Name == nameof(CurrentContext.UserId) && FilterPermissionDefinition.IdFilter != null)
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.IS.Id)
+                        {
+                            if (subFilter.AppUserId == null) subFilter.AppUserId = new IdFilter { };
+                            subFilter.AppUserId.Equal = CurrentContext.UserId;
+                        }
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.ISNT.Id)
+                        {
+                            if (subFilter.AppUserId == null) subFilter.AppUserId = new IdFilter { };
+                            subFilter.AppUserId.NotEqual = CurrentContext.UserId;
+                        }
+                    }
                 }
             }
             return filter;

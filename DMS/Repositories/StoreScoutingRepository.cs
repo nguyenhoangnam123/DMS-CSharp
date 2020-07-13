@@ -60,8 +60,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Latitude, filter.Latitude);
             if (filter.Longitude != null)
                 query = query.Where(q => q.Longitude, filter.Longitude);
-            if (filter.CreatorId != null)
-                query = query.Where(q => q.CreatorId, filter.CreatorId);
+            if (filter.AppUserId != null)
+                query = query.Where(q => q.CreatorId, filter.AppUserId);
             if (filter.StoreScoutingStatusId != null)
                 query = query.Where(q => q.StoreScoutingStatusId, filter.StoreScoutingStatusId);
             query = OrFilter(query, filter);
@@ -98,8 +98,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Latitude, filter.Latitude);
                 if (filter.Longitude != null)
                     queryable = queryable.Where(q => q.Longitude, filter.Longitude);
-                if (filter.CreatorId != null)
-                    queryable = queryable.Where(q => q.CreatorId, filter.CreatorId);
+                if (filter.AppUserId != null)
+                    queryable = queryable.Where(q => q.CreatorId, filter.AppUserId);
                 if (filter.StoreScoutingStatusId != null)
                     queryable = queryable.Where(q => q.StoreScoutingStatusId, filter.StoreScoutingStatusId);
                 initQuery = initQuery.Union(queryable);

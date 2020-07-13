@@ -57,7 +57,7 @@ namespace DMS.Entities
         public StringFilter Address { get; set; }
         public DecimalFilter Latitude { get; set; }
         public DecimalFilter Longitude { get; set; }
-        public IdFilter CreatorId { get; set; }
+        public IdFilter AppUserId { get; set; }
         public IdFilter StoreScoutingStatusId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
