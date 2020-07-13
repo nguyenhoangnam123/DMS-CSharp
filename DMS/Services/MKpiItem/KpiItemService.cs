@@ -293,7 +293,7 @@ namespace DMS.Services.MKpiItem
                     Skip = 0,
                     Take = int.MaxValue,
                     Id = new IdFilter { NotIn = AppUserIds },
-                    Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName,
+                    Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email,
                     DisplayName = AppUserFilter.DisplayName,
                     Username = AppUserFilter.Username,
                     Phone = AppUserFilter.Phone,
