@@ -5,8 +5,8 @@ namespace DMS.Rpc.supplier
 {
     public class SupplierRoute : Root
     {
-        public const string Master = Module + "/supplier/supplier-master";
-        public const string Detail = Module + "/supplier/supplier-detail";
+        public const string Master = Module + "/partner/supplier/supplier-master";
+        public const string Detail = Module + "/partner/supplier/supplier-detail/*";
         private const string Default = Rpc + Module + "/supplier";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

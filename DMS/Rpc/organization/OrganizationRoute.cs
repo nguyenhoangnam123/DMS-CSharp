@@ -5,8 +5,8 @@ namespace DMS.Rpc.organization
 {
     public class OrganizationRoute : Root
     {
-        public const string Master = Module + "/organization/organization-master";
-        public const string Detail = Module + "/organization/organization-detail";
+        public const string Master = Module + "/account/organization/organization-master";
+        public const string Detail = Module + "/account/organization/organization-detail/*";
         private const string Default = Rpc + Module + "/organization";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

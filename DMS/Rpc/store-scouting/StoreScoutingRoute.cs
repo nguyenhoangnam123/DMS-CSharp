@@ -23,8 +23,8 @@ namespace DMS.Rpc.store_scouting
 {
     public class StoreScoutingRoute : Root
     {
-        public const string Master = Module + "/store-scouting/store-scouting-master";
-        public const string Detail = Module + "/store-scouting/store-scouting-detail";
+        public const string Master = Module + "/location/store-scouting/store-scouting-master";
+        public const string Detail = Module + "/location/store-scouting/store-scouting-detail/*";
         private const string Default = Rpc + Module + "/store-scouting";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

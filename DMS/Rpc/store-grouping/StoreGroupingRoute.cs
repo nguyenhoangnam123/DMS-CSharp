@@ -5,8 +5,8 @@ namespace DMS.Rpc.store_grouping
 {
     public class StoreGroupingRoute : Root
     {
-        public const string Master = Module + "/store-grouping/store-grouping-master";
-        public const string Detail = Module + "/store-grouping/store-grouping-detail";
+        public const string Master = Module + "/location/store-grouping/store-grouping-master";
+        public const string Detail = Module + "/location/store-grouping/store-grouping-detail/*";
         private const string Default = Rpc + Module + "/store-grouping";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

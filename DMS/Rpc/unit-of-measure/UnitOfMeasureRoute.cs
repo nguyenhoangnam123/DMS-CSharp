@@ -5,8 +5,8 @@ namespace DMS.Rpc.unit_of_measure
 {
     public class UnitOfMeasureRoute : Root
     {
-        public const string Master = Module + "/unit-of-measure/unit-of-measure-master";
-        public const string Detail = Module + "/unit-of-measure/unit-of-measure-detail";
+        public const string Master = Module + "/product-category/unit-of-measure/unit-of-measure-master";
+        public const string Detail = Module + "/product-category/unit-of-measure/unit-of-measure-detail/*";
         private const string Default = Rpc + Module + "/unit-of-measure";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

@@ -5,8 +5,8 @@ namespace DMS.Rpc.product_type
 {
     public class ProductTypeRoute : Root
     {
-        public const string Master = Module + "/product-type/product-type-master";
-        public const string Detail = Module + "/product-type/product-type-detail";
+        public const string Master = Module + "/product-category/product-type/product-type-master";
+        public const string Detail = Module + "/product-category/product-type/product-type-detail/*";
         private const string Default = Rpc + Module + "/product-type";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

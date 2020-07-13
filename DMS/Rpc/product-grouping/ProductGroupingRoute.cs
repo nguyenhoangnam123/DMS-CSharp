@@ -5,8 +5,8 @@ namespace DMS.Rpc.product_grouping
 {
     public class ProductGroupingRoute : Root
     {
-        public const string Master = Module + "/product-grouping/product-grouping-master";
-        public const string Detail = Module + "/product-grouping/product-grouping-detail";
+        public const string Master = Module + "/product-category/product-grouping/product-grouping-master";
+        public const string Detail = Module + "/product-category/product-grouping/product-grouping-detail/*";
         private const string Default = Rpc + Module + "/product-grouping";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

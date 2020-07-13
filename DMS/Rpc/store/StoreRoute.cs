@@ -6,8 +6,8 @@ namespace DMS.Rpc.store
 {
     public class StoreRoute : Root
     {
-        public const string Master = Module + "/store/store-master";
-        public const string Detail = Module + "/store/store-detail";
+        public const string Master = Module + "/location/store/store-master";
+        public const string Detail = Module + "/location/store/store-detail/*";
         public const string Mobile = Module + "/master-data.stores";
         private const string Default = Rpc + Module + "/store";
         public const string Count = Default + "/count";

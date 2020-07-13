@@ -6,8 +6,8 @@ namespace DMS.Rpc.e_route
 {
     public class ERouteRoute : Root
     {
-        public const string Master = Module + "/e-route/e-route-master";
-        public const string Detail = Module + "/e-route/e-route-detail";
+        public const string Master = Module + "/route/e-route/e-route-master";
+        public const string Detail = Module + "/route/e-route/e-route-detail/*";
         private const string Default = Rpc + Module + "/e-route";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

@@ -5,8 +5,8 @@ namespace DMS.Rpc.store_type
 {
     public class StoreTypeRoute : Root
     {
-        public const string Master = Module + "/store-type/store-type-master";
-        public const string Detail = Module + "/store-type/store-type-detail";
+        public const string Master = Module + "/location/store-type/store-type-master";
+        public const string Detail = Module + "/location/store-type/store-type-detail/*";
         private const string Default = Rpc + Module + "/store-type";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

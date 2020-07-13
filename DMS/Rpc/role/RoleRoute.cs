@@ -6,8 +6,8 @@ namespace DMS.Rpc.role
 {
     public class RoleRoute : Root
     {
-        public const string Master = Module + "/role/role-master";
-        public const string Detail = Module + "/role/role-detail";
+        public const string Master = Module + "/account/role/role-master";
+        public const string Detail = Module + "/account/role/role-detail/*";
         private const string Default = Rpc + Module + "/role";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

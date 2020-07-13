@@ -5,8 +5,8 @@ namespace DMS.Rpc.brand
 {
     public class BrandRoute : Root
     {
-        public const string Master = Module + "/brand/brand-master";
-        public const string Detail = Module + "/brand/brand-detail";
+        public const string Master = Module + "/partner/brand/brand-master";
+        public const string Detail = Module + "/partner/brand/brand-detail/*";
         private const string Default = Rpc + Module + "/brand";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

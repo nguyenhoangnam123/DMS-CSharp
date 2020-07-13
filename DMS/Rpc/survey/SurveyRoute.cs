@@ -6,8 +6,8 @@ namespace DMS.Rpc.survey
 {
     public class SurveyRoute : Root
     {
-        public const string Master = Module + "/survey/survey-master";
-        public const string Detail = Module + "/survey/survey-detail";
+        public const string Master = Module + "/knowledge/survey/survey-master";
+        public const string Detail = Module + "/knowledge/survey/survey-detail/*";
         private const string Default = Rpc + Module + "/survey";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
