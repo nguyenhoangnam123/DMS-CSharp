@@ -53,11 +53,16 @@ namespace DMS.Services.MKpiItem
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiItemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -87,11 +92,16 @@ namespace DMS.Services.MKpiItem
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiItemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<KpiItem> Get(long Id)
@@ -162,11 +172,16 @@ namespace DMS.Services.MKpiItem
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiItemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -186,11 +201,16 @@ namespace DMS.Services.MKpiItem
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiItemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -210,11 +230,16 @@ namespace DMS.Services.MKpiItem
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiItemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -234,11 +259,16 @@ namespace DMS.Services.MKpiItem
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiItemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -275,11 +305,16 @@ namespace DMS.Services.MKpiItem
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiItemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiItemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
 
         }
