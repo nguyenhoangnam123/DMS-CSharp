@@ -95,13 +95,13 @@ namespace DMS.Rpc.kpi_general
             });
             KpiGeneral KpiGeneral = await KpiGeneralService.Get(KpiGeneral_KpiGeneralDTO.Id);
 
-            var kpiGeneral_KpiGeneralDTO = new KpiGeneral_KpiGeneralDTO(KpiGeneral);
-            (kpiGeneral_KpiGeneralDTO.CurrentMonth, kpiGeneral_KpiGeneralDTO.CurrentQuarter, kpiGeneral_KpiGeneralDTO.CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
-            foreach (var KpiGeneralContent in kpiGeneral_KpiGeneralDTO.KpiGeneralContents)
+            KpiGeneral_KpiGeneralDTO = new KpiGeneral_KpiGeneralDTO(KpiGeneral);
+            (KpiGeneral_KpiGeneralDTO.CurrentMonth, KpiGeneral_KpiGeneralDTO.CurrentQuarter, KpiGeneral_KpiGeneralDTO.CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
+            foreach (var KpiGeneralContent in KpiGeneral_KpiGeneralDTO.KpiGeneralContents)
             {
                 KpiGeneralContent.KpiGeneralContentKpiPeriodMappingEnables = GetPeriodEnables(KpiGeneral_KpiGeneralDTO, KpiPeriods);
             }
-            return kpiGeneral_KpiGeneralDTO;
+            return KpiGeneral_KpiGeneralDTO;
         }
         
         [Route(KpiGeneralRoute.GetDraft), HttpPost]
@@ -141,10 +141,6 @@ namespace DMS.Rpc.kpi_general
                 KpiCriteriaGeneralId = x.Id,
                 KpiCriteriaGeneral = new KpiGeneral_KpiCriteriaGeneralDTO(x),
                 KpiGeneralContentKpiPeriodMappings = KpiPeriods.ToDictionary(x => x.Id, y => (decimal?)null),
-                //KpiGeneralContentKpiPeriodMappingEnables = KpiPeriods.ToDictionary(x => x.Id, y => ((y.Id >= KpiGeneral_KpiGeneralDTO.CurrentMonth.Id && y.Id <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id || KpiYearId > StaticParams.DateTimeNow.Year)
-                //                                                                                || (y.Id > Enums.KpiPeriodEnum.PERIOD_MONTH12.Id && y.Id >= KpiGeneral_KpiGeneralDTO.CurrentQuarter.Id && y.Id <= Enums.KpiPeriodEnum.PERIOD_QUATER04.Id || KpiYearId > StaticParams.DateTimeNow.Year)
-                //                                                                                || (y.Id > Enums.KpiPeriodEnum.PERIOD_QUATER04.Id && KpiYearId >= StaticParams.DateTimeNow.Year))
-                //                                                                                ? true : false),
                 KpiGeneralContentKpiPeriodMappingEnables = GetPeriodEnables(KpiGeneral_KpiGeneralDTO, KpiPeriods),
                 Status = new KpiGeneral_StatusDTO
                 {
