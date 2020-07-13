@@ -31,6 +31,7 @@ using DMS.Services.MWard;
 using DMS.Services.MBrand;
 using DMS.Services.MSupplier;
 using DMS.Services.MProductGrouping;
+using System.Text;
 
 namespace DMS.Rpc.mobile
 {
@@ -142,9 +143,6 @@ namespace DMS.Rpc.mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Mobile_StoreCheckingDTO.Id))
-                return Forbid();
-
             StoreChecking StoreChecking = await StoreCheckingService.Get(Mobile_StoreCheckingDTO.Id);
             return new Mobile_StoreCheckingDTO(StoreChecking);
         }
@@ -154,9 +152,6 @@ namespace DMS.Rpc.mobile
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            if (!await HasPermission(Mobile_StoreCheckingDTO.Id))
-                return Forbid();
 
             StoreChecking StoreChecking = ConvertDTOToEntity(Mobile_StoreCheckingDTO);
             StoreChecking.DeviceName = HttpContext.Request.Headers["X-Device-Model"];
@@ -174,9 +169,6 @@ namespace DMS.Rpc.mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Mobile_StoreCheckingDTO.Id))
-                return Forbid();
-
             StoreChecking StoreChecking = ConvertDTOToEntity(Mobile_StoreCheckingDTO);
             StoreChecking = await StoreCheckingService.Update(StoreChecking);
             Mobile_StoreCheckingDTO = new Mobile_StoreCheckingDTO(StoreChecking);
@@ -191,9 +183,6 @@ namespace DMS.Rpc.mobile
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            if (!await HasPermission(Mobile_StoreCheckingDTO.Id))
-                return Forbid();
 
             StoreChecking StoreChecking = ConvertDTOToEntity(Mobile_StoreCheckingDTO);
             StoreChecking = await StoreCheckingService.CheckOut(StoreChecking);
@@ -259,9 +248,6 @@ namespace DMS.Rpc.mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Mobile_IndirectSalesOrderDTO.Id))
-                return Forbid();
-
             IndirectSalesOrder IndirectSalesOrder = await IndirectSalesOrderService.Get(Mobile_IndirectSalesOrderDTO.Id);
             return new Mobile_IndirectSalesOrderDTO(IndirectSalesOrder);
         }
@@ -271,9 +257,6 @@ namespace DMS.Rpc.mobile
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            if (!await HasPermission(Mobile_IndirectSalesOrderDTO.Id))
-                return Forbid();
 
             IndirectSalesOrder IndirectSalesOrder = new IndirectSalesOrder();
             IndirectSalesOrder.Id = Mobile_IndirectSalesOrderDTO.Id;
@@ -571,9 +554,6 @@ namespace DMS.Rpc.mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Mobile_IndirectSalesOrderDTO.Id))
-                return Forbid();
-
             IndirectSalesOrder IndirectSalesOrder = new IndirectSalesOrder();
             IndirectSalesOrder.Id = Mobile_IndirectSalesOrderDTO.Id;
             IndirectSalesOrder.Code = Mobile_IndirectSalesOrderDTO.Code;
@@ -857,9 +837,6 @@ namespace DMS.Rpc.mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Mobile_SurveyDTO.Id))
-                return Forbid();
-
             Survey Survey = new Survey();
             Survey.Id = Mobile_SurveyDTO.Id;
             Survey.Title = Mobile_SurveyDTO.Title;
@@ -907,9 +884,6 @@ namespace DMS.Rpc.mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Mobile_StoreScoutingDTO.Id))
-                return Forbid();
-
             StoreScouting StoreScouting = await StoreScoutingService.Get(Mobile_StoreScoutingDTO.Id);
             return new Mobile_StoreScoutingDTO(StoreScouting);
         }
@@ -919,9 +893,6 @@ namespace DMS.Rpc.mobile
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            if (!await HasPermission(Mobile_StoreScoutingDTO.Id))
-                return Forbid();
 
             StoreScouting StoreScouting = ConvertStoreScoutingToEntity(Mobile_StoreScoutingDTO);
             StoreScouting = await StoreScoutingService.Create(StoreScouting);
@@ -938,9 +909,6 @@ namespace DMS.Rpc.mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Mobile_StoreScoutingDTO.Id))
-                return Forbid();
-
             StoreScouting StoreScouting = ConvertStoreScoutingToEntity(Mobile_StoreScoutingDTO);
             StoreScouting = await StoreScoutingService.Update(StoreScouting);
             Mobile_StoreScoutingDTO = new Mobile_StoreScoutingDTO(StoreScouting);
@@ -955,9 +923,6 @@ namespace DMS.Rpc.mobile
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            if (!await HasPermission(Mobile_StoreScoutingDTO.Id))
-                return Forbid();
 
             StoreScouting StoreScouting = ConvertStoreScoutingToEntity(Mobile_StoreScoutingDTO);
             StoreScouting = await StoreScoutingService.Delete(StoreScouting);
@@ -991,22 +956,29 @@ namespace DMS.Rpc.mobile
             };
             return Ok(Mobile_ImageDTO);
         }
-        private async Task<bool> HasPermission(long Id)
-        {
-            StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter();
-            StoreCheckingFilter = StoreCheckingService.ToFilter(StoreCheckingFilter);
-            if (Id == 0)
-            {
 
-            }
-            else
+        [Route(MobileRoute.SaveImage64), HttpPost]
+        public async Task<ActionResult<Mobile_ImageDTO>> SaveImage64([FromBody] Image64DTO Image64DTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            byte[] array = Encoding.ASCII.GetBytes(Image64DTO.Content);
+            Image Image = new Image
             {
-                StoreCheckingFilter.Id = new IdFilter { Equal = Id };
-                int count = await StoreCheckingService.Count(StoreCheckingFilter);
-                if (count == 0)
-                    return false;
-            }
-            return true;
+                Name = Image64DTO.FileName,
+                Content = array,
+            };
+
+            Image = await StoreCheckingService.SaveImage(Image);
+            if (Image == null)
+                return BadRequest();
+            Mobile_ImageDTO Mobile_ImageDTO = new Mobile_ImageDTO
+            {
+                Id = Image.Id,
+                Name = Image.Name,
+                Url = Image.Url,
+            };
+            return Ok(Mobile_ImageDTO);
         }
 
         private StoreChecking ConvertDTOToEntity(Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
@@ -1190,6 +1162,12 @@ namespace DMS.Rpc.mobile
             return StoreCheckingFilter;
         }
 
+    }
+
+    public class Image64DTO : DataDTO
+    {
+        public string FileName { get; set; }
+        public string Content { get; set; }
     }
 }
 

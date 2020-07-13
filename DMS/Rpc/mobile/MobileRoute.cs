@@ -21,6 +21,7 @@ namespace DMS.Rpc.mobile
         public const string UpdateIndirectSalesOrder = Default + "/update-indirect-sales-order";
         public const string CreateProblem = Default + "/create-problem";
         public const string SaveImage = Default + "/save-image";
+        public const string SaveImage64 = Default + "/save-image-64";
 
         public const string SingleListAlbum = Default + "/single-list-album";
         public const string SingleListAppUser = Default + "/single-list-app-user";
