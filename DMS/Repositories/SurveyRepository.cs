@@ -311,7 +311,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Survey Survey)
         {
-            var SurveyQuestionIds = Survey.SurveyQuestions?.Select(x => x.Id).ToList();
+            var SurveyQuestionIds = await DataContext.SurveyQuestion.Where(x => x.SurveyId == Survey.Id).Select(x => x.Id).ToListAsync();
             await DataContext.SurveyOption.Where(x => SurveyQuestionIds.Contains(x.SurveyQuestionId)).DeleteFromQueryAsync();
             await DataContext.SurveyQuestion.Where(x => SurveyQuestionIds.Contains(x.Id)).DeleteFromQueryAsync();
             await DataContext.Survey.Where(x => x.Id == Survey.Id).UpdateFromQueryAsync(x => new SurveyDAO { DeletedAt = StaticParams.DateTimeNow });
