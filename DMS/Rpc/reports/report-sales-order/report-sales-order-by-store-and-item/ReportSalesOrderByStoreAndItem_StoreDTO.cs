@@ -12,6 +12,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public string Address { get; set; }
         public long OrganizationId { get; set; }
         public long StoreTypeId { get; set; }
         public long? StoreGroupingId { get; set; }
@@ -22,6 +23,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             this.Id = Store.Id;
             this.Code = Store.Code;
             this.Name = Store.Name;
+            this.Address = Store.Address;
             this.OrganizationId = Store.OrganizationId;
             this.StoreTypeId = Store.StoreTypeId;
             this.StoreGroupingId = Store.StoreGroupingId;

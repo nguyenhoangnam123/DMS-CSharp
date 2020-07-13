@@ -241,6 +241,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                         Id = x.Id,
                         Code = x.Code,
                         Name = x.Name,
+                        Address = x.Address,
                         OrganizationId = x.OrganizationId,
                         StoreGroupingId = x.StoreGroupingId,
                         StoreTypeId = x.StoreTypeId,
