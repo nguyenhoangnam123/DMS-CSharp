@@ -31,6 +31,7 @@ using DMS.Services.MWard;
 using DMS.Services.MBrand;
 using DMS.Services.MSupplier;
 using DMS.Services.MProductGrouping;
+using System.Text;
 
 namespace DMS.Rpc.mobile
 {
@@ -991,6 +992,30 @@ namespace DMS.Rpc.mobile
             };
             return Ok(Mobile_ImageDTO);
         }
+
+        [Route(MobileRoute.SaveImage64), HttpPost]
+        public async Task<ActionResult<Mobile_ImageDTO>> SaveImage64([FromBody] Image64DTO Image64DTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            byte[] array = Encoding.ASCII.GetBytes(Image64DTO.Content);
+            Image Image = new Image
+            {
+                Name = Image64DTO.FileName,
+                Content = array,
+            };
+
+            Image = await StoreCheckingService.SaveImage(Image);
+            if (Image == null)
+                return BadRequest();
+            Mobile_ImageDTO Mobile_ImageDTO = new Mobile_ImageDTO
+            {
+                Id = Image.Id,
+                Name = Image.Name,
+                Url = Image.Url,
+            };
+            return Ok(Mobile_ImageDTO);
+        }
         private async Task<bool> HasPermission(long Id)
         {
             StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter();
@@ -1190,6 +1215,12 @@ namespace DMS.Rpc.mobile
             return StoreCheckingFilter;
         }
 
+    }
+
+    public class Image64DTO : DataDTO
+    {
+        public string FileName { get; set; }
+        public string Content { get; set; }
     }
 }
 
