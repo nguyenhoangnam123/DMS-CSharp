@@ -8,7 +8,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
 {
     public class MonitorStoreAlbumRoute : Root
     {
-        public const string Master = Module + "/monitor-store-album/monitor-store-album-master";
+        public const string Master = Module + "/monitor/monitor-store-album/monitor-store-album-master";
 
         private const string Default = Rpc + Module + "/monitor-store-album";
         public const string Count = Default + "/count";

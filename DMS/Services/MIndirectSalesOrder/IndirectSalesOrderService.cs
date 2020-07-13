@@ -5,6 +5,7 @@ using DMS.Handlers;
 using DMS.Repositories;
 using DMS.Rpc.indirect_sales_order;
 using DMS.Services.MNotification;
+using DMS.Services.MOrganization;
 using DMS.Services.MWorkflow;
 using Helpers;
 using System;
@@ -27,7 +28,7 @@ namespace DMS.Services.MIndirectSalesOrder
         Task<IndirectSalesOrder> Reject(IndirectSalesOrder IndirectSalesOrder);
         Task<List<IndirectSalesOrder>> BulkDelete(List<IndirectSalesOrder> IndirectSalesOrders);
         Task<List<IndirectSalesOrder>> Import(List<IndirectSalesOrder> IndirectSalesOrders);
-        IndirectSalesOrderFilter ToFilter(IndirectSalesOrderFilter IndirectSalesOrderFilter);
+        Task<IndirectSalesOrderFilter> ToFilter(IndirectSalesOrderFilter IndirectSalesOrderFilter);
     }
 
     public class IndirectSalesOrderService : BaseService, IIndirectSalesOrderService
@@ -38,6 +39,7 @@ namespace DMS.Services.MIndirectSalesOrder
         private INotificationService NotificationService;
         private IIndirectSalesOrderValidator IndirectSalesOrderValidator;
         private IRabbitManager RabbitManager;
+        private IOrganizationService OrganizationService;
         private IWorkflowService WorkflowService;
 
         public IndirectSalesOrderService(
@@ -47,6 +49,7 @@ namespace DMS.Services.MIndirectSalesOrder
             INotificationService NotificationService,
             IRabbitManager RabbitManager,
             IIndirectSalesOrderValidator IndirectSalesOrderValidator,
+            IOrganizationService OrganizationService,
             IWorkflowService WorkflowService
         )
         {
@@ -56,6 +59,7 @@ namespace DMS.Services.MIndirectSalesOrder
             this.NotificationService = NotificationService;
             this.RabbitManager = RabbitManager;
             this.IndirectSalesOrderValidator = IndirectSalesOrderValidator;
+            this.OrganizationService = OrganizationService;
             this.WorkflowService = WorkflowService;
         }
         public async Task<int> Count(IndirectSalesOrderFilter IndirectSalesOrderFilter)
@@ -363,10 +367,20 @@ namespace DMS.Services.MIndirectSalesOrder
             }
         }
 
-        public IndirectSalesOrderFilter ToFilter(IndirectSalesOrderFilter filter)
+        public async Task<IndirectSalesOrderFilter> ToFilter(IndirectSalesOrderFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<IndirectSalesOrderFilter>();
             if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
+
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL,
+                OrderBy = OrganizationOrder.Id,
+                OrderType = OrderType.ASC
+            });
+
             foreach (var currentFilter in CurrentContext.Filters)
             {
                 IndirectSalesOrderFilter subFilter = new IndirectSalesOrderFilter();
@@ -376,6 +390,13 @@ namespace DMS.Services.MIndirectSalesOrder
                 {
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
                         subFilter.Id = FilterBuilder.Merge(subFilter.Id, FilterPermissionDefinition.IdFilter);
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
+                    {
+                        var organizationIds = FilterOrganization(Organizations, FilterPermissionDefinition.IdFilter);
+                        IdFilter IdFilter = new IdFilter { In = organizationIds };
+                        subFilter.OrganizationId = FilterBuilder.Merge(subFilter.OrganizationId, IdFilter);
+                    }
 
                     if (FilterPermissionDefinition.Name == nameof(subFilter.BuyerStoreId))
                         subFilter.BuyerStoreId = FilterBuilder.Merge(subFilter.BuyerStoreId, FilterPermissionDefinition.IdFilter);

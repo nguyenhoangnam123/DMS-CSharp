@@ -6,8 +6,8 @@ namespace DMS.Rpc.app_user
 {
     public class AppUserRoute : Root
     {
-        public const string Master = Module + "/app-user/app-user-master";
-        public const string Detail = Module + "/app-user/app-user-detail";
+        public const string Master = Module + "/account/app-user/app-user-master";
+        public const string Detail = Module + "/account/app-user/app-user-detail/*";
         private const string Default = Rpc + Module + "/app-user";
         public const string Mobile = Default + "/master-data.profile";
         public const string Count = Default + "/count";
@@ -35,13 +35,13 @@ namespace DMS.Rpc.app_user
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master,Detail,Count,List,Get,
+                Master, Count, List, Get,
                 FilterListPosition, FilterListOrganization, FilterListStatus,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, CountRole, ListRole}},
             { "Sửa", new List<string> {
-                Master, Count, List,Get,
+                Master, Count, List, Get,
                 FilterListPosition,
-                Detail,Get,Update, 
+                Detail, Get, Update, 
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole,
                 CountRole, ListRole}},
         };

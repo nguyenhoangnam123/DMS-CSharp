@@ -5,8 +5,8 @@ namespace DMS.Rpc.position
 {
     public class PositionRoute : Root
     {
-        public const string Master = Module + "/position/position-master";
-        public const string Detail = Module + "/position/position-detail";
+        public const string Master = Module + "/account/position/position-master";
+        public const string Detail = Module + "/account/position/position-detail/*";
         private const string Default = Rpc + Module + "/position";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

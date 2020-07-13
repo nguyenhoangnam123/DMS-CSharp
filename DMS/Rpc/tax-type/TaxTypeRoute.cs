@@ -5,8 +5,8 @@ namespace DMS.Rpc.tax_type
 {
     public class TaxTypeRoute : Root
     {
-        public const string Master = Module + "/tax-type/tax-type-master";
-        public const string Detail = Module + "/tax-type/tax-type-detail";
+        public const string Master = Module + "/product-category/tax-type/tax-type-master";
+        public const string Detail = Module + "/product-category/tax-type/tax-type-detail/*";
         private const string Default = Rpc + Module + "/tax-type";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

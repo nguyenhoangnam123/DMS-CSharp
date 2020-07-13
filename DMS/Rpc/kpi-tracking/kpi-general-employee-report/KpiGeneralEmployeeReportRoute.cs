@@ -5,7 +5,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
 {
     public class KpiGeneralEmployeeReportRoute : Root
     {
-        public const string Master = Module + "/kpi-general-employee-report/kpi-general-employee-report-master";
+        public const string Master = Module + "/kpi-tracking/kpi-general-employee-report/kpi-general-employee-report-master";
 
         private const string Default = Rpc + Module + "/kpi-general-employee-report";
         public const string Count = Default + "/count";

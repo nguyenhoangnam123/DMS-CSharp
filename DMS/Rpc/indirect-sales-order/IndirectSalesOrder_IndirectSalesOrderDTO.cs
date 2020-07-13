@@ -68,6 +68,7 @@ namespace DMS.Rpc.indirect_sales_order
     public class IndirectSalesOrder_IndirectSalesOrderFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public StringFilter Code { get; set; }
         public IdFilter BuyerStoreId { get; set; }
         public StringFilter PhoneNumber { get; set; }

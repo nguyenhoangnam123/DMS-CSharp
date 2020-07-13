@@ -5,8 +5,8 @@ namespace DMS.Rpc.banner
 {
     public class BannerRoute : Root
     {
-        public const string Master = Module + "/banner/banner-master";
-        public const string Detail = Module + "/banner/banner-detail";
+        public const string Master = Module + "/application-banner/banner/banner-master";
+        public const string Detail = Module + "/application-banner/banner/banner-detail/*";
         private const string Default = Rpc + Module + "/banner";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

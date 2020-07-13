@@ -6,8 +6,8 @@ namespace DMS.Rpc.warehouse
 {
     public class WarehouseRoute : Root
     {
-        public const string Master = Module + "/warehouse/warehouse-master";
-        public const string Detail = Module + "/warehouse/warehouse-detail";
+        public const string Master = Module + "/inventory/warehouse/warehouse-master";
+        public const string Detail = Module + "/inventory/warehouse/warehouse-detail/*";
         private const string Default = Rpc + Module + "/warehouse";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

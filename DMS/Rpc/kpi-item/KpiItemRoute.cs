@@ -6,8 +6,8 @@ namespace DMS.Rpc.kpi_item
 {
     public class KpiItemRoute : Root
     {
-        public const string Master = Module + "/kpi-item/kpi-item-master";
-        public const string Detail = Module + "/kpi-item/kpi-item-detail";
+        public const string Master = Module + "/kpi-management/kpi-item/kpi-item-master";
+        public const string Detail = Module + "/kpi-management/kpi-item/kpi-item-detail/*";
         private const string Default = Rpc + Module + "/kpi-item";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

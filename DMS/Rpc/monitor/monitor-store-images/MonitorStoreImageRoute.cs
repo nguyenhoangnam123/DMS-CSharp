@@ -8,7 +8,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
 {
     public class MonitorStoreImageRoute : Root
     {
-        public const string Master = Module + "/monitor-store-image/monitor-store-image-master";
+        public const string Master = Module + "/monitor/monitor-store-image/monitor-store-image-master";
 
         private const string Default = Rpc + Module + "/monitor-store-image";
         public const string Count = Default + "/count";

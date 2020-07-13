@@ -6,8 +6,8 @@ namespace DMS.Rpc.album
 {
     public class AlbumRoute : Root
     {
-        public const string Master = Module + "/album/album-master";
-        public const string Detail = Module + "/album/album-detail";
+        public const string Master = Module + "/gallery/album/album-master";
+        public const string Detail = Module + "/gallery/album/album-detail/*";
         private const string Default = Rpc + Module + "/album";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

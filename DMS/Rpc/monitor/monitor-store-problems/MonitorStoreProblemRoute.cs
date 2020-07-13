@@ -6,8 +6,8 @@ namespace DMS.Rpc.monitor_store_problems
 {
     public class MonitorStoreProblemRoute : Root
     {
-        public const string Master = Module + "/monitor-store-problem/monitor-store-problem-master";
-        public const string Detail = Module + "/monitor-store-problem/monitor-store-problem-detail";
+        public const string Master = Module + "/monitor/monitor-store-problem/monitor-store-problem-master";
+        public const string Detail = Module + "/monitor/monitor-store-problem/monitor-store-problem-detail/*";
         private const string Default = Rpc + Module + "/monitor-store-problem";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

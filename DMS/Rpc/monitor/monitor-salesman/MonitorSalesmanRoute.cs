@@ -5,7 +5,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 {
     public class MonitorSalesmanRoute : Root
     {
-        public const string Master = Module + "/monitor-salesman/monitor-salesman-master";
+        public const string Master = Module + "/monitor/monitor-salesman/monitor-salesman-master";
 
         private const string Default = Rpc + Module + "/monitor-salesman";
         public const string Count = Default + "/count";

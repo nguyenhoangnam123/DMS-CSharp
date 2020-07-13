@@ -6,8 +6,7 @@ namespace DMS.Rpc.product
 {
     public class NewProductRoute : Root
     {
-        public const string Master = Module + "/new-product/product-master";
-        public const string Detail = Module + "/new-product/product-detail";
+        public const string Master = Module + "/product-category/new-product/product-master";
         private const string Default = Rpc + Module + "/new-product";
         public const string Mobile = Default + "/master-data.new-products";
         public const string Count = Default + "/count";

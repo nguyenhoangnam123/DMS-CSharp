@@ -21,8 +21,8 @@ namespace DMS.Rpc.kpi_general
 {
     public class KpiGeneralRoute : Root
     {
-        public const string Master = Module + "/kpi-general/kpi-general-master";
-        public const string Detail = Module + "/kpi-general/kpi-general-detail";
+        public const string Master = Module + "/kpi-management/kpi-general/kpi-general-master";
+        public const string Detail = Module + "/kpi-management/kpi-general/kpi-general-detail/*";
         private const string Default = Rpc + Module + "/kpi-general";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
