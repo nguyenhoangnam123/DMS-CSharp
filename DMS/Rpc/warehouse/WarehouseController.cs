@@ -205,6 +205,9 @@ namespace DMS.Rpc.warehouse
             Warehouse Warehouse = await WarehouseService.Get(WarehouseId);
             if (Warehouse == null)
                 return BadRequest("Kho không tồn tại");
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            if (!FileInfo.Extension.Equals(".xlsx"))
+                return BadRequest("Định dạng file không hợp lệ");
 
             ItemFilter ItemFilter = new ItemFilter
             {
@@ -220,16 +223,16 @@ namespace DMS.Rpc.warehouse
                 Selects = WarehouseSelect.ALL
             });
             List<Item> Items = await ItemService.List(ItemFilter);
-
+            StringBuilder errorContent = new StringBuilder();
             Warehouse.Inventories = new List<Inventory>();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Inventory"];
                 if (worksheet == null)
-                    return Ok(Warehouse);
+                    return BadRequest("File không đúng biểu mẫu import");
                 int StartColumn = 1;
                 int StartRow = 1;
-
+                int SttColumnn = 0 + StartColumn;
                 int WarehouseCodeColumn = 1 + StartColumn;
                 int WarehouseNameColumn = 2 + StartColumn;
                 int ItemCodeColumn = 3 + StartColumn;
@@ -239,23 +242,26 @@ namespace DMS.Rpc.warehouse
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
+                    string stt = worksheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
+                    if (stt != null && stt.ToLower() == "END".ToLower())
+                        break;
+
                     string WarehouseCodeValue = worksheet.Cells[i + StartRow, WarehouseCodeColumn].Value?.ToString();
+                    if (string.IsNullOrWhiteSpace(WarehouseCodeValue) && i != worksheet.Dimension.End.Row)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã kho");
+                    }
+                    else if (string.IsNullOrWhiteSpace(WarehouseCodeValue) && i == worksheet.Dimension.End.Row)
+                        break;
                     string WarehouseNameValue = worksheet.Cells[i + StartRow, WarehouseNameColumn].Value?.ToString();
                     string ItemCodeValue = worksheet.Cells[i + StartRow, ItemCodeColumn].Value?.ToString();
                     string ItemNameValue = worksheet.Cells[i + StartRow, ItemNameColumn].Value?.ToString();
                     string SaleStockValue = worksheet.Cells[i + StartRow, SaleStockColumn].Value?.ToString();
                     string AccountingStockValue = worksheet.Cells[i + StartRow, AccountingStockColumn].Value?.ToString();
 
-                    if (string.IsNullOrWhiteSpace(WarehouseCodeValue))
-                    {
-                        return BadRequest($"Dòng {i}: Mã kho không hợp lệ");
-                    }
-                    else
-                    {
-                        Warehouse WarehouseInDB = warehouses.Where(x => x.Code == WarehouseCodeValue.Trim()).FirstOrDefault();
-                        if(WarehouseInDB.Id != Warehouse.Id)
-                            return BadRequest($"Dòng {i}: Mã kho không hợp lệ");
-                    }
+                    Warehouse WarehouseInDB = warehouses.Where(x => x.Code == WarehouseCodeValue.Trim()).FirstOrDefault();
+                    if (WarehouseInDB.Id != Warehouse.Id)
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Mã kho không đúng");
                     var InventoryItem = Items.Where(x => x.Code == ItemCodeValue).FirstOrDefault();
 
                     Inventory Inventory = new Inventory();
@@ -267,23 +273,24 @@ namespace DMS.Rpc.warehouse
 
                     Warehouse.Inventories.Add(Inventory);
                 }
+                if (errorContent.Length > 0)
+                    return BadRequest(errorContent.ToString());
             }
             Warehouse = await WarehouseService.Update(Warehouse);
             List<Warehouse_InventoryDTO> Warehouse_InventoryDTOs = Warehouse.Inventories
                  .Select(c => new Warehouse_InventoryDTO(c)).ToList();
-            StringBuilder errorContent = new StringBuilder();
             for (int i = 0; i < Warehouse.Inventories.Count; i++)
             {
                 if (!Warehouse.Inventories[i].IsValidated)
                 {
                     foreach (var Error in Warehouse.Inventories[i].Errors)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: {Error.Value}");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
                     }
                 }
             }
             if (Warehouse.Inventories.Any(x => !x.IsValidated))
-                return BadRequest(errorContent);
+                return BadRequest(errorContent.ToString());
             return Warehouse_InventoryDTOs;
         }
 
