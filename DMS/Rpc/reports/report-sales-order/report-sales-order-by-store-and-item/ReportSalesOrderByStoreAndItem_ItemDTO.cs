@@ -11,7 +11,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public string UnitOfMeaureName { get; set; }
+        public string UnitOfMeasureName { get; set; }
         public long SaleStock { get; set; }
         public long PromotionStock { get; set; }
         public decimal SalePriceAverage { get; set; }

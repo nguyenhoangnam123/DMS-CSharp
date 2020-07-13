@@ -294,7 +294,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                                 {
                                     Code = item.Code,
                                     Name = item.Name,
-                                    UnitOfMeaureName = UOMName,
+                                    UnitOfMeasureName = UOMName,
                                     IndirecSalesOrderIds = new HashSet<long>(),
                                 };
                                 Store.Items.Add(ReportSalesOrderByStoreAndItem_ItemDTO);
@@ -325,7 +325,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                                 {
                                     Code = item.Code,
                                     Name = item.Name,
-                                    UnitOfMeaureName = UOMName,
+                                    UnitOfMeasureName = UOMName,
                                     IndirecSalesOrderIds = new HashSet<long>(),
                                 };
                                 Store.Items.Add(ReportSalesOrderByStoreAndItem_ItemDTO);
