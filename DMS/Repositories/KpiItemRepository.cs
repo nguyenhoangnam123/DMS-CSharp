@@ -539,7 +539,7 @@ namespace DMS.Repositories
                 .Contains(x.KpiItemContentId))
                 .DeleteFromQueryAsync();
             await DataContext.KpiItemContent
-                .Where(x => KpiItemContentIds.Contains(x.Id))
+                .Where(x => x.KpiItemId == KpiItem.Id)
                 .DeleteFromQueryAsync();
             List<KpiItemContentDAO> KpiItemContentDAOs = new List<KpiItemContentDAO>();
             List<KpiItemContentKpiCriteriaItemMappingDAO> KpiItemContentKpiCriteriaItemMappingDAOs = new List<KpiItemContentKpiCriteriaItemMappingDAO>();
