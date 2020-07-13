@@ -219,13 +219,18 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             ItemIds.AddRange(IndirectSalesOrderContentDAOs.Select(x => x.ItemId));
             ItemIds.AddRange(IndirectSalesOrderPromotionDAOs.Select(x => x.ItemId));
             ItemIds = ItemIds.Distinct().ToList();
-            List<Item> Items = await ItemService.List(new ItemFilter
+            ItemFilter ItemFilter = new ItemFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Id = new IdFilter { In = ItemIds },
+                ProductGroupingId = new IdFilter { Equal = ProductGroupingId },
+                ProductTypeId = new IdFilter { Equal = ProductTypeId },
                 Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name | ItemSelect.SalePrice
-            });
+            };
+            if (ItemId.HasValue)
+                ItemFilter.Id = new IdFilter { Equal = ItemId.Value };
+            List<Item> Items = await ItemService.List(ItemFilter);
 
             List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO> ReportSalesOrderByItem_ReportSalesOrderByItemDTOs = new List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO>();
             //foreach (IndirectSalesOrderContentDAO IndirectSalesOrderContentDAO in IndirectSalesOrderContentDAOs)
