@@ -401,9 +401,6 @@ namespace DMS.Rpc.mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Mobile_StoreDTO.Id))
-                return Forbid();
-
             Store Store = await StoreService.Get(Mobile_StoreDTO.Id);
             return new Mobile_StoreDTO(Store);
         }
