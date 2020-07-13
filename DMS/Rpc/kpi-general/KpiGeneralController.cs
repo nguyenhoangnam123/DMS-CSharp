@@ -168,9 +168,20 @@ namespace DMS.Rpc.kpi_general
             if (!await HasPermission(KpiGeneral_KpiGeneralDTO.Id))
                 return Forbid();
 
+            List<KpiPeriod> KpiPeriods = await KpiPeriodService.List(new KpiPeriodFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiPeriodSelect.ALL,
+            });
             KpiGeneral KpiGeneral = ConvertDTOToEntity(KpiGeneral_KpiGeneralDTO);
             KpiGeneral = await KpiGeneralService.Create(KpiGeneral);
             KpiGeneral_KpiGeneralDTO = new KpiGeneral_KpiGeneralDTO(KpiGeneral);
+            (KpiGeneral_KpiGeneralDTO.CurrentMonth, KpiGeneral_KpiGeneralDTO.CurrentQuarter, KpiGeneral_KpiGeneralDTO.CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
+            foreach (var KpiGeneralContent in KpiGeneral_KpiGeneralDTO.KpiGeneralContents)
+            {
+                KpiGeneralContent.KpiGeneralContentKpiPeriodMappingEnables = GetPeriodEnables(KpiGeneral_KpiGeneralDTO, KpiPeriods);
+            }
             if (KpiGeneral.IsValidated)
                 return KpiGeneral_KpiGeneralDTO;
             else
@@ -186,9 +197,21 @@ namespace DMS.Rpc.kpi_general
             if (!await HasPermission(KpiGeneral_KpiGeneralDTO.Id))
                 return Forbid();
 
+            List<KpiPeriod> KpiPeriods = await KpiPeriodService.List(new KpiPeriodFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiPeriodSelect.ALL,
+            });
+
             KpiGeneral KpiGeneral = ConvertDTOToEntity(KpiGeneral_KpiGeneralDTO);
             KpiGeneral = await KpiGeneralService.Update(KpiGeneral);
             KpiGeneral_KpiGeneralDTO = new KpiGeneral_KpiGeneralDTO(KpiGeneral);
+            (KpiGeneral_KpiGeneralDTO.CurrentMonth, KpiGeneral_KpiGeneralDTO.CurrentQuarter, KpiGeneral_KpiGeneralDTO.CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
+            foreach (var KpiGeneralContent in KpiGeneral_KpiGeneralDTO.KpiGeneralContents)
+            {
+                KpiGeneralContent.KpiGeneralContentKpiPeriodMappingEnables = GetPeriodEnables(KpiGeneral_KpiGeneralDTO, KpiPeriods);
+            }
             if (KpiGeneral.IsValidated)
                 return KpiGeneral_KpiGeneralDTO;
             else
