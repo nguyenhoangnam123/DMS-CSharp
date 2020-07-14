@@ -46,11 +46,16 @@ namespace DMS.Services.MWard
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(WardService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WardService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WardService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -63,11 +68,16 @@ namespace DMS.Services.MWard
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(WardService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WardService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WardService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<Ward> Get(long Id)

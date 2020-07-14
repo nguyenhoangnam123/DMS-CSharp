@@ -39,11 +39,16 @@ namespace DMS.Services.MSurvey
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyOptionTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SurveyOptionTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyOptionTypeService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -56,11 +61,16 @@ namespace DMS.Services.MSurvey
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyOptionTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SurveyOptionTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyOptionTypeService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
     }

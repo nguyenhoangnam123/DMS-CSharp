@@ -46,11 +46,16 @@ namespace DMS.Services.MProduct
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(VariationGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -63,11 +68,16 @@ namespace DMS.Services.MProduct
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(VariationGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
         public async Task<VariationGrouping> Get(long Id)
@@ -95,11 +105,16 @@ namespace DMS.Services.MProduct
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(VariationGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -122,11 +137,16 @@ namespace DMS.Services.MProduct
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(VariationGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -146,11 +166,16 @@ namespace DMS.Services.MProduct
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(VariationGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -170,11 +195,16 @@ namespace DMS.Services.MProduct
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(VariationGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -219,11 +249,16 @@ namespace DMS.Services.MProduct
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(VariationGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(VariationGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 

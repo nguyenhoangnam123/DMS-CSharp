@@ -13,8 +13,6 @@ namespace DMS.Services.MSurveyResult
         Task<int> Count(SurveyResultFilter SurveyResultFilter);
         Task<List<SurveyResult>> List(SurveyResultFilter SurveyResultFilter);
         Task<SurveyResult> Get(long Id);
-        //Task<SurveyResult> Create(SurveyResult SurveyResult);
-        //Task<SurveyResult> Delete(SurveyResult SurveyResult);
     }
 
     public class SurveyResultService : BaseService, ISurveyResultService
@@ -62,11 +60,16 @@ namespace DMS.Services.MSurveyResult
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyResultService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SurveyResultService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyResultService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
         public async Task<SurveyResult> Get(long Id)
@@ -76,55 +79,5 @@ namespace DMS.Services.MSurveyResult
                 return null;
             return SurveyResult;
         }
-
-        //public async Task<SurveyResult> Create(SurveyResult SurveyResult)
-        //{
-        //    if (!await SurveyResultValidator.Create(SurveyResult))
-        //        return SurveyResult;
-
-        //    try
-        //    {
-        //        await UOW.Begin();
-        //        await UOW.SurveyResultRepository.Create(SurveyResult);
-        //        await UOW.Commit();
-
-        //        await Logging.CreateAuditLog(SurveyResult, new { }, nameof(SurveyResultService));
-        //        return await UOW.SurveyResultRepository.Get(SurveyResult.Id);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await UOW.Rollback();
-        //        await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyResultService));
-        //        if (ex.InnerException == null)
-        //            throw new MessageException(ex);
-        //        else
-        //            throw new MessageException(ex.InnerException);
-        //    }
-        //}
-
-
-        //public async Task<SurveyResult> Delete(SurveyResult SurveyResult)
-        //{
-        //    if (!await SurveyResultValidator.Delete(SurveyResult))
-        //        return SurveyResult;
-
-        //    try
-        //    {
-        //        await UOW.Begin();
-        //        await UOW.SurveyResultRepository.Delete(SurveyResult);
-        //        await UOW.Commit();
-        //        await Logging.CreateAuditLog(new { }, SurveyResult, nameof(SurveyResultService));
-        //        return SurveyResult;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await UOW.Rollback();
-        //        await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyResultService));
-        //        if (ex.InnerException == null)
-        //            throw new MessageException(ex);
-        //        else
-        //            throw new MessageException(ex.InnerException);
-        //    }
-        //}
     }
 }

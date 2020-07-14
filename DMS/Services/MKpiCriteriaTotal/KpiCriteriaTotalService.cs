@@ -43,11 +43,16 @@ namespace DMS.Services.MKpiCriteriaTotal
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiCriteriaTotalService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiCriteriaTotalService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiCriteriaTotalService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -60,11 +65,16 @@ namespace DMS.Services.MKpiCriteriaTotal
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiCriteriaTotalService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiCriteriaTotalService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiCriteriaTotalService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<KpiCriteriaTotal> Get(long Id)

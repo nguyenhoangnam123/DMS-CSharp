@@ -39,11 +39,16 @@ namespace DMS.Services.MDirectPriceList
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(DirectPriceListTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectPriceListTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectPriceListTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -56,11 +61,16 @@ namespace DMS.Services.MDirectPriceList
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(DirectPriceListTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectPriceListTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectPriceListTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
     }

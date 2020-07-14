@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(NotificationStatusFilter NotificationStatusFilter);
         Task<List<NotificationStatus>> List(NotificationStatusFilter NotificationStatusFilter);
         Task<NotificationStatus> Get(long Id);
-        Task<bool> Create(NotificationStatus NotificationStatus);
-        Task<bool> Update(NotificationStatus NotificationStatus);
-        Task<bool> Delete(NotificationStatus NotificationStatus);
-        Task<bool> BulkMerge(List<NotificationStatus> NotificationStatuses);
-        Task<bool> BulkDelete(List<NotificationStatus> NotificationStatuses);
     }
     public class NotificationStatusRepository : INotificationStatusRepository
     {
@@ -141,64 +136,6 @@ namespace DMS.Repositories
                 return null;
 
             return NotificationStatus;
-        }
-        public async Task<bool> Create(NotificationStatus NotificationStatus)
-        {
-            NotificationStatusDAO NotificationStatusDAO = new NotificationStatusDAO();
-            NotificationStatusDAO.Id = NotificationStatus.Id;
-            NotificationStatusDAO.Code = NotificationStatus.Code;
-            NotificationStatusDAO.Name = NotificationStatus.Name;
-            DataContext.NotificationStatus.Add(NotificationStatusDAO);
-            await DataContext.SaveChangesAsync();
-            NotificationStatus.Id = NotificationStatusDAO.Id;
-            await SaveReference(NotificationStatus);
-            return true;
-        }
-
-        public async Task<bool> Update(NotificationStatus NotificationStatus)
-        {
-            NotificationStatusDAO NotificationStatusDAO = DataContext.NotificationStatus.Where(x => x.Id == NotificationStatus.Id).FirstOrDefault();
-            if (NotificationStatusDAO == null)
-                return false;
-            NotificationStatusDAO.Id = NotificationStatus.Id;
-            NotificationStatusDAO.Code = NotificationStatus.Code;
-            NotificationStatusDAO.Name = NotificationStatus.Name;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(NotificationStatus);
-            return true;
-        }
-
-        public async Task<bool> Delete(NotificationStatus NotificationStatus)
-        {
-            await DataContext.NotificationStatus.Where(x => x.Id == NotificationStatus.Id).DeleteFromQueryAsync();
-            return true;
-        }
-        
-        public async Task<bool> BulkMerge(List<NotificationStatus> NotificationStatuses)
-        {
-            List<NotificationStatusDAO> NotificationStatusDAOs = new List<NotificationStatusDAO>();
-            foreach (NotificationStatus NotificationStatus in NotificationStatuses)
-            {
-                NotificationStatusDAO NotificationStatusDAO = new NotificationStatusDAO();
-                NotificationStatusDAO.Id = NotificationStatus.Id;
-                NotificationStatusDAO.Code = NotificationStatus.Code;
-                NotificationStatusDAO.Name = NotificationStatus.Name;
-                NotificationStatusDAOs.Add(NotificationStatusDAO);
-            }
-            await DataContext.BulkMergeAsync(NotificationStatusDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<NotificationStatus> NotificationStatuses)
-        {
-            List<long> Ids = NotificationStatuses.Select(x => x.Id).ToList();
-            await DataContext.NotificationStatus
-                .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
-            return true;
-        }
-
-        private async Task SaveReference(NotificationStatus NotificationStatus)
-        {
         }
         
     }

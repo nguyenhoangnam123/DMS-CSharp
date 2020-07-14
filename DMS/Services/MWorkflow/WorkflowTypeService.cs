@@ -40,11 +40,16 @@ namespace DMS.Services.MWorkflow
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WorkflowTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -57,11 +62,16 @@ namespace DMS.Services.MWorkflow
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WorkflowTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<WorkflowType> Get(long Id)

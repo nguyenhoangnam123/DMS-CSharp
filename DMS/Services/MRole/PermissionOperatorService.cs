@@ -39,11 +39,16 @@ namespace DMS.Services.MPermissionOperator
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionOperatorService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PermissionOperatorService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionOperatorService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -56,11 +61,16 @@ namespace DMS.Services.MPermissionOperator
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionOperatorService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PermissionOperatorService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionOperatorService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
     }

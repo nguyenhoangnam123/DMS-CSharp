@@ -39,15 +39,14 @@ namespace DMS.Services.MProblem
             }
             catch (Exception ex)
             {
-                string ClassName = nameof(ProblemTypeService);
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, ClassName);
+                    await Logging.CreateSystemLog(ex, nameof(ProblemTypeService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, ClassName);
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemTypeService));
                     throw new MessageException(ex.InnerException);
                 };
             }
@@ -62,17 +61,16 @@ namespace DMS.Services.MProblem
             }
             catch (Exception ex)
             {
-                string ClassName = nameof(ProblemTypeService);
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, ClassName);
+                    await Logging.CreateSystemLog(ex, nameof(ProblemTypeService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, ClassName);
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemTypeService));
                     throw new MessageException(ex.InnerException);
-                }
+                };
             }
         }
     }

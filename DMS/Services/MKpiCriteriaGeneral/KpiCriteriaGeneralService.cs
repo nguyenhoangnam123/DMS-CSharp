@@ -45,11 +45,16 @@ namespace DMS.Services.MKpiCriteriaGeneral
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiCriteriaGeneralService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiCriteriaGeneralService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiCriteriaGeneralService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -62,11 +67,16 @@ namespace DMS.Services.MKpiCriteriaGeneral
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiCriteriaGeneralService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiCriteriaGeneralService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiCriteriaGeneralService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
     }

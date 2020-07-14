@@ -44,11 +44,16 @@ namespace DMS.Services.MPosition
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(PositionService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PositionService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PositionService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -61,11 +66,16 @@ namespace DMS.Services.MPosition
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(PositionService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PositionService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PositionService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<Position> Get(long Id)

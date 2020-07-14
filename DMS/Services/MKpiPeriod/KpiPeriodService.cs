@@ -43,11 +43,16 @@ namespace DMS.Services.MKpiPeriod
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiPeriodService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiPeriodService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiPeriodService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -60,11 +65,16 @@ namespace DMS.Services.MKpiPeriod
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiPeriodService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiPeriodService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiPeriodService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<KpiPeriod> Get(long Id)

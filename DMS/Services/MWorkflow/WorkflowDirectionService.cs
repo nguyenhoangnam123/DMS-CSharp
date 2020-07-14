@@ -49,11 +49,16 @@ namespace DMS.Services.MWorkflow
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WorkflowDirectionService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -66,11 +71,16 @@ namespace DMS.Services.MWorkflow
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WorkflowDirectionService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<WorkflowDirection> Get(long Id)
@@ -106,11 +116,16 @@ namespace DMS.Services.MWorkflow
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WorkflowDirectionService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -133,11 +148,16 @@ namespace DMS.Services.MWorkflow
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WorkflowDirectionService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -157,11 +177,16 @@ namespace DMS.Services.MWorkflow
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WorkflowDirectionService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -181,11 +206,16 @@ namespace DMS.Services.MWorkflow
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WorkflowDirectionService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -205,11 +235,16 @@ namespace DMS.Services.MWorkflow
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WorkflowDirectionService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDirectionService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 

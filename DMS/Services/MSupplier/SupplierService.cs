@@ -53,11 +53,16 @@ namespace DMS.Services.MSupplier
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SupplierService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -70,11 +75,16 @@ namespace DMS.Services.MSupplier
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SupplierService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
         public async Task<Supplier> Get(long Id)
@@ -103,11 +113,16 @@ namespace DMS.Services.MSupplier
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SupplierService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -130,11 +145,16 @@ namespace DMS.Services.MSupplier
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SupplierService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -154,11 +174,16 @@ namespace DMS.Services.MSupplier
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SupplierService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -178,11 +203,16 @@ namespace DMS.Services.MSupplier
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SupplierService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -218,59 +248,81 @@ namespace DMS.Services.MSupplier
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SupplierService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
         public async Task<DataFile> Export(SupplierFilter SupplierFilter)
         {
-            List<Supplier> Suppliers = await UOW.SupplierRepository.List(SupplierFilter);
-            MemoryStream MemoryStream = new MemoryStream();
-            using (ExcelPackage excelPackage = new ExcelPackage(MemoryStream))
+            try
             {
-                //Set some properties of the Excel document
-                excelPackage.Workbook.Properties.Author = CurrentContext.UserName;
-                excelPackage.Workbook.Properties.Title = nameof(Supplier);
-                excelPackage.Workbook.Properties.Created = StaticParams.DateTimeNow;
-
-                //Create the WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
-                int StartColumn = 1;
-                int StartRow = 2;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int TaxCodeColumn = 3 + StartColumn;
-                int StatusIdColumn = 4 + StartColumn;
-
-                worksheet.Cells[1, IdColumn].Value = nameof(Supplier.Id);
-                worksheet.Cells[1, CodeColumn].Value = nameof(Supplier.Code);
-                worksheet.Cells[1, NameColumn].Value = nameof(Supplier.Name);
-                worksheet.Cells[1, TaxCodeColumn].Value = nameof(Supplier.TaxCode);
-                worksheet.Cells[1, StatusIdColumn].Value = nameof(Supplier.StatusId);
-
-                for (int i = 0; i < Suppliers.Count; i++)
+                List<Supplier> Suppliers = await UOW.SupplierRepository.List(SupplierFilter);
+                MemoryStream MemoryStream = new MemoryStream();
+                using (ExcelPackage excelPackage = new ExcelPackage(MemoryStream))
                 {
-                    Supplier Supplier = Suppliers[i];
-                    worksheet.Cells[i + StartRow, IdColumn].Value = Supplier.Id;
-                    worksheet.Cells[i + StartRow, CodeColumn].Value = Supplier.Code;
-                    worksheet.Cells[i + StartRow, NameColumn].Value = Supplier.Name;
-                    worksheet.Cells[i + StartRow, TaxCodeColumn].Value = Supplier.TaxCode;
-                    worksheet.Cells[i + StartRow, StatusIdColumn].Value = Supplier.StatusId;
-                }
-                excelPackage.Save();
-            }
+                    //Set some properties of the Excel document
+                    excelPackage.Workbook.Properties.Author = CurrentContext.UserName;
+                    excelPackage.Workbook.Properties.Title = nameof(Supplier);
+                    excelPackage.Workbook.Properties.Created = StaticParams.DateTimeNow;
 
-            DataFile DataFile = new DataFile
+                    //Create the WorkSheet
+                    ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
+                    int StartColumn = 1;
+                    int StartRow = 2;
+                    int IdColumn = 0 + StartColumn;
+                    int CodeColumn = 1 + StartColumn;
+                    int NameColumn = 2 + StartColumn;
+                    int TaxCodeColumn = 3 + StartColumn;
+                    int StatusIdColumn = 4 + StartColumn;
+
+                    worksheet.Cells[1, IdColumn].Value = nameof(Supplier.Id);
+                    worksheet.Cells[1, CodeColumn].Value = nameof(Supplier.Code);
+                    worksheet.Cells[1, NameColumn].Value = nameof(Supplier.Name);
+                    worksheet.Cells[1, TaxCodeColumn].Value = nameof(Supplier.TaxCode);
+                    worksheet.Cells[1, StatusIdColumn].Value = nameof(Supplier.StatusId);
+
+                    for (int i = 0; i < Suppliers.Count; i++)
+                    {
+                        Supplier Supplier = Suppliers[i];
+                        worksheet.Cells[i + StartRow, IdColumn].Value = Supplier.Id;
+                        worksheet.Cells[i + StartRow, CodeColumn].Value = Supplier.Code;
+                        worksheet.Cells[i + StartRow, NameColumn].Value = Supplier.Name;
+                        worksheet.Cells[i + StartRow, TaxCodeColumn].Value = Supplier.TaxCode;
+                        worksheet.Cells[i + StartRow, StatusIdColumn].Value = Supplier.StatusId;
+                    }
+                    excelPackage.Save();
+                }
+
+                DataFile DataFile = new DataFile
+                {
+                    Name = nameof(Supplier),
+                    Content = MemoryStream,
+                };
+                return DataFile;
+            }
+            catch (Exception ex)
             {
-                Name = nameof(Supplier),
-                Content = MemoryStream,
-            };
-            return DataFile;
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SupplierService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SupplierService));
+                    throw new MessageException(ex.InnerException);
+                };
+            }
         }
 
         public SupplierFilter ToFilter(SupplierFilter filter)

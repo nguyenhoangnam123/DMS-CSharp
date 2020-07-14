@@ -16,12 +16,6 @@ namespace DMS.Services.MNotificationStatus
         Task<int> Count(NotificationStatusFilter NotificationStatusFilter);
         Task<List<NotificationStatus>> List(NotificationStatusFilter NotificationStatusFilter);
         Task<NotificationStatus> Get(long Id);
-        Task<NotificationStatus> Create(NotificationStatus NotificationStatus);
-        Task<NotificationStatus> Update(NotificationStatus NotificationStatus);
-        Task<NotificationStatus> Delete(NotificationStatus NotificationStatus);
-        Task<List<NotificationStatus>> BulkDelete(List<NotificationStatus> NotificationStatuses);
-        Task<List<NotificationStatus>> Import(List<NotificationStatus> NotificationStatuses);
-        NotificationStatusFilter ToFilter(NotificationStatusFilter NotificationStatusFilter);
     }
 
     public class NotificationStatusService : BaseService, INotificationStatusService
@@ -52,11 +46,16 @@ namespace DMS.Services.MNotificationStatus
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationStatusService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(NotificationStatusService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationStatusService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -69,11 +68,16 @@ namespace DMS.Services.MNotificationStatus
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationStatusService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(NotificationStatusService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationStatusService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<NotificationStatus> Get(long Id)
@@ -83,130 +87,6 @@ namespace DMS.Services.MNotificationStatus
                 return null;
             return NotificationStatus;
         }
-       
-        public async Task<NotificationStatus> Create(NotificationStatus NotificationStatus)
-        {
-            if (!await NotificationStatusValidator.Create(NotificationStatus))
-                return NotificationStatus;
-
-            try
-            {
-                await UOW.Begin();
-                await UOW.NotificationStatusRepository.Create(NotificationStatus);
-                await UOW.Commit();
-
-                await Logging.CreateAuditLog(NotificationStatus, new { }, nameof(NotificationStatusService));
-                return await UOW.NotificationStatusRepository.Get(NotificationStatus.Id);
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationStatusService));
-                if (ex.InnerException == null)
-                    throw new MessageException(ex);
-                else
-                    throw new MessageException(ex.InnerException);
-            }
-        }
-
-        public async Task<NotificationStatus> Update(NotificationStatus NotificationStatus)
-        {
-            if (!await NotificationStatusValidator.Update(NotificationStatus))
-                return NotificationStatus;
-            try
-            {
-                var oldData = await UOW.NotificationStatusRepository.Get(NotificationStatus.Id);
-
-                await UOW.Begin();
-                await UOW.NotificationStatusRepository.Update(NotificationStatus);
-                await UOW.Commit();
-
-                var newData = await UOW.NotificationStatusRepository.Get(NotificationStatus.Id);
-                await Logging.CreateAuditLog(newData, oldData, nameof(NotificationStatusService));
-                return newData;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationStatusService));
-                if (ex.InnerException == null)
-                    throw new MessageException(ex);
-                else
-                    throw new MessageException(ex.InnerException);
-            }
-        }
-
-        public async Task<NotificationStatus> Delete(NotificationStatus NotificationStatus)
-        {
-            if (!await NotificationStatusValidator.Delete(NotificationStatus))
-                return NotificationStatus;
-
-            try
-            {
-                await UOW.Begin();
-                await UOW.NotificationStatusRepository.Delete(NotificationStatus);
-                await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, NotificationStatus, nameof(NotificationStatusService));
-                return NotificationStatus;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationStatusService));
-                if (ex.InnerException == null)
-                    throw new MessageException(ex);
-                else
-                    throw new MessageException(ex.InnerException);
-            }
-        }
-
-        public async Task<List<NotificationStatus>> BulkDelete(List<NotificationStatus> NotificationStatuses)
-        {
-            if (!await NotificationStatusValidator.BulkDelete(NotificationStatuses))
-                return NotificationStatuses;
-
-            try
-            {
-                await UOW.Begin();
-                await UOW.NotificationStatusRepository.BulkDelete(NotificationStatuses);
-                await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, NotificationStatuses, nameof(NotificationStatusService));
-                return NotificationStatuses;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationStatusService));
-                if (ex.InnerException == null)
-                    throw new MessageException(ex);
-                else
-                    throw new MessageException(ex.InnerException);
-            }
-        }
-        
-        public async Task<List<NotificationStatus>> Import(List<NotificationStatus> NotificationStatuses)
-        {
-            if (!await NotificationStatusValidator.Import(NotificationStatuses))
-                return NotificationStatuses;
-            try
-            {
-                await UOW.Begin();
-                await UOW.NotificationStatusRepository.BulkMerge(NotificationStatuses);
-                await UOW.Commit();
-
-                await Logging.CreateAuditLog(NotificationStatuses, new { }, nameof(NotificationStatusService));
-                return NotificationStatuses;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationStatusService));
-                if (ex.InnerException == null)
-                    throw new MessageException(ex);
-                else
-                    throw new MessageException(ex.InnerException);
-            }
-        }     
         
         public NotificationStatusFilter ToFilter(NotificationStatusFilter filter)
         {

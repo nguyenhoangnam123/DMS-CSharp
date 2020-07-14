@@ -39,11 +39,16 @@ namespace DMS.Services.MWorkflow
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(RequestStateService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RequestStateService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RequestStateService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -56,11 +61,16 @@ namespace DMS.Services.MWorkflow
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(RequestStateService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(RequestStateService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(RequestStateService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
     }

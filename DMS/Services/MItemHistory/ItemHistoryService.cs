@@ -52,11 +52,16 @@ namespace DMS.Services.MItemHistory
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ItemHistoryService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -69,11 +74,16 @@ namespace DMS.Services.MItemHistory
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ItemHistoryService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<ItemHistory> Get(long Id)
@@ -101,11 +111,16 @@ namespace DMS.Services.MItemHistory
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ItemHistoryService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -128,11 +143,16 @@ namespace DMS.Services.MItemHistory
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ItemHistoryService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -152,11 +172,16 @@ namespace DMS.Services.MItemHistory
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ItemHistoryService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -176,11 +201,16 @@ namespace DMS.Services.MItemHistory
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ItemHistoryService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         
@@ -200,11 +230,16 @@ namespace DMS.Services.MItemHistory
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ItemHistoryService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ItemHistoryService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }     
         

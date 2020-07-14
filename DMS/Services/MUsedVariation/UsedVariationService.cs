@@ -39,11 +39,16 @@ namespace DMS.Services.MUsedVariation
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(UsedVariationService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(UsedVariationService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(UsedVariationService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -56,11 +61,16 @@ namespace DMS.Services.MUsedVariation
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(UsedVariationService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(UsedVariationService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(UsedVariationService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
     }

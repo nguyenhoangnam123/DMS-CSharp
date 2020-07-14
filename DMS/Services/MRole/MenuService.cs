@@ -41,11 +41,16 @@ namespace DMS.Services.MMenu
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(MenuService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(MenuService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(MenuService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -58,11 +63,16 @@ namespace DMS.Services.MMenu
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(MenuService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(MenuService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(MenuService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
         public async Task<Menu> Get(long Id)
