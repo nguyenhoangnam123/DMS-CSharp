@@ -446,8 +446,6 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.ListStore), HttpPost]
         public async Task<List<Mobile_StoreDTO>> ListStore([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
-            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
-
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Search = Mobile_StoreFilterDTO.Search;
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
@@ -459,7 +457,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.Code = Mobile_StoreFilterDTO.Code;
             StoreFilter.Name = Mobile_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = Mobile_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
+            StoreFilter.OrganizationId = Mobile_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = Mobile_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
