@@ -8,7 +8,7 @@ namespace DMS.Rpc.store
     {
         public const string Master = Module + "/location/store/store-master";
         public const string Detail = Module + "/location/store/store-detail/*";
-        public const string Mobile = Module + "/master-data.stores";
+        public const string Mobile = Module + "store.*";
         private const string Default = Rpc + Module + "/store";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

@@ -136,7 +136,8 @@ namespace DMS.Services.MProblem
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Vấn đề {Problem.Code} của cửa hàng {Problem.Store.Code} - {Problem.Store.Name} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
-                        LinkWebsite = $"{ProblemRoute.Master}/{Problem.Id}",
+                        LinkWebsite = $"{ProblemRoute.Detail}".Replace("*", Problem.Id.ToString()),
+                        LinkMobile = $"{ProblemRoute.Mobile}".Replace("*", Problem.Id.ToString()),
                         Time = Now,
                         Unread = false,
                         SenderId = CurrentContext.UserId,

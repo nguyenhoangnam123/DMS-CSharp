@@ -7,8 +7,8 @@ namespace DMS.Rpc.problem
     public class ProblemRoute : Root
     {
         public const string Master = Module + "/problem/problem-master";
-        public const string Detail = Module + "/problem/problem-detail";
-        public const string Mobile = Module + "/problem";
+        public const string Detail = Module + "/problem/problem-detail/*";
+        public const string Mobile = Module + "problem.*";
         private const string Default = Rpc + Module + "/problem";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

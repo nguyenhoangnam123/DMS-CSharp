@@ -122,7 +122,8 @@ namespace DMS.Services.MSurvey
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Khảo sát {Survey.Title} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}, có hiệu lực từ {Survey.StartAt} - {Survey.EndAt}",
-                        LinkWebsite = $"{SurveyRoute.Master}/{Survey.Id}",
+                        LinkWebsite = $"{SurveyRoute.Detail}".Replace("*", Survey.Id.ToString()),
+                        LinkMobile = $"{SurveyRoute.Mobile}".Replace("*", Survey.Id.ToString()),
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,
