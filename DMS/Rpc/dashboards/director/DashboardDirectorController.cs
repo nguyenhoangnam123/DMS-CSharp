@@ -259,19 +259,13 @@ namespace DMS.Rpc.dashboards.director
             return DashboardDirector_StatisticDailyDTO;
         }
 
-        [Route(DashboardDirectorRoute.StoreCheckingCoverage), HttpPost]
-        public async Task<List<DashboardDirector_StoreDTO>> StoreCheckingCoverage()
+        [Route(DashboardDirectorRoute.StoreCoverage), HttpPost]
+        public async Task<List<DashboardDirector_StoreDTO>> StoreCoverage()
         {
-            DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, 1);
-            DateTime End = Start.AddMonths(1).AddSeconds(-1);
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from s in DataContext.Store
-                        join sc in DataContext.StoreChecking on s.Id equals sc.StoreId
-                        join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
-                        join o in DataContext.Organization on au.OrganizationId equals o.Id
-                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                        au.OrganizationId.HasValue && o.Path.StartsWith(CurrentUser.Organization.Path)
+                        join o in DataContext.Organization on s.OrganizationId equals o.Id
+                        where o.Path.StartsWith(CurrentUser.Organization.Path)
                         select new DashboardDirector_StoreDTO
                         {
                             Id = s.Id,

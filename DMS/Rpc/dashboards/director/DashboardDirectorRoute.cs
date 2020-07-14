@@ -16,7 +16,7 @@ namespace DMS.Rpc.dashboards.director
         public const string CountStoreChecking = Default + "/store-checking-couter";
         public const string StatisticToday = Default + "/statistic-today";
         public const string StatisticYesterday = Default + "/statistic-yesterday";
-        public const string StoreCheckingCoverage = Default + "/store-checking-coverage";
+        public const string StoreCoverage = Default + "/store-coverage";
         public const string SaleEmployeeLocation = Default + "/sale-employee-location";
         public const string ListIndirectSalesOrder = Default + "/list-indirect-sales-order";
         public const string Top5RevenueByProduct = Default + "/top-5-revenue-by-product";
