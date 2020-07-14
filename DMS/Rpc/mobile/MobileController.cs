@@ -1021,7 +1021,7 @@ namespace DMS.Rpc.mobile
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            byte[] array = Encoding.ASCII.GetBytes(Image64DTO.Content);
+            byte[] array = Convert.FromBase64String(Image64DTO.Content);
             Image Image = new Image
             {
                 Name = Image64DTO.FileName,
