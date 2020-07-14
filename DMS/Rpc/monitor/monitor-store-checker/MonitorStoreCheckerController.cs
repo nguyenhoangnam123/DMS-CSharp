@@ -332,31 +332,34 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 Max = CompetitorProblems.Count > Max ? CompetitorProblems.Count : Max;
                 Max = StoreProblems.Count > Max ? StoreProblems.Count : Max;
                 StoreDAO storeDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
+                MonitorStoreChecker_MonitorStoreCheckerDetailDTO MonitorStoreChecker_MonitorStoreCheckerDetailDTO = new MonitorStoreChecker_MonitorStoreCheckerDetailDTO
+                {
+                    StoreCode = storeDAO.Code,
+                    StoreName = storeDAO.Name,
+                    Infoes = new List<MonitorStoreChecker_MonitorStoreCheckerDetailInfoDTO>(),
+                };
+                MonitorStoreChecker_MonitorStoreCheckerDetailDTOs.Add(MonitorStoreChecker_MonitorStoreCheckerDetailDTO);
                 for (int i = 0; i < Max; i++)
                 {
-                    MonitorStoreChecker_MonitorStoreCheckerDetailDTO MonitorStoreChecker_MonitorStoreCheckerDetailDTO = new MonitorStoreChecker_MonitorStoreCheckerDetailDTO
-                    {
-                        StoreCode = storeDAO.Code,
-                        StoreName = storeDAO.Name,
-                    };
+                    MonitorStoreChecker_MonitorStoreCheckerDetailInfoDTO Info = new MonitorStoreChecker_MonitorStoreCheckerDetailInfoDTO();
+                    MonitorStoreChecker_MonitorStoreCheckerDetailDTO.Infoes.Add(Info);
                     if (i == 0)
                     {
-                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.ImagePath = SubStoreCheckingImageMappingDAOs.Select(i => i.Image.Url).FirstOrDefault();
+                        Info.ImagePath = SubStoreCheckingImageMappingDAOs.Select(i => i.Image.Url).FirstOrDefault();
                     }
-
-                    MonitorStoreChecker_MonitorStoreCheckerDetailDTOs.Add(MonitorStoreChecker_MonitorStoreCheckerDetailDTO);
+                    
                     if (SubIndirectSalesOrderDAOs.Count > i)
                     {
-                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.IndirectSalesOrderCode = SubIndirectSalesOrderDAOs[i].Code;
-                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.Sales = SubIndirectSalesOrderDAOs[i].Total;
+                        Info.IndirectSalesOrderCode = SubIndirectSalesOrderDAOs[i].Code;
+                        Info.Sales = SubIndirectSalesOrderDAOs[i].Total;
                     }
                     if (CompetitorProblems.Count > i)
                     {
-                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.CompetitorProblemCode = CompetitorProblems[i].Code;
+                        Info.CompetitorProblemCode = CompetitorProblems[i].Code;
                     }
                     if (StoreProblems.Count > i)
                     {
-                        MonitorStoreChecker_MonitorStoreCheckerDetailDTO.StoreProblemCode = StoreProblems[i].Code;
+                        Info.StoreProblemCode = StoreProblems[i].Code;
                     }
                 }
             }
