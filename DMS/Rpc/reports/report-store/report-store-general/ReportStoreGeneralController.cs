@@ -201,6 +201,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 .Where(x => OrganizationIds.Contains(x.OrganizationId) &&
                 (StoreId == null || x.Id == StoreId.Value) &&
                 (StoreTypeId == null || x.StoreTypeId == StoreTypeId.Value))
+                .Skip(ReportStoreGeneral_ReportStoreGeneralFilterDTO.Skip)
+                .Take(ReportStoreGeneral_ReportStoreGeneralFilterDTO.Take)
                 .ToListAsync();
 
             List<ReportStoreGeneral_StoreDTO> ReportStoreGeneral_StoreDTOs = StoreDAOs.Select(s => new ReportStoreGeneral_StoreDTO
@@ -228,40 +230,78 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             foreach (ReportStoreGeneral_ReportStoreGeneralDTO ReportStoreGeneral_ReportStoreGeneralDTO in ReportStoreGeneral_ReportStoreGeneralDTOs)
             {
                 ReportStoreGeneral_ReportStoreGeneralDTO.Stores = ReportStoreGeneral_StoreDTOs
-                    .Where(se => se.Organization.Name == ReportStoreGeneral_ReportStoreGeneralDTO.OrganizationName)
-                    .ToList();
+                    .Where(x => x.Organization.Name == ReportStoreGeneral_ReportStoreGeneralDTO.OrganizationName)
+                    .Select(x => new ReportStoreGeneral_StoreDetailDTO
+                    {
+                        Id = x.Id,
+                        Code = x.Code,
+                        Name = x.Name,
+                        Address = x.Address,
+                        Phone = x.Phone,
+                    }).ToList();
             }
             ReportStoreGeneral_ReportStoreGeneralDTOs = ReportStoreGeneral_ReportStoreGeneralDTOs.Where(x => x.Stores.Any()).ToList();
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(sc => sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End && StoreIds.Contains(sc.StoreId))
+                .Where(sc => sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End && 
+                StoreIds.Contains(sc.StoreId))
+                .ToListAsync();
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
+                .Where(x => StoreIds.Contains(x.BuyerStoreId) &&
+                x.OrderDate >= Start && x.OrderDate <= End)
+                .ToListAsync();
+            var IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
+            List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
+                .Where(x => IndirectSalesOrderIds.Contains(x.IndirectSalesOrderId))
                 .ToListAsync();
             // khởi tạo khung dữ liệu
-            //foreach (ReportStoreGeneral_SaleEmployeeDTO ReportStoreGeneral_SaleEmployeeDTO in ReportStoreGeneral_SaleEmployeeDTOs)
-            //{
-            //    ReportStoreGeneral_SaleEmployeeDTO.StoreCheckingGroupByDates = new List<ReportStoreGeneral_StoreCheckingGroupByDateDTO>();
-            //    for (DateTime i = Start; i < End; i = i.AddDays(1))
-            //    {
-            //        ReportStoreGeneral_StoreCheckingGroupByDateDTO ReportStoreGeneral_StoreCheckingGroupByDateDTO = new ReportStoreGeneral_StoreCheckingGroupByDateDTO();
-            //        ReportStoreGeneral_StoreCheckingGroupByDateDTO.Date = i;
-            //        ReportStoreGeneral_StoreCheckingGroupByDateDTO.StoreCheckings = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == ReportStoreGeneral_SaleEmployeeDTO.SaleEmployeeId)
-            //            .Where(x => x.CheckOutAt.Value.Date == i)
-            //            .Select(x => new ReportStoreGeneral_StoreCheckingDTO
-            //            {
-            //                CheckIn = x.CheckInAt.Value,
-            //                CheckOut = x.CheckOutAt.Value,
-            //                Duaration = x.CheckOutAt.Value.AddSeconds(x.CheckInAt.Value.Second * -1),
-            //                DeviceName = x.DeviceName,
-            //                ImageCounter = x.ImageCounter ?? 0,
-            //                Planned = x.Planned,
-            //                SalesOrder = x.IndirectSalesOrderCounter > 0 ? true : false,
-            //                SaleEmployeeId = x.SaleEmployeeId,
-            //                StoreName = x.Store.Name,
-            //                StoreCode = x.Store.Code,
-            //                StoreAddress = x.Store.Address
-            //            }).ToList();
-            //        ReportStoreGeneral_SaleEmployeeDTO.StoreCheckingGroupByDates.Add(ReportStoreGeneral_StoreCheckingGroupByDateDTO);
-            //    }
-            //}
+            foreach (ReportStoreGeneral_ReportStoreGeneralDTO ReportStoreGeneral_ReportStoreGeneralDTO in ReportStoreGeneral_ReportStoreGeneralDTOs)
+            {
+                foreach (var StoreCheckingDAO in StoreCheckingDAOs)
+                {
+                    var Store = ReportStoreGeneral_ReportStoreGeneralDTO.Stores.Where(x => x.Id == StoreCheckingDAO.StoreId).FirstOrDefault();
+                    if (StoreCheckingDAO.Planned)
+                        Store.StoreCheckingPlannedIds.Add(StoreCheckingDAO.Id);
+                    else
+                        Store.StoreCheckingUnPlannedIds.Add(StoreCheckingDAO.Id);
+                }
+
+                foreach (var Store in ReportStoreGeneral_ReportStoreGeneralDTO.Stores)
+                {
+                    var StoreCheckings = StoreCheckingDAOs.Where(x => x.StoreId == Store.Id).ToList();
+
+                    //lượt viếng thăm đầu tiên
+                    Store.FirstChecking = StoreCheckings.OrderBy(x => x.CheckOutAt)
+                        .Select(x => x.CheckOutAt.Value.Date)
+                        .FirstOrDefault();
+                    //lượt viếng thăm gần nhất
+                    Store.LastChecking = StoreCheckings.OrderByDescending(x => x.CheckOutAt)
+                        .Select(x => x.CheckOutAt.Value.Date)
+                        .FirstOrDefault();
+                    //tổng thời gian viếng thăm
+                    var TotalMinuteChecking = StoreCheckings.Sum(x => (x.CheckOutAt.Value.Subtract(x.CheckInAt.Value)).Minutes);
+                    Store.TotalCheckingTime = $"{TotalMinuteChecking / 60} : {TotalMinuteChecking % 60}";
+
+                    //tổng doanh thu
+                    Store.TotalRevenue = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Sum(x => x.Total);
+                    //ngày đặt hàng gần nhất
+                    Store.LastOrder = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id)
+                        .OrderByDescending(x => x.OrderDate)
+                        .Select(x => x.OrderDate.Date)
+                        .FirstOrDefault();
+                }
+
+                foreach (var IndirectSalesOrderDAO in IndirectSalesOrderDAOs)
+                {
+                    var Store = ReportStoreGeneral_ReportStoreGeneralDTO.Stores.Where(x => x.Id == IndirectSalesOrderDAO.BuyerStoreId).FirstOrDefault();
+                    Store.IndirectSalesOrderIds.Add(IndirectSalesOrderDAO.Id);
+
+                    var IndirectSalesOrderContents = IndirectSalesOrderContentDAOs.Where(x => x.IndirectSalesOrderId == IndirectSalesOrderDAO.Id).ToList();
+                    foreach (var IndirectSalesOrderContent in IndirectSalesOrderContents)
+                    {
+                        Store.SKUItemIds.Add(IndirectSalesOrderContent.Id);
+                    }
+                }
+            }
             return ReportStoreGeneral_ReportStoreGeneralDTOs;
         }
     }
