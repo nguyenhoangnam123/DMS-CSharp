@@ -55,11 +55,16 @@ namespace DMS.Services.MNotification
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(NotificationService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -72,11 +77,16 @@ namespace DMS.Services.MNotification
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(NotificationService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<Notification> Get(long Id)
@@ -136,8 +146,8 @@ namespace DMS.Services.MNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = Notification.Content,
-                        LinkWebsite = $"{NotificationRoute.Master}/{Notification.Id}",
-                        LinkMobile = $"{NotificationRoute.Mobile}/{Notification.Id}",
+                        LinkWebsite = $"{NotificationRoute.Detail}".Replace("*", Notification.Id.ToString()),
+                        LinkMobile = $"{NotificationRoute.Mobile}".Replace("*", Notification.Id.ToString()),
                         Time = StaticParams.DateTimeNow,
                         Unread = false,
                         SenderId = CurrentContext.UserId,
@@ -154,11 +164,16 @@ namespace DMS.Services.MNotification
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(NotificationService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -181,11 +196,16 @@ namespace DMS.Services.MNotification
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(NotificationService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -208,11 +228,16 @@ namespace DMS.Services.MNotification
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(NotificationService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -232,11 +257,16 @@ namespace DMS.Services.MNotification
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(NotificationService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -256,11 +286,16 @@ namespace DMS.Services.MNotification
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(NotificationService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -280,11 +315,16 @@ namespace DMS.Services.MNotification
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(NotificationService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(NotificationService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 

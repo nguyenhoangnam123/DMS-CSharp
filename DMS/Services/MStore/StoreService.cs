@@ -176,7 +176,8 @@ namespace DMS.Services.MStore
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Cửa hàng cắm cờ {StoreScouting.Code} - {StoreScouting.Name} đã được mở cửa hàng bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
-                        LinkWebsite = $"{StoreScoutingRoute.Master}/{StoreScouting.Id}",
+                        LinkWebsite = $"{StoreScoutingRoute.Detail}".Replace("*", StoreScouting.Id.ToString()),
+                        LinkMobile = $"{StoreScoutingRoute.Mobile}".Replace("*", StoreScouting.Id.ToString()),
                         RecipientId = StoreScouting.CreatorId,
                         SenderId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,
@@ -196,8 +197,8 @@ namespace DMS.Services.MStore
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Cửa hàng {Store.Code} - {Store.Name} vừa được thêm mới vào hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
-                        LinkWebsite = $"{StoreRoute.Master}/{Store.Id}",
-                        LinkMobile = $"{StoreRoute.Mobile}/{Store.Id}",
+                        LinkWebsite = $"{StoreRoute.Detail}".Replace("*", Store.Id.ToString()),
+                        LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,
@@ -250,8 +251,8 @@ namespace DMS.Services.MStore
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Cửa hàng {Store.Code} - {Store.Name} vừa được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
-                        LinkWebsite = $"{StoreRoute.Master}/{Store.Id}",
-                        LinkMobile = $"{StoreRoute.Mobile}/{Store.Id}",
+                        LinkWebsite = $"{StoreRoute.Detail}".Replace("*", Store.Id.ToString()),
+                        LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,
