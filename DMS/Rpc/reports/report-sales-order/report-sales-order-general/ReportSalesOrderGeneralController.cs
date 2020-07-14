@@ -270,7 +270,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                     })
                     .ToList();
             }
-            
+
             return ReportSalesOrderGeneral_ReportSalesOrderGeneralDTOs.Where(x => x.IndirectSalesOrders.Any()).ToList();
         }
 
@@ -300,9 +300,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await query.ToListAsync();
             ReportSalesOrderGeneral_TotalDTO ReportSalesOrderGeneral_TotalDTO = new ReportSalesOrderGeneral_TotalDTO
             {
-                TotalDiscount = IndirectSalesOrderDAOs.Select(x => x.GeneralDiscountAmount.Value).DefaultIfEmpty().Sum(),
-                TotalTax = IndirectSalesOrderDAOs.Select(x => x.TotalTaxAmount).DefaultIfEmpty().Sum(),
-                TotalRevenue = IndirectSalesOrderDAOs.Select(x => x.Total).DefaultIfEmpty().Sum(),
+                TotalDiscount = IndirectSalesOrderDAOs.Where(x => x.GeneralDiscountAmount.HasValue)
+                .Select(x => x.GeneralDiscountAmount.Value)
+                .DefaultIfEmpty(0).Sum(),
+                TotalTax = IndirectSalesOrderDAOs.Select(x => x.TotalTaxAmount).DefaultIfEmpty(0).Sum(),
+                TotalRevenue = IndirectSalesOrderDAOs.Select(x => x.Total).DefaultIfEmpty(0).Sum(),
             };
 
             return ReportSalesOrderGeneral_TotalDTO;
