@@ -12,7 +12,7 @@ using DMS.Helpers;
 
 namespace DMS.Services.MKpiGeneral
 {
-    public interface IKpiGeneralService :  IServiceScoped
+    public interface IKpiGeneralService : IServiceScoped
     {
         Task<int> Count(KpiGeneralFilter KpiGeneralFilter);
         Task<List<KpiGeneral>> List(KpiGeneralFilter KpiGeneralFilter);
@@ -167,7 +167,7 @@ namespace DMS.Services.MKpiGeneral
                     await Logging.CreateSystemLog(ex.InnerException, nameof(KpiGeneralService));
                     throw new MessageException(ex.InnerException);
                 }
-                    
+
             }
         }
 
@@ -271,18 +271,8 @@ namespace DMS.Services.MKpiGeneral
 
                 var KpiGenerals = await UOW.KpiGeneralRepository.List(KpiGeneralFilter);
                 var AppUserIds = KpiGenerals.Select(x => x.EmployeeId).ToList();
-                AppUserFilter = new AppUserFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Id = new IdFilter { NotIn = AppUserIds },
-                    Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email,
-                    DisplayName = AppUserFilter.DisplayName,
-                    Username = AppUserFilter.Username,
-                    Phone = AppUserFilter.Phone,
-                    Email = AppUserFilter.Email,
-                    OrganizationId = AppUserFilter.OrganizationId,
-                };
+                AppUserFilter.Id = new IdFilter { NotIn = AppUserIds };
+                AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email;
 
                 var AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
                 return AppUsers;
@@ -318,15 +308,7 @@ namespace DMS.Services.MKpiGeneral
 
                 var KpiGenerals = await UOW.KpiGeneralRepository.List(KpiGeneralFilter);
                 var AppUserIds = KpiGenerals.Select(x => x.EmployeeId).ToList();
-                AppUserFilter = new AppUserFilter
-                {
-                    Id = new IdFilter { NotIn = AppUserIds },
-                    DisplayName = AppUserFilter.DisplayName,
-                    Username = AppUserFilter.Username,
-                    Phone = AppUserFilter.Phone,
-                    Email = AppUserFilter.Email,
-                    OrganizationId = AppUserFilter.OrganizationId,
-                };
+                AppUserFilter.Id = new IdFilter { NotIn = AppUserIds };
 
                 var count = await UOW.AppUserRepository.Count(AppUserFilter);
                 return count;
