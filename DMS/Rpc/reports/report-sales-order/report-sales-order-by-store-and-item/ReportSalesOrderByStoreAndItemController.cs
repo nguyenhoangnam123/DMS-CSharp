@@ -204,6 +204,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
+            long? StoreId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreGroupingId?.Equal;
 
@@ -216,17 +217,34 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+            var query = from i in DataContext.IndirectSalesOrder
+                        join s in DataContext.Store on i.SellerStoreId equals s.Id
+                        join o in DataContext.Organization on s.OrganizationId equals o.Id
+                        where i.OrderDate >= Start && i.OrderDate <= End &&
+                        (StoreId.HasValue == false || s.Id == StoreId.Value) &&
+                        (StoreTypeId.HasValue == false || s.StoreTypeId == StoreTypeId.Value) &&
+                        (StoreGroupingId.HasValue == false || s.StoreGroupingId == StoreGroupingId.Value) &&
+                        (OrganizationIds.Contains(s.OrganizationId))
+                        select new Store
+                        {
+                            Id = s.Id,
+                            Code = s.Code,
+                            Name = s.Name,
+                            OrganizationId = s.OrganizationId,
+                            Organization = new Organization
+                            {
+                                Id = o.Id,
+                                Code = o.Code,
+                                Name = o.Name,
+                            }
+                        };
 
-            List<Store> Stores = await StoreService.List(new StoreFilter
-            {
-                OrganizationId = new IdFilter { In = OrganizationIds },
-                StoreTypeId = new IdFilter { Equal = StoreTypeId },
-                StoreGroupingId = new IdFilter { Equal = StoreGroupingId },
-                Skip = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.Skip,
-                Take = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.Take,
-                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name | StoreSelect.Organization | StoreSelect.StoreGrouping | StoreSelect.StoreType
-            });
+            List<Store> Stores = await query.Distinct().ToListAsync();
 
+            Stores = Stores.OrderBy(x => x.Name)
+                .Skip(ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.Skip)
+                .Take(ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.Take)
+                .ToList();
             List<string> OrganizationNames = Stores.Select(s => s.Organization.Name).Distinct().ToList();
             List<ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO> ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs = OrganizationNames.Select(on => new ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO
             {
@@ -248,7 +266,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                     })
                     .ToList();
             }
-            ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs.Where(x => x.Stores.Any()).ToList();
 
             List<long> StoreIds = Stores.Select(s => s.Id).ToList();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
@@ -345,6 +362,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             {
                 ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO.Stores = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO.Stores.Where(x => x.Items.Any()).ToList();
             }
+            ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs.Where(x => x.Stores.Any()).ToList();
             return ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs.Where(x => x.Stores.Any()).ToList();
         }
 
@@ -358,12 +376,25 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
-
-            List<Store> Stores = await StoreService.List(new StoreFilter
-            {
-                OrganizationId = new IdFilter { In = OrganizationIds },
-                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name | StoreSelect.Organization
-            });
+            
+            var query = from i in DataContext.IndirectSalesOrder
+                        join s in DataContext.Store on i.SellerStoreId equals s.Id
+                        join o in DataContext.Organization on s.OrganizationId equals o.Id
+                        where (OrganizationIds.Contains(s.OrganizationId))
+                        select new Store
+                        {
+                            Id = s.Id,
+                            Code = s.Code,
+                            Name = s.Name,
+                            OrganizationId = s.OrganizationId,
+                            Organization = new Organization
+                            {
+                                Id = o.Id,
+                                Code = o.Code,
+                                Name = o.Name,
+                            }
+                        };
+            List<Store> Stores = await query.Distinct().ToListAsync();
 
             List<string> OrganizationNames = Stores.Select(s => s.Organization.Name).Distinct().ToList();
             List<ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO> ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs = OrganizationNames.Select(on => new ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO
