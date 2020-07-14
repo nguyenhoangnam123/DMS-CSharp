@@ -30,6 +30,8 @@ namespace DMS.Rpc.role
             this.Address = AppUser.Address;
             this.Email = AppUser.Email;
             this.Phone = AppUser.Phone;
+            this.StatusId = AppUser.StatusId;
+            this.OrganizationId = AppUser.OrganizationId;
             this.Errors = AppUser.Errors;
         }
     }
