@@ -668,6 +668,66 @@ namespace DMS.Rpc.mobile
                     TaxPercentage = x.TaxPercentage,
                     TaxAmount = x.TaxAmount,
                     Factor = x.Factor,
+                    Item = x.Item == null ? null : new Item
+                    {
+                        Id = x.Item.Id,
+                        ProductId = x.Item.ProductId,
+                        Code = x.Item.Code,
+                        Name = x.Item.Name,
+                        ScanCode = x.Item.ScanCode,
+                        SalePrice = x.Item.SalePrice,
+                        RetailPrice = x.Item.RetailPrice,
+                        StatusId = x.Item.StatusId,
+                        Product = x.Item.Product == null ? null : new Product
+                        {
+                            Id = x.Item.Product.Id,
+                            Code = x.Item.Product.Code,
+                            SupplierCode = x.Item.Product.SupplierCode,
+                            Name = x.Item.Product.Name,
+                            Description = x.Item.Product.Description,
+                            ScanCode = x.Item.Product.ScanCode,
+                            ProductTypeId = x.Item.Product.ProductTypeId,
+                            SupplierId = x.Item.Product.SupplierId,
+                            BrandId = x.Item.Product.BrandId,
+                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
+                            UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
+                            RetailPrice = x.Item.Product.RetailPrice,
+                            TaxTypeId = x.Item.Product.TaxTypeId,
+                            StatusId = x.Item.Product.StatusId,
+                            ProductType = x.Item.Product.ProductType == null ? null : new ProductType
+                            {
+                                Id = x.Item.Product.ProductType.Id,
+                                Code = x.Item.Product.ProductType.Code,
+                                Name = x.Item.Product.ProductType.Name,
+                                Description = x.Item.Product.ProductType.Description,
+                                StatusId = x.Item.Product.ProductType.StatusId,
+                            },
+                            TaxType = x.Item.Product.TaxType == null ? null : new TaxType
+                            {
+                                Id = x.Item.Product.TaxType.Id,
+                                Code = x.Item.Product.TaxType.Code,
+                                StatusId = x.Item.Product.TaxType.StatusId,
+                                Name = x.Item.Product.TaxType.Name,
+                                Percentage = x.Item.Product.TaxType.Percentage,
+                            },
+                            UnitOfMeasure = x.Item.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
+                            {
+                                Id = x.Item.Product.UnitOfMeasure.Id,
+                                Code = x.Item.Product.UnitOfMeasure.Code,
+                                Name = x.Item.Product.UnitOfMeasure.Name,
+                                Description = x.Item.Product.UnitOfMeasure.Description,
+                                StatusId = x.Item.Product.UnitOfMeasure.StatusId,
+                            },
+                            UnitOfMeasureGrouping = x.Item.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
+                            {
+                                Id = x.Item.Product.UnitOfMeasureGrouping.Id,
+                                Code = x.Item.Product.UnitOfMeasureGrouping.Code,
+                                Name = x.Item.Product.UnitOfMeasureGrouping.Name,
+                                Description = x.Item.Product.UnitOfMeasureGrouping.Description,
+                                UnitOfMeasureId = x.Item.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
+                            },
+                        }
+                    },
                     PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
                     {
                         Id = x.PrimaryUnitOfMeasure.Id,
