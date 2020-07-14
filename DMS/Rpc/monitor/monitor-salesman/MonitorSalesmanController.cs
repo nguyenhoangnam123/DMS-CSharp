@@ -8,6 +8,7 @@ using DMS.Services.MOrganization;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using System;
 using System.Collections.Generic;
@@ -206,6 +207,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             StoreIds.AddRange(ProblemDAOs.Select(x => x.StoreId).ToList());
             StoreIds.AddRange(IndirectSalesOrderDAOs.Select(x => x.BuyerStoreId).ToList());
             StoreIds = StoreIds.Distinct().ToList();
+            List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id)).ToListAsync();
             // khởi tạo kế hoạch
             foreach (MonitorSalesman_SaleEmployeeDTO MonitorSalesman_SaleEmployeeDTO in MonitorSalesman_SaleEmployeeDTOs)
             {
@@ -245,38 +247,43 @@ namespace DMS.Rpc.monitor.monitor_salesman
                             StoreId == s.StoreId &&
                             Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End).OrderByDescending(s => s.CheckOutAt).ToList();
                     StoreCheckingDAO Checked = SubStoreCheckingDAOs.FirstOrDefault();
-
-                    MonitorSalesman_StoreCheckingDTO MonitorSalesman_StoreCheckingDTO = new MonitorSalesman_StoreCheckingDTO
+                    StoreDAO StoreDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
+                   
+                    MonitorSalesman_StoreCheckingDTO MonitorSalesman_StoreCheckingDTO = new MonitorSalesman_StoreCheckingDTO();
+                    MonitorSalesman_SaleEmployeeDTO.StoreCheckings.Add(MonitorSalesman_StoreCheckingDTO);
+                    if (Checked != null)
                     {
-                        Id = Checked.Id,
-                        Latitude = Checked.Latitude ?? 0,
-                        Longitude = Checked.Longitude ?? 0,
-                        StoreCode = Checked.Store?.Code,
-                        StoreName = Checked.Store?.Name,
-                        Address = Checked.Store?.Address,
-                        CheckIn = Checked.CheckInAt,
-                        CheckOut = Checked.CheckOutAt,
-                    };
-                    MonitorSalesman_StoreCheckingDTO.Image = StoreCheckingImageMappingDAOs.Where(sc => sc.StoreCheckingId == Checked.Id).Select(sc => sc.Image?.Url).FirstOrDefault();
-                    MonitorSalesman_StoreCheckingDTO.CompetitorProblems = ProblemDAOs.Where(p => p.StoreId == Checked.StoreId && p.ProblemTypeId == ProblemTypeEnum.COMPETITOR.Id)
+                        MonitorSalesman_StoreCheckingDTO.Id = Checked.Id;
+                        MonitorSalesman_StoreCheckingDTO.Latitude = Checked.Latitude ?? 0;
+                        MonitorSalesman_StoreCheckingDTO.Longitude = Checked.Longitude ?? 0;
+                        MonitorSalesman_StoreCheckingDTO.CheckIn = Checked.CheckInAt;
+                        MonitorSalesman_StoreCheckingDTO.CheckOut = Checked.CheckOutAt;
+                        MonitorSalesman_StoreCheckingDTO.Image = StoreCheckingImageMappingDAOs.Where(sc => sc.StoreCheckingId == Checked.Id).Select(sc => sc.Image?.Url).FirstOrDefault();
+                    }
+                    
+                    MonitorSalesman_StoreCheckingDTO.StoreCode = StoreDAO.Code;
+                    MonitorSalesman_StoreCheckingDTO.StoreName = StoreDAO.Name;
+                    MonitorSalesman_StoreCheckingDTO.Address = StoreDAO.Address;
+
+                    MonitorSalesman_StoreCheckingDTO.CompetitorProblems = ProblemDAOs.Where(p => p.StoreId == StoreId && p.ProblemTypeId == ProblemTypeEnum.COMPETITOR.Id)
                      .Select(p => new MonitorSalesman_ProblemDTO
                      {
                          Id = p.Id,
                          Code = p.Code,
                      }).ToList();
-                    MonitorSalesman_StoreCheckingDTO.StoreProblems = ProblemDAOs.Where(p => p.StoreId == Checked.StoreId && p.ProblemTypeId == ProblemTypeEnum.STORE.Id)
+                    MonitorSalesman_StoreCheckingDTO.StoreProblems = ProblemDAOs.Where(p => p.StoreId == StoreId && p.ProblemTypeId == ProblemTypeEnum.STORE.Id)
                      .Select(p => new MonitorSalesman_ProblemDTO
                      {
                          Id = p.Id,
                          Code = p.Code,
                      }).ToList();
-                    MonitorSalesman_StoreCheckingDTO.IndirectSalesOrders = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == Checked.StoreId)
+                    MonitorSalesman_StoreCheckingDTO.IndirectSalesOrders = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == StoreId)
                      .Select(i => new MonitorSalesman_IndirectSalesOrderDTO
                      {
                          Id = i.Id,
                          Code = i.Code,
                      }).ToList();
-                    MonitorSalesman_SaleEmployeeDTO.StoreCheckings.Add(MonitorSalesman_StoreCheckingDTO);
+
                 };
             }
             return MonitorSalesman_MonitorSalesmanDTOs;
