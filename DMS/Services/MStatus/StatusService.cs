@@ -14,14 +14,14 @@ namespace DMS.Services.MStatus
         Task<List<Status>> List(StatusFilter StatusFilter);
     }
 
-    public class FieldService : BaseService, IStatusService
+    public class StatusService : BaseService, IStatusService
     {
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IStatusValidator StatusValidator;
 
-        public FieldService(
+        public StatusService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
@@ -42,11 +42,16 @@ namespace DMS.Services.MStatus
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(FieldService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StatusService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StatusService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -59,11 +64,16 @@ namespace DMS.Services.MStatus
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(FieldService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StatusService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StatusService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
     }

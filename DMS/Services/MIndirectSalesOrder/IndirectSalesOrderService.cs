@@ -71,11 +71,16 @@ namespace DMS.Services.MIndirectSalesOrder
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -88,11 +93,16 @@ namespace DMS.Services.MIndirectSalesOrder
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<List<Item>> ListItem(ItemFilter ItemFilter, long StoreId)
@@ -105,11 +115,16 @@ namespace DMS.Services.MIndirectSalesOrder
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 

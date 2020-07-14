@@ -43,11 +43,16 @@ namespace DMS.Services.MResellerStatus
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerStatusService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ResellerStatusService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerStatusService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -60,11 +65,16 @@ namespace DMS.Services.MResellerStatus
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerStatusService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ResellerStatusService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerStatusService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
         public async Task<ResellerStatus> Get(long Id)

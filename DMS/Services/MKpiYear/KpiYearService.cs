@@ -45,11 +45,16 @@ namespace DMS.Services.MKpiYear
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiYearService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiYearService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiYearService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -62,11 +67,16 @@ namespace DMS.Services.MKpiYear
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(KpiYearService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(KpiYearService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(KpiYearService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
     }

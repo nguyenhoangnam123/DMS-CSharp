@@ -52,11 +52,16 @@ namespace DMS.Services.MTaxType
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(TaxTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -69,11 +74,16 @@ namespace DMS.Services.MTaxType
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(TaxTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<TaxType> Get(long Id)
@@ -101,11 +111,16 @@ namespace DMS.Services.MTaxType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(TaxTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -128,11 +143,16 @@ namespace DMS.Services.MTaxType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(TaxTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -152,11 +172,16 @@ namespace DMS.Services.MTaxType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(TaxTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -176,11 +201,16 @@ namespace DMS.Services.MTaxType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(TaxTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -231,59 +261,81 @@ namespace DMS.Services.MTaxType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(TaxTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
         public async Task<DataFile> Export(TaxTypeFilter TaxTypeFilter)
         {
-            List<TaxType> TaxTypes = await UOW.TaxTypeRepository.List(TaxTypeFilter);
-            MemoryStream MemoryStream = new MemoryStream();
-            using (ExcelPackage excelPackage = new ExcelPackage(MemoryStream))
+            try
             {
-                //Set some properties of the Excel document
-                excelPackage.Workbook.Properties.Author = CurrentContext.UserName;
-                excelPackage.Workbook.Properties.Title = nameof(TaxType);
-                excelPackage.Workbook.Properties.Created = StaticParams.DateTimeNow;
-
-                //Create the WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
-                int StartColumn = 1;
-                int StartRow = 2;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int PercentageColumn = 3 + StartColumn;
-                int StatusIdColumn = 4 + StartColumn;
-
-                worksheet.Cells[1, IdColumn].Value = nameof(TaxType.Id);
-                worksheet.Cells[1, CodeColumn].Value = nameof(TaxType.Code);
-                worksheet.Cells[1, NameColumn].Value = nameof(TaxType.Name);
-                worksheet.Cells[1, PercentageColumn].Value = nameof(TaxType.Percentage);
-                worksheet.Cells[1, StatusIdColumn].Value = nameof(TaxType.StatusId);
-
-                for (int i = 0; i < TaxTypes.Count; i++)
+                List<TaxType> TaxTypes = await UOW.TaxTypeRepository.List(TaxTypeFilter);
+                MemoryStream MemoryStream = new MemoryStream();
+                using (ExcelPackage excelPackage = new ExcelPackage(MemoryStream))
                 {
-                    TaxType TaxType = TaxTypes[i];
-                    worksheet.Cells[i + StartRow, IdColumn].Value = TaxType.Id;
-                    worksheet.Cells[i + StartRow, CodeColumn].Value = TaxType.Code;
-                    worksheet.Cells[i + StartRow, NameColumn].Value = TaxType.Name;
-                    worksheet.Cells[i + StartRow, PercentageColumn].Value = TaxType.Percentage;
-                    worksheet.Cells[i + StartRow, StatusIdColumn].Value = TaxType.StatusId;
-                }
-                excelPackage.Save();
-            }
+                    //Set some properties of the Excel document
+                    excelPackage.Workbook.Properties.Author = CurrentContext.UserName;
+                    excelPackage.Workbook.Properties.Title = nameof(TaxType);
+                    excelPackage.Workbook.Properties.Created = StaticParams.DateTimeNow;
 
-            DataFile DataFile = new DataFile
+                    //Create the WorkSheet
+                    ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
+                    int StartColumn = 1;
+                    int StartRow = 2;
+                    int IdColumn = 0 + StartColumn;
+                    int CodeColumn = 1 + StartColumn;
+                    int NameColumn = 2 + StartColumn;
+                    int PercentageColumn = 3 + StartColumn;
+                    int StatusIdColumn = 4 + StartColumn;
+
+                    worksheet.Cells[1, IdColumn].Value = nameof(TaxType.Id);
+                    worksheet.Cells[1, CodeColumn].Value = nameof(TaxType.Code);
+                    worksheet.Cells[1, NameColumn].Value = nameof(TaxType.Name);
+                    worksheet.Cells[1, PercentageColumn].Value = nameof(TaxType.Percentage);
+                    worksheet.Cells[1, StatusIdColumn].Value = nameof(TaxType.StatusId);
+
+                    for (int i = 0; i < TaxTypes.Count; i++)
+                    {
+                        TaxType TaxType = TaxTypes[i];
+                        worksheet.Cells[i + StartRow, IdColumn].Value = TaxType.Id;
+                        worksheet.Cells[i + StartRow, CodeColumn].Value = TaxType.Code;
+                        worksheet.Cells[i + StartRow, NameColumn].Value = TaxType.Name;
+                        worksheet.Cells[i + StartRow, PercentageColumn].Value = TaxType.Percentage;
+                        worksheet.Cells[i + StartRow, StatusIdColumn].Value = TaxType.StatusId;
+                    }
+                    excelPackage.Save();
+                }
+
+                DataFile DataFile = new DataFile
+                {
+                    Name = nameof(TaxType),
+                    Content = MemoryStream,
+                };
+                return DataFile;
+            }
+            catch (Exception ex)
             {
-                Name = nameof(TaxType),
-                Content = MemoryStream,
-            };
-            return DataFile;
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(TaxTypeService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(TaxTypeService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
         }
     }
 }

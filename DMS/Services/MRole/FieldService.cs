@@ -39,11 +39,16 @@ namespace DMS.Services.MField
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(FieldService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(FieldService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(FieldService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -56,11 +61,16 @@ namespace DMS.Services.MField
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(FieldService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(FieldService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(FieldService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
     }

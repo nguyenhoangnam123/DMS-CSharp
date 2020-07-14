@@ -46,11 +46,16 @@ namespace DMS.Services.MProvince
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProvinceService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -63,11 +68,16 @@ namespace DMS.Services.MProvince
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProvinceService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProvinceService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
         public async Task<Province> Get(long Id)

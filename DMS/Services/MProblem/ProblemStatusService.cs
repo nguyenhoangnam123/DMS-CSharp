@@ -39,11 +39,16 @@ namespace DMS.Services.MProblem
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemStatusService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProblemStatusService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemStatusService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -56,11 +61,16 @@ namespace DMS.Services.MProblem
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemStatusService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProblemStatusService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemStatusService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
     }

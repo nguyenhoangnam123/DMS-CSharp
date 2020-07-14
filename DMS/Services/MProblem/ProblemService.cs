@@ -65,11 +65,16 @@ namespace DMS.Services.MProblem
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProblemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -82,11 +87,16 @@ namespace DMS.Services.MProblem
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProblemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<Problem> Get(long Id)
@@ -154,11 +164,16 @@ namespace DMS.Services.MProblem
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProblemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -206,11 +221,16 @@ namespace DMS.Services.MProblem
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProblemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -260,11 +280,16 @@ namespace DMS.Services.MProblem
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProblemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -284,11 +309,16 @@ namespace DMS.Services.MProblem
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProblemService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProblemService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 

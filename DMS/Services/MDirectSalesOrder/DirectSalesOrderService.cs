@@ -51,11 +51,16 @@ namespace DMS.Services.MDirectSalesOrder
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -68,11 +73,16 @@ namespace DMS.Services.MDirectSalesOrder
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -86,11 +96,16 @@ namespace DMS.Services.MDirectSalesOrder
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -123,11 +138,16 @@ namespace DMS.Services.MDirectSalesOrder
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -150,11 +170,16 @@ namespace DMS.Services.MDirectSalesOrder
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -174,11 +199,16 @@ namespace DMS.Services.MDirectSalesOrder
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -198,11 +228,16 @@ namespace DMS.Services.MDirectSalesOrder
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -222,11 +257,16 @@ namespace DMS.Services.MDirectSalesOrder
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 

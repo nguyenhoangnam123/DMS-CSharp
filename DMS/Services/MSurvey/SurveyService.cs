@@ -56,11 +56,16 @@ namespace DMS.Services.MSurvey
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SurveyService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -73,17 +78,22 @@ namespace DMS.Services.MSurvey
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SurveyService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
         public async Task<Survey> Get(long Id)
         {
             Survey Survey = await UOW.SurveyRepository.Get(Id);
-            if(Survey != null)
+            if (Survey != null)
             {
                 SurveyResultFilter SurveyResultFilter = new SurveyResultFilter
                 {
@@ -140,11 +150,16 @@ namespace DMS.Services.MSurvey
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SurveyService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -248,7 +263,7 @@ namespace DMS.Services.MSurvey
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                
+
                 if (ex.InnerException == null)
                 {
                     await Logging.CreateSystemLog(ex, nameof(SurveyService));
@@ -282,45 +297,63 @@ namespace DMS.Services.MSurvey
 
         public async Task<Survey> GetForm(long Id)
         {
-            Survey Survey = await UOW.SurveyRepository.Get(Id);
-            if (Survey.SurveyQuestions != null)
+            try
             {
-                foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
+                Survey Survey = await UOW.SurveyRepository.Get(Id);
+                if (Survey.SurveyQuestions != null)
                 {
-                    if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id ||
-                        SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id)
+                    foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
                     {
-                        SurveyQuestion.ListResult = new Dictionary<long, bool>();
-                        if (SurveyQuestion.SurveyOptions != null)
+                        if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id ||
+                            SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id)
                         {
-                            foreach (SurveyOption SurveyOption in SurveyQuestion.SurveyOptions)
+                            SurveyQuestion.ListResult = new Dictionary<long, bool>();
+                            if (SurveyQuestion.SurveyOptions != null)
                             {
-                                SurveyQuestion.ListResult.Add(SurveyOption.Id, false);
+                                foreach (SurveyOption SurveyOption in SurveyQuestion.SurveyOptions)
+                                {
+                                    SurveyQuestion.ListResult.Add(SurveyOption.Id, false);
+                                }
                             }
                         }
-                    }
-                    if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id ||
-                        SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
-                    {
-                        SurveyQuestion.TableResult = new Dictionary<long, Dictionary<long, bool>>();
-                        if (SurveyQuestion.SurveyOptions != null)
+                        if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id ||
+                            SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
                         {
-                            List<SurveyOption> Columns = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.COLUMN.Id).ToList();
-                            List<SurveyOption> Rows = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.ROW.Id).ToList();
-                            foreach (SurveyOption Row in Rows)
+                            SurveyQuestion.TableResult = new Dictionary<long, Dictionary<long, bool>>();
+                            if (SurveyQuestion.SurveyOptions != null)
                             {
-                                Dictionary<long, bool> RowResult = new Dictionary<long, bool>();
-                                SurveyQuestion.TableResult.Add(Row.Id, RowResult);
-                                foreach (SurveyOption Column in Columns)
+                                List<SurveyOption> Columns = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.COLUMN.Id).ToList();
+                                List<SurveyOption> Rows = SurveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.ROW.Id).ToList();
+                                foreach (SurveyOption Row in Rows)
                                 {
-                                    RowResult.Add(Column.Id, false);
+                                    Dictionary<long, bool> RowResult = new Dictionary<long, bool>();
+                                    SurveyQuestion.TableResult.Add(Row.Id, RowResult);
+                                    foreach (SurveyOption Column in Columns)
+                                    {
+                                        RowResult.Add(Column.Id, false);
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                return Survey;
             }
-            return Survey;
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(SurveyService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(SurveyService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
         }
 
         public async Task<Survey> SaveForm(Survey Survey)

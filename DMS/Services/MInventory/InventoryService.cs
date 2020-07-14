@@ -40,11 +40,16 @@ namespace DMS.Services.MInventory
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(InventoryService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(InventoryService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(InventoryService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -57,11 +62,16 @@ namespace DMS.Services.MInventory
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(InventoryService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(InventoryService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(InventoryService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<Inventory> Get(long Id)

@@ -48,11 +48,16 @@ namespace DMS.Services.MResellerType
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ResellerTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -65,11 +70,16 @@ namespace DMS.Services.MResellerType
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ResellerTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
         public async Task<ResellerType> Get(long Id)
@@ -97,11 +107,16 @@ namespace DMS.Services.MResellerType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ResellerTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -124,11 +139,16 @@ namespace DMS.Services.MResellerType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ResellerTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -148,11 +168,16 @@ namespace DMS.Services.MResellerType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ResellerTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -172,11 +197,16 @@ namespace DMS.Services.MResellerType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ResellerTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -196,11 +226,16 @@ namespace DMS.Services.MResellerType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ResellerTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ResellerTypeService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
     }

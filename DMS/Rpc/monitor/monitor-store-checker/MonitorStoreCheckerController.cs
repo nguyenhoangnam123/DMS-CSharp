@@ -227,7 +227,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             // khởi tạo kế hoạch
             foreach (MonitorStoreChecker_SaleEmployeeDTO MonitorStoreChecker_SaleEmployeeDTO in MonitorStoreChecker_SaleEmployeeDTOs)
             {
-                for (DateTime i = Start; i < End; i = i.AddDays(1))
+                for (DateTime i = Start; i <= End; i = i.AddDays(1))
                 {
                     MonitorStoreChecker_StoreCheckingDTO MonitorStoreChecker_StoreCheckingDTO = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings
                         .Where(s => s.Date == i).FirstOrDefault();

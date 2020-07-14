@@ -53,11 +53,16 @@ namespace DMS.Services.MProductGrouping
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProductGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -70,11 +75,16 @@ namespace DMS.Services.MProductGrouping
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProductGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
         public async Task<ProductGrouping> Get(long Id)
@@ -102,11 +112,16 @@ namespace DMS.Services.MProductGrouping
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProductGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -129,11 +144,16 @@ namespace DMS.Services.MProductGrouping
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProductGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -153,11 +173,16 @@ namespace DMS.Services.MProductGrouping
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProductGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -177,11 +202,16 @@ namespace DMS.Services.MProductGrouping
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProductGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 
@@ -235,11 +265,16 @@ namespace DMS.Services.MProductGrouping
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProductGroupingService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProductGroupingService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 

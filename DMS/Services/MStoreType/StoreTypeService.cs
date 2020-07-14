@@ -52,11 +52,16 @@ namespace DMS.Services.MStoreType
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreTypeService));
                     throw new MessageException(ex.InnerException);
+                };
             }
         }
 

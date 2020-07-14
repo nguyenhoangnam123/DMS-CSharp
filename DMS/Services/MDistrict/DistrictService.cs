@@ -46,11 +46,16 @@ namespace DMS.Services.MDistrict
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(DistrictService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DistrictService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DistrictService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -63,11 +68,16 @@ namespace DMS.Services.MDistrict
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(DistrictService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DistrictService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DistrictService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<District> Get(long Id)

@@ -33,13 +33,45 @@ namespace DMS.Services.MRole
 
         public async Task<int> Count(PermissionFilter PermissionFilter)
         {
-            return await UOW.PermissionRepository.Count(PermissionFilter);
+            try
+            {
+                return await UOW.PermissionRepository.Count(PermissionFilter);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PermissionService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionService));
+                    throw new MessageException(ex.InnerException);
+                };
+            }
         }
 
         public async Task<List<Permission>> List(PermissionFilter PermissionFilter)
         {
-            List<Permission> Permissions = await UOW.PermissionRepository.List(PermissionFilter);
-            return Permissions;
+            try
+            {
+                List<Permission> Permissions = await UOW.PermissionRepository.List(PermissionFilter);
+                return Permissions;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PermissionService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionService));
+                    throw new MessageException(ex.InnerException);
+                };
+            }
         }
         public async Task<Permission> Get(long Id)
         {

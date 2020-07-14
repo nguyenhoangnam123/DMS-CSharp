@@ -49,11 +49,16 @@ namespace DMS.Services.MIndirectPriceListType
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -66,11 +71,16 @@ namespace DMS.Services.MIndirectPriceListType
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<IndirectPriceListType> Get(long Id)
@@ -98,11 +108,16 @@ namespace DMS.Services.MIndirectPriceListType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -125,11 +140,16 @@ namespace DMS.Services.MIndirectPriceListType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -149,11 +169,16 @@ namespace DMS.Services.MIndirectPriceListType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -173,11 +198,16 @@ namespace DMS.Services.MIndirectPriceListType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -197,11 +227,16 @@ namespace DMS.Services.MIndirectPriceListType
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListTypeService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 

@@ -44,11 +44,16 @@ namespace DMS.Services.MEditedPriceStatus
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(EditedPriceStatusService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(EditedPriceStatusService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(EditedPriceStatusService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
 
@@ -61,11 +66,16 @@ namespace DMS.Services.MEditedPriceStatus
             }
             catch (Exception ex)
             {
-                await Logging.CreateSystemLog(ex.InnerException, nameof(EditedPriceStatusService));
                 if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(EditedPriceStatusService));
                     throw new MessageException(ex);
+                }
                 else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(EditedPriceStatusService));
                     throw new MessageException(ex.InnerException);
+                }
             }
         }
         public async Task<EditedPriceStatus> Get(long Id)
