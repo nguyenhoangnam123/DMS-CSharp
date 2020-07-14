@@ -36,7 +36,10 @@ namespace DMS.Repositories
                 return query.Where(q => false);
             query = query.Where(q => !q.DeletedAt.HasValue);
             if (filter.Search != null)
-                query = query.Where(q => q.Code.ToLower().Contains(filter.Search.ToLower()) || q.Name.ToLower().Contains(filter.Search.ToLower()));
+                query = query.Where(q => 
+                q.Code.ToLower().Contains(filter.Search.ToLower()) ||
+                q.Address.ToLower().Contains(filter.Search.ToLower()) ||
+                q.Name.ToLower().Contains(filter.Search.ToLower()));
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.Code != null)
