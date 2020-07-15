@@ -48,6 +48,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             this.CurrentContext = CurrentContext;
         }
 
+        #region Filter List
         [Route(ReportSalesOrderByItemRoute.FilterListOrganization), HttpPost]
         public async Task<List<ReportSalesOrderByItem_OrganizationDTO>> FilterListOrganization()
         {
@@ -138,12 +139,16 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                 .Select(x => new ReportSalesOrderByItem_ItemDTO(x)).ToList();
             return ReportSalesOrderByItem_ItemDTOs;
         }
+        #endregion
 
         [Route(ReportSalesOrderByItemRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            if (ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.HasValue == false)
+                return 0;
 
             DateTime Start = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
@@ -203,6 +208,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            if (ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.HasValue == false)
+                return new List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO>();
 
             DateTime Start = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
@@ -324,10 +332,28 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
         }
 
         [Route(ReportSalesOrderByItemRoute.Total), HttpPost]
-        public async Task<ReportSalesOrderByItem_TotalDTO> Total()
+        public async Task<ReportSalesOrderByItem_TotalDTO> Total([FromBody] ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            if (ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.HasValue == false)
+                return new ReportSalesOrderByItem_TotalDTO();
+
+            DateTime Start = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date?.GreaterEqual == null ?
+                   StaticParams.DateTimeNow :
+                   ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date.GreaterEqual.Value;
+
+            DateTime End = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date?.LessEqual == null ?
+                    StaticParams.DateTimeNow :
+                    ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date.LessEqual.Value;
+
+            long? ItemId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ItemId?.Equal;
+            long? ProductTypeId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ProductTypeId?.Equal;
+            long? ProductGroupingId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ProductGroupingId?.Equal;
+
+            Start = new DateTime(Start.Year, Start.Month, Start.Day);
+            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
             ReportSalesOrderByItem_TotalDTO ReportSalesOrderByItem_TotalDTO = new ReportSalesOrderByItem_TotalDTO();
 
@@ -353,13 +379,18 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             ItemIds.AddRange(IndirectSalesOrderContentDAOs.Select(x => x.ItemId));
             ItemIds.AddRange(IndirectSalesOrderPromotionDAOs.Select(x => x.ItemId));
             ItemIds = ItemIds.Distinct().ToList();
-            List<Item> Items = await ItemService.List(new ItemFilter
+            ItemFilter ItemFilter = new ItemFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Id = new IdFilter { In = ItemIds },
+                ProductGroupingId = new IdFilter { Equal = ProductGroupingId },
+                ProductTypeId = new IdFilter { Equal = ProductTypeId },
                 Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name | ItemSelect.SalePrice
-            });
+            };
+            if (ItemId.HasValue)
+                ItemFilter.Id = new IdFilter { Equal = ItemId.Value };
+            List<Item> Items = await ItemService.List(ItemFilter);
 
             List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO> ReportSalesOrderByItem_ReportSalesOrderByItemDTOs = new List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO>();
             foreach (IndirectSalesOrderContentDAO IndirectSalesOrderContentDAO in IndirectSalesOrderContentDAOs)

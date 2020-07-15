@@ -46,6 +46,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             this.CurrentContext = CurrentContext;
         }
 
+        #region Filter List
         [Route(ReportStoreGeneralRoute.FilterListOrganization), HttpPost]
         public async Task<List<ReportStoreGeneral_OrganizationDTO>> FilterListOrganization([FromBody] ReportStoreGeneral_OrganizationFilterDTO ReportStoreGeneral_OrganizationFilterDTO)
         {
@@ -122,12 +123,16 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 .Select(x => new ReportStoreGeneral_StoreTypeDTO(x)).ToList();
             return ReportStoreGeneral_StoreTypeDTOs;
         }
+        #endregion
 
         [Route(ReportStoreGeneralRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] ReportStoreGeneral_ReportStoreGeneralFilterDTO ReportStoreGeneral_ReportStoreGeneralFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            if (ReportStoreGeneral_ReportStoreGeneralFilterDTO.HasValue == false)
+                return 0;
 
             DateTime Start = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
@@ -172,6 +177,9 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            if (ReportStoreGeneral_ReportStoreGeneralFilterDTO.HasValue == false)
+                return new List<ReportStoreGeneral_ReportStoreGeneralDTO>();
 
             DateTime Start = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
@@ -223,6 +231,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 
             var StoreIds = ReportStoreGeneral_StoreDTOs.Select(x => x.Id).ToList();
             List<string> OrganizationNames = ReportStoreGeneral_StoreDTOs.Select(s => s.Organization.Name).Distinct().ToList();
+            OrganizationNames = OrganizationNames.OrderBy(x => x).ToList();
             List<ReportStoreGeneral_ReportStoreGeneralDTO> ReportStoreGeneral_ReportStoreGeneralDTOs = OrganizationNames.Select(on => new ReportStoreGeneral_ReportStoreGeneralDTO
             {
                 OrganizationName = on,

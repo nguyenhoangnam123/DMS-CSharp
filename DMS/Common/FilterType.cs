@@ -217,6 +217,15 @@ namespace Common
             NotEndWith = NotEndWith?.ToUpper();
             return this;
         }
+        public bool HasValue
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(Equal) || string.IsNullOrWhiteSpace(NotEqual) || string.IsNullOrWhiteSpace(Contain)
+                    || string.IsNullOrWhiteSpace(NotContain) || string.IsNullOrWhiteSpace(StartWith) || string.IsNullOrWhiteSpace(NotStartWith)
+                    || string.IsNullOrWhiteSpace(EndWith) || string.IsNullOrWhiteSpace(NotEndWith);
+            }
+        }
     }
 
     public class LongFilter

@@ -15,7 +15,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
     public class ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO : FilterDTO
     {
         public IdFilter OrganizationId { get; set; }
-        public IdFilter AppUserId { get; set; }
+        public IdFilter SaleEmployeeId { get; set; }
         public DateFilter OrderDate { get; set; }
+        internal bool HasValue => OrganizationId.HasValue || SaleEmployeeId.HasValue || OrderDate.HasValue;
     }
 }

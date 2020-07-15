@@ -122,6 +122,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            if (ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.HasValue == false)
+                return 0;
+
             DateTime Start = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
@@ -166,6 +169,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            if (ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.HasValue == false)
+                return new List<ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO>();
+
             DateTime Start = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
@@ -208,7 +214,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                         (AppUserIds.Contains(i.SaleEmployeeId))
                         select i;
 
-            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await query.ToListAsync();
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await query
+                .Skip(ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.Skip)
+                .Take(ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.Take)
+                .ToListAsync();
             var StoreIds = new List<long>();
             StoreIds.AddRange(IndirectSalesOrderDAOs.Select(x => x.SellerStoreId));
             StoreIds.AddRange(IndirectSalesOrderDAOs.Select(x => x.BuyerStoreId));
@@ -275,10 +284,28 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
         }
 
         [Route(ReportSalesOrderGeneralRoute.Total), HttpPost]
-        public async Task<ReportSalesOrderGeneral_TotalDTO> Total()
+        public async Task<ReportSalesOrderGeneral_TotalDTO> Total([FromBody] ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            if (ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.HasValue == false)
+                return new ReportSalesOrderGeneral_TotalDTO ();
+
+            DateTime Start = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
+                    StaticParams.DateTimeNow :
+                    ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
+
+            DateTime End = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
+                    StaticParams.DateTimeNow :
+                    ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value;
+
+            Start = new DateTime(Start.Year, Start.Month, Start.Day);
+            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+
+            long? SaleEmployeeId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.SaleEmployeeId?.Equal;
+            long? BuyerStoreId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.BuyerStoreId?.Equal;
+            long? SellerStoreId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.SellerStoreId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -294,7 +321,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             var query = from i in DataContext.IndirectSalesOrder
-                        where AppUserIds.Contains(i.SaleEmployeeId)
+                        where i.OrderDate >= Start && i.OrderDate <= End &&
+                        (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                        (BuyerStoreId.HasValue == false || i.BuyerStoreId == BuyerStoreId.Value) &&
+                        (SellerStoreId.HasValue == false || i.SellerStoreId == SellerStoreId.Value) &&
+                        (AppUserIds.Contains(i.SaleEmployeeId))
                         select i;
 
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await query.ToListAsync();
