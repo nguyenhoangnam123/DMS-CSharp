@@ -16,7 +16,6 @@ namespace DMS.Models
             KpiItems = new HashSet<KpiItemDAO>();
             Notifications = new HashSet<NotificationDAO>();
             Resellers = new HashSet<ResellerDAO>();
-            StoreScoutings = new HashSet<StoreScoutingDAO>();
             Stores = new HashSet<StoreDAO>();
             Warehouses = new HashSet<WarehouseDAO>();
         }
@@ -47,7 +46,6 @@ namespace DMS.Models
         public virtual ICollection<KpiItemDAO> KpiItems { get; set; }
         public virtual ICollection<NotificationDAO> Notifications { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
-        public virtual ICollection<StoreScoutingDAO> StoreScoutings { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
         public virtual ICollection<WarehouseDAO> Warehouses { get; set; }
     }

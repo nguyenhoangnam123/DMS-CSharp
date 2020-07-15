@@ -177,7 +177,6 @@ namespace DMS.Rpc.store_scouting
             StoreScouting.ProvinceId = StoreScouting_StoreScoutingDTO.ProvinceId;
             StoreScouting.DistrictId = StoreScouting_StoreScoutingDTO.DistrictId;
             StoreScouting.WardId = StoreScouting_StoreScoutingDTO.WardId;
-            StoreScouting.OrganizationId = StoreScouting_StoreScoutingDTO.OrganizationId;
             StoreScouting.Address = StoreScouting_StoreScoutingDTO.Address;
             StoreScouting.Latitude = StoreScouting_StoreScoutingDTO.Latitude;
             StoreScouting.Longitude = StoreScouting_StoreScoutingDTO.Longitude;
@@ -210,19 +209,6 @@ namespace DMS.Rpc.store_scouting
                 Priority = StoreScouting_StoreScoutingDTO.District.Priority,
                 ProvinceId = StoreScouting_StoreScoutingDTO.District.ProvinceId,
                 StatusId = StoreScouting_StoreScoutingDTO.District.StatusId,
-            };
-            StoreScouting.Organization = StoreScouting_StoreScoutingDTO.Organization == null ? null : new Organization
-            {
-                Id = StoreScouting_StoreScoutingDTO.Organization.Id,
-                Code = StoreScouting_StoreScoutingDTO.Organization.Code,
-                Name = StoreScouting_StoreScoutingDTO.Organization.Name,
-                ParentId = StoreScouting_StoreScoutingDTO.Organization.ParentId,
-                Path = StoreScouting_StoreScoutingDTO.Organization.Path,
-                Level = StoreScouting_StoreScoutingDTO.Organization.Level,
-                StatusId = StoreScouting_StoreScoutingDTO.Organization.StatusId,
-                Phone = StoreScouting_StoreScoutingDTO.Organization.Phone,
-                Email = StoreScouting_StoreScoutingDTO.Organization.Email,
-                Address = StoreScouting_StoreScoutingDTO.Organization.Address,
             };
             StoreScouting.Province = StoreScouting_StoreScoutingDTO.Province == null ? null : new Province
             {

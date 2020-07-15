@@ -40,7 +40,6 @@ namespace DMS.Rpc.store
             this.ProvinceId = StoreScouting.ProvinceId;
             this.DistrictId = StoreScouting.DistrictId;
             this.WardId = StoreScouting.WardId;
-            this.OrganizationId = StoreScouting.OrganizationId;
             this.Address = StoreScouting.Address;
             this.Latitude = StoreScouting.Latitude;
             this.Longitude = StoreScouting.Longitude;
@@ -48,7 +47,6 @@ namespace DMS.Rpc.store
             this.StoreScoutingStatusId = StoreScouting.StoreScoutingStatusId;
             this.Creator = StoreScouting.Creator == null ? null : new Store_AppUserDTO(StoreScouting.Creator);
             this.District = StoreScouting.District == null ? null : new Store_DistrictDTO(StoreScouting.District);
-            this.Organization = StoreScouting.Organization == null ? null : new Store_OrganizationDTO(StoreScouting.Organization);
             this.Province = StoreScouting.Province == null ? null : new Store_ProvinceDTO(StoreScouting.Province);
             this.StoreScoutingStatus = StoreScouting.StoreScoutingStatus == null ? null : new Store_StoreScoutingStatusDTO(StoreScouting.StoreScoutingStatus);
             this.Ward = StoreScouting.Ward == null ? null : new Store_WardDTO(StoreScouting.Ward);

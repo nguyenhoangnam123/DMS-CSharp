@@ -1129,7 +1129,6 @@ namespace DMS.Rpc.mobile
             StoreScouting.ProvinceId = Mobile_StoreScoutingDTO.ProvinceId;
             StoreScouting.DistrictId = Mobile_StoreScoutingDTO.DistrictId;
             StoreScouting.WardId = Mobile_StoreScoutingDTO.WardId;
-            StoreScouting.OrganizationId = Mobile_StoreScoutingDTO.OrganizationId;
             StoreScouting.Address = Mobile_StoreScoutingDTO.Address;
             StoreScouting.Latitude = Mobile_StoreScoutingDTO.Latitude;
             StoreScouting.Longitude = Mobile_StoreScoutingDTO.Longitude;
@@ -1160,19 +1159,6 @@ namespace DMS.Rpc.mobile
                 Priority = Mobile_StoreScoutingDTO.District.Priority,
                 ProvinceId = Mobile_StoreScoutingDTO.District.ProvinceId,
                 StatusId = Mobile_StoreScoutingDTO.District.StatusId,
-            };
-            StoreScouting.Organization = Mobile_StoreScoutingDTO.Organization == null ? null : new Organization
-            {
-                Id = Mobile_StoreScoutingDTO.Organization.Id,
-                Code = Mobile_StoreScoutingDTO.Organization.Code,
-                Name = Mobile_StoreScoutingDTO.Organization.Name,
-                ParentId = Mobile_StoreScoutingDTO.Organization.ParentId,
-                Path = Mobile_StoreScoutingDTO.Organization.Path,
-                Level = Mobile_StoreScoutingDTO.Organization.Level,
-                StatusId = Mobile_StoreScoutingDTO.Organization.StatusId,
-                Phone = Mobile_StoreScoutingDTO.Organization.Phone,
-                Email = Mobile_StoreScoutingDTO.Organization.Email,
-                Address = Mobile_StoreScoutingDTO.Organization.Address,
             };
             StoreScouting.Province = Mobile_StoreScoutingDTO.Province == null ? null : new Province
             {

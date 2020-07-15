@@ -15,7 +15,6 @@ namespace DMS.Entities
         public long? ProvinceId { get; set; }
         public long? DistrictId { get; set; }
         public long? WardId { get; set; }
-        public long? OrganizationId { get; set; }
         public string Address { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
@@ -26,7 +25,6 @@ namespace DMS.Entities
         public Guid RowId { get; set; }
         public AppUser Creator { get; set; }
         public District District { get; set; }
-        public Organization Organization { get; set; }
         public Province Province { get; set; }
         public StoreScoutingStatus StoreScoutingStatus { get; set; }
         public Ward Ward { get; set; }
@@ -76,7 +74,6 @@ namespace DMS.Entities
         Province = 4,
         District = 5,
         Ward = 6,
-        Organization = 7,
         Address = 8,
         Latitude = 9,
         Longitude = 10,
@@ -98,7 +95,6 @@ namespace DMS.Entities
         Province = E._4,
         District = E._5,
         Ward = E._6,
-        Organization = E._7,
         Address = E._8,
         Latitude = E._9,
         Longitude = E._10,

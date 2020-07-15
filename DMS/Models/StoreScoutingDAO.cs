@@ -17,7 +17,6 @@ namespace DMS.Models
         public long? ProvinceId { get; set; }
         public long? DistrictId { get; set; }
         public long? WardId { get; set; }
-        public long? OrganizationId { get; set; }
         public string Address { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
@@ -30,7 +29,6 @@ namespace DMS.Models
 
         public virtual AppUserDAO Creator { get; set; }
         public virtual DistrictDAO District { get; set; }
-        public virtual OrganizationDAO Organization { get; set; }
         public virtual ProvinceDAO Province { get; set; }
         public virtual StoreScoutingStatusDAO StoreScoutingStatus { get; set; }
         public virtual WardDAO Ward { get; set; }

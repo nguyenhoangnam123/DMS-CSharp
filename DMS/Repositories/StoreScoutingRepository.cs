@@ -52,8 +52,39 @@ namespace DMS.Repositories
                 query = query.Where(q => q.DistrictId, filter.DistrictId);
             if (filter.WardId != null)
                 query = query.Where(q => q.WardId, filter.WardId);
-            if (filter.OrganizationId != null)
-                query = query.Where(q => q.OrganizationId, filter.OrganizationId);
+           if (filter.OrganizationId != null)
+            {
+                if (filter.OrganizationId.Equal != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.Equal.Value).FirstOrDefault();
+                    query = query.Where(q => q.Creator.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.NotEqual != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                    query = query.Where(q => !q.Creator.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.In != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => q.Creator.OrganizationId.HasValue && Ids.Contains(q.Creator.OrganizationId.Value));
+                }
+                if (filter.OrganizationId.NotIn != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => q.Creator.OrganizationId.HasValue && !Ids.Contains(q.Creator.OrganizationId.Value));
+                }
+            }
             if (filter.Address != null)
                 query = query.Where(q => q.Address, filter.Address);
             if (filter.Latitude != null)
@@ -76,32 +107,63 @@ namespace DMS.Repositories
             foreach (StoreScoutingFilter StoreScoutingFilter in filter.OrFilter)
             {
                 IQueryable<StoreScoutingDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.Name != null)
-                    queryable = queryable.Where(q => q.Name, filter.Name);
-                if (filter.OwnerPhone != null)
-                    queryable = queryable.Where(q => q.OwnerPhone, filter.OwnerPhone);
-                if (filter.ProvinceId != null)
-                    queryable = queryable.Where(q => q.ProvinceId, filter.ProvinceId);
-                if (filter.DistrictId != null)
-                    queryable = queryable.Where(q => q.DistrictId, filter.DistrictId);
-                if (filter.WardId != null)
-                    queryable = queryable.Where(q => q.WardId, filter.WardId);
-                if (filter.OrganizationId != null)
-                    queryable = queryable.Where(q => q.OrganizationId, filter.OrganizationId);
-                if (filter.Address != null)
-                    queryable = queryable.Where(q => q.Address, filter.Address);
-                if (filter.Latitude != null)
-                    queryable = queryable.Where(q => q.Latitude, filter.Latitude);
-                if (filter.Longitude != null)
-                    queryable = queryable.Where(q => q.Longitude, filter.Longitude);
-                if (filter.AppUserId != null)
-                    queryable = queryable.Where(q => q.CreatorId, filter.AppUserId);
-                if (filter.StoreScoutingStatusId != null)
-                    queryable = queryable.Where(q => q.StoreScoutingStatusId, filter.StoreScoutingStatusId);
+                if (StoreScoutingFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, StoreScoutingFilter.Id);
+                if (StoreScoutingFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, StoreScoutingFilter.Code);
+                if (StoreScoutingFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, StoreScoutingFilter.Name);
+                if (StoreScoutingFilter.OwnerPhone != null)
+                    queryable = queryable.Where(q => q.OwnerPhone, StoreScoutingFilter.OwnerPhone);
+                if (StoreScoutingFilter.ProvinceId != null)
+                    queryable = queryable.Where(q => q.ProvinceId, StoreScoutingFilter.ProvinceId);
+                if (StoreScoutingFilter.DistrictId != null)
+                    queryable = queryable.Where(q => q.DistrictId, StoreScoutingFilter.DistrictId);
+                if (StoreScoutingFilter.WardId != null)
+                    queryable = queryable.Where(q => q.WardId, StoreScoutingFilter.WardId);
+                if (StoreScoutingFilter.OrganizationId != null)
+                {
+                    if (StoreScoutingFilter.OrganizationId.Equal != null)
+                    {
+                        OrganizationDAO OrganizationDAO = DataContext.Organization
+                            .Where(o => o.Id == StoreScoutingFilter.OrganizationId.Equal.Value).FirstOrDefault();
+                        queryable = queryable.Where(q => q.Creator.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    }
+                    if (StoreScoutingFilter.OrganizationId.NotEqual != null)
+                    {
+                        OrganizationDAO OrganizationDAO = DataContext.Organization
+                            .Where(o => o.Id == StoreScoutingFilter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                        queryable = queryable.Where(q => !q.Creator.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    }
+                    if (StoreScoutingFilter.OrganizationId.In != null)
+                    {
+                        List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                            .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                        List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => StoreScoutingFilter.OrganizationId.In.Contains(o.Id)).ToList();
+                        List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                        List<long> Ids = Branches.Select(o => o.Id).ToList();
+                        queryable = queryable.Where(q => Ids.Contains(q.Creator.OrganizationId.Value));
+                    }
+                    if (StoreScoutingFilter.OrganizationId.NotIn != null)
+                    {
+                        List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                            .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                        List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => StoreScoutingFilter.OrganizationId.NotIn.Contains(o.Id)).ToList();
+                        List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                        List<long> Ids = Branches.Select(o => o.Id).ToList();
+                        queryable = queryable.Where(q => !Ids.Contains(q.Creator.OrganizationId.Value));
+                    }
+                }
+                if (StoreScoutingFilter.Address != null)
+                    queryable = queryable.Where(q => q.Address, StoreScoutingFilter.Address);
+                if (StoreScoutingFilter.Latitude != null)
+                    queryable = queryable.Where(q => q.Latitude, StoreScoutingFilter.Latitude);
+                if (StoreScoutingFilter.Longitude != null)
+                    queryable = queryable.Where(q => q.Longitude, StoreScoutingFilter.Longitude);
+                if (StoreScoutingFilter.AppUserId != null)
+                    queryable = queryable.Where(q => q.CreatorId, StoreScoutingFilter.AppUserId);
+                if (StoreScoutingFilter.StoreScoutingStatusId != null)
+                    queryable = queryable.Where(q => q.StoreScoutingStatusId, StoreScoutingFilter.StoreScoutingStatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -134,9 +196,6 @@ namespace DMS.Repositories
                             break;
                         case StoreScoutingOrder.Ward:
                             query = query.OrderBy(q => q.WardId);
-                            break;
-                        case StoreScoutingOrder.Organization:
-                            query = query.OrderBy(q => q.OrganizationId);
                             break;
                         case StoreScoutingOrder.Address:
                             query = query.OrderBy(q => q.Address);
@@ -179,9 +238,6 @@ namespace DMS.Repositories
                         case StoreScoutingOrder.Ward:
                             query = query.OrderByDescending(q => q.WardId);
                             break;
-                        case StoreScoutingOrder.Organization:
-                            query = query.OrderByDescending(q => q.OrganizationId);
-                            break;
                         case StoreScoutingOrder.Address:
                             query = query.OrderByDescending(q => q.Address);
                             break;
@@ -215,7 +271,6 @@ namespace DMS.Repositories
                 ProvinceId = filter.Selects.Contains(StoreScoutingSelect.Province) ? q.ProvinceId : default(long?),
                 DistrictId = filter.Selects.Contains(StoreScoutingSelect.District) ? q.DistrictId : default(long?),
                 WardId = filter.Selects.Contains(StoreScoutingSelect.Ward) ? q.WardId : default(long?),
-                OrganizationId = filter.Selects.Contains(StoreScoutingSelect.Organization) ? q.OrganizationId : default(long?),
                 Address = filter.Selects.Contains(StoreScoutingSelect.Address) ? q.Address : default(string),
                 Latitude = filter.Selects.Contains(StoreScoutingSelect.Latitude) ? q.Latitude : default(decimal?),
                 Longitude = filter.Selects.Contains(StoreScoutingSelect.Longitude) ? q.Longitude : default(decimal?),
@@ -246,19 +301,6 @@ namespace DMS.Repositories
                     Priority = q.District.Priority,
                     ProvinceId = q.District.ProvinceId,
                     StatusId = q.District.StatusId,
-                } : null,
-                Organization = filter.Selects.Contains(StoreScoutingSelect.Organization) && q.Organization != null ? new Organization
-                {
-                    Id = q.Organization.Id,
-                    Code = q.Organization.Code,
-                    Name = q.Organization.Name,
-                    ParentId = q.Organization.ParentId,
-                    Path = q.Organization.Path,
-                    Level = q.Organization.Level,
-                    StatusId = q.Organization.StatusId,
-                    Phone = q.Organization.Phone,
-                    Email = q.Organization.Email,
-                    Address = q.Organization.Address,
                 } : null,
                 Province = filter.Selects.Contains(StoreScoutingSelect.Province) && q.Province != null ? new Province
                 {
@@ -321,7 +363,6 @@ namespace DMS.Repositories
                 ProvinceId = x.ProvinceId,
                 DistrictId = x.DistrictId,
                 WardId = x.WardId,
-                OrganizationId = x.OrganizationId,
                 Address = x.Address,
                 Latitude = x.Latitude,
                 Longitude = x.Longitude,
@@ -353,19 +394,6 @@ namespace DMS.Repositories
                     Priority = x.District.Priority,
                     ProvinceId = x.District.ProvinceId,
                     StatusId = x.District.StatusId,
-                },
-                Organization = x.Organization == null ? null : new Organization
-                {
-                    Id = x.Organization.Id,
-                    Code = x.Organization.Code,
-                    Name = x.Organization.Name,
-                    ParentId = x.Organization.ParentId,
-                    Path = x.Organization.Path,
-                    Level = x.Organization.Level,
-                    StatusId = x.Organization.StatusId,
-                    Phone = x.Organization.Phone,
-                    Email = x.Organization.Email,
-                    Address = x.Organization.Address,
                 },
                 Province = x.Province == null ? null : new Province
                 {
@@ -440,7 +468,6 @@ namespace DMS.Repositories
             StoreScoutingDAO.ProvinceId = StoreScouting.ProvinceId;
             StoreScoutingDAO.DistrictId = StoreScouting.DistrictId;
             StoreScoutingDAO.WardId = StoreScouting.WardId;
-            StoreScoutingDAO.OrganizationId = StoreScouting.OrganizationId;
             StoreScoutingDAO.Address = StoreScouting.Address;
             StoreScoutingDAO.Latitude = StoreScouting.Latitude;
             StoreScoutingDAO.Longitude = StoreScouting.Longitude;
@@ -468,7 +495,6 @@ namespace DMS.Repositories
             StoreScoutingDAO.ProvinceId = StoreScouting.ProvinceId;
             StoreScoutingDAO.DistrictId = StoreScouting.DistrictId;
             StoreScoutingDAO.WardId = StoreScouting.WardId;
-            StoreScoutingDAO.OrganizationId = StoreScouting.OrganizationId;
             StoreScoutingDAO.Address = StoreScouting.Address;
             StoreScoutingDAO.Latitude = StoreScouting.Latitude;
             StoreScoutingDAO.Longitude = StoreScouting.Longitude;
@@ -499,7 +525,6 @@ namespace DMS.Repositories
                 StoreScoutingDAO.ProvinceId = StoreScouting.ProvinceId;
                 StoreScoutingDAO.DistrictId = StoreScouting.DistrictId;
                 StoreScoutingDAO.WardId = StoreScouting.WardId;
-                StoreScoutingDAO.OrganizationId = StoreScouting.OrganizationId;
                 StoreScoutingDAO.Address = StoreScouting.Address;
                 StoreScoutingDAO.Latitude = StoreScouting.Latitude;
                 StoreScoutingDAO.Longitude = StoreScouting.Longitude;

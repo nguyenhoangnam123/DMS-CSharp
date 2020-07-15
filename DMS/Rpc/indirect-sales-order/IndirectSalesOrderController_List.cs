@@ -60,6 +60,10 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = IndirectSalesOrder_StoreFilterDTO.StatusId;
 
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
+
+
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<IndirectSalesOrder_StoreDTO> IndirectSalesOrder_StoreDTOs = Stores
                 .Select(x => new IndirectSalesOrder_StoreDTO(x)).ToList();
@@ -237,6 +241,9 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<IndirectSalesOrder_StoreDTO> IndirectSalesOrder_StoreDTOs = Stores
@@ -519,6 +526,10 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
+
             return await StoreService.Count(StoreFilter);
         }
 
@@ -554,6 +565,9 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<IndirectSalesOrder_StoreDTO> IndirectSalesOrder_StoreDTOs = Stores

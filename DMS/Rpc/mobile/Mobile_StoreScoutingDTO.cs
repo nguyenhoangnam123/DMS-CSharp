@@ -40,7 +40,6 @@ namespace DMS.Rpc.mobile
             this.ProvinceId = StoreScouting.ProvinceId;
             this.DistrictId = StoreScouting.DistrictId;
             this.WardId = StoreScouting.WardId;
-            this.OrganizationId = StoreScouting.OrganizationId;
             this.Address = StoreScouting.Address;
             this.Latitude = StoreScouting.Latitude;
             this.Longitude = StoreScouting.Longitude;
@@ -49,7 +48,6 @@ namespace DMS.Rpc.mobile
             this.Creator = StoreScouting.Creator == null ? null : new Mobile_AppUserDTO(StoreScouting.Creator);
             this.District = StoreScouting.District == null ? null : new Mobile_DistrictDTO(StoreScouting.District);
             this.Province = StoreScouting.Province == null ? null : new Mobile_ProvinceDTO(StoreScouting.Province);
-            this.Organization = StoreScouting.Organization == null ? null : new Mobile_OrganizationDTO(StoreScouting.Organization);
             this.StoreScoutingStatus = StoreScouting.StoreScoutingStatus == null ? null : new Mobile_StoreScoutingStatusDTO(StoreScouting.StoreScoutingStatus);
             this.Ward = StoreScouting.Ward == null ? null : new Mobile_WardDTO(StoreScouting.Ward);
             this.CreatedAt = StoreScouting.CreatedAt;
