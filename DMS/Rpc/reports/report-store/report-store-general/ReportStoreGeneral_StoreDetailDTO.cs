@@ -14,13 +14,13 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         public string Name { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
-        public long CheckingPlannedCounter => StoreCheckingPlannedIds.Count();
-        public long CheckingUnPlannedCounter => StoreCheckingUnPlannedIds.Count();
+        public long CheckingPlannedCounter => StoreCheckingPlannedIds?.Count() ?? 0;
+        public long CheckingUnPlannedCounter => StoreCheckingUnPlannedIds?.Count() ?? 0;
         public string TotalCheckingTime { get; set; }
         public DateTime FirstChecking { get; set; }
         public DateTime LastChecking { get; set; }
-        public long IndirectSalesOrderCounter => IndirectSalesOrderIds.Count();
-        public long SKUCounter => SKUItemIds.Count();
+        public long IndirectSalesOrderCounter => IndirectSalesOrderIds?.Count() ?? 0;
+        public long SKUCounter => SKUItemIds?.Count() ?? 0;
         public decimal TotalRevenue { get; set; }
         public DateTime LastOrder { get; set; }
         internal HashSet<long> StoreCheckingPlannedIds { get; set; }
