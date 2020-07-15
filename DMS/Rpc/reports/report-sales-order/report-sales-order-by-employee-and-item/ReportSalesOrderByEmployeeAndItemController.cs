@@ -65,13 +65,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             AppUserFilter.DisplayName = ReportSalesOrderByEmployeeAndItem_AppUserFilterDTO.DisplayName;
             AppUserFilter.OrganizationId = ReportSalesOrderByEmployeeAndItem_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-            List<ReportSalesOrderByEmployeeAndItem_AppUserDTO> StoreCheckerReport_AppUserDTOs = AppUsers
+            List<ReportSalesOrderByEmployeeAndItem_AppUserDTO> ReportSalesOrderByEmployeeAndItem_AppUserDTOs = AppUsers
                 .Select(x => new ReportSalesOrderByEmployeeAndItem_AppUserDTO(x)).ToList();
-            return StoreCheckerReport_AppUserDTOs;
+            return ReportSalesOrderByEmployeeAndItem_AppUserDTOs;
         }
 
 
@@ -91,13 +92,15 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             OrganizationFilter.Id = ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO.Id;
             OrganizationFilter.Code = ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO.Name;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-            List<ReportSalesOrderByEmployeeAndItem_OrganizationDTO> StoreCheckerReport_OrganizationDTOs = Organizations
+            List<ReportSalesOrderByEmployeeAndItem_OrganizationDTO> ReportSalesOrderByEmployeeAndItem_OrganizationDTOs = Organizations
                 .Select(x => new ReportSalesOrderByEmployeeAndItem_OrganizationDTO(x)).ToList();
-            return StoreCheckerReport_OrganizationDTOs;
+            return ReportSalesOrderByEmployeeAndItem_OrganizationDTOs;
         }
 
         [Route(ReportSalesOrderByEmployeeAndItemRoute.Count), HttpPost]
@@ -117,7 +120,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
-            var SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.SaleEmployeeId?.Equal;
+            var SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -156,7 +159,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
-            var SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.SaleEmployeeId?.Equal;
+            var SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -170,6 +173,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
 
             List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
             {
+                Id = new IdFilter { Equal = SaleEmployeeId },
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 Skip = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Skip,
                 Take = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Take,

@@ -65,7 +65,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
         }
 
         [Route(MonitorStoreImageRoute.FilterListOrganization), HttpPost]
-        public async Task<List<MonitorStoreImage_OrganizationDTO>> FilterListOrganization([FromBody] MonitorStoreImage_OrganizationFilterDTO MonitorStoreImage_OrganizationFilterDTO)
+        public async Task<List<MonitorStoreImage_OrganizationDTO>> FilterListOrganization()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -106,17 +106,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
             StoreFilter.OrganizationId = MonitorStoreImage_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = MonitorStoreImage_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = MonitorStoreImage_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = MonitorStoreImage_StoreFilterDTO.ResellerId;
-            StoreFilter.Telephone = MonitorStoreImage_StoreFilterDTO.Telephone;
-            StoreFilter.ProvinceId = MonitorStoreImage_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = MonitorStoreImage_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = MonitorStoreImage_StoreFilterDTO.WardId;
-            StoreFilter.Address = MonitorStoreImage_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = MonitorStoreImage_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = MonitorStoreImage_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = MonitorStoreImage_StoreFilterDTO.Longitude;
-            StoreFilter.DeliveryLatitude = MonitorStoreImage_StoreFilterDTO.DeliveryLatitude;
-            StoreFilter.DeliveryLongitude = MonitorStoreImage_StoreFilterDTO.DeliveryLongitude;
             StoreFilter.OwnerName = MonitorStoreImage_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = MonitorStoreImage_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = MonitorStoreImage_StoreFilterDTO.OwnerEmail;

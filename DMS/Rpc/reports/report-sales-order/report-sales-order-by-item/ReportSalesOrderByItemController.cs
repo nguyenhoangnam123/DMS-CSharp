@@ -48,6 +48,33 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             this.CurrentContext = CurrentContext;
         }
 
+        [Route(ReportSalesOrderByItemRoute.FilterListOrganization), HttpPost]
+        public async Task<List<ReportSalesOrderByItem_OrganizationDTO>> FilterListOrganization([FromBody] ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = int.MaxValue;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            OrganizationFilter.Id = ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO.Name;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<ReportSalesOrderByItem_OrganizationDTO> ReportSalesOrderByItem_OrganizationDTO = Organizations
+                .Select(x => new ReportSalesOrderByItem_OrganizationDTO(x)).ToList();
+            return ReportSalesOrderByItem_OrganizationDTO;
+        }
+
         [Route(ReportSalesOrderByItemRoute.FilterListProductGrouping), HttpPost]
         public async Task<List<ReportSalesOrderByItem_ProductGroupingDTO>> FilterListProductGrouping([FromBody] ReportSalesOrderByItem_ProductGroupingFilterDTO ReportSalesOrderByItem_ProductGroupingFilterDTO)
         {

@@ -31,19 +31,4 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             this.Errors = Organization.Errors;
         }
     }
-
-    public class MonitorStoreAlbum_OrganizationFilterDTO : FilterDTO
-    {
-        public IdFilter Id { get; set; }
-        public StringFilter Code { get; set; }
-        public StringFilter Name { get; set; }
-        public IdFilter ParentId { get; set; }
-        public StringFilter Path { get; set; }
-        public LongFilter Level { get; set; }
-        public IdFilter StatusId { get; set; }
-        public StringFilter Phone { get; set; }
-        public StringFilter Email { get; set; }
-        public StringFilter Address { get; set; }
-        public OrganizationOrder OrderBy { get; set; }
-    }
 }

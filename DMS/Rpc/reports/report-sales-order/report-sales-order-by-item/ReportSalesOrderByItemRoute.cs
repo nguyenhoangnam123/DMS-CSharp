@@ -16,6 +16,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
         public const string Total = Default + "/total";
         public const string Export = Default + "/export";
 
+        public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListItem = Default + "/filter-list-item";
         public const string FilterListProductType = Default + "/filter-list-product-type";
         public const string FilterListProductGrouping = Default + "/filter-list-product-grouping";

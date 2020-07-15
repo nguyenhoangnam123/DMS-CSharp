@@ -18,6 +18,7 @@ using DMS.Services.MProvince;
 using DMS.Services.MStore;
 using DMS.Services.MStoreScoutingStatus;
 using DMS.Services.MWard;
+using DMS.Enums;
 
 namespace DMS.Rpc.store_scouting
 {
@@ -74,7 +75,7 @@ namespace DMS.Rpc.store_scouting
                 throw new BindException(ModelState);
 
             StoreScoutingFilter StoreScoutingFilter = ConvertFilterDTOToFilterEntity(StoreScouting_StoreScoutingFilterDTO);
-            StoreScoutingFilter = await  StoreScoutingService.ToFilter(StoreScoutingFilter);
+            StoreScoutingFilter = await StoreScoutingService.ToFilter(StoreScoutingFilter);
             List<StoreScouting> StoreScoutings = await StoreScoutingService.List(StoreScoutingFilter);
             List<StoreScouting_StoreScoutingDTO> StoreScouting_StoreScoutingDTOs = StoreScoutings
                 .Select(c => new StoreScouting_StoreScoutingDTO(c)).ToList();
@@ -82,7 +83,7 @@ namespace DMS.Rpc.store_scouting
         }
 
         [Route(StoreScoutingRoute.Get), HttpPost]
-        public async Task<ActionResult<StoreScouting_StoreScoutingDTO>> Get([FromBody]StoreScouting_StoreScoutingDTO StoreScouting_StoreScoutingDTO)
+        public async Task<ActionResult<StoreScouting_StoreScoutingDTO>> Get([FromBody] StoreScouting_StoreScoutingDTO StoreScouting_StoreScoutingDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -99,7 +100,7 @@ namespace DMS.Rpc.store_scouting
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(StoreScouting_StoreScoutingDTO.Id))
                 return Forbid();
 
@@ -117,7 +118,7 @@ namespace DMS.Rpc.store_scouting
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(StoreScouting_StoreScoutingDTO.Id))
                 return Forbid();
 
@@ -147,7 +148,7 @@ namespace DMS.Rpc.store_scouting
             else
                 return BadRequest(StoreScouting_StoreScoutingDTO);
         }
-        
+
         private async Task<bool> HasPermission(long Id)
         {
             StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter();
@@ -326,7 +327,7 @@ namespace DMS.Rpc.store_scouting
             return StoreScouting_DistrictDTOs;
         }
         [Route(StoreScoutingRoute.FilterListOrganization), HttpPost]
-        public async Task<List<StoreScouting_OrganizationDTO>> FilterListOrganization([FromBody] StoreScouting_OrganizationFilterDTO StoreScouting_OrganizationFilterDTO)
+        public async Task<List<StoreScouting_OrganizationDTO>> FilterListOrganization()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -337,9 +338,7 @@ namespace DMS.Rpc.store_scouting
             OrganizationFilter.OrderBy = OrganizationOrder.Id;
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
-            OrganizationFilter.Id = StoreScouting_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = StoreScouting_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = StoreScouting_OrganizationFilterDTO.Name;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
@@ -507,7 +506,7 @@ namespace DMS.Rpc.store_scouting
             return StoreScouting_DistrictDTOs;
         }
         [Route(StoreScoutingRoute.SingleListOrganization), HttpPost]
-        public async Task<List<StoreScouting_OrganizationDTO>> SingleListOrganization([FromBody] StoreScouting_OrganizationFilterDTO StoreScouting_OrganizationFilterDTO)
+        public async Task<List<StoreScouting_OrganizationDTO>> SingleListOrganization()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -518,9 +517,7 @@ namespace DMS.Rpc.store_scouting
             OrganizationFilter.OrderBy = OrganizationOrder.Id;
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
-            OrganizationFilter.Id = StoreScouting_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = StoreScouting_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = StoreScouting_OrganizationFilterDTO.Name;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
