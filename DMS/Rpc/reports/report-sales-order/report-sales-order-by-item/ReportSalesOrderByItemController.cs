@@ -382,7 +382,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                 .ToListAsync();
 
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
-                .Where(x => AppUserIds.Contains(x.SaleEmployeeId))
+                .Where(x => AppUserIds.Contains(x.SaleEmployeeId) &&
+                x.OrderDate >= Start && x.OrderDate <= End)
                 //x.RequestStateId == RequestStateEnum.APPROVED.Id) todo
                 .ToListAsync();
 

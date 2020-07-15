@@ -29,6 +29,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
         public IdFilter ProductGroupingId { get; set; }
         public IdFilter ProductTypeId { get; set; }
         public DateFilter Date { get; set; }
-        internal bool HasValue => ItemId.HasValue || ProductGroupingId.HasValue || ProductTypeId.HasValue || Date.HasValue;
+        internal bool HasValue => (ItemId != null && ItemId.HasValue) ||
+            (ProductGroupingId != null && ProductGroupingId.HasValue) ||
+            (ProductTypeId != null && ProductTypeId.HasValue) ||
+            (Date != null && Date.HasValue);
     }
 }

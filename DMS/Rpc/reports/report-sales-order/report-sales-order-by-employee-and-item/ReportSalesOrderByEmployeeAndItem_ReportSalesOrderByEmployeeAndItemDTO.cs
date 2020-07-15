@@ -17,6 +17,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
         public IdFilter OrganizationId { get; set; }
         public IdFilter AppUserId { get; set; }
         public DateFilter OrderDate { get; set; }
-        internal bool HasValue => OrganizationId.HasValue || AppUserId.HasValue || OrderDate.HasValue;
+        internal bool HasValue => (OrganizationId != null && OrganizationId.HasValue) ||
+            (AppUserId != null && AppUserId.HasValue) ||
+            (OrderDate != null && OrderDate.HasValue);
     }
 }

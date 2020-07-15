@@ -19,6 +19,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
         public IdFilter BuyerStoreId { get; set; }
         public IdFilter SellerStoreId { get; set; }
         public DateFilter OrderDate { get; set; }
-        internal bool HasValue => OrganizationId.HasValue || AppUserId.HasValue || BuyerStoreId.HasValue || SellerStoreId.HasValue || OrderDate.HasValue;
+        internal bool HasValue => (OrganizationId != null && OrganizationId.HasValue) ||
+            (AppUserId != null && AppUserId.HasValue) ||
+            (BuyerStoreId != null && BuyerStoreId.HasValue) ||
+            (SellerStoreId != null && SellerStoreId.HasValue) ||
+            (OrderDate != null && OrderDate.HasValue);
     }
 }
