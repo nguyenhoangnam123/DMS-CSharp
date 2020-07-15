@@ -127,7 +127,7 @@ namespace DMS.Services.MStoreScouting
                 await UOW.StoreScoutingRepository.Update(StoreScouting);
                 await UOW.Commit();
 
-                var RecipientIds = await UOW.PermissionRepository.ListAppUser(StoreScoutingRoute.Reject);
+                var RecipientIds = await ListReceipientId(User, StoreScoutingRoute.Reject);
 
                 DateTime Now = StaticParams.DateTimeNow;
                 List<UserNotification> UserNotifications = new List<UserNotification>();
@@ -283,6 +283,36 @@ namespace DMS.Services.MStoreScouting
                     throw new MessageException(ex.InnerException);
                 }
             }
+        }
+
+        private async Task<List<long>> ListReceipientId(AppUser CurrentUser, string Path)
+        {
+            var Ids = await UOW.PermissionRepository.ListAppUser(Path);
+            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+
+            var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
+            var OrganizationIds = Organizations
+                .Where(x => x.Path.StartsWith(CurrentUser.Organization.Path) || CurrentUser.Organization.Path.StartsWith(x.Path))
+                .Select(x => x.Id)
+                .ToList();
+
+            var AppUserIds = (await UOW.AppUserRepository.List(new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id,
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            })).Select(x => x.Id).ToList();
+
+            AppUserIds = AppUserIds.Intersect(Ids).ToList();
+            return AppUserIds;
         }
 
         public async Task<StoreScoutingFilter> ToFilter(StoreScoutingFilter filter)
