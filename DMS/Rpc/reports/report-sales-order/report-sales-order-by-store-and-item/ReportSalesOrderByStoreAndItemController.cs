@@ -45,7 +45,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
         }
 
         [Route(ReportSalesOrderByStoreAndItemRoute.FilterListOrganization), HttpPost]
-        public async Task<List<ReportSalesOrderByStoreAndItem_OrganizationDTO>> FilterListOrganization([FromBody] ReportSalesOrderByStoreAndItem_OrganizationFilterDTO ReportSalesOrderByStoreAndItem_OrganizationFilterDTO)
+        public async Task<List<ReportSalesOrderByStoreAndItem_OrganizationDTO>> FilterListOrganization()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -57,9 +57,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            OrganizationFilter.Id = ReportSalesOrderByStoreAndItem_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = ReportSalesOrderByStoreAndItem_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = ReportSalesOrderByStoreAndItem_OrganizationFilterDTO.Name;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
@@ -84,11 +81,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             StoreFilter.Id = ReportSalesOrderByStoreAndItem_StoreFilterDTO.Id;
             StoreFilter.Code = ReportSalesOrderByStoreAndItem_StoreFilterDTO.Code;
             StoreFilter.Name = ReportSalesOrderByStoreAndItem_StoreFilterDTO.Name;
-            StoreFilter.ParentStoreId = ReportSalesOrderByStoreAndItem_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ReportSalesOrderByStoreAndItem_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ReportSalesOrderByStoreAndItem_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = ReportSalesOrderByStoreAndItem_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.StatusId = ReportSalesOrderByStoreAndItem_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
@@ -114,7 +110,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             StoreGroupingFilter.Name = ReportSalesOrderByStoreAndItem_StoreGroupingFilterDTO.Name;
             StoreGroupingFilter.Level = ReportSalesOrderByStoreAndItem_StoreGroupingFilterDTO.Level;
             StoreGroupingFilter.Path = ReportSalesOrderByStoreAndItem_StoreGroupingFilterDTO.Path;
-            StoreGroupingFilter.StatusId = ReportSalesOrderByStoreAndItem_StoreGroupingFilterDTO.StatusId;
+            StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<ReportSalesOrderByStoreAndItem_StoreGroupingDTO> ReportSalesOrderByStoreAndItem_StoreGroupingDTOs = StoreGroupings
                 .Select(x => new ReportSalesOrderByStoreAndItem_StoreGroupingDTO(x)).ToList();
@@ -135,7 +132,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             StoreTypeFilter.Id = ReportSalesOrderByStoreAndItem_StoreTypeFilterDTO.Id;
             StoreTypeFilter.Code = ReportSalesOrderByStoreAndItem_StoreTypeFilterDTO.Code;
             StoreTypeFilter.Name = ReportSalesOrderByStoreAndItem_StoreTypeFilterDTO.Name;
-            StoreTypeFilter.StatusId = ReportSalesOrderByStoreAndItem_StoreTypeFilterDTO.StatusId;
+            StoreTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
             List<ReportSalesOrderByStoreAndItem_StoreTypeDTO> ReportSalesOrderByStoreAndItem_StoreTypeDTOs = StoreTypes

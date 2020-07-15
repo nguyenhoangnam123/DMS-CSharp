@@ -56,6 +56,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             AppUserFilter.DisplayName = ReportSalesOrderGeneral_AppUserFilterDTO.DisplayName;
             AppUserFilter.OrganizationId = ReportSalesOrderGeneral_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
@@ -66,7 +67,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
         }
 
         [Route(ReportSalesOrderGeneralRoute.FilterListOrganization), HttpPost]
-        public async Task<List<ReportSalesOrderGeneral_OrganizationDTO>> FilterListOrganization([FromBody] ReportSalesOrderGeneral_OrganizationFilterDTO ReportSalesOrderGeneral_OrganizationFilterDTO)
+        public async Task<List<ReportSalesOrderGeneral_OrganizationDTO>> FilterListOrganization()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -78,12 +79,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            OrganizationFilter.Id = ReportSalesOrderGeneral_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = ReportSalesOrderGeneral_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = ReportSalesOrderGeneral_OrganizationFilterDTO.Name;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<ReportSalesOrderGeneral_OrganizationDTO> StoreCheckerReport_OrganizationDTOs = Organizations
                 .Select(x => new ReportSalesOrderGeneral_OrganizationDTO(x)).ToList();
@@ -106,7 +105,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             StoreFilter.Code = ReportSalesOrderGeneral_StoreFilterDTO.Code;
             StoreFilter.Name = ReportSalesOrderGeneral_StoreFilterDTO.Name;
             StoreFilter.OrganizationId = ReportSalesOrderGeneral_StoreFilterDTO.OrganizationId;
-            StoreFilter.StatusId = ReportSalesOrderGeneral_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);

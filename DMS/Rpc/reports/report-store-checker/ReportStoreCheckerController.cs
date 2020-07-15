@@ -64,6 +64,7 @@ namespace DMS.Rpc.reports.report_store_checker
             AppUserFilter.DisplayName = ReportStoreChecker_AppUserFilterDTO.DisplayName;
             AppUserFilter.OrganizationId = ReportStoreChecker_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
@@ -74,7 +75,7 @@ namespace DMS.Rpc.reports.report_store_checker
         }
 
         [Route(ReportStoreCheckerRoute.FilterListOrganization), HttpPost]
-        public async Task<List<ReportStoreChecker_OrganizationDTO>> FilterListOrganization([FromBody] ReportStoreChecker_OrganizationFilterDTO ReportStoreChecker_OrganizationFilterDTO)
+        public async Task<List<ReportStoreChecker_OrganizationDTO>> FilterListOrganization()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -86,13 +87,11 @@ namespace DMS.Rpc.reports.report_store_checker
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            OrganizationFilter.Id = ReportStoreChecker_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = ReportStoreChecker_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = ReportStoreChecker_OrganizationFilterDTO.Name;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+
             List<ReportStoreChecker_OrganizationDTO> StoreCheckerReport_OrganizationDTOs = Organizations
                 .Select(x => new ReportStoreChecker_OrganizationDTO(x)).ToList();
             return StoreCheckerReport_OrganizationDTOs;
@@ -117,11 +116,12 @@ namespace DMS.Rpc.reports.report_store_checker
             StoreFilter.OrganizationId = ReportStoreChecker_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ReportStoreChecker_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = ReportStoreChecker_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.StatusId = ReportStoreChecker_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
             List<Store> Stores = await StoreService.List(StoreFilter);
+
             List<ReportStoreChecker_StoreDTO> ReportStoreChecker_StoreDTOs = Stores
                 .Select(x => new ReportStoreChecker_StoreDTO(x)).ToList();
             return ReportStoreChecker_StoreDTOs;
@@ -143,7 +143,8 @@ namespace DMS.Rpc.reports.report_store_checker
             StoreGroupingFilter.Name = ReportStoreChecker_StoreGroupingFilterDTO.Name;
             StoreGroupingFilter.Level = ReportStoreChecker_StoreGroupingFilterDTO.Level;
             StoreGroupingFilter.Path = ReportStoreChecker_StoreGroupingFilterDTO.Path;
-            StoreGroupingFilter.StatusId = ReportStoreChecker_StoreGroupingFilterDTO.StatusId;
+            StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<ReportStoreChecker_StoreGroupingDTO> ReportStoreChecker_StoreGroupingDTOs = StoreGroupings
                 .Select(x => new ReportStoreChecker_StoreGroupingDTO(x)).ToList();
@@ -164,7 +165,7 @@ namespace DMS.Rpc.reports.report_store_checker
             StoreTypeFilter.Id = ReportStoreChecker_StoreTypeFilterDTO.Id;
             StoreTypeFilter.Code = ReportStoreChecker_StoreTypeFilterDTO.Code;
             StoreTypeFilter.Name = ReportStoreChecker_StoreTypeFilterDTO.Name;
-            StoreTypeFilter.StatusId = ReportStoreChecker_StoreTypeFilterDTO.StatusId;
+            StoreTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
             List<ReportStoreChecker_StoreTypeDTO> ReportStoreChecker_StoreTypeDTOs = StoreTypes

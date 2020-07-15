@@ -48,7 +48,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 
         #region Filter List
         [Route(ReportStoreGeneralRoute.FilterListOrganization), HttpPost]
-        public async Task<List<ReportStoreGeneral_OrganizationDTO>> FilterListOrganization([FromBody] ReportStoreGeneral_OrganizationFilterDTO ReportStoreGeneral_OrganizationFilterDTO)
+        public async Task<List<ReportStoreGeneral_OrganizationDTO>> FilterListOrganization()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -60,9 +60,6 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            OrganizationFilter.Id = ReportStoreGeneral_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = ReportStoreGeneral_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = ReportStoreGeneral_OrganizationFilterDTO.Name;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
@@ -91,7 +88,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             StoreFilter.OrganizationId = ReportStoreGeneral_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ReportStoreGeneral_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = ReportStoreGeneral_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.StatusId = ReportStoreGeneral_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
@@ -116,7 +113,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             StoreTypeFilter.Id = ReportStoreGeneral_StoreTypeFilterDTO.Id;
             StoreTypeFilter.Code = ReportStoreGeneral_StoreTypeFilterDTO.Code;
             StoreTypeFilter.Name = ReportStoreGeneral_StoreTypeFilterDTO.Name;
-            StoreTypeFilter.StatusId = ReportStoreGeneral_StoreTypeFilterDTO.StatusId;
+            StoreTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
             List<ReportStoreGeneral_StoreTypeDTO> ReportStoreGeneral_StoreTypeDTOs = StoreTypes
