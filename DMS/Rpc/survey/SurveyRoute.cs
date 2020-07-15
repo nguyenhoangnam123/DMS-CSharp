@@ -8,7 +8,7 @@ namespace DMS.Rpc.survey
     {
         public const string Master = Module + "/knowledge/survey/survey-master";
         public const string Detail = Module + "/knowledge/survey/survey-detail/*";
-        public const string Mobile = Module + "survey.*";
+        public const string Mobile = Module + ".survey.*";
         private const string Default = Rpc + Module + "/survey";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

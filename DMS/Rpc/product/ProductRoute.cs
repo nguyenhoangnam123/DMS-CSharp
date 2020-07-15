@@ -8,7 +8,7 @@ namespace DMS.Rpc.product
     {
         public const string Master = Module + "/product-category/product/product-master";
         public const string Detail = Module + "/product-category/product/product-detail/*";
-        public const string Mobile = Module + "product.*";
+        public const string Mobile = Module + ".product.*";
         private const string Default = Rpc + Module + "/product";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
