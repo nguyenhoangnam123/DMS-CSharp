@@ -20,14 +20,8 @@ namespace DMS.Rpc.reports.report_store_checker
         public IdFilter StoreTypeId { get; set; }
         public IdFilter StoreGroupingId { get; set; }
         public DateFilter CheckIn { get; set; }
-        public List<ReportStoreChecker_ReportStoreCheckerFilterDTO> OrFilters { get; set; }
+
+        internal bool HasValue => OrganizationId.HasValue || AppUserId.HasValue || StoreId.HasValue || StoreTypeId.HasValue || StoreGroupingId.HasValue || CheckIn.HasValue;
     }
 
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum ReportStoreCheckerOrder
-    {
-        Username = 1,
-        DisplayName = 2,
-        Organization = 3,
-    }
 }

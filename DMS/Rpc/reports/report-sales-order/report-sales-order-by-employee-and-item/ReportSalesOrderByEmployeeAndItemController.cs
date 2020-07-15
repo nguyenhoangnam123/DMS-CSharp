@@ -106,6 +106,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            if (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.HasValue == false)
+                return 0;
+
             DateTime Start = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
                     ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.GreaterEqual.Value;
@@ -145,6 +148,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            if (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.HasValue == false)
+                return new List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO>();
+
             DateTime Start = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
                     ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.GreaterEqual.Value;
@@ -155,8 +161,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
 
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
-
-            var SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.SaleEmployeeId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -170,6 +174,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
 
             List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
             {
+                Id = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.SaleEmployeeId,
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 Skip = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Skip,
                 Take = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Take,
@@ -177,6 +182,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             });
 
             List<string> OrganizationNames = AppUsers.Select(s => s.Organization.Name).Distinct().ToList();
+            OrganizationNames = OrganizationNames.OrderBy(x => x).ToList();
             List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO>
                 ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs = OrganizationNames
                 .Select(on => new ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO
@@ -296,10 +302,24 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
         }
 
         [Route(ReportSalesOrderByEmployeeAndItemRoute.Total), HttpPost]
-        public async Task<ReportSalesOrderByEmployeeAndItem_TotalDTO> Total()
+        public async Task<ReportSalesOrderByEmployeeAndItem_TotalDTO> Total([FromBody] ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            if (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.HasValue == false)
+                return new ReportSalesOrderByEmployeeAndItem_TotalDTO();
+
+            DateTime Start = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
+                    StaticParams.DateTimeNow :
+                    ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.GreaterEqual.Value;
+
+            DateTime End = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.LessEqual == null ?
+                    StaticParams.DateTimeNow :
+                    ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.LessEqual.Value;
+
+            Start = new DateTime(Start.Year, Start.Month, Start.Day);
+            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
             ReportSalesOrderByEmployeeAndItem_TotalDTO ReportSalesOrderByEmployeeAndItem_TotalDTO = new ReportSalesOrderByEmployeeAndItem_TotalDTO();
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
@@ -308,6 +328,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
 
             List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
             {
+                Skip = 0,
+                Take = int.MaxValue,
+                Id = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.SaleEmployeeId,
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Organization
             });
@@ -330,9 +353,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                     .ToList();
             }
 
-            List<long> StoreIds = AppUsers.Select(s => s.Id).ToList();
+            List<long> SaleEmployeeIds = AppUsers.Select(s => s.Id).ToList();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
-                .Where(x => StoreIds.Contains(x.SellerStoreId))
+                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && Start <= x.OrderDate && x.OrderDate <= End)
                 .ToListAsync();
             List<long> IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
             List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent

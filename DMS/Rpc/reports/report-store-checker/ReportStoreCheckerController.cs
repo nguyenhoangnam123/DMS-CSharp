@@ -46,6 +46,7 @@ namespace DMS.Rpc.reports.report_store_checker
             this.CurrentContext = CurrentContext;
         }
 
+        #region Filter List
         [Route(ReportStoreCheckerRoute.FilterListAppUser), HttpPost]
         public async Task<List<ReportStoreChecker_AppUserDTO>> FilterListAppUser([FromBody] ReportStoreChecker_AppUserFilterDTO ReportStoreChecker_AppUserFilterDTO)
         {
@@ -170,12 +171,16 @@ namespace DMS.Rpc.reports.report_store_checker
                 .Select(x => new ReportStoreChecker_StoreTypeDTO(x)).ToList();
             return ReportStoreChecker_StoreTypeDTOs;
         }
+        #endregion
 
         [Route(ReportStoreCheckerRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] ReportStoreChecker_ReportStoreCheckerFilterDTO ReportStoreChecker_ReportStoreCheckerFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            if (ReportStoreChecker_ReportStoreCheckerFilterDTO.HasValue == false)
+                return 0;
 
             DateTime Start = ReportStoreChecker_ReportStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
@@ -224,6 +229,9 @@ namespace DMS.Rpc.reports.report_store_checker
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            if (ReportStoreChecker_ReportStoreCheckerFilterDTO.HasValue == false)
+                return new List<ReportStoreChecker_ReportStoreCheckerDTO>();
+
             DateTime Start = ReportStoreChecker_ReportStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
                     ReportStoreChecker_ReportStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
@@ -235,7 +243,6 @@ namespace DMS.Rpc.reports.report_store_checker
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
-            long? SaleEmployeeId = ReportStoreChecker_ReportStoreCheckerFilterDTO.AppUserId?.Equal;
             long? StoreId = ReportStoreChecker_ReportStoreCheckerFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStoreChecker_ReportStoreCheckerFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportStoreChecker_ReportStoreCheckerFilterDTO.StoreGroupingId?.Equal;
@@ -251,14 +258,13 @@ namespace DMS.Rpc.reports.report_store_checker
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
             AppUserFilter AppUserFilter = new AppUserFilter
             {
+                Id = ReportStoreChecker_ReportStoreCheckerFilterDTO.AppUserId,
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 Skip = ReportStoreChecker_ReportStoreCheckerFilterDTO.Skip,
                 Take = ReportStoreChecker_ReportStoreCheckerFilterDTO.Take,
                 OrderBy = AppUserOrder.DisplayName,
                 Selects = AppUserSelect.ALL
             };
-            if (SaleEmployeeId.HasValue)
-                AppUserFilter.Id = new IdFilter { Equal = SaleEmployeeId.Value };
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
 
             List<StoreDAO> StoreDAOs = await DataContext.Store.Where(x => OrganizationIds.Contains(x.OrganizationId) &&
@@ -276,6 +282,7 @@ namespace DMS.Rpc.reports.report_store_checker
             }).ToList();
 
             List<string> OrganizationNames = ReportStoreChecker_SaleEmployeeDTOs.Select(se => se.OrganizationName).Distinct().ToList();
+            OrganizationNames = OrganizationNames.OrderBy(x => x).ToList();
             List<ReportStoreChecker_ReportStoreCheckerDTO> ReportStoreChecker_ReportStoreCheckerDTOs = OrganizationNames.Select(on => new ReportStoreChecker_ReportStoreCheckerDTO
             {
                 OrganizationName = on,
@@ -286,7 +293,7 @@ namespace DMS.Rpc.reports.report_store_checker
                     .Where(se => se.OrganizationName == ReportStoreChecker_ReportStoreCheckerDTO.OrganizationName)
                     .ToList();
             }
-            
+
             List<long> AppUserIds = AppUsers.Select(s => s.Id).ToList();
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
@@ -323,7 +330,7 @@ namespace DMS.Rpc.reports.report_store_checker
                     ReportStoreChecker_SaleEmployeeDTO.StoreCheckingGroupByDates.Add(ReportStoreChecker_StoreCheckingGroupByDateDTO);
                 }
             }
-            
+
             foreach (var ReportStoreChecker_ReportStoreCheckerDTO in ReportStoreChecker_ReportStoreCheckerDTOs)
             {
                 foreach (var SaleEmployee in ReportStoreChecker_ReportStoreCheckerDTO.SaleEmployees)
