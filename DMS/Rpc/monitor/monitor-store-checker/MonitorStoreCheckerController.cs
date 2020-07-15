@@ -118,6 +118,13 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 throw new BindException(ModelState);
 
             long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.AppUserId?.Equal;
+            DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
+              StaticParams.DateTimeNow.Date :
+              MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value.Date;
+
+            DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -129,8 +136,33 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
             List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
+            List<long> AppUserIds = new List<long>();
+            var ERouteAppUserIds = await DataContext.ERouteContent
+               .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && OrganizationIds.Contains(ec.ERoute.SaleEmployee.OrganizationId.Value))
+               .Select(x => x.ERoute.SaleEmployeeId)
+               .ToListAsync();
+            AppUserIds.AddRange(ERouteAppUserIds);
+
+            var StoreCheckingAppUserIds = await DataContext.StoreChecking
+                .Where(sc => OrganizationIds.Contains(sc.SaleEmployee.OrganizationId.Value) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
+                .Select(x => x.SaleEmployeeId)
+                .ToListAsync();
+            AppUserIds.AddRange(StoreCheckingAppUserIds);
+
+            var IndirectSalesOrderAppUserIds = await DataContext.IndirectSalesOrder
+                .Where(o => Start <= o.OrderDate && o.OrderDate <= End && OrganizationIds.Contains(o.SaleEmployee.OrganizationId.Value))
+                .Select(x => x.SaleEmployeeId)
+                .ToListAsync();
+            AppUserIds.AddRange(IndirectSalesOrderAppUserIds);
+            AppUserIds = FilterAppUserIds.Intersect(AppUserIds).ToList();
+
+            if (SaleEmployeeId.HasValue)
+                AppUserIds = AppUserIds.Where(x => x == SaleEmployeeId.Value).ToList();
+            AppUserIds = AppUserIds.Distinct().ToList();
+
             int count = await DataContext.AppUser.Where(au =>
-                FilterAppUserIds.Contains(au.Id) &&
+                AppUserIds.Contains(au.Id) &&
                 au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value) &&
                 (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value)
             ).CountAsync();
@@ -163,8 +195,26 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
             List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            List<long> AppUserIds = new List<long>();
+            List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
+               .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && OrganizationIds.Contains(ec.ERoute.SaleEmployee.OrganizationId.Value))
+               .Include(ec => ec.ERouteContentDays)
+               .Include(ec => ec.ERoute)
+               .ToListAsync();
+            AppUserIds.AddRange(ERouteContentDAOs.Select(e => e.ERoute.SaleEmployeeId).ToList());
+            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
+                .Where(sc => OrganizationIds.Contains(sc.SaleEmployee.OrganizationId.Value) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
+                .ToListAsync();
+            AppUserIds.AddRange(StoreCheckingDAOs.Select(e => e.SaleEmployeeId).ToList());
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.Where(o => Start <= o.OrderDate && o.OrderDate <= End && OrganizationIds.Contains(o.SaleEmployee.OrganizationId.Value)).ToListAsync();
+            AppUserIds.AddRange(IndirectSalesOrderDAOs.Select(e => e.SaleEmployeeId).ToList());
+            AppUserIds = FilterAppUserIds.Intersect(AppUserIds).ToList();
+            if (SaleEmployeeId.HasValue)
+                AppUserIds = AppUserIds.Where(x => x == SaleEmployeeId.Value).ToList();
+            AppUserIds = AppUserIds.Distinct().ToList();
+
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au =>
-                FilterAppUserIds.Contains(au.Id) &&
+               AppUserIds.Contains(au.Id) &&
                au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value) &&
                (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value)
             )
@@ -194,8 +244,6 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     .ToList();
             }
 
-            List<long> AppUserIds = AppUserDAOs.Select(s => s.Id).ToList();
-
             // khởi tạo khung dữ liệu
             foreach (MonitorStoreChecker_SaleEmployeeDTO MonitorStoreChecker_SaleEmployeeDTO in MonitorStoreChecker_SaleEmployeeDTOs)
             {
@@ -212,18 +260,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 }
             }
 
-            List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
-                .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && AppUserIds.Contains(ec.ERoute.SaleEmployeeId))
-                .Include(ec => ec.ERouteContentDays)
-                .Include(ec => ec.ERoute)
-                .ToListAsync();
-
-            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
-                .ToListAsync();
-
-            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.Where(o => Start <= o.OrderDate && o.OrderDate <= End && AppUserIds.Contains(o.SaleEmployeeId)).ToListAsync();
-
+           
             // khởi tạo kế hoạch
             foreach (MonitorStoreChecker_SaleEmployeeDTO MonitorStoreChecker_SaleEmployeeDTO in MonitorStoreChecker_SaleEmployeeDTOs)
             {
