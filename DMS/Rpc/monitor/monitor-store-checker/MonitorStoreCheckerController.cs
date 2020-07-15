@@ -51,8 +51,10 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             AppUserFilter.DisplayName = StoreCheckerMonitor_AppUserFilterDTO.DisplayName;
             AppUserFilter.OrganizationId = StoreCheckerMonitor_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<MonitorStoreChecker_AppUserDTO> StoreCheckerMonitor_AppUserDTOs = AppUsers
                 .Select(x => new MonitorStoreChecker_AppUserDTO(x)).ToList();
@@ -60,7 +62,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         }
 
         [Route(MonitorStoreCheckerRoute.FilterListOrganization), HttpPost]
-        public async Task<List<MonitorStoreChecker_OrganizationDTO>> FilterListOrganization([FromBody] StoreCheckerMonitor_OrganizationFilterDTO StoreCheckerMonitor_OrganizationFilterDTO)
+        public async Task<List<MonitorStoreChecker_OrganizationDTO>> FilterListOrganization()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -72,12 +74,10 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            OrganizationFilter.Id = StoreCheckerMonitor_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = StoreCheckerMonitor_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = StoreCheckerMonitor_OrganizationFilterDTO.Name;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<MonitorStoreChecker_OrganizationDTO> StoreCheckerMonitor_OrganizationDTOs = Organizations
                 .Select(x => new MonitorStoreChecker_OrganizationDTO(x)).ToList();

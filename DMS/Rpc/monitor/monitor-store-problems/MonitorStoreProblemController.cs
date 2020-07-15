@@ -302,8 +302,8 @@ namespace DMS.Rpc.monitor_store_problems
             AppUserFilter.Username = MonitorStoreProblem_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = MonitorStoreProblem_AppUserFilterDTO.DisplayName;
             AppUserFilter.OrganizationId = MonitorStoreProblem_AppUserFilterDTO.OrganizationId;
-
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
@@ -314,7 +314,7 @@ namespace DMS.Rpc.monitor_store_problems
         }
 
         [Route(MonitorStoreProblemRoute.FilterListOrganization), HttpPost]
-        public async Task<List<MonitorStoreProblem_OrganizationDTO>> FilterListOrganization([FromBody] MonitorStoreProblem_OrganizationFilterDTO MonitorStoreProblem_OrganizationFilterDTO)
+        public async Task<List<MonitorStoreProblem_OrganizationDTO>> FilterListOrganization()
         {
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
             OrganizationFilter.Skip = 0;
@@ -420,8 +420,8 @@ namespace DMS.Rpc.monitor_store_problems
             AppUserFilter.Username = MonitorStoreProblem_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = MonitorStoreProblem_AppUserFilterDTO.DisplayName;
             AppUserFilter.OrganizationId = MonitorStoreProblem_AppUserFilterDTO.OrganizationId;
-
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
@@ -432,7 +432,7 @@ namespace DMS.Rpc.monitor_store_problems
         }
 
         [Route(MonitorStoreProblemRoute.SingleListOrganization), HttpPost]
-        public async Task<List<MonitorStoreProblem_OrganizationDTO>> SingleListOrganization([FromBody] MonitorStoreProblem_OrganizationFilterDTO MonitorStoreProblem_OrganizationFilterDTO)
+        public async Task<List<MonitorStoreProblem_OrganizationDTO>> SingleListOrganization()
         {
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
             OrganizationFilter.Skip = 0;

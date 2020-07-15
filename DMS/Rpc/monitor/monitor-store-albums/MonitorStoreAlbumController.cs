@@ -95,7 +95,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         }
 
         [Route(MonitorStoreAlbumRoute.FilterListOrganization), HttpPost]
-        public async Task<List<MonitorStoreAlbum_OrganizationDTO>> FilterListOrganization([FromBody] MonitorStoreAlbum_OrganizationFilterDTO MonitorStoreAlbum_OrganizationFilterDTO)
+        public async Task<List<MonitorStoreAlbum_OrganizationDTO>> FilterListOrganization()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -107,6 +107,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
@@ -135,17 +136,6 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             StoreFilter.OrganizationId = MonitorStoreAlbum_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = MonitorStoreAlbum_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = MonitorStoreAlbum_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = MonitorStoreAlbum_StoreFilterDTO.ResellerId;
-            StoreFilter.Telephone = MonitorStoreAlbum_StoreFilterDTO.Telephone;
-            StoreFilter.ProvinceId = MonitorStoreAlbum_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = MonitorStoreAlbum_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = MonitorStoreAlbum_StoreFilterDTO.WardId;
-            StoreFilter.Address = MonitorStoreAlbum_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = MonitorStoreAlbum_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = MonitorStoreAlbum_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = MonitorStoreAlbum_StoreFilterDTO.Longitude;
-            StoreFilter.DeliveryLatitude = MonitorStoreAlbum_StoreFilterDTO.DeliveryLatitude;
-            StoreFilter.DeliveryLongitude = MonitorStoreAlbum_StoreFilterDTO.DeliveryLongitude;
             StoreFilter.OwnerName = MonitorStoreAlbum_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = MonitorStoreAlbum_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = MonitorStoreAlbum_StoreFilterDTO.OwnerEmail;

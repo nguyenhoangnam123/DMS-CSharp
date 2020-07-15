@@ -50,6 +50,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             AppUserFilter.DisplayName = SalesmanMonitor_AppUserFilterDTO.DisplayName;
             AppUserFilter.OrganizationId = SalesmanMonitor_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<MonitorSalesman_AppUserDTO> SalesmanMonitor_AppUserDTOs = AppUsers
@@ -58,7 +59,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
         }
 
         [Route(MonitorSalesmanRoute.FilterListOrganization), HttpPost]
-        public async Task<List<MonitorSalesman_OrganizationDTO>> FilterListOrganization([FromBody] MonitorSalesman_OrganizationFilterDTO MonitorSalesman_OrganizationFilterDTO)
+        public async Task<List<MonitorSalesman_OrganizationDTO>> FilterListOrganization()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
