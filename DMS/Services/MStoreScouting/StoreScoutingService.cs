@@ -137,12 +137,12 @@ namespace DMS.Services.MStoreScouting
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Cửa hàng cắm cờ {StoreScouting.Code} - {StoreScouting.Name} vừa được thêm mới vào hệ thống bởi {User.DisplayName} vào lúc {Now}",
-                        LinkWebsite = $"{StoreScoutingRoute.Detail}".Replace("*", StoreScouting.Id.ToString()),
+                        LinkWebsite = $"{StoreScoutingRoute.Master}/?id=*".Replace("*", StoreScouting.Id.ToString()),
                         LinkMobile = $"{StoreScoutingRoute.Mobile}".Replace("*", StoreScouting.Id.ToString()),
                         Time = Now,
                         Unread = false,
                         SenderId = CurrentContext.UserId,
-                        RecipientId = Id
+                        RecipientId = Id,
                     };
                     UserNotifications.Add(NotificationUtils);
                 }

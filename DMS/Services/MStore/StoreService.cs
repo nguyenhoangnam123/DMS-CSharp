@@ -176,7 +176,7 @@ namespace DMS.Services.MStore
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Cửa hàng cắm cờ {StoreScouting.Code} - {StoreScouting.Name} đã được mở cửa hàng bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
-                        LinkWebsite = $"{StoreScoutingRoute.Detail}".Replace("*", StoreScouting.Id.ToString()),
+                        LinkWebsite = $"{StoreScoutingRoute.Master}/?id=*".Replace("*", StoreScouting.Id.ToString()),
                         LinkMobile = $"{StoreScoutingRoute.Mobile}".Replace("*", StoreScouting.Id.ToString()),
                         RecipientId = StoreScouting.CreatorId,
                         SenderId = CurrentContext.UserId,
