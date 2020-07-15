@@ -98,6 +98,30 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             return ReportStoreGeneral_StoreDTOs;
         }
 
+        [Route(ReportStoreGeneralRoute.FilterListStoreGrouping), HttpPost]
+        public async Task<List<ReportStoreGeneral_StoreGroupingDTO>> FilterListStoreGrouping([FromBody] ReportStoreGeneral_StoreGroupingFilterDTO ReportStoreGeneral_StoreGroupingFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = 0;
+            StoreGroupingFilter.Take = 99999;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Code = ReportStoreGeneral_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = ReportStoreGeneral_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.Level = ReportStoreGeneral_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.Path = ReportStoreGeneral_StoreGroupingFilterDTO.Path;
+            StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+            List<ReportStoreGeneral_StoreGroupingDTO> ReportStoreGeneral_StoreGroupingDTOs = StoreGroupings
+                .Select(x => new ReportStoreGeneral_StoreGroupingDTO(x)).ToList();
+            return ReportStoreGeneral_StoreGroupingDTOs;
+        }
+
         [Route(ReportStoreGeneralRoute.FilterListStoreType), HttpPost]
         public async Task<List<ReportStoreGeneral_StoreTypeDTO>> FilterListStoreType([FromBody] ReportStoreGeneral_StoreTypeFilterDTO ReportStoreGeneral_StoreTypeFilterDTO)
         {
@@ -144,6 +168,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 
             long? StoreId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreTypeId?.Equal;
+            long? StoreGroupingId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreGroupingId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -162,6 +187,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                         (StoreTypeId.HasValue == false || s.StoreTypeId == StoreTypeId.Value) &&
+                        (StoreGroupingId.HasValue == false || s.StoreGroupingId == StoreGroupingId.Value) &&
                         OrganizationIds.Contains(o.Id)
                         select s;
 
@@ -191,6 +217,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 
             long? StoreId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreTypeId?.Equal;
+            long? StoreGroupingId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreGroupingId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -205,7 +232,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             List<StoreDAO> StoreDAOs = await DataContext.Store.Include(x => x.Organization)
                 .Where(x => OrganizationIds.Contains(x.OrganizationId) &&
                 (StoreId == null || x.Id == StoreId.Value) &&
-                (StoreTypeId == null || x.StoreTypeId == StoreTypeId.Value))
+                (StoreTypeId == null || x.StoreTypeId == StoreTypeId.Value) &&
+                (StoreGroupingId == null || x.StoreGroupingId == StoreGroupingId.Value))
                 .Skip(ReportStoreGeneral_ReportStoreGeneralFilterDTO.Skip)
                 .Take(ReportStoreGeneral_ReportStoreGeneralFilterDTO.Take)
                 .ToListAsync();

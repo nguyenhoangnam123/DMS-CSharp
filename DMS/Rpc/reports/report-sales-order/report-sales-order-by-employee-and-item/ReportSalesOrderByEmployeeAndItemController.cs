@@ -103,7 +103,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                 .Select(x => new ReportSalesOrderByEmployeeAndItem_OrganizationDTO(x)).ToList();
             return ReportSalesOrderByEmployeeAndItem_OrganizationDTOs;
         }
-        #region
+        #endregion
 
         [Route(ReportSalesOrderByEmployeeAndItemRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO)
