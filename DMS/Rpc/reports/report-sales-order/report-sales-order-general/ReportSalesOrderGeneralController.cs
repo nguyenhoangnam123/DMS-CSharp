@@ -136,7 +136,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
-            long? SaleEmployeeId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.SaleEmployeeId?.Equal;
+            long? SaleEmployeeId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.AppUserId?.Equal;
             long? BuyerStoreId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.BuyerStoreId?.Equal;
             long? SellerStoreId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.SellerStoreId?.Equal;
 
@@ -183,7 +183,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
-            long? SaleEmployeeId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.SaleEmployeeId?.Equal;
+            long? SaleEmployeeId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.AppUserId?.Equal;
             long? BuyerStoreId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.BuyerStoreId?.Equal;
             long? SellerStoreId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.SellerStoreId?.Equal;
 
@@ -303,7 +303,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
-            long? SaleEmployeeId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.SaleEmployeeId?.Equal;
+            long? SaleEmployeeId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.AppUserId?.Equal;
             long? BuyerStoreId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.BuyerStoreId?.Equal;
             long? SellerStoreId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.SellerStoreId?.Equal;
 

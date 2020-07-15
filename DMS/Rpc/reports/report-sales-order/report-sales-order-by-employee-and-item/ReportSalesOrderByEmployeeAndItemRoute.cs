@@ -22,7 +22,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
-            { nameof(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.SaleEmployeeId), FieldTypeEnum.ID.Id },
+            { nameof(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
             { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 

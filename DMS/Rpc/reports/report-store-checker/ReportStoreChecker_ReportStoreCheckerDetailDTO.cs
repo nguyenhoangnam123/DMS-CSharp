@@ -16,7 +16,7 @@ namespace DMS.Rpc.reports.report_store_checker
 
     public class ReportStoreChecker_ReportStoreCheckerDetailFilterDTO : FilterDTO
     {
-        public long SaleEmployeeId { get; set; }
+        public long AppUserId { get; set; }
         public DateTime Date { get; set; }
     }
 }

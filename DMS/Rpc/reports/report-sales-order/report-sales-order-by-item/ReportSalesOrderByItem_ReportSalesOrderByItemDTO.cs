@@ -24,6 +24,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
 
     public class ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO : FilterDTO
     {
+        public IdFilter OrganizationId { get; set; }
         public IdFilter ItemId { get; set; }
         public IdFilter ProductGroupingId { get; set; }
         public IdFilter ProductTypeId { get; set; }

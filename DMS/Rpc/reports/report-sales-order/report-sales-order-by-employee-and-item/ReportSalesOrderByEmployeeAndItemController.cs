@@ -123,7 +123,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
 
-            var SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.SaleEmployeeId?.Equal;
+            var SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -177,7 +177,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
 
             List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
             {
-                Id = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.SaleEmployeeId,
+                Id = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId,
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 Skip = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Skip,
                 Take = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Take,
@@ -333,7 +333,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Id = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.SaleEmployeeId,
+                Id = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId,
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Organization
             });
