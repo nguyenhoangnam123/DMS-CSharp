@@ -385,7 +385,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             {
                 foreach (var SaleEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
                 {
-                    var SalesOrderIds = IndirectSalesOrderDAOs.Where(x => x.SellerStoreId == SaleEmployee.SaleEmployeeId).Select(x => x.Id).ToList();
+                    var SalesOrderIds = IndirectSalesOrderDAOs.Where(x => x.SaleEmployeeId == SaleEmployee.SaleEmployeeId).Select(x => x.Id).ToList();
                     SaleEmployee.Items = new List<ReportSalesOrderByEmployeeAndItem_ItemDTO>();
                     foreach (IndirectSalesOrderContentDAO IndirectSalesOrderContentDAO in IndirectSalesOrderContentDAOs)
                     {
