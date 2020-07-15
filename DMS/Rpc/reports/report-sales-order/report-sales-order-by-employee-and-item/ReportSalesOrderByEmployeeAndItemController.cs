@@ -48,7 +48,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             this.CurrentContext = CurrentContext;
         }
 
-        #region Filter List
         [Route(ReportSalesOrderByEmployeeAndItemRoute.FilterListAppUser), HttpPost]
         public async Task<List<ReportSalesOrderByEmployeeAndItem_AppUserDTO>> FilterListAppUser([FromBody] ReportSalesOrderByEmployeeAndItem_AppUserFilterDTO ReportSalesOrderByEmployeeAndItem_AppUserFilterDTO)
         {
@@ -103,7 +102,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                 .Select(x => new ReportSalesOrderByEmployeeAndItem_OrganizationDTO(x)).ToList();
             return ReportSalesOrderByEmployeeAndItem_OrganizationDTOs;
         }
-        #region
+
 
         [Route(ReportSalesOrderByEmployeeAndItemRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO)
