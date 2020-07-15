@@ -18,7 +18,10 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         public IdFilter StoreId { get; set; }
         public IdFilter StoreTypeId { get; set; }
         public DateFilter CheckIn { get; set; }
-        internal bool HasValue => OrganizationId.HasValue || StoreId.HasValue || StoreTypeId.HasValue || CheckIn.HasValue;
+        internal bool HasValue => (OrganizationId != null && OrganizationId.HasValue) ||
+            (StoreId != null && StoreId.HasValue) ||
+            (StoreTypeId != null && StoreTypeId.HasValue) ||
+            (CheckIn != null && CheckIn.HasValue);
     }
 
 }

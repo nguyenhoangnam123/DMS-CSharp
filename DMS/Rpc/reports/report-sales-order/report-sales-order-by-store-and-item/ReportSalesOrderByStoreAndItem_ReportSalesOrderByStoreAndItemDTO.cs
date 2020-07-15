@@ -19,6 +19,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
         public IdFilter StoreId { get; set; }
         public IdFilter StoreTypeId { get; set; }
         public IdFilter StoreGroupingId { get; set; }
-        internal bool HasValue => OrganizationId.HasValue || OrderDate.HasValue || StoreId.HasValue || StoreTypeId.HasValue || StoreGroupingId.HasValue;
+        internal bool HasValue => (OrganizationId != null && OrganizationId.HasValue) ||
+            (OrderDate != null && OrderDate.HasValue) ||
+            (StoreId != null && StoreId.HasValue) ||
+            (StoreTypeId != null && StoreTypeId.HasValue) ||
+            (StoreGroupingId != null && StoreGroupingId.HasValue);
     }
 }
