@@ -17,7 +17,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
         public decimal SalePriceAverage { get; set; }
         public decimal Discount { get; set; }
         public decimal Revenue { get; set; }
-        public long IndirecSalesOrderCounter => IndirectSalesOrderIds.Count();
+        public long IndirecSalesOrderCounter => IndirectSalesOrderIds?.Count() ?? 0;
         internal HashSet<long> IndirectSalesOrderIds { get; set; }
     }
 }

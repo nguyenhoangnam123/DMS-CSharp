@@ -265,10 +265,20 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 foreach (var StoreCheckingDAO in StoreCheckingDAOs)
                 {
                     var Store = ReportStoreGeneral_ReportStoreGeneralDTO.Stores.Where(x => x.Id == StoreCheckingDAO.StoreId).FirstOrDefault();
+                    if (Store == null)
+                        continue;
                     if (StoreCheckingDAO.Planned)
+                    {
+                        if (Store.StoreCheckingPlannedIds == null)
+                            Store.StoreCheckingPlannedIds = new HashSet<long>();
                         Store.StoreCheckingPlannedIds.Add(StoreCheckingDAO.Id);
+                    }
                     else
+                    {
+                        if (Store.StoreCheckingUnPlannedIds == null)
+                            Store.StoreCheckingUnPlannedIds = new HashSet<long>();
                         Store.StoreCheckingUnPlannedIds.Add(StoreCheckingDAO.Id);
+                    }
                 }
 
                 foreach (var Store in ReportStoreGeneral_ReportStoreGeneralDTO.Stores)
@@ -299,11 +309,17 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 foreach (var IndirectSalesOrderDAO in IndirectSalesOrderDAOs)
                 {
                     var Store = ReportStoreGeneral_ReportStoreGeneralDTO.Stores.Where(x => x.Id == IndirectSalesOrderDAO.BuyerStoreId).FirstOrDefault();
+                    if (Store == null)
+                        continue;
+                    if (Store.IndirectSalesOrderIds == null)
+                        Store.IndirectSalesOrderIds = new HashSet<long>();
                     Store.IndirectSalesOrderIds.Add(IndirectSalesOrderDAO.Id);
 
                     var IndirectSalesOrderContents = IndirectSalesOrderContentDAOs.Where(x => x.IndirectSalesOrderId == IndirectSalesOrderDAO.Id).ToList();
                     foreach (var IndirectSalesOrderContent in IndirectSalesOrderContents)
                     {
+                        if (Store.SKUItemIds == null)
+                            Store.SKUItemIds = new HashSet<long>();
                         Store.SKUItemIds.Add(IndirectSalesOrderContent.Id);
                     }
                 }
