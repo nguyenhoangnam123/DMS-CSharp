@@ -49,7 +49,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
         }
 
         [Route(ReportSalesOrderByItemRoute.FilterListOrganization), HttpPost]
-        public async Task<List<ReportSalesOrderByItem_OrganizationDTO>> FilterListOrganization([FromBody] ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO)
+        public async Task<List<ReportSalesOrderByItem_OrganizationDTO>> FilterListOrganization()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -60,10 +60,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             OrganizationFilter.OrderBy = OrganizationOrder.Id;
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
-            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            OrganizationFilter.Id = ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO.Name;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
