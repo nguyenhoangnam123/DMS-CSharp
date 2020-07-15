@@ -8,6 +8,7 @@ namespace DMS.Rpc.dashboards.director
 {
     public class DashboardDirectorRoute : Root
     {
+        public const string Master = Module + "/dashboards/director";
         private const string Default = Rpc + Module + "/dashboards/director";
         public const string CountStore = Default + "/count-store";
         public const string CountIndirectSalesOrder = Default + "/indirect-sales-order-counter";

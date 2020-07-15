@@ -8,6 +8,7 @@ namespace DMS.Rpc.dashboards.monitor
 {
     public class DashboardMonitorRoute : Root
     {
+        public const string Master = Module + "/dashboards/monitor";
         private const string Default = Rpc + Module + "/dashboards/monitor";
         public const string StoreChecking = Default + "/store-checking";
         public const string SaleEmployeeOnline = Default + "/sale-employee-online";
