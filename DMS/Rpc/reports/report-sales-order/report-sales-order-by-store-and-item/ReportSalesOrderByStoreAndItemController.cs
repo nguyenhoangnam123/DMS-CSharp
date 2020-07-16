@@ -159,8 +159,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
 
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return 0;
 
-            long? StoreId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreId?.Equal;
+                long? StoreId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreGroupingId?.Equal;
 
@@ -188,7 +190,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
         }
 
         [Route(ReportSalesOrderByStoreAndItemRoute.List), HttpPost]
-        public async Task<List<ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO>> List([FromBody] ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO)
+        public async Task<ActionResult<List<ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO>>> List([FromBody] ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -206,6 +208,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
 
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
 
             long? StoreId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreTypeId?.Equal;
@@ -388,6 +392,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
 
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return new ReportSalesOrderByStoreAndItem_TotalDTO();
 
             long? StoreId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreTypeId?.Equal;

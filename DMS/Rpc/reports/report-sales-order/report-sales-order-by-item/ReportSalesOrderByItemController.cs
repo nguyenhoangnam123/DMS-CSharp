@@ -160,8 +160,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
 
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return 0;
 
-            long? ItemId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ItemId?.Equal;
+                long? ItemId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ItemId?.Equal;
             long? ProductTypeId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ProductTypeId?.Equal;
             long? ProductGroupingId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ProductGroupingId?.Equal;
 
@@ -213,7 +215,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
         }
 
         [Route(ReportSalesOrderByItemRoute.List), HttpPost]
-        public async Task<List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO>> List([FromBody] ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO)
+        public async Task<ActionResult<List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO>>> List([FromBody] ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -231,6 +233,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
 
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
 
             long? ItemId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ItemId?.Equal;
             long? ProductTypeId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ProductTypeId?.Equal;
@@ -372,10 +376,20 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
 
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return new ReportSalesOrderByItem_TotalDTO();
 
             ReportSalesOrderByItem_TotalDTO ReportSalesOrderByItem_TotalDTO = new ReportSalesOrderByItem_TotalDTO();
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
             List<long> AppUserIds = await DataContext.AppUser.Where(au =>
                au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
                 .Select(x => x.Id)

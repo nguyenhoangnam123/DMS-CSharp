@@ -134,6 +134,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
 
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return 0;
 
             long? SaleEmployeeId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.AppUserId?.Equal;
             long? BuyerStoreId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.BuyerStoreId?.Equal;
@@ -163,7 +165,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
         }
 
         [Route(ReportSalesOrderGeneralRoute.List), HttpPost]
-        public async Task<List<ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO>> List([FromBody] ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO)
+        public async Task<ActionResult<List<ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO>>> List([FromBody] ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -181,6 +183,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
 
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
 
             long? SaleEmployeeId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.AppUserId?.Equal;
             long? BuyerStoreId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.BuyerStoreId?.Equal;
@@ -289,7 +293,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                 throw new BindException(ModelState);
 
             if (ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.HasValue == false)
-                return new ReportSalesOrderGeneral_TotalDTO ();
+                return new ReportSalesOrderGeneral_TotalDTO();
 
             DateTime Start = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
@@ -301,6 +305,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
 
             Start = new DateTime(Start.Year, Start.Month, Start.Day);
             End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return new ReportSalesOrderGeneral_TotalDTO();
 
             long? SaleEmployeeId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.AppUserId?.Equal;
             long? BuyerStoreId = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.BuyerStoreId?.Equal;
