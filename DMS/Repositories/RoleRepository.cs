@@ -245,7 +245,9 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Role Role)
         {
+            await DataContext.AppUserRoleMapping.Where(x => x.RoleId == Role.Id).DeleteFromQueryAsync();
             await DataContext.PermissionActionMapping.Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
+            await DataContext.PermissionContent.Where(x => x.Permission.RoleId == Role.Id).DeleteFromQueryAsync();
             await DataContext.Permission.Where(x => x.RoleId == Role.Id).DeleteFromQueryAsync();
             await DataContext.Role.Where(x => x.Id == Role.Id).DeleteFromQueryAsync();
             return true;
@@ -270,6 +272,10 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<Role> Roles)
         {
             List<long> Ids = Roles.Select(x => x.Id).ToList();
+            await DataContext.AppUserRoleMapping.Where(x => Ids.Contains(x.RoleId)).DeleteFromQueryAsync();
+            await DataContext.PermissionActionMapping.Where(x => Ids.Contains(x.Permission.RoleId)).DeleteFromQueryAsync();
+            await DataContext.PermissionContent.Where(x => Ids.Contains(x.Permission.RoleId)).DeleteFromQueryAsync();
+            await DataContext.Permission.Where(x => Ids.Contains(x.RoleId)).DeleteFromQueryAsync();
             await DataContext.Role
                 .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
             return true;
