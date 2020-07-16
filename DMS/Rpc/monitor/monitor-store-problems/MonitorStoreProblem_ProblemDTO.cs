@@ -20,6 +20,7 @@ namespace DMS.Rpc.monitor_store_problems
         public long ProblemStatusId { get; set; }
         public Guid RowId { get; set; }
         public MonitorStoreProblem_AppUserDTO Creator { get; set; }
+        public MonitorStoreProblem_OrganizationDTO Organization { get; set; }
         public MonitorStoreProblem_ProblemStatusDTO ProblemStatus { get; set; }
         public MonitorStoreProblem_ProblemTypeDTO ProblemType { get; set; }
         public MonitorStoreProblem_StoreDTO Store { get; set; }
@@ -41,6 +42,7 @@ namespace DMS.Rpc.monitor_store_problems
             this.ProblemStatusId = Problem.ProblemStatusId;
             this.RowId = Problem.RowId;
             this.Creator = Problem.Creator == null ? null : new MonitorStoreProblem_AppUserDTO(Problem.Creator);
+            this.Organization = Problem.Creator.Organization == null ? null : new MonitorStoreProblem_OrganizationDTO(Problem.Creator.Organization);
             this.ProblemStatus = Problem.ProblemStatus == null ? null : new MonitorStoreProblem_ProblemStatusDTO(Problem.ProblemStatus);
             this.ProblemType = Problem.ProblemType == null ? null : new MonitorStoreProblem_ProblemTypeDTO(Problem.ProblemType);
             this.Store = Problem.Store == null ? null : new MonitorStoreProblem_StoreDTO(Problem.Store);
