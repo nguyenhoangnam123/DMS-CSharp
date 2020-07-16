@@ -3,16 +3,16 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 
-namespace DMS.Rpc.reports.report_store_checker
+namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 {
-    public class ReportStoreChecker_ReportStoreCheckerDTO : DataDTO
+    public class ReportStoreChecked_ReportStoreCheckedDTO : DataDTO
     {
         public string OrganizationName { get; set; }
-        public List<ReportStoreChecker_SaleEmployeeDTO> SaleEmployees { get; set; }
+        public List<ReportStoreChecked_SaleEmployeeDTO> SaleEmployees { get; set; }
     }
 
 
-    public class ReportStoreChecker_ReportStoreCheckerFilterDTO : FilterDTO
+    public class ReportStoreChecked_ReportStoreCheckedFilterDTO : FilterDTO
     {
         public IdFilter OrganizationId { get; set; }
         public IdFilter AppUserId { get; set; }

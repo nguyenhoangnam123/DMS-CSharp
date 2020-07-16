@@ -1,9 +1,9 @@
 ﻿using Common;
 using System;
 
-namespace DMS.Rpc.reports.report_store_checker
+namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 {
-    public class ReportStoreChecker_ReportStoreCheckerDetailDTO : DataDTO
+    public class ReportStoreChecked_ReportStoreCheckedDetailDTO : DataDTO
     {
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
@@ -14,7 +14,7 @@ namespace DMS.Rpc.reports.report_store_checker
         public string CompetitorProblemCode { get; set; }
     }
 
-    public class ReportStoreChecker_ReportStoreCheckerDetailFilterDTO : FilterDTO
+    public class ReportStoreChecked_ReportStoreCheckedDetailFilterDTO : FilterDTO
     {
         public long AppUserId { get; set; }
         public DateTime Date { get; set; }

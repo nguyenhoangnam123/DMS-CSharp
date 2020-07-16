@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.reports.report_store_checker
+namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 {
-    public class ReportStoreChecker_StoreDTO : DataDTO
+    public class ReportStoreChecked_StoreDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -17,8 +17,8 @@ namespace DMS.Rpc.reports.report_store_checker
         public long StoreTypeId { get; set; }
         public long? StoreGroupingId { get; set; }
         public long StatusId { get; set; }
-        public ReportStoreChecker_StoreDTO() { }
-        public ReportStoreChecker_StoreDTO(Store Store)
+        public ReportStoreChecked_StoreDTO() { }
+        public ReportStoreChecked_StoreDTO(Store Store)
         {
             this.Id = Store.Id;
             this.Code = Store.Code;

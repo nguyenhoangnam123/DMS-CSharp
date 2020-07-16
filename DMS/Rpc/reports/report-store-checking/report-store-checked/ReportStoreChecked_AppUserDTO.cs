@@ -1,16 +1,16 @@
 ﻿using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.reports.report_store_checker
+namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 {
-    public class ReportStoreChecker_AppUserDTO : DataDTO
+    public class ReportStoreChecked_AppUserDTO : DataDTO
     {
         public long Id { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
 
-        public ReportStoreChecker_AppUserDTO() { }
-        public ReportStoreChecker_AppUserDTO(AppUser AppUser)
+        public ReportStoreChecked_AppUserDTO() { }
+        public ReportStoreChecked_AppUserDTO(AppUser AppUser)
         {
             this.Id = AppUser.Id;
             this.Username = AppUser.Username;
@@ -19,7 +19,7 @@ namespace DMS.Rpc.reports.report_store_checker
         }
     }
 
-    public class ReportStoreChecker_AppUserFilterDTO : FilterDTO
+    public class ReportStoreChecked_AppUserFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public IdFilter OrganizationId { get; set; }

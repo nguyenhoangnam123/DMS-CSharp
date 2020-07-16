@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DMS.Rpc.reports.report_store_checker
+namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 {
-    public class ReportStoreChecker_StoreCheckingDTO : DataDTO
+    public class ReportStoreChecked_StoreCheckingDTO : DataDTO
     {
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
@@ -13,16 +13,16 @@ namespace DMS.Rpc.reports.report_store_checker
         public long SaleEmployeeId { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
-        public DateTime Duaration { get; set; }
+        public string Duaration { get; set; }
         public string DeviceName { get; set; }
         public long ImageCounter { get; set; }
         public bool Planned { get; set; }
         public bool SalesOrder { get; set; }
     }
 
-    public class ReportStoreChecker_StoreCheckingGroupByDateDTO : DataDTO
+    public class ReportStoreChecked_StoreCheckingGroupByDateDTO : DataDTO
     {
         public DateTime Date { get; set; }
-        public List<ReportStoreChecker_StoreCheckingDTO> StoreCheckings { get; set; }
+        public List<ReportStoreChecked_StoreCheckingDTO> StoreCheckings { get; set; }
     }
 }

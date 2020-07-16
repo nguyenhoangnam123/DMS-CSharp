@@ -1,9 +1,9 @@
 using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.reports.report_store_checker
+namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 {
-    public class ReportStoreChecker_StoreTypeDTO : DataDTO
+    public class ReportStoreChecked_StoreTypeDTO : DataDTO
     {
 
         public long Id { get; set; }
@@ -15,8 +15,8 @@ namespace DMS.Rpc.reports.report_store_checker
         public long StatusId { get; set; }
 
 
-        public ReportStoreChecker_StoreTypeDTO() { }
-        public ReportStoreChecker_StoreTypeDTO(StoreType StoreType)
+        public ReportStoreChecked_StoreTypeDTO() { }
+        public ReportStoreChecked_StoreTypeDTO(StoreType StoreType)
         {
 
             this.Id = StoreType.Id;
@@ -30,7 +30,7 @@ namespace DMS.Rpc.reports.report_store_checker
         }
     }
 
-    public class ReportStoreChecker_StoreTypeFilterDTO : FilterDTO
+    public class ReportStoreChecked_StoreTypeFilterDTO : FilterDTO
     {
 
         public IdFilter Id { get; set; }

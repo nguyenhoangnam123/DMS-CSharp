@@ -1,13 +1,13 @@
 ﻿using Common;
 using System.Collections.Generic;
 
-namespace DMS.Rpc.reports.report_store_checker
+namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 {
-    public class ReportStoreCheckerRoute : Root
+    public class ReportStoreCheckedRoute : Root
     {
-        public const string Master = Module + "/report-store-checker/report-store-checker-master";
+        public const string Master = Module + "/report-store-checked/report-store-checked-master";
 
-        private const string Default = Rpc + Module + "/report-store-checker";
+        private const string Default = Rpc + Module + "/report-store-checked";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Export = Default + "/export";
@@ -20,14 +20,14 @@ namespace DMS.Rpc.reports.report_store_checker
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(ReportStoreChecker_ReportStoreCheckerFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
-            { nameof(ReportStoreChecker_ReportStoreCheckerFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
+            { nameof(ReportStoreChecked_ReportStoreCheckedFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(ReportStoreChecked_ReportStoreCheckedFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Export, FilterListOrganization,FilterListAppUser,FilterListStore, FilterListStoreType,FilterListStoreGrouping  } },
+                Master, Count, List, Export, FilterListOrganization, FilterListAppUser, FilterListStore, FilterListStoreType, FilterListStoreGrouping  } },
 
         };
     }

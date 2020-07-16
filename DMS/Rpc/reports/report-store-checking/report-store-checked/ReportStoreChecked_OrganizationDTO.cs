@@ -1,9 +1,9 @@
 ﻿using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.reports.report_store_checker
+namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 {
-    public class ReportStoreChecker_OrganizationDTO : DataDTO
+    public class ReportStoreChecked_OrganizationDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -15,8 +15,8 @@ namespace DMS.Rpc.reports.report_store_checker
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
-        public ReportStoreChecker_OrganizationDTO() { }
-        public ReportStoreChecker_OrganizationDTO(Organization Organization)
+        public ReportStoreChecked_OrganizationDTO() { }
+        public ReportStoreChecked_OrganizationDTO(Organization Organization)
         {
             this.Id = Organization.Id;
             this.Code = Organization.Code;
@@ -32,7 +32,7 @@ namespace DMS.Rpc.reports.report_store_checker
         }
     }
 
-    public class ReportStoreChecker_OrganizationFilterDTO : FilterDTO
+    public class ReportStoreChecked_OrganizationFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
