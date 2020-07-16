@@ -317,6 +317,18 @@ namespace DMS.Repositories
                     ProvinceId = x.Creator.ProvinceId,
                     SexId = x.Creator.SexId,
                     Birthday = x.Creator.Birthday,
+                    Organization = x.Creator.Organization == null ? null : new Organization
+                    {
+                        Id = x.Creator.Organization.Id,
+                        Code = x.Creator.Organization.Code,
+                        Name = x.Creator.Organization.Name,
+                        Email = x.Creator.Organization.Email,
+                        Level = x.Creator.Organization.Level,
+                        Phone = x.Creator.Organization.Phone,
+                        ParentId = x.Creator.Organization.ParentId,
+                        StatusId = x.Creator.Organization.StatusId,
+                        Address = x.Creator.Organization.Address,
+                    }
                 },
                 ProblemStatus = x.ProblemStatus == null ? null : new ProblemStatus
                 {
