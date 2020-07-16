@@ -190,7 +190,7 @@ namespace DMS.Services.MStore
 
                 NotifyUsed(Store);
 
-                var RecipientIds = await ListAppUserInOrgs();
+                var RecipientIds = await ListAppUserInOrgs(Store);
                 foreach (var Id in RecipientIds)
                 {
                     UserNotification UserNotification = new UserNotification
@@ -243,7 +243,7 @@ namespace DMS.Services.MStore
                 NotifyUsed(Store);
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var RecipientIds = await ListAppUserInOrgs();
+                var RecipientIds = await ListAppUserInOrgs(Store);
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 foreach (var Id in RecipientIds)
                 {
@@ -296,7 +296,7 @@ namespace DMS.Services.MStore
                 await UOW.Commit();
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var RecipientIds = await ListAppUserInOrgs();
+                var RecipientIds = await ListAppUserInOrgs(Store);
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 foreach (var Id in RecipientIds)
                 {
@@ -343,6 +343,28 @@ namespace DMS.Services.MStore
                 await UOW.Begin();
                 await UOW.StoreRepository.BulkDelete(Stores);
                 await UOW.Commit();
+
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                foreach (var Store in Stores)
+                {
+                    var RecipientIds = await ListAppUserInOrgs(Store);
+                    foreach (var Id in RecipientIds)
+                    {
+                        UserNotification UserNotification = new UserNotification
+                        {
+                            TitleWeb = $"Thông báo từ DMS",
+                            ContentWeb = $"Cửa hàng {Store.Code} - {Store.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                            RecipientId = Id,
+                            SenderId = CurrentContext.UserId,
+                            Time = StaticParams.DateTimeNow,
+                            Unread = false
+                        };
+                        UserNotifications.Add(UserNotification);
+                    }
+                }
+
+                await NotificationService.BulkSend(UserNotifications);
                 await Logging.CreateAuditLog(new { }, Stores, nameof(StoreService));
                 return Stores;
             }
@@ -500,18 +522,18 @@ namespace DMS.Services.MStore
             return Parameters;
         }
 
-        private async Task<List<long>> ListAppUserInOrgs()
+        private async Task<List<long>> ListAppUserInOrgs(Store Store)
         {
-            var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            var Org = await UOW.OrganizationRepository.Get(Store.OrganizationId);
             List<long> Ids = new List<long>();
-            if (CurrentUser.OrganizationId.HasValue)
+            if (Org != null)
             {
                 var OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
                 {
                     Skip = 0,
                     Take = int.MaxValue,
                     Selects = OrganizationSelect.Id,
-                    Path = new StringFilter { StartWith = CurrentUser.Organization.Path }
+                    Path = new StringFilter { StartWith = Org.Path }
                 })).Select(x => x.Id).ToList();
                 Ids = (await UOW.AppUserRepository.List(new AppUserFilter
                 {
@@ -520,8 +542,8 @@ namespace DMS.Services.MStore
                     Selects = AppUserSelect.Id,
                     OrganizationId = new IdFilter { In = OrganizationIds }
                 })).Select(x => x.Id).Distinct().ToList();
-
             }
+            
             return Ids;
         }
 
