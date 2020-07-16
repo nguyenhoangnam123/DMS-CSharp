@@ -261,9 +261,9 @@ namespace DMS.Models
                     .HasMaxLength(500)
                     .HasComment("Địa chỉ email");
 
-                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 6)");
 
-                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 6)");
 
                 entity.Property(e => e.OrganizationId).HasComment("Đơn vị công tác");
 
@@ -2620,15 +2620,15 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeliveryAddress).HasMaxLength(3000);
 
-                entity.Property(e => e.DeliveryLatitude).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.DeliveryLatitude).HasColumnType("decimal(18, 6)");
 
-                entity.Property(e => e.DeliveryLongitude).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.DeliveryLongitude).HasColumnType("decimal(18, 6)");
 
-                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 6)");
 
                 entity.Property(e => e.LegalEntity).HasMaxLength(500);
 
-                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 6)");
 
                 entity.Property(e => e.Name).HasMaxLength(500);
 
@@ -2710,9 +2710,9 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeviceName).HasMaxLength(200);
 
-                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 6)");
 
-                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 6)");
 
                 entity.HasOne(d => d.SaleEmployee)
                     .WithMany(p => p.StoreCheckings)
@@ -2832,9 +2832,9 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 6)");
 
-                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 6)");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
