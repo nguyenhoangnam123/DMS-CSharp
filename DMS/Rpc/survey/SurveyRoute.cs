@@ -61,6 +61,10 @@ namespace DMS.Rpc.survey
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType,
                 GetSurveyForm, SaveSurveyForm } },
+            { "Xuất Excel", new List<string> {
+                Master, Count, List, Get, Export,
+                FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType,
+                Delete, } },
         };
     }
 }
