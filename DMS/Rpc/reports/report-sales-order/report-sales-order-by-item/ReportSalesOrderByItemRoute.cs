@@ -8,9 +8,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
 {
     public class ReportSalesOrderByItemRoute : Root
     {
-        public const string Master = Module + "/report-sales-order-by-items/report-sales-order-by-items-master";
+        public const string Master = Module + "/sales-order-report/sales-order-by-items-report-master";
 
-        private const string Default = Rpc + Module + "/report-sales-order-by-item";
+        private const string Default = Rpc + Module + "/sales-order-by-items-report";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Total = Default + "/total";

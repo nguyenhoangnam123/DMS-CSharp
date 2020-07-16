@@ -5,9 +5,9 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 {
     public class ReportStoreGeneralRoute : Root
     {
-        public const string Master = Module + "/report-store-general/report-store-general-master";
+        public const string Master = Module + "/store-report/store-general-report-master";
 
-        private const string Default = Rpc + Module + "/report-store-general";
+        private const string Default = Rpc + Module + "/store-general-report";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Export = Default + "/export";
