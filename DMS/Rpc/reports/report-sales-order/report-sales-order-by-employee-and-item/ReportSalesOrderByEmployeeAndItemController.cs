@@ -171,6 +171,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             if (End.Subtract(Start).Days > 31)
                 return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
 
+            long? SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
+
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -181,14 +183,25 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
-            List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
+            var query = from i in DataContext.IndirectSalesOrder
+                        join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
+                        where i.OrderDate >= Start && i.OrderDate <= End &&
+                        (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                        (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
+                        select au;
+
+            var AppUserIds = await query.Select(x => x.Id).Distinct().ToListAsync();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
             {
-                Id = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId,
+                Id = new IdFilter { In = AppUserIds },
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 Skip = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Skip,
                 Take = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Take,
+                OrderBy = AppUserOrder.DisplayName,
                 Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Organization
-            });
+            };
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
 
             List<string> OrganizationNames = AppUsers.Select(s => s.Organization.Name).Distinct().ToList();
             OrganizationNames = OrganizationNames.OrderBy(x => x).ToList();
@@ -332,19 +345,38 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             if (End.Subtract(Start).Days > 31)
                 return new ReportSalesOrderByEmployeeAndItem_TotalDTO();
 
+            long? SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
+
             ReportSalesOrderByEmployeeAndItem_TotalDTO ReportSalesOrderByEmployeeAndItem_TotalDTO = new ReportSalesOrderByEmployeeAndItem_TotalDTO();
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
-            List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
+            var query = from i in DataContext.IndirectSalesOrder
+                        join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
+                        where i.OrderDate >= Start && i.OrderDate <= End &&
+                        (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                        (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
+                        select au;
+
+            var AppUserIds = await query.Select(x => x.Id).Distinct().ToListAsync();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
             {
-                Skip = 0,
-                Take = int.MaxValue,
-                Id = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId,
+                Id = new IdFilter { In = AppUserIds },
                 OrganizationId = new IdFilter { In = OrganizationIds },
+                Skip = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Skip,
+                Take = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Take,
+                OrderBy = AppUserOrder.DisplayName,
                 Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Organization
-            });
+            };
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
 
             List<string> OrganizationNames = AppUsers.Select(s => s.Organization.Name).Distinct().ToList();
             List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO> ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs = OrganizationNames.Select(on => new ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO
