@@ -20,5 +20,19 @@ namespace DMS.Rpc.dashboards.monitor
         public const string TopSaleEmployeeStoreChecking = Default + "/top-sale-employee-store-checking";
 
         public const string FilterListTime = Default + "/filter-list-time";
+
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
+        {
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
+        };
+
+        public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
+        {
+            { "Hiển thị", new List<string> {
+                Master,
+                StoreChecking, SaleEmployeeOnline, StatisticIndirectSalesOrder, ImageStoreCheking, StoreCheckingCoverage, SaleEmployeeLocation,
+                ListIndirectSalesOrder, TopSaleEmployeeStoreChecking, FilterListTime
+            } },
+        };
     }
 }

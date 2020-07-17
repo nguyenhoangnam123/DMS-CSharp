@@ -43,6 +43,7 @@ namespace DMS.Rpc.mobile
 
         public const string CountBanner = Default + "/count-banner";
         public const string ListBanner = Default + "/list-banner";
+        public const string GetBanner = Default + "/get-banner";
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
         public const string GetItem = Default + "/get-item";

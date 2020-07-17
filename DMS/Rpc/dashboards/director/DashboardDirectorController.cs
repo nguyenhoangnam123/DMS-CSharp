@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.dashboards.director
 {
-    public class DashboardDirectorController : SimpleController
+    public class DashboardDirectorController : RpcController
     {
         private const long TODAY = 0;
         private const long THIS_WEEK = 1;

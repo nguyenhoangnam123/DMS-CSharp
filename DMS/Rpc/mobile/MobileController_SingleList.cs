@@ -394,6 +394,16 @@ namespace DMS.Rpc.mobile
             return Mobile_BannerDTOs;
         }
 
+        [Route(MobileRoute.GetBanner), HttpPost]
+        public async Task<ActionResult<Mobile_BannerDTO>> GetBanner([FromBody] Mobile_BannerDTO Mobile_BannerDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            Banner Banner = await BannerService.Get(Mobile_BannerDTO.Id);
+            return new Mobile_BannerDTO(Banner);
+        }
+
         [Route(MobileRoute.GetStore), HttpPost]
         public async Task<ActionResult<Mobile_StoreDTO>> Get([FromBody] Mobile_StoreDTO Mobile_StoreDTO)
         {
