@@ -39,7 +39,7 @@ namespace DMS.Rpc.dashboards.director
             { "Hiển thị", new List<string> {
                 Master,
                 CountStore, CountIndirectSalesOrder, RevenueTotal, ItemSalesTotal, CountStoreChecking, StatisticToday, StatisticYesterday,
-                StoreCoverage, SaleEmployeeLocation, ListIndirectSalesOrder, Top5RevenueByProduct, RevenueFluctuation, SaledItemFluctuation,
+                StoreCoverage, SaleEmployeeLocation, ListIndirectSalesOrder, Top5RevenueByProduct, Top5RevenueByStore, RevenueFluctuation, SaledItemFluctuation,
                 IndirectSalesOrderFluctuation, FilterListTime1, FilterListTime2,
             } },
         };
