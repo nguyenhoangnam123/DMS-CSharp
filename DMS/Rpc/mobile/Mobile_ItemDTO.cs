@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,6 +18,7 @@ namespace DMS.Rpc.mobile
         public long SaleStock { get; set; }
         public long StatusId { get; set; }
         public bool HasInventory { get; set; }
+        public DateTime? LastUpdateInventory { get; set; }
         public Mobile_ProductDTO Product { get; set; }
         public List<Mobile_ImageDTO> Images { get; set; }
         public List<Mobile_InventoryDTO> Inventories { get; set; }
@@ -33,6 +35,7 @@ namespace DMS.Rpc.mobile
             this.SaleStock = Item.SaleStock;
             this.StatusId = Item.StatusId;
             this.HasInventory = Item.HasInventory;
+            this.LastUpdateInventory = Item.LastUpdateInventory;
             this.Product = Item.Product == null ? null : new Mobile_ProductDTO(Item.Product);
             this.Images = Item.ItemImageMappings?.Where(iim => iim.Image != null).Select(iim => new Mobile_ImageDTO(iim.Image)).ToList();
             this.Inventories = Item.Inventories?.Select(iv => new Mobile_InventoryDTO(iv)).ToList();

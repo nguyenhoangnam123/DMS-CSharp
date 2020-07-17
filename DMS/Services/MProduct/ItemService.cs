@@ -1,4 +1,4 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
 using DMS.Repositories;
 using DMS.Services.MImage;
@@ -110,17 +110,11 @@ namespace DMS.Services.MProduct
         }
         public async Task<Item> Get(long Id)
         {
+            var appUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             Item Item = await UOW.ItemRepository.Get(Id);
             if (Item == null)
                 return null;
-            InventoryFilter InventoryFilter = new InventoryFilter
-            {
-                ItemId = new IdFilter { Equal = Item.Id },
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = InventorySelect.ALL,
-            };
-            List<Inventory> Inventories = await UOW.InventoryRepository.List(InventoryFilter);
+            
             WarehouseFilter warehouseFilter = new WarehouseFilter
             {
                 Skip = 0,
@@ -128,12 +122,43 @@ namespace DMS.Services.MProduct
                 OrderBy = WarehouseOrder.Code,
                 OrderType = OrderType.ASC,
                 Selects = WarehouseSelect.Id | WarehouseSelect.Code | WarehouseSelect.Name,
+                OrganizationId = new IdFilter { Equal = appUser.OrganizationId }
             };
             List<Warehouse> Warehouses = await UOW.WarehouseRepository.List(warehouseFilter);
+            var WarehouseIds = Warehouses.Select(x => x.Id).ToList();
+            InventoryFilter InventoryFilter = new InventoryFilter
+            {
+                ItemId = new IdFilter { Equal = Item.Id },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = InventorySelect.ALL,
+                WarehouseId = new IdFilter { In = WarehouseIds }
+            };
+            List<Inventory> Inventories = await UOW.InventoryRepository.List(InventoryFilter);
+            var InventoryIds = Inventories.Select(x => x.Id).ToList();
+
+            #region lấy thời gian cập nhật tồn kho gần nhất
+            InventoryHistoryFilter InventoryHistoryFilter = new InventoryHistoryFilter
+            {
+                InventoryId = new IdFilter { In = InventoryIds },
+                OrderBy = InventoryHistoryOrder.UpdateTime,
+                OrderType = OrderType.DESC,
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = InventoryHistorySelect.UpdateTime,
+            };
+            List<InventoryHistory> InventoryHistories = await UOW.InventoryHistoryRepository.List(InventoryHistoryFilter);
+            InventoryHistory InventoryHistory = InventoryHistories.FirstOrDefault();
+            if(InventoryHistory != null)
+            {
+                Item.LastUpdateInventory = InventoryHistory.UpdateTime;
+            }
+            #endregion
+
             Item.Inventories = new List<Inventory>();
             foreach (Warehouse Warehouse in Warehouses)
             {
-                Inventory Inventory = Inventories.Where(i => i.WarehouseId == Warehouse.Id).FirstOrDefault();
+                Inventory Inventory = Inventories.Where(i => i.WarehouseId == Warehouse.Id && i.ItemId == Id).FirstOrDefault();
                 if (Inventory == null)
                 {
                     Inventory = new Inventory
@@ -147,7 +172,7 @@ namespace DMS.Services.MProduct
                 }
                 Item.Inventories.Add(Inventory);
             }
-            Item.HasInventory = Item.Inventories.Select(i => i.SaleStock).Count() > 0;
+            Item.HasInventory = Item.Inventories.Select(i => i.SaleStock).Sum() > 0;
             return Item;
         }
 
