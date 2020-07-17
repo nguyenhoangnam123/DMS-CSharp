@@ -16,7 +16,7 @@ using DMS.Services.MOrganization;
 
 namespace DMS.Rpc.dashboards.monitor
 {
-    public class DashboardMonitorController : SimpleController
+    public class DashboardMonitorController : RpcController
     {
         private const long TODAY = 0;
         private const long THIS_WEEK = 1;

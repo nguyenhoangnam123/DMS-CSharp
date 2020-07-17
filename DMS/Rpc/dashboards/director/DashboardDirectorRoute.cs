@@ -28,5 +28,20 @@ namespace DMS.Rpc.dashboards.director
 
         public const string FilterListTime1 = Default + "/filter-list-time-1";
         public const string FilterListTime2 = Default + "/filter-list-time-2";
+
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
+        {
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
+        };
+
+        public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
+        {
+            { "Hiển thị", new List<string> {
+                Master,
+                CountStore, CountIndirectSalesOrder, RevenueTotal, ItemSalesTotal, CountStoreChecking, StatisticToday, StatisticYesterday,
+                StoreCoverage, SaleEmployeeLocation, ListIndirectSalesOrder, Top5RevenueByProduct, RevenueFluctuation, SaledItemFluctuation,
+                IndirectSalesOrderFluctuation, FilterListTime1, FilterListTime2,
+            } },
+        };
     }
 }
