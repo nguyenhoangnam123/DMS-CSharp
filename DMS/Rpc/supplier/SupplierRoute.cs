@@ -35,15 +35,15 @@ namespace DMS.Rpc.supplier
             { "Thêm", new List<string> {
                 Master, Count, List, Get, FilterListStatus,
                 Detail, Create,
-                SingleListDistrict, SingleListProvince, SingleListStatus, SingleListWard, } },
+                SingleListDistrict, SingleListPersonInCharge, SingleListProvince, SingleListStatus, SingleListWard, } },
             { "Sửa", new List<string> {
                 Master, Count, List, Get, FilterListStatus,
                 Detail, Update,
-                SingleListDistrict, SingleListProvince, SingleListStatus, SingleListWard, } },
+                SingleListDistrict, SingleListPersonInCharge, SingleListProvince, SingleListStatus, SingleListWard, } },
             { "Xoá", new List<string> {
                 Master, Count, List, Get, FilterListStatus,
                 Detail, Delete,
-                SingleListDistrict, SingleListProvince, SingleListStatus, SingleListWard, } },
+                SingleListDistrict, SingleListPersonInCharge, SingleListProvince, SingleListStatus, SingleListWard, } },
             { "Xoá nhiều", new List<string> {
                 Master, Count, List, Get, FilterListStatus,
                 BulkDelete } },
