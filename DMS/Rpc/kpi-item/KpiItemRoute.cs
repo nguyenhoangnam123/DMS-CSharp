@@ -50,12 +50,9 @@ namespace DMS.Rpc.kpi_item
         public const string CountItem = Default + "/count-item";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(KpiItemFilter.Id), FieldTypeEnum.ID.Id },
             { nameof(KpiItemFilter.OrganizationId), FieldTypeEnum.ID.Id },
-            { nameof(KpiItemFilter.KpiPeriodId), FieldTypeEnum.ID.Id },
-            { nameof(KpiItemFilter.StatusId), FieldTypeEnum.ID.Id },
             { nameof(KpiItemFilter.AppUserId), FieldTypeEnum.ID.Id },
-            { nameof(KpiItemFilter.CreatorId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

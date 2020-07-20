@@ -18,6 +18,13 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         public const string FilterListKpiPeriod = Default + "/filter-list-kpi-period";
         public const string FilterListKpiYear = Default + "/filter-list-kpi-year";
 
+        public static Dictionary<string, long> Filters = new Dictionary<string, long>
+        {
+            { nameof(KpiItemReport_KpiItemReportFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(KpiItemReport_KpiItemReportFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
+        };
+
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {

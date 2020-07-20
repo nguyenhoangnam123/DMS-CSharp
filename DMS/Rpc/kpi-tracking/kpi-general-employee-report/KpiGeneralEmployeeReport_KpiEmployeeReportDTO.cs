@@ -15,7 +15,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
     public class KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO : FilterDTO
     {
         public IdFilter OrganizationId { get; set; }
-        public IdFilter SaleEmployeeId { get; set; }
+        public IdFilter AppUserId { get; set; }
         public IdFilter KpiPeriodId { get; set; }
         public IdFilter KpiYearId { get; set; }
     }
