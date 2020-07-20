@@ -6,6 +6,7 @@ using DMS.Rpc;
 using DMS.Services;
 using Hangfire;
 using Hangfire.SqlServer;
+using Hangfire.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -159,7 +160,16 @@ namespace DMS
             {
                 InternalServices.UTILS = Configuration["InternalServices:UTILS"];
                 InternalServices.ES = Configuration["InternalServices:ES"];
+
                 JobStorage.Current = new SqlServerStorage(Configuration.GetConnectionString("DataContext"));
+                using (var connection = JobStorage.Current.GetConnection())
+                {
+                    foreach (var recurringJob in connection.GetRecurringJobs())
+                    {
+                        RecurringJob.RemoveIfExists(recurringJob.Id);
+                    }
+                }
+
                 bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
                 TimeZoneInfo tzi;
                 if (isWindows)
