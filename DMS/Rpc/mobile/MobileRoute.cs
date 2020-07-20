@@ -50,6 +50,7 @@ namespace DMS.Rpc.mobile
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
         public const string GetStore = Default + "/get-store";
+        public const string UpdateStore = Default + "/update-store";
         public const string CountStorePlanned = Default + "/count-store-planned";
         public const string ListStorePlanned = Default + "/list-store-planned";
         public const string CountStoreUnPlanned = Default + "/count-store-unplanned";

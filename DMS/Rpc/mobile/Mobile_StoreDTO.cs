@@ -35,6 +35,7 @@ namespace DMS.Rpc.mobile
         public bool HasChecking { get; set; }
         public bool Used { get; set; }
         public long? StoreScoutingId { get; set; }
+        public long? StoreId { get; set; }
         public Mobile_DistrictDTO District { get; set; }
         public Mobile_OrganizationDTO Organization { get; set; }
         public Mobile_StoreDTO ParentStore { get; set; }
@@ -42,6 +43,7 @@ namespace DMS.Rpc.mobile
         public Mobile_StoreGroupingDTO StoreGrouping { get; set; }
         public Mobile_StoreTypeDTO StoreType { get; set; }
         public Mobile_WardDTO Ward { get; set; }
+        public Mobile_StatusDTO Status { get; set; }
         public Mobile_StoreScoutingDTO StoreScouting { get; set; }
         public List<Mobile_StoreImageMappingDTO> StoreImageMappings { get; set; }
         public List<Mobile_StoreCheckingDTO> StoreCheckings { get; set; }
@@ -76,6 +78,7 @@ namespace DMS.Rpc.mobile
             this.HasChecking = Store.HasChecking;
             this.Used = Store.Used;
             this.StoreScoutingId = Store.StoreScoutingId;
+            this.Status = Store.Status == null ? null : new Mobile_StatusDTO(Store.Status);
             this.District = Store.District == null ? null : new Mobile_DistrictDTO(Store.District);
             this.Organization = Store.Organization == null ? null : new Mobile_OrganizationDTO(Store.Organization);
             this.ParentStore = Store.ParentStore == null ? null : new Mobile_StoreDTO(Store.ParentStore);
