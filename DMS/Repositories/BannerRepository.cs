@@ -74,8 +74,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Title, BannerFilter.Title);
                 if (BannerFilter.Priority != null)
                     queryable = queryable.Where(q => q.Priority, BannerFilter.Priority);
-                if (BannerFilter.Content != null)
-                    queryable = queryable.Where(q => q.Content, BannerFilter.Content);
                 if (BannerFilter.CreatorId != null)
                     queryable = queryable.Where(q => q.CreatorId, BannerFilter.CreatorId);
                 if (BannerFilter.ImageId != null)
@@ -106,9 +104,6 @@ namespace DMS.Repositories
                         case BannerOrder.Priority:
                             query = query.OrderBy(q => q.Priority == null).ThenBy(x => x.Priority);
                             break;
-                        case BannerOrder.Content:
-                            query = query.OrderBy(q => q.Content);
-                            break;
                         case BannerOrder.Creator:
                             query = query.OrderBy(q => q.CreatorId);
                             break;
@@ -135,9 +130,6 @@ namespace DMS.Repositories
                         case BannerOrder.Priority:
                             query = query.OrderByDescending(q => q.Priority == null).ThenByDescending(x => x.Priority);
                             break;
-                        case BannerOrder.Content:
-                            query = query.OrderByDescending(q => q.Content);
-                            break;
                         case BannerOrder.Creator:
                             query = query.OrderByDescending(q => q.CreatorId);
                             break;
@@ -162,7 +154,6 @@ namespace DMS.Repositories
                 Code = filter.Selects.Contains(BannerSelect.Code) ? q.Code : default(string),
                 Title = filter.Selects.Contains(BannerSelect.Title) ? q.Title : default(string),
                 Priority = filter.Selects.Contains(BannerSelect.Priority) ? q.Priority : default(long?),
-                Content = filter.Selects.Contains(BannerSelect.Content) ? q.Content : default(string),
                 CreatorId = filter.Selects.Contains(BannerSelect.Creator) ? q.CreatorId : default(long),
                 ImageId = filter.Selects.Contains(BannerSelect.Image) ? q.ImageId : default(long?),
                 StatusId = filter.Selects.Contains(BannerSelect.Status) ? q.StatusId : default(long),

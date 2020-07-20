@@ -7,6 +7,9 @@
       "TitleEmpty": "Chưa nhập tiêu đề",
       "TitleOverLength": "Tiêu đề quá dài"
     },
+    "Content": {
+      "ContentOverLength": "Nội dung quá dài"
+    },
     "Priority": {
       "PriorityInvalid": "Chưa nhập thứ tự ưu tiên"
     },
