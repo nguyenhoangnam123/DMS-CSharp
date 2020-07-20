@@ -54,7 +54,38 @@ namespace DMS.Repositories
             if (filter.ProblemStatusId != null)
                 query = query.Where(q => q.ProblemStatusId, filter.ProblemStatusId);
             if (filter.OrganizationId != null)
-                query = query.Where(q => q.Creator.OrganizationId, filter.OrganizationId);
+            {
+                if (filter.OrganizationId.Equal != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.Equal.Value).FirstOrDefault();
+                    query = query.Where(q => q.Creator.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.NotEqual != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                    query = query.Where(q => !q.Creator.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.In != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => q.Creator.OrganizationId.HasValue && Ids.Contains(q.Creator.OrganizationId.Value));
+                }
+                if (filter.OrganizationId.NotIn != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => q.Creator.OrganizationId.HasValue && !Ids.Contains(q.Creator.OrganizationId.Value));
+                }
+            }
             query = OrFilter(query, filter);
             return query;
         }
@@ -67,26 +98,59 @@ namespace DMS.Repositories
             foreach (ProblemFilter ProblemFilter in filter.OrFilter)
             {
                 IQueryable<ProblemDAO> queryable = query;
-                if (filter.Id != null)
-                    queryable = queryable.Where(q => q.Id, filter.Id);
-                if (filter.StoreCheckingId != null)
-                    queryable = queryable.Where(q => q.StoreCheckingId, filter.StoreCheckingId);
-                if (filter.Code != null)
-                    queryable = queryable.Where(q => q.Code, filter.Code);
-                if (filter.StoreId != null)
-                    queryable = queryable.Where(q => q.StoreId, filter.StoreId);
-                if (filter.AppUserId != null)
-                    queryable = queryable.Where(q => q.CreatorId, filter.AppUserId);
-                if (filter.ProblemTypeId != null)
-                    queryable = queryable.Where(q => q.ProblemTypeId, filter.ProblemTypeId);
-                if (filter.NoteAt != null)
-                    queryable = queryable.Where(q => q.NoteAt, filter.NoteAt);
-                if (filter.CompletedAt != null)
-                    queryable = queryable.Where(q => q.CompletedAt, filter.CompletedAt);
-                if (filter.Content != null)
-                    queryable = queryable.Where(q => q.Content, filter.Content);
-                if (filter.ProblemStatusId != null)
-                    queryable = queryable.Where(q => q.ProblemStatusId, filter.ProblemStatusId);
+                if (ProblemFilter.Id != null)
+                    queryable = queryable.Where(q => q.Id, ProblemFilter.Id);
+                if (ProblemFilter.StoreCheckingId != null)
+                    queryable = queryable.Where(q => q.StoreCheckingId, ProblemFilter.StoreCheckingId);
+                if (ProblemFilter.Code != null)
+                    queryable = queryable.Where(q => q.Code, ProblemFilter.Code);
+                if (ProblemFilter.StoreId != null)
+                    queryable = queryable.Where(q => q.StoreId, ProblemFilter.StoreId);
+                if (ProblemFilter.AppUserId != null)
+                    queryable = queryable.Where(q => q.CreatorId, ProblemFilter.AppUserId);
+                if (ProblemFilter.ProblemTypeId != null)
+                    queryable = queryable.Where(q => q.ProblemTypeId, ProblemFilter.ProblemTypeId);
+                if (ProblemFilter.NoteAt != null)
+                    queryable = queryable.Where(q => q.NoteAt, ProblemFilter.NoteAt);
+                if (ProblemFilter.CompletedAt != null)
+                    queryable = queryable.Where(q => q.CompletedAt, ProblemFilter.CompletedAt);
+                if (ProblemFilter.Content != null)
+                    queryable = queryable.Where(q => q.Content, ProblemFilter.Content);
+                if (ProblemFilter.ProblemStatusId != null)
+                    queryable = queryable.Where(q => q.ProblemStatusId, ProblemFilter.ProblemStatusId);
+                if (ProblemFilter.OrganizationId != null)
+                {
+                    if (ProblemFilter.OrganizationId.Equal != null)
+                    {
+                        OrganizationDAO OrganizationDAO = DataContext.Organization
+                            .Where(o => o.Id == ProblemFilter.OrganizationId.Equal.Value).FirstOrDefault();
+                        queryable = queryable.Where(q => q.Creator.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    }
+                    if (ProblemFilter.OrganizationId.NotEqual != null)
+                    {
+                        OrganizationDAO OrganizationDAO = DataContext.Organization
+                            .Where(o => o.Id == ProblemFilter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                        queryable = queryable.Where(q => !q.Creator.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    }
+                    if (ProblemFilter.OrganizationId.In != null)
+                    {
+                        List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                            .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                        List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => ProblemFilter.OrganizationId.In.Contains(o.Id)).ToList();
+                        List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                        List<long> Ids = Branches.Select(o => o.Id).ToList();
+                        queryable = queryable.Where(q => Ids.Contains(q.Creator.OrganizationId.Value));
+                    }
+                    if (ProblemFilter.OrganizationId.NotIn != null)
+                    {
+                        List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                            .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                        List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => ProblemFilter.OrganizationId.NotIn.Contains(o.Id)).ToList();
+                        List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                        List<long> Ids = Branches.Select(o => o.Id).ToList();
+                        queryable = queryable.Where(q => !Ids.Contains(q.Creator.OrganizationId.Value));
+                    }
+                }
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
