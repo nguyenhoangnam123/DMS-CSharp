@@ -2,6 +2,7 @@
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
+using DMS.Rpc.monitor_store_problems;
 using DMS.Rpc.problem;
 using DMS.Services.MImage;
 using DMS.Services.MNotification;
@@ -146,8 +147,8 @@ namespace DMS.Services.MProblem
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Vấn đề {Problem.Code} của cửa hàng {Problem.Store.Code} - {Problem.Store.Name} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
-                        LinkWebsite = $"{ProblemRoute.Detail}".Replace("*", Problem.Id.ToString()),
-                        LinkMobile = $"{ProblemRoute.Mobile}".Replace("*", Problem.Id.ToString()),
+                        LinkWebsite = $"{MonitorStoreProblemRoute.Master}/?id=*".Replace("*", Problem.Id.ToString()),
+                        LinkMobile = $"{MonitorStoreProblemRoute.Mobile}".Replace("*", Problem.Id.ToString()),
                         Time = Now,
                         Unread = false,
                         SenderId = CurrentContext.UserId,

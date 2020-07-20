@@ -143,7 +143,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 throw new BindException(ModelState); // to do kpi year and period
 
             DateTime StartDate, EndDate;
-            long SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.SaleEmployeeId.Equal ?? 1;
+            long SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId.Equal ?? 1;
             long? KpiPeriodId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.KpiPeriodId?.Equal;
             long? KpiYearId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.KpiYearId?.Equal;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
@@ -169,10 +169,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.SaleEmployeeId == null) return BadRequest("Chưa chọn nhân viên");
+            if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId == null) return BadRequest("Chưa chọn nhân viên");
 
             DateTime StartDate, EndDate;
-            long SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.SaleEmployeeId.Equal ?? 1;
+            long SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId.Equal ?? 1;
             long? KpiPeriodId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.KpiPeriodId?.Equal;
             long? KpiYearId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.KpiYearId?.Equal;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);

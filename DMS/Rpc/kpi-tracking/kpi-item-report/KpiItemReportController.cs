@@ -168,7 +168,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                 throw new BindException(ModelState); // to do kpi year and period
             OrganizationDAO OrganizationDAO = null;
             DateTime StartDate, EndDate;
-            long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.SaleEmployeeId?.Equal;
+            long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.AppUserId?.Equal;
             long? ItemId = KpiItemReport_KpiItemReportFilterDTO.ItemId?.Equal;
             long KpiPeriodId = KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal ?? KpiPeriodEnum.PERIOD_MONTH01.Id;
             long KpiYearId = KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal ?? KpiYearEnum.YEAR_2020.Id;
@@ -212,7 +212,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
 
             OrganizationDAO OrganizationDAO = null;
             DateTime StartDate, EndDate;
-            long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.SaleEmployeeId?.Equal;
+            long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.AppUserId?.Equal;
             long? ItemId = KpiItemReport_KpiItemReportFilterDTO.ItemId?.Equal;
             long KpiPeriodId = KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal ?? KpiPeriodEnum.PERIOD_MONTH01.Id;
             long KpiYearId = KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal ?? KpiYearEnum.YEAR_2020.Id;

@@ -55,8 +55,6 @@ namespace DMS.Rpc.kpi_general
         {
             { nameof(KpiGeneralFilter.OrganizationId), FieldTypeEnum.ID.Id },
             { nameof(KpiGeneralFilter.AppUserId), FieldTypeEnum.ID.Id },
-            { nameof(KpiGeneralFilter.KpiYearId), FieldTypeEnum.ID.Id },
-            { nameof(KpiGeneralFilter.StatusId), FieldTypeEnum.ID.Id },
             { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
