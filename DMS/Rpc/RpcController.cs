@@ -198,6 +198,29 @@ namespace DMS.Rpc
             return StoreIds;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="OrganizationId"></param>
+        /// <param name="AppUserService"></param>
+        /// <param name="OrganizationService"></param>
+        /// <param name="CurrentContext"></param>
+        /// <param name="DataContext"></param>
+        /// <returns> AppUserIds, OrganizationIds </returns>
+        protected async Task<(List<long>, List<long>)> FilterOrganizationAndUser(IdFilter OrganizationId,IAppUserService AppUserService, IOrganizationService OrganizationService, ICurrentContext CurrentContext, DataContext DataContext)
+        {
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+            List<long> AppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            return (AppUserIds, OrganizationIds);
+        }
     }
 
     [Authorize]

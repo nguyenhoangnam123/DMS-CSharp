@@ -108,6 +108,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
             List<long> AppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             int count = await DataContext.AppUser.Where(au =>
                 AppUserIds.Contains(au.Id) &&
                 au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value) &&
