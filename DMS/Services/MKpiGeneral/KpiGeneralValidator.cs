@@ -142,7 +142,7 @@ namespace DMS.Services.MKpiGeneral
                 {
                     Skip = 0,
                     Take = int.MaxValue,
-                    EmployeeId = new IdFilter { Equal = id },
+                    AppUserId = new IdFilter { Equal = id },
                     KpiYearId = new IdFilter { Equal = KpiGeneral.KpiYearId },
                     Selects = KpiGeneralSelect.Employee | KpiGeneralSelect.KpiYear
                 };

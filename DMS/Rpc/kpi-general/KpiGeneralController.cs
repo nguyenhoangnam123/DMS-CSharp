@@ -939,7 +939,7 @@ namespace DMS.Rpc.kpi_general
 
             KpiGeneralFilter.Id = KpiGeneral_KpiGeneralFilterDTO.Id;
             KpiGeneralFilter.OrganizationId = KpiGeneral_KpiGeneralFilterDTO.OrganizationId;
-            KpiGeneralFilter.EmployeeId = KpiGeneral_KpiGeneralFilterDTO.EmployeeId;
+            KpiGeneralFilter.AppUserId = KpiGeneral_KpiGeneralFilterDTO.EmployeeId;
             KpiGeneralFilter.KpiYearId = KpiGeneral_KpiGeneralFilterDTO.KpiYearId;
             KpiGeneralFilter.StatusId = KpiGeneral_KpiGeneralFilterDTO.StatusId;
             KpiGeneralFilter.CreatorId = KpiGeneral_KpiGeneralFilterDTO.CreatorId;
