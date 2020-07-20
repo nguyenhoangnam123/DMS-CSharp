@@ -188,6 +188,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
             List<StoreCheckingImageMappingDAO> StoreCheckingImageMappingDAOs = await DataContext.StoreCheckingImageMapping
                 .Where(sc => StoreCheckingIds.Contains(sc.StoreCheckingId))
+                .Include(sc => sc.Image)
                 .ToListAsync();
 
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem
