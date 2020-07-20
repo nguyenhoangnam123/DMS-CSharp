@@ -60,7 +60,7 @@ namespace DMS.Rpc.kpi_general
                 throw new BindException(ModelState);
 
             KpiGeneralFilter KpiGeneralFilter = ConvertFilterDTOToFilterEntity(KpiGeneral_KpiGeneralFilterDTO);
-            KpiGeneralFilter = KpiGeneralService.ToFilter(KpiGeneralFilter);
+            KpiGeneralFilter = await KpiGeneralService.ToFilter(KpiGeneralFilter);
             int count = await KpiGeneralService.Count(KpiGeneralFilter);
             return count;
         }
@@ -72,7 +72,7 @@ namespace DMS.Rpc.kpi_general
                 throw new BindException(ModelState);
 
             KpiGeneralFilter KpiGeneralFilter = ConvertFilterDTOToFilterEntity(KpiGeneral_KpiGeneralFilterDTO);
-            KpiGeneralFilter = KpiGeneralService.ToFilter(KpiGeneralFilter);
+            KpiGeneralFilter = await KpiGeneralService.ToFilter(KpiGeneralFilter);
             List<KpiGeneral> KpiGenerals = await KpiGeneralService.List(KpiGeneralFilter);
             List<KpiGeneral_KpiGeneralDTO> KpiGeneral_KpiGeneralDTOs = KpiGenerals
                 .Select(c => new KpiGeneral_KpiGeneralDTO(c)).ToList();
@@ -243,7 +243,7 @@ namespace DMS.Rpc.kpi_general
                 throw new BindException(ModelState);
 
             KpiGeneralFilter KpiGeneralFilter = new KpiGeneralFilter();
-            KpiGeneralFilter = KpiGeneralService.ToFilter(KpiGeneralFilter);
+            KpiGeneralFilter = await KpiGeneralService.ToFilter(KpiGeneralFilter);
             KpiGeneralFilter.Id = new IdFilter { In = Ids };
             KpiGeneralFilter.Selects = KpiGeneralSelect.Id;
             KpiGeneralFilter.Skip = 0;
@@ -374,7 +374,7 @@ namespace DMS.Rpc.kpi_general
                 var KpiGeneralFilter = ConvertFilterDTOToFilterEntity(KpiGeneral_KpiGeneralFilterDTO);
                 KpiGeneralFilter.Skip = 0;
                 KpiGeneralFilter.Take = int.MaxValue;
-                KpiGeneralFilter = KpiGeneralService.ToFilter(KpiGeneralFilter);
+                KpiGeneralFilter = await KpiGeneralService.ToFilter(KpiGeneralFilter);
                 List<KpiGeneral> KpiGenerals = await KpiGeneralService.List(KpiGeneralFilter);
 
                 var KpiGeneralHeaders = new List<string[]>()
@@ -816,7 +816,7 @@ namespace DMS.Rpc.kpi_general
         private async Task<bool> HasPermission(long Id)
         {
             KpiGeneralFilter KpiGeneralFilter = new KpiGeneralFilter();
-            KpiGeneralFilter = KpiGeneralService.ToFilter(KpiGeneralFilter);
+            KpiGeneralFilter = await KpiGeneralService.ToFilter(KpiGeneralFilter);
             if (Id == 0)
             {
 
