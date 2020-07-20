@@ -295,8 +295,8 @@ namespace DMS.Rpc.mobile
         public async Task<List<Mobile_ProvinceDTO>> SingleListProvince([FromBody] Mobile_ProvinceFilterDTO Mobile_ProvinceFilterDTO)
         {
             ProvinceFilter ProvinceFilter = new ProvinceFilter();
-            ProvinceFilter.Skip = 0;
-            ProvinceFilter.Take = 20;
+            ProvinceFilter.Skip = Mobile_ProvinceFilterDTO.Skip;
+            ProvinceFilter.Take = Mobile_ProvinceFilterDTO.Take;
             ProvinceFilter.OrderBy = ProvinceOrder.Priority;
             ProvinceFilter.OrderType = OrderType.ASC;
             ProvinceFilter.Selects = ProvinceSelect.ALL;
@@ -313,8 +313,8 @@ namespace DMS.Rpc.mobile
         public async Task<List<Mobile_DistrictDTO>> SingleListDistrict([FromBody] Mobile_DistrictFilterDTO Mobile_DistrictFilterDTO)
         {
             DistrictFilter DistrictFilter = new DistrictFilter();
-            DistrictFilter.Skip = 0;
-            DistrictFilter.Take = 20;
+            DistrictFilter.Skip = Mobile_DistrictFilterDTO.Skip;
+            DistrictFilter.Take = Mobile_DistrictFilterDTO.Take;
             DistrictFilter.OrderBy = DistrictOrder.Priority;
             DistrictFilter.OrderType = OrderType.ASC;
             DistrictFilter.Selects = DistrictSelect.ALL;
@@ -333,8 +333,8 @@ namespace DMS.Rpc.mobile
         public async Task<List<Mobile_WardDTO>> SingleListWard([FromBody] Mobile_WardFilterDTO Mobile_WardFilterDTO)
         {
             WardFilter WardFilter = new WardFilter();
-            WardFilter.Skip = 0;
-            WardFilter.Take = 20;
+            WardFilter.Skip = Mobile_WardFilterDTO.Skip;
+            WardFilter.Take = Mobile_WardFilterDTO.Take;
             WardFilter.OrderBy = WardOrder.Priority;
             WardFilter.OrderType = OrderType.ASC;
             WardFilter.Selects = WardSelect.ALL;
