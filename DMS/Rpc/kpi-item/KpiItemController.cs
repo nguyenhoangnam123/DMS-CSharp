@@ -77,7 +77,7 @@ namespace DMS.Rpc.kpi_item
                 throw new BindException(ModelState);
 
             KpiItemFilter KpiItemFilter = ConvertFilterDTOToFilterEntity(KpiItem_KpiItemFilterDTO);
-            KpiItemFilter = KpiItemService.ToFilter(KpiItemFilter);
+            KpiItemFilter = await KpiItemService.ToFilter(KpiItemFilter);
             int count = await KpiItemService.Count(KpiItemFilter);
             return count;
         }
@@ -89,7 +89,7 @@ namespace DMS.Rpc.kpi_item
                 throw new BindException(ModelState);
 
             KpiItemFilter KpiItemFilter = ConvertFilterDTOToFilterEntity(KpiItem_KpiItemFilterDTO);
-            KpiItemFilter = KpiItemService.ToFilter(KpiItemFilter);
+            KpiItemFilter = await KpiItemService.ToFilter(KpiItemFilter);
             List<KpiItem> KpiItems = await KpiItemService.List(KpiItemFilter);
             List<KpiItem_KpiItemDTO> KpiItem_KpiItemDTOs = KpiItems
                 .Select(c => new KpiItem_KpiItemDTO(c)).ToList();
@@ -199,7 +199,7 @@ namespace DMS.Rpc.kpi_item
                 throw new BindException(ModelState);
 
             KpiItemFilter KpiItemFilter = new KpiItemFilter();
-            KpiItemFilter = KpiItemService.ToFilter(KpiItemFilter);
+            KpiItemFilter = await KpiItemService.ToFilter(KpiItemFilter);
             KpiItemFilter.Id = new IdFilter { In = Ids };
             KpiItemFilter.Selects = KpiItemSelect.Id;
             KpiItemFilter.Skip = 0;
@@ -330,7 +330,7 @@ namespace DMS.Rpc.kpi_item
                 var KpiItemFilter = ConvertFilterDTOToFilterEntity(KpiItem_KpiItemFilterDTO);
                 KpiItemFilter.Skip = 0;
                 KpiItemFilter.Take = int.MaxValue;
-                KpiItemFilter = KpiItemService.ToFilter(KpiItemFilter);
+                KpiItemFilter = await KpiItemService.ToFilter(KpiItemFilter);
                 List<KpiItem> KpiItems = await KpiItemService.List(KpiItemFilter);
 
                 var KpiItemHeaders = new List<string[]>()
@@ -792,7 +792,7 @@ namespace DMS.Rpc.kpi_item
         private async Task<bool> HasPermission(long Id)
         {
             KpiItemFilter KpiItemFilter = new KpiItemFilter();
-            KpiItemFilter = KpiItemService.ToFilter(KpiItemFilter);
+            KpiItemFilter = await KpiItemService.ToFilter(KpiItemFilter);
             if (Id == 0)
             {
 
@@ -904,7 +904,7 @@ namespace DMS.Rpc.kpi_item
             KpiItemFilter.KpiYearId = KpiItem_KpiItemFilterDTO.KpiYearId;
             KpiItemFilter.KpiPeriodId = KpiItem_KpiItemFilterDTO.KpiPeriodId;
             KpiItemFilter.StatusId = KpiItem_KpiItemFilterDTO.StatusId;
-            KpiItemFilter.EmployeeId = KpiItem_KpiItemFilterDTO.EmployeeId;
+            KpiItemFilter.AppUserId = KpiItem_KpiItemFilterDTO.EmployeeId;
             KpiItemFilter.CreatorId = KpiItem_KpiItemFilterDTO.CreatorId;
             KpiItemFilter.CreatedAt = KpiItem_KpiItemFilterDTO.CreatedAt;
             KpiItemFilter.UpdatedAt = KpiItem_KpiItemFilterDTO.UpdatedAt;
@@ -1339,6 +1339,9 @@ namespace DMS.Rpc.kpi_item
             AppUserFilter.OrganizationId = KpiItem_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             return await KpiItemService.CountAppUser(AppUserFilter, KpiItem_AppUserFilterDTO.KpiYearId, KpiItem_AppUserFilterDTO.KpiPeriodId);
         }
         [Route(KpiItemRoute.ListAppUser), HttpPost]
@@ -1357,6 +1360,9 @@ namespace DMS.Rpc.kpi_item
             AppUserFilter.OrganizationId = KpiItem_AppUserFilterDTO.OrganizationId;
             AppUserFilter.Phone = KpiItem_AppUserFilterDTO.Phone;
             AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             List<AppUser> AppUsers = await KpiItemService.ListAppUser(AppUserFilter, KpiItem_AppUserFilterDTO.KpiYearId, KpiItem_AppUserFilterDTO.KpiPeriodId);
             List<KpiItem_AppUserDTO> KpiItem_AppUserDTOs = AppUsers

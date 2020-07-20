@@ -54,7 +54,7 @@ namespace DMS.Rpc.kpi_item
             { nameof(KpiItemFilter.OrganizationId), FieldTypeEnum.ID.Id },
             { nameof(KpiItemFilter.KpiPeriodId), FieldTypeEnum.ID.Id },
             { nameof(KpiItemFilter.StatusId), FieldTypeEnum.ID.Id },
-            { nameof(KpiItemFilter.EmployeeId), FieldTypeEnum.ID.Id },
+            { nameof(KpiItemFilter.AppUserId), FieldTypeEnum.ID.Id },
             { nameof(KpiItemFilter.CreatorId), FieldTypeEnum.ID.Id },
         };
 

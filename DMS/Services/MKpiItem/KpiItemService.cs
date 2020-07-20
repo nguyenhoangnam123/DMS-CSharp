@@ -1,7 +1,9 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Helpers;
 using DMS.Repositories;
+using DMS.Services.MOrganization;
 using Helpers;
 using System;
 using System.Collections.Generic;
@@ -23,25 +25,28 @@ namespace DMS.Services.MKpiItem
         Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId);
         Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId);
 
-        KpiItemFilter ToFilter(KpiItemFilter KpiItemFilter);
+        Task<KpiItemFilter> ToFilter(KpiItemFilter KpiItemFilter);
     }
 
     public class KpiItemService : BaseService, IKpiItemService
     {
         private IUOW UOW;
         private ILogging Logging;
+        private IOrganizationService OrganizationService;
         private ICurrentContext CurrentContext;
         private IKpiItemValidator KpiItemValidator;
 
         public KpiItemService(
             IUOW UOW,
             ILogging Logging,
+            IOrganizationService OrganizationService,
             ICurrentContext CurrentContext,
             IKpiItemValidator KpiItemValidator
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
+            this.OrganizationService = OrganizationService;
             this.CurrentContext = CurrentContext;
             this.KpiItemValidator = KpiItemValidator;
         }
@@ -349,10 +354,20 @@ namespace DMS.Services.MKpiItem
 
         }
 
-        public KpiItemFilter ToFilter(KpiItemFilter filter)
+        public async Task<KpiItemFilter> ToFilter(KpiItemFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<KpiItemFilter>();
             if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
+
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL,
+                OrderBy = OrganizationOrder.Id,
+                OrderType = OrderType.ASC
+            });
+
             foreach (var currentFilter in CurrentContext.Filters)
             {
                 KpiItemFilter subFilter = new KpiItemFilter();
@@ -360,6 +375,33 @@ namespace DMS.Services.MKpiItem
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = FilterBuilder.Merge(subFilter.Id, FilterPermissionDefinition.IdFilter);
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
+                    {
+                        var organizationIds = FilterOrganization(Organizations, FilterPermissionDefinition.IdFilter);
+                        IdFilter IdFilter = new IdFilter { In = organizationIds };
+                        subFilter.OrganizationId = FilterBuilder.Merge(subFilter.OrganizationId, IdFilter);
+                    }
+
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.AppUserId))
+                        subFilter.AppUserId = FilterBuilder.Merge(subFilter.AppUserId, FilterPermissionDefinition.IdFilter);
+
+
+                    if (FilterPermissionDefinition.Name == nameof(CurrentContext.UserId) && FilterPermissionDefinition.IdFilter != null)
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.IS.Id)
+                        {
+                            if (subFilter.AppUserId == null) subFilter.AppUserId = new IdFilter { };
+                            subFilter.CreatorId.Equal = CurrentContext.UserId;
+                        }
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.ISNT.Id)
+                        {
+                            if (subFilter.AppUserId == null) subFilter.AppUserId = new IdFilter { };
+                            subFilter.CreatorId.NotEqual = CurrentContext.UserId;
+                        }
+                    }
                 }
             }
             return filter;
