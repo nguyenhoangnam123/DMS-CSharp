@@ -56,6 +56,7 @@ namespace DMS.Rpc.mobile
         public const string ListStoreUnPlanned = Default + "/list-store-unplanned";
         public const string CountProblem = Default + "/count-problem";
         public const string ListProblem = Default + "/list-problem";
+        public const string GetProblem = Default + "/get-problem";
         public const string CountSurvey = Default + "/count-survey";
         public const string ListSurvey = Default + "/list-survey";
         public const string GetSurveyForm = Default + "/get-survey-form";

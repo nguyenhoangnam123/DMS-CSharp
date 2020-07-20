@@ -777,6 +777,15 @@ namespace DMS.Rpc.mobile
             return Mobile_ProblemDTOs;
         }
 
+        [Route(MobileRoute.GetProblem), HttpPost]
+        public async Task<ActionResult<Mobile_ProblemDTO>> Get([FromBody] Mobile_ProblemDTO Mobile_ProblemDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            Problem Problem = await ProblemService.Get(Mobile_ProblemDTO.Id);
+            return new Mobile_ProblemDTO(Problem);
+        }
+
         [Route(MobileRoute.CountSurvey), HttpPost]
         public async Task<long> CountSurvey([FromBody] Mobile_SurveyFilterDTO Mobile_SurveyFilterDTO)
         {
