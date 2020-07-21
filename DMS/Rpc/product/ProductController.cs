@@ -574,7 +574,7 @@ namespace DMS.Rpc.product
                 }
 
                 if (errorContent.Length > 0)
-                    return BadRequest(errorContent);
+                    return BadRequest(errorContent.ToString());
                 #endregion
             }
             #region Item
@@ -746,7 +746,7 @@ namespace DMS.Rpc.product
             }
 
             if (Products.Any(x => !x.IsValidated))
-                return BadRequest(errorContent);
+                return BadRequest(errorContent.ToString());
             return Product_ProductDTOs;
         }
 
