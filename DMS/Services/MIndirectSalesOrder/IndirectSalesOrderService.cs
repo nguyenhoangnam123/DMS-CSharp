@@ -165,10 +165,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var RecipientIds = await UOW.PermissionRepository.ListAppUser(IndirectSalesOrderRoute.Approve);
-                RecipientIds.AddRange(await UOW.PermissionRepository.ListAppUser(IndirectSalesOrderRoute.Reject));
-                RecipientIds.Add(CurrentContext.UserId);
-                RecipientIds = RecipientIds.Distinct().ToList();
+                var RecipientIds = await ListReceipientId(CurrentUser, IndirectSalesOrderRoute.Approve);
 
                 DateTime Now = StaticParams.DateTimeNow;
                 List<UserNotification> UserNotifications = new List<UserNotification>();
@@ -224,10 +221,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.Commit();
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var RecipientIds = await UOW.PermissionRepository.ListAppUser(IndirectSalesOrderRoute.Approve);
-                RecipientIds.AddRange(await UOW.PermissionRepository.ListAppUser(IndirectSalesOrderRoute.Reject));
-                RecipientIds.Add(CurrentContext.UserId);
-                RecipientIds = RecipientIds.Distinct().ToList();
+                var RecipientIds = await ListReceipientId(CurrentUser, IndirectSalesOrderRoute.Approve);
 
                 DateTime Now = StaticParams.DateTimeNow;
                 List<UserNotification> UserNotifications = new List<UserNotification>();
@@ -738,6 +732,36 @@ namespace DMS.Services.MIndirectSalesOrder
             Parameters.Add(nameof(IndirectSalesOrder.Code), IndirectSalesOrder.Code);
             Parameters.Add("Username", CurrentContext.UserName);
             return Parameters;
+        }
+
+        private async Task<List<long>> ListReceipientId(AppUser CurrentUser, string Path)
+        {
+            var Ids = await UOW.PermissionRepository.ListAppUser(Path);
+            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+
+            var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
+            var OrganizationIds = Organizations
+                .Where(x => x.Path.StartsWith(CurrentUser.Organization.Path) || CurrentUser.Organization.Path.StartsWith(x.Path))
+                .Select(x => x.Id)
+                .ToList();
+
+            var AppUserIds = (await UOW.AppUserRepository.List(new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id,
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            })).Select(x => x.Id).ToList();
+
+            AppUserIds = AppUserIds.Intersect(Ids).ToList();
+            return AppUserIds;
         }
 
         private void NotifyUsed(IndirectSalesOrder IndirectSalesOrder)
