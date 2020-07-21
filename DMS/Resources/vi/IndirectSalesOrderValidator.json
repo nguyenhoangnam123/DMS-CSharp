@@ -4,13 +4,13 @@
       "IdNotExisted": "Id không tồn tại"
     },
     "BuyerStore": {
-      "BuyerStoreNotExisted": "Cửa hàng mua không tồn tại",
-      "BuyerStoreEmpty": "Chưa chọn cửa hàng mua"
+      "BuyerStoreNotExisted": "Đại lý mua không tồn tại",
+      "BuyerStoreEmpty": "Chưa chọn đại lý mua"
     },
     "SellerStore": {
-      "SellerStoreNotExisted": "Cửa hàng bán không tồn tại",
-      "SellerStoreEmpty": "Chưa chọn cửa hàng bán",
-      "SellerStoreEqualBuyerStore": "Cửa hàng mua trùng với cửa hàng bán"
+      "SellerStoreNotExisted": "Đại lý bán không tồn tại",
+      "SellerStoreEmpty": "Chưa chọn đại lý bán",
+      "SellerStoreEqualBuyerStore": "Đại lý mua trùng với đại lý bán"
     },
     "SaleEmployee": {
       "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại",

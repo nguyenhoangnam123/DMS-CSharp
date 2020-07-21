@@ -4,7 +4,7 @@
       "IdNotExisted": "Id không tồn tại"
     },
     "BuyerStore": {
-      "BuyerStoreNotExisted": "Cửa hàng mua không tồn tại"
+      "BuyerStoreNotExisted": "Đại lý mua không tồn tại"
     },
     "SaleEmployee": {
       "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại"

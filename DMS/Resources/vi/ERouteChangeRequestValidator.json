@@ -12,7 +12,7 @@
     },
     "ERouteChangeRequestContent": {
       "Store": {
-        "StoreEmpty": "Chưa chọn cửa hàng"
+        "StoreEmpty": "Chưa chọn đại lý"
       }
     },
     "ERouteChangeRequestContents": {
