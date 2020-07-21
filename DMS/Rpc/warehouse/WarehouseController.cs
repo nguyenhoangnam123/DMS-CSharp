@@ -260,7 +260,9 @@ namespace DMS.Rpc.warehouse
                     string AccountingStockValue = worksheet.Cells[i + StartRow, AccountingStockColumn].Value?.ToString();
 
                     Warehouse WarehouseInDB = warehouses.Where(x => x.Code == WarehouseCodeValue.Trim()).FirstOrDefault();
-                    if (WarehouseInDB.Id != Warehouse.Id)
+                    if(WarehouseInDB == null)
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Mã kho không đúng");
+                    else if (WarehouseInDB.Id != Warehouse.Id)
                         errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Mã kho không đúng");
                     var InventoryItem = Items.Where(x => x.Code == ItemCodeValue).FirstOrDefault();
 

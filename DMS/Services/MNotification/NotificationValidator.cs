@@ -22,7 +22,7 @@ namespace DMS.Services.MNotification
             IdNotExisted,
             TitleEmpty,
             TitleOverLength,
-            OrganizationIdNotExisted
+            OrganizationNotExisted
         }
 
         private IUOW UOW;
@@ -77,7 +77,7 @@ namespace DMS.Services.MNotification
                 int count = await UOW.OrganizationRepository.Count(OrganizationFilter);
 
                 if (count == 0)
-                    Notification.AddError(nameof(NotificationValidator), nameof(Notification.Organization), ErrorCode.OrganizationIdNotExisted);
+                    Notification.AddError(nameof(NotificationValidator), nameof(Notification.Organization), ErrorCode.OrganizationNotExisted);
             }
             return Notification.IsValidated;
         }

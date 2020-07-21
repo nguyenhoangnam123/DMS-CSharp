@@ -2,11 +2,11 @@
   "KpiItem": {
     "Id": {
       "IdNotExisted": "Kpi chung không tồn tại",
-      "ValueCannotBeNull": "Giá trị không thể null"
+      "ValueCannotBeNull": "Chỉ tiêu không thể bỏ trống"
     },
     "Organization": {
-      "OrganizationIdNotExisted": "Cơ cấu tổ chức không tồn tại",
-      "OrganizationEmpty": "Chưa chọn cơ cấu tổ chức"
+      "OrganizationIdNotExisted": "Đơn vị tổ chức không tồn tại",
+      "OrganizationEmpty": "Chưa chọn đơn vị tổ chức"
     },
     "EmployeeIds": {
       "EmployeeIdsEmpty": "Chưa chọn nhân viên",

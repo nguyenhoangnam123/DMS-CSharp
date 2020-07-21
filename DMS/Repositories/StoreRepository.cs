@@ -36,7 +36,7 @@ namespace DMS.Repositories
                 return query.Where(q => false);
             query = query.Where(q => !q.DeletedAt.HasValue);
             if (filter.Search != null)
-                query = query.Where(q => 
+                query = query.Where(q =>
                 q.Code.ToLower().Contains(filter.Search.ToLower()) ||
                 q.Address.ToLower().Contains(filter.Search.ToLower()) ||
                 q.Name.ToLower().Contains(filter.Search.ToLower()));
@@ -52,14 +52,18 @@ namespace DMS.Repositories
             {
                 if (filter.StoreCheckingStatusId.Equal.HasValue)
                 {
-                    List<long> storeIds = DataContext.StoreChecking
-                           .Where(sc => sc.CheckInAt.HasValue && sc.CheckOutAt.HasValue && sc.CheckOutAt.Value.Date == StaticParams.DateTimeNow.Date)
-                           .Select(sc => sc.StoreId).ToList();
+                    var storeCheckingQuery = DataContext.StoreChecking
+                           .Where(sc => sc.CheckInAt.HasValue && sc.CheckOutAt.HasValue && sc.CheckOutAt.Value.Date == StaticParams.DateTimeNow.Date);
+                    if (filter.SalesEmployeeId.Equal.HasValue)
+                    {
+                        storeCheckingQuery = storeCheckingQuery.Where(x => x.SaleEmployeeId == filter.SalesEmployeeId.Equal.Value);
+                    }
+                    var storeIds = storeCheckingQuery.Select(x => x.StoreId).ToList();
                     if (filter.StoreCheckingStatusId.Equal.Value == StoreCheckingStatusEnum.CHECKED.Id)
                         query = query.Where(q => storeIds.Contains(q.Id));
                     if (filter.StoreCheckingStatusId.Equal.Value == StoreCheckingStatusEnum.NOTCHECKED.Id)
                         query = query.Where(q => !storeIds.Contains(q.Id));
-                }    
+                }
             }
             if (filter.OrganizationId != null)
             {

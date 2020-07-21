@@ -125,37 +125,6 @@ namespace DMS.Services.MPermission
             return count != 0;
         }
 
-
-        public async Task<bool> ValidateMenu(Menu Menu)
-        {
-            MenuFilter MenuFilter = new MenuFilter
-            {
-                Skip = 0,
-                Take = 10,
-                Code = new StringFilter { Equal = Menu.Code },
-                Selects = MenuSelect.Code
-            };
-
-            var MenuInDB = (await UOW.MenuRepository.List(MenuFilter)).FirstOrDefault();
-            if (MenuInDB == null)
-            {
-                Menu.AddError(nameof(PermissionValidator), nameof(Menu.Code), ErrorCode.CodeNotExisted);
-            }
-            else
-            {
-                foreach (var Field in Menu.Fields)
-                {
-                    if (!MenuInDB.Fields.Select(f => f.Name).Contains(Field.Name))
-                    {
-                        Field.AddError(nameof(PermissionValidator), nameof(Field.Name), ErrorCode.FieldNotExisted);
-                        return false;
-                    }
-                }
-            }
-            return Menu.IsValidated;
-        }
-
-
         public async Task<bool> Create(Permission Permission)
         {
             await ValidateCode(Permission);

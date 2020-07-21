@@ -5,14 +5,15 @@
       "SupplierInUsed": "Nhà cung cấp đã được sử dụng"
     },
     "Name": {
-      "NameEmpty": "Chưa nhập tên",
-      "NameOverLength": "Tên quá dài",
-      "NameExisted": "Tên đã tồn tại"
+      "NameEmpty": "Chưa nhập tên nhà cung cấp",
+      "NameOverLength": "Tên nhà cung cấp quá dài",
+      "NameExisted": "Tên nhà cung cấp đã tồn tại"
     },
     "Code": {
-      "CodeEmpty": "Chưa nhập Code",
-      "CodeOverLength": "Code quá dài",
-      "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt"
+      "CodeExisted": "Mã nhà cung cấp đã tồn tại",
+      "CodeEmpty": "Chưa nhập mã nhà cung cấp",
+      "CodeOverLength": "Mã nhà cung cấp quá dài",
+      "CodeHasSpecialCharacter": "Mã nhà cung cấp chứa kí tự đặc biệt"
     },
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
@@ -27,7 +28,7 @@
       "WardNotExisted": "Xã không tồn tại"
     },
     "PersonInChargeId": {
-      "PersonInChargeNotExisted": "Người phụ trách chưa tồn tại"
+      "PersonInChargeNotExisted": "Nhân viên phụ trách chưa tồn tại"
     }
   }
 }

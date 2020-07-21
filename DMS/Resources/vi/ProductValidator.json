@@ -4,14 +4,15 @@
       "IdNotExisted": "Id không tồn tại"
     },
     "Code": {
-      "CodeEmpty": "Chưa nhập Code",
-      "CodeOverLength": "Code quá dài",
-      "CodeHasSpecialCharacter": "Code chứa kí tự không hợp lệ"
+      "CodeExisted": "Mã sản phẩm đã tồn tại",
+      "CodeEmpty": "Chưa nhập mã sản phẩm",
+      "CodeOverLength": "Mã sản phẩm quá dài",
+      "CodeHasSpecialCharacter": "Mã sản phẩm không thể chứa khoảng trắng hoặc kí tự Tiếng Việt"
     },
     "Name": {
-      "NameEmpty": "Chưa nhập tên",
-      "NameOverLength": "Tên quá dài",
-      "NameExisted": "Tên đã tồn tại"
+      "NameEmpty": "Chưa nhập tên sản phẩm",
+      "NameOverLength": "Tên sản phẩm quá dài",
+      "NameExisted": "Tên sản phẩm đã tồn tại"
     },
     "ProductType": {
       "ProductTypeEmpty": "Chưa chọn loại sản phẩm",

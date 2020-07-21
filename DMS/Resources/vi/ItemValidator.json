@@ -8,12 +8,12 @@
       "NameOverLength": "Tên quá dài"
     },
     "Code": {
-      "CodeEmpty": "Chưa nhập Code",
-      "CodeOverLength": "Code quá dài"
+      "CodeEmpty": "Chưa nhập mã phiên bản sản phẩm",
+      "CodeOverLength": "Mã phiên bản sản phẩm quá dài"
     },
     "ScanCoded": {
-      "ScanCodeEmpty": "Chưa nhập ScanCode",
-      "ScanCodeOverLength": "ScanCode quá dài"
+      "ScanCodeEmpty": "Chưa nhập mã nhận diện",
+      "ScanCodeOverLength": "Mã nhận diện quá dài"
     },
     "ProductId": {
       "ProductNotExisted": "Sản phẩm không tồn tại"

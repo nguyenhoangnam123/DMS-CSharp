@@ -2,16 +2,16 @@
   "ERoute": {
     "Id": {
       "IdNotExisted": "Id không tồn tại",
-      "ERouteInUsed": "Nội dung tuyến đang được sử dụng"
+      "ERouteInUsed": "Tuyến đã được sử dụng"
     },
     "Code": {
-      "CodeEmpty": "Chưa nhập mã cho tuyến",
+      "CodeEmpty": "Chưa nhập mã tuyến",
       "CodeOverLength": "Mã tuyến quá dài",
-      "CodeHasSpecialCharacter": "Mã không chứa khoảng trắng hoặc ký tự Tiếng Việt",
-      "CodeExisted": "Mã đã tồn tại"
+      "CodeHasSpecialCharacter": "Mã tuyến không thể chứa khoảng trắng hoặc ký tự Tiếng Việt",
+      "CodeExisted": "Mã tuyến đã tồn tại"
     },
     "Name": {
-      "NameEmpty": "Chưa nhập tên cho tuyến",
+      "NameEmpty": "Chưa nhập tên tuyến",
       "NameOverLength": "Tên tuyến quá dài"
     },
     "SaleEmployee": {
@@ -35,7 +35,7 @@
     },
     "ERouteContent": {
       "Store": {
-        "StoreEmpty": "Chưa chọn cửa hàng"
+        "StoreEmpty": "Chưa chọn đại lý"
       }
     }
   }

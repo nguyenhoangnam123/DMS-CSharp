@@ -11,21 +11,21 @@
     },
     "Field": {
       "Name": {
-        "FieldNotExisted": "Trường không tồn tại"
+        "FieldNotExisted": "Trường dự liệu không tồn tại"
       }
     },
     "Menu": {
       "Code": {
-        "CodeNotExisted": "Code không tồn tại"
+        "CodeNotExisted": "Mã Menu không tồn tại"
       }
     },
     "Permission": {
       "Code": {
-        "CodeNotExisted": "Code không tồn tại"
+        "CodeNotExisted": "Mã quyền không tồn tại"
       }
     },
     "Name": {
-      "NameExisted": "Tên đã tồn tại",
+      "NameExisted": "Tên vai trò đã tồn tại",
       "NameEmpty": "Chưa nhập tên vai trò",
       "NameOverLength": "Tên vai trò quá dài"
     },
@@ -33,10 +33,10 @@
       "StatusNotExisted": "Chưa chọn trạng thái"
     },
     "Page": {
-      "PageNotExisted": "Trang không tồn tại"
+      "PageNotExisted": "Trạng không tồn tại"
     },
     "AppUser": {
-      "AppUserNotExisted": "Chưa chọn AppUser"
+      "AppUserNotExisted": "Chưa chọn người dùng"
     }
   }
 }

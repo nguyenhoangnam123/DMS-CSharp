@@ -312,7 +312,7 @@ namespace DMS.Services.MStoreChecking
 
             List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
             StoreIds = Stores.Select(s => s.Id).ToList();
-            // Lấy tất cả các cửa hàng đã được checkin trong ngày hôm nay và đánh dấu xem cửa hàng nào đã được checkin hay chưa.
+            // Lấy tất cả các đại lý đã được checkin trong ngày hôm nay và đánh dấu xem đại lý nào đã được checkin hay chưa.
             StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
             {
                 Skip = 0,
@@ -337,6 +337,7 @@ namespace DMS.Services.MStoreChecking
             {
                 List<long> StoreIds = await ListStoreIds(ERouteId);
                 StoreFilter.Id = new IdFilter { In = StoreIds };
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 int count = await UOW.StoreRepository.Count(StoreFilter);
                 return count;
             }
@@ -359,12 +360,13 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
-                // lấy danh sách tất cả các cửa hàng trong kế hoạch
+                // lấy danh sách tất cả các đại lý trong kế hoạch
                 List<long> StoreIds = await ListStoreIds(ERouteId);
 
                 StoreFilter.Id = new IdFilter { In = StoreIds };
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
-
+                StoreIds = Stores.Select(x => x.Id).ToList();
                 StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
                 {
                     Skip = 0,
@@ -374,7 +376,7 @@ namespace DMS.Services.MStoreChecking
                     SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
                     CheckOutAt = new DateFilter { GreaterEqual = StaticParams.DateTimeNow.Date, Less = StaticParams.DateTimeNow.Date.AddDays(1) }
                 };
-                // Lấy tất cả các cửa hàng đã được checkin trong ngày hôm nay và đánh dấu xem cửa hàng nào đã được checkin hay chưa.
+                // Lấy tất cả các đại lý đã được checkin trong ngày hôm nay và đánh dấu xem đại lý nào đã được checkin hay chưa.
                 List<StoreChecking> StoreCheckings = await UOW.StoreCheckingRepository.List(StoreCheckingFilter);
                 foreach (var Store in Stores)
                 {
@@ -419,6 +421,7 @@ namespace DMS.Services.MStoreChecking
                 }
 
                 StoreFilter.Id = new IdFilter { NotIn = StoreIds };
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
 
                 int count = await UOW.StoreRepository.Count(StoreFilter);
                 return count;
@@ -459,8 +462,9 @@ namespace DMS.Services.MStoreChecking
                 }
 
                 StoreFilter.Id = new IdFilter { NotIn = StoreIds };
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
-
+                StoreIds = Stores.Select(x => x.Id).ToList();
                 StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
                 {
                     Skip = 0,
@@ -517,7 +521,7 @@ namespace DMS.Services.MStoreChecking
             return Image;
         }
 
-        // Lấy danh sách tất cả các cửa hàng theo kế hoạch
+        // Lấy danh sách tất cả các đại lý theo kế hoạch
         private async Task<List<long>> ListStoreIds(IdFilter ERouteId)
         {
             DateTime Now = StaticParams.DateTimeNow.Date;

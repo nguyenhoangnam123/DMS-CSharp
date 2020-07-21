@@ -196,8 +196,8 @@ namespace DMS.Rpc.survey
                 List<string> header = new List<string>
                 {
                     "Thời gian",
-                    "Cửa hàng",
-                    "Mã cửa hàng",
+                    "Đại lý",
+                    "Mã đại lý",
                     "Nhân viên",
                 };
 

@@ -5,13 +5,13 @@
       "BrandInUsed": "Brand đang hoạt động"
     },
     "Code": {
-      "CodeEmpty": "Chưa nhập mã cho Brand",
-      "CodeHasSpecialCharacter": "Mã không chứa khoảng trắng và ký tự Tiếng Việt",
-      "CodeExisted": "Mã đã được sử dụng"
+      "CodeEmpty": "Chưa nhập mã nhãn hiệu",
+      "CodeHasSpecialCharacter": "Mã nhãn hiệu không thể chứa khoảng trắng hoặc ký tự Tiếng Việt",
+      "CodeExisted": "Mã nhãn hiệu đã tồn tại"
     },
     "Name": {
-      "NameEmpty": "Chưa nhập tên cho Brand",
-      "NameOverLength": "Tên quá dài"
+      "NameEmpty": "Chưa nhập tên nhãn hiệu",
+      "NameOverLength": "Tên nhãn hiệu quá dài"
     },
     "Description": {
       "DescriptionOverLength": "Mô tả quá dài"

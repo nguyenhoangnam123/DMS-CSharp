@@ -4,14 +4,14 @@
       "IdNotExisted": "Id không tồn tại"
     },
     "Store": {
-      "StoreNotExisted": "Cửa hàng không tồn tại",
+      "StoreNotExisted": "Đại lý không tồn tại",
       "DistanceOutOfRange": "Khoảng cách ngoài phạm vi"
     },
     "CheckOutAt": {
-      "HasCheckOut": "Cửa hàng đã viếng thăm"
+      "HasCheckOut": "Đại lý đã viếng thăm"
     },
     "CheckInAt": {
-      "HasCheckin": "Cửa hàng đã viếng thăm"
+      "HasCheckin": "Đại lý đã viếng thăm"
     }
   }
 }
