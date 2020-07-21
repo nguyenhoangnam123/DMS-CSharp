@@ -249,7 +249,9 @@ namespace DMS.Services.MStoreScouting
                 UserNotification NotificationUtils = new UserNotification
                 {
                     TitleWeb = $"Thông báo từ DMS",
-                    ContentWeb = $"{oldData.Name} đã bị từ chối bởi {CurrentUser.DisplayName} vào lúc {Now}. Chi tiết xem tại {StoreScouting.Link}",
+                    ContentWeb = $"{oldData.Name} đã bị từ chối bởi {CurrentUser.DisplayName} vào lúc {Now}.",
+                    LinkWebsite = $"{StoreScoutingRoute.Master}/?id=*".Replace("*", StoreScouting.Id.ToString()),
+                    LinkMobile = $"{StoreScoutingRoute.Mobile}".Replace("*", StoreScouting.Id.ToString()),
                     Time = Now,
                     Unread = false,
                     SenderId = CurrentContext.UserId,
