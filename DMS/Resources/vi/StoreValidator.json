@@ -4,13 +4,13 @@
       "IdNotExisted": "Id không tồn tại"
     },
     "Code": {
-      "CodeEmpty": "Chưa nhập mã cửa hàng",
-      "CodeHasSpecialCharacter": "Mã cửa hàng không thể chứa khoảng trắng hoặc kí tự Tiếng Việt",
-      "CodeExisted": "Mã cửa hàng đã tồn tại"
+      "CodeEmpty": "Chưa nhập mã đại lý",
+      "CodeHasSpecialCharacter": "Mã đại lý không thể chứa khoảng trắng hoặc kí tự Tiếng Việt",
+      "CodeExisted": "Mã đại lý đã tồn tại"
     },
     "Name": {
-      "NameEmpty": "Chưa nhập tên cửa hàng",
-      "NameOverLength": "Tên cửa hàng quá dài"
+      "NameEmpty": "Chưa nhập tên đại lý",
+      "NameOverLength": "Tên đại lý quá dài"
     },
     "OrganizationId": {
       "OrganizationNotExisted": "Đơn vị tổ chức không tồn tại",
@@ -18,14 +18,14 @@
     },
     "ParentStoreId": {
       "ParentStoreNotExisted": "Cừa hàng cấp cha không tồn tại",
-      "StoreHasChild": "Cửa hàng đã có cửa hàng cấp con"
+      "StoreHasChild": "đại lý đã có đại lý cấp con"
     },
     "StoreTypeId": {
-      "StoreTypeEmpty": "Chưa chọn loại cửa hàng",
-      "StoreTypeNotExisted": "Loại cửa hàng không tồn tại"
+      "StoreTypeEmpty": "Chưa chọn loại đại lý",
+      "StoreTypeNotExisted": "Loại đại lý không tồn tại"
     },
     "StoreGroupingId": {
-      "StoreGroupingNotExisted": "Nhóm cửa hàng không tồn tại"
+      "StoreGroupingNotExisted": "Nhóm đại lý không tồn tại"
     },
     "Telephone": {
       "TelephoneOverLength": "Số điện thoại quá dài"
@@ -56,11 +56,11 @@
       "LocationEmpty": "Chưa chọn địa điểm"
     },
     "OwnerName": {
-      "OwnerNameEmpty": "Chưa nhập tên chủ cửa hàng",
-      "OwnerNameOverLength": "Tên chủ cửa hàng quá dài"
+      "OwnerNameEmpty": "Chưa nhập tên chủ đại lý",
+      "OwnerNameOverLength": "Tên chủ đại lý quá dài"
     },
     "OwnerPhone": {
-      "OwnerPhoneEmpty": "Chưa nhập số điện thoại chủ cửa hàng",
+      "OwnerPhoneEmpty": "Chưa nhập số điện thoại chủ đại lý",
       "OwnerPhoneOverLength": "Số điện thoại quá dài"
     },
     "OwnerEmail": {
@@ -74,8 +74,8 @@
       "StatusNotExisted": "Trạng thái không tồn tại"
     },
     "StoreScouting": {
-      "StoreScoutingHasOpened": "Cửa hàng cắm cờ đã được mở",
-      "StoreScoutingHasRejected": "Cửa hàng cắm cờ bị từ chối"
+      "StoreScoutingHasOpened": "Đại lý cắm cờ đã được mở",
+      "StoreScoutingHasRejected": "Đại lý cắm cờ bị từ chối"
     }
   }
 }

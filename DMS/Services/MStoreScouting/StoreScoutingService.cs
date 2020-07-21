@@ -135,7 +135,7 @@ namespace DMS.Services.MStoreScouting
                     UserNotification NotificationUtils = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
-                        ContentWeb = $"Cửa hàng cắm cờ {StoreScouting.Code} - {StoreScouting.Name} vừa được thêm mới vào hệ thống bởi {User.DisplayName} vào lúc {Now}",
+                        ContentWeb = $"Đại lý cắm cờ {StoreScouting.Code} - {StoreScouting.Name} vừa được thêm mới vào hệ thống bởi {User.DisplayName} vào lúc {Now}",
                         LinkWebsite = $"{StoreScoutingRoute.Master}/?id=*".Replace("*", StoreScouting.Id.ToString()),
                         LinkMobile = $"{StoreScoutingRoute.Mobile}".Replace("*", StoreScouting.Id.ToString()),
                         Time = Now,
@@ -261,7 +261,7 @@ namespace DMS.Services.MStoreScouting
 
                 Mail mail = new Mail
                 {
-                    Subject = "Từ chối tạo cửa hàng",
+                    Subject = "Từ chối tạo đại lý",
                     Body = $"{oldData.Name} đã bị từ chối bởi {CurrentUser.DisplayName} vào lúc {Now}. Chi tiết xem tại {StoreScouting.Link}",
                     Recipients = new List<string> { Creator.Email },
                     RowId = Guid.NewGuid()
