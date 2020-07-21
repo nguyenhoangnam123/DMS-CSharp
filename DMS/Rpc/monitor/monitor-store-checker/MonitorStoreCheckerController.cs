@@ -8,9 +8,13 @@ using Hangfire.Annotations;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NGS.Templater;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
+using Spire.Doc;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -212,7 +216,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
               .Where(ec => ec.ERoute.RealStartDate <= End &&
-                    (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && 
+                    (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) &&
                     AppUserIds.Contains(ec.ERoute.SaleEmployeeId))
               .Include(ec => ec.ERouteContentDays)
               .Include(ec => ec.ERoute)
@@ -264,7 +268,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 }
             }
 
-           
+
             // khởi tạo kế hoạch
             foreach (MonitorStoreChecker_SaleEmployeeDTO MonitorStoreChecker_SaleEmployeeDTO in MonitorStoreChecker_SaleEmployeeDTOs)
             {
@@ -322,7 +326,18 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                         MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings.Where(sc => sc.SalesOrderCounter > 0).ToList();
                 }
             }
-
+            long stt = 1;
+            foreach (MonitorStoreChecker_MonitorStoreCheckerDTO MonitorStoreChecker_MonitorStoreCheckerDTO in MonitorStoreChecker_MonitorStoreCheckerDTOs)
+            {
+                foreach (var SaleEmployee in MonitorStoreChecker_MonitorStoreCheckerDTO.SaleEmployees)
+                {
+                    foreach(var storeChecking in SaleEmployee.StoreCheckings)
+                    {
+                        storeChecking.STT = stt;
+                        stt++;
+                    }    
+                }    
+            }    
             return MonitorStoreChecker_MonitorStoreCheckerDTOs;
         }
 
@@ -388,7 +403,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     {
                         Info.ImagePath = SubStoreCheckingImageMappingDAOs.Select(i => i.Image.Url).FirstOrDefault();
                     }
-                    
+
                     if (SubIndirectSalesOrderDAOs.Count > i)
                     {
                         Info.IndirectSalesOrderCode = SubIndirectSalesOrderDAOs[i].Code;
@@ -406,5 +421,36 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             }
             return MonitorStoreChecker_MonitorStoreCheckerDetailDTOs;
         }
+
+        [Route(MonitorStoreCheckerRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] MonitorStoreChecker_MonitorStoreCheckerFilterDTO MonitorStoreChecker_MonitorStoreCheckerFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            List<MonitorStoreChecker_MonitorStoreCheckerDTO> MonitorStoreChecker_MonitorStoreCheckerDTOs = await List(MonitorStoreChecker_MonitorStoreCheckerFilterDTO);
+            DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
+               StaticParams.DateTimeNow.Date :
+               MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value.Date;
+
+            DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+            string path = "Templates/Monitor_Store_Checker_Report.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.ToString("dd-MM-yyyy");
+            Data.End = End.ToString("dd-MM-yyyy");
+            Data.MonitorStoreCheckers = MonitorStoreChecker_MonitorStoreCheckerDTOs;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "MonitorStoreChecker.xlsx");
+        }
+
     }
 }
