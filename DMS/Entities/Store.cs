@@ -74,6 +74,7 @@ namespace DMS.Entities
         public IdFilter StoreTypeId { get; set; }
         public IdFilter StoreGroupingId { get; set; }
         public IdFilter StoreCheckingStatusId { get; set; }
+        public IdFilter SalesEmployeeId { get; set; }
         public StringFilter Telephone { get; set; }
         public IdFilter ResellerId { get; set; }
         public IdFilter ProvinceId { get; set; }

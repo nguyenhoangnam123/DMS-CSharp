@@ -336,6 +336,7 @@ namespace DMS.Services.MStoreChecking
             {
                 List<long> StoreIds = await ListStoreIds(ERouteId);
                 StoreFilter.Id = new IdFilter { In = StoreIds };
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 int count = await UOW.StoreRepository.Count(StoreFilter);
                 return count;
             }
@@ -362,8 +363,9 @@ namespace DMS.Services.MStoreChecking
                 List<long> StoreIds = await ListStoreIds(ERouteId);
 
                 StoreFilter.Id = new IdFilter { In = StoreIds };
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
-
+                StoreIds = Stores.Select(x => x.Id).ToList();
                 StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
                 {
                     Skip = 0,
@@ -418,6 +420,7 @@ namespace DMS.Services.MStoreChecking
                 }
 
                 StoreFilter.Id = new IdFilter { NotIn = StoreIds };
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
 
                 int count = await UOW.StoreRepository.Count(StoreFilter);
                 return count;
@@ -458,8 +461,9 @@ namespace DMS.Services.MStoreChecking
                 }
 
                 StoreFilter.Id = new IdFilter { NotIn = StoreIds };
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
-
+                StoreIds = Stores.Select(x => x.Id).ToList();
                 StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
                 {
                     Skip = 0,
