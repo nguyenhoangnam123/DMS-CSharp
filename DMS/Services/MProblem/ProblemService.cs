@@ -206,6 +206,7 @@ namespace DMS.Services.MProblem
                     if (Problem.ProblemStatusId == Enums.ProblemStatusEnum.DONE.Id)
                     {
                         ProblemHistory.ProblemStatusId = Enums.ProblemStatusEnum.DONE.Id;
+                        Problem.CompletedAt = StaticParams.DateTimeNow;
                     }
                     if (Problem.ProblemHistorys == null)
                         Problem.ProblemHistorys = new List<ProblemHistory>();
