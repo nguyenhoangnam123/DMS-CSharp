@@ -25,6 +25,7 @@ namespace DMS.Services.MRole
             CodeExisted,
             CodeNotExisted,
             CodeEmpty,
+            CodeHasSpecialCharacter,
             CodeOverLength,
             NameEmpty,
             NameOverLength,
@@ -66,20 +67,28 @@ namespace DMS.Services.MRole
                 Role.AddError(nameof(RoleValidator), nameof(Role.Code), ErrorCode.CodeEmpty);
             else
             {
-                if (Role.Code.Length > 255)
-                    Role.AddError(nameof(RoleValidator), nameof(Role.Code), ErrorCode.CodeOverLength);
-                RoleFilter RoleFilter = new RoleFilter
+                var Code = Role.Code;
+                if (Role.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Role.Code))
                 {
-                    Skip = 0,
-                    Take = 10,
-                    Id = new IdFilter { NotEqual = Role.Id },
-                    Code = new StringFilter { Equal = Role.Code },
-                    Selects = RoleSelect.Code
-                };
-
-                int count = await UOW.RoleRepository.Count(RoleFilter);
-                if (count != 0)
-                    Role.AddError(nameof(RoleValidator), nameof(Role.Code), ErrorCode.CodeExisted);
+                    Role.AddError(nameof(RoleValidator), nameof(Role.Code), ErrorCode.CodeHasSpecialCharacter);
+                }
+                else if (Role.Code.Length > 255)
+                    Role.AddError(nameof(RoleValidator), nameof(Role.Code), ErrorCode.CodeOverLength);
+                else
+                {
+                    RoleFilter RoleFilter = new RoleFilter
+                    {
+                        Skip = 0,
+                        Take = 10,
+                        Id = new IdFilter { NotEqual = Role.Id },
+                        Code = new StringFilter { Equal = Role.Code },
+                        Selects = RoleSelect.Code
+                    };
+                    int count = await UOW.RoleRepository.Count(RoleFilter);
+                    if (count != 0)
+                        Role.AddError(nameof(RoleValidator), nameof(Role.Code), ErrorCode.CodeExisted);
+                }
+                
             }
             return Role.IsValidated;
         }

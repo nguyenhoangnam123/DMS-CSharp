@@ -69,19 +69,21 @@ namespace DMS.Services.MProductGrouping
                 {
                     ProductGrouping.AddError(nameof(ProductGroupingValidator), nameof(ProductGrouping.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
-
-                ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter
+                else
                 {
-                    Skip = 0,
-                    Take = 10,
-                    Id = new IdFilter { NotEqual = ProductGrouping.Id },
-                    Code = new StringFilter { Equal = ProductGrouping.Code },
-                    Selects = ProductGroupingSelect.Code
-                };
+                    ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter
+                    {
+                        Skip = 0,
+                        Take = 10,
+                        Id = new IdFilter { NotEqual = ProductGrouping.Id },
+                        Code = new StringFilter { Equal = ProductGrouping.Code },
+                        Selects = ProductGroupingSelect.Code
+                    };
 
-                int count = await UOW.ProductGroupingRepository.Count(ProductGroupingFilter);
-                if (count != 0)
-                    ProductGrouping.AddError(nameof(ProductGroupingValidator), nameof(ProductGrouping.Code), ErrorCode.CodeExisted);
+                    int count = await UOW.ProductGroupingRepository.Count(ProductGroupingFilter);
+                    if (count != 0)
+                        ProductGrouping.AddError(nameof(ProductGroupingValidator), nameof(ProductGrouping.Code), ErrorCode.CodeExisted);
+                }
             }
             return ProductGrouping.IsValidated;
         }

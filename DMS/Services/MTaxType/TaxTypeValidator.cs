@@ -23,6 +23,7 @@ namespace DMS.Services.MTaxType
         {
             IdNotExisted,
             TaxTypeInUsed,
+            CodeHasSpecialCharacter,
             CodeEmpty,
             CodeExisted,
             NameEmpty,
@@ -75,19 +76,32 @@ namespace DMS.Services.MTaxType
                 TaxType.AddError(nameof(TaxTypeValidator), nameof(TaxType.Code), ErrorCode.CodeEmpty);
                 return false;
             }
-            TaxTypeFilter TaxTypeFilter = new TaxTypeFilter
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { NotEqual = TaxType.Id },
-                Code = new StringFilter { Equal = TaxType.Code },
-                Selects = TaxTypeSelect.Code
-            };
+                var Code = TaxType.Code;
+                if (TaxType.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(TaxType.Code))
+                {
+                    TaxType.AddError(nameof(TaxTypeValidator), nameof(TaxType.Code), ErrorCode.CodeHasSpecialCharacter);
+                }
+                else
+                {
+                    TaxTypeFilter TaxTypeFilter = new TaxTypeFilter
+                    {
+                        Skip = 0,
+                        Take = 10,
+                        Id = new IdFilter { NotEqual = TaxType.Id },
+                        Code = new StringFilter { Equal = TaxType.Code },
+                        Selects = TaxTypeSelect.Code
+                    };
 
-            int count = await UOW.TaxTypeRepository.Count(TaxTypeFilter);
-            if (count != 0)
-                TaxType.AddError(nameof(TaxTypeValidator), nameof(TaxType.Code), ErrorCode.CodeExisted);
-            return count == 0;
+                    int count = await UOW.TaxTypeRepository.Count(TaxTypeFilter);
+                    if (count != 0)
+                        TaxType.AddError(nameof(TaxTypeValidator), nameof(TaxType.Code), ErrorCode.CodeExisted);
+                }
+                
+            }
+
+            return TaxType.IsValidated;
         }
 
         private async Task<bool> ValidateName(TaxType TaxType)

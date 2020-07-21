@@ -6,7 +6,8 @@
     },
     "Code": {
       "CodeEmpty": "Chưa nhập mã thuế",
-      "CodeExisted": "Mã thuế đã tồn tại"
+      "CodeExisted": "Mã thuế đã tồn tại",
+      "CodeHasSpecialCharacter": "Mã thuế không thể chứa khoảng trắng hoặc kí tự Tiếng Việt"
     },
     "Name": {
       "NameEmpty": "Chưa nhập tên thuế",

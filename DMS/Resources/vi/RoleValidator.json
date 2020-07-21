@@ -7,7 +7,7 @@
       "CodeEmpty": "Chưa nhập mã vai trò",
       "CodeOverLength": "Mã vai trò quá dài",
       "CodeExisted": "Mã vai trò đã được sử dụng",
-      "CodeHasSpecialCharacter": "Mã chứa kí tự đặc biệt"
+      "CodeHasSpecialCharacter": "Mã vai trò không thể chứa khoảng trắng hoặc kí tự Tiếng Việt"
     },
     "Field": {
       "Name": {

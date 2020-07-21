@@ -66,23 +66,25 @@ namespace DMS.Services.MStoreGrouping
             else
             {
                 var Code = StoreGrouping.Code;
-                if (!FilterExtension.ChangeToEnglishChar(Code).Equals(StoreGrouping.Code))
+                if (StoreGrouping.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(StoreGrouping.Code))
                 {
                     StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
-
-                StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter
+                else
                 {
-                    Skip = 0,
-                    Take = 10,
-                    Id = new IdFilter { NotEqual = StoreGrouping.Id },
-                    Code = new StringFilter { Equal = StoreGrouping.Code },
-                    Selects = StoreGroupingSelect.Code
-                };
+                    StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter
+                    {
+                        Skip = 0,
+                        Take = 10,
+                        Id = new IdFilter { NotEqual = StoreGrouping.Id },
+                        Code = new StringFilter { Equal = StoreGrouping.Code },
+                        Selects = StoreGroupingSelect.Code
+                    };
 
-                int count = await UOW.StoreGroupingRepository.Count(StoreGroupingFilter);
-                if (count != 0)
-                    StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Code), ErrorCode.CodeExisted);
+                    int count = await UOW.StoreGroupingRepository.Count(StoreGroupingFilter);
+                    if (count != 0)
+                        StoreGrouping.AddError(nameof(StoreGroupingValidator), nameof(StoreGrouping.Code), ErrorCode.CodeExisted);
+                }
             }
             return StoreGrouping.IsValidated;
         }
