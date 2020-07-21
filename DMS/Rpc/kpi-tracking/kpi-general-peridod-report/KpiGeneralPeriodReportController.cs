@@ -27,8 +27,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         private IKpiYearService KpiYearService;
         private IKpiPeriodService KpiPeriodService;
         private ICurrentContext CurrentContext;
-        public KpiGeneralPeriodReportController(DataContext DataContext, 
-            IOrganizationService OrganizationService, 
+        public KpiGeneralPeriodReportController(DataContext DataContext,
+            IOrganizationService OrganizationService,
             IAppUserService AppUserService,
             IKpiYearService KpiYearService,
             IKpiPeriodService KpiPeriodService,
@@ -63,7 +63,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
-
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<KpiGeneralPeriodReport_AppUserDTO> KpiGeneralPeriodReport_AppUserDTOs = AppUsers
                 .Select(x => new KpiGeneralPeriodReport_AppUserDTO(x)).ToList();
@@ -86,7 +85,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
-
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<KpiGeneralPeriodReport_OrganizationDTO> KpiGeneralPeriodReport_OrganizationDTOs = Organizations
@@ -142,18 +140,19 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState); // to do kpi year and period
-            OrganizationDAO OrganizationDAO = null;
             long? SaleEmployeeId = KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.AppUserId?.Equal;
             long KpiPeriodId = KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId?.Equal ?? KpiPeriodEnum.PERIOD_MONTH01.Id;
             long KpiYearId = KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId?.Equal ?? KpiYearEnum.YEAR_2020.Id;
-            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.OrganizationId?.Equal != null)
-            {
-                OrganizationDAO = DataContext.Organization.Where(o => o.Id == KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.OrganizationId.Equal.Value).FirstOrDefault();
-            }
+
+            List<long> AppUserIds, OrganizationIds;
+            (AppUserIds, OrganizationIds) = await FilterOrganizationAndUser(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.OrganizationId,
+                AppUserService, OrganizationService, CurrentContext, DataContext);
+
             var query = from k in DataContext.KpiGeneral
                         join ap in DataContext.AppUser on k.EmployeeId equals ap.Id
                         join o in DataContext.Organization on ap.OrganizationId equals o.Id
-                        where (OrganizationDAO == null || o.Path.StartsWith(OrganizationDAO.Path))
+                        where OrganizationIds.Contains(o.Id)
+                        && AppUserIds.Contains(ap.Id)
                         && (SaleEmployeeId == null || ap.Id == SaleEmployeeId.Value)
                         && (k.KpiYearId == KpiYearId)
                         select k.Id;
@@ -168,24 +167,23 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
             if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId == null) return BadRequest("Chưa chọn kì KPI");
             if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId == null) return BadRequest("Chưa chọn năm KPI");
 
-            OrganizationDAO OrganizationDAO = null;
             DateTime StartDate, EndDate;
             long? SaleEmployeeId = KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.AppUserId?.Equal;
             long KpiPeriodId = KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId?.Equal ?? KpiPeriodEnum.PERIOD_MONTH01.Id;
             long KpiYearId = KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId?.Equal ?? KpiYearEnum.YEAR_2020.Id;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
 
-            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.OrganizationId?.Equal != null)
-            {
-                OrganizationDAO = DataContext.Organization.Where(o => o.Id == KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.OrganizationId.Equal.Value).FirstOrDefault();
-            }
+            List<long> AppUserIds, OrganizationIds;
+            (AppUserIds, OrganizationIds) = await FilterOrganizationAndUser(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.OrganizationId,
+                AppUserService, OrganizationService, CurrentContext, DataContext);
 
             // list toan bo nhan vien trong organization do va cac con ma co kpi general
             var query = from k in DataContext.KpiGeneral
                         join ap in DataContext.AppUser on k.EmployeeId equals ap.Id
                         join o in DataContext.Organization on ap.OrganizationId equals o.Id
-                        where (OrganizationDAO == null || o.Path.StartsWith(OrganizationDAO.Path))
-                        &&  (SaleEmployeeId == null || ap.Id == SaleEmployeeId.Value)
+                        where OrganizationIds.Contains(o.Id)
+                        && AppUserIds.Contains(ap.Id)
+                        && (SaleEmployeeId == null || ap.Id == SaleEmployeeId.Value)
                         && (k.KpiYearId == KpiYearId)
                         select new KpiGeneralPeriodReport_SaleEmployeeDTO
                         {
@@ -203,7 +201,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 .ToListAsync();
 
             //get organization distinct for employee
-            List<long> OrganizationIds = KpiGeneralPeriodReport_SaleEmployeeDTOs.Where(x => x.OrganizationId.HasValue).Select(x => x.OrganizationId.Value).Distinct().ToList();
+            OrganizationIds = KpiGeneralPeriodReport_SaleEmployeeDTOs.Where(x => x.OrganizationId.HasValue).Select(x => x.OrganizationId.Value).Distinct().ToList();
             List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
             {
                 Skip = 0,
@@ -311,7 +309,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 SaleEmployeeDTO.SkuIndirectOrder = SaleEmployeeDTO.SkuIndirectOrderPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.SkuIndirectOrder / SaleEmployeeDTO.SkuIndirectOrderPlanned, 2);
 
                 // STORESVISITED - Số KH viếng thăm
-                SaleEmployeeDTO.StoresVisitedPLanned= KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                SaleEmployeeDTO.StoresVisitedPLanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.STORE_VISITED.Id)
                        .Select(sed => sed.Value).FirstOrDefault();
                 SaleEmployeeDTO.StoresVisited = StoreCheckingDAOs
@@ -354,7 +352,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
         private Tuple<DateTime, DateTime> DateTimeConvert(long KpiPeriodId, long KpiYearId)
         {
-            DateTime startDate =  StaticParams.DateTimeNow;
+            DateTime startDate = StaticParams.DateTimeNow;
             DateTime endDate = StaticParams.DateTimeNow;
             if (KpiPeriodId <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
             {

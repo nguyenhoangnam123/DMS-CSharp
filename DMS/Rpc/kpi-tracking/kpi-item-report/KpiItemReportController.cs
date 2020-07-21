@@ -166,7 +166,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState); // to do kpi year and period
-            OrganizationDAO OrganizationDAO = null;
             DateTime StartDate, EndDate;
             long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.AppUserId?.Equal;
             long? ItemId = KpiItemReport_KpiItemReportFilterDTO.ItemId?.Equal;
@@ -174,10 +173,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             long KpiYearId = KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal ?? KpiYearEnum.YEAR_2020.Id;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
 
-            if (KpiItemReport_KpiItemReportFilterDTO.OrganizationId?.Equal != null)
-            {
-                OrganizationDAO = DataContext.Organization.Where(o => o.Id == KpiItemReport_KpiItemReportFilterDTO.OrganizationId.Equal.Value).FirstOrDefault();
-            }
+            List<long> AppUserIds, OrganizationIds;
+            (AppUserIds, OrganizationIds) = await FilterOrganizationAndUser(KpiItemReport_KpiItemReportFilterDTO.OrganizationId,
+                AppUserService, OrganizationService, CurrentContext, DataContext);
 
             // list toan bo nhan vien sau khi chay qua filter
             var query = from ki in DataContext.KpiItem
@@ -185,7 +183,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         join o in DataContext.Organization on ki.OrganizationId equals o.Id
                         join kic in DataContext.KpiItemContent on ki.Id equals kic.KpiItemId
                         join i in DataContext.Item on kic.ItemId equals i.Id
-                        where (OrganizationDAO == null || o.Path.StartsWith(OrganizationDAO.Path))
+                        where OrganizationIds.Contains(o.Id) 
+                        && AppUserIds.Contains(ap.Id)
                         && (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value)
                         && (ItemId == null || i.Id == ItemId.Value)
                         && (ki.KpiYearId == KpiYearId)
@@ -210,7 +209,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             if (KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId == null) return BadRequest("Chưa chọn kì KPI");
             if (KpiItemReport_KpiItemReportFilterDTO.KpiYearId == null) return BadRequest("Chưa chọn năm KPI");
 
-            OrganizationDAO OrganizationDAO = null;
             DateTime StartDate, EndDate;
             long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.AppUserId?.Equal;
             long? ItemId = KpiItemReport_KpiItemReportFilterDTO.ItemId?.Equal;
@@ -218,10 +216,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             long KpiYearId = KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal ?? KpiYearEnum.YEAR_2020.Id;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
 
-            if (KpiItemReport_KpiItemReportFilterDTO.OrganizationId?.Equal != null)
-            {
-                OrganizationDAO = DataContext.Organization.Where(o => o.Id == KpiItemReport_KpiItemReportFilterDTO.OrganizationId.Equal.Value).FirstOrDefault();
-            }
+            List<long> AppUserIds, OrganizationIds;
+            (AppUserIds, OrganizationIds) = await FilterOrganizationAndUser(KpiItemReport_KpiItemReportFilterDTO.OrganizationId,
+                AppUserService, OrganizationService, CurrentContext, DataContext);
 
             // list toan bo nhan vien sau khi chay qua filter
             var query = from ki in DataContext.KpiItem
@@ -229,7 +226,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         join o in DataContext.Organization on ki.OrganizationId equals o.Id
                         join kic in DataContext.KpiItemContent on ki.Id equals kic.KpiItemId
                         join i in DataContext.Item on kic.ItemId equals i.Id
-                        where (OrganizationDAO == null || o.Path.StartsWith(OrganizationDAO.Path))
+                        where OrganizationIds.Contains(o.Id)
+                        && AppUserIds.Contains(ap.Id)
                         && (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value)
                         && (ItemId == null || i.Id == ItemId.Value)
                         && (ki.KpiYearId == KpiYearId)
@@ -251,7 +249,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                 .ToListAsync();
 
             //get organization
-            List<long> OrganizationIds = KpiItemReport_SaleEmployeeItemDTOs.Select(x => x.OrganizationId).Distinct().ToList(); // to do
+            OrganizationIds = KpiItemReport_SaleEmployeeItemDTOs.Select(x => x.OrganizationId).Distinct().ToList(); // to do
             List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
             {
                 Skip = 0,
