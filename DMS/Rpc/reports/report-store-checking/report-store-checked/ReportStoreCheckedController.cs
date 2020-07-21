@@ -5,6 +5,7 @@ using DMS.Models;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
 using DMS.Services.MStore;
+using DMS.Services.MStoreChecking;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using Hangfire.Annotations;
@@ -27,6 +28,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         private IStoreService StoreService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
+        private IStoreCheckingService StoreCheckingService;
         private ICurrentContext CurrentContext;
         public ReportStoreCheckedController(
             DataContext DataContext,
@@ -35,6 +37,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
+            IStoreCheckingService StoreCheckingService,
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
@@ -43,6 +46,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             this.StoreService = StoreService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
+            this.StoreCheckingService = StoreCheckingService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -315,14 +319,16 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             }
 
             AppUserIds = AppUsers.Select(s => s.Id).ToList();
-            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(sc => AppUserIds.Contains(sc.SaleEmployeeId) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
-                .ToListAsync();
-            foreach (var StoreCheckingDAO in StoreCheckingDAOs)
+            StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
             {
-                StoreDAO StoreDAO = StoreDAOs.Where(x => x.Id == StoreCheckingDAO.Id).FirstOrDefault();
-                StoreCheckingDAO.Store = StoreDAO;
-            }
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreCheckingSelect.ALL,
+                CheckOutAt = new DateFilter { GreaterEqual = Start, LessEqual = End },
+                SaleEmployeeId = new IdFilter { In = AppUserIds }
+            };
+            List<StoreChecking> storeCheckings = await StoreCheckingService.List(StoreCheckingFilter);
+            
             // khởi tạo khung dữ liệu
             foreach (ReportStoreChecked_SaleEmployeeDTO ReportStoreChecked_SaleEmployeeDTO in ReportStoreChecked_SaleEmployeeDTOs)
             {
@@ -331,7 +337,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 {
                     ReportStoreChecked_StoreCheckingGroupByDateDTO ReportStoreChecked_StoreCheckingGroupByDateDTO = new ReportStoreChecked_StoreCheckingGroupByDateDTO();
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.Date = i;
-                    ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == ReportStoreChecked_SaleEmployeeDTO.SaleEmployeeId)
+                    ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings = storeCheckings.Where(x => x.SaleEmployeeId == ReportStoreChecked_SaleEmployeeDTO.SaleEmployeeId)
                         .Where(x => x.CheckOutAt.Value.Date == i)
                         .Select(x => new ReportStoreChecked_StoreCheckingDTO
                         {
@@ -340,7 +346,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             DeviceName = x.DeviceName,
                             ImageCounter = x.ImageCounter ?? 0,
                             Planned = x.Planned,
-                            SalesOrder = x.IndirectSalesOrderCounter > 0 ? true : false,
+                            SalesOrder = x.CountIndirectSalesOrder > 0 ? true : false,
                             SaleEmployeeId = x.SaleEmployeeId,
                             StoreName = x.Store.Name,
                             StoreCode = x.Store.Code,
