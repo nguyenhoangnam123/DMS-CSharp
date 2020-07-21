@@ -18,15 +18,16 @@
   </ItemGroup>
 
 <ItemGroup>
-    <PackageReference Include="EntityFrameworkCore.Scaffolding.Handlebars" Version="3.7.0" />
+    <PackageReference Include="EntityFrameworkCore.Scaffolding.Handlebars" Version="3.8.2" />
     <PackageReference Include="EPPlus" Version="5.2.0" />
+    <PackageReference Include="FreeSpire.Doc" Version="7.11.0" />
     <PackageReference Include="Hangfire" Version="1.7.11" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.6"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.6" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" />
     <PackageReference Include="RabbitMQ.Client" Version="6.1.0" />
@@ -34,9 +35,9 @@
     <PackageReference Include="Scrutor" Version="3.2.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-rc0001" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
-    <PackageReference Include="Templater" Version="4.4.0" />
+    <PackageReference Include="Templater" Version="4.5.0" />
     <PackageReference Include="Winton.Extensions.Configuration.Consul" Version="3.1.0" />
-    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="3.0.79" />
+    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="3.0.84" />
 </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +45,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Templates\Inventory_Export.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Monitor_Store_Checker_Report.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Templates\Product_Export.xlsx">

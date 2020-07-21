@@ -337,5 +337,6 @@ namespace DMS.Rpc.monitor.monitor_store_albums
 
             return MonitorStoreAlbum_StoreCheckingImageMappingDTO;
         }
+
     }
 }
