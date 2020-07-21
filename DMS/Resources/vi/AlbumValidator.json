@@ -4,8 +4,8 @@
       "IdNotExisted": "Id không tồn tại"
     },
     "Name": {
-      "NameEmpty": "Chưa nhập tên Album",
-      "NameOverLength": "Tên quá dài"
+      "NameEmpty": "Chưa nhập tên Album ảnh",
+      "NameOverLength": "Tên Album ảnh quá dài"
     },
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"

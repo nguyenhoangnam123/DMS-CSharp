@@ -4,21 +4,21 @@
       "IdNotExisted": "Id không tồn tại"
     },
     "Code": {
-      "CodeEmpty": "Chưa nhập code",
-      "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt",
-      "CodeExisted": "Code đã tồn tại"
+      "CodeEmpty": "Chưa nhập mã cửa hàng",
+      "CodeHasSpecialCharacter": "Mã cửa hàng không thể chứa khoảng trắng hoặc kí tự Tiếng Việt",
+      "CodeExisted": "Mã cửa hàng đã tồn tại"
     },
     "Name": {
-      "NameEmpty": "Chưa nhập tên",
-      "NameOverLength": "Tên nhập quá dài"
+      "NameEmpty": "Chưa nhập tên cửa hàng",
+      "NameOverLength": "Tên cửa hàng quá dài"
     },
     "OrganizationId": {
-      "OrganizationNotExisted": "Cơ cấu tổ chức không tồn tại",
-      "OrganizationEmpty": "Chưa nhập cơ cấu tổ chức"
+      "OrganizationNotExisted": "Đơn vị tổ chức không tồn tại",
+      "OrganizationEmpty": "Chưa nhập đơn vị tổ chức"
     },
     "ParentStoreId": {
-      "ParentStoreNotExisted": "Cừa hàng quản lý không tồn tại",
-      "StoreHasChild": "Cửa hàng có con"
+      "ParentStoreNotExisted": "Cừa hàng cấp cha không tồn tại",
+      "StoreHasChild": "Cửa hàng đã có cửa hàng cấp con"
     },
     "StoreTypeId": {
       "StoreTypeEmpty": "Chưa chọn loại cửa hàng",
@@ -56,8 +56,8 @@
       "LocationEmpty": "Chưa chọn địa điểm"
     },
     "OwnerName": {
-      "OwnerNameEmpty": "Chưa nhập tên người chủ cửa hàng",
-      "OwnerNameOverLength": "Tên người chủ cửa hàng quá dài"
+      "OwnerNameEmpty": "Chưa nhập tên chủ cửa hàng",
+      "OwnerNameOverLength": "Tên chủ cửa hàng quá dài"
     },
     "OwnerPhone": {
       "OwnerPhoneEmpty": "Chưa nhập số điện thoại chủ cửa hàng",
@@ -68,7 +68,7 @@
       "OwnerEmailOverLength": "Email quá dài"
     },
     "TaxCode": {
-      "CodeHasSpecialCharacter": "Mã Code chứa kí tự đặc biệt"
+      "CodeHasSpecialCharacter": "Mã thuế chứa kí tự đặc biệt"
     },
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"

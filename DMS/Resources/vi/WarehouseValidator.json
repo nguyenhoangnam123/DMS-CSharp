@@ -5,14 +5,14 @@
       "WarehouseHasInventory": "Kho đã có sản phẩm tồn kho"
     },
     "Code": {
-      "CodeEmpty": "Chưa nhập Code",
-      "CodeOverLength": "Code quá dài",
-      "CodeHasSpecialCharacter": "Code chứa kí tự đặc biệt",
-      "CodeExisted":  "Code đã bị trùng"
+      "CodeEmpty": "Chưa nhập mã kho",
+      "CodeOverLength": "Mã kho quá dài",
+      "CodeHasSpecialCharacter": "Mã kho không thể chứa khoảng trắng hoặc kí tự Tiếng Việt",
+      "CodeExisted":  "Mã kho đã tồn tại"
     },
     "Name": {
-      "NameEmpty": "Chưa nhập tên",
-      "NameOverLength": "Tên quá dài"
+      "NameEmpty": "Chưa nhập tên kho",
+      "NameOverLength": "Tên kho quá dài"
     },
     "Address": {
       "AddressOverLength": "Địa chỉ quá dài"

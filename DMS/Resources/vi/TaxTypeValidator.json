@@ -5,12 +5,12 @@
       "TaxTypeInUsed": "Loại thuế đã được sử dụng"
     },
     "Code": {
-      "CodeEmpty": "Chưa nhập Code",
-      "CodeExisted": "Code đã tồn tại"
+      "CodeEmpty": "Chưa nhập mã thuế",
+      "CodeExisted": "Mã thuế đã tồn tại"
     },
     "Name": {
-      "NameEmpty": "Chưa nhập tên",
-      "NameOverLength": "Tên quá dài"
+      "NameEmpty": "Chưa nhập tên thuế",
+      "NameOverLength": "Tên thuế quá dài"
     }
   }
 }

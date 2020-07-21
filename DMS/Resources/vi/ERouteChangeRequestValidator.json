@@ -7,8 +7,8 @@
       "ERouteNotExisted": "Tuyến không tồn tại"
     },
     "RequestState": {
-      "RequestStateIsNotApproved": "Trạng thái yêu cầu tuyến không được chấp nhận",
-      "ERouteChangeRequestInUsed": "Yêu cầu tuyến thay đổi đang sử dụng"
+      "RequestStateIsNotApproved": "Tuyến chưa được phê duyệt",
+      "ERouteChangeRequestInUsed": "Tuyến thay đổi đã được sử dụng"
     },
     "ERouteChangeRequestContent": {
       "Store": {
