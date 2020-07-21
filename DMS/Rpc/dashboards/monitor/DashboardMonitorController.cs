@@ -63,12 +63,18 @@ namespace DMS.Rpc.dashboards.monitor
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
 
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+            var AppUserIds = await DataContext.AppUser
+                .Where(x => x.OrganizationId.HasValue && x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
+                .Select(x => x.Id)
+                .ToListAsync();
+
             StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = StoreCheckingSelect.Id | StoreCheckingSelect.CheckOutAt,
-                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                SaleEmployeeId = new IdFilter { In = AppUserIds },
                 CheckOutAt = new DateFilter { GreaterEqual = Start, LessEqual = End }
             };
 
@@ -140,13 +146,19 @@ namespace DMS.Rpc.dashboards.monitor
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
 
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+            var AppUserIds = await DataContext.AppUser
+                .Where(x => x.OrganizationId.HasValue && x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
+                .Select(x => x.Id)
+                .ToListAsync();
+
             IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = IndirectSalesOrderSelect.Id | IndirectSalesOrderSelect.OrderDate,
                 OrderDate = new DateFilter { GreaterEqual = Start, LessEqual = End },
-                AppUserId = new IdFilter { Equal = CurrentContext.UserId },
+                AppUserId = new IdFilter { In = AppUserIds },
             };
 
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
@@ -179,8 +191,14 @@ namespace DMS.Rpc.dashboards.monitor
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
 
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+            var AppUserIds = await DataContext.AppUser
+                .Where(x => x.OrganizationId.HasValue && x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
+                .Select(x => x.Id)
+                .ToListAsync();
+
             var query = from scim in DataContext.StoreCheckingImageMapping
-                        where scim.SaleEmployeeId == CurrentContext.UserId &&
+                        where AppUserIds.Contains(scim.SaleEmployeeId) &&
                         Now <= scim.ShootingAt && scim.ShootingAt <= End
                         group scim by scim.ShootingAt.Hour into i
                         select new DashboardMonitor_StoreCheckingImageMappingHourDTO
@@ -209,17 +227,14 @@ namespace DMS.Rpc.dashboards.monitor
             return DashboardMonitor_StoreCheckingImageMappingDTO;
         }
 
-        [Route(DashboardMonitorRoute.StoreCheckingCoverage), HttpPost]
-        public async Task<List<DashboardMonitor_StoreDTO>> StoreCheckingCoverage()
+        [Route(DashboardMonitorRoute.StoreCoverage), HttpPost]
+        public async Task<List<DashboardMonitor_StoreDTO>> StoreCoverage()
         {
-            DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, 1);
-            DateTime End = Start.AddMonths(1).AddSeconds(-1);
-
+            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from s in DataContext.Store
-                        join sc in DataContext.StoreChecking on s.Id equals sc.StoreId
-                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End
-                        select new DashboardMonitor_StoreDTO 
+                        join o in DataContext.Organization on s.OrganizationId equals o.Id
+                        where o.Path.StartsWith(CurrentUser.Organization.Path)
+                        select new DashboardMonitor_StoreDTO
                         {
                             Id = s.Id,
                             Name = s.Name,
@@ -321,12 +336,19 @@ namespace DMS.Rpc.dashboards.monitor
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
 
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+            var AppUserIds = await DataContext.AppUser
+                .Where(x => x.OrganizationId.HasValue && x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
+                .Select(x => x.Id)
+                .ToListAsync();
+
             StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = StoreCheckingSelect.Id | StoreCheckingSelect.CheckOutAt | StoreCheckingSelect.SaleEmployee,
-                CheckOutAt = new DateFilter { GreaterEqual = Start, LessEqual = End }
+                CheckOutAt = new DateFilter { GreaterEqual = Start, LessEqual = End },
+                SaleEmployeeId = new IdFilter { In = AppUserIds }
             };
 
             var StoreCheckings = await StoreCheckingService.List(StoreCheckingFilter);
@@ -353,7 +375,7 @@ namespace DMS.Rpc.dashboards.monitor
                     .Select(x => x.DisplayName).FirstOrDefault();
             }
 
-            return DashboardMonitor_TopSaleEmployeeStoreCheckingDTOs;
+            return DashboardMonitor_TopSaleEmployeeStoreCheckingDTOs.OrderByDescending(x => x.Counter).ToList();
         }
     }
 }
