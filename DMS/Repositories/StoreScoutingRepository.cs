@@ -292,6 +292,12 @@ namespace DMS.Repositories
                     ProvinceId = q.Creator.ProvinceId,
                     SexId = q.Creator.SexId,
                     Birthday = q.Creator.Birthday,
+                    Organization = q.Creator.Organization == null ? null : new Organization
+                    {
+                        Id = q.Creator.Organization.Id,
+                        Code = q.Creator.Organization.Code,
+                        Name = q.Creator.Organization.Name
+                    }
                 } : null,
                 District = filter.Selects.Contains(StoreScoutingSelect.District) && q.District != null ? new District
                 {

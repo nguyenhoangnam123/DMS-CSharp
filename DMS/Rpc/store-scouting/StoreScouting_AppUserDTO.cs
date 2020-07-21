@@ -37,7 +37,7 @@ namespace DMS.Rpc.store_scouting
         
         public DateTime? Birthday { get; set; }
         
-
+        public StoreScouting_OrganizationDTO Organization { get; set; }
         public StoreScouting_AppUserDTO() {}
         public StoreScouting_AppUserDTO(AppUser AppUser)
         {
@@ -69,7 +69,7 @@ namespace DMS.Rpc.store_scouting
             this.SexId = AppUser.SexId;
             
             this.Birthday = AppUser.Birthday;
-            
+            this.Organization = AppUser.Organization == null ? null : new StoreScouting_OrganizationDTO(AppUser.Organization);
             this.Errors = AppUser.Errors;
         }
     }
