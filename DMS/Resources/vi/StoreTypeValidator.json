@@ -10,6 +10,7 @@
       "NameExisted": "Tên loại cửa hàng đã tồn tại"
     },
     "Code": {
+      "CodeExisted": "Mã loại cửa hàng đã tồn tại",
       "CodeEmpty": "Chưa nhập mã loại cửa hàng",
       "CodeOverLength": "Mã loại cửa hàng quá dài",
       "CodeHasSpecialCharacter": "Mã loại cửa hàng chứa kí tự đặc biệt"
