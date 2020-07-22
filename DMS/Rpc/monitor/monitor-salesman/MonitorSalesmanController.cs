@@ -9,9 +9,12 @@ using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using NGS.Templater;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -374,5 +377,37 @@ namespace DMS.Rpc.monitor.monitor_salesman
             }
             return MonitorStoreChecker_MonitorStoreCheckerDetailDTOs;
         }
+
+        [Route(MonitorSalesmanRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            List<MonitorSalesman_MonitorSalesmanDTO> MonitorSalesman_MonitorSalesmanDTOs = await List(MonitorSalesman_MonitorSalesmanFilterDTO);
+            DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
+               StaticParams.DateTimeNow.Date :
+               MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value.Date;
+
+            DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+            string path = "Templates/Monitor_Salesman_Report.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.ToString("dd-MM-yyyy");
+            Data.End = End.ToString("dd-MM-yyyy");
+            Data.MonitorSalesmans = MonitorSalesman_MonitorSalesmanDTOs;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "MonitorStoreChecker.xlsx");
+        }
+
+
     }
 }
