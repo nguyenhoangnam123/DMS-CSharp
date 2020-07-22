@@ -254,7 +254,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                             Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End).OrderByDescending(s => s.CheckOutAt).ToList();
                     StoreCheckingDAO Checked = SubStoreCheckingDAOs.FirstOrDefault();
                     StoreDAO StoreDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
-                   
+
                     MonitorSalesman_StoreCheckingDTO MonitorSalesman_StoreCheckingDTO = new MonitorSalesman_StoreCheckingDTO();
                     MonitorSalesman_SaleEmployeeDTO.StoreCheckings.Add(MonitorSalesman_StoreCheckingDTO);
                     if (Checked != null)
@@ -266,7 +266,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                         MonitorSalesman_StoreCheckingDTO.CheckOut = Checked.CheckOutAt;
                         MonitorSalesman_StoreCheckingDTO.Image = StoreCheckingImageMappingDAOs.Where(sc => sc.StoreCheckingId == Checked.Id).Select(sc => sc.Image?.Url).FirstOrDefault();
                     }
-                    
+
                     MonitorSalesman_StoreCheckingDTO.StoreCode = StoreDAO.Code;
                     MonitorSalesman_StoreCheckingDTO.StoreName = StoreDAO.Name;
                     MonitorSalesman_StoreCheckingDTO.Address = StoreDAO.Address;
@@ -291,6 +291,15 @@ namespace DMS.Rpc.monitor.monitor_salesman
                      }).ToList();
 
                 };
+            }
+            int stt = 1;
+            foreach (MonitorSalesman_MonitorSalesmanDTO MonitorSalesman_MonitorSalesmanDTO in MonitorSalesman_MonitorSalesmanDTOs)
+            {
+                foreach (var SaleEmployee in MonitorSalesman_MonitorSalesmanDTO.SaleEmployees)
+                {
+                    SaleEmployee.STT = stt;
+                    stt++;
+                }
             }
             return MonitorSalesman_MonitorSalesmanDTOs;
         }
@@ -407,7 +416,6 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
             return File(output.ToArray(), "application/octet-stream", "Monitor_Salesman_Report.xlsx");
         }
-
 
     }
 }

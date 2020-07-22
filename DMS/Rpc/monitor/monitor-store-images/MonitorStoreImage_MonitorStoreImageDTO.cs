@@ -14,6 +14,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
     public class MonitorStoreImage_SaleEmployeeDTO : DataDTO
     {
+        public long STT { get; set; }
         public long SaleEmployeeId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
