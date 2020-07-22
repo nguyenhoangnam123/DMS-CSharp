@@ -297,8 +297,11 @@ namespace DMS.Rpc.monitor.monitor_store_images
             {
                 foreach (var SaleEmployee in MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees)
                 {
-                    SaleEmployee.STT = stt;
-                    stt++;
+                    foreach (var StoreChecking in SaleEmployee.StoreCheckings)
+                    {
+                        StoreChecking.STT = stt;
+                        stt++;
+                    }
                 }
             }
             return MonitorStoreImage_MonitorStoreImageDTOs;
@@ -369,7 +372,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
             dynamic Data = new ExpandoObject();
             Data.Start = Start.ToString("dd-MM-yyyy");
             Data.End = End.ToString("dd-MM-yyyy");
-            Data.MonitorSalesmans = MonitorStoreImage_MonitorStoreImageDTOs;
+            Data.MonitorStoreImages = MonitorStoreImage_MonitorStoreImageDTOs;
             using (var document = Configuration.Factory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);

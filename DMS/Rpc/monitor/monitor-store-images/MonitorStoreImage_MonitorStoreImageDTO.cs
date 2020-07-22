@@ -14,7 +14,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
     public class MonitorStoreImage_SaleEmployeeDTO : DataDTO
     {
-        public long STT { get; set; }
+        
         public long SaleEmployeeId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
@@ -24,8 +24,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
     public class MonitorStoreImage_StoreCheckingDTO : DataDTO
     {
+        public long STT { get; set; }
         public long Id { get; set; }
         public DateTime Date { get; set; }
+        public string DateDisplay => Date.ToString("dd-MM-yyyy");
         public long StoreId { get; set; }
         public string StoreName { get; set; }
         public long ImageCounter { get; set; }
