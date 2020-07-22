@@ -324,18 +324,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                         MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings.Where(sc => sc.SalesOrderCounter > 0).ToList();
                 }
             }
-            long stt = 1;
-            foreach (MonitorStoreChecker_MonitorStoreCheckerDTO MonitorStoreChecker_MonitorStoreCheckerDTO in MonitorStoreChecker_MonitorStoreCheckerDTOs)
-            {
-                foreach (var SaleEmployee in MonitorStoreChecker_MonitorStoreCheckerDTO.SaleEmployees)
-                {
-                    foreach(var storeChecking in SaleEmployee.StoreCheckings)
-                    {
-                        storeChecking.STT = stt;
-                        stt++;
-                    }    
-                }    
-            }    
+            
             return MonitorStoreChecker_MonitorStoreCheckerDTOs;
         }
 
@@ -425,8 +414,22 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Skip = 0;
+            MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Take = int.MaxValue;
             List<MonitorStoreChecker_MonitorStoreCheckerDTO> MonitorStoreChecker_MonitorStoreCheckerDTOs = await List(MonitorStoreChecker_MonitorStoreCheckerFilterDTO);
+            long stt = 1;
+            foreach (MonitorStoreChecker_MonitorStoreCheckerDTO MonitorStoreChecker_MonitorStoreCheckerDTO in MonitorStoreChecker_MonitorStoreCheckerDTOs)
+            {
+                foreach (var SaleEmployee in MonitorStoreChecker_MonitorStoreCheckerDTO.SaleEmployees)
+                {
+                    foreach (var storeChecking in SaleEmployee.StoreCheckings)
+                    {
+                        storeChecking.STT = stt;
+                        stt++;
+                    }
+                }
+            }
+
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
                StaticParams.DateTimeNow.Date :
                MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value.Date;

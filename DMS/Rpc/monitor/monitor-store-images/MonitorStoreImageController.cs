@@ -292,18 +292,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
             }
 
             MonitorStoreImage_MonitorStoreImageDTOs = MonitorStoreImage_MonitorStoreImageDTOs.Where(si => si.SaleEmployees.Count > 0).ToList();
-            long stt = 1;
-            foreach (MonitorStoreImage_MonitorStoreImageDTO MonitorStoreImage_MonitorStoreImageDTO in MonitorStoreImage_MonitorStoreImageDTOs)
-            {
-                foreach (var SaleEmployee in MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees)
-                {
-                    foreach (var StoreChecking in SaleEmployee.StoreCheckings)
-                    {
-                        StoreChecking.STT = stt;
-                        stt++;
-                    }
-                }
-            }
+           
             return MonitorStoreImage_MonitorStoreImageDTOs;
         }
 
@@ -357,7 +346,22 @@ namespace DMS.Rpc.monitor.monitor_store_images
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            MonitorStoreImage_MonitorStoreImageFilterDTO.Skip = 0;
+            MonitorStoreImage_MonitorStoreImageFilterDTO.Take = int.MaxValue;
             List<MonitorStoreImage_MonitorStoreImageDTO> MonitorStoreImage_MonitorStoreImageDTOs = await List(MonitorStoreImage_MonitorStoreImageFilterDTO);
+            long stt = 1;
+            foreach (MonitorStoreImage_MonitorStoreImageDTO MonitorStoreImage_MonitorStoreImageDTO in MonitorStoreImage_MonitorStoreImageDTOs)
+            {
+                foreach (var SaleEmployee in MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees)
+                {
+                    foreach (var StoreChecking in SaleEmployee.StoreCheckings)
+                    {
+                        StoreChecking.STT = stt;
+                        stt++;
+                    }
+                }
+            }
+
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
                StaticParams.DateTimeNow.Date :
                MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value.Date;

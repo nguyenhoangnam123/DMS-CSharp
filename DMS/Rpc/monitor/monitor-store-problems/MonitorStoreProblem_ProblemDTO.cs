@@ -8,6 +8,7 @@ namespace DMS.Rpc.monitor_store_problems
 {
     public class MonitorStoreProblem_ProblemDTO : DataDTO
     {
+        public long STT { get; set; }
         public long Id { get; set; }
         public string Code { get; set; }
         public long? StoreCheckingId { get; set; }
@@ -15,6 +16,7 @@ namespace DMS.Rpc.monitor_store_problems
         public long CreatorId { get; set; }
         public long ProblemTypeId { get; set; }
         public DateTime NoteAt { get; set; }
+        public string NoteAtDisplay => NoteAt.ToString("dd-MM-yyyy");
         public DateTime? CompletedAt { get; set; }
         public string Content { get; set; }
         public long ProblemStatusId { get; set; }

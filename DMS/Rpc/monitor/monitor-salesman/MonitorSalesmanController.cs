@@ -292,15 +292,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
                 };
             }
-            int stt = 1;
-            foreach (MonitorSalesman_MonitorSalesmanDTO MonitorSalesman_MonitorSalesmanDTO in MonitorSalesman_MonitorSalesmanDTOs)
-            {
-                foreach (var SaleEmployee in MonitorSalesman_MonitorSalesmanDTO.SaleEmployees)
-                {
-                    SaleEmployee.STT = stt;
-                    stt++;
-                }
-            }
+           
             return MonitorSalesman_MonitorSalesmanDTOs;
         }
 
@@ -392,8 +384,19 @@ namespace DMS.Rpc.monitor.monitor_salesman
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            MonitorSalesman_MonitorSalesmanFilterDTO.Skip = 0;
+            MonitorSalesman_MonitorSalesmanFilterDTO.Take = int.MaxValue;
             List<MonitorSalesman_MonitorSalesmanDTO> MonitorSalesman_MonitorSalesmanDTOs = await List(MonitorSalesman_MonitorSalesmanFilterDTO);
+            int stt = 1;
+            foreach (MonitorSalesman_MonitorSalesmanDTO MonitorSalesman_MonitorSalesmanDTO in MonitorSalesman_MonitorSalesmanDTOs)
+            {
+                foreach (var SaleEmployee in MonitorSalesman_MonitorSalesmanDTO.SaleEmployees)
+                {
+                    SaleEmployee.STT = stt;
+                    stt++;
+                }
+            }
+
             DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
                StaticParams.DateTimeNow.Date :
                MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value.Date;
