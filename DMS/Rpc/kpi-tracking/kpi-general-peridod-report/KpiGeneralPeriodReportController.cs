@@ -179,36 +179,46 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
             // list toan bo nhan vien trong organization do va cac con ma co kpi general
             var query = from k in DataContext.KpiGeneral
-                        join ap in DataContext.AppUser on k.EmployeeId equals ap.Id
-                        join o in DataContext.Organization on ap.OrganizationId equals o.Id
+                        join au in DataContext.AppUser on k.EmployeeId equals au.Id
+                        join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where OrganizationIds.Contains(o.Id)
-                        && AppUserIds.Contains(ap.Id)
-                        && (SaleEmployeeId == null || ap.Id == SaleEmployeeId.Value)
+                        && AppUserIds.Contains(au.Id)
+                        && (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value)
                         && (k.KpiYearId == KpiYearId)
-                        select new KpiGeneralPeriodReport_SaleEmployeeDTO
+                        select new
                         {
-                            SaleEmployeeId = ap.Id,
-                            Username = ap.Username,
-                            DisplayName = ap.DisplayName,
-                            OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
-                            OrganizationId = ap.OrganizationId.Value
+                            SaleEmployeeId = au.Id,
+                            Username = au.Username,
+                            DisplayName = au.DisplayName,
+                            OrganizationName = au.Organization == null ? null : au.Organization.Name,
+                            OrganizationId = au.OrganizationId.Value
                         };
-            List<KpiGeneralPeriodReport_SaleEmployeeDTO> KpiGeneralPeriodReport_SaleEmployeeDTOs = await query
+            List<KpiGeneralPeriodReport_SaleEmployeeDTO> KpiGeneralPeriodReport_SaleEmployeeDTOs = (await query
                 .Distinct()
                 .OrderBy(x => x.DisplayName)
                 .Skip(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Skip)
                 .Take(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Take)
-                .ToListAsync();
+                .ToListAsync())
+                .Select(x => new KpiGeneralPeriodReport_SaleEmployeeDTO
+                {
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    Username = x.Username,
+                    DisplayName = x.DisplayName,
+                    OrganizationName = x.OrganizationName,
+                    OrganizationId = x.OrganizationId,
+                }).ToList();
 
-            //get organization distinct for employee
-            OrganizationIds = KpiGeneralPeriodReport_SaleEmployeeDTOs.Where(x => x.OrganizationId.HasValue).Select(x => x.OrganizationId.Value).Distinct().ToList();
-            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            //build khung theo org
+            var OrganizationNames = KpiGeneralPeriodReport_SaleEmployeeDTOs.Where(x => x.OrganizationId.HasValue).Select(x => x.OrganizationName).Distinct().ToList();
+            List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO> kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs = new List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO>();
+            foreach (string OrganizationName in OrganizationNames)
             {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = OrganizationSelect.Id | OrganizationSelect.Name,
-                Id = new IdFilter { In = OrganizationIds }
-            });
+                KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO = new KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO()
+                {
+                    OrganizationName = OrganizationName,
+                };
+                kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs.Add(KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO);
+            }
 
             List<long> SaleEmployeeIds = KpiGeneralPeriodReport_SaleEmployeeDTOs.Select(x => x.SaleEmployeeId).ToList();
 
@@ -220,13 +230,21 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                                       && OrganizationIds.Contains(c.OrganizationId)
                                       && c.KpiYearId == KpiYearId
                                       && a.KpiPeriodId == KpiPeriodId)
-                               select new KpiGeneralPeriodReport_SaleEmployeeDetailDTO
+                               select new
                                {
                                    SaleEmployeeId = c.EmployeeId,
                                    KpiCriteriaGeneralId = b.KpiCriteriaGeneralId,
                                    Value = a.Value.Value,
                                };
-            List<KpiGeneralPeriodReport_SaleEmployeeDetailDTO> KpiGeneralPeriodReport_SaleEmployeeDetailDTOs = await query_detail.Distinct().ToListAsync();
+            List<KpiGeneralPeriodReport_SaleEmployeeDetailDTO> KpiGeneralPeriodReport_SaleEmployeeDetailDTOs = (await query_detail
+                .Distinct()
+                .ToListAsync())
+                .Select(x => new KpiGeneralPeriodReport_SaleEmployeeDetailDTO
+                {
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    KpiCriteriaGeneralId = x.KpiCriteriaGeneralId,
+                    Value = x.Value,
+                }).ToList();
 
             var IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && x.OrderDate >= StartDate && x.OrderDate <= EndDate)
@@ -238,7 +256,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     OrderDate = x.OrderDate,
                     IndirectSalesOrderContents = x.IndirectSalesOrderContents.Select(c => new IndirectSalesOrderContentDAO
                     {
-                        Quantity = c.Quantity
+                        Quantity = c.Quantity,
+                        ItemId = c.ItemId
                     }).ToList(),
                 })
                 .ToListAsync(); // to do 
@@ -271,83 +290,138 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
             foreach (var SaleEmployeeDTO in KpiGeneralPeriodReport_SaleEmployeeDTOs)
             {
-                // TOTALINDIRECTORDERS - Số đơn hàng gián tiếp
+                #region Số đơn hàng gián tiếp
+                //kế hoạch
                 SaleEmployeeDTO.TotalIndirectOrdersPLanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id)
-                        .Select(sed => sed.Value).FirstOrDefault();
+                        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                         x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id)
+                        .Select(x => x.Value).FirstOrDefault();
+                //thực hiện
                 SaleEmployeeDTO.TotalIndirectOrders = IndirectSalesOrderDAOs
-                    .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
+                    .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
                     .Count();
-                SaleEmployeeDTO.TotalIndirectOrdersRatio = SaleEmployeeDTO.TotalIndirectOrdersPLanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.TotalIndirectOrders / SaleEmployeeDTO.TotalIndirectOrdersPLanned, 2);
+                //tỉ lệ
+                SaleEmployeeDTO.TotalIndirectOrdersRatio = SaleEmployeeDTO.TotalIndirectOrdersPLanned == 0 ?
+                    0 : Math.Round(SaleEmployeeDTO.TotalIndirectOrders / SaleEmployeeDTO.TotalIndirectOrdersPLanned, 2) * 100;
+                #endregion
 
-
-                // TOTALINDIRECTOUTPUT - Tổng sản lượng đơn hàng gián tiếp
-                SaleEmployeeDTO.TotalIndirectOutputPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_OUTPUT.Id)
-                        .Select(sed => sed.Value).FirstOrDefault();
-                SaleEmployeeDTO.TotalIndirectOutput = IndirectSalesOrderDAOs
-                    .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
-                    .SelectMany(iso => iso.IndirectSalesOrderContents)
-                    .Select(z => z.Quantity)
+                #region Tổng sản lượng theo đơn gián tiếp
+                //kế hoạch
+                SaleEmployeeDTO.TotalIndirectQuantityPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                         x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id)
+                        .Select(x => x.Value).FirstOrDefault();
+                //thực hiện
+                SaleEmployeeDTO.TotalIndirectQuantity = IndirectSalesOrderDAOs
+                    .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
+                    .SelectMany(c => c.IndirectSalesOrderContents)
+                    .Select(q => q.Quantity)
                     .DefaultIfEmpty(0).Sum();
-                SaleEmployeeDTO.TotalIndirectOutputRatio = SaleEmployeeDTO.TotalIndirectOutputPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.TotalIndirectOutput / SaleEmployeeDTO.TotalIndirectOutputPlanned, 2);
+                //tỉ lệ
+                SaleEmployeeDTO.TotalIndirectQuantityRatio = SaleEmployeeDTO.TotalIndirectQuantityPlanned == 0 ?
+                    0 : Math.Round(SaleEmployeeDTO.TotalIndirectQuantity / SaleEmployeeDTO.TotalIndirectQuantityPlanned, 2) * 100;
+                #endregion
 
-                // TOTALINDIRECTSALESAMOUNT - Doanh số đơn hàng gián tiếp
+                #region Doanh thu theo đơn hàng gián tiếp
+                //kế hoạch
                 SaleEmployeeDTO.TotalIndirectSalesAmountPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
-                        .Select(sed => sed.Value).FirstOrDefault();
+                        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                         x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
+                        .Select(x => x.Value).FirstOrDefault();
+                //thực hiện
                 SaleEmployeeDTO.TotalIndirectSalesAmount = IndirectSalesOrderDAOs
-                    .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
+                    .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
                     .Sum(iso => iso.Total);
-                SaleEmployeeDTO.TotalIndirectSalesAmountRatio = SaleEmployeeDTO.TotalIndirectSalesAmountPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.TotalIndirectSalesAmount / SaleEmployeeDTO.TotalIndirectSalesAmountPlanned, 2);
+                //tỉ lệ
+                SaleEmployeeDTO.TotalIndirectSalesAmountRatio = SaleEmployeeDTO.TotalIndirectSalesAmountPlanned == 0 ?
+                    0 : Math.Round(SaleEmployeeDTO.TotalIndirectSalesAmount / SaleEmployeeDTO.TotalIndirectSalesAmountPlanned, 2) * 100;
+                #endregion
 
-                // SKUINDIRECTORDER - SKU/ Đơn hàng gián tiếp
+                #region SKU/Đơn hàng gián tiếp
+                //kế hoạch
                 SaleEmployeeDTO.SkuIndirectOrderPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id)
-                        .Select(sed => sed.Value).FirstOrDefault();
-                SaleEmployeeDTO.SkuIndirectOrder = SaleEmployeeDTO.TotalIndirectOrders == 0 ? 0 : SaleEmployeeDTO.TotalIndirectOutput / SaleEmployeeDTO.TotalIndirectOrders;
-                SaleEmployeeDTO.SkuIndirectOrder = SaleEmployeeDTO.SkuIndirectOrderPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.SkuIndirectOrder / SaleEmployeeDTO.SkuIndirectOrderPlanned, 2);
+                        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                        x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id)
+                        .Select(x => x.Value).FirstOrDefault();
+                //thực hiện
+                var IndirectSalesOrderContents = IndirectSalesOrderDAOs
+                    .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
+                    .SelectMany(x => x.IndirectSalesOrderContents)
+                    .ToList();
+                SaleEmployeeDTO.SKUItems = new HashSet<long>();
+                foreach (var content in IndirectSalesOrderContents)
+                {
+                    SaleEmployeeDTO.SKUItems.Add(content.ItemId);
+                }
+                SaleEmployeeDTO.SkuIndirectOrder = SaleEmployeeDTO.TotalIndirectOrders == 0 ?
+                    0 : Math.Round(SaleEmployeeDTO.SKUItems.Count() / SaleEmployeeDTO.TotalIndirectOrders, 2);
+                //tỉ lệ
+                SaleEmployeeDTO.SkuIndirectOrderRatio = SaleEmployeeDTO.SkuIndirectOrderPlanned == 0 
+                    ? 0 : Math.Round(SaleEmployeeDTO.SkuIndirectOrder / SaleEmployeeDTO.SkuIndirectOrderPlanned, 2) * 100;
+                #endregion
 
-                // STORESVISITED - Số KH viếng thăm
+                #region Số cửa hàng viếng thăm
+                //kế hoạch
                 SaleEmployeeDTO.StoresVisitedPLanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                       .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.STORE_VISITED.Id)
-                       .Select(sed => sed.Value).FirstOrDefault();
-                SaleEmployeeDTO.StoresVisited = StoreCheckingDAOs
+                       .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && 
+                        x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.STORE_VISITED.Id)
+                       .Select(x => x.Value).FirstOrDefault();
+                //thực hiện
+                var StoreIds = StoreCheckingDAOs
                     .Where(sc => sc.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
-                    .Count();
-                SaleEmployeeDTO.StoresVisitedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.StoresVisited / SaleEmployeeDTO.NewStoreCreatedPlanned, 2);
+                    .Select(x => x.StoreId)
+                    .ToList();
+                SaleEmployeeDTO.StoreIds = new HashSet<long>();
+                foreach (var StoreId in StoreIds)
+                {
+                    SaleEmployeeDTO.StoreIds.Add(StoreId);
+                }
+                //tỉ lệ
+                SaleEmployeeDTO.StoresVisitedRatio = SaleEmployeeDTO.StoresVisitedPLanned == 0 
+                    ? 0 : Math.Round(SaleEmployeeDTO.StoresVisited / SaleEmployeeDTO.StoresVisitedPLanned, 2) * 100;
+                #endregion
 
-                // NEWSTORECREATED - Số KH tạo mới
+                #region Số cửa hàng tạo mới
+                //kế hoạch
                 SaleEmployeeDTO.NewStoreCreatedPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id)
-                        .Select(sed => sed.Value).FirstOrDefault();
+                        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId 
+                         && x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id)
+                        .Select(x => x.Value).FirstOrDefault();
+                //thực hiện
                 SaleEmployeeDTO.NewStoreCreated = StoreScoutingDAOs
                     .Where(sc => sc.CreatorId == SaleEmployeeDTO.SaleEmployeeId)
                     .SelectMany(sc => sc.Stores)
-                    .Select(z => z.StoreScoutingId.HasValue)
+                    .Where(x => x.StoreScoutingId.HasValue)
+                    .Select(z => z.StoreScoutingId.Value)
                     .Count();
-                SaleEmployeeDTO.NewStoreCreatedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.NewStoreCreated / SaleEmployeeDTO.NewStoreCreatedPlanned, 2);
+                //tỉ lệ
+                SaleEmployeeDTO.NewStoreCreatedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == 0 ? 
+                    0 : Math.Round(SaleEmployeeDTO.NewStoreCreated / SaleEmployeeDTO.NewStoreCreatedPlanned, 2) * 100;
+                #endregion
 
-                // NumberOfStoreVisits - số lần viếng thăm cửa hàng
+                #region Số lần viếng thăm cửa hàng
+                //kế hoạch
                 SaleEmployeeDTO.NumberOfStoreVisitsPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id)
-                        .Select(sed => sed.Value).FirstOrDefault();
-                SaleEmployeeDTO.NumberOfStoreVisits = 0; // to do
-                SaleEmployeeDTO.NumberOfStoreVisitsRatio = SaleEmployeeDTO.NumberOfStoreVisitsPlanned == 0 ? 0 : Math.Round(SaleEmployeeDTO.NumberOfStoreVisits / SaleEmployeeDTO.NumberOfStoreVisitsPlanned, 2);
-
+                        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && 
+                         x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id)
+                        .Select(x => x.Value).FirstOrDefault();
+                //thực hiện
+                SaleEmployeeDTO.NumberOfStoreVisits = StoreCheckingDAOs
+                    .Where(sc => sc.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
+                    .Count();
+                //tỉ lệ
+                SaleEmployeeDTO.NumberOfStoreVisitsRatio = SaleEmployeeDTO.NumberOfStoreVisitsPlanned == 0 ? 
+                    0 : Math.Round(SaleEmployeeDTO.NumberOfStoreVisits / SaleEmployeeDTO.NumberOfStoreVisitsPlanned, 2) * 100;
+                #endregion
             };
 
-            List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO> kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs = new List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO>();
-            foreach (Organization Organization in Organizations)
+            foreach (var kpiGeneralPeriodReport_KpiGeneralPeriodReportDTO in kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs)
             {
-                KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO = new KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO()
-                {
-                    OrganizationName = Organization.Name,
-                    SaleEmployees = KpiGeneralPeriodReport_SaleEmployeeDTOs.Where(x => x.OrganizationName.Equals(Organization.Name)).ToList()
-                };
-                if (KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO.SaleEmployees.Count() > 0) kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs.Add(KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO);
+                kpiGeneralPeriodReport_KpiGeneralPeriodReportDTO.SaleEmployees = KpiGeneralPeriodReport_SaleEmployeeDTOs
+                    .Where(x => x.OrganizationName.Equals(kpiGeneralPeriodReport_KpiGeneralPeriodReportDTO.OrganizationName))
+                    .ToList();
             }
-            return kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs;
+            return kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs.Where(x => x.SaleEmployees.Any()).ToList();
         }
 
         private Tuple<DateTime, DateTime> DateTimeConvert(long KpiPeriodId, long KpiYearId)

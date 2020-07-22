@@ -143,7 +143,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 throw new BindException(ModelState); // to do kpi year and period
 
             DateTime StartDate, EndDate;
-            long SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId.Equal ?? 1;
+            long? SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId.Equal;
+            if (SaleEmployeeId == null)
+                return 0;
             long? KpiPeriodId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.KpiPeriodId?.Equal;
             long? KpiYearId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.KpiYearId?.Equal;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
@@ -156,16 +158,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                                join b in DataContext.KpiGeneralContent on a.KpiGeneralContentId equals b.Id
                                join c in DataContext.KpiGeneral on b.KpiGeneralId equals c.Id
                                where OrganizationIds.Contains(c.OrganizationId)
-                                && AppUserIds.Contains(c.EmployeeId)
-                                && c.EmployeeId == SaleEmployeeId
+                                && c.EmployeeId == SaleEmployeeId.Value
                                 && (KpiYearId == null || c.KpiYearId == KpiYearId)
                                 && (KpiPeriodId == null || a.KpiPeriodId == KpiPeriodId)
-                               select new KpiGeneralEmployeeReport_SaleEmployeeDetailDTO
+                               select new
                                {
                                    SaleEmployeeId = c.EmployeeId,
-                                   KpiCriteriaGeneralId = b.KpiCriteriaGeneralId,
+                                   KpiYearId = c.KpiYearId,
                                    KpiPeriodId = a.KpiPeriodId,
-                                   Value = a.Value.Value,
                                };
             return await query_detail.Distinct().CountAsync();
         }
@@ -178,7 +178,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId == null) return BadRequest("Chưa chọn nhân viên");
 
             DateTime StartDate, EndDate;
-            long SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId.Equal ?? 1;
+            long? SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId.Equal.Value;
             long? KpiPeriodId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.KpiPeriodId?.Equal;
             long? KpiYearId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.KpiYearId?.Equal;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
@@ -192,23 +192,26 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                                join b in DataContext.KpiGeneralContent on a.KpiGeneralContentId equals b.Id
                                join c in DataContext.KpiGeneral on b.KpiGeneralId equals c.Id
                                where OrganizationIds.Contains(c.OrganizationId)
-                                    && AppUserIds.Contains(c.EmployeeId)
                                     && c.EmployeeId == SaleEmployeeId
                                     && (KpiYearId == null || c.KpiYearId == KpiYearId)
                                     && (KpiPeriodId == null || a.KpiPeriodId == KpiPeriodId)
-                               select new KpiGeneralEmployeeReport_SaleEmployeeDetailDTO
+                               select new 
                                {
                                    SaleEmployeeId = c.EmployeeId,
-                                   KpiCriteriaGeneralId = b.KpiCriteriaGeneralId,
+                                   KpiYearId = c.KpiYearId,
                                    KpiPeriodId = a.KpiPeriodId,
-                                   Value = a.Value.Value,
                                };
-            List<KpiGeneralEmployeeReport_SaleEmployeeDetailDTO> KpiGeneralEmployeeReport_SaleEmployeeDetailDTOs = await query_detail
+            List<KpiGeneralEmployeeReport_SaleEmployeeDetailDTO> KpiGeneralEmployeeReport_SaleEmployeeDetailDTOs = (await query_detail
                 .Distinct()
                 .OrderBy(x => x.SaleEmployeeId)
                 .Skip(KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.Skip)
                 .Take(KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.Take)
-                .ToListAsync();
+                .ToListAsync())
+                .Select(x => new KpiGeneralEmployeeReport_SaleEmployeeDetailDTO 
+                {
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    KpiPeriodId = x.KpiPeriodId,
+                }).ToList();
 
             var IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(x => x.SaleEmployeeId == SaleEmployeeId && x.OrderDate >= StartDate && x.OrderDate <= EndDate)
@@ -255,7 +258,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             {
                 KpiGeneralEmployeeReport_SaleEmployeeDTO SaleEmployeeDTO = new KpiGeneralEmployeeReport_SaleEmployeeDTO();
 
-                SaleEmployeeDTO.SaleEmployeeId = SaleEmployeeId;
+                //SaleEmployeeDTO.SaleEmployeeId = SaleEmployeeId;
                 SaleEmployeeDTO.KpiPeriodId = SaleEmployeeDetailDTO.KpiPeriodId;
                 foreach (var KpiPeriod in KpiPeriodEnum.KpiPeriodEnumList)
                 {
@@ -273,7 +276,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
 
                 // TOTALINDIRECTOUTPUT
                 SaleEmployeeDTO.TotalIndirectOutputPlanned = KpiGeneralEmployeeReport_SaleEmployeeDetailDTOs
-                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_OUTPUT.Id)
+                        .Where(sed => sed.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && sed.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id)
                         .Select(sed => sed.Value).FirstOrDefault();
                 SaleEmployeeDTO.TotalIndirectOutput = IndirectSalesOrderDAOs
                     .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)

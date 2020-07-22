@@ -78,7 +78,7 @@ namespace DMS.Services.MERoute
             else
             {
                 var Code = ERoute.Code;
-                if (string.IsNullOrWhiteSpace(ERoute.Code) || !FilterExtension.ChangeToEnglishChar(Code).Equals(ERoute.Code))
+                if (ERoute.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(ERoute.Code))
                 {
                     ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
