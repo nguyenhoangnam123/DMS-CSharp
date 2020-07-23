@@ -397,6 +397,7 @@ namespace DMS.Repositories
             foreach (KpiGeneralContent KpiGeneralContent in KpiGeneral.KpiGeneralContents)
             {
                 KpiGeneralContent.KpiGeneralContentKpiPeriodMappings = KpiGeneralContentKpiPeriodMappings.Where(x => x.KpiGeneralContentId == KpiGeneralContent.Id).ToList();
+                KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.ForEach(x => x.KpiGeneralContent = KpiGeneralContent);
             }
             return KpiGeneral;
         }

@@ -10,14 +10,17 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         public string DisplayName { get; set; }
         public string? OrganizationName { get; set; }
         public long? OrganizationId { get; set; }
+
         //Số đơn hàng gián tiếp
         public decimal TotalIndirectOrdersPLanned { get; set; }
         public decimal TotalIndirectOrders { get; set; }
         public decimal TotalIndirectOrdersRatio { get; set; }
+
         //Tổng sản lượng theo đơn hàng gián tiếp
         public decimal TotalIndirectQuantityPlanned { get; set; }
         public decimal TotalIndirectQuantity { get; set; }
         public decimal TotalIndirectQuantityRatio { get; set; }
+
         //Doanh thu theo đơn hàng gián tiếp
         public decimal TotalIndirectSalesAmountPlanned { get; set; }
         public decimal TotalIndirectSalesAmount { get; set; }
@@ -35,10 +38,12 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         public decimal StoresVisited => StoreIds.Count;
         public decimal StoresVisitedRatio { get; set; }
 
+        //Số cửa hàng tạo mới
         public decimal NewStoreCreatedPlanned { get; set; }
         public decimal NewStoreCreated { get; set; }
         public decimal NewStoreCreatedRatio { get; set; }
 
+        //Số lần viếng thăm
         public decimal NumberOfStoreVisits { get; set; }
         public decimal NumberOfStoreVisitsPlanned { get; set; }
         public decimal NumberOfStoreVisitsRatio { get; set; }

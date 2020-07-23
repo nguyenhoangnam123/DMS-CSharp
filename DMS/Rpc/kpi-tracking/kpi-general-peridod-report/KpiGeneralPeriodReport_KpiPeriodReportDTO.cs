@@ -19,12 +19,4 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         public IdFilter KpiPeriodId { get; set; }
         public IdFilter KpiYearId { get; set; }
     }
-
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum KpiGeneralPeriodReportOrder
-    {
-        Username = 1,
-        DisplayName = 2,
-        Organization = 3,
-    }
 }

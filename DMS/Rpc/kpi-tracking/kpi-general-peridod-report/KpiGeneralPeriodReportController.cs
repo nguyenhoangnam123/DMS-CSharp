@@ -149,12 +149,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 AppUserService, OrganizationService, CurrentContext, DataContext);
 
             var query = from k in DataContext.KpiGeneral
-                        join ap in DataContext.AppUser on k.EmployeeId equals ap.Id
-                        join o in DataContext.Organization on ap.OrganizationId equals o.Id
-                        where OrganizationIds.Contains(o.Id)
-                        && AppUserIds.Contains(ap.Id)
-                        && (SaleEmployeeId == null || ap.Id == SaleEmployeeId.Value)
-                        && (k.KpiYearId == KpiYearId)
+                        join au in DataContext.AppUser on k.EmployeeId equals au.Id
+                        join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        where OrganizationIds.Contains(o.Id) &&
+                        AppUserIds.Contains(au.Id) &&
+                        (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
+                        k.KpiYearId == KpiYearId &&
+                        k.StatusId == StatusEnum.ACTIVE.Id &&
+                        k.DeletedAt == null
                         select k.Id;
             return await query.Distinct().CountAsync();
         }
@@ -181,10 +183,12 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
             var query = from k in DataContext.KpiGeneral
                         join au in DataContext.AppUser on k.EmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
-                        where OrganizationIds.Contains(o.Id)
-                        && AppUserIds.Contains(au.Id)
-                        && (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value)
-                        && (k.KpiYearId == KpiYearId)
+                        where OrganizationIds.Contains(o.Id) &&
+                        AppUserIds.Contains(au.Id) &&
+                        (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
+                        k.KpiYearId == KpiYearId &&
+                        k.StatusId == StatusEnum.ACTIVE.Id &&
+                        k.DeletedAt == null
                         select new
                         {
                             SaleEmployeeId = au.Id,
@@ -226,10 +230,12 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
             var query_detail = from a in DataContext.KpiGeneralContentKpiPeriodMapping
                                join b in DataContext.KpiGeneralContent on a.KpiGeneralContentId equals b.Id
                                join c in DataContext.KpiGeneral on b.KpiGeneralId equals c.Id
-                               where (SaleEmployeeIds.Contains(c.EmployeeId)
-                                      && OrganizationIds.Contains(c.OrganizationId)
-                                      && c.KpiYearId == KpiYearId
-                                      && a.KpiPeriodId == KpiPeriodId)
+                               where (SaleEmployeeIds.Contains(c.EmployeeId) && 
+                               OrganizationIds.Contains(c.OrganizationId) && 
+                               c.KpiYearId == KpiYearId && 
+                               a.KpiPeriodId == KpiPeriodId &&
+                               c.StatusId == StatusEnum.ACTIVE.Id &&
+                               c.DeletedAt == null)
                                select new
                                {
                                    SaleEmployeeId = c.EmployeeId,
@@ -247,7 +253,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 }).ToList();
 
             var IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
-                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && x.OrderDate >= StartDate && x.OrderDate <= EndDate)
+                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && 
+                x.OrderDate >= StartDate && x.OrderDate <= EndDate)
                 .Select(x => new IndirectSalesOrderDAO
                 {
                     Id = x.Id,
@@ -263,7 +270,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 .ToListAsync(); // to do 
 
             var StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && x.CheckOutAt.HasValue && x.CheckOutAt.Value >= StartDate && x.CheckOutAt.Value <= EndDate)
+                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && 
+                x.CheckOutAt.HasValue && x.CheckOutAt.Value >= StartDate && x.CheckOutAt.Value <= EndDate)
                 .Select(x => new StoreCheckingDAO
                 {
                     SaleEmployeeId = x.SaleEmployeeId,
@@ -275,7 +283,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
 
             var StoreScoutingDAOs = await DataContext.StoreScouting
-                .Where(x => SaleEmployeeIds.Contains(x.CreatorId) && x.CreatedAt >= StartDate)
+                .Where(x => SaleEmployeeIds.Contains(x.CreatorId) && 
+                x.CreatedAt >= StartDate && x.CreatedAt <= EndDate)
                 .Select(x => new StoreScoutingDAO
                 {
                     CreatorId = x.CreatorId,
