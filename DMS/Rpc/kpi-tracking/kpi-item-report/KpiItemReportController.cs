@@ -183,11 +183,13 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             var query = from ki in DataContext.KpiItem
                         join kic in DataContext.KpiItemContent on ki.Id equals kic.KpiItemId
                         join i in DataContext.Item on kic.ItemId equals i.Id
-                        where OrganizationIds.Contains(ki.OrganizationId)
-                        && AppUserIds.Contains(ki.EmployeeId)
-                        && (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value)
-                        && (ItemId == null || i.Id == ItemId.Value)
-                        && (ki.KpiYearId == KpiYearId)
+                        where OrganizationIds.Contains(ki.OrganizationId) &&
+                        AppUserIds.Contains(ki.EmployeeId) &&
+                        (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value) &&
+                        (ItemId == null || i.Id == ItemId.Value) &&
+                        (ki.KpiYearId == KpiYearId) &&
+                        ki.DeletedAt == null &&
+                        ki.StatusId == StatusEnum.ACTIVE.Id
                         select new
                         {
                             SaleEmployeeId = ki.EmployeeId,
@@ -219,11 +221,13 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         join au in DataContext.AppUser on ki.EmployeeId equals au.Id
                         join kic in DataContext.KpiItemContent on ki.Id equals kic.KpiItemId
                         join i in DataContext.Item on kic.ItemId equals i.Id
-                        where OrganizationIds.Contains(ki.OrganizationId)
-                        && AppUserIds.Contains(au.Id)
-                        && (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value)
-                        && (ItemId == null || i.Id == ItemId.Value)
-                        && (ki.KpiYearId == KpiYearId)
+                        where OrganizationIds.Contains(ki.OrganizationId) &&
+                        AppUserIds.Contains(au.Id) &&
+                        (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value) &&
+                        (ItemId == null || i.Id == ItemId.Value) &&
+                        (ki.KpiYearId == KpiYearId) &&
+                        ki.DeletedAt == null &&
+                        ki.StatusId == StatusEnum.ACTIVE.Id
                         select new
                         {
                             SaleEmployeeId = au.Id,
@@ -272,7 +276,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                                where (SaleEmployeeIds.Contains(k.EmployeeId) &&
                                       k.KpiYearId == KpiYearId &&
                                       k.KpiPeriodId == KpiPeriodId &&
-                                      (ItemId == null || i.Id == ItemId))
+                                      (ItemId == null || i.Id == ItemId)) &&
+                                      k.DeletedAt == null &&
+                                      k.StatusId == StatusEnum.ACTIVE.Id
                                select new
                                {
                                    SaleEmployeeId = k.EmployeeId,
