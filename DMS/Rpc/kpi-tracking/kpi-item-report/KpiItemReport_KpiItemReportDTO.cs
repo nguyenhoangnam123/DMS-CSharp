@@ -7,8 +7,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
 {
     public class KpiItemReport_KpiItemReportDTO : DataDTO
     {
-        public string OrganizationName { get; set; }
-        public List<KpiItemReport_SaleEmployeeDTO> SaleEmployees { get; set; }
+        public long SaleEmployeeId { get; set; }
+        public string Username { get; set; }
+        public string DisplayName { get; set; }
+        public List<KpiItemReport_KpiItemContentDTO> ItemContents { get; set; }
     }
 
 
@@ -19,13 +21,5 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         public IdFilter KpiPeriodId { get; set; }
         public IdFilter KpiYearId { get; set; }
         public IdFilter ItemId { get; set; }
-    }
-
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum KpiItemReportOrder
-    {
-        Username = 1,
-        DisplayName = 2,
-        Organization = 3,
     }
 }

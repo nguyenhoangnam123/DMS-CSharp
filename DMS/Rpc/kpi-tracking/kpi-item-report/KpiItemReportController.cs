@@ -169,34 +169,31 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             DateTime StartDate, EndDate;
             long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.AppUserId?.Equal;
             long? ItemId = KpiItemReport_KpiItemReportFilterDTO.ItemId?.Equal;
-            long KpiPeriodId = KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal ?? KpiPeriodEnum.PERIOD_MONTH01.Id;
-            long KpiYearId = KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal ?? KpiYearEnum.YEAR_2020.Id;
-            (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
+            if (KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal.HasValue == false ||
+                KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.HasValue == false)
+                return 0;
+            long? KpiPeriodId = KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal.Value;
+            long? KpiYearId = KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.Value;
+            (StartDate, EndDate) = DateTimeConvert(KpiPeriodId.Value, KpiYearId.Value);
 
             List<long> AppUserIds, OrganizationIds;
             (AppUserIds, OrganizationIds) = await FilterOrganizationAndUser(KpiItemReport_KpiItemReportFilterDTO.OrganizationId,
                 AppUserService, OrganizationService, CurrentContext, DataContext);
 
-            // list toan bo nhan vien sau khi chay qua filter
             var query = from ki in DataContext.KpiItem
-                        join ap in DataContext.AppUser on ki.EmployeeId equals ap.Id
-                        join o in DataContext.Organization on ki.OrganizationId equals o.Id
                         join kic in DataContext.KpiItemContent on ki.Id equals kic.KpiItemId
                         join i in DataContext.Item on kic.ItemId equals i.Id
-                        where OrganizationIds.Contains(o.Id) 
-                        && AppUserIds.Contains(ap.Id)
-                        && (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value)
-                        && (ItemId == null || i.Id == ItemId.Value)
-                        && (ki.KpiYearId == KpiYearId)
-                        select new KpiItemReport_SaleEmployeeItemDTO
+                        where OrganizationIds.Contains(ki.OrganizationId) &&
+                        AppUserIds.Contains(ki.EmployeeId) &&
+                        (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value) &&
+                        (ItemId == null || i.Id == ItemId.Value) &&
+                        (ki.KpiYearId == KpiYearId) &&
+                        ki.DeletedAt == null &&
+                        ki.StatusId == StatusEnum.ACTIVE.Id
+                        select new
                         {
-                            SaleEmployeeId = ap.Id,
-                            Username = ap.Username,
-                            DisplayName = ap.DisplayName,
-                            OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
-                            OrganizationId = ap.OrganizationId.Value,
+                            SaleEmployeeId = ki.EmployeeId,
                             ItemId = i.Id,
-                            ItemName = i.Name,
                         };
             return await query.Distinct().CountAsync();
         }
@@ -206,189 +203,223 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId == null) return BadRequest("Chưa chọn kì KPI");
-            if (KpiItemReport_KpiItemReportFilterDTO.KpiYearId == null) return BadRequest("Chưa chọn năm KPI");
+            if (KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal.HasValue == false) return BadRequest("Chưa chọn kì KPI");
+            if (KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.HasValue == false) return BadRequest("Chưa chọn năm KPI");
 
             DateTime StartDate, EndDate;
             long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.AppUserId?.Equal;
             long? ItemId = KpiItemReport_KpiItemReportFilterDTO.ItemId?.Equal;
-            long KpiPeriodId = KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal ?? KpiPeriodEnum.PERIOD_MONTH01.Id;
-            long KpiYearId = KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal ?? KpiYearEnum.YEAR_2020.Id;
-            (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
+            long? KpiPeriodId = KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal.Value;
+            long? KpiYearId = KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.Value;
+            (StartDate, EndDate) = DateTimeConvert(KpiPeriodId.Value, KpiYearId.Value);
 
             List<long> AppUserIds, OrganizationIds;
             (AppUserIds, OrganizationIds) = await FilterOrganizationAndUser(KpiItemReport_KpiItemReportFilterDTO.OrganizationId,
                 AppUserService, OrganizationService, CurrentContext, DataContext);
 
-            // list toan bo nhan vien sau khi chay qua filter
             var query = from ki in DataContext.KpiItem
-                        join ap in DataContext.AppUser on ki.EmployeeId equals ap.Id
-                        join o in DataContext.Organization on ki.OrganizationId equals o.Id
+                        join au in DataContext.AppUser on ki.EmployeeId equals au.Id
                         join kic in DataContext.KpiItemContent on ki.Id equals kic.KpiItemId
                         join i in DataContext.Item on kic.ItemId equals i.Id
-                        where OrganizationIds.Contains(o.Id)
-                        && AppUserIds.Contains(ap.Id)
-                        && (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value)
-                        && (ItemId == null || i.Id == ItemId.Value)
-                        && (ki.KpiYearId == KpiYearId)
-                        select new KpiItemReport_SaleEmployeeItemDTO
+                        where OrganizationIds.Contains(ki.OrganizationId) &&
+                        AppUserIds.Contains(au.Id) &&
+                        (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value) &&
+                        (ItemId == null || i.Id == ItemId.Value) &&
+                        (ki.KpiYearId == KpiYearId) &&
+                        ki.DeletedAt == null &&
+                        ki.StatusId == StatusEnum.ACTIVE.Id
+                        select new
                         {
-                            SaleEmployeeId = ap.Id,
-                            Username = ap.Username,
-                            DisplayName = ap.DisplayName,
-                            OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
-                            OrganizationId = ap.OrganizationId.Value,
+                            SaleEmployeeId = au.Id,
+                            Username = au.Username,
+                            DisplayName = au.DisplayName,
                             ItemId = i.Id,
+                            ItemCode = i.Code,
                             ItemName = i.Name,
                         };
 
-            List<KpiItemReport_SaleEmployeeItemDTO> KpiItemReport_SaleEmployeeItemDTOs = await query.Distinct()
+            var ItemContents = await query.Distinct()
                 .OrderBy(q => q.DisplayName)
                 .Skip(KpiItemReport_KpiItemReportFilterDTO.Skip)
                 .Take(KpiItemReport_KpiItemReportFilterDTO.Take)
                 .ToListAsync();
 
-            //get organization
-            OrganizationIds = KpiItemReport_SaleEmployeeItemDTOs.Select(x => x.OrganizationId).Distinct().ToList(); // to do
-            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = OrganizationSelect.Id | OrganizationSelect.Name,
-                Id = new IdFilter { In = OrganizationIds }
-            });
-
-            List<long> SaleEmployeeIds = KpiItemReport_SaleEmployeeItemDTOs.Select(x => x.SaleEmployeeId).Distinct().ToList();
+            List<long> SaleEmployeeIds = ItemContents.Select(x => x.SaleEmployeeId).Distinct().ToList();
 
 
-            List<KpiItemReport_SaleEmployeeDTO> KpiItemReport_SaleEmployeeDTOs = new List<KpiItemReport_SaleEmployeeDTO>();
+            List<KpiItemReport_KpiItemReportDTO> KpiItemReport_KpiItemReportDTOs = new List<KpiItemReport_KpiItemReportDTO>();
             foreach (var EmployeeId in SaleEmployeeIds)
             {
-                KpiItemReport_SaleEmployeeDTO KpiItemReport_SaleEmployeeDTO = new KpiItemReport_SaleEmployeeDTO()
+                KpiItemReport_KpiItemReportDTO KpiItemReport_KpiItemReportDTO = new KpiItemReport_KpiItemReportDTO()
                 {
                     SaleEmployeeId = EmployeeId,
-                    DisplayName = KpiItemReport_SaleEmployeeItemDTOs.Where(x => x.SaleEmployeeId == EmployeeId).Select(x => x.DisplayName).FirstOrDefault(),
-                    OrganizationName = KpiItemReport_SaleEmployeeItemDTOs.Where(x => x.SaleEmployeeId == EmployeeId).Select(x => x.OrganizationName).FirstOrDefault(),
-                    OrganizationId = KpiItemReport_SaleEmployeeItemDTOs.Where(x => x.SaleEmployeeId == EmployeeId).Select(x => x.OrganizationId).FirstOrDefault(),
-                    Username = KpiItemReport_SaleEmployeeItemDTOs.Where(x => x.SaleEmployeeId == EmployeeId).Select(x => x.Username).FirstOrDefault(),
-                    KpiItemReport_SaleEmployeeItemDTOs = KpiItemReport_SaleEmployeeItemDTOs.Select(x => new KpiItemReport_SaleEmployeeItemDTO
+                    DisplayName = ItemContents.Where(x => x.SaleEmployeeId == EmployeeId).Select(x => x.DisplayName).FirstOrDefault(),
+                    Username = ItemContents.Where(x => x.SaleEmployeeId == EmployeeId).Select(x => x.Username).FirstOrDefault(),
+                    ItemContents = ItemContents.Where(x => x.SaleEmployeeId == EmployeeId).Select(x => new KpiItemReport_KpiItemContentDTO
                     {
                         ItemId = x.ItemId,
                         SaleEmployeeId = EmployeeId,
                         ItemName = x.ItemName,
                         ItemCode = x.ItemCode,
-                        DisplayName = x.DisplayName,
-                        Username = x.Username,
-                        OrganizationName = x.OrganizationName,
-                        OrganizationId = x.OrganizationId
                     })
                     .Where(x => x.SaleEmployeeId == EmployeeId)
                     .ToList()
                 };
-                KpiItemReport_SaleEmployeeDTOs.Add(KpiItemReport_SaleEmployeeDTO);
+                KpiItemReport_KpiItemReportDTOs.Add(KpiItemReport_KpiItemReportDTO);
             }
 
             // lay du lieu bang mapping
-            var query_detail = from a in DataContext.KpiItemContentKpiCriteriaItemMapping
-                               join b in DataContext.KpiItemContent on a.KpiItemContentId equals b.Id
-                               join c in DataContext.KpiItem on b.KpiItemId equals c.Id
-                               join d in DataContext.Item on b.ItemId equals d.Id
-                               where (SaleEmployeeIds.Contains(c.EmployeeId) &&
-                                      c.KpiYearId == KpiYearId &&
-                                      c.KpiPeriodId == KpiPeriodId &&
-                                      (ItemId == null || d.Id == ItemId))
-                               select new KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTO
+            var query_detail = from km in DataContext.KpiItemContentKpiCriteriaItemMapping
+                               join kc in DataContext.KpiItemContent on km.KpiItemContentId equals kc.Id
+                               join k in DataContext.KpiItem on kc.KpiItemId equals k.Id
+                               join i in DataContext.Item on kc.ItemId equals i.Id
+                               where (SaleEmployeeIds.Contains(k.EmployeeId) &&
+                                      k.KpiYearId == KpiYearId &&
+                                      k.KpiPeriodId == KpiPeriodId &&
+                                      (ItemId == null || i.Id == ItemId)) &&
+                                      k.DeletedAt == null &&
+                                      k.StatusId == StatusEnum.ACTIVE.Id
+                               select new
                                {
-                                   SaleEmployeeId = c.EmployeeId,
-                                   KpiCriteriaItemId = a.KpiCriteriaItemId,
-                                   Value = a.Value,
-                                   ItemId = d.Id,
+                                   SaleEmployeeId = k.EmployeeId,
+                                   KpiCriteriaItemId = km.KpiCriteriaItemId,
+                                   Value = km.Value,
+                                   ItemId = i.Id,
                                };
 
-            List<KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTO> KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs = await query_detail.Distinct().ToListAsync();
+            List<KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTO>
+                KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs = (await query_detail.Distinct()
+                .ToListAsync())
+                .Select(x => new KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTO
+                {
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    KpiCriteriaItemId = x.KpiCriteriaItemId,
+                    Value = x.Value,
+                    ItemId = x.ItemId,
+                })
+                .ToList();
 
             var IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
-                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && x.OrderDate >= StartDate && x.OrderDate <= EndDate)
+                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) &&
+                x.OrderDate >= StartDate && x.OrderDate <= EndDate)
                 .Select(x => new IndirectSalesOrderDAO
                 {
                     Id = x.Id,
                     Total = x.Total,
                     SaleEmployeeId = x.SaleEmployeeId,
                     OrderDate = x.OrderDate,
+                    BuyerStoreId = x.BuyerStoreId,
                     IndirectSalesOrderContents = x.IndirectSalesOrderContents.Select(c => new IndirectSalesOrderContentDAO
                     {
+                        IndirectSalesOrderId = x.Id,
                         Quantity = c.Quantity,
                         ItemId = c.ItemId,
+                        Amount = c.Amount,
+                        GeneralDiscountAmount = c.GeneralDiscountAmount,
                     }).ToList(),
                 })
-                .ToListAsync(); 
+                .ToListAsync();
 
-            foreach (var SaleEmployeeDTO in KpiItemReport_SaleEmployeeDTOs)
+            foreach (var Employee in KpiItemReport_KpiItemReportDTOs)
             {
-                foreach (var SaleEmployeeItemDTO in SaleEmployeeDTO.KpiItemReport_SaleEmployeeItemDTOs)
+                foreach (var ItemContent in Employee.ItemContents)
                 {
-                    // INDIRECT_ORDERS_OF_KEY_ITEM - Sản lượng theo đơn gián tiếp
-                    SaleEmployeeItemDTO.IndirectOutputOfkeyItemPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
-                            .Where(sed => sed.SaleEmployeeId == SaleEmployeeItemDTO.SaleEmployeeId && sed.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_ORDERS_OF_KEY_ITEM.Id)
-                            .Select(sed => sed.Value).FirstOrDefault();
-                    SaleEmployeeItemDTO.IndirectOutputOfKeyItem = IndirectSalesOrderDAOs
-                        .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
-                        .SelectMany(iso => iso.IndirectSalesOrderContents)
-                        .Where(z => z.ItemId == ItemId)
-                        .Select(z => z.Quantity)
-                        .DefaultIfEmpty(0).Sum();
-                    SaleEmployeeItemDTO.IndirectOutputOfkeyItemRatio = SaleEmployeeItemDTO.IndirectOutputOfkeyItemPlanned == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.IndirectOutputOfKeyItem / SaleEmployeeItemDTO.IndirectOutputOfkeyItemPlanned, 2);
+                    //lấy tất cả đơn hàng được thực hiện bởi nhân viên đang xét
+                    var IndirectSalesOrders = IndirectSalesOrderDAOs
+                            .Where(x => x.SaleEmployeeId == Employee.SaleEmployeeId)
+                            .ToList();
 
-                    // INDIRECT_SALES_OF_KEY_ITEM - Doanh số theo đơn gián tiếp
-                    SaleEmployeeItemDTO.IndirectSalesOfKeyItemPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
-                            .Where(sed => sed.SaleEmployeeId == SaleEmployeeItemDTO.SaleEmployeeId && sed.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_SALES_OF_KEY_ITEM.Id)
-                            .Select(sed => sed.Value).FirstOrDefault();
+                    #region Sản lượng theo đơn hàng gián tiếp
+                    //kế hoạch
+                    ItemContent.IndirectQuantityPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
+                            .Where(x => x.SaleEmployeeId == ItemContent.SaleEmployeeId &&
+                            x.ItemId == ItemContent.ItemId &&
+                            x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+                    //thực hiện
+                    foreach (var IndirectSalesOrder in IndirectSalesOrders)
+                    {
+                        foreach (var content in IndirectSalesOrder.IndirectSalesOrderContents)
+                        {
+                            if (content.ItemId == ItemContent.ItemId)
+                                ItemContent.IndirectQuantity += content.RequestedQuantity;
+                        }
+                    }
+                    //tỉ lệ
+                    ItemContent.IndirectQuantityRatio = ItemContent.IndirectQuantityPlanned == 0 ?
+                        0.00m : Math.Round((ItemContent.IndirectQuantity / ItemContent.IndirectQuantityPlanned) * 100, 2);
+                    #endregion
 
-                    List<long> IndirectSalesOrderIds = IndirectSalesOrderDAOs
-                        .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
-                        .SelectMany(iso => iso.IndirectSalesOrderContents)
-                        .Where(z => z.ItemId == ItemId)
-                        .Select(z => z.IndirectSalesOrderId)
-                        .ToList();  // list Id
-                    SaleEmployeeItemDTO.IndirectSalesOfKeyItem = IndirectSalesOrderDAOs
-                        .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && IndirectSalesOrderIds.Contains(iso.Id))
-                        .Select(iso => iso.Total)
-                        .DefaultIfEmpty(0).Sum();
-                    SaleEmployeeItemDTO.IndirectSalesOfKeyItemRatio = SaleEmployeeItemDTO.IndirectSalesOfKeyItemPlanned == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.IndirectSalesOfKeyItem / SaleEmployeeItemDTO.IndirectSalesOfKeyItemPlanned, 2);
+                    #region Doanh thu theo đơn hàng gián tiếp
+                    //kế hoạch
+                    ItemContent.IndirectRevenuePlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
+                            .Where(x => x.SaleEmployeeId == ItemContent.SaleEmployeeId &&
+                            x.ItemId == ItemContent.ItemId &&
+                            x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
+                            .Select(x => x.Value).FirstOrDefault();
 
-                    // INDIRECT_ORDERS_OF_KEY_ITEM - Đơn hàng gián tiếp
-                    SaleEmployeeItemDTO.IndirectOrdersOfKeyItemPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
-                            .Where(sed => sed.SaleEmployeeId == SaleEmployeeItemDTO.SaleEmployeeId && sed.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_ORDERS_OF_KEY_ITEM.Id)
-                            .Select(sed => sed.Value).FirstOrDefault();
-                    SaleEmployeeItemDTO.IndirectOrdersOfKeyItem = IndirectSalesOrderDAOs
-                        .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
-                        .SelectMany(iso => iso.IndirectSalesOrderContents)
-                        .Where(z => z.ItemId == ItemId)
-                        .Count();
-                    SaleEmployeeItemDTO.IndirectOrdersOfKeyItemRatio = SaleEmployeeItemDTO.IndirectOrdersOfKeyItemPlanned == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.IndirectOrdersOfKeyItem / SaleEmployeeItemDTO.IndirectOrdersOfKeyItemPlanned, 2);
+                    //thực hiện
+                    foreach (var IndirectSalesOrder in IndirectSalesOrders)
+                    {
+                        foreach (var content in IndirectSalesOrder.IndirectSalesOrderContents)
+                        {
+                            if (content.ItemId == ItemContent.ItemId)
+                            {
+                                ItemContent.IndirectRevenue += content.Amount;
+                                ItemContent.IndirectRevenue -= content.GeneralDiscountAmount ?? 0;
+                            }
+                        }
+                    }
+                    //tỉ lệ
+                    ItemContent.IndirectRevenueRatio = ItemContent.IndirectRevenuePlanned == 0 ?
+                        0.00m : Math.Round((ItemContent.IndirectRevenue / ItemContent.IndirectRevenuePlanned) * 100, 2);
+                    #endregion
 
-                    // INDIRECT_STORES_OF_KEY_ITEM - khách hàng theo đơn gián tiếp
-                    SaleEmployeeItemDTO.IndirectStoresOfKeyItemPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
-                            .Where(sed => sed.SaleEmployeeId == SaleEmployeeItemDTO.SaleEmployeeId && sed.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORES_OF_KEY_ITEM.Id)
-                            .Select(sed => sed.Value).FirstOrDefault();
-                    SaleEmployeeItemDTO.IndirectStoresOfKeyItem = IndirectSalesOrderDAOs
-                        .Where(iso => iso.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId && IndirectSalesOrderIds.Contains(iso.Id))
-                        .Count();
-                    SaleEmployeeItemDTO.IndirectStoresOfKeyItem = SaleEmployeeItemDTO.IndirectStoresOfKeyItemPlanned == 0 ? 0 : Math.Round(SaleEmployeeItemDTO.IndirectStoresOfKeyItem / SaleEmployeeItemDTO.IndirectStoresOfKeyItemPlanned, 2);
+                    #region Số đơn hàng gián tiếp
+                    //kế hoạch
+                    ItemContent.IndirectAmountPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
+                            .Where(x => x.SaleEmployeeId == ItemContent.SaleEmployeeId &&
+                            x.ItemId == ItemContent.ItemId &&
+                            x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+                    //thực hiện
+                    ItemContent.IndirectSalesOrderIds = new HashSet<long>();
+                    foreach (var IndirectSalesOrder in IndirectSalesOrders)
+                    {
+                        foreach (var content in IndirectSalesOrder.IndirectSalesOrderContents)
+                        {
+                            if (content.ItemId == ItemContent.ItemId)
+                                ItemContent.IndirectSalesOrderIds.Add(content.IndirectSalesOrderId);
+                        }
+                    }
+                    //tỉ lệ
+                    ItemContent.IndirectAmountRatio = ItemContent.IndirectAmountPlanned == 0 ?
+                        0.00m : Math.Round((ItemContent.IndirectAmount / ItemContent.IndirectAmountPlanned) * 100, 2);
+                    #endregion
 
+                    #region Đại lý theo đơn hàng gián tiếp
+                    //kế hoạch
+                    ItemContent.IndirectStorePlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
+                            .Where(x => x.SaleEmployeeId == ItemContent.SaleEmployeeId &&
+                            x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+                    //thực hiện
+                    ItemContent.StoreIds = new HashSet<long>();
+                    foreach (var IndirectSalesOrder in IndirectSalesOrders)
+                    {
+                        foreach (var content in IndirectSalesOrder.IndirectSalesOrderContents)
+                        {
+                            if (content.ItemId == ItemContent.ItemId)
+                                ItemContent.StoreIds.Add(IndirectSalesOrder.BuyerStoreId);
+                        }
+                    }
+                    //tỉ lệ
+                    ItemContent.IndirectStoreRatio = ItemContent.IndirectStorePlanned == 0 ?
+                        0.00m : Math.Round((ItemContent.IndirectStore / ItemContent.IndirectStorePlanned) * 100, 2);
+                    #endregion
                 }
             };
-
-            List<KpiItemReport_KpiItemReportDTO> KpiItemReport_KpiItemReportDTOs = new List<KpiItemReport_KpiItemReportDTO>();
-            foreach (Organization Organization in Organizations)
-            {
-                KpiItemReport_KpiItemReportDTO KpiItemReport_KpiItemReportDTO = new KpiItemReport_KpiItemReportDTO()
-                {
-                    OrganizationName = Organization.Name,
-                    SaleEmployees = KpiItemReport_SaleEmployeeDTOs.Where(x => x.OrganizationName.Equals(Organization.Name)).ToList()
-                };
-                if (KpiItemReport_KpiItemReportDTO.SaleEmployees.Count() > 0) KpiItemReport_KpiItemReportDTOs.Add(KpiItemReport_KpiItemReportDTO);
-            }
+            KpiItemReport_KpiItemReportDTOs = KpiItemReport_KpiItemReportDTOs.Where(x => x.ItemContents.Any()).ToList();
             return KpiItemReport_KpiItemReportDTOs;
         }
 
