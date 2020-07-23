@@ -8,11 +8,15 @@ using DMS.Services.MOrganization;
 using DMS.Services.MProblem;
 using DMS.Services.MStore;
 using DMS.Services.MStoreChecking;
+using Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NGS.Templater;
 using OfficeOpenXml;
+using RabbitMQ.Client.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -63,7 +67,7 @@ namespace DMS.Rpc.monitor_store_problems
         }
 
         [Route(MonitorStoreProblemRoute.List), HttpPost]
-        public async Task<ActionResult<List<MonitorStoreProblem_ProblemDTO>>> List([FromBody] MonitorStoreProblem_ProblemFilterDTO MonitorStoreProblem_ProblemFilterDTO)
+        public async Task<List<MonitorStoreProblem_ProblemDTO>> List([FromBody] MonitorStoreProblem_ProblemFilterDTO MonitorStoreProblem_ProblemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -126,7 +130,7 @@ namespace DMS.Rpc.monitor_store_problems
         }
 
         [Route(MonitorStoreProblemRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
+        public async Task<bool> BulkDelete([FromBody] List<long> Ids)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -141,6 +145,44 @@ namespace DMS.Rpc.monitor_store_problems
             List<Problem> Problems = await ProblemService.List(ProblemFilter);
             Problems = await ProblemService.BulkDelete(Problems);
             return true;
+        }
+
+        [Route(MonitorStoreProblemRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] MonitorStoreProblem_ProblemFilterDTO MonitorStoreProblem_ProblemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            MonitorStoreProblem_ProblemFilterDTO.Skip = 0;
+            MonitorStoreProblem_ProblemFilterDTO.Take = int.MaxValue;
+            List<MonitorStoreProblem_ProblemDTO> MonitorStoreProblem_ProblemDTOs = await List(MonitorStoreProblem_ProblemFilterDTO);
+            int stt = 1;
+            foreach(MonitorStoreProblem_ProblemDTO MonitorStoreProblem_ProblemDTO in MonitorStoreProblem_ProblemDTOs)
+            {
+                MonitorStoreProblem_ProblemDTO.STT = stt;
+                stt++;
+            }    
+            DateTime Start = MonitorStoreProblem_ProblemFilterDTO.NoteAt?.GreaterEqual == null ?
+               StaticParams.DateTimeNow.Date :
+               MonitorStoreProblem_ProblemFilterDTO.NoteAt.GreaterEqual.Value.Date;
+
+            DateTime End = MonitorStoreProblem_ProblemFilterDTO.NoteAt?.LessEqual == null ?
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    MonitorStoreProblem_ProblemFilterDTO.NoteAt.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+            string path = "Templates/Monitor_Store_Problem_Report.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.ToString("dd-MM-yyyy");
+            Data.End = End.ToString("dd-MM-yyyy");
+            Data.MonitorStoreProblems = MonitorStoreProblem_ProblemDTOs;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "Monitor_Store_Problem_Report.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)

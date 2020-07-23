@@ -9,8 +9,11 @@ using DMS.Services.MStoreChecking;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NGS.Templater;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -56,7 +59,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
             AppUserFilter.Username = MonitorStoreImage_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = MonitorStoreImage_AppUserFilterDTO.DisplayName;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            AppUserFilter.Id.In = await FilterAppUser(AppUserService,OrganizationService,CurrentContext);
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<MonitorStoreImage_AppUserDTO> StoreCheckerMonitor_AppUserDTOs = AppUsers
@@ -156,7 +159,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
 
             List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
-            var query = from  sc in DataContext.StoreChecking
+            var query = from sc in DataContext.StoreChecking
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                         FilterAppUserIds.Contains(sc.SaleEmployeeId) &&
                         (OrganizationId.HasValue == false || sc.SaleEmployee.OrganizationId.Value == OrganizationId.Value) &&
@@ -289,6 +292,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
             }
 
             MonitorStoreImage_MonitorStoreImageDTOs = MonitorStoreImage_MonitorStoreImageDTOs.Where(si => si.SaleEmployees.Count > 0).ToList();
+           
             return MonitorStoreImage_MonitorStoreImageDTOs;
         }
 
@@ -334,6 +338,51 @@ namespace DMS.Rpc.monitor.monitor_store_images
                         };
 
             return await query.ToListAsync();
+        }
+
+        [Route(MonitorStoreImageRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] MonitorStoreImage_MonitorStoreImageFilterDTO MonitorStoreImage_MonitorStoreImageFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            MonitorStoreImage_MonitorStoreImageFilterDTO.Skip = 0;
+            MonitorStoreImage_MonitorStoreImageFilterDTO.Take = int.MaxValue;
+            List<MonitorStoreImage_MonitorStoreImageDTO> MonitorStoreImage_MonitorStoreImageDTOs = await List(MonitorStoreImage_MonitorStoreImageFilterDTO);
+            long stt = 1;
+            foreach (MonitorStoreImage_MonitorStoreImageDTO MonitorStoreImage_MonitorStoreImageDTO in MonitorStoreImage_MonitorStoreImageDTOs)
+            {
+                foreach (var SaleEmployee in MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees)
+                {
+                    foreach (var StoreChecking in SaleEmployee.StoreCheckings)
+                    {
+                        StoreChecking.STT = stt;
+                        stt++;
+                    }
+                }
+            }
+
+            DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
+               StaticParams.DateTimeNow.Date :
+               MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value.Date;
+
+            DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+            string path = "Templates/Monitor_Store_Image.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.ToString("dd-MM-yyyy");
+            Data.End = End.ToString("dd-MM-yyyy");
+            Data.MonitorStoreImages = MonitorStoreImage_MonitorStoreImageDTOs;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "Monitor_Store_Image.xlsx");
         }
     }
 }

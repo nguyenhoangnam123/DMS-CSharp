@@ -13,6 +13,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
     public class MonitorSalesman_SaleEmployeeDTO : DataDTO
     {
+        public long STT { get; set; }
         public long SaleEmployeeId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }

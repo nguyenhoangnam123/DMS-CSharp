@@ -393,13 +393,13 @@ namespace DMS.Services.MKpiItem
                     {
                         if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.IS.Id)
                         {
-                            if (subFilter.CreatorId == null) subFilter.CreatorId = new IdFilter { };
-                            subFilter.CreatorId.Equal = CurrentContext.UserId;
+                            if (subFilter.AppUserId == null) subFilter.AppUserId = new IdFilter { };
+                            subFilter.AppUserId.Equal = CurrentContext.UserId;
                         }
                         if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.ISNT.Id)
                         {
-                            if (subFilter.CreatorId == null) subFilter.CreatorId = new IdFilter { };
-                            subFilter.CreatorId.NotEqual = CurrentContext.UserId;
+                            if (subFilter.AppUserId == null) subFilter.AppUserId = new IdFilter { };
+                            subFilter.AppUserId.NotEqual = CurrentContext.UserId;
                         }
                     }
                 }

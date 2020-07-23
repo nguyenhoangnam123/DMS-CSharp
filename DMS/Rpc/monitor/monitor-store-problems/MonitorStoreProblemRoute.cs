@@ -13,6 +13,7 @@ namespace DMS.Rpc.monitor_store_problems
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string Export = Default + "/export";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
         public const string BulkDelete = Default + "/bulk-delete";
@@ -43,7 +44,7 @@ namespace DMS.Rpc.monitor_store_problems
         {
             { "Tìm kiếm", new List<string> {
                 Master, Count, List, Get, FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
-                CountProblemHistory, ListProblemHistory } },
+                CountProblemHistory, ListProblemHistory, Export } },
 
             { "Sửa", new List<string> {
                 Master, Count, List, Get,  FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
