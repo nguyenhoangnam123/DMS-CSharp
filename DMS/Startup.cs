@@ -4,6 +4,7 @@ using DMS.Helpers;
 using DMS.Models;
 using DMS.Rpc;
 using DMS.Services;
+using GleamTech.AspNet.Core;
 using Hangfire;
 using Hangfire.SqlServer;
 using Hangfire.Storage;
@@ -57,6 +58,7 @@ namespace DMS
             }
             Configuration = builder.Build();
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            //DocumentUltimateConfiguration.Current.LicenseKey = "QTSHF7N4NU-MFTCJGT46Z-CPSL9AZA1Q-U4GPFSM1CG-DYHAPW27KX-K2FU3HUSX2-KE37RR548K-Z8JF";
         }
 
         public IConfiguration Configuration { get; }
@@ -66,6 +68,7 @@ namespace DMS
         {
             _ = DataEntity.ErrorResource;
             services.AddControllers().AddNewtonsoftJson();
+            services.AddGleamTech();
             services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
             services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
             services.AddSingleton<IRabbitManager, RabbitManager>();
@@ -189,6 +192,7 @@ namespace DMS
         {
             app.UseRouting();
             app.UseMiddleware<ErrorHandlingMiddleware>();
+            app.UseGleamTech();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
@@ -206,7 +210,6 @@ namespace DMS
             });
             app.UseDeveloperExceptionPage();
             app.UseHangfireDashboard("/rpc/dms/hangfire");
-
         }
     }
 }

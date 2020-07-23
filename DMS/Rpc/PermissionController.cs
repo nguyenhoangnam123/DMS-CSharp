@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Common;
 using DMS.Services.MRole;
+using GleamTech.DocumentUltimate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,5 +26,16 @@ namespace DMS.Rpc
         {
             return await PermissionService.ListPath(CurrentContext.UserId);
         }
+
+        //[HttpGet, Route("rpc/dms/permission/test-export")]
+        //public async Task<ActionResult> Export()
+        //{
+        //    MemoryStream MemoryStream = new MemoryStream();
+        //    var documentConverter = new DocumentConverter("D:\\VTB_TaiLieuCustomize-v0.1.docx");
+
+        //    // Convert "InputFile.docx" to Pdf written to outputStream
+        //    documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
+        //    return File(MemoryStream.ToArray(), "application/octet-stream", "VTB_TaiLieuCustomize.pdf");
+        //}
     }
 }
