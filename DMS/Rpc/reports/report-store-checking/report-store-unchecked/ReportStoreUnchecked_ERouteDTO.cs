@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.reports.report_store_checking.report_store_un_checked
+namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 {
     public class ReportStoreUnChecked_ERouteDTO : DataDTO
     {
