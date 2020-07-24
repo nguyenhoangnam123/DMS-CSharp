@@ -124,7 +124,7 @@ namespace DMS.Repositories
                 }
             }
             if (!string.IsNullOrWhiteSpace(filter.Search))
-                query = query.Where(q => q.Code.Contains(filter.Search) || q.Name.Contains(filter.Search));
+                query = query.Where(q => q.Code.ToLower().Contains(filter.Search.ToLower()) || q.Name.ToLower().Contains(filter.Search.ToLower()) || q.OtherName.ToLower().Contains(filter.Search.ToLower()));
             if (filter.IsNew != null)
                 query = query.Where(q => q.IsNew.Equals(filter.IsNew));
             query = OrFilter(query, filter);
