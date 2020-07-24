@@ -328,7 +328,15 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 SaleEmployeeId = new IdFilter { In = AppUserIds }
             };
             List<StoreChecking> storeCheckings = await StoreCheckingService.List(StoreCheckingFilter);
-            
+            var StoreCheckingIds = storeCheckings.Select(x => x.Id).ToList();
+            var SalesOrders = await DataContext.IndirectSalesOrder.Where(x => x.StoreCheckingId.HasValue &&
+                StoreCheckingIds.Contains(x.StoreCheckingId.Value))
+                .Select(x => new
+                {
+                    Id = x.Id,
+                    StoreCheckingId = x.StoreCheckingId
+                }).ToListAsync();
+
             // khởi tạo khung dữ liệu
             foreach (ReportStoreChecked_SaleEmployeeDTO ReportStoreChecked_SaleEmployeeDTO in ReportStoreChecked_SaleEmployeeDTOs)
             {
@@ -341,12 +349,12 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         .Where(x => x.CheckOutAt.Value.Date == i)
                         .Select(x => new ReportStoreChecked_StoreCheckingDTO
                         {
+                            Id = x.Id,
                             CheckIn = x.CheckInAt.Value,
                             CheckOut = x.CheckOutAt.Value,
                             DeviceName = x.DeviceName,
                             ImageCounter = x.ImageCounter ?? 0,
                             Planned = x.Planned,
-                            SalesOrder = x.CountIndirectSalesOrder > 0 ? true : false,
                             SaleEmployeeId = x.SaleEmployeeId,
                             StoreName = x.Store.Name,
                             StoreCode = x.Store.Code,
@@ -356,6 +364,11 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     {
                         var TotalMinuteChecking = StoreChecking.CheckOut.Subtract(StoreChecking.CheckIn).Minutes;
                         StoreChecking.Duaration = $"{TotalMinuteChecking / 60} : {TotalMinuteChecking % 60}";
+                        var HasSalesOrder = SalesOrders.Where(x => x.StoreCheckingId == StoreChecking.Id).FirstOrDefault();
+                        if (HasSalesOrder == null)
+                            StoreChecking.SalesOrder = false;
+                        else
+                            StoreChecking.SalesOrder = true;
                     }
                     ReportStoreChecked_SaleEmployeeDTO.StoreCheckingGroupByDates.Add(ReportStoreChecked_StoreCheckingGroupByDateDTO);
                 }
