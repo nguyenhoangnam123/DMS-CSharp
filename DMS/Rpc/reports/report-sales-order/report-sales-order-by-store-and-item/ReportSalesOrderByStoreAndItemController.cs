@@ -328,9 +328,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                             }
                             ReportSalesOrderByStoreAndItem_ItemDTO.IndirectSalesOrderIds.Add(IndirectSalesOrderContentDAO.IndirectSalesOrderId);
                             ReportSalesOrderByStoreAndItem_ItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
-                            ReportSalesOrderByStoreAndItem_ItemDTO.SalePriceAverage += IndirectSalesOrderContentDAO.SalePrice * IndirectSalesOrderContentDAO.RequestedQuantity;
+                            ReportSalesOrderByStoreAndItem_ItemDTO.SalePriceAverage += (IndirectSalesOrderContentDAO.SalePrice * IndirectSalesOrderContentDAO.RequestedQuantity);
                             ReportSalesOrderByStoreAndItem_ItemDTO.Revenue += IndirectSalesOrderContentDAO.Amount;
-                            ReportSalesOrderByStoreAndItem_ItemDTO.Discount += (IndirectSalesOrderContentDAO.DiscountAmount ?? 0 + IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0);
+                            ReportSalesOrderByStoreAndItem_ItemDTO.Discount += ((IndirectSalesOrderContentDAO.DiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0));
                         }
                     }
 

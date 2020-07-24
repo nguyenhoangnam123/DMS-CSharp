@@ -279,9 +279,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                             }
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.IndirectSalesOrderIds.Add(IndirectSalesOrderContentDAO.IndirectSalesOrderId);
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO.SalePriceAverage += IndirectSalesOrderContentDAO.SalePrice * IndirectSalesOrderContentDAO.RequestedQuantity;
+                            ReportSalesOrderByEmployeeAndItem_ItemDTO.SalePriceAverage += (IndirectSalesOrderContentDAO.SalePrice * IndirectSalesOrderContentDAO.RequestedQuantity);
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.Revenue += IndirectSalesOrderContentDAO.Amount;
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO.Discount += (IndirectSalesOrderContentDAO.DiscountAmount ?? 0 + IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0);
+                            ReportSalesOrderByEmployeeAndItem_ItemDTO.Discount += ((IndirectSalesOrderContentDAO.DiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0));
                         }
                     }
 
@@ -446,7 +446,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                             }
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.Revenue += IndirectSalesOrderContentDAO.Amount;
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO.Discount += (IndirectSalesOrderContentDAO.DiscountAmount ?? 0 + IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0);
+                            ReportSalesOrderByEmployeeAndItem_ItemDTO.Discount += ((IndirectSalesOrderContentDAO.DiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0));
                         }
                     }
 

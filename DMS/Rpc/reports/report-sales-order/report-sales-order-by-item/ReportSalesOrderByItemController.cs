@@ -312,7 +312,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                     }
                     ReportSalesOrderByItem_ReportSalesOrderByItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
                     ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Revenue += IndirectSalesOrderContentDAO.Amount;
-                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Discount += (IndirectSalesOrderContentDAO.DiscountAmount ?? 0 + IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0);
+                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Discount += ((IndirectSalesOrderContentDAO.DiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0));
                     ReportSalesOrderByItem_ReportSalesOrderByItemDTO.IndirectSalesOrderIds.Add(IndirectSalesOrderContentDAO.IndirectSalesOrderId);
 
                     var IndirectSalesOrder = IndirectSalesOrderDAOs.Where(x => x.Id == IndirectSalesOrderContentDAO.IndirectSalesOrderId).FirstOrDefault();
@@ -447,7 +447,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                     }
                     ReportSalesOrderByItem_ReportSalesOrderByItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
                     ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Revenue += IndirectSalesOrderContentDAO.Amount;
-                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Discount += (IndirectSalesOrderContentDAO.DiscountAmount ?? 0 + IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0);
+                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Discount += ((IndirectSalesOrderContentDAO.DiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0));
                 }
             }
 
