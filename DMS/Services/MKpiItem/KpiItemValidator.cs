@@ -32,6 +32,7 @@ namespace DMS.Services.MKpiItem
             KpiYearIdNotExisted,
             KpiItemContentsEmpty,
             ItemIdNotExisted,
+            ValueCannotBeNull,
             KpiYearAndKpiPeriodMustInTheFuture
         }
 
@@ -212,6 +213,21 @@ namespace DMS.Services.MKpiItem
 
             return Tuple.Create(startDate, endDate);
         }
+
+        private async Task<bool> ValidateValue(KpiItem KpiItem)
+        {
+            bool flag = false;
+            foreach (var KpiItemContent in KpiItem.KpiItemContents)
+            {
+                foreach (var item in KpiItemContent.KpiItemContentKpiCriteriaItemMappings)
+                {
+                    if (item.Value <= 0) flag = true;
+                }
+            }
+            if (!flag) KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.Id), ErrorCode.ValueCannotBeNull);
+            return KpiItem.IsValidated;
+        }
+
         private async Task<bool> ValidateTime(KpiItem KpiItem)
         {
             await ValidateKpiPeriod(KpiItem);

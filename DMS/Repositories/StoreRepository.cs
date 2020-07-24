@@ -54,7 +54,7 @@ namespace DMS.Repositories
                 {
                     var storeCheckingQuery = DataContext.StoreChecking
                            .Where(sc => sc.CheckInAt.HasValue && sc.CheckOutAt.HasValue && sc.CheckOutAt.Value.Date == StaticParams.DateTimeNow.Date);
-                    if (filter.SalesEmployeeId.Equal.HasValue)
+                    if (filter.SalesEmployeeId != null && filter.SalesEmployeeId.Equal.HasValue)
                     {
                         storeCheckingQuery = storeCheckingQuery.Where(x => x.SaleEmployeeId == filter.SalesEmployeeId.Equal.Value);
                     }

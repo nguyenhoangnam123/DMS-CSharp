@@ -311,8 +311,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                         ReportSalesOrderByItem_ReportSalesOrderByItemDTOs.Add(ReportSalesOrderByItem_ReportSalesOrderByItemDTO);
                     }
                     ReportSalesOrderByItem_ReportSalesOrderByItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
-                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Revenue += IndirectSalesOrderContentDAO.Amount;
-                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Discount += (IndirectSalesOrderContentDAO.DiscountAmount ?? 0 + IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0);
+                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Revenue += (IndirectSalesOrderContentDAO.Amount - (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.TaxAmount ?? 0));
+                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Discount += ((IndirectSalesOrderContentDAO.DiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0));
                     ReportSalesOrderByItem_ReportSalesOrderByItemDTO.IndirectSalesOrderIds.Add(IndirectSalesOrderContentDAO.IndirectSalesOrderId);
 
                     var IndirectSalesOrder = IndirectSalesOrderDAOs.Where(x => x.Id == IndirectSalesOrderContentDAO.IndirectSalesOrderId).FirstOrDefault();
@@ -350,6 +350,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                     ReportSalesOrderByItem_ReportSalesOrderByItemDTO.BuyerStoreIds.Add(IndirectSalesOrder.BuyerStoreId);
                 }
             }
+
+            //làm tròn số
+            foreach (var item in ReportSalesOrderByItem_ReportSalesOrderByItemDTOs)
+            {
+                item.Discount = Math.Round(item.Discount, 0);
+                item.Revenue = Math.Round(item.Revenue, 0);
+            }
+
             return ReportSalesOrderByItem_ReportSalesOrderByItemDTOs;
         }
 
@@ -446,8 +454,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                         ReportSalesOrderByItem_ReportSalesOrderByItemDTOs.Add(ReportSalesOrderByItem_ReportSalesOrderByItemDTO);
                     }
                     ReportSalesOrderByItem_ReportSalesOrderByItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
-                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Revenue += IndirectSalesOrderContentDAO.Amount;
-                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Discount += (IndirectSalesOrderContentDAO.DiscountAmount ?? 0 + IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0);
+                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Revenue += (IndirectSalesOrderContentDAO.Amount - (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.TaxAmount ?? 0));
+                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO.Discount += ((IndirectSalesOrderContentDAO.DiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0));
                 }
             }
 
@@ -473,6 +481,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                     ReportSalesOrderByItem_ReportSalesOrderByItemDTO.PromotionStock += IndirectSalesOrderPromotionDAO.RequestedQuantity;
                 }
             }
+
+            //làm tròn số
+            foreach (var item in ReportSalesOrderByItem_ReportSalesOrderByItemDTOs)
+            {
+                item.Discount = Math.Round(item.Discount, 0);
+                item.Revenue = Math.Round(item.Revenue, 0);
+            }
+
             ReportSalesOrderByItem_TotalDTO.TotalDiscount = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs.Sum(x => x.Discount);
             ReportSalesOrderByItem_TotalDTO.TotalRevenue = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs.Sum(x => x.Revenue);
             ReportSalesOrderByItem_TotalDTO.TotalPromotionStock = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs.Sum(x => x.PromotionStock);
