@@ -273,10 +273,12 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                                 var UOMName = UnitOfMeasureDAOs.Where(x => x.Id == IndirectSalesOrderContentDAO.PrimaryUnitOfMeasureId).Select(x => x.Name).FirstOrDefault();
                                 ReportSalesOrderByEmployeeAndItem_ItemDTO = new ReportSalesOrderByEmployeeAndItem_ItemDTO
                                 {
+                                    Id = item.Id,
                                     Code = item.Code,
                                     Name = item.Name,
                                     UnitOfMeasureName = UOMName,
                                     StoreIds = new HashSet<long>(),
+                                    IndirectSalesOrderIds = new HashSet<long>(),
                                 };
                                 SaleEmployee.Items.Add(ReportSalesOrderByEmployeeAndItem_ItemDTO);
                             }
@@ -284,6 +286,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                                 .Select(x => x.BuyerStoreId)
                                 .FirstOrDefault();
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.StoreIds.Add(BuyerStoreId);
+                            ReportSalesOrderByEmployeeAndItem_ItemDTO.IndirectSalesOrderIds.Add(IndirectSalesOrderContentDAO.IndirectSalesOrderId);
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.SalePriceAverage += (IndirectSalesOrderContentDAO.SalePrice * IndirectSalesOrderContentDAO.RequestedQuantity);
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.Revenue += IndirectSalesOrderContentDAO.Amount;
@@ -309,10 +312,12 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                                 var UOMName = UnitOfMeasureDAOs.Where(x => x.Id == IndirectSalesOrderPromotionDAO.PrimaryUnitOfMeasureId).Select(x => x.Name).FirstOrDefault();
                                 ReportSalesOrderByEmployeeAndItem_ItemDTO = new ReportSalesOrderByEmployeeAndItem_ItemDTO
                                 {
+                                    Id = item.Id,
                                     Code = item.Code,
                                     Name = item.Name,
                                     UnitOfMeasureName = UOMName,
                                     StoreIds = new HashSet<long>(),
+                                    IndirectSalesOrderIds = new HashSet<long>(),
                                 };
                                 SaleEmployee.Items.Add(ReportSalesOrderByEmployeeAndItem_ItemDTO);
                             }
@@ -320,6 +325,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                                 .Select(x => x.BuyerStoreId)
                                 .FirstOrDefault();
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.StoreIds.Add(BuyerStoreId);
+                            ReportSalesOrderByEmployeeAndItem_ItemDTO.IndirectSalesOrderIds.Add(IndirectSalesOrderPromotionDAO.IndirectSalesOrderId);
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.PromotionStock += IndirectSalesOrderPromotionDAO.RequestedQuantity;
                         }
                     }

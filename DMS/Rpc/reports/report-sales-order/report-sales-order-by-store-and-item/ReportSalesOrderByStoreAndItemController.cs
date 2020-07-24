@@ -319,6 +319,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                                 var UOMName = UnitOfMeasureDAOs.Where(x => x.Id == IndirectSalesOrderContentDAO.PrimaryUnitOfMeasureId).Select(x => x.Name).FirstOrDefault();
                                 ReportSalesOrderByStoreAndItem_ItemDTO = new ReportSalesOrderByStoreAndItem_ItemDTO
                                 {
+                                    Id = item.Id,
                                     Code = item.Code,
                                     Name = item.Name,
                                     UnitOfMeasureName = UOMName,
@@ -352,6 +353,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                                 var UOMName = UnitOfMeasureDAOs.Where(x => x.Id == IndirectSalesOrderPromotionDAO.PrimaryUnitOfMeasureId).Select(x => x.Name).FirstOrDefault();
                                 ReportSalesOrderByStoreAndItem_ItemDTO = new ReportSalesOrderByStoreAndItem_ItemDTO
                                 {
+                                    Id = item.Id,
                                     Code = item.Code,
                                     Name = item.Name,
                                     UnitOfMeasureName = UOMName,
@@ -494,6 +496,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                                     continue;
                                 ReportSalesOrderByStoreAndItem_ItemDTO = new ReportSalesOrderByStoreAndItem_ItemDTO
                                 {
+                                    Id = item.Id,
                                     Code = item.Code,
                                     Name = item.Name,
                                 };
@@ -517,6 +520,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                                     continue;
                                 ReportSalesOrderByStoreAndItem_ItemDTO = new ReportSalesOrderByStoreAndItem_ItemDTO
                                 {
+                                    Id = item.Id,
                                     Code = item.Code,
                                     Name = item.Name,
                                 };
