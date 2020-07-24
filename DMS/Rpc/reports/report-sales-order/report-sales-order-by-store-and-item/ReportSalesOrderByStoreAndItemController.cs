@@ -237,6 +237,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                             Id = s.Id,
                             Code = s.Code,
                             Name = s.Name,
+                            Address = s.Address,
                             OrganizationId = s.OrganizationId,
                             Organization = new Organization
                             {
@@ -440,6 +441,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                             Id = s.Id,
                             Code = s.Code,
                             Name = s.Name,
+                            Address = s.Address,
                             OrganizationId = s.OrganizationId,
                             Organization = new Organization
                             {
