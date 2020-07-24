@@ -82,11 +82,6 @@ namespace DMS.Handlers
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
             optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DataContext"));
             DataContext context = new DataContext(optionsBuilder.Options);
-            ICurrentContext CurrentContext = new CurrentContext
-            {
-                UserId = 0,
-                UserName = "SYSTEM",
-            };
             List<string> path = routingKey.Split(".").ToList();
             if (path.Count < 1)
                 throw new Exception();
