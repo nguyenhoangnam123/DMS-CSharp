@@ -314,6 +314,12 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
             var AppUsers = await AppUserService.List(new AppUserFilter
