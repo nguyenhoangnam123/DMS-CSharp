@@ -1,9 +1,9 @@
 ﻿using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.reports.report_store_checking.report_store_un_checked
+namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 {
-    public class ReportStoreUnChecked_OrganizationDTO : DataDTO
+    public class ReportStoreUnchecked_OrganizationDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -15,8 +15,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_un_checked
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
-        public ReportStoreUnChecked_OrganizationDTO() { }
-        public ReportStoreUnChecked_OrganizationDTO(Organization Organization)
+        public ReportStoreUnchecked_OrganizationDTO() { }
+        public ReportStoreUnchecked_OrganizationDTO(Organization Organization)
         {
             this.Id = Organization.Id;
             this.Code = Organization.Code;

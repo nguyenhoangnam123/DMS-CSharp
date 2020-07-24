@@ -139,6 +139,8 @@ namespace DMS.Rpc
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = AppUserSelect.Id,
+                OrderBy = AppUserOrder.DisplayName,
+                OrderType = OrderType.ASC,
             };
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);

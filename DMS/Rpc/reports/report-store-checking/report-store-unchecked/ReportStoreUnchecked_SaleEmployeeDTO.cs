@@ -2,15 +2,19 @@
 using System;
 using System.Collections.Generic;
 
-namespace DMS.Rpc.reports.report_store_checking.report_store_un_checked
+namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 {
-    public class ReportStoreUnChecked_SaleEmployeeDTO : DataDTO
+    public class ReportStoreUnchecked_SaleEmployeeDTO : DataDTO
     {
         public long SaleEmployeeId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
+        public List<ReportStoreUnchecked_StoreDTO> Stores { get; set; }
+    }
+
+    public class ReportStoreUnchecked_StoreDTO : DataDTO
+    {
         public DateTime Date { get; set; }
-        public string ERouteCode { get; set; }
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
         public string StoreTypeName { get; set; }

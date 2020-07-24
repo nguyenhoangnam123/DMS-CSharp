@@ -1,9 +1,9 @@
 ﻿using Common;
 using System.Collections.Generic;
 
-namespace DMS.Rpc.reports.report_store_checking.report_store_un_checked
+namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 {
-    public class ReportStoreUnCheckedRoute : Root
+    public class ReportStoreUncheckedRoute : Root
     {
         public const string Master = Module + "/report-store-un-checked/report-store-un-checked-master";
 
@@ -18,9 +18,10 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_un_checked
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(ReportStoreChecked_ReportStoreCheckedFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
-            { nameof(ReportStoreChecked_ReportStoreCheckedFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
-            { nameof(ReportStoreChecked_ReportStoreCheckedFilterDTO.ERouteId), FieldTypeEnum.ID.Id },
+            { nameof(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
+            { nameof(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>

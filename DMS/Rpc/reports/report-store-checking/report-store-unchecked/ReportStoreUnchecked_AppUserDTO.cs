@@ -1,7 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.reports.report_store_checking.report_store_un_checked
+namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 {
     public class ReportStoreUnChecked_AppUserDTO : DataDTO
     {
