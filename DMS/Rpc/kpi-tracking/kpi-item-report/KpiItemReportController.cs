@@ -316,6 +316,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         ItemId = c.ItemId,
                         Amount = c.Amount,
                         GeneralDiscountAmount = c.GeneralDiscountAmount,
+                        TaxAmount = c.TaxAmount
                     }).ToList(),
                 })
                 .ToListAsync();
@@ -366,10 +367,12 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                             if (content.ItemId == ItemContent.ItemId)
                             {
                                 ItemContent.IndirectRevenue += content.Amount;
+                                ItemContent.IndirectRevenue += content.TaxAmount ?? 0;
                                 ItemContent.IndirectRevenue -= content.GeneralDiscountAmount ?? 0;
                             }
                         }
                     }
+                    ItemContent.IndirectRevenue = Math.Round(ItemContent.IndirectRevenue, 0);
                     //tỉ lệ
                     ItemContent.IndirectRevenueRatio = ItemContent.IndirectRevenuePlanned == 0 ?
                         0.00m : Math.Round((ItemContent.IndirectRevenue / ItemContent.IndirectRevenuePlanned) * 100, 2);

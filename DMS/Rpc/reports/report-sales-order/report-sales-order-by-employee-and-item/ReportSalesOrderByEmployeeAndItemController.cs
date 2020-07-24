@@ -331,10 +331,26 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                     }
                 }
             }
+
             foreach (var ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
             {
                 ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees.Where(x => x.Items.Any()).ToList();
             }
+
+            //làm tròn số
+            foreach (var ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
+            {
+                foreach (var SaleEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
+                {
+                    foreach (var item in SaleEmployee.Items)
+                    {
+                        item.Discount = Math.Round(item.Discount, 0);
+                        item.Revenue = Math.Round(item.Revenue, 0);
+                        item.SalePriceAverage = Math.Round(item.SalePriceAverage, 0);
+                    }
+                }
+            }
+
             return ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.Where(x => x.SaleEmployees.Any()).ToList();
         }
 
@@ -489,6 +505,21 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                     }
                 }
             }
+
+            //làm tròn số
+            foreach (var ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
+            {
+                foreach (var SaleEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
+                {
+                    foreach (var item in SaleEmployee.Items)
+                    {
+                        item.Discount = Math.Round(item.Discount, 0);
+                        item.Revenue = Math.Round(item.Revenue, 0);
+                        item.SalePriceAverage = Math.Round(item.SalePriceAverage, 0);
+                    }
+                }
+            }
+
             ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalDiscount = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.SelectMany(x => x.SaleEmployees)
                 .SelectMany(x => x.Items).Sum(x => x.Discount);
             ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalRevenue = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.SelectMany(x => x.SaleEmployees)
