@@ -448,6 +448,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                                     continue;
                                 ReportSalesOrderByEmployeeAndItem_ItemDTO = new ReportSalesOrderByEmployeeAndItem_ItemDTO
                                 {
+                                    Id = item.Id,
                                     Code = item.Code,
                                     Name = item.Name,
                                 };
@@ -471,6 +472,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                                     continue;
                                 ReportSalesOrderByEmployeeAndItem_ItemDTO = new ReportSalesOrderByEmployeeAndItem_ItemDTO
                                 {
+                                    Id = item.Id,
                                     Code = item.Code,
                                     Name = item.Name,
                                 };
