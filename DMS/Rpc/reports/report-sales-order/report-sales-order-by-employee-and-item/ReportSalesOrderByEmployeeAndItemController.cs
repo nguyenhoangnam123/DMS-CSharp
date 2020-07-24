@@ -255,7 +255,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             {
                 foreach (var SaleEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
                 {
-                    var SalesOrderIds = IndirectSalesOrderDAOs.Where(x => x.SaleEmployeeId == SaleEmployee.SaleEmployeeId).Select(x => x.Id).ToList();
+                    //lấy tất cả đơn hàng được thực hiện bởi nhân viên đang xét
+                    var IndirectSalesOrders = IndirectSalesOrderDAOs.Where(x => x.SaleEmployeeId == SaleEmployee.SaleEmployeeId).ToList();
+                    var SalesOrderIds = IndirectSalesOrders.Select(x => x.Id).ToList();
+
                     SaleEmployee.Items = new List<ReportSalesOrderByEmployeeAndItem_ItemDTO>();
                     foreach (IndirectSalesOrderContentDAO IndirectSalesOrderContentDAO in IndirectSalesOrderContentDAOs)
                     {
@@ -273,11 +276,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                                     Code = item.Code,
                                     Name = item.Name,
                                     UnitOfMeasureName = UOMName,
-                                    IndirectSalesOrderIds = new HashSet<long>(),
+                                    StoreIds = new HashSet<long>(),
                                 };
                                 SaleEmployee.Items.Add(ReportSalesOrderByEmployeeAndItem_ItemDTO);
                             }
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO.IndirectSalesOrderIds.Add(IndirectSalesOrderContentDAO.IndirectSalesOrderId);
+                            var BuyerStoreId = IndirectSalesOrders.Where(x => x.Id == IndirectSalesOrderContentDAO.IndirectSalesOrderId)
+                                .Select(x => x.BuyerStoreId)
+                                .FirstOrDefault();
+                            ReportSalesOrderByEmployeeAndItem_ItemDTO.StoreIds.Add(BuyerStoreId);
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.SalePriceAverage += (IndirectSalesOrderContentDAO.SalePrice * IndirectSalesOrderContentDAO.RequestedQuantity);
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.Revenue += IndirectSalesOrderContentDAO.Amount;
@@ -306,11 +312,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                                     Code = item.Code,
                                     Name = item.Name,
                                     UnitOfMeasureName = UOMName,
-                                    IndirectSalesOrderIds = new HashSet<long>(),
+                                    StoreIds = new HashSet<long>(),
                                 };
                                 SaleEmployee.Items.Add(ReportSalesOrderByEmployeeAndItem_ItemDTO);
                             }
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO.IndirectSalesOrderIds.Add(IndirectSalesOrderPromotionDAO.IndirectSalesOrderId);
+                            var BuyerStoreId = IndirectSalesOrders.Where(x => x.Id == IndirectSalesOrderPromotionDAO.IndirectSalesOrderId)
+                                .Select(x => x.BuyerStoreId)
+                                .FirstOrDefault();
+                            ReportSalesOrderByEmployeeAndItem_ItemDTO.StoreIds.Add(BuyerStoreId);
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.PromotionStock += IndirectSalesOrderPromotionDAO.RequestedQuantity;
                         }
                     }
