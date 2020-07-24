@@ -760,7 +760,7 @@ namespace DMS.Rpc.mobile
             ProblemFilter.Skip = Mobile_ProblemFilterDTO.Skip;
             ProblemFilter.Take = Mobile_ProblemFilterDTO.Take;
             ProblemFilter.OrderBy = ProblemOrder.NoteAt;
-            ProblemFilter.OrderType = OrderType.ASC;
+            ProblemFilter.OrderType = Mobile_ProblemFilterDTO.OrderType;
             ProblemFilter.Selects = ProblemSelect.ALL;
             ProblemFilter.Id = Mobile_ProblemFilterDTO.Id;
             ProblemFilter.StoreCheckingId = Mobile_ProblemFilterDTO.StoreCheckingId;
