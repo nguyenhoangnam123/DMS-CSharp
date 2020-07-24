@@ -424,7 +424,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
             StoreFilter.Take = Mobile_StoreFilterDTO.Take;
             StoreFilter.OrderBy = StoreOrder.Id;
-            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.OrderType = OrderType.DESC;
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = Mobile_StoreFilterDTO.Id;
             StoreFilter.Code = Mobile_StoreFilterDTO.Code;
@@ -461,7 +461,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
             StoreFilter.Take = Mobile_StoreFilterDTO.Take;
             StoreFilter.OrderBy = StoreOrder.Id;
-            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.OrderType = OrderType.DESC;
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = Mobile_StoreFilterDTO.Id;
             StoreFilter.Code = Mobile_StoreFilterDTO.Code;
@@ -503,7 +503,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
             StoreFilter.Take = Mobile_StoreFilterDTO.Take;
             StoreFilter.OrderBy = StoreOrder.Id;
-            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.OrderType = OrderType.DESC;
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = Mobile_StoreFilterDTO.Id;
             StoreFilter.Code = Mobile_StoreFilterDTO.Code;
@@ -542,7 +542,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
             StoreFilter.Take = Mobile_StoreFilterDTO.Take;
             StoreFilter.OrderBy = StoreOrder.Id;
-            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.OrderType = OrderType.DESC;
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = Mobile_StoreFilterDTO.Id;
             StoreFilter.Code = Mobile_StoreFilterDTO.Code;
@@ -584,7 +584,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
             StoreFilter.Take = Mobile_StoreFilterDTO.Take;
             StoreFilter.OrderBy = StoreOrder.Id;
-            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.OrderType = OrderType.DESC;
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = Mobile_StoreFilterDTO.Id;
             StoreFilter.Code = Mobile_StoreFilterDTO.Code;
@@ -623,7 +623,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
             StoreFilter.Take = Mobile_StoreFilterDTO.Take;
             StoreFilter.OrderBy = StoreOrder.Id;
-            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.OrderType = OrderType.DESC;
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = Mobile_StoreFilterDTO.Id;
             StoreFilter.Code = Mobile_StoreFilterDTO.Code;
@@ -690,7 +690,7 @@ namespace DMS.Rpc.mobile
             ItemFilter.Skip = Mobile_ItemFilterDTO.Skip;
             ItemFilter.Take = Mobile_ItemFilterDTO.Take;
             ItemFilter.OrderBy = ItemOrder.Id;
-            ItemFilter.OrderType = OrderType.ASC;
+            ItemFilter.OrderType = OrderType.DESC;
             ItemFilter.Selects = ItemSelect.ALL;
             ItemFilter.Id = Mobile_ItemFilterDTO.Id;
             ItemFilter.Code = Mobile_ItemFilterDTO.Code;
@@ -760,7 +760,7 @@ namespace DMS.Rpc.mobile
             ProblemFilter.Skip = Mobile_ProblemFilterDTO.Skip;
             ProblemFilter.Take = Mobile_ProblemFilterDTO.Take;
             ProblemFilter.OrderBy = ProblemOrder.NoteAt;
-            ProblemFilter.OrderType = Mobile_ProblemFilterDTO.OrderType;
+            ProblemFilter.OrderType = OrderType.DESC;
             ProblemFilter.Selects = ProblemSelect.ALL;
             ProblemFilter.Id = Mobile_ProblemFilterDTO.Id;
             ProblemFilter.StoreCheckingId = Mobile_ProblemFilterDTO.StoreCheckingId;
