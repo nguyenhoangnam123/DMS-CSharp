@@ -67,6 +67,7 @@ namespace DMS.Entities
         public DecimalFilter GeneralDiscountAmount { get; set; }
         public DecimalFilter TotalTaxAmount { get; set; }
         public DecimalFilter Total { get; set; }
+        public IdFilter StoreCheckingId { get; set; }
         public List<IndirectSalesOrderFilter> OrFilter { get; set; }
         public IndirectSalesOrderOrder OrderBy { get; set; }
         public IndirectSalesOrderSelect Selects { get; set; }
