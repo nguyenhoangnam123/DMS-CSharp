@@ -87,6 +87,7 @@ namespace DMS.Rpc.mobile
         public LongFilter GeneralDiscountAmount { get; set; }
         public LongFilter TotalTaxAmount { get; set; }
         public LongFilter Total { get; set; }
+        public IdFilter StoreCheckingId { get; set; }
         public IndirectSalesOrderOrder OrderBy { get; set; }
     }
 }
