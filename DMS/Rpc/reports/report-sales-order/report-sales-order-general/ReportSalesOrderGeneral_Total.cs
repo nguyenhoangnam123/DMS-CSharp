@@ -10,6 +10,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
     {
         public decimal TotalDiscount { get; set; }
         public decimal TotalTax { get; set; }
+        public decimal SubTotal { get; set; }
         public decimal TotalRevenue { get; set; }
     }
 }
