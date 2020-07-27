@@ -145,13 +145,12 @@ namespace DMS.Services.MProductGrouping
         {
             if (await ValidateId(ProductGrouping))
             {
-                ProductFilter ProductFilter = new ProductFilter
+                ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter
                 {
-                    ProductGroupingId = new IdFilter { Equal = ProductGrouping.Id },
-                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    ParentId = new IdFilter { Equal = ProductGrouping.Id },
                 };
 
-                var count = await UOW.ProductRepository.Count(ProductFilter);
+                var count = await UOW.ProductGroupingRepository.Count(ProductGroupingFilter);
                 if (count > 0)
                     ProductGrouping.AddError(nameof(ProductGroupingValidator), nameof(ProductGrouping.Id), ErrorCode.ProductGroupingInUsed);
             }
