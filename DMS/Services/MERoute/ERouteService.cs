@@ -133,10 +133,10 @@ namespace DMS.Services.MERoute
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được thêm mới cho anh/chị bởi {CurrentUser.DisplayName} vào lúc {Now}",
-                    LinkWebsite = $"{ERouteRoute.Detail}".Replace("*", ERoute.Id.ToString()),
+                    LinkWebsite = $"{ERouteRoute.Master}/?id=*".Replace("*", ERoute.Id.ToString()),
                     LinkMobile = $"{ERouteRoute.Detail}".Replace("*", ERoute.Id.ToString()),
                     Time = Now,
-                    Unread = false,
+                    Unread = true,
                     SenderId = CurrentContext.UserId,
                     RecipientId = ERoute.SaleEmployeeId
                 };
@@ -181,10 +181,10 @@ namespace DMS.Services.MERoute
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được cập nhật cho anh/chị bởi {CurrentUser.DisplayName} vào lúc {Now}",
-                    LinkWebsite = $"{ERouteRoute.Detail}".Replace("*", ERoute.Id.ToString()),
+                    LinkWebsite = $"{ERouteRoute.Master}/?id=*".Replace("*", ERoute.Id.ToString()),
                     LinkMobile = $"{ERouteRoute.Detail}".Replace("*", ERoute.Id.ToString()),
                     Time = Now,
-                    Unread = false,
+                    Unread = true,
                     SenderId = CurrentContext.UserId,
                     RecipientId = ERoute.SaleEmployeeId
                 };
@@ -228,7 +228,7 @@ namespace DMS.Services.MERoute
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
                     Time = Now,
-                    Unread = false,
+                    Unread = true,
                     SenderId = CurrentContext.UserId,
                     RecipientId = ERoute.SaleEmployeeId
                 };
