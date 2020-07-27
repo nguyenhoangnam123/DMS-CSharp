@@ -12,5 +12,4 @@ namespace DMS.Enums
             ACTIVE, INACTIVE
         };
     }
-
 }

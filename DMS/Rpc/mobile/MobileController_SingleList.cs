@@ -742,7 +742,7 @@ namespace DMS.Rpc.mobile
             ProblemFilter ProblemFilter = new ProblemFilter();
             ProblemFilter.Id = Mobile_ProblemFilterDTO.Id;
             ProblemFilter.StoreCheckingId = Mobile_ProblemFilterDTO.StoreCheckingId;
-            ProblemFilter.AppUserId = Mobile_ProblemFilterDTO.CreatorId;
+            ProblemFilter.AppUserId = new IdFilter { Equal = appUser.Id };
             ProblemFilter.StoreId = Mobile_ProblemFilterDTO.StoreId;
             ProblemFilter.NoteAt = Mobile_ProblemFilterDTO.NoteAt;
             ProblemFilter.CompletedAt = Mobile_ProblemFilterDTO.CompletedAt;
@@ -764,7 +764,7 @@ namespace DMS.Rpc.mobile
             ProblemFilter.Selects = ProblemSelect.ALL;
             ProblemFilter.Id = Mobile_ProblemFilterDTO.Id;
             ProblemFilter.StoreCheckingId = Mobile_ProblemFilterDTO.StoreCheckingId;
-            ProblemFilter.AppUserId = Mobile_ProblemFilterDTO.CreatorId;
+            ProblemFilter.AppUserId = new IdFilter { Equal = appUser.Id };
             ProblemFilter.StoreId = Mobile_ProblemFilterDTO.StoreId;
             ProblemFilter.NoteAt = Mobile_ProblemFilterDTO.NoteAt;
             ProblemFilter.CompletedAt = Mobile_ProblemFilterDTO.CompletedAt;

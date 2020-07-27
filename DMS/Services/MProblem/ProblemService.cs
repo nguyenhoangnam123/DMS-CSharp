@@ -150,7 +150,7 @@ namespace DMS.Services.MProblem
                         LinkWebsite = $"{MonitorStoreProblemRoute.Master}/?id=*".Replace("*", Problem.Id.ToString()),
                         LinkMobile = $"{MonitorStoreProblemRoute.Mobile}".Replace("*", Problem.Id.ToString()),
                         Time = Now,
-                        Unread = false,
+                        Unread = true,
                         SenderId = CurrentContext.UserId,
                         RecipientId = id
                     };
@@ -195,22 +195,48 @@ namespace DMS.Services.MProblem
                         ModifierId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,
                     };
+                    string status = "";
                     if (Problem.ProblemStatusId == Enums.ProblemStatusEnum.WAITING.Id)
                     {
                         ProblemHistory.ProblemStatusId = Enums.ProblemStatusEnum.WAITING.Id;
+                        status = "chờ xử lý";
                     }
                     if (Problem.ProblemStatusId == Enums.ProblemStatusEnum.PROCESSING.Id)
                     {
                         ProblemHistory.ProblemStatusId = Enums.ProblemStatusEnum.PROCESSING.Id;
+                        status = "đang xử lý";
                     }
                     if (Problem.ProblemStatusId == Enums.ProblemStatusEnum.DONE.Id)
                     {
                         ProblemHistory.ProblemStatusId = Enums.ProblemStatusEnum.DONE.Id;
+                        status = "hoàn thành";
                         Problem.CompletedAt = StaticParams.DateTimeNow;
                     }
                     if (Problem.ProblemHistorys == null)
                         Problem.ProblemHistorys = new List<ProblemHistory>();
                     Problem.ProblemHistorys.Add(ProblemHistory);
+
+                    DateTime Now = StaticParams.DateTimeNow;
+                    List<UserNotification> UserNotifications = new List<UserNotification>();
+                    var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                    var RecipientIds = await UOW.PermissionRepository.ListAppUser(ProblemRoute.Update);
+                    foreach (var id in RecipientIds)
+                    {
+                        UserNotification NotificationUtils = new UserNotification
+                        {
+                            TitleWeb = $"Thông báo từ DMS",
+                            ContentWeb = $"Vấn đề {Problem.Code} của đại lý {Problem.Store.Code} - {Problem.Store.Name} đã chuyển trạng thái {status} bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                            LinkWebsite = $"{MonitorStoreProblemRoute.Master}/?id=*".Replace("*", Problem.Id.ToString()),
+                            LinkMobile = $"{MonitorStoreProblemRoute.Mobile}".Replace("*", Problem.Id.ToString()),
+                            Time = Now,
+                            Unread = true,
+                            SenderId = CurrentContext.UserId,
+                            RecipientId = id
+                        };
+                        UserNotifications.Add(NotificationUtils);
+                    }
+
+                    await NotificationService.BulkSend(UserNotifications);
                 }
                 await UOW.Begin();
                 await UOW.ProblemRepository.Update(Problem);
