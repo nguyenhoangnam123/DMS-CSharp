@@ -175,10 +175,10 @@ namespace DMS.Services.MIndirectSalesOrder
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
-                        LinkWebsite = $"{IndirectSalesOrderRoute.Detail}".Replace("*", IndirectSalesOrder.Id.ToString()),
+                        LinkWebsite = $"{IndirectSalesOrderRoute.Master}/?id=*".Replace("*", IndirectSalesOrder.Id.ToString()),
                         LinkMobile = $"{IndirectSalesOrderRoute.Mobile}".Replace("*", IndirectSalesOrder.Id.ToString()),
                         Time = Now,
-                        Unread = false,
+                        Unread = true,
                         SenderId = CurrentContext.UserId,
                         RecipientId = Id
                     };
@@ -231,10 +231,10 @@ namespace DMS.Services.MIndirectSalesOrder
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {Now}",
-                        LinkWebsite = $"{IndirectSalesOrderRoute.Detail}".Replace("*", IndirectSalesOrder.Id.ToString()),
+                        LinkWebsite = $"{IndirectSalesOrderRoute.Master}/?id=*".Replace("*", IndirectSalesOrder.Id.ToString()),
                         LinkMobile = $"{IndirectSalesOrderRoute.Mobile}".Replace("*", IndirectSalesOrder.Id.ToString()),
                         Time = Now,
-                        Unread = false,
+                        Unread = true,
                         SenderId = CurrentContext.UserId,
                         RecipientId = Id
                     };
@@ -290,7 +290,7 @@ namespace DMS.Services.MIndirectSalesOrder
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
                         Time = Now,
-                        Unread = false,
+                        Unread = true,
                         SenderId = CurrentContext.UserId,
                         RecipientId = Id
                     };
