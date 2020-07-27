@@ -328,6 +328,7 @@ namespace DMS.Services.MProduct
             try
             {
                 var oldData = await UOW.ProductRepository.Get(Product.Id);
+                Product.IsNew = oldData.IsNew;
                 var Items = Product.Items;
                 var OldItems = oldData.Items;
                 var OldItemIds = OldItems.Select(x => x.Id).ToList();
