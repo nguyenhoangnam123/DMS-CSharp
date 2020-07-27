@@ -71,7 +71,7 @@ namespace DMS.Rpc.indirect_sales_order
             { "Thêm", new List<string> {
                 Master, Count, List, Get, 
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Create,
+                Detail, Create, Approve, Reject,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
                 CountItem, ListItem, CountStore, ListStore, } },
@@ -79,7 +79,7 @@ namespace DMS.Rpc.indirect_sales_order
             { "Sửa", new List<string> {
                 Master, Count, List, Get, 
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Update,
+                Detail, Update, Approve, Reject,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
                 CountItem, ListItem, CountStore, ListStore, } },
@@ -87,7 +87,7 @@ namespace DMS.Rpc.indirect_sales_order
             { "Xoá", new List<string> {
                 Master, Count, List, Get, 
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Delete,
+                Delete, Approve, Reject,
                 } },
 
             { "Xuất excel", new List<string> {
