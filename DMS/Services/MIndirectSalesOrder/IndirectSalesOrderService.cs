@@ -170,6 +170,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 DateTime Now = StaticParams.DateTimeNow;
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 foreach (var Id in RecipientIds)
+
                 {
                     UserNotification NotificationUtils = new UserNotification
                     {
