@@ -335,7 +335,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                     ItemContent.IndirectQuantityPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
                             .Where(x => x.SaleEmployeeId == ItemContent.SaleEmployeeId &&
                             x.ItemId == ItemContent.ItemId &&
-                            x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id)
+                            x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id)
                             .Select(x => x.Value).FirstOrDefault();
                     //thực hiện
                     foreach (var IndirectSalesOrder in IndirectSalesOrders)
@@ -404,6 +404,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                     //kế hoạch
                     ItemContent.IndirectStorePlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
                             .Where(x => x.SaleEmployeeId == ItemContent.SaleEmployeeId &&
+                            x.ItemId == ItemContent.ItemId &&
                             x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
                             .Select(x => x.Value).FirstOrDefault();
                     //thực hiện
