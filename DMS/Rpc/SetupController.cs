@@ -55,7 +55,6 @@ namespace DMS.Rpc
         private void InitPosition(RestClient RestClient)
         {
             IRestRequest RestRequest = new RestRequest("rpc/es/position/list");
-            RestRequest.RequestFormat = DataFormat.Json;
             RestRequest.Method = Method.POST;
             IRestResponse<List<Position>> RestResponse = RestClient.Post<List<Position>>(RestRequest);
             if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
@@ -88,7 +87,6 @@ namespace DMS.Rpc
         private void InitOrganization(RestClient RestClient)
         {
             IRestRequest RestRequest = new RestRequest("rpc/es/organization/list");
-            RestRequest.RequestFormat = DataFormat.Json;
             RestRequest.Method = Method.POST;
             IRestResponse<List<Organization>> RestResponse = RestClient.Post<List<Organization>>(RestRequest);
             if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
@@ -128,7 +126,6 @@ namespace DMS.Rpc
         private void InitAppUser(RestClient RestClient)
         {
             IRestRequest RestRequest = new RestRequest("rpc/es/app-user/list");
-            RestRequest.RequestFormat = DataFormat.Json;
             RestRequest.Method = Method.POST;
             IRestResponse<List<AppUser>> RestResponse = RestClient.Post<List<AppUser>>(RestRequest);
             if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
@@ -204,7 +201,6 @@ namespace DMS.Rpc
         private void InitDistrict(RestClient RestClient)
         {
             IRestRequest RestRequest = new RestRequest("rpc/es/district/list");
-            RestRequest.RequestFormat = DataFormat.Json;
             RestRequest.Method = Method.POST;
             IRestResponse<List<District>> RestResponse = RestClient.Post<List<District>>(RestRequest);
             if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
@@ -238,7 +234,6 @@ namespace DMS.Rpc
         private void InitWard(RestClient RestClient)
         {
             IRestRequest RestRequest = new RestRequest("rpc/es/ward/list");
-            RestRequest.RequestFormat = DataFormat.Json;
             RestRequest.Method = Method.POST;
             IRestResponse<List<Ward>> RestResponse = RestClient.Post<List<Ward>>(RestRequest);
             if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)

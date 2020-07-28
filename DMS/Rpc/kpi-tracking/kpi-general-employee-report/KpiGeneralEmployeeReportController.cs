@@ -192,6 +192,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             var KpiGeneralId = await DataContext.KpiGeneral
                 .Where(x => x.EmployeeId == SaleEmployeeId.Value &&
                 x.StatusId == StatusEnum.ACTIVE.Id &&
+                (KpiYearId == null || x.KpiYearId == KpiYearId) &&
                 x.DeletedAt == null)
                 .Select(x => x.Id)
                 .FirstOrDefaultAsync();
