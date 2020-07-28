@@ -194,6 +194,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 .Where(x => x.EmployeeId == SaleEmployeeId.Value &&
                 (KpiYearId.HasValue == false || x.KpiYearId == KpiYearId.Value) &&
                 x.StatusId == StatusEnum.ACTIVE.Id &&
+                (KpiYearId == null || x.KpiYearId == KpiYearId) &&
                 x.DeletedAt == null)
                 .Select(x => x.Id)
                 .FirstOrDefaultAsync();

@@ -22,6 +22,7 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OfficeOpenXml;
+using Prometheus;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
@@ -191,6 +192,7 @@ namespace DMS
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseRouting();
+            app.UseHttpMetrics();
             app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseGleamTech();
             app.UseAuthentication();
@@ -198,6 +200,7 @@ namespace DMS
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapMetrics("rpc/dms/metrics");
             });
             app.UseSwagger(c =>
             {
