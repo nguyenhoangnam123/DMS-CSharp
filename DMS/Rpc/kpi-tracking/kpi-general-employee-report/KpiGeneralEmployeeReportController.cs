@@ -192,6 +192,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
 
             var KpiGeneralId = await DataContext.KpiGeneral
                 .Where(x => x.EmployeeId == SaleEmployeeId.Value &&
+                (KpiYearId.HasValue == false || x.KpiYearId == KpiYearId.Value) &&
                 x.StatusId == StatusEnum.ACTIVE.Id &&
                 x.DeletedAt == null)
                 .Select(x => x.Id)
@@ -202,6 +203,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 return new List<KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO>();
             var KpiPeriodIds = KpiGeneral.KpiGeneralContents
                 .SelectMany(x => x.KpiGeneralContentKpiPeriodMappings)
+                .Where(x => KpiPeriodId.HasValue == false || x.KpiPeriodId == KpiPeriodId.Value)
                 .Select(x => x.KpiPeriodId)
                 .Distinct()
                 .Skip(KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.Skip)

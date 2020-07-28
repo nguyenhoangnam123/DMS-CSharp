@@ -185,7 +185,6 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             var query = from sc in DataContext.StoreChecking
                         join s in DataContext.Store on sc.StoreId equals s.Id
                         join o in DataContext.Organization on s.OrganizationId equals o.Id
-                        join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                         (StoreTypeId.HasValue == false || s.StoreTypeId == StoreTypeId.Value) &&
@@ -233,8 +232,21 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
+            var query = from sc in DataContext.StoreChecking
+                        join s in DataContext.Store on sc.StoreId equals s.Id
+                        join o in DataContext.Organization on s.OrganizationId equals o.Id
+                        where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
+                        (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
+                        (StoreTypeId.HasValue == false || s.StoreTypeId == StoreTypeId.Value) &&
+                        (StoreGroupingId.HasValue == false || s.StoreGroupingId == StoreGroupingId.Value) &&
+                        OrganizationIds.Contains(o.Id)
+                        select s;
+
+            var StoreIds = await query.Select(x => x.Id).Distinct().ToListAsync();
+
             List<StoreDAO> StoreDAOs = await DataContext.Store.Include(x => x.Organization)
                 .Where(x => OrganizationIds.Contains(x.OrganizationId) &&
+                StoreIds.Contains(x.Id) &&
                 (StoreId == null || x.Id == StoreId.Value) &&
                 (StoreTypeId == null || x.StoreTypeId == StoreTypeId.Value) &&
                 (StoreGroupingId == null || x.StoreGroupingId == StoreGroupingId.Value))
@@ -258,7 +270,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 }
             }).ToList();
 
-            var StoreIds = ReportStoreGeneral_StoreDTOs.Select(x => x.Id).ToList();
+            StoreIds = ReportStoreGeneral_StoreDTOs.Select(x => x.Id).ToList();
             List<string> OrganizationNames = ReportStoreGeneral_StoreDTOs.Select(s => s.Organization.Name).Distinct().ToList();
             OrganizationNames = OrganizationNames.OrderBy(x => x).ToList();
             List<ReportStoreGeneral_ReportStoreGeneralDTO> ReportStoreGeneral_ReportStoreGeneralDTOs = OrganizationNames.Select(on => new ReportStoreGeneral_ReportStoreGeneralDTO

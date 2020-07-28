@@ -263,7 +263,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     OrderDate = x.OrderDate,
                     IndirectSalesOrderContents = x.IndirectSalesOrderContents.Select(c => new IndirectSalesOrderContentDAO
                     {
-                        Quantity = c.Quantity,
+                        RequestedQuantity = c.RequestedQuantity,
                         ItemId = c.ItemId
                     }).ToList(),
                 })
