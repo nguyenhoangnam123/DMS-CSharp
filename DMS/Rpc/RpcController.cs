@@ -87,7 +87,6 @@ namespace DMS.Rpc
 
             List<long> In = null;
             List<long> NotIn = null;
-            IdFilter CurrentUserId = new IdFilter();
             foreach (var currentFilter in CurrentContext.Filters)
             {
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
@@ -121,20 +120,21 @@ namespace DMS.Rpc
                     {
                         if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.IS.Id)
                         {
-                            CurrentUserId.Equal =  CurrentContext.UserId;
+                            if (In == null) In = new List<long>();
+                            In.Add(CurrentContext.UserId);
                         }
                         if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.ISNT.Id)
                         {
-                            CurrentUserId.NotEqual = CurrentContext.UserId;
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.Add(CurrentContext.UserId);
                         }
                     }
                 }
             }
 
-
             AppUserFilter AppUserFilter = new AppUserFilter
             {
-                Id = new IdFilter { In = In, NotIn = NotIn, Equal = CurrentUserId.Equal, NotEqual = CurrentUserId.NotEqual },
+                Id = new IdFilter { In = In, NotIn = NotIn, },
                 OrganizationId = new IdFilter { In = organizationIds },
                 Skip = 0,
                 Take = int.MaxValue,
@@ -209,7 +209,7 @@ namespace DMS.Rpc
         /// <param name="CurrentContext"></param>
         /// <param name="DataContext"></param>
         /// <returns> AppUserIds, OrganizationIds </returns>
-        protected async Task<(List<long>, List<long>)> FilterOrganizationAndUser(IdFilter OrganizationId,IAppUserService AppUserService, IOrganizationService OrganizationService, ICurrentContext CurrentContext, DataContext DataContext)
+        protected async Task<(List<long>, List<long>)> FilterOrganizationAndUser(IdFilter OrganizationId, IAppUserService AppUserService, IOrganizationService OrganizationService, ICurrentContext CurrentContext, DataContext DataContext)
         {
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
