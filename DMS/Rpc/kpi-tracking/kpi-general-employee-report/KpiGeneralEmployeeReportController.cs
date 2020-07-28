@@ -181,7 +181,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId == null) return BadRequest("Chưa chọn nhân viên");
+            if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId == null) 
+                return BadRequest("Chưa chọn nhân viên");
 
             DateTime StartDate, EndDate;
             long? SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId.Equal.Value;
@@ -197,6 +198,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 .FirstOrDefaultAsync();
             var KpiGeneral = await KpiGeneralService.Get(KpiGeneralId);
 
+            if (KpiGeneral == null)
+                return new List<KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO>();
             var KpiPeriodIds = KpiGeneral.KpiGeneralContents
                 .SelectMany(x => x.KpiGeneralContentKpiPeriodMappings)
                 .Select(x => x.KpiPeriodId)
