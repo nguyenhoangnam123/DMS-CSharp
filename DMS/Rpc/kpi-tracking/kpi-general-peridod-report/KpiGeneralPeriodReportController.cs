@@ -277,7 +277,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     SaleEmployeeId = x.SaleEmployeeId,
                     Id = x.Id,
                     CheckInAt = x.CheckInAt,
-                    CheckOutAt = x.CheckOutAt
+                    CheckOutAt = x.CheckOutAt,
+                    StoreId = x.StoreId
                 })
                 .ToListAsync();
 
@@ -325,7 +326,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 //thực hiện
                 SaleEmployeeDTO.TotalIndirectQuantity = IndirectSalesOrders
                     .SelectMany(c => c.IndirectSalesOrderContents)
-                    .Select(q => q.Quantity)
+                    .Select(q => q.RequestedQuantity)
                     .DefaultIfEmpty(0).Sum();
                 //tỉ lệ
                 SaleEmployeeDTO.TotalIndirectQuantityRatio = SaleEmployeeDTO.TotalIndirectQuantityPlanned == 0 ?
