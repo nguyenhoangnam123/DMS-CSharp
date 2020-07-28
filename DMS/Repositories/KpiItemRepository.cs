@@ -595,7 +595,6 @@ namespace DMS.Repositories
 
         private async Task SaveReference(KpiItem KpiItem)
         {
-            var KpiItemContentIds = KpiItem.KpiItemContents.Select(x => x.Id).ToList();
             await DataContext.KpiItemContentKpiCriteriaItemMapping
                 .Where(x => x.KpiItemContent.KpiItemId == KpiItem.Id)
                 .DeleteFromQueryAsync();
@@ -655,6 +654,5 @@ namespace DMS.Repositories
                 await DataContext.KpiItemKpiCriteriaTotalMapping.BulkMergeAsync(KpiItemKpiCriteriaTotalMappingDAOs);
             }
         }
-
     }
 }
