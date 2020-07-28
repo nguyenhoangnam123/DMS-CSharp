@@ -101,8 +101,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.TotalTaxAmount, filter.TotalTaxAmount);
             if (filter.Total != null)
                 query = query.Where(q => q.Total, filter.Total);
-            if (filter.StoreCheckingId != null)
-                query = query.Where(q => q.StoreCheckingId, filter.StoreCheckingId);
             query = OrFilter(query, filter);
             return query;
         }
