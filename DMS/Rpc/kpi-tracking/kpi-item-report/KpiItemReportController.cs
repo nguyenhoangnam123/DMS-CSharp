@@ -404,6 +404,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                     //kế hoạch
                     ItemContent.IndirectStorePlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
                             .Where(x => x.SaleEmployeeId == ItemContent.SaleEmployeeId &&
+                            x.ItemId == ItemContent.ItemId &&
                             x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
                             .Select(x => x.Value).FirstOrDefault();
                     //thực hiện
