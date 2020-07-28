@@ -524,13 +524,11 @@ namespace DMS.Repositories
 
         private async Task SaveReference(KpiGeneral KpiGeneral) 
         {
-            var KpiGeneralContentIds = KpiGeneral.KpiGeneralContents.Select(x => x.Id).ToList();
             await DataContext.KpiGeneralContentKpiPeriodMapping
-                .Where(x => KpiGeneralContentIds
-                .Contains(x.KpiGeneralContentId))
+                .Where(x => x.KpiGeneralContent.KpiGeneralId == KpiGeneral.Id)
                 .DeleteFromQueryAsync();
             await DataContext.KpiGeneralContent
-                .Where(x => KpiGeneralContentIds.Contains(x.Id))
+                .Where(x => x.KpiGeneralId == KpiGeneral.Id)
                 .DeleteFromQueryAsync();
             List<KpiGeneralContentDAO> KpiGeneralContentDAOs = new List<KpiGeneralContentDAO>();
             List<KpiGeneralContentKpiPeriodMappingDAO> KpiGeneralContentKpiCriteriaItemMappingDAOs = new List<KpiGeneralContentKpiPeriodMappingDAO>();
