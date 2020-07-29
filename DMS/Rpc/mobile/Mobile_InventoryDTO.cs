@@ -27,7 +27,7 @@ namespace DMS.Rpc.mobile
         }
     }
 
-    public class Warehouse_InventoryFilterDTO : FilterDTO
+    public class Mobile_InventoryFilterDTO : FilterDTO
     {
 
         public IdFilter Id { get; set; }
