@@ -313,7 +313,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                     IndirectSalesOrderContents = x.IndirectSalesOrderContents.Select(c => new IndirectSalesOrderContentDAO
                     {
                         IndirectSalesOrderId = x.Id,
-                        Quantity = c.Quantity,
+                        RequestedQuantity = c.RequestedQuantity,
                         ItemId = c.ItemId,
                         Amount = c.Amount,
                         GeneralDiscountAmount = c.GeneralDiscountAmount,
