@@ -5,9 +5,9 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 {
     public class ReportStoreUncheckedRoute : Root
     {
-        public const string Master = Module + "/report-store-un-checked/report-store-un-checked-master";
+        public const string Master = Module + "/store-checking-report/store-unchecked-report-master";
 
-        private const string Default = Rpc + Module + "/report-store-un-checked";
+        private const string Default = Rpc + Module + "/store-unchecked-report-master";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Export = Default + "/export";
