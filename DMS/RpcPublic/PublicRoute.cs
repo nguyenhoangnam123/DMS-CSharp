@@ -8,7 +8,7 @@ namespace DMS.RpcPublic
 {
     public class PublicRoute : Root
     {
-        private const string Default = "public/" + Rpc + Module;
+        private const string Default = "public-" + Rpc + Module;
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
         public const string SingleListTaxType = Default + "/single-list-tax-type";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
