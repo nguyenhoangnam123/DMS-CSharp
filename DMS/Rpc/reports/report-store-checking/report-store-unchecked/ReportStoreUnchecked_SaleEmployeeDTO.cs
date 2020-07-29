@@ -15,6 +15,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
     public class ReportStoreUnchecked_StoreDTO : DataDTO
     {
         public DateTime Date { get; set; }
+        public string ERouteCode { get; set; }
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
         public string StoreTypeName { get; set; }

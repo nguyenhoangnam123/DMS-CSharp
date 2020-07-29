@@ -246,6 +246,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                     ReportStoreUnchecked_StoreDTO ReportStoreUnchecked_StoreDTO = new ReportStoreUnchecked_StoreDTO
                                     {
                                         Date = index,
+                                        ERouteCode = ERouteDAO.Code,
                                         StoreAddress = StoreDAO.Address,
                                         StoreCode = StoreDAO.Code,
                                         StoreName = StoreDAO.Name,
