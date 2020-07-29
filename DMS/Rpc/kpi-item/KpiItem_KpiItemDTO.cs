@@ -62,7 +62,7 @@ namespace DMS.Rpc.kpi_item
         public IdFilter KpiYearId { get; set; }
         public IdFilter KpiPeriodId { get; set; }
         public IdFilter StatusId { get; set; }
-        public IdFilter EmployeeId { get; set; }
+        public IdFilter AppUserId { get; set; }
         public IdFilter CreatorId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
