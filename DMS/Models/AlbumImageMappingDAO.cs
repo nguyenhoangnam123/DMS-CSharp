@@ -8,6 +8,7 @@ namespace DMS.Models
         public long ImageId { get; set; }
         public long AlbumId { get; set; }
         public long StoreId { get; set; }
+        public DateTime ShootingAt { get; set; }
 
         public virtual AlbumDAO Album { get; set; }
         public virtual ImageDAO Image { get; set; }

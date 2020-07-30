@@ -992,14 +992,12 @@ namespace DMS.Rpc.mobile
             {
                 Id = Mobile_AlbumDTO.Id,
                 Name = Mobile_AlbumDTO.Name,
-                StoreCheckingImageMappings = Mobile_AlbumDTO.StoreCheckingImageMappings?.Select(x => new StoreCheckingImageMapping
+                AlbumImageMappings = Mobile_AlbumDTO.AlbumImageMappings?.Select(x => new AlbumImageMapping
                 {
                     AlbumId = x.AlbumId,
                     ImageId = x.ImageId,
-                    SaleEmployeeId = x.SaleEmployeeId,
-                    ShootingAt = x.ShootingAt,
-                    StoreCheckingId = x.StoreCheckingId,
                     StoreId = x.StoreId,
+                    ShootingAt = x.ShootingAt,
                 }).ToList()
             };
 

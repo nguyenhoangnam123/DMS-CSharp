@@ -162,14 +162,12 @@ namespace DMS.Repositories
 
             if (Album == null)
                 return null;
-            Album.StoreCheckingImageMappings = await DataContext.StoreCheckingImageMapping.Where(x => x.AlbumId == Id)
-                .Select(x => new StoreCheckingImageMapping
+            Album.AlbumImageMappings = await DataContext.AlbumImageMapping.Where(x => x.AlbumId == Id)
+                .Select(x => new AlbumImageMapping
                 {
                     AlbumId = x.AlbumId,
                     ImageId = x.ImageId,
-                    SaleEmployeeId = x.SaleEmployeeId,
                     ShootingAt = x.ShootingAt,
-                    StoreCheckingId = x.StoreCheckingId,
                     StoreId = x.StoreId,
                 }).ToListAsync();
             return Album;
@@ -239,19 +237,17 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Album Album)
         {
-            List<StoreCheckingImageMappingDAO> StoreCheckingImageMappingDAOs = new List<StoreCheckingImageMappingDAO>();
-            foreach (var StoreCheckingImageMapping in Album.StoreCheckingImageMappings)
+            List<AlbumImageMappingDAO> AlbumImageMappingDAOs = new List<AlbumImageMappingDAO>();
+            foreach (var AlbumImageMapping in Album.AlbumImageMappings)
             {
-                StoreCheckingImageMappingDAO StoreCheckingImageMappingDAO = new StoreCheckingImageMappingDAO();
-                StoreCheckingImageMappingDAO.AlbumId = StoreCheckingImageMapping.AlbumId;
-                StoreCheckingImageMappingDAO.ImageId = StoreCheckingImageMapping.ImageId;
-                StoreCheckingImageMappingDAO.StoreCheckingId = StoreCheckingImageMapping.StoreCheckingId;
-                StoreCheckingImageMappingDAO.StoreId = StoreCheckingImageMapping.StoreId;
-                StoreCheckingImageMappingDAO.ShootingAt = StoreCheckingImageMapping.ShootingAt;
-                StoreCheckingImageMappingDAO.SaleEmployeeId = StoreCheckingImageMapping.SaleEmployeeId;
-                StoreCheckingImageMappingDAOs.Add(StoreCheckingImageMappingDAO);
+                AlbumImageMappingDAO AlbumImageMappingDAO = new AlbumImageMappingDAO();
+                AlbumImageMappingDAO.AlbumId = AlbumImageMapping.AlbumId;
+                AlbumImageMappingDAO.ImageId = AlbumImageMapping.ImageId;
+                AlbumImageMappingDAO.StoreId = AlbumImageMapping.StoreId;
+                AlbumImageMappingDAO.ShootingAt = AlbumImageMapping.ShootingAt;
+                AlbumImageMappingDAOs.Add(AlbumImageMappingDAO);
             }
-            await DataContext.StoreCheckingImageMapping.BulkMergeAsync(StoreCheckingImageMappingDAOs);
+            await DataContext.AlbumImageMapping.BulkMergeAsync(AlbumImageMappingDAOs);
         }
 
     }

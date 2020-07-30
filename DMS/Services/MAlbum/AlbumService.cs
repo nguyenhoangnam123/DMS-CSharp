@@ -161,7 +161,7 @@ namespace DMS.Services.MAlbum
             try
             {
                 var oldData = await UOW.AlbumRepository.Get(Album.Id);
-                Album.StoreCheckingImageMappings.AddRange(oldData.StoreCheckingImageMappings);
+                Album.AlbumImageMappings.AddRange(oldData.AlbumImageMappings);
                 await UOW.Begin();
                 await UOW.AlbumRepository.Update(Album);
                 await UOW.Commit();
