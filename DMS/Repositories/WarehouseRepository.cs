@@ -539,7 +539,7 @@ namespace DMS.Repositories
                         {
                             foreach (InventoryHistory inventoryHistory in Inventory.InventoryHistories)
                             {
-                                InventoryHistoryDAO InventoryHistoryDAO = InventoryHistoryDAOs.Where(x => x.Id == inventoryHistory.Id).FirstOrDefault();
+                                InventoryHistoryDAO InventoryHistoryDAO = InventoryHistoryDAOs.Where(x => x.Id == inventoryHistory.Id && x.Id != 0).FirstOrDefault();
                                 if (InventoryHistoryDAO == null)
                                 {
                                     InventoryHistoryDAO = new InventoryHistoryDAO

@@ -51,12 +51,12 @@ namespace DMS.Rpc.warehouse
             { "Thêm", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
-                Detail, Create, ImportInventory, ExportInventory, ExportTemplate, CountHistory, ListHistory,
+                Detail, Create, CountHistory, ListHistory,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Sửa", new List<string> {
                 Master, Count, List, Get,GetPreview,
                 FilterListOrganization, FilterListStatus,
-                Detail, Update, ImportInventory, ExportInventory, ExportTemplate,  CountHistory, ListHistory,
+                Detail, Update, CountHistory, ListHistory,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Xoá", new List<string> {
                 Master, Count, List, Get, GetPreview,
@@ -67,6 +67,12 @@ namespace DMS.Rpc.warehouse
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
                 BulkDelete } },
+            { "Xuất excel", new List<string> {
+                Master, Count, List, Get, FilterListOrganization, FilterListStatus,
+                Detail, ExportInventory } },
+            { "Nhập excel", new List<string> {
+                Master, Count, List, Get, FilterListOrganization, FilterListStatus,
+                Detail, ExportTemplate, ImportInventory } },
         };
     }
 }
