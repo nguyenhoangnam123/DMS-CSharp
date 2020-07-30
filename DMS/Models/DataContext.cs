@@ -10,6 +10,7 @@ namespace DMS.Models
         public virtual DbSet<ActionPageMappingDAO> ActionPageMapping { get; set; }
         public virtual DbSet<AggregatedCounterDAO> AggregatedCounter { get; set; }
         public virtual DbSet<AlbumDAO> Album { get; set; }
+        public virtual DbSet<AlbumImageMappingDAO> AlbumImageMapping { get; set; }
         public virtual DbSet<AppUserDAO> AppUser { get; set; }
         public virtual DbSet<AppUserPermissionDAO> AppUserPermission { get; set; }
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
@@ -221,6 +222,29 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Album_Status");
+            });
+
+            modelBuilder.Entity<AlbumImageMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ImageId, e.AlbumId });
+
+                entity.HasOne(d => d.Album)
+                    .WithMany(p => p.AlbumImageMappings)
+                    .HasForeignKey(d => d.AlbumId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AlbumImageMapping_Album");
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.AlbumImageMappings)
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AlbumImageMapping_Image");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.AlbumImageMappings)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AlbumImageMapping_Store");
             });
 
             modelBuilder.Entity<AppUserDAO>(entity =>

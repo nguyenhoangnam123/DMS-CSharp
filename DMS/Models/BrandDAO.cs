@@ -10,13 +10,37 @@ namespace DMS.Models
             Products = new HashSet<ProductDAO>();
         }
 
+        /// <summary>
+        /// Id
+        /// </summary>
         public long Id { get; set; }
+        /// <summary>
+        /// Mã nhãn hiệu
+        /// </summary>
         public string Code { get; set; }
+        /// <summary>
+        /// Tên nhãn nhiệu
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Trạng thái hoạt động
+        /// </summary>
         public long StatusId { get; set; }
+        /// <summary>
+        /// Mô tả
+        /// </summary>
         public string Description { get; set; }
+        /// <summary>
+        /// Ngày tạo
+        /// </summary>
         public DateTime CreatedAt { get; set; }
+        /// <summary>
+        /// Ngày cập nhật
+        /// </summary>
         public DateTime UpdatedAt { get; set; }
+        /// <summary>
+        /// Ngày xoá
+        /// </summary>
         public DateTime? DeletedAt { get; set; }
         public bool Used { get; set; }
 
