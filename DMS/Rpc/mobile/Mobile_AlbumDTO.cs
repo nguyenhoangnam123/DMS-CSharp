@@ -1,5 +1,7 @@
 using Common;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.mobile
 {
@@ -10,7 +12,7 @@ namespace DMS.Rpc.mobile
 
         public string Name { get; set; }
 
-
+        public List<Mobile_StoreCheckingImageMappingDTO> StoreCheckingImageMappings { get; set; }
         public Mobile_AlbumDTO() { }
         public Mobile_AlbumDTO(Album Album)
         {
@@ -18,6 +20,7 @@ namespace DMS.Rpc.mobile
             this.Id = Album.Id;
 
             this.Name = Album.Name;
+            this.StoreCheckingImageMappings = Album.StoreCheckingImageMappings?.Select(x => new Mobile_StoreCheckingImageMappingDTO(x)).ToList();
 
             this.Errors = Album.Errors;
         }

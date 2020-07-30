@@ -16,6 +16,7 @@ namespace DMS.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
+        public List<StoreCheckingImageMapping> StoreCheckingImageMappings { get; set; }
         public bool Equals(Album other)
         {
             return other != null && Id == other.Id;

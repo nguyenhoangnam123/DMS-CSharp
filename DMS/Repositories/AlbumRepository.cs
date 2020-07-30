@@ -162,7 +162,16 @@ namespace DMS.Repositories
 
             if (Album == null)
                 return null;
-
+            Album.StoreCheckingImageMappings = await DataContext.StoreCheckingImageMapping.Where(x => x.AlbumId == Id)
+                .Select(x => new StoreCheckingImageMapping
+                {
+                    AlbumId = x.AlbumId,
+                    ImageId = x.ImageId,
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    ShootingAt = x.ShootingAt,
+                    StoreCheckingId = x.StoreCheckingId,
+                    StoreId = x.StoreId,
+                }).ToListAsync();
             return Album;
         }
         public async Task<bool> Create(Album Album)
@@ -197,6 +206,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Album Album)
         {
+            await DataContext.StoreCheckingImageMapping.Where(x => x.AlbumId == Album.Id).DeleteFromQueryAsync();
             await DataContext.Album.Where(x => x.Id == Album.Id).UpdateFromQueryAsync(x => new AlbumDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
@@ -229,6 +239,19 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Album Album)
         {
+            List<StoreCheckingImageMappingDAO> StoreCheckingImageMappingDAOs = new List<StoreCheckingImageMappingDAO>();
+            foreach (var StoreCheckingImageMapping in Album.StoreCheckingImageMappings)
+            {
+                StoreCheckingImageMappingDAO StoreCheckingImageMappingDAO = new StoreCheckingImageMappingDAO();
+                StoreCheckingImageMappingDAO.AlbumId = StoreCheckingImageMapping.AlbumId;
+                StoreCheckingImageMappingDAO.ImageId = StoreCheckingImageMapping.ImageId;
+                StoreCheckingImageMappingDAO.StoreCheckingId = StoreCheckingImageMapping.StoreCheckingId;
+                StoreCheckingImageMappingDAO.StoreId = StoreCheckingImageMapping.StoreId;
+                StoreCheckingImageMappingDAO.ShootingAt = StoreCheckingImageMapping.ShootingAt;
+                StoreCheckingImageMappingDAO.SaleEmployeeId = StoreCheckingImageMapping.SaleEmployeeId;
+                StoreCheckingImageMappingDAOs.Add(StoreCheckingImageMappingDAO);
+            }
+            await DataContext.StoreCheckingImageMapping.BulkMergeAsync(StoreCheckingImageMappingDAOs);
         }
 
     }

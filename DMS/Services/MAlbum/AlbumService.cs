@@ -15,6 +15,7 @@ namespace DMS.Services.MAlbum
         Task<Album> Get(long Id);
         Task<Album> Create(Album Album);
         Task<Album> Update(Album Album);
+        Task<Album> UpdateMobile(Album Album);
         Task<Album> Delete(Album Album);
         Task<List<Album>> BulkDelete(List<Album> Albums);
         Task<List<Album>> Import(List<Album> Albums);
@@ -129,6 +130,38 @@ namespace DMS.Services.MAlbum
             {
                 var oldData = await UOW.AlbumRepository.Get(Album.Id);
 
+                await UOW.Begin();
+                await UOW.AlbumRepository.Update(Album);
+                await UOW.Commit();
+
+                var newData = await UOW.AlbumRepository.Get(Album.Id);
+                await Logging.CreateAuditLog(newData, oldData, nameof(AlbumService));
+                return newData;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(AlbumService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(AlbumService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<Album> UpdateMobile(Album Album)
+        {
+            if (!await AlbumValidator.Update(Album))
+                return Album;
+            try
+            {
+                var oldData = await UOW.AlbumRepository.Get(Album.Id);
+                Album.StoreCheckingImageMappings.AddRange(oldData.StoreCheckingImageMappings);
                 await UOW.Begin();
                 await UOW.AlbumRepository.Update(Album);
                 await UOW.Commit();

@@ -137,7 +137,7 @@ namespace DMS.Rpc.mobile
         }
 
         [Route(MobileRoute.GetStoreChecking), HttpPost]
-        public async Task<ActionResult<Mobile_StoreCheckingDTO>> GetStoreChecking([FromBody]Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
+        public async Task<ActionResult<Mobile_StoreCheckingDTO>> GetStoreChecking([FromBody] Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -192,7 +192,7 @@ namespace DMS.Rpc.mobile
                 return BadRequest(Mobile_StoreCheckingDTO);
         }
 
-      
+
         [Route(MobileRoute.CreateIndirectSalesOrder), HttpPost]
         public async Task<ActionResult<Mobile_IndirectSalesOrderDTO>> CreateIndirectSalesOrder([FromBody] Mobile_IndirectSalesOrderDTO Mobile_IndirectSalesOrderDTO)
         {
@@ -980,6 +980,34 @@ namespace DMS.Rpc.mobile
                 Url = Image.Url,
             };
             return Ok(Mobile_ImageDTO);
+        }
+
+        [Route(MobileRoute.UpdateAlbum), HttpPost]
+        public async Task<ActionResult<Mobile_AlbumDTO>> UpdateAlbum([FromBody] Mobile_AlbumDTO Mobile_AlbumDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            Album Album = new Album
+            {
+                Id = Mobile_AlbumDTO.Id,
+                Name = Mobile_AlbumDTO.Name,
+                StoreCheckingImageMappings = Mobile_AlbumDTO.StoreCheckingImageMappings?.Select(x => new StoreCheckingImageMapping
+                {
+                    AlbumId = x.AlbumId,
+                    ImageId = x.ImageId,
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    ShootingAt = x.ShootingAt,
+                    StoreCheckingId = x.StoreCheckingId,
+                    StoreId = x.StoreId,
+                }).ToList()
+            };
+
+            Album = await AlbumService.UpdateMobile(Album);
+            Mobile_AlbumDTO = new Mobile_AlbumDTO(Album);
+            if (!Album.IsValidated)
+                return BadRequest(Mobile_AlbumDTO);
+            return Ok(Mobile_AlbumDTO);
         }
 
         [Route(MobileRoute.UpdateStore), HttpPost]
