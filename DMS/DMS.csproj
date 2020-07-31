@@ -22,6 +22,7 @@
     <PackageReference Include="EPPlus" Version="5.2.1" />
     <PackageReference Include="GleamTech.DocumentUltimate" Version="5.4.2" />
     <PackageReference Include="Hangfire" Version="1.7.12" />
+    <PackageReference Include="Html2Markdown" Version="3.3.1.407" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.6" />
@@ -38,7 +39,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
     <PackageReference Include="Templater" Version="4.5.0" />
     <PackageReference Include="Winton.Extensions.Configuration.Consul" Version="3.1.0" />
-    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="3.0.85" />
+    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="3.0.86" />
 </ItemGroup>
 
   <ItemGroup>
