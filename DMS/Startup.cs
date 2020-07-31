@@ -21,6 +21,7 @@ using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using OfficeOpenXml;
 using Prometheus;
 using RabbitMQ.Client;
@@ -68,7 +69,14 @@ namespace DMS
         public void ConfigureServices(IServiceCollection services)
         {
             _ = DataEntity.ErrorResource;
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers().AddNewtonsoftJson(
+                options =>
+                {
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
+                    options.SerializerSettings.DateParseHandling = DateParseHandling.DateTimeOffset;
+                    options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+                });
+
             services.AddGleamTech();
             services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
             services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
