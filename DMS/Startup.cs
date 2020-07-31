@@ -72,9 +72,10 @@ namespace DMS
             services.AddControllers().AddNewtonsoftJson(
                 options =>
                 {
-                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                     options.SerializerSettings.DateParseHandling = DateParseHandling.DateTimeOffset;
-                    options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+                    options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat; 
+                    options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffK";
                 });
 
             services.AddGleamTech();
