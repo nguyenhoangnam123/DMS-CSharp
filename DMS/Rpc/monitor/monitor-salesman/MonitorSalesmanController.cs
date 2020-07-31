@@ -264,9 +264,9 @@ namespace DMS.Rpc.monitor.monitor_salesman
                         MonitorSalesman_StoreCheckingDTO.Longitude = Checked.Longitude ?? 0;
                         MonitorSalesman_StoreCheckingDTO.CheckIn = Checked.CheckInAt;
                         MonitorSalesman_StoreCheckingDTO.CheckOut = Checked.CheckOutAt;
-                        MonitorSalesman_StoreCheckingDTO.Image = StoreCheckingImageMappingDAOs.Where(sc => sc.StoreCheckingId == Checked.Id).Select(sc => sc.Image?.Url).FirstOrDefault();
                     }
 
+                    MonitorSalesman_StoreCheckingDTO.Image = StoreCheckingImageMappingDAOs.Where(sc => sc.StoreId == StoreId).Select(sc => sc.Image?.Url).FirstOrDefault();
                     MonitorSalesman_StoreCheckingDTO.StoreCode = StoreDAO.Code;
                     MonitorSalesman_StoreCheckingDTO.StoreName = StoreDAO.Name;
                     MonitorSalesman_StoreCheckingDTO.Address = StoreDAO.Address;
