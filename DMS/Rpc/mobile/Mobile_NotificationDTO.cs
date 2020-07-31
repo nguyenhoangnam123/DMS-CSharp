@@ -21,7 +21,7 @@ namespace DMS.Rpc.mobile
             var converter = new Converter();
             this.Id = Notification.Id;
             this.Title = Notification.Title;
-            this.Content = converter.Convert(Notification.Content);
+            this.Content = Notification.Content == null ? null : converter.Convert(Notification.Content);
             this.OrganizationId = Notification.OrganizationId;
             this.NotificationStatusId = Notification.NotificationStatusId;
             this.Organization = Notification.Organization == null ? null : new Mobile_OrganizationDTO(Notification.Organization);

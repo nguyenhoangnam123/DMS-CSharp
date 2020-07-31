@@ -368,7 +368,6 @@ namespace DMS.Rpc.mobile
             BannerFilter.OrderType = Mobile_BannerFilterDTO.OrderType;
             BannerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
-            BannerFilter = BannerService.ToFilter(BannerFilter);
             int count = await BannerService.Count(BannerFilter);
             return count;
         }
@@ -387,7 +386,6 @@ namespace DMS.Rpc.mobile
             BannerFilter.OrderType = Mobile_BannerFilterDTO.OrderType;
             BannerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
-            BannerFilter = BannerService.ToFilter(BannerFilter);
             List<Banner> Banners = await BannerService.List(BannerFilter);
             List<Mobile_BannerDTO> Mobile_BannerDTOs = Banners
                 .Select(c => new Mobile_BannerDTO(c)).ToList();
