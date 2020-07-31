@@ -184,7 +184,6 @@ namespace DMS.Repositories
             DataContext.Album.Add(AlbumDAO);
             await DataContext.SaveChangesAsync();
             Album.Id = AlbumDAO.Id;
-            await SaveReference(Album);
             return true;
         }
 
@@ -198,7 +197,6 @@ namespace DMS.Repositories
             AlbumDAO.StatusId = Album.StatusId;
             AlbumDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
-            await SaveReference(Album);
             return true;
         }
 
@@ -234,21 +232,5 @@ namespace DMS.Repositories
                 .UpdateFromQueryAsync(x => new AlbumDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-
-        private async Task SaveReference(Album Album)
-        {
-            List<AlbumImageMappingDAO> AlbumImageMappingDAOs = new List<AlbumImageMappingDAO>();
-            foreach (var AlbumImageMapping in Album.AlbumImageMappings)
-            {
-                AlbumImageMappingDAO AlbumImageMappingDAO = new AlbumImageMappingDAO();
-                AlbumImageMappingDAO.AlbumId = AlbumImageMapping.AlbumId;
-                AlbumImageMappingDAO.ImageId = AlbumImageMapping.ImageId;
-                AlbumImageMappingDAO.StoreId = AlbumImageMapping.StoreId;
-                AlbumImageMappingDAO.ShootingAt = AlbumImageMapping.ShootingAt;
-                AlbumImageMappingDAOs.Add(AlbumImageMappingDAO);
-            }
-            await DataContext.AlbumImageMapping.BulkMergeAsync(AlbumImageMappingDAOs);
-        }
-
     }
 }
