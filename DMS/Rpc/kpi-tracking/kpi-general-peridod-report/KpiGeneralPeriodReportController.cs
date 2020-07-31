@@ -149,12 +149,16 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 AppUserService, OrganizationService, CurrentContext, DataContext);
 
             var query = from k in DataContext.KpiGeneral
+                        join kc in DataContext.KpiGeneralContent on k.Id equals kc.KpiGeneralId
+                        join km in DataContext.KpiGeneralContentKpiPeriodMapping on kc.Id equals km.KpiGeneralContentId
                         join au in DataContext.AppUser on k.EmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where OrganizationIds.Contains(o.Id) &&
                         AppUserIds.Contains(au.Id) &&
                         (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
                         k.KpiYearId == KpiYearId &&
+                        km.KpiPeriodId == KpiPeriodId &&
+                        km.Value.HasValue &&
                         k.StatusId == StatusEnum.ACTIVE.Id &&
                         k.DeletedAt == null
                         select k.Id;
@@ -181,12 +185,16 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
             // list toan bo nhan vien trong organization do va cac con ma co kpi general
             var query = from k in DataContext.KpiGeneral
+                        join kc in DataContext.KpiGeneralContent on k.Id equals kc.KpiGeneralId
+                        join km in DataContext.KpiGeneralContentKpiPeriodMapping on kc.Id equals km.KpiGeneralContentId
                         join au in DataContext.AppUser on k.EmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where OrganizationIds.Contains(o.Id) &&
                         AppUserIds.Contains(au.Id) &&
                         (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
                         k.KpiYearId == KpiYearId &&
+                        km.KpiPeriodId == KpiPeriodId &&
+                        km.Value.HasValue &&
                         k.StatusId == StatusEnum.ACTIVE.Id &&
                         k.DeletedAt == null
                         select new
