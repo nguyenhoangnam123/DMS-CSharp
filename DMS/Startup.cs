@@ -183,15 +183,9 @@ namespace DMS
                     }
                 }
 
-                bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-                TimeZoneInfo tzi;
-                if (isWindows)
-                    tzi = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                else
-                    tzi = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
-                RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily, tzi);
-                RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily, tzi);
-                RecurringJob.AddOrUpdate<MaintenanceService>("CompleteStoreCheckout", x => x.CompleteStoreCheckout(), Cron.Daily, tzi);
+                RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily);
+                RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily);
+                RecurringJob.AddOrUpdate<MaintenanceService>("CompleteStoreCheckout", x => x.CompleteStoreCheckout(), Cron.Daily);
             };
             onChange();
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);
