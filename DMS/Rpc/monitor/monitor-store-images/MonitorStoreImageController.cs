@@ -56,6 +56,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
             AppUserFilter.OrderType = OrderType.ASC;
             AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName;
             AppUserFilter.Id = MonitorStoreImage_AppUserFilterDTO.Id;
+            AppUserFilter.OrganizationId = MonitorStoreImage_AppUserFilterDTO.OrganizationId;
             AppUserFilter.Username = MonitorStoreImage_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = MonitorStoreImage_AppUserFilterDTO.DisplayName;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };

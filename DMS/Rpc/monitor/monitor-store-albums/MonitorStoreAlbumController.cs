@@ -85,6 +85,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             AppUserFilter.Id = MonitorStoreAlbum_AppUserFilterDTO.Id;
             AppUserFilter.Username = MonitorStoreAlbum_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = MonitorStoreAlbum_AppUserFilterDTO.DisplayName;
+            AppUserFilter.OrganizationId = MonitorStoreAlbum_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             AppUserFilter.Id.In = await FilterAppUser(AppUserService,OrganizationService,CurrentContext);
 

@@ -24,6 +24,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public IdFilter Id { get; set; }
         public StringFilter Username { get; set; }
         public StringFilter DisplayName { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public AppUserOrder OrderBy { get; set; }
     }
 }
