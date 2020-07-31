@@ -4,6 +4,7 @@ using DMS.Helpers;
 using DMS.Repositories;
 using DMS.Rpc.notification;
 using Helpers;
+using HtmlAgilityPack;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -141,7 +142,6 @@ namespace DMS.Services.MNotification
                 if (AppUsers != null && AppUsers.Any())
                 {
                     var AppUserIds = AppUsers.Select(x => x.Id).ToList();
-
                     List<UserNotification> NotificationUtilss = AppUserIds.Select(x => new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",

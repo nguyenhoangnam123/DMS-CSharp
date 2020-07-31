@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using Html2Markdown;
 using System;
 using System.Collections.Generic;
 
@@ -21,11 +22,12 @@ namespace DMS.Rpc.mobile
         public Mobile_BannerDTO() { }
         public Mobile_BannerDTO(Banner Banner)
         {
+            var converter = new Converter();
             this.Id = Banner.Id;
             this.Code = Banner.Code;
             this.Title = Banner.Title;
             this.Priority = Banner.Priority;
-            this.Content = Banner.Content;
+            this.Content = converter.Convert(Banner.Content);
             this.CreatorId = Banner.CreatorId;
             this.ImageId = Banner.ImageId;
             this.StatusId = Banner.StatusId;

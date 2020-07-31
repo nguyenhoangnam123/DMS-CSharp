@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using DMS.Entities;
+using Html2Markdown;
 
 namespace DMS.Rpc.mobile
 {
@@ -14,12 +15,13 @@ namespace DMS.Rpc.mobile
         public long? OrganizationId { get; set; }
         public long NotificationStatusId { get; set; }
         public Mobile_OrganizationDTO Organization { get; set; }
-        public Mobile_NotificationDTO() {}
+        public Mobile_NotificationDTO() { }
         public Mobile_NotificationDTO(Notification Notification)
         {
+            var converter = new Converter();
             this.Id = Notification.Id;
             this.Title = Notification.Title;
-            this.Content = Notification.Content;
+            this.Content = converter.Convert(Notification.Content);
             this.OrganizationId = Notification.OrganizationId;
             this.NotificationStatusId = Notification.NotificationStatusId;
             this.Organization = Notification.Organization == null ? null : new Mobile_OrganizationDTO(Notification.Organization);
