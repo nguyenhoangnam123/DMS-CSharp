@@ -191,6 +191,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
             List<StoreCheckingImageMappingDAO> StoreCheckingImageMappingDAOs = await DataContext.StoreCheckingImageMapping
                 .Where(sc => StoreCheckingIds.Contains(sc.StoreCheckingId))
+                .Include(sc => sc.StoreChecking)
                 .Include(sc => sc.Image)
                 .ToListAsync();
 
@@ -247,6 +248,9 @@ namespace DMS.Rpc.monitor.monitor_salesman
                         MonitorSalesman_SaleEmployeeDTO.External.Add(Checked.StoreId);
                     }
                 }
+
+                MonitorSalesman_SaleEmployeeDTO.ImageCounter = StoreCheckingImageMappingDAOs
+                    .Where(sc => sc.StoreChecking.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).Count();
                 foreach (long StoreId in StoreIds)
                 {
                     List<StoreCheckingDAO> SubStoreCheckingDAOs = StoreCheckingDAOs.Where(s => s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId &&
@@ -254,7 +258,6 @@ namespace DMS.Rpc.monitor.monitor_salesman
                             Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End).OrderByDescending(s => s.CheckOutAt).ToList();
                     StoreCheckingDAO Checked = SubStoreCheckingDAOs.FirstOrDefault();
                     StoreDAO StoreDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
-
                     MonitorSalesman_StoreCheckingDTO MonitorSalesman_StoreCheckingDTO = new MonitorSalesman_StoreCheckingDTO();
                     MonitorSalesman_SaleEmployeeDTO.StoreCheckings.Add(MonitorSalesman_StoreCheckingDTO);
                     if (Checked != null)
