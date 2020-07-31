@@ -248,6 +248,7 @@ namespace DMS.Services.MKpiItem
             await ValidateEmployees(KpiItem);
             await ValidateStatus(KpiItem);
             await ValidateItem(KpiItem);
+            await ValidateValue(KpiItem);
             return KpiItem.IsValidated;
         }
 
@@ -258,6 +259,7 @@ namespace DMS.Services.MKpiItem
                 await ValidateTime(KpiItem);
                 await ValidateOrganization(KpiItem);
                 await ValidateStatus(KpiItem);
+                await ValidateValue(KpiItem);
             }
             return KpiItem.IsValidated;
         }
