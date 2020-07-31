@@ -31,6 +31,7 @@ using DMS.Services.MBrand;
 using DMS.Services.MSupplier;
 using DMS.Services.MProductGrouping;
 using System.Text;
+using DMS.Services.MNotification;
 
 namespace DMS.Rpc.mobile
 {
@@ -58,6 +59,7 @@ namespace DMS.Rpc.mobile
         private IWardService WardService;
         private ISupplierService SupplierService;
         private IProductGroupingService ProductGroupingService;
+        private INotificationService NotificationService;
         private ICurrentContext CurrentContext;
         public MobileController(
             IAlbumService AlbumService,
@@ -82,6 +84,7 @@ namespace DMS.Rpc.mobile
             IWardService WardService,
             ISupplierService SupplierService,
             IProductGroupingService ProductGroupingService,
+            INotificationService NotificationService,
             ICurrentContext CurrentContext
         )
         {
@@ -107,6 +110,7 @@ namespace DMS.Rpc.mobile
             this.WardService = WardService;
             this.SupplierService = SupplierService;
             this.ProductGroupingService = ProductGroupingService;
+            this.NotificationService = NotificationService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -1036,6 +1040,17 @@ namespace DMS.Rpc.mobile
                 return Mobile_StoreDTO;
             else
                 return BadRequest(Mobile_StoreDTO);
+        }
+
+
+        [Route(MobileRoute.GetNotification), HttpPost]
+        public async Task<ActionResult<Mobile_NotificationDTO>> GetNotification([FromBody] Mobile_NotificationDTO Mobile_NotificationDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            Notification Notification = await NotificationService.Get(Mobile_NotificationDTO.Id);
+            return new Mobile_NotificationDTO(Notification);
         }
 
         private StoreChecking ConvertDTOToEntity(Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
