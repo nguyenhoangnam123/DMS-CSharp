@@ -132,7 +132,7 @@ namespace DMS.Services.MERoute
                 UserNotification NotificationUtils = new UserNotification
                 {
                     TitleWeb = $"Thông báo từ DMS",
-                    ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được thêm mới cho anh/chị bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                    ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được thêm mới cho anh/chị bởi {CurrentUser.DisplayName}",
                     LinkWebsite = $"{ERouteRoute.Master}/?id=*".Replace("*", ERoute.Id.ToString()),
                     LinkMobile = $"{ERouteRoute.Detail}".Replace("*", ERoute.Id.ToString()),
                     Time = Now,
@@ -180,7 +180,7 @@ namespace DMS.Services.MERoute
                 UserNotification NotificationUtils = new UserNotification
                 {
                     TitleWeb = $"Thông báo từ DMS",
-                    ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được cập nhật cho anh/chị bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                    ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được cập nhật cho anh/chị bởi {CurrentUser.DisplayName}",
                     LinkWebsite = $"{ERouteRoute.Master}/?id=*".Replace("*", ERoute.Id.ToString()),
                     LinkMobile = $"{ERouteRoute.Detail}".Replace("*", ERoute.Id.ToString()),
                     Time = Now,
@@ -226,7 +226,7 @@ namespace DMS.Services.MERoute
                 UserNotification NotificationUtils = new UserNotification
                 {
                     TitleWeb = $"Thông báo từ DMS",
-                    ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                    ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName}",
                     Time = Now,
                     Unread = true,
                     SenderId = CurrentContext.UserId,

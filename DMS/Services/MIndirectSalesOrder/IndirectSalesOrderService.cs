@@ -170,12 +170,11 @@ namespace DMS.Services.MIndirectSalesOrder
                 DateTime Now = StaticParams.DateTimeNow;
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 foreach (var Id in RecipientIds)
-
                 {
                     UserNotification NotificationUtils = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
-                        ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                        ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName}",
                         LinkWebsite = $"{IndirectSalesOrderRoute.Master}/?id=*".Replace("*", IndirectSalesOrder.Id.ToString()),
                         LinkMobile = $"{IndirectSalesOrderRoute.Mobile}".Replace("*", IndirectSalesOrder.Id.ToString()),
                         Time = Now,
@@ -231,7 +230,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     UserNotification NotificationUtils = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
-                        ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                        ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được cập nhật thông tin bởi {CurrentUser.DisplayName}",
                         LinkWebsite = $"{IndirectSalesOrderRoute.Master}/?id=*".Replace("*", IndirectSalesOrder.Id.ToString()),
                         LinkMobile = $"{IndirectSalesOrderRoute.Mobile}".Replace("*", IndirectSalesOrder.Id.ToString()),
                         Time = Now,
@@ -289,7 +288,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     UserNotification NotificationUtils = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
-                        ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {Now}",
+                        ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName}",
                         Time = Now,
                         Unread = true,
                         SenderId = CurrentContext.UserId,
