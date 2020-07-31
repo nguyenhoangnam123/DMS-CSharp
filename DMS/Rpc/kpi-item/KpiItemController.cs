@@ -904,7 +904,7 @@ namespace DMS.Rpc.kpi_item
             KpiItemFilter.KpiYearId = KpiItem_KpiItemFilterDTO.KpiYearId;
             KpiItemFilter.KpiPeriodId = KpiItem_KpiItemFilterDTO.KpiPeriodId;
             KpiItemFilter.StatusId = KpiItem_KpiItemFilterDTO.StatusId;
-            KpiItemFilter.AppUserId = KpiItem_KpiItemFilterDTO.EmployeeId;
+            KpiItemFilter.AppUserId = KpiItem_KpiItemFilterDTO.AppUserId;
             KpiItemFilter.CreatorId = KpiItem_KpiItemFilterDTO.CreatorId;
             KpiItemFilter.CreatedAt = KpiItem_KpiItemFilterDTO.CreatedAt;
             KpiItemFilter.UpdatedAt = KpiItem_KpiItemFilterDTO.UpdatedAt;

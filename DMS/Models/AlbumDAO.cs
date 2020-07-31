@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public AlbumDAO()
         {
+            AlbumImageMappings = new HashSet<AlbumImageMappingDAO>();
             StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
         }
 
@@ -19,6 +20,7 @@ namespace DMS.Models
         public bool Used { get; set; }
 
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<AlbumImageMappingDAO> AlbumImageMappings { get; set; }
         public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }
     }
 }

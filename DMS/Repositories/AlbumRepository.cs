@@ -162,7 +162,14 @@ namespace DMS.Repositories
 
             if (Album == null)
                 return null;
-
+            Album.AlbumImageMappings = await DataContext.AlbumImageMapping.Where(x => x.AlbumId == Id)
+                .Select(x => new AlbumImageMapping
+                {
+                    AlbumId = x.AlbumId,
+                    ImageId = x.ImageId,
+                    ShootingAt = x.ShootingAt,
+                    StoreId = x.StoreId,
+                }).ToListAsync();
             return Album;
         }
         public async Task<bool> Create(Album Album)
@@ -197,6 +204,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(Album Album)
         {
+            await DataContext.StoreCheckingImageMapping.Where(x => x.AlbumId == Album.Id).DeleteFromQueryAsync();
             await DataContext.Album.Where(x => x.Id == Album.Id).UpdateFromQueryAsync(x => new AlbumDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
@@ -229,6 +237,17 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Album Album)
         {
+            List<AlbumImageMappingDAO> AlbumImageMappingDAOs = new List<AlbumImageMappingDAO>();
+            foreach (var AlbumImageMapping in Album.AlbumImageMappings)
+            {
+                AlbumImageMappingDAO AlbumImageMappingDAO = new AlbumImageMappingDAO();
+                AlbumImageMappingDAO.AlbumId = AlbumImageMapping.AlbumId;
+                AlbumImageMappingDAO.ImageId = AlbumImageMapping.ImageId;
+                AlbumImageMappingDAO.StoreId = AlbumImageMapping.StoreId;
+                AlbumImageMappingDAO.ShootingAt = AlbumImageMapping.ShootingAt;
+                AlbumImageMappingDAOs.Add(AlbumImageMappingDAO);
+            }
+            await DataContext.AlbumImageMapping.BulkMergeAsync(AlbumImageMappingDAOs);
         }
 
     }

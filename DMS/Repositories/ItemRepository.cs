@@ -508,7 +508,7 @@ namespace DMS.Repositories
                 }).ToListAsync();
             if (Item.ItemImageMappings.Count == 0)
             {
-                var ProductImageMappingDAO = await DataContext.ProductImageMapping.Where(x => x.ProductId == Item.ProductId).FirstOrDefaultAsync();
+                var ProductImageMappingDAO = await DataContext.ProductImageMapping.Include(x => x.Image).Where(x => x.ProductId == Item.ProductId).FirstOrDefaultAsync();
                 if (ProductImageMappingDAO != null)
                 {
                     ItemImageMapping ItemImageMapping = new ItemImageMapping

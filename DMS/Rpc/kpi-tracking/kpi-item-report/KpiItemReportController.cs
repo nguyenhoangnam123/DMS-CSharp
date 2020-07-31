@@ -223,9 +223,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         join i in DataContext.Item on kic.ItemId equals i.Id
                         where OrganizationIds.Contains(ki.OrganizationId) &&
                         AppUserIds.Contains(au.Id) &&
-                        (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value) &&
-                        (ItemId == null || i.Id == ItemId.Value) &&
-                        (ki.KpiYearId == KpiYearId) &&
+                        (SaleEmployeeId.HasValue == false || ki.EmployeeId == SaleEmployeeId.Value) &&
+                        (ItemId.HasValue == false || i.Id == ItemId.Value) &&
+                        (ki.KpiPeriodId == KpiPeriodId.Value) &&
+                        (ki.KpiYearId == KpiYearId.Value) &&
                         ki.DeletedAt == null &&
                         ki.StatusId == StatusEnum.ACTIVE.Id
                         select new
@@ -312,7 +313,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                     IndirectSalesOrderContents = x.IndirectSalesOrderContents.Select(c => new IndirectSalesOrderContentDAO
                     {
                         IndirectSalesOrderId = x.Id,
-                        Quantity = c.Quantity,
+                        RequestedQuantity = c.RequestedQuantity,
                         ItemId = c.ItemId,
                         Amount = c.Amount,
                         GeneralDiscountAmount = c.GeneralDiscountAmount,

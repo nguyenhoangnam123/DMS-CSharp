@@ -246,6 +246,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                     ReportStoreUnchecked_StoreDTO ReportStoreUnchecked_StoreDTO = new ReportStoreUnchecked_StoreDTO
                                     {
                                         Date = index,
+                                        ERouteCode = ERouteDAO.Code,
                                         StoreAddress = StoreDAO.Address,
                                         StoreCode = StoreDAO.Code,
                                         StoreName = StoreDAO.Name,
@@ -260,6 +261,11 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                 }
                 ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees.Add(ReportStoreUnChecked_SaleEmployeeDTO);
             }
+            foreach (var ReportStoreUnchecked_ReportStoreUncheckedDTO in ReportStoreUnchecked_ReportStoreUncheckedDTOs)
+            {
+                ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees = ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees.Where(x => x.Stores.Any()).ToList();
+            }
+            ReportStoreUnchecked_ReportStoreUncheckedDTOs = ReportStoreUnchecked_ReportStoreUncheckedDTOs.Where(x => x.SaleEmployees.Any()).ToList();
             return ReportStoreUnchecked_ReportStoreUncheckedDTOs;
         }
     }

@@ -54,7 +54,7 @@ namespace DMS.Rpc.kpi_general
     {
         public IdFilter Id { get; set; }
         public IdFilter OrganizationId { get; set; }
-        public IdFilter EmployeeId { get; set; }
+        public IdFilter AppUserId { get; set; }
         public IdFilter KpiYearId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter CreatorId { get; set; }

@@ -137,7 +137,7 @@ namespace DMS.Rpc.mobile
         }
 
         [Route(MobileRoute.GetStoreChecking), HttpPost]
-        public async Task<ActionResult<Mobile_StoreCheckingDTO>> GetStoreChecking([FromBody]Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
+        public async Task<ActionResult<Mobile_StoreCheckingDTO>> GetStoreChecking([FromBody] Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -192,7 +192,7 @@ namespace DMS.Rpc.mobile
                 return BadRequest(Mobile_StoreCheckingDTO);
         }
 
-      
+
         [Route(MobileRoute.CreateIndirectSalesOrder), HttpPost]
         public async Task<ActionResult<Mobile_IndirectSalesOrderDTO>> CreateIndirectSalesOrder([FromBody] Mobile_IndirectSalesOrderDTO Mobile_IndirectSalesOrderDTO)
         {
@@ -980,6 +980,32 @@ namespace DMS.Rpc.mobile
                 Url = Image.Url,
             };
             return Ok(Mobile_ImageDTO);
+        }
+
+        [Route(MobileRoute.UpdateAlbum), HttpPost]
+        public async Task<ActionResult<Mobile_AlbumDTO>> UpdateAlbum([FromBody] Mobile_AlbumDTO Mobile_AlbumDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            Album Album = new Album
+            {
+                Id = Mobile_AlbumDTO.Id,
+                Name = Mobile_AlbumDTO.Name,
+                AlbumImageMappings = Mobile_AlbumDTO.AlbumImageMappings?.Select(x => new AlbumImageMapping
+                {
+                    AlbumId = x.AlbumId,
+                    ImageId = x.ImageId,
+                    StoreId = x.StoreId,
+                    ShootingAt = x.ShootingAt,
+                }).ToList()
+            };
+
+            Album = await AlbumService.UpdateMobile(Album);
+            Mobile_AlbumDTO = new Mobile_AlbumDTO(Album);
+            if (!Album.IsValidated)
+                return BadRequest(Mobile_AlbumDTO);
+            return Ok(Mobile_AlbumDTO);
         }
 
         [Route(MobileRoute.UpdateStore), HttpPost]
