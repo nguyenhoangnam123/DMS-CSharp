@@ -393,6 +393,11 @@ namespace DMS.Repositories
                     KpiGeneralContentId = x.KpiGeneralContentId,
                     KpiPeriodId = x.KpiPeriodId,
                     Value = x.Value,
+                    KpiGeneralContent = x.KpiGeneralContent == null ? null : new KpiGeneralContent
+                    {
+                        Id = x.KpiGeneralContent.Id,
+                        KpiCriteriaGeneralId = x.KpiGeneralContent.KpiCriteriaGeneralId,
+                    }
                 }).ToListAsync();
             foreach (KpiGeneralContent KpiGeneralContent in KpiGeneral.KpiGeneralContents)
             {
