@@ -6,15 +6,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MStatus
+namespace DMS.Services.MSystemConfiguration
 {
-    public interface IStatusService : IServiceScoped
+    public interface ISystemConfigurationService : IServiceScoped
     {
-        Task<int> Count(StatusFilter StatusFilter);
-        Task<List<Status>> List(StatusFilter StatusFilter);
+        Task<SystemConfiguration> Get();
+        Task<bool> Update(SystemConfiguration SystemConfiguration);
     }
 
-    public class SystemConfigurationService : BaseService, IStatusService
+    public class SystemConfigurationService : BaseService, ISystemConfigurationService
     {
         private IUOW UOW;
         private ILogging Logging;
@@ -30,11 +30,11 @@ namespace DMS.Services.MStatus
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
         }
-        public async Task<int> Count(StatusFilter StatusFilter)
+        public async Task<SystemConfiguration> Get()
         {
             try
             {
-                int result = await UOW.StatusRepository.Count(StatusFilter);
+                var result = await UOW.SystemConfigurationRepository.Get();
                 return result;
             }
             catch (Exception ex)
@@ -52,12 +52,11 @@ namespace DMS.Services.MStatus
             }
         }
 
-        public async Task<List<Status>> List(StatusFilter StatusFilter)
+        public async Task<bool> Update(SystemConfiguration SystemConfiguration)
         {
             try
             {
-                List<Status> Statuss = await UOW.StatusRepository.List(StatusFilter);
-                return Statuss;
+                return await UOW.SystemConfigurationRepository.Update(SystemConfiguration);
             }
             catch (Exception ex)
             {

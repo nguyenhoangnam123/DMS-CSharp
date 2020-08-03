@@ -588,6 +588,7 @@ namespace DMS.Rpc
             InitPermissionEnum();
             InitStoreScoutingStatusEnum();
             InitSexEnum();
+            InitSystemConfigurationEnum();
             return Ok();
         }
         private void InitStatusEnum()
@@ -873,6 +874,25 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.Sex.BulkSynchronize(SexDAOs);
+        }
+
+        private void InitSystemConfigurationEnum()
+        {
+            List<SystemConfigurationDAO> SystemConfigurationDAOs = DataContext.SystemConfiguration.ToList();
+            foreach(GenericEnum item in SystemConfigurationEnum.SystemConfigurationEnumList)
+            {
+                SystemConfigurationDAO SystemConfigurationDAO = SystemConfigurationDAOs.Where(sc => sc.Id == item.Id).FirstOrDefault();
+                if (SystemConfigurationDAO == null)
+                {
+                    SystemConfigurationDAO = new SystemConfigurationDAO();
+                    SystemConfigurationDAO.Id = item.Id;
+                    SystemConfigurationDAO.Code = item.Code;
+                    SystemConfigurationDAO.Name = item.Name;
+                    SystemConfigurationDAO.Value = null;
+                    SystemConfigurationDAOs.Add(SystemConfigurationDAO);
+                }    
+            }    
+            DataContext.SystemConfiguration.BulkSynchronize(SystemConfigurationDAOs);
         }
         #endregion
     }

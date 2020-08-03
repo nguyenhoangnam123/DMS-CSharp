@@ -59,11 +59,17 @@ namespace DMS.Models
         /// </summary>
         public string Phone { get; set; }
         public long? SexId { get; set; }
+        /// <summary>
+        /// Ngày sinh
+        /// </summary>
         public DateTime? Birthday { get; set; }
         /// <summary>
         /// Ảnh đại diện
         /// </summary>
         public string Avatar { get; set; }
+        /// <summary>
+        /// Vị trí công tác
+        /// </summary>
         public long? PositionId { get; set; }
         /// <summary>
         /// Phòng ban
@@ -73,6 +79,9 @@ namespace DMS.Models
         /// Đơn vị công tác
         /// </summary>
         public long? OrganizationId { get; set; }
+        /// <summary>
+        /// Phạm vi đi tuyến - OrganizationId
+        /// </summary>
         public long? ERouteScopeId { get; set; }
         /// <summary>
         /// Tỉnh thành
