@@ -8,6 +8,13 @@ namespace DMS.Entities
     public class UserNotification
     {
         public long Id { get; set; }
+        public long SiteId
+        {
+            get
+            {
+                return 2;
+            }
+        }
         public string TitleWeb { get; set; }
         public string ContentWeb { get; set; }
         public string TitleMobile
