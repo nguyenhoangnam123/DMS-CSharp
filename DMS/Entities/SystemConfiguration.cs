@@ -17,7 +17,7 @@ namespace DMS.Entities
         public long PRIORITY_USE_PROMOTION { get; set; }
         public long STORE_CHECKING_MINIMUM_TIME { get; set; }
         public long DASH_BOARD_REFRESH_TIME { get; set; }
-        public decimal? AMPLITUDE_PRICE_IN_DIRECT { get; set; }
-        public decimal? AMPLITUDE_PRICE_IN_INDIRECT { get; set; }
+        public decimal AMPLITUDE_PRICE_IN_DIRECT { get; set; }
+        public decimal AMPLITUDE_PRICE_IN_INDIRECT { get; set; }
     }
 }
