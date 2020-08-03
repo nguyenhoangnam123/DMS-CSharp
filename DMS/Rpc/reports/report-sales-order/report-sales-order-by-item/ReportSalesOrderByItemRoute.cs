@@ -23,6 +23,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
+            { nameof(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ProductGroupingId), FieldTypeEnum.ID.Id },
+            { nameof(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ProductTypeId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
