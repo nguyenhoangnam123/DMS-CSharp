@@ -10,14 +10,14 @@ namespace DMS.Rpc.dashboards.user
     {
         public const string Master = Module + "/dashboards/user";
         private const string Default = Rpc + Module + "/dashboards/user";
+
+        public const string SalesQuantity = Default + "/sales-quantity";
         public const string StoreChecking = Default + "/store-checking";
-        public const string SaleEmployeeOnline = Default + "/sale-employee-online";
+        public const string Revenue = Default + "/revenue";
         public const string StatisticIndirectSalesOrder = Default + "/statistic-indirect-sales-order";
-        public const string ImageStoreCheking = Default + "/image-store-checking";
-        public const string StoreCoverage = Default + "/store-coverage";
-        public const string SaleEmployeeLocation = Default + "/sale-employee-location";
+
         public const string ListIndirectSalesOrder = Default + "/list-indirect-sales-order";
-        public const string TopSaleEmployeeStoreChecking = Default + "/top-sale-employee-store-checking";
+        public const string ListComment = Default + "/list-comment";
 
         public const string FilterListTime = Default + "/filter-list-time";
 
@@ -30,8 +30,8 @@ namespace DMS.Rpc.dashboards.user
         {
             { "Hiển thị", new List<string> {
                 Master,
-                StoreChecking, SaleEmployeeOnline, StatisticIndirectSalesOrder, ImageStoreCheking, StoreCoverage, SaleEmployeeLocation,
-                ListIndirectSalesOrder, TopSaleEmployeeStoreChecking, FilterListTime
+                SalesQuantity, StoreChecking, Revenue, StatisticIndirectSalesOrder, ListIndirectSalesOrder, ListComment,
+                FilterListTime
             } },
         };
     }
