@@ -996,6 +996,7 @@ namespace DMS.Rpc.mobile
             {
                 Id = Mobile_AlbumDTO.Id,
                 Name = Mobile_AlbumDTO.Name,
+                StatusId = Mobile_AlbumDTO.StatusId,
                 AlbumImageMappings = Mobile_AlbumDTO.AlbumImageMappings?.Select(x => new AlbumImageMapping
                 {
                     AlbumId = x.AlbumId,
