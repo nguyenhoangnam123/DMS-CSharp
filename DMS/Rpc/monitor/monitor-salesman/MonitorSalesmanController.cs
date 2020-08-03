@@ -371,10 +371,12 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     }
                     if (CompetitorProblems.Count > i)
                     {
+                        Info.CompetitorProblemId = CompetitorProblems[i].Id;
                         Info.CompetitorProblemCode = CompetitorProblems[i].Code;
                     }
                     if (StoreProblems.Count > i)
                     {
+                        Info.StoreProblemId = StoreProblems[i].Id;
                         Info.StoreProblemCode = StoreProblems[i].Code;
                     }
                 }
