@@ -13,6 +13,8 @@ using DMS.Services.MIndirectSalesOrder;
 using Microsoft.EntityFrameworkCore;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
+using RestSharp;
+using DMS.Helpers;
 
 namespace DMS.Rpc.dashboards.user
 {
@@ -182,8 +184,32 @@ namespace DMS.Rpc.dashboards.user
         [Route(DashboardUserRoute.ListComment), HttpPost]
         public async Task<List<DashboardUser_CommentDTO>> ListComment()
         {
-            List<DashboardUser_CommentDTO> DashboardUser_CommentDTOs = new List<DashboardUser_CommentDTO>();
-            return DashboardUser_CommentDTOs;
+            DashboardUser_CommentFilterDTO DashboardUser_CommentFilterDTO = new DashboardUser_CommentFilterDTO
+            {
+                AppUserId = CurrentContext.UserId
+            };
+
+            RestClient restClient = new RestClient(InternalServices.UTILS);
+            RestRequest restRequest = new RestRequest("/rpc/utils/file/upload");
+            restRequest.RequestFormat = DataFormat.Json;
+            restRequest.Method = Method.POST;
+            restRequest.AddCookie("Token", CurrentContext.Token);
+            restRequest.AddCookie("X-Language", CurrentContext.Language);
+            restRequest.AddHeader("Content-Type", "application/json");
+            restRequest.AddJsonBody(DashboardUser_CommentFilterDTO);
+            try
+            {
+                var response = restClient.Execute<List<DashboardUser_CommentDTO>>(restRequest);
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return response.Data;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+            return new List<DashboardUser_CommentDTO>();
         }
 
         private Tuple<DateTime, DateTime> ConvertDateTime(DashboardUser_DashboardUserFilterDTO DashboardUser_DashboardUserFilterDTO)

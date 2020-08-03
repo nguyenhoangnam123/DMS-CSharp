@@ -14,4 +14,9 @@ namespace DMS.Rpc.dashboards.user
         public string Content { get; set; }
         public DateTime CreatedAt { get; set; }
     }
+
+    public class DashboardUser_CommentFilterDTO : FilterDTO
+    {
+        public long? AppUserId { get; set; }
+    }
 }
