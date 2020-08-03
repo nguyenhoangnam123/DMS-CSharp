@@ -122,6 +122,7 @@ namespace DMS.Models
         public virtual DbSet<SurveyResultDAO> SurveyResult { get; set; }
         public virtual DbSet<SurveyResultCellDAO> SurveyResultCell { get; set; }
         public virtual DbSet<SurveyResultSingleDAO> SurveyResultSingle { get; set; }
+        public virtual DbSet<SystemConfigurationDAO> SystemConfiguration { get; set; }
         public virtual DbSet<TaxTypeDAO> TaxType { get; set; }
         public virtual DbSet<UnitOfMeasureDAO> UnitOfMeasure { get; set; }
         public virtual DbSet<UnitOfMeasureGroupingDAO> UnitOfMeasureGrouping { get; set; }
@@ -265,7 +266,9 @@ namespace DMS.Models
                     .HasMaxLength(4000)
                     .HasComment("Ảnh đại diện");
 
-                entity.Property(e => e.Birthday).HasColumnType("datetime");
+                entity.Property(e => e.Birthday)
+                    .HasColumnType("datetime")
+                    .HasComment("Ngày sinh");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -283,6 +286,8 @@ namespace DMS.Models
                     .HasMaxLength(500)
                     .HasComment("Tên hiển thị");
 
+                entity.Property(e => e.ERouteScopeId).HasComment("Phạm vi đi tuyến - OrganizationId");
+
                 entity.Property(e => e.Email)
                     .HasMaxLength(500)
                     .HasComment("Địa chỉ email");
@@ -296,6 +301,8 @@ namespace DMS.Models
                 entity.Property(e => e.Phone)
                     .HasMaxLength(500)
                     .HasComment("Số điện thoại liên hệ");
+
+                entity.Property(e => e.PositionId).HasComment("Vị trí công tác");
 
                 entity.Property(e => e.ProvinceId).HasComment("Tỉnh thành");
 
@@ -3163,6 +3170,17 @@ namespace DMS.Models
                     .HasForeignKey(d => d.SurveyResultId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyResultSingle_SurveyResult");
+            });
+
+            modelBuilder.Entity<SystemConfigurationDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code).HasMaxLength(500);
+
+                entity.Property(e => e.Name).HasMaxLength(500);
+
+                entity.Property(e => e.Value).HasMaxLength(500);
             });
 
             modelBuilder.Entity<TaxTypeDAO>(entity =>

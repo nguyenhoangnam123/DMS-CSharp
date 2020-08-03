@@ -83,6 +83,7 @@ namespace DMS.Repositories
         ISurveyQuestionTypeRepository SurveyQuestionTypeRepository { get; }
         ISurveyRepository SurveyRepository { get; }
         ISurveyResultRepository SurveyResultRepository { get; }
+        ISystemConfigurationRepository SystemConfigurationRepository { get; }
         ITaxTypeRepository TaxTypeRepository { get; }
         IUnitOfMeasureRepository UnitOfMeasureRepository { get; }
         IUnitOfMeasureGroupingContentRepository UnitOfMeasureGroupingContentRepository { get; }
@@ -177,6 +178,7 @@ namespace DMS.Repositories
         public ISurveyQuestionTypeRepository SurveyQuestionTypeRepository { get; private set; }
         public ISurveyRepository SurveyRepository { get; private set; }
         public ISurveyResultRepository SurveyResultRepository { get; private set; }
+        public ISystemConfigurationRepository SystemConfigurationRepository { get; private set; }
         public ITaxTypeRepository TaxTypeRepository { get; private set; }
 
         public IUnitOfMeasureRepository UnitOfMeasureRepository { get; private set; }
@@ -270,6 +272,7 @@ namespace DMS.Repositories
             SurveyQuestionTypeRepository = new SurveyQuestionTypeRepository(DataContext);
             SurveyRepository = new SurveyRepository(DataContext);
             SurveyResultRepository = new SurveyResultRepository(DataContext);
+            SystemConfigurationRepository = new SystemConfigurationRepository(DataContext);
             TaxTypeRepository = new TaxTypeRepository(DataContext);
             UnitOfMeasureRepository = new UnitOfMeasureRepository(DataContext);
             UnitOfMeasureGroupingContentRepository = new UnitOfMeasureGroupingContentRepository(DataContext);
