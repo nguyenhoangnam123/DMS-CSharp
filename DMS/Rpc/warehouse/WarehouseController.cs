@@ -202,6 +202,10 @@ namespace DMS.Rpc.warehouse
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            if (!await HasPermission(WarehouseId))
+                return Forbid();
+
             Warehouse Warehouse = await WarehouseService.Get(WarehouseId);
             if (Warehouse == null)
                 return BadRequest("Kho không tồn tại");
@@ -297,10 +301,14 @@ namespace DMS.Rpc.warehouse
         }
 
         [Route(WarehouseRoute.ExportInventory), HttpPost]
-        public async Task<FileResult> ExportInventory([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
+        public async Task<ActionResult<FileResult>> ExportInventory([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            if (!await HasPermission(Warehouse_WarehouseDTO.Id))
+                return Forbid();
+
             long WarehouseId = Warehouse_WarehouseDTO?.Id ?? 0;
             Warehouse Warehouse = await WarehouseService.Get(WarehouseId);
             if (Warehouse == null)
@@ -343,10 +351,14 @@ namespace DMS.Rpc.warehouse
         }
 
         [Route(WarehouseRoute.ExportTemplate), HttpPost]
-        public async Task<FileResult> ExportTemplate([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
+        public async Task<ActionResult<FileResult>> ExportTemplate([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            if (!await HasPermission(Warehouse_WarehouseDTO.Id))
+                return Forbid();
+
             long WarehouseId = Warehouse_WarehouseDTO?.Id ?? 0;
             Warehouse Warehouse = await WarehouseService.Get(WarehouseId);
             if (Warehouse == null)

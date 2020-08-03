@@ -51,7 +51,7 @@ namespace DMS.Rpc.warehouse
             { "Thêm", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
-                Detail, Create, CountHistory, ListHistory,
+                Create, CountHistory, ListHistory,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Sửa", new List<string> {
                 Master, Count, List, Get,GetPreview,
