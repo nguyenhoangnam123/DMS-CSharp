@@ -221,7 +221,7 @@ namespace DMS.Services.MKpiItem
             {
                 foreach (var item in KpiItemContent.KpiItemContentKpiCriteriaItemMappings)
                 {
-                    if (item.Value <= 0) flag = true;
+                    if (item.Value != null) flag = true;
                 }
             }
             if (!flag) KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.Id), ErrorCode.ValueCannotBeNull);
