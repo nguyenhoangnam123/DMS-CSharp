@@ -48,6 +48,7 @@ namespace DMS.Models
         public virtual DbSet<IndirectSalesOrderDAO> IndirectSalesOrder { get; set; }
         public virtual DbSet<IndirectSalesOrderContentDAO> IndirectSalesOrderContent { get; set; }
         public virtual DbSet<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotion { get; set; }
+        public virtual DbSet<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransaction { get; set; }
         public virtual DbSet<InventoryDAO> Inventory { get; set; }
         public virtual DbSet<InventoryHistoryDAO> InventoryHistory { get; set; }
         public virtual DbSet<ItemDAO> Item { get; set; }
@@ -134,7 +135,10 @@ namespace DMS.Models
         public virtual DbSet<WarehouseDAO> Warehouse { get; set; }
         public virtual DbSet<WorkflowDefinitionDAO> WorkflowDefinition { get; set; }
         public virtual DbSet<WorkflowDirectionDAO> WorkflowDirection { get; set; }
+        public virtual DbSet<WorkflowDirectionConditionDAO> WorkflowDirectionCondition { get; set; }
+        public virtual DbSet<WorkflowOperatorDAO> WorkflowOperator { get; set; }
         public virtual DbSet<WorkflowParameterDAO> WorkflowParameter { get; set; }
+        public virtual DbSet<WorkflowParameterTypeDAO> WorkflowParameterType { get; set; }
         public virtual DbSet<WorkflowStateDAO> WorkflowState { get; set; }
         public virtual DbSet<WorkflowStepDAO> WorkflowStep { get; set; }
         public virtual DbSet<WorkflowTypeDAO> WorkflowType { get; set; }
@@ -1362,6 +1366,39 @@ namespace DMS.Models
                     .HasForeignKey(d => d.UnitOfMeasureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrderPromotion_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<IndirectSalesOrderTransactionDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Discount).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Revenue).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.IndirectSalesOrder)
+                    .WithMany(p => p.IndirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.IndirectSalesOrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderTransaction_IndirectSalesOrder");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.IndirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderTransaction_Item");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.IndirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderTransaction_Organization");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.IndirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderTransaction_UnitOfMeasure");
             });
 
             modelBuilder.Entity<InventoryDAO>(entity =>
@@ -3512,23 +3549,92 @@ namespace DMS.Models
                     .HasConstraintName("FK_WorkflowDirection_WorkflowDefinition");
             });
 
+            modelBuilder.Entity<WorkflowDirectionConditionDAO>(entity =>
+            {
+                entity.ToTable("WorkflowDirectionCondition", "WF");
+
+                entity.Property(e => e.Value)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.WorkflowDirection)
+                    .WithMany(p => p.WorkflowDirectionConditions)
+                    .HasForeignKey(d => d.WorkflowDirectionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowDirectionCondition_WorkflowDirection");
+
+                entity.HasOne(d => d.WorkflowOperator)
+                    .WithMany(p => p.WorkflowDirectionConditions)
+                    .HasForeignKey(d => d.WorkflowOperatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowDirectionCondition_WorkflowOperator");
+
+                entity.HasOne(d => d.WorkflowParameter)
+                    .WithMany(p => p.WorkflowDirectionConditions)
+                    .HasForeignKey(d => d.WorkflowParameterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowDirectionCondition_WorkflowParameter");
+            });
+
+            modelBuilder.Entity<WorkflowOperatorDAO>(entity =>
+            {
+                entity.ToTable("WorkflowOperator", "WF");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.WorkflowParameterType)
+                    .WithMany(p => p.WorkflowOperators)
+                    .HasForeignKey(d => d.WorkflowParameterTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowOperator_WorkflowParameterType");
+            });
+
             modelBuilder.Entity<WorkflowParameterDAO>(entity =>
             {
                 entity.ToTable("WorkflowParameter", "WF");
 
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(500);
 
                 entity.HasOne(d => d.WorkflowDefinition)
                     .WithMany(p => p.WorkflowParameters)
                     .HasForeignKey(d => d.WorkflowDefinitionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WorkflowParameter_WorkflowDefinition");
+
+                entity.HasOne(d => d.WorkflowParameterType)
+                    .WithMany(p => p.WorkflowParameters)
+                    .HasForeignKey(d => d.WorkflowParameterTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowParameter_WorkflowParameterType");
+            });
+
+            modelBuilder.Entity<WorkflowParameterTypeDAO>(entity =>
+            {
+                entity.ToTable("WorkflowParameterType", "WF");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
             });
 
             modelBuilder.Entity<WorkflowStateDAO>(entity =>

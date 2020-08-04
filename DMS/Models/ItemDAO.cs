@@ -13,6 +13,7 @@ namespace DMS.Models
             IndirectPriceListItemMappings = new HashSet<IndirectPriceListItemMappingDAO>();
             IndirectSalesOrderContents = new HashSet<IndirectSalesOrderContentDAO>();
             IndirectSalesOrderPromotions = new HashSet<IndirectSalesOrderPromotionDAO>();
+            IndirectSalesOrderTransactions = new HashSet<IndirectSalesOrderTransactionDAO>();
             Inventories = new HashSet<InventoryDAO>();
             ItemHistories = new HashSet<ItemHistoryDAO>();
             ItemImageMappings = new HashSet<ItemImageMappingDAO>();
@@ -40,6 +41,7 @@ namespace DMS.Models
         public virtual ICollection<IndirectPriceListItemMappingDAO> IndirectPriceListItemMappings { get; set; }
         public virtual ICollection<IndirectSalesOrderContentDAO> IndirectSalesOrderContents { get; set; }
         public virtual ICollection<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotions { get; set; }
+        public virtual ICollection<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactions { get; set; }
         public virtual ICollection<InventoryDAO> Inventories { get; set; }
         public virtual ICollection<ItemHistoryDAO> ItemHistories { get; set; }
         public virtual ICollection<ItemImageMappingDAO> ItemImageMappings { get; set; }
