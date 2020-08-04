@@ -181,7 +181,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId == null) 
+            if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId == null)
                 return BadRequest("Chưa chọn nhân viên");
 
             DateTime StartDate, EndDate;
@@ -224,7 +224,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 .SelectMany(x => x.KpiGeneralContentKpiPeriodMappings)
                 .Where(x => KpiPeriodIds.Contains(x.KpiPeriodId))
                 .ToList();
-            List<KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO> 
+            List<KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO>
                 KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs = new List<KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO>();
             foreach (var KpiPeriod in KpiPeriods)
             {
@@ -255,7 +255,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 .ToListAsync();
 
             var StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(x => x.SaleEmployeeId == SaleEmployeeId && 
+                .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
                 x.CheckOutAt.HasValue && x.CheckOutAt.Value >= StartDate && x.CheckOutAt.Value <= EndDate)
                 .Select(x => new StoreCheckingDAO
                 {
@@ -284,7 +284,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             {
                 foreach (var KpiPeriod in KpiPeriodEnum.KpiPeriodEnumList)
                 {
-                    if (KpiPeriod.Id == Period.KpiPeriodId) 
+                    if (KpiPeriod.Id == Period.KpiPeriodId)
                         Period.KpiPeriodName = KpiPeriod.Name;
                 }
                 DateTime Start, End;
@@ -310,7 +310,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         .Select(x => x.Value == null ? 0 : x.Value.Value)
                         .FirstOrDefault();
                 //thực hiện
-                Period.TotalIndirectOrders = IndirectSalesOrders.Count();
+                Period.TotalIndirectOrders = Period.TotalIndirectOrdersPLanned == 0 ? 0 : IndirectSalesOrders.Count();
                 //tỉ lệ
                 Period.TotalIndirectOrdersRatio = Period.TotalIndirectOrdersPLanned == 0 ?
                     0.00m : Math.Round((Period.TotalIndirectOrders / Period.TotalIndirectOrdersPLanned) * 100, 2);
@@ -331,6 +331,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         Period.TotalIndirectQuantity += content.RequestedQuantity;
                     }
                 }
+                if (Period.TotalIndirectQuantityPlanned == 0) Period.TotalIndirectQuantity = 0;
                 //tỉ lệ
                 Period.TotalIndirectQuantityRatio = Period.TotalIndirectQuantityPlanned == 0 ?
                     0.00m : Math.Round((Period.TotalIndirectQuantity / Period.TotalIndirectQuantityPlanned) * 100, 2);
@@ -344,7 +345,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         .Select(x => x.Value == null ? 0 : x.Value.Value)
                         .FirstOrDefault();
                 //thực hiện
-                Period.TotalIndirectSalesAmount = IndirectSalesOrders.Sum(x => x.Total);
+                Period.TotalIndirectSalesAmount = Period.TotalIndirectSalesAmountPlanned == 0 ? 0 : IndirectSalesOrders.Sum(x => x.Total);
                 //tỉ lệ
                 Period.TotalIndirectSalesAmountRatio = Period.TotalIndirectSalesAmountPlanned == 0 ?
                     0.00m : Math.Round((Period.TotalIndirectSalesAmount / Period.TotalIndirectSalesAmountPlanned) * 100, 2);
@@ -368,6 +369,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 }
                 Period.SkuIndirectOrder = Period.TotalIndirectOrders == 0 ?
                     0 : Math.Round(Period.SKUItems.Count() / Period.TotalIndirectOrders, 2);
+                if (Period.SkuIndirectOrderPlanned == 0)
+                    Period.SkuIndirectOrder = 0;
                 //tỉ lệ
                 Period.SkuIndirectOrderRatio = Period.SkuIndirectOrderPlanned == 0 ?
                     0.00m : Math.Round((Period.SkuIndirectOrder / Period.SkuIndirectOrderPlanned) * 100, 2);
@@ -386,6 +389,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 {
                     Period.StoreIds.Add(StoreChecking.StoreId);
                 }
+                if (Period.StoresVisitedPLanned == 0)
+                    Period.StoreIds = new HashSet<long>();
                 //tỉ lệ
                 Period.StoresVisitedRatio = Period.StoresVisitedPLanned == 0 ?
                     0.00m : Math.Round((Period.StoresVisited / Period.StoresVisitedPLanned) * 100, 2);
@@ -399,7 +404,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         .Select(x => x.Value == null ? 0 : x.Value.Value)
                         .FirstOrDefault();
                 //thực hiện
-                Period.NewStoreCreated = StoreScoutingDAOs
+                Period.NewStoreCreated = Period.NewStoreCreatedPlanned == 0 ? 0 : StoreScoutingDAOs
                     .Where(sc => sc.CreatorId == Period.SaleEmployeeId &&
                     sc.CreatedAt >= Start && sc.CreatedAt <= End)
                     .SelectMany(sc => sc.Stores)
@@ -419,7 +424,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         .Select(x => x.Value == null ? 0 : x.Value.Value)
                         .FirstOrDefault();
                 //thực hiện
-                Period.NumberOfStoreVisits = StoreCheckings.Count();
+                Period.NumberOfStoreVisits = Period.NumberOfStoreVisitsPlanned == 0 ? 0 : StoreCheckings.Count();
                 //tỉ lệ
                 Period.NumberOfStoreVisitsRatio = Period.NumberOfStoreVisitsPlanned == 0 ?
                     0.00m : Math.Round((Period.NumberOfStoreVisits / Period.NumberOfStoreVisitsPlanned) * 100, 2);

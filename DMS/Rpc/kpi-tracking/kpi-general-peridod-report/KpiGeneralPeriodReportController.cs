@@ -324,7 +324,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                          x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id)
                         .Select(x => x.Value).FirstOrDefault();
                 //thực hiện
-                SaleEmployeeDTO.TotalIndirectOrders = IndirectSalesOrders.Count();
+                SaleEmployeeDTO.TotalIndirectOrders = SaleEmployeeDTO.TotalIndirectOrdersPLanned == 0 ? 0 : IndirectSalesOrders.Count();
                 //tỉ lệ
                 SaleEmployeeDTO.TotalIndirectOrdersRatio = SaleEmployeeDTO.TotalIndirectOrdersPLanned == 0 ?
                     0.00m : Math.Round((SaleEmployeeDTO.TotalIndirectOrders / SaleEmployeeDTO.TotalIndirectOrdersPLanned) * 100, 2);
@@ -337,7 +337,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                          x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id)
                         .Select(x => x.Value).FirstOrDefault();
                 //thực hiện
-                SaleEmployeeDTO.TotalIndirectQuantity = IndirectSalesOrders
+                SaleEmployeeDTO.TotalIndirectQuantity = SaleEmployeeDTO.TotalIndirectQuantityPlanned == 0 ? 0 : IndirectSalesOrders
                     .SelectMany(c => c.IndirectSalesOrderContents)
                     .Select(q => q.RequestedQuantity)
                     .DefaultIfEmpty(0).Sum();
@@ -353,7 +353,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                          x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
                         .Select(x => x.Value).FirstOrDefault();
                 //thực hiện
-                SaleEmployeeDTO.TotalIndirectSalesAmount = IndirectSalesOrders.Sum(iso => iso.Total);
+                SaleEmployeeDTO.TotalIndirectSalesAmount = SaleEmployeeDTO.TotalIndirectSalesAmountPlanned == 0 ? 0 : IndirectSalesOrders.Sum(iso => iso.Total);
                 //tỉ lệ
                 SaleEmployeeDTO.TotalIndirectSalesAmountRatio = SaleEmployeeDTO.TotalIndirectSalesAmountPlanned == 0 ?
                     0.00m : Math.Round((SaleEmployeeDTO.TotalIndirectSalesAmount / SaleEmployeeDTO.TotalIndirectSalesAmountPlanned) * 100, 2);
@@ -383,6 +383,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 }
                 SaleEmployeeDTO.SkuIndirectOrder = SaleEmployeeDTO.TotalIndirectOrders == 0 ?
                     0.00m : Math.Round(SaleEmployeeDTO.SKUItems.Count() / SaleEmployeeDTO.TotalIndirectOrders, 2);
+                if (SaleEmployeeDTO.SkuIndirectOrderPlanned == 0)
+                    SaleEmployeeDTO.SkuIndirectOrder = 0;
                 //tỉ lệ
                 SaleEmployeeDTO.SkuIndirectOrderRatio = SaleEmployeeDTO.SkuIndirectOrderPlanned == 0 ?
                     0.00m : Math.Round((SaleEmployeeDTO.SkuIndirectOrder / SaleEmployeeDTO.SkuIndirectOrderPlanned) * 100, 2);
@@ -404,6 +406,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 {
                     SaleEmployeeDTO.StoreIds.Add(StoreId);
                 }
+                if (SaleEmployeeDTO.StoresVisitedPLanned == 0)
+                    SaleEmployeeDTO.StoreIds = new HashSet<long>();
                 //tỉ lệ
                 SaleEmployeeDTO.StoresVisitedRatio = SaleEmployeeDTO.StoresVisitedPLanned == 0 ?
                     0.00m : Math.Round((SaleEmployeeDTO.StoresVisited / SaleEmployeeDTO.StoresVisitedPLanned) * 100, 2);
@@ -416,7 +420,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                          && x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id)
                         .Select(x => x.Value).FirstOrDefault();
                 //thực hiện
-                SaleEmployeeDTO.NewStoreCreated = StoreScoutingDAOs
+                SaleEmployeeDTO.NewStoreCreated = SaleEmployeeDTO.NewStoreCreatedPlanned == 0 ? 0 : StoreScoutingDAOs
                     .Where(sc => sc.CreatorId == SaleEmployeeDTO.SaleEmployeeId)
                     .SelectMany(sc => sc.Stores)
                     .Where(x => x.StoreScoutingId.HasValue)
@@ -434,7 +438,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                          x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id)
                         .Select(x => x.Value).FirstOrDefault();
                 //thực hiện
-                SaleEmployeeDTO.NumberOfStoreVisits = StoreCheckingDAOs
+                SaleEmployeeDTO.NumberOfStoreVisits = SaleEmployeeDTO.NumberOfStoreVisitsPlanned == 0 ? 0 : StoreCheckingDAOs
                     .Where(sc => sc.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
                     .Count();
                 //tỉ lệ
