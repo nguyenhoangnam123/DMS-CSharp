@@ -10,6 +10,7 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public string Code { get; set; }
+        public long OrganizationId { get; set; }
         public long BuyerStoreId { get; set; }
         public string PhoneNumber { get; set; }
         public string StoreAddress { get; set; }
@@ -28,6 +29,7 @@ namespace DMS.Entities
         public decimal Total { get; set; }
         public Store BuyerStore { get; set; }
         public EditedPriceStatus EditedPriceStatus { get; set; }
+        public Organization Organization { get; set; }
         public RequestState RequestState { get; set; }
         public AppUser SaleEmployee { get; set; }
         public Store SellerStore { get; set; }
@@ -94,6 +96,7 @@ namespace DMS.Entities
         GeneralDiscountAmount = 15,
         TotalTaxAmount = 16,
         Total = 17,
+        Organization = 18,
     }
 
     [Flags]
@@ -118,5 +121,6 @@ namespace DMS.Entities
         GeneralDiscountAmount = E._15,
         TotalTaxAmount = E._16,
         Total = E._17,
+        Organization = E._18,
     }
 }

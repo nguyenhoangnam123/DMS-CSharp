@@ -215,13 +215,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
         }
 
         [Route(ReportSalesOrderByItemRoute.List), HttpPost]
-        public async Task<ActionResult<List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO>>> List([FromBody] ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO)
+        public async Task<ActionResult<List<ReportSalesOrderByItem_ItemDetailDTO>>> List([FromBody] ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
             if (ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.HasValue == false)
-                return new List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO>();
+                return new List<ReportSalesOrderByItem_ItemDetailDTO>();
 
             DateTime Start = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date?.GreaterEqual == null ?
                     StaticParams.DateTimeNow :
@@ -286,12 +286,12 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             List<Item> Items = await ItemService.List(ItemFilter);
 
             List<UnitOfMeasureDAO> UnitOfMeasureDAOs = await DataContext.UnitOfMeasure.ToListAsync();
-            List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO> ReportSalesOrderByItem_ReportSalesOrderByItemDTOs = new List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO>();
+            List<ReportSalesOrderByItem_ItemDetailDTO> ReportSalesOrderByItem_ReportSalesOrderByItemDTOs = new List<ReportSalesOrderByItem_ItemDetailDTO>();
             foreach (IndirectSalesOrderContentDAO IndirectSalesOrderContentDAO in IndirectSalesOrderContentDAOs)
             {
                 if (IndirectSalesOrderIds.Contains(IndirectSalesOrderContentDAO.IndirectSalesOrderId))
                 {
-                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO ReportSalesOrderByItem_ReportSalesOrderByItemDTO = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs
+                    ReportSalesOrderByItem_ItemDetailDTO ReportSalesOrderByItem_ReportSalesOrderByItemDTO = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs
                         .Where(i => i.ItemId == IndirectSalesOrderContentDAO.ItemId).FirstOrDefault();
                     if (ReportSalesOrderByItem_ReportSalesOrderByItemDTO == null)
                     {
@@ -299,7 +299,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                         if (item == null)
                             continue;
                         var UOMName = UnitOfMeasureDAOs.Where(x => x.Id == IndirectSalesOrderContentDAO.PrimaryUnitOfMeasureId).Select(x => x.Name).FirstOrDefault();
-                        ReportSalesOrderByItem_ReportSalesOrderByItemDTO = new ReportSalesOrderByItem_ReportSalesOrderByItemDTO
+                        ReportSalesOrderByItem_ReportSalesOrderByItemDTO = new ReportSalesOrderByItem_ItemDetailDTO
                         {
                             ItemId = item.Id,
                             ItemCode = item.Code,
@@ -324,7 +324,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             {
                 if (IndirectSalesOrderIds.Contains(IndirectSalesOrderPromotionDAO.IndirectSalesOrderId))
                 {
-                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO ReportSalesOrderByItem_ReportSalesOrderByItemDTO = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs
+                    ReportSalesOrderByItem_ItemDetailDTO ReportSalesOrderByItem_ReportSalesOrderByItemDTO = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs
                         .Where(i => i.ItemId == IndirectSalesOrderPromotionDAO.ItemId).FirstOrDefault();
                     if (ReportSalesOrderByItem_ReportSalesOrderByItemDTO == null)
                     {
@@ -332,7 +332,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                         if (item == null)
                             continue;
                         var UOMName = UnitOfMeasureDAOs.Where(x => x.Id == IndirectSalesOrderPromotionDAO.PrimaryUnitOfMeasureId).Select(x => x.Name).FirstOrDefault();
-                        ReportSalesOrderByItem_ReportSalesOrderByItemDTO = new ReportSalesOrderByItem_ReportSalesOrderByItemDTO
+                        ReportSalesOrderByItem_ReportSalesOrderByItemDTO = new ReportSalesOrderByItem_ItemDetailDTO
                         {
                             ItemId = item.Id,
                             ItemCode = item.Code,
@@ -433,19 +433,19 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                 ItemFilter.Id = new IdFilter { Equal = ItemId.Value };
             List<Item> Items = await ItemService.List(ItemFilter);
 
-            List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO> ReportSalesOrderByItem_ReportSalesOrderByItemDTOs = new List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO>();
+            List<ReportSalesOrderByItem_ItemDetailDTO> ReportSalesOrderByItem_ReportSalesOrderByItemDTOs = new List<ReportSalesOrderByItem_ItemDetailDTO>();
             foreach (IndirectSalesOrderContentDAO IndirectSalesOrderContentDAO in IndirectSalesOrderContentDAOs)
             {
                 if (IndirectSalesOrderIds.Contains(IndirectSalesOrderContentDAO.IndirectSalesOrderId))
                 {
-                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO ReportSalesOrderByItem_ReportSalesOrderByItemDTO = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs
+                    ReportSalesOrderByItem_ItemDetailDTO ReportSalesOrderByItem_ReportSalesOrderByItemDTO = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs
                         .Where(i => i.ItemId == IndirectSalesOrderContentDAO.ItemId).FirstOrDefault();
                     if (ReportSalesOrderByItem_ReportSalesOrderByItemDTO == null)
                     {
                         var item = Items.Where(x => x.Id == IndirectSalesOrderContentDAO.ItemId).FirstOrDefault();
                         if (item == null)
                             continue;
-                        ReportSalesOrderByItem_ReportSalesOrderByItemDTO = new ReportSalesOrderByItem_ReportSalesOrderByItemDTO
+                        ReportSalesOrderByItem_ReportSalesOrderByItemDTO = new ReportSalesOrderByItem_ItemDetailDTO
                         {
                             ItemId = item.Id,
                             ItemCode = item.Code,
@@ -463,14 +463,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             {
                 if (IndirectSalesOrderIds.Contains(IndirectSalesOrderPromotionDAO.IndirectSalesOrderId))
                 {
-                    ReportSalesOrderByItem_ReportSalesOrderByItemDTO ReportSalesOrderByItem_ReportSalesOrderByItemDTO = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs
+                    ReportSalesOrderByItem_ItemDetailDTO ReportSalesOrderByItem_ReportSalesOrderByItemDTO = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs
                         .Where(i => i.ItemId == IndirectSalesOrderPromotionDAO.ItemId).FirstOrDefault();
                     if (ReportSalesOrderByItem_ReportSalesOrderByItemDTO == null)
                     {
                         var item = Items.Where(x => x.Id == IndirectSalesOrderPromotionDAO.ItemId).FirstOrDefault();
                         if (item == null)
                             continue;
-                        ReportSalesOrderByItem_ReportSalesOrderByItemDTO = new ReportSalesOrderByItem_ReportSalesOrderByItemDTO
+                        ReportSalesOrderByItem_ReportSalesOrderByItemDTO = new ReportSalesOrderByItem_ItemDetailDTO
                         {
                             ItemId = item.Id,
                             ItemCode = item.Code,

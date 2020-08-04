@@ -1217,6 +1217,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrder_EditedPriceStatus");
 
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.IndirectSalesOrders)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrder_Organization");
+
                 entity.HasOne(d => d.RequestState)
                     .WithMany(p => p.IndirectSalesOrders)
                     .HasForeignKey(d => d.RequestStateId)
