@@ -575,20 +575,18 @@ namespace DMS.Rpc
             InitProblemTypeEnum();
             InitProblemStatusEnum();
             InitResellerStatusEnum();
-            InitRequestStateEnum();
             InitStatusEnum();
             InitERouteTypeEnum();
             InitNotificationStatusEnum();
             InitSurveyQuestionTypeEnum();
             InitSurveyOptionTypeEnum();
             InitUsedVariationEnum();
-            InitWorkflowStateEnum();
-            InitWorkflowTypeEnum();
             InitKpiEnum();
             InitPermissionEnum();
             InitStoreScoutingStatusEnum();
             InitSexEnum();
             InitSystemConfigurationEnum();
+            InitWorkflowEnum();
             return Ok();
         }
         private void InitStatusEnum()
@@ -707,39 +705,6 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.ResellerStatus.BulkSynchronize(ResellerStatusEnumList);
-        }
-
-        private void InitRequestStateEnum()
-        {
-            List<RequestStateDAO> RequestStateEnumList = RequestStateEnum.RequestStateEnumList.Select(item => new RequestStateDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.RequestState.BulkSynchronize(RequestStateEnumList);
-        }
-
-        private void InitWorkflowStateEnum()
-        {
-            List<WorkflowStateDAO> WorkflowStateEnumList = WorkflowStateEnum.WorkflowStateEnumList.Select(item => new WorkflowStateDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.WorkflowState.BulkSynchronize(WorkflowStateEnumList);
-        }
-
-        private void InitWorkflowTypeEnum()
-        {
-            List<WorkflowTypeDAO> WorkflowTypeEnumList = WorkflowTypeEnum.WorkflowTypeEnumList.Select(item => new WorkflowTypeDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.WorkflowType.BulkSynchronize(WorkflowTypeEnumList);
         }
 
         private void InitIndirectPriceListTypeEnum()
@@ -893,6 +858,86 @@ namespace DMS.Rpc
                 }    
             }    
             DataContext.SystemConfiguration.BulkSynchronize(SystemConfigurationDAOs);
+        }
+
+        private void InitWorkflowEnum()
+        {
+            List<WorkflowTypeDAO> WorkflowTypeEnumList = WorkflowTypeEnum.WorkflowTypeEnumList.Select(item => new WorkflowTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.WorkflowType.BulkSynchronize(WorkflowTypeEnumList);
+            List<WorkflowStateDAO> WorkflowStateEnumList = WorkflowStateEnum.WorkflowStateEnumList.Select(item => new WorkflowStateDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.WorkflowState.BulkSynchronize(WorkflowStateEnumList);
+            List<RequestStateDAO> RequestStateEnumList = RequestStateEnum.RequestStateEnumList.Select(item => new RequestStateDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.RequestState.BulkSynchronize(RequestStateEnumList);
+            List<WorkflowParameterTypeDAO> WorkflowParameterTypeDAOs = WorkflowParameterTypeEnum.List.Select(item => new WorkflowParameterTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.WorkflowParameterType.BulkSynchronize(WorkflowParameterTypeDAOs);
+
+            List<WorkflowOperatorDAO> WorkflowOperatorDAOs = new List<WorkflowOperatorDAO>();
+            List<WorkflowOperatorDAO> ID = WorkflowOperatorEnum.WorkflowOperatorEnumForID.Select(item => new WorkflowOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                WorkflowParameterTypeId = WorkflowParameterTypeEnum.ID.Id,
+            }).ToList();
+            WorkflowOperatorDAOs.AddRange(ID);
+
+            List<WorkflowOperatorDAO> STRING = WorkflowOperatorEnum.WorkflowOperatorEnumForSTRING.Select(item => new WorkflowOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                WorkflowParameterTypeId = FieldTypeEnum.STRING.Id,
+            }).ToList();
+            WorkflowOperatorDAOs.AddRange(STRING);
+
+            List<WorkflowOperatorDAO> LONG = WorkflowOperatorEnum.WorkflowOperatorEnumForLONG.Select(item => new WorkflowOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                WorkflowParameterTypeId = FieldTypeEnum.LONG.Id,
+            }).ToList();
+            WorkflowOperatorDAOs.AddRange(LONG);
+
+            List<WorkflowOperatorDAO> DECIMAL = WorkflowOperatorEnum.WorkflowOperatorEnumForDECIMAL.Select(item => new WorkflowOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                WorkflowParameterTypeId = FieldTypeEnum.DECIMAL.Id,
+            }).ToList();
+            WorkflowOperatorDAOs.AddRange(DECIMAL);
+
+            List<WorkflowOperatorDAO> DATE = WorkflowOperatorEnum.WorkflowOperatorEnumForDATE.Select(item => new WorkflowOperatorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                WorkflowParameterTypeId = FieldTypeEnum.DATE.Id,
+            }).ToList();
+            WorkflowOperatorDAOs.AddRange(DATE);
+
+            DataContext.WorkflowOperator.BulkSynchronize(WorkflowOperatorDAOs);
         }
         #endregion
     }

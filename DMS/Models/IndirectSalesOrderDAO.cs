@@ -19,6 +19,7 @@ namespace DMS.Models
         /// Mã đơn hàng
         /// </summary>
         public string Code { get; set; }
+        public long OrganizationId { get; set; }
         /// <summary>
         /// Cửa hàng mua
         /// </summary>
@@ -85,6 +86,7 @@ namespace DMS.Models
 
         public virtual StoreDAO BuyerStore { get; set; }
         public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }
+        public virtual OrganizationDAO Organization { get; set; }
         public virtual RequestStateDAO RequestState { get; set; }
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StoreDAO SellerStore { get; set; }

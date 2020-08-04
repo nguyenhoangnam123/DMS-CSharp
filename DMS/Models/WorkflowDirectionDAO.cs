@@ -5,6 +5,11 @@ namespace DMS.Models
 {
     public partial class WorkflowDirectionDAO
     {
+        public WorkflowDirectionDAO()
+        {
+            WorkflowDirectionConditions = new HashSet<WorkflowDirectionConditionDAO>();
+        }
+
         public long Id { get; set; }
         public long WorkflowDefinitionId { get; set; }
         public long FromStepId { get; set; }
@@ -20,5 +25,6 @@ namespace DMS.Models
         public virtual WorkflowStepDAO FromStep { get; set; }
         public virtual WorkflowStepDAO ToStep { get; set; }
         public virtual WorkflowDefinitionDAO WorkflowDefinition { get; set; }
+        public virtual ICollection<WorkflowDirectionConditionDAO> WorkflowDirectionConditions { get; set; }
     }
 }

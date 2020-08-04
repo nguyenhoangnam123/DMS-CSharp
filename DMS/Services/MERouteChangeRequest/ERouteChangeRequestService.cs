@@ -105,7 +105,7 @@ namespace DMS.Services.MERouteChangeRequest
             try
             {
                 ERouteChangeRequest.CreatorId = CurrentContext.UserId;
-                ERouteChangeRequest.RequestStateId = Enums.RequestStateEnum.NEW.Id;
+                ERouteChangeRequest.RequestStateId = RequestStateEnum.NEW.Id;
                 await UOW.Begin();
                 await UOW.ERouteChangeRequestRepository.Create(ERouteChangeRequest);
                 await UOW.Commit();
