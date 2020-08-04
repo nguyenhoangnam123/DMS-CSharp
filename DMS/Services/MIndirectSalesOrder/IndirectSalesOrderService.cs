@@ -153,10 +153,12 @@ namespace DMS.Services.MIndirectSalesOrder
 
             try
             {
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 await Calculator(IndirectSalesOrder);
                 await UOW.Begin();
                 IndirectSalesOrder.RequestStateId = Enums.RequestStateEnum.NEW.Id;
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
+                IndirectSalesOrder.OrganizationId = CurrentUser.OrganizationId.Value;
                 await UOW.IndirectSalesOrderRepository.Create(IndirectSalesOrder);
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);
@@ -164,7 +166,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.Commit();
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
 
-                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 var RecipientIds = await ListReceipientId(CurrentUser, IndirectSalesOrderRoute.Approve);
 
                 DateTime Now = StaticParams.DateTimeNow;

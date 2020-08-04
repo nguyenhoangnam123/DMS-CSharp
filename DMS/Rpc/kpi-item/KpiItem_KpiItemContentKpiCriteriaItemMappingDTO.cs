@@ -7,7 +7,7 @@ namespace DMS.Rpc.kpi_item
     {
         public long KpiItemContentId { get; set; }
         public long KpiCriteriaItemId { get; set; }
-        public long Value { get; set; }
+        public long? Value { get; set; }
 
         public KpiItem_KpiItemContentKpiCriteriaItemMappingDTO() { }
         public KpiItem_KpiItemContentKpiCriteriaItemMappingDTO(KpiItemContentKpiCriteriaItemMapping KpiItemContentKpiCriteriaItemMapping)

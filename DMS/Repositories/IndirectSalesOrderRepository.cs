@@ -40,13 +40,13 @@ namespace DMS.Repositories
                 {
                     OrganizationDAO OrganizationDAO = DataContext.Organization
                         .Where(o => o.Id == filter.OrganizationId.Equal.Value).FirstOrDefault();
-                    query = query.Where(q => q.SaleEmployee.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    query = query.Where(q => q.Organization.Path.StartsWith(OrganizationDAO.Path));
                 }
                 if (filter.OrganizationId.NotEqual != null)
                 {
                     OrganizationDAO OrganizationDAO = DataContext.Organization
                         .Where(o => o.Id == filter.OrganizationId.NotEqual.Value).FirstOrDefault();
-                    query = query.Where(q => !q.SaleEmployee.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    query = query.Where(q => !q.Organization.Path.StartsWith(OrganizationDAO.Path));
                 }
                 if (filter.OrganizationId.In != null)
                 {
@@ -55,7 +55,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q => q.SaleEmployee.OrganizationId.HasValue && Ids.Contains(q.SaleEmployee.OrganizationId.Value));
+                    query = query.Where(q => Ids.Contains(q.OrganizationId));
                 }
                 if (filter.OrganizationId.NotIn != null)
                 {
@@ -64,7 +64,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q => q.SaleEmployee.OrganizationId.HasValue && !Ids.Contains(q.SaleEmployee.OrganizationId.Value));
+                    query = query.Where(q => !Ids.Contains(q.OrganizationId));
                 }
             }
             if (filter.Code != null)
@@ -121,13 +121,13 @@ namespace DMS.Repositories
                     {
                         OrganizationDAO OrganizationDAO = DataContext.Organization
                             .Where(o => o.Id == IndirectSalesOrderFilter.OrganizationId.Equal.Value).FirstOrDefault();
-                        queryable = queryable.Where(q => q.SaleEmployee.Organization.Path.StartsWith(OrganizationDAO.Path));
+                        queryable = queryable.Where(q => q.Organization.Path.StartsWith(OrganizationDAO.Path));
                     }
                     if (IndirectSalesOrderFilter.OrganizationId.NotEqual != null)
                     {
                         OrganizationDAO OrganizationDAO = DataContext.Organization
                             .Where(o => o.Id == IndirectSalesOrderFilter.OrganizationId.NotEqual.Value).FirstOrDefault();
-                        queryable = queryable.Where(q => !q.SaleEmployee.Organization.Path.StartsWith(OrganizationDAO.Path));
+                        queryable = queryable.Where(q => !q.Organization.Path.StartsWith(OrganizationDAO.Path));
                     }
                     if (IndirectSalesOrderFilter.OrganizationId.In != null)
                     {
@@ -136,7 +136,7 @@ namespace DMS.Repositories
                         List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => IndirectSalesOrderFilter.OrganizationId.In.Contains(o.Id)).ToList();
                         List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> Ids = Branches.Select(o => o.Id).ToList();
-                        queryable = queryable.Where(q => Ids.Contains(q.SaleEmployee.OrganizationId.Value));
+                        queryable = queryable.Where(q => Ids.Contains(q.OrganizationId));
                     }
                     if (IndirectSalesOrderFilter.OrganizationId.NotIn != null)
                     {
@@ -145,7 +145,7 @@ namespace DMS.Repositories
                         List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => IndirectSalesOrderFilter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                         List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> Ids = Branches.Select(o => o.Id).ToList();
-                        queryable = queryable.Where(q => !Ids.Contains(q.SaleEmployee.OrganizationId.Value));
+                        queryable = queryable.Where(q => !Ids.Contains(q.OrganizationId));
                     }
                 }
                 if (IndirectSalesOrderFilter.Code != null)
@@ -199,6 +199,9 @@ namespace DMS.Repositories
                             break;
                         case IndirectSalesOrderOrder.Code:
                             query = query.OrderBy(q => q.Code);
+                            break;
+                        case IndirectSalesOrderOrder.Organization:
+                            query = query.OrderBy(q => q.OrganizationId);
                             break;
                         case IndirectSalesOrderOrder.BuyerStore:
                             query = query.OrderBy(q => q.BuyerStoreId);
@@ -258,6 +261,9 @@ namespace DMS.Repositories
                             break;
                         case IndirectSalesOrderOrder.Code:
                             query = query.OrderByDescending(q => q.Code);
+                            break;
+                        case IndirectSalesOrderOrder.Organization:
+                            query = query.OrderByDescending(q => q.OrganizationId);
                             break;
                         case IndirectSalesOrderOrder.BuyerStore:
                             query = query.OrderByDescending(q => q.BuyerStoreId);
@@ -320,6 +326,7 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(IndirectSalesOrderSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(IndirectSalesOrderSelect.Code) ? q.Code : default(string),
+                OrganizationId = filter.Selects.Contains(IndirectSalesOrderSelect.Organization) ? q.OrganizationId : default(long),
                 BuyerStoreId = filter.Selects.Contains(IndirectSalesOrderSelect.BuyerStore) ? q.BuyerStoreId : default(long),
                 PhoneNumber = filter.Selects.Contains(IndirectSalesOrderSelect.PhoneNumber) ? q.PhoneNumber : default(string),
                 StoreAddress = filter.Selects.Contains(IndirectSalesOrderSelect.StoreAddress) ? q.StoreAddress : default(string),
@@ -368,6 +375,19 @@ namespace DMS.Repositories
                     Id = q.EditedPriceStatus.Id,
                     Code = q.EditedPriceStatus.Code,
                     Name = q.EditedPriceStatus.Name,
+                } : null,
+                Organization = filter.Selects.Contains(IndirectSalesOrderSelect.Organization) && q.Organization != null ? new Organization
+                {
+                    Id = q.Organization.Id,
+                    Code = q.Organization.Code,
+                    Name = q.Organization.Name,
+                    Address = q.Organization.Address,
+                    Phone = q.Organization.Phone,
+                    Path = q.Organization.Path,
+                    ParentId = q.Organization.ParentId,
+                    Email = q.Organization.Email,
+                    StatusId = q.Organization.StatusId,
+                    Level = q.Organization.Level
                 } : null,
                 RequestState = filter.Selects.Contains(IndirectSalesOrderSelect.RequestState) && q.RequestState != null ? new RequestState
                 {
@@ -439,6 +459,7 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 Code = x.Code,
+                OrganizationId = x.OrganizationId,
                 BuyerStoreId = x.BuyerStoreId,
                 PhoneNumber = x.PhoneNumber,
                 StoreAddress = x.StoreAddress,
@@ -489,6 +510,19 @@ namespace DMS.Repositories
                     Id = x.EditedPriceStatus.Id,
                     Code = x.EditedPriceStatus.Code,
                     Name = x.EditedPriceStatus.Name,
+                },
+                Organization = x.Organization == null ? null : new Organization
+                {
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    Address = x.Organization.Address,
+                    Phone = x.Organization.Phone,
+                    Path = x.Organization.Path,
+                    ParentId = x.Organization.ParentId,
+                    Email = x.Organization.Email,
+                    StatusId = x.Organization.StatusId,
+                    Level = x.Organization.Level
                 },
                 RequestState = x.RequestState == null ? null : new RequestState
                 {
@@ -702,6 +736,7 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO IndirectSalesOrderDAO = new IndirectSalesOrderDAO();
             IndirectSalesOrderDAO.Id = IndirectSalesOrder.Id;
             IndirectSalesOrderDAO.Code = IndirectSalesOrder.Code;
+            IndirectSalesOrderDAO.OrganizationId = IndirectSalesOrder.OrganizationId;
             IndirectSalesOrderDAO.BuyerStoreId = IndirectSalesOrder.BuyerStoreId;
             IndirectSalesOrderDAO.PhoneNumber = IndirectSalesOrder.PhoneNumber;
             IndirectSalesOrderDAO.StoreAddress = IndirectSalesOrder.StoreAddress;
@@ -735,6 +770,7 @@ namespace DMS.Repositories
                 return false;
             IndirectSalesOrderDAO.Id = IndirectSalesOrder.Id;
             IndirectSalesOrderDAO.Code = IndirectSalesOrder.Code;
+            IndirectSalesOrderDAO.OrganizationId = IndirectSalesOrder.OrganizationId;
             IndirectSalesOrderDAO.BuyerStoreId = IndirectSalesOrder.BuyerStoreId;
             IndirectSalesOrderDAO.PhoneNumber = IndirectSalesOrder.PhoneNumber;
             IndirectSalesOrderDAO.StoreAddress = IndirectSalesOrder.StoreAddress;
@@ -773,6 +809,7 @@ namespace DMS.Repositories
                 IndirectSalesOrderDAO IndirectSalesOrderDAO = new IndirectSalesOrderDAO();
                 IndirectSalesOrderDAO.Id = IndirectSalesOrder.Id;
                 IndirectSalesOrderDAO.Code = IndirectSalesOrder.Code;
+                IndirectSalesOrderDAO.OrganizationId = IndirectSalesOrder.OrganizationId;
                 IndirectSalesOrderDAO.BuyerStoreId = IndirectSalesOrder.BuyerStoreId;
                 IndirectSalesOrderDAO.PhoneNumber = IndirectSalesOrder.PhoneNumber;
                 IndirectSalesOrderDAO.StoreAddress = IndirectSalesOrder.StoreAddress;

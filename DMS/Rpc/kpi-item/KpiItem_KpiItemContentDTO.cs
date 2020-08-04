@@ -11,7 +11,7 @@ namespace DMS.Rpc.kpi_item
         public long KpiItemId { get; set; }
         public long ItemId { get; set; }
         public KpiItem_ItemDTO Item { get; set; }
-        public Dictionary<long, long> KpiItemContentKpiCriteriaItemMappings { get; set; }
+        public Dictionary<long, long?> KpiItemContentKpiCriteriaItemMappings { get; set; }
 
 
         public KpiItem_KpiItemContentDTO() { }

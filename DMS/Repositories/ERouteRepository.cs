@@ -448,6 +448,11 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(ERoute ERoute)
         {
+            var ERouteContentIds = await DataContext.ERouteContent.Where(x => x.ERouteId == ERoute.Id).Select(x => x.Id).ToListAsync();
+            var ERouteChangeRequestIds = await DataContext.ERouteChangeRequest.Where(x => x.ERouteId == ERoute.Id).Select(x => x.Id).ToListAsync();
+            await DataContext.ERouteChangeRequestContent.Where(x => ERouteChangeRequestIds.Contains(x.ERouteChangeRequestId)).DeleteFromQueryAsync();
+            await DataContext.ERouteChangeRequest.Where(x => x.ERouteId == ERoute.Id).DeleteFromQueryAsync();
+            await DataContext.ERouteContentDay.Where(x => ERouteContentIds.Contains(x.ERouteContentId)).DeleteFromQueryAsync();
             await DataContext.ERouteContent.Where(x => x.ERouteId == ERoute.Id).DeleteFromQueryAsync();
             await DataContext.ERoute.Where(x => x.Id == ERoute.Id).UpdateFromQueryAsync(x => new ERouteDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;

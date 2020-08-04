@@ -274,6 +274,11 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                         RequestedQuantity = c.RequestedQuantity,
                         ItemId = c.ItemId
                     }).ToList(),
+                    IndirectSalesOrderPromotions = x.IndirectSalesOrderPromotions.Select(x => new IndirectSalesOrderPromotionDAO
+                    {
+                        RequestedQuantity = x.RequestedQuantity,
+                        ItemId = x.ItemId
+                    }).ToList()
                 })
                 .ToListAsync(); // to do 
 
@@ -364,8 +369,15 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 var IndirectSalesOrderContents = IndirectSalesOrders
                     .SelectMany(x => x.IndirectSalesOrderContents)
                     .ToList();
+                var IndirectSalesOrderPromotions = IndirectSalesOrders
+                    .SelectMany(x => x.IndirectSalesOrderPromotions)
+                    .ToList();
                 SaleEmployeeDTO.SKUItems = new HashSet<long>();
                 foreach (var content in IndirectSalesOrderContents)
+                {
+                    SaleEmployeeDTO.SKUItems.Add(content.ItemId);
+                }
+                foreach (var content in IndirectSalesOrderPromotions)
                 {
                     SaleEmployeeDTO.SKUItems.Add(content.ItemId);
                 }

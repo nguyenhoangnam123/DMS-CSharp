@@ -278,13 +278,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                                       k.KpiYearId == KpiYearId &&
                                       k.KpiPeriodId == KpiPeriodId &&
                                       (ItemId == null || i.Id == ItemId)) &&
+                                      km.Value.HasValue &&
                                       k.DeletedAt == null &&
                                       k.StatusId == StatusEnum.ACTIVE.Id
                                select new
                                {
                                    SaleEmployeeId = k.EmployeeId,
                                    KpiCriteriaItemId = km.KpiCriteriaItemId,
-                                   Value = km.Value,
+                                   Value = km.Value.Value,
                                    ItemId = i.Id,
                                };
 

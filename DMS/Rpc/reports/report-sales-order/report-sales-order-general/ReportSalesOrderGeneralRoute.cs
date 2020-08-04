@@ -23,6 +23,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
+            { nameof(ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
