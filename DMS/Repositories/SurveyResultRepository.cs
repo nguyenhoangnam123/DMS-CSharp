@@ -113,6 +113,26 @@ namespace DMS.Repositories
                     Name = q.Store.Name,
                 } : null,
             }).ToListAsync();
+
+            var SurveyResultIds = SurveyResults.Select(x => x.Id).ToList();
+            var SurveyResultSingles = await DataContext.SurveyResultSingle.Where(x => SurveyResultIds.Contains(x.SurveyResultId)).ToListAsync();
+            var SurveyResultCells = await DataContext.SurveyResultCell.Where(x => SurveyResultIds.Contains(x.SurveyResultId)).ToListAsync();
+            foreach (var SurveyResult in SurveyResults)
+            {
+                SurveyResult.SurveyResultSingles = SurveyResultSingles.Where(x => x.SurveyResultId == SurveyResult.Id).Select(x => new SurveyResultSingle
+                {
+                    SurveyOptionId = x.SurveyOptionId,
+                    SurveyQuestionId = x.SurveyQuestionId,
+                    SurveyResultId = x.SurveyResultId,
+                }).ToList();
+                SurveyResult.SurveyResultCells = SurveyResultCells.Where(x => x.SurveyResultId == SurveyResult.Id).Select(x => new SurveyResultCell 
+                {
+                    ColumnOptionId = x.ColumnOptionId,
+                    RowOptionId = x.RowOptionId,
+                    SurveyQuestionId = x.SurveyQuestionId,
+                    SurveyResultId = x.SurveyResultId,
+                }).ToList();
+            }
             return SurveyResults;
         }
 
