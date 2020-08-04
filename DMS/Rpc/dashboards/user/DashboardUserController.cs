@@ -190,7 +190,7 @@ namespace DMS.Rpc.dashboards.user
             };
 
             RestClient restClient = new RestClient(InternalServices.UTILS);
-            RestRequest restRequest = new RestRequest("/rpc/utils/file/upload");
+            RestRequest restRequest = new RestRequest("/rpc/utils/discussion/list-mentioned");
             restRequest.RequestFormat = DataFormat.Json;
             restRequest.Method = Method.POST;
             restRequest.AddCookie("Token", CurrentContext.Token);
