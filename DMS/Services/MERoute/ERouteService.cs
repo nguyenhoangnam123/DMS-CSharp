@@ -125,7 +125,7 @@ namespace DMS.Services.MERoute
                 ERoute.RealStartDate = ERoute.StartDate.AddDays(-1 * diff);
                 ERoute.CreatorId = CurrentContext.UserId;
                 ERoute.OrganizationId = SaleEmployee.OrganizationId.Value;
-                ERoute.RequestStateId = Enums.RequestStateEnum.NEW.Id;
+                ERoute.RequestStateId = RequestStateEnum.NEW.Id;
                 await UOW.Begin();
                 await UOW.ERouteRepository.Create(ERoute);
                 await UOW.Commit();
