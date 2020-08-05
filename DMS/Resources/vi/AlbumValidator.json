@@ -1,7 +1,8 @@
 ﻿{
   "Album": {
     "Id": {
-      "IdNotExisted": "Id không tồn tại"
+      "IdNotExisted": "Id không tồn tại",
+      "AlbumInUsed": "Album đã được sử dụng"
     },
     "Name": {
       "NameEmpty": "Chưa nhập tên Album ảnh",

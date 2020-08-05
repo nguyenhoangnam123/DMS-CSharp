@@ -24,7 +24,8 @@ namespace DMS.Services.MAlbum
             IdNotExisted,
             NameEmpty,
             NameOverLength,
-            StatusNotExisted
+            StatusNotExisted,
+            AlbumInUsed
         }
 
         private IUOW UOW;
@@ -92,6 +93,9 @@ namespace DMS.Services.MAlbum
         {
             if (await ValidateId(Album))
             {
+                Album = await UOW.AlbumRepository.Get(Album.Id);
+                if(Album.Used)
+                    Album.AddError(nameof(AlbumValidator), nameof(Album.Id), ErrorCode.AlbumInUsed);
             }
             return Album.IsValidated;
         }
