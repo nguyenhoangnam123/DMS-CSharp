@@ -14,6 +14,9 @@
       "NameEmpty": "Chưa nhập tên tuyến",
       "NameOverLength": "Tên tuyến quá dài"
     },
+    "Organization": {
+      "OrganizationInvalid": "Nhân viên không thuộc đơn vị tổ chức hiện tại"
+    },
     "SaleEmployee": {
       "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại",
       "SaleEmployeeEmpty": "Chưa chọn nhân viên kinh doanh"

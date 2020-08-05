@@ -31,6 +31,7 @@ namespace DMS.Services.MERoute
             NameOverLength,
             SaleEmployeeNotExisted,
             SaleEmployeeEmpty,
+            OrganizationInvalid,
             ERouteTypeEmpty,
             StatusNotExisted,
             StartDateEmpty,
@@ -200,11 +201,21 @@ namespace DMS.Services.MERoute
             return ERoute.IsValidated;
         }
 
+        private async Task<bool> ValidateOrganization(ERoute ERoute)
+        {
+            var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            var SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
+            if(!SaleEmployee.Organization.Path.StartsWith(CurrentUser.Organization.Path))
+                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Organization), ErrorCode.OrganizationInvalid);
+            return ERoute.IsValidated;
+        }
+
         public async Task<bool> Create(ERoute ERoute)
         {
             await ValidateCode(ERoute);
             await ValidateName(ERoute);
             await ValidateSaleEmployee(ERoute);
+            await ValidateOrganization(ERoute);
             await ValidateERouteType(ERoute);
             await ValidateStatusId(ERoute);
             await ValidateStartDateAndEndDate(ERoute);
@@ -219,6 +230,7 @@ namespace DMS.Services.MERoute
                 await ValidateCode(ERoute);
                 await ValidateName(ERoute);
                 await ValidateSaleEmployee(ERoute);
+                await ValidateOrganization(ERoute);
                 await ValidateERouteType(ERoute);
                 await ValidateStatusId(ERoute);
                 await ValidateStartDateAndEndDate(ERoute);
