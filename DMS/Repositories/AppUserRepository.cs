@@ -16,6 +16,7 @@ namespace DMS.Repositories
         Task<List<AppUser>> List(AppUserFilter AppUserFilter);
         Task<AppUser> Get(long Id);
         Task<bool> Update(AppUser AppUser);
+        Task<bool> SimpleUpdate(AppUser AppUser);
     }
     public class AppUserRepository : IAppUserRepository
     {
@@ -473,5 +474,18 @@ namespace DMS.Repositories
             await DataContext.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> SimpleUpdate(AppUser AppUser)
+        {
+            AppUserDAO AppUserDAO = DataContext.AppUser.Where(x => x.Id == AppUser.Id).FirstOrDefault();
+            if (AppUserDAO == null)
+                return false;
+            AppUserDAO.Latitude = AppUser.Latitude;
+            AppUserDAO.Longitude = AppUser.Longitude;
+            AppUserDAO.UpdatedAt = StaticParams.DateTimeNow;
+            await DataContext.SaveChangesAsync();
+            return true;
+        }
+
     }
 }

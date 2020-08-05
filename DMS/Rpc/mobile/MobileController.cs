@@ -1082,6 +1082,26 @@ namespace DMS.Rpc.mobile
             return new Mobile_NotificationDTO(Notification);
         }
 
+        [Route(MobileRoute.UpdateGPS), HttpPost]
+        public async Task<ActionResult<Mobile_AppUserDTO>> UpdateGPS([FromBody] Mobile_AppUserDTO Mobile_AppUserDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUser AppUser = new AppUser
+            {
+                Id = CurrentContext.UserId,
+                Longitude = Mobile_AppUserDTO.Longitude,
+                Latitude = Mobile_AppUserDTO.Latitude
+            };
+            AppUser = await AppUserService.UpdateGPS(AppUser);
+            Mobile_AppUserDTO = new Mobile_AppUserDTO(AppUser);
+            if (AppUser.IsValidated)
+                return Mobile_AppUserDTO;
+            else
+                return BadRequest(Mobile_AppUserDTO);
+        }
+
         private StoreChecking ConvertDTOToEntity(Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
         {
             StoreChecking StoreChecking = new StoreChecking();

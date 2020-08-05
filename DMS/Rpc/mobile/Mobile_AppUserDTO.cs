@@ -36,7 +36,8 @@ namespace DMS.Rpc.mobile
         public DateTime? Birthday { get; set; }
 
         public long? ProvinceId { get; set; }
-
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
 
         public Mobile_AppUserDTO() { }
         public Mobile_AppUserDTO(AppUser AppUser)
@@ -69,7 +70,8 @@ namespace DMS.Rpc.mobile
             this.Birthday = AppUser.Birthday;
 
             this.ProvinceId = AppUser.ProvinceId;
-
+            this.Latitude = AppUser.Latitude;
+            this.Longitude = AppUser.Longitude;
             this.Errors = AppUser.Errors;
         }
     }

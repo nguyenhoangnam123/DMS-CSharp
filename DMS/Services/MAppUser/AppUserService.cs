@@ -1,5 +1,7 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
+using DMS.Handlers;
 using DMS.Repositories;
 using DMS.Services.MSex;
 using Helpers;
@@ -15,6 +17,7 @@ namespace DMS.Services.MAppUser
         Task<List<AppUser>> List(AppUserFilter AppUserFilter);
         Task<AppUser> Get(long Id);
         Task<AppUser> Update(AppUser AppUser);
+        Task<AppUser> UpdateGPS(AppUser AppUser);
         AppUserFilter ToFilter(AppUserFilter AppUserFilter);
     }
 
@@ -24,6 +27,7 @@ namespace DMS.Services.MAppUser
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IAppUserValidator AppUserValidator;
+        private IRabbitManager RabbitManager;
         private ISexService SexService;
 
         public AppUserService(
@@ -31,6 +35,7 @@ namespace DMS.Services.MAppUser
             ILogging Logging,
             ICurrentContext CurrentContext,
             IAppUserValidator AppUserValidator,
+            IRabbitManager RabbitManager,
             ISexService SexService
         )
         {
@@ -38,6 +43,7 @@ namespace DMS.Services.MAppUser
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.AppUserValidator = AppUserValidator;
+            this.RabbitManager = RabbitManager;
             this.SexService = SexService;
         }
         public async Task<int> Count(AppUserFilter AppUserFilter)
@@ -106,6 +112,32 @@ namespace DMS.Services.MAppUser
                 var newData = await UOW.AppUserRepository.Get(AppUser.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(AppUserService));
                 return newData;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(AppUserService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(AppUserService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<AppUser> UpdateGPS(AppUser AppUser)
+        {
+            try
+            {
+                await UOW.AppUserRepository.SimpleUpdate(AppUser);
+
+                AppUser = await Get(AppUser.Id);
+                RabbitManager.PublishSingle(new EventMessage<AppUser>(AppUser, AppUser.RowId), RoutingKeyEnum.AppUserSync);
+                return AppUser;
             }
             catch (Exception ex)
             {
