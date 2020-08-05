@@ -16,6 +16,7 @@ namespace DMS.Rpc.mobile
         public string DeliveryAddress { get; set; }
         public long SellerStoreId { get; set; }
         public long SaleEmployeeId { get; set; }
+        public long OrganizationId { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
         public long RequestStateId { get; set; }
@@ -31,6 +32,7 @@ namespace DMS.Rpc.mobile
         public Mobile_EditedPriceStatusDTO EditedPriceStatus { get; set; }
         public Mobile_RequestStateDTO RequestState { get; set; }
         public Mobile_AppUserDTO SaleEmployee { get; set; }
+        public Mobile_OrganizationDTO Organization { get; set; }
         public Mobile_StoreDTO SellerStore { get; set; }
         public List<Mobile_IndirectSalesOrderContentDTO> IndirectSalesOrderContents { get; set; }
         public List<Mobile_IndirectSalesOrderPromotionDTO> IndirectSalesOrderPromotions { get; set; }
@@ -45,6 +47,7 @@ namespace DMS.Rpc.mobile
             this.DeliveryAddress = IndirectSalesOrder.DeliveryAddress;
             this.SellerStoreId = IndirectSalesOrder.SellerStoreId;
             this.SaleEmployeeId = IndirectSalesOrder.SaleEmployeeId;
+            this.OrganizationId = IndirectSalesOrder.OrganizationId;
             this.OrderDate = IndirectSalesOrder.OrderDate;
             this.DeliveryDate = IndirectSalesOrder.DeliveryDate;
             this.RequestStateId = IndirectSalesOrder.RequestStateId;
@@ -60,6 +63,7 @@ namespace DMS.Rpc.mobile
             this.EditedPriceStatus = IndirectSalesOrder.EditedPriceStatus == null ? null : new Mobile_EditedPriceStatusDTO(IndirectSalesOrder.EditedPriceStatus);
             this.RequestState = IndirectSalesOrder.RequestState == null ? null : new Mobile_RequestStateDTO(IndirectSalesOrder.RequestState);
             this.SaleEmployee = IndirectSalesOrder.SaleEmployee == null ? null : new Mobile_AppUserDTO(IndirectSalesOrder.SaleEmployee);
+            this.Organization = IndirectSalesOrder.Organization == null ? null : new Mobile_OrganizationDTO(IndirectSalesOrder.Organization);
             this.SellerStore = IndirectSalesOrder.SellerStore == null ? null : new Mobile_StoreDTO(IndirectSalesOrder.SellerStore);
             this.IndirectSalesOrderContents = IndirectSalesOrder.IndirectSalesOrderContents?.Select(x => new Mobile_IndirectSalesOrderContentDTO(x)).ToList();
             this.IndirectSalesOrderPromotions = IndirectSalesOrder.IndirectSalesOrderPromotions?.Select(x => new Mobile_IndirectSalesOrderPromotionDTO(x)).ToList();

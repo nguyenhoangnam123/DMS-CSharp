@@ -235,6 +235,7 @@ namespace DMS.Rpc.indirect_sales_order
             IndirectSalesOrder.DeliveryAddress = IndirectSalesOrder_IndirectSalesOrderDTO.DeliveryAddress;
             IndirectSalesOrder.SellerStoreId = IndirectSalesOrder_IndirectSalesOrderDTO.SellerStoreId;
             IndirectSalesOrder.SaleEmployeeId = IndirectSalesOrder_IndirectSalesOrderDTO.SaleEmployeeId;
+            IndirectSalesOrder.OrganizationId = IndirectSalesOrder_IndirectSalesOrderDTO.OrganizationId;
             IndirectSalesOrder.OrderDate = IndirectSalesOrder_IndirectSalesOrderDTO.OrderDate;
             IndirectSalesOrder.DeliveryDate = IndirectSalesOrder_IndirectSalesOrderDTO.DeliveryDate;
             IndirectSalesOrder.RequestStateId = IndirectSalesOrder_IndirectSalesOrderDTO.RequestStateId;
@@ -271,6 +272,19 @@ namespace DMS.Rpc.indirect_sales_order
                 TaxCode = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.TaxCode,
                 LegalEntity = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.LegalEntity,
                 StatusId = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore.StatusId,
+            };
+            IndirectSalesOrder.Organization = IndirectSalesOrder_IndirectSalesOrderDTO.Organization == null ? null : new Organization
+            {
+                Id = IndirectSalesOrder_IndirectSalesOrderDTO.Organization.Id,
+                Code = IndirectSalesOrder_IndirectSalesOrderDTO.Organization.Code,
+                Name = IndirectSalesOrder_IndirectSalesOrderDTO.Organization.Name,
+                ParentId = IndirectSalesOrder_IndirectSalesOrderDTO.Organization.ParentId,
+                Path = IndirectSalesOrder_IndirectSalesOrderDTO.Organization.Path,
+                Level = IndirectSalesOrder_IndirectSalesOrderDTO.Organization.Level,
+                StatusId = IndirectSalesOrder_IndirectSalesOrderDTO.Organization.StatusId,
+                Phone = IndirectSalesOrder_IndirectSalesOrderDTO.Organization.Phone,
+                Address = IndirectSalesOrder_IndirectSalesOrderDTO.Organization.Address,
+                Email = IndirectSalesOrder_IndirectSalesOrderDTO.Organization.Email,
             };
             IndirectSalesOrder.EditedPriceStatus = IndirectSalesOrder_IndirectSalesOrderDTO.EditedPriceStatus == null ? null : new EditedPriceStatus
             {
