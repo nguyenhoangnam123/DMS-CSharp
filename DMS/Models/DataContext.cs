@@ -3522,6 +3522,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.BodyMailForCreator).HasMaxLength(4000);
 
+                entity.Property(e => e.BodyMailForCurrentStep).HasMaxLength(4000);
+
                 entity.Property(e => e.BodyMailForNextStep).HasMaxLength(4000);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -3529,6 +3531,8 @@ namespace DMS.Models
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.SubjectMailForCreator).HasMaxLength(500);
+
+                entity.Property(e => e.SubjectMailForCurrentStep).HasMaxLength(500);
 
                 entity.Property(e => e.SubjectMailForNextStep).HasMaxLength(500);
 

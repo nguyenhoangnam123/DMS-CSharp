@@ -284,8 +284,10 @@ namespace DMS.Rpc.workflow_direction
             WorkflowDirection.FromStepId = WorkflowDirection_WorkflowDirectionDTO.FromStepId;
             WorkflowDirection.ToStepId = WorkflowDirection_WorkflowDirectionDTO.ToStepId;
             WorkflowDirection.SubjectMailForCreator = WorkflowDirection_WorkflowDirectionDTO.SubjectMailForCreator;
+            WorkflowDirection.SubjectMailForCurrentStep = WorkflowDirection_WorkflowDirectionDTO.SubjectMailForCurrentStep;
             WorkflowDirection.SubjectMailForNextStep = WorkflowDirection_WorkflowDirectionDTO.SubjectMailForNextStep;
             WorkflowDirection.BodyMailForCreator = WorkflowDirection_WorkflowDirectionDTO.BodyMailForCreator;
+            WorkflowDirection.BodyMailForCurrentStep = WorkflowDirection_WorkflowDirectionDTO.BodyMailForCurrentStep;
             WorkflowDirection.BodyMailForNextStep = WorkflowDirection_WorkflowDirectionDTO.BodyMailForNextStep;
             WorkflowDirection.UpdatedAt = WorkflowDirection_WorkflowDirectionDTO.UpdatedAt;
             WorkflowDirection.FromStep = WorkflowDirection_WorkflowDirectionDTO.FromStep == null ? null : new WorkflowStep

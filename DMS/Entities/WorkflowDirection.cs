@@ -15,8 +15,10 @@ namespace DMS.Entities
         public WorkflowStep FromStep { get; set; }
         public WorkflowStep ToStep { get; set; }
         public string SubjectMailForCreator { get; set; }
+        public string SubjectMailForCurrentStep { get; set; }
         public string SubjectMailForNextStep { get; set; }
         public string BodyMailForCreator { get; set; }
+        public string BodyMailForCurrentStep { get; set; }
         public string BodyMailForNextStep { get; set; }
         public DateTime UpdatedAt { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }

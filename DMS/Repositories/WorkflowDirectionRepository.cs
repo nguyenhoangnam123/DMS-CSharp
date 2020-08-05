@@ -189,8 +189,10 @@ namespace DMS.Repositories
                 FromStepId = x.FromStepId,
                 ToStepId = x.ToStepId,
                 SubjectMailForCreator = x.SubjectMailForCreator,
+                SubjectMailForCurrentStep = x.SubjectMailForCurrentStep,
                 SubjectMailForNextStep = x.SubjectMailForNextStep,
                 BodyMailForCreator = x.BodyMailForCreator,
+                BodyMailForCurrentStep = x.BodyMailForCurrentStep,
                 BodyMailForNextStep = x.BodyMailForNextStep,
                 FromStep = x.FromStep == null ? null : new WorkflowStep
                 {
