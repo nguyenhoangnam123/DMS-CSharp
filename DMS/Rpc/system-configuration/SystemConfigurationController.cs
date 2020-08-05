@@ -36,7 +36,7 @@ namespace DMS.Rpc.system_configuration
 
 
         [Route(SystemConfigurationRoute.Update), HttpPost]
-        public async Task<bool> Update([FromBody] SystemConfiguration_SystemConfigurationDTO SystemConfiguration_SystemConfigurationDTO)
+        public async Task<SystemConfiguration_SystemConfigurationDTO> Update([FromBody] SystemConfiguration_SystemConfigurationDTO SystemConfiguration_SystemConfigurationDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -55,7 +55,9 @@ namespace DMS.Rpc.system_configuration
                 AMPLITUDE_PRICE_IN_DIRECT = SystemConfiguration_SystemConfigurationDTO.AMPLITUDE_PRICE_IN_DIRECT,
                 AMPLITUDE_PRICE_IN_INDIRECT = SystemConfiguration_SystemConfigurationDTO.AMPLITUDE_PRICE_IN_INDIRECT,
             };
-            return await SystemConfigurationService.Update(SystemConfiguration);
+            await SystemConfigurationService.Update(SystemConfiguration);
+            SystemConfiguration = await SystemConfigurationService.Get();
+            return new SystemConfiguration_SystemConfigurationDTO(SystemConfiguration);
         }
     }
 }

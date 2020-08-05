@@ -12,7 +12,7 @@ namespace DMS.Entities
         public long WorkflowDefinitionId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public WorkflowDefinition WorkflowDefinition { get; set; }
+        public long WorkflowParameterTypeId { get; set; }
 
         public bool Equals(WorkflowParameter other)
         {
@@ -28,6 +28,7 @@ namespace DMS.Entities
     {
         public IdFilter Id { get; set; }
         public IdFilter WorkflowDefinitionId { get; set; }
+        public IdFilter WorkflowParameterTypeId { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public List<WorkflowParameterFilter> OrFilter { get; set; }

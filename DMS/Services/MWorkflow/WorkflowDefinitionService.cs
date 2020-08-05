@@ -29,7 +29,7 @@ namespace DMS.Services.MWorkflow
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IWorkflowDefinitionValidator WorkflowDefinitionValidator;
-        private List<string> StoreParameters;
+        private List<WorkflowParameterStruct> StoreParameters, ERouteParameters;
         public WorkflowDefinitionService(
             IUOW UOW,
             ILogging Logging,
@@ -42,7 +42,25 @@ namespace DMS.Services.MWorkflow
             this.CurrentContext = CurrentContext;
             this.WorkflowDefinitionValidator = WorkflowDefinitionValidator;
 
-            StoreParameters = new List<string> { nameof(Store.Code), nameof(Store.Name), nameof(Store.StoreTypeId) };
+            StoreParameters = new List<WorkflowParameterStruct>
+            {
+                new WorkflowParameterStruct
+                {
+                    Code = nameof(Store.OrganizationId),
+                    Name = "Đơn vị tổ chức",
+                    TypeId = WorkflowParameterTypeEnum.ID.Id,
+                },
+            };
+
+            ERouteParameters = new List<WorkflowParameterStruct>
+            {
+                new WorkflowParameterStruct
+                {
+                    Code = "OrganizationId",
+                    Name = "Đơn vị tổ chức",
+                    TypeId = WorkflowParameterTypeEnum.ID.Id,
+                },
+            };
         }
         public async Task<int> Count(WorkflowDefinitionFilter WorkflowDefinitionFilter)
         {
@@ -269,7 +287,19 @@ namespace DMS.Services.MWorkflow
             {
                 WorkflowDefinition.WorkflowParameters = StoreParameters.Select(x => new WorkflowParameter
                 {
-                    Name = x
+                    Code = x.Code,
+                    Name = x.Name,
+                    WorkflowParameterTypeId = x.TypeId,
+                }).ToList();
+            }
+
+            if (WorkflowDefinition.WorkflowTypeId == WorkflowTypeEnum.EROUTE.Id)
+            {
+                WorkflowDefinition.WorkflowParameters = ERouteParameters.Select(x => new WorkflowParameter
+                {
+                    Code = x.Code,
+                    Name = x.Name,
+                    WorkflowParameterTypeId = x.TypeId,
                 }).ToList();
             }
         }
