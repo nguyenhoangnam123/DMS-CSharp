@@ -96,7 +96,9 @@ namespace DMS.Repositories
         IWarehouseRepository WarehouseRepository { get; }
         IWorkflowDefinitionRepository WorkflowDefinitionRepository { get; }
         IWorkflowDirectionRepository WorkflowDirectionRepository { get; }
+        IWorkflowOperatorRepository WorkflowOperatorRepository { get; }
         IWorkflowParameterRepository WorkflowParameterRepository { get; }
+        IWorkflowParameterTypeRepository WorkflowParameterTypeRepository { get; }
         IWorkflowStateRepository WorkflowStateRepository { get; }
         IWorkflowStepRepository WorkflowStepRepository { get; }
         IWorkflowTypeRepository WorkflowTypeRepository { get; }
@@ -193,7 +195,9 @@ namespace DMS.Repositories
         public IWarehouseRepository WarehouseRepository { get; private set; }
         public IWorkflowDefinitionRepository WorkflowDefinitionRepository { get; private set; }
         public IWorkflowDirectionRepository WorkflowDirectionRepository { get; private set; }
+        public IWorkflowOperatorRepository WorkflowOperatorRepository { get; private set; }
         public IWorkflowParameterRepository WorkflowParameterRepository { get; private set; }
+        public IWorkflowParameterTypeRepository WorkflowParameterTypeRepository { get; private set; }
         public IWorkflowStateRepository WorkflowStateRepository { get; private set; }
         public IWorkflowStepRepository WorkflowStepRepository { get; private set; }
         public IWorkflowTypeRepository WorkflowTypeRepository { get; private set; }
@@ -287,7 +291,9 @@ namespace DMS.Repositories
             WarehouseRepository = new WarehouseRepository(DataContext);
             WorkflowDefinitionRepository = new WorkflowDefinitionRepository(DataContext);
             WorkflowDirectionRepository = new WorkflowDirectionRepository(DataContext);
+            WorkflowOperatorRepository = new WorkflowOperatorRepository(DataContext);
             WorkflowParameterRepository = new WorkflowParameterRepository(DataContext);
+            WorkflowParameterTypeRepository = new WorkflowParameterTypeRepository(DataContext);
             WorkflowStateRepository = new WorkflowStateRepository(DataContext);
             WorkflowStepRepository = new WorkflowStepRepository(DataContext);
             WorkflowTypeRepository = new WorkflowTypeRepository(DataContext);

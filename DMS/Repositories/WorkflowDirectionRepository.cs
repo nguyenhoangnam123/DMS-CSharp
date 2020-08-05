@@ -189,8 +189,10 @@ namespace DMS.Repositories
                 FromStepId = x.FromStepId,
                 ToStepId = x.ToStepId,
                 SubjectMailForCreator = x.SubjectMailForCreator,
+                SubjectMailForCurrentStep = x.SubjectMailForCurrentStep,
                 SubjectMailForNextStep = x.SubjectMailForNextStep,
                 BodyMailForCreator = x.BodyMailForCreator,
+                BodyMailForCurrentStep = x.BodyMailForCurrentStep,
                 BodyMailForNextStep = x.BodyMailForNextStep,
                 FromStep = x.FromStep == null ? null : new WorkflowStep
                 {
@@ -227,7 +229,27 @@ namespace DMS.Repositories
 
             if (WorkflowDirection == null)
                 return null;
+            WorkflowDirection.WorkflowDirectionConditions = await DataContext.WorkflowDirectionCondition
+                .Where(x => x.WorkflowDirectionId == WorkflowDirection.Id)
+                .Select(x => new WorkflowDirectionCondition
+                {
+                    Id = x.Id,
+                    Value = x.Value,
+                    WorkflowDirectionId = x.WorkflowDirectionId,
+                    WorkflowOperatorId = x.WorkflowOperatorId,
+                    WorkflowParameterId = x.WorkflowParameterId,
+                }).ToListAsync();
 
+            WorkflowDirection.WorkflowParameters = await DataContext.WorkflowParameter
+                .Where(x => x.WorkflowDefinitionId == WorkflowDirection.WorkflowDefinitionId)
+                .Select(x => new WorkflowParameter
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    WorkflowDefinitionId = x.WorkflowDefinitionId,
+                    WorkflowParameterTypeId = x.WorkflowParameterTypeId,
+                }).ToListAsync();
             return WorkflowDirection;
         }
         public async Task<bool> Create(WorkflowDirection WorkflowDirection)
@@ -300,6 +322,8 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<WorkflowDirection> WorkflowDirections)
         {
             List<long> Ids = WorkflowDirections.Select(x => x.Id).ToList();
+            await DataContext.WorkflowDirectionCondition
+                .Where(x => Ids.Contains(x.WorkflowDirectionId)).DeleteFromQueryAsync();
             await DataContext.WorkflowDirection
                 .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
             return true;
@@ -307,6 +331,20 @@ namespace DMS.Repositories
 
         private async Task SaveReference(WorkflowDirection WorkflowDirection)
         {
+            await DataContext.WorkflowDirectionCondition.Where(x => x.Id == WorkflowDirection.Id).DeleteFromQueryAsync();
+            List<WorkflowDirectionConditionDAO> WorkflowDirectionConditionDAOs = new List<WorkflowDirectionConditionDAO>();
+            foreach (WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirection.WorkflowDirectionConditions)
+            {
+                WorkflowDirectionConditionDAO WorkflowDirectionConditionDAO = new WorkflowDirectionConditionDAO
+                {
+                    Value = WorkflowDirectionCondition.Value,
+                    WorkflowDirectionId = WorkflowDirection.Id,
+                    WorkflowOperatorId = WorkflowDirectionCondition.WorkflowOperatorId,
+                    WorkflowParameterId = WorkflowDirectionCondition.WorkflowParameterId,
+                };
+                WorkflowDirectionConditionDAOs.Add(WorkflowDirectionConditionDAO);
+            }
+            await DataContext.WorkflowDirectionCondition.BulkInsertAsync(WorkflowDirectionConditionDAOs);
         }
 
     }

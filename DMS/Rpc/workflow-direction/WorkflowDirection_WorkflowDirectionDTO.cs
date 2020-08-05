@@ -13,8 +13,10 @@ namespace DMS.Rpc.workflow_direction
         public long FromStepId { get; set; }
         public long ToStepId { get; set; }
         public string SubjectMailForCreator { get; set; }
+        public string SubjectMailForCurrentStep { get; set; }
         public string SubjectMailForNextStep { get; set; }
         public string BodyMailForCreator { get; set; }
+        public string BodyMailForCurrentStep { get; set; }
         public string BodyMailForNextStep { get; set; }
         public DateTime UpdatedAt { get; set; }
         public WorkflowDirection_WorkflowStepDTO FromStep { get; set; }
@@ -29,8 +31,10 @@ namespace DMS.Rpc.workflow_direction
             this.FromStepId = WorkflowDirection.FromStepId;
             this.ToStepId = WorkflowDirection.ToStepId;
             this.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
+            this.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
             this.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
             this.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
+            this.BodyMailForCurrentStep = WorkflowDirection.BodyMailForCurrentStep;
             this.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
             this.UpdatedAt = WorkflowDirection.UpdatedAt;
             this.FromStep = WorkflowDirection.FromStep == null ? null : new WorkflowDirection_WorkflowStepDTO(WorkflowDirection.FromStep);
