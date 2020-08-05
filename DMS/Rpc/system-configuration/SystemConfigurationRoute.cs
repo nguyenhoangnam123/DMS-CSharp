@@ -5,7 +5,7 @@ namespace DMS.Rpc.system_configuration
 {
     public class SystemConfigurationRoute : Root
     {
-        public const string Master = Module + "/configuration/system-configuration/system-configuration-master";
+        public const string Master = Module + "/system-configuration/system-configuration-master";
         private const string Default = Rpc + Module + "/system-configuration";
         public const string Get = Default + "/get";
         public const string Update = Default + "/update";
