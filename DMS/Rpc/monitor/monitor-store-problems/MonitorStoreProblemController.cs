@@ -586,8 +586,8 @@ namespace DMS.Rpc.monitor_store_problems
             ProblemHistoryFilter ProblemHistoryFilter = new ProblemHistoryFilter();
             ProblemHistoryFilter.Skip = MonitorStoreProblem_ProblemHistoryFilterDTO.Skip;
             ProblemHistoryFilter.Take = MonitorStoreProblem_ProblemHistoryFilterDTO.Take;
-            ProblemHistoryFilter.OrderBy = ProblemHistoryOrder.Id;
-            ProblemHistoryFilter.OrderType = OrderType.ASC;
+            ProblemHistoryFilter.OrderBy = ProblemHistoryOrder.Time;
+            ProblemHistoryFilter.OrderType = OrderType.DESC;
             ProblemHistoryFilter.Selects = ProblemHistorySelect.ALL;
             ProblemHistoryFilter.ProblemId = MonitorStoreProblem_ProblemHistoryFilterDTO.ProblemId;
             ProblemHistoryFilter.Time = MonitorStoreProblem_ProblemHistoryFilterDTO.Time;
