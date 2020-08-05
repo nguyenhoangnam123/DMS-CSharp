@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -895,7 +896,45 @@ namespace DMS.Repositories
                 }
                 await DataContext.IndirectSalesOrderPromotion.BulkMergeAsync(IndirectSalesOrderPromotionDAOs);
             }
-        }
 
+            await DataContext.IndirectSalesOrderTransaction.Where(x => x.IndirectSalesOrderId == IndirectSalesOrder.Id).DeleteFromQueryAsync();
+            List<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactionDAOs = new List<IndirectSalesOrderTransactionDAO>();
+            if(IndirectSalesOrder.IndirectSalesOrderContents != null)
+            {
+                foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
+                {
+                    IndirectSalesOrderTransactionDAO IndirectSalesOrderTransactionDAO = new IndirectSalesOrderTransactionDAO
+                    {
+                        IndirectSalesOrderId = IndirectSalesOrder.Id,
+                        ItemId = IndirectSalesOrderContent.Id,
+                        OrganizationId = IndirectSalesOrder.OrganizationId,
+                        TypeId = IndirectSalesOrderTransactionTypeEnum.SALES_CONTENT.Id,
+                        UnitOfMeasureId = IndirectSalesOrderContent.PrimaryUnitOfMeasureId,
+                        Quantity = IndirectSalesOrderContent.RequestedQuantity,
+                        Revenue = IndirectSalesOrderContent.Amount - (IndirectSalesOrderContent.GeneralDiscountAmount ?? 0) + (IndirectSalesOrderContent.TaxAmount ?? 0),
+                        Discount = (IndirectSalesOrderContent.DiscountAmount ?? 0) + (IndirectSalesOrderContent.GeneralDiscountAmount ?? 0)
+                    };
+                    IndirectSalesOrderTransactionDAOs.Add(IndirectSalesOrderTransactionDAO);
+                }
+            }
+
+            if (IndirectSalesOrder.IndirectSalesOrderPromotions != null)
+            {
+                foreach (var IndirectSalesOrderPromotion in IndirectSalesOrder.IndirectSalesOrderPromotions)
+                {
+                    IndirectSalesOrderTransactionDAO IndirectSalesOrderTransactionDAO = new IndirectSalesOrderTransactionDAO
+                    {
+                        IndirectSalesOrderId = IndirectSalesOrder.Id,
+                        ItemId = IndirectSalesOrderPromotion.Id,
+                        OrganizationId = IndirectSalesOrder.OrganizationId,
+                        TypeId = IndirectSalesOrderTransactionTypeEnum.PROMOTION.Id,
+                        UnitOfMeasureId = IndirectSalesOrderPromotion.PrimaryUnitOfMeasureId,
+                        Quantity = IndirectSalesOrderPromotion.RequestedQuantity,
+                    };
+                    IndirectSalesOrderTransactionDAOs.Add(IndirectSalesOrderTransactionDAO);
+                }
+            }
+            await DataContext.IndirectSalesOrderTransaction.BulkMergeAsync(IndirectSalesOrderTransactionDAOs);
+        }
     }
 }

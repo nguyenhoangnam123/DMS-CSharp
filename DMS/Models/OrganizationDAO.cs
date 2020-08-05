@@ -11,6 +11,7 @@ namespace DMS.Models
             AppUserOrganizations = new HashSet<AppUserDAO>();
             DirectPriceLists = new HashSet<DirectPriceListDAO>();
             IndirectPriceLists = new HashSet<IndirectPriceListDAO>();
+            IndirectSalesOrderTransactions = new HashSet<IndirectSalesOrderTransactionDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
             InverseParent = new HashSet<OrganizationDAO>();
             KpiGenerals = new HashSet<KpiGeneralDAO>();
@@ -42,6 +43,7 @@ namespace DMS.Models
         public virtual ICollection<AppUserDAO> AppUserOrganizations { get; set; }
         public virtual ICollection<DirectPriceListDAO> DirectPriceLists { get; set; }
         public virtual ICollection<IndirectPriceListDAO> IndirectPriceLists { get; set; }
+        public virtual ICollection<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactions { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
         public virtual ICollection<OrganizationDAO> InverseParent { get; set; }
         public virtual ICollection<KpiGeneralDAO> KpiGenerals { get; set; }

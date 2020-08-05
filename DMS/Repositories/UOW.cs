@@ -36,6 +36,7 @@ namespace DMS.Repositories
         IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; }
         IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; }
         IIndirectSalesOrderPromotionRepository IndirectSalesOrderPromotionRepository { get; }
+        IIndirectSalesOrderTransactionRepository IndirectSalesOrderTransactionRepository { get; }
         IItemRepository ItemRepository { get; }
         IItemHistoryRepository ItemHistoryRepository { get; }
         IKpiCriteriaGeneralRepository KpiCriteriaGeneralRepository { get; }
@@ -131,6 +132,7 @@ namespace DMS.Repositories
         public IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; private set; }
         public IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; private set; }
         public IIndirectSalesOrderPromotionRepository IndirectSalesOrderPromotionRepository { get; private set; }
+        public IIndirectSalesOrderTransactionRepository IndirectSalesOrderTransactionRepository { get; private set; }
         public IItemRepository ItemRepository { get; private set; }
         public IItemHistoryRepository ItemHistoryRepository { get; private set; }
         public IInventoryRepository InventoryRepository { get; private set; }
@@ -225,6 +227,7 @@ namespace DMS.Repositories
             IndirectSalesOrderContentRepository = new IndirectSalesOrderContentRepository(DataContext);
             IndirectSalesOrderRepository = new IndirectSalesOrderRepository(DataContext);
             IndirectSalesOrderPromotionRepository = new IndirectSalesOrderPromotionRepository(DataContext);
+            IndirectSalesOrderTransactionRepository = new IndirectSalesOrderTransactionRepository(DataContext);
             ItemRepository = new ItemRepository(DataContext);
             ItemHistoryRepository = new ItemHistoryRepository(DataContext);
             InventoryRepository = new InventoryRepository(DataContext);

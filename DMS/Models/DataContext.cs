@@ -48,6 +48,7 @@ namespace DMS.Models
         public virtual DbSet<IndirectSalesOrderDAO> IndirectSalesOrder { get; set; }
         public virtual DbSet<IndirectSalesOrderContentDAO> IndirectSalesOrderContent { get; set; }
         public virtual DbSet<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotion { get; set; }
+        public virtual DbSet<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransaction { get; set; }
         public virtual DbSet<InventoryDAO> Inventory { get; set; }
         public virtual DbSet<InventoryHistoryDAO> InventoryHistory { get; set; }
         public virtual DbSet<ItemDAO> Item { get; set; }
@@ -1365,6 +1366,39 @@ namespace DMS.Models
                     .HasForeignKey(d => d.UnitOfMeasureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrderPromotion_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<IndirectSalesOrderTransactionDAO>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Discount).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Revenue).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.IndirectSalesOrder)
+                    .WithMany(p => p.IndirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.IndirectSalesOrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderTransaction_IndirectSalesOrder");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.IndirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderTransaction_Item");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.IndirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderTransaction_Organization");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.IndirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderTransaction_UnitOfMeasure");
             });
 
             modelBuilder.Entity<InventoryDAO>(entity =>

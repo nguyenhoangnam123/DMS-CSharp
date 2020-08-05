@@ -1022,6 +1022,7 @@ namespace DMS.Rpc.kpi_general
             AppUserFilter.Id = KpiGeneral_AppUserFilterDTO.Id;
             AppUserFilter.Username = KpiGeneral_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = KpiGeneral_AppUserFilterDTO.DisplayName;
+            AppUserFilter.OrganizationId = KpiGeneral_AppUserFilterDTO.OrganizationId;
 
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
