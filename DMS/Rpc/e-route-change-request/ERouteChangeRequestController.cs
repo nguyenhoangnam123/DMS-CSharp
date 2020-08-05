@@ -105,7 +105,7 @@ namespace DMS.Rpc.e_route_change_request
             {
                 ERouteId = ERoute.Id,
                 CreatorId = CurrentContext.UserId,
-                RequestStateId = Enums.RequestStateEnum.NEW.Id,
+                RequestStateId = RequestStateEnum.NEW.Id,
                 ERoute = new ERouteChangeRequest_ERouteDTO(ERoute),
                 ERouteChangeRequestContents = ERoute.ERouteContents?.Select(x => new ERouteChangeRequest_ERouteChangeRequestContentDTO
                 {

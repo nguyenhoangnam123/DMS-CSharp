@@ -156,7 +156,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 await Calculator(IndirectSalesOrder);
                 await UOW.Begin();
-                IndirectSalesOrder.RequestStateId = Enums.RequestStateEnum.NEW.Id;
+                IndirectSalesOrder.RequestStateId = RequestStateEnum.NEW.Id;
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 IndirectSalesOrder.OrganizationId = CurrentUser.OrganizationId.Value;
                 await UOW.IndirectSalesOrderRepository.Create(IndirectSalesOrder);
