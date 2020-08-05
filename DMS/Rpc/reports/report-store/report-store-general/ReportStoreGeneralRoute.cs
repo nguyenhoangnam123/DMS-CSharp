@@ -22,6 +22,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             { nameof(ReportStoreGeneral_ReportStoreGeneralFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
             { nameof(ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreGroupingId), FieldTypeEnum.ID.Id },
             { nameof(ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreTypeId), FieldTypeEnum.ID.Id },
+            { nameof(ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
