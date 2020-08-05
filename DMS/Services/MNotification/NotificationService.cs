@@ -346,24 +346,27 @@ namespace DMS.Services.MNotification
 
         public async Task<List<UserNotification>> BulkSend(List<UserNotification> UserNotifications)
         {
-            RestClient restClient = new RestClient(InternalServices.UTILS);
-            RestRequest restRequest = new RestRequest("/rpc/utils/user-notification/bulk-create");
-            restRequest.RequestFormat = DataFormat.Json;
-            restRequest.Method = Method.POST;
-            restRequest.AddCookie("Token", CurrentContext.Token);
-            restRequest.AddCookie("X-Language", CurrentContext.Language);
-            restRequest.AddJsonBody(UserNotifications);
-            try
+            if (StaticParams.EnableExternalService)
             {
-                var response = await restClient.ExecuteAsync<List<UserNotification>>(restRequest);
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                RestClient restClient = new RestClient(InternalServices.UTILS);
+                RestRequest restRequest = new RestRequest("/rpc/utils/user-notification/bulk-create");
+                restRequest.RequestFormat = DataFormat.Json;
+                restRequest.Method = Method.POST;
+                restRequest.AddCookie("Token", CurrentContext.Token);
+                restRequest.AddCookie("X-Language", CurrentContext.Language);
+                restRequest.AddJsonBody(UserNotifications);
+                try
                 {
-                    return UserNotifications;
+                    var response = await restClient.ExecuteAsync<List<UserNotification>>(restRequest);
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        return UserNotifications;
+                    }
                 }
-            }
-            catch
-            {
-                return null;
+                catch
+                {
+                    return null;
+                }
             }
             return null;
         }
