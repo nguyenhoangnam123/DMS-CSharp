@@ -4,3 +4,5 @@ DMS/obj/
 docker-compose.override.*
 
 DMS/appsettings.Development.json
+DMS.Tests/bin/
+DMS.Tests/obj/

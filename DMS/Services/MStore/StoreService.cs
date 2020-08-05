@@ -176,7 +176,7 @@ namespace DMS.Services.MStore
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đại lý cắm cờ {StoreScouting.Code} - {StoreScouting.Name} đã được mở đại lý bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
-                        LinkWebsite = $"{StoreRoute.Detail}".Replace("*", Store.Id.ToString()),
+                        LinkWebsite = $"{StoreRoute.Master}/?id=*".Replace("*", Store.Id.ToString()),
                         LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
                         RecipientId = StoreScouting.CreatorId,
                         SenderId = CurrentContext.UserId,
@@ -197,7 +197,7 @@ namespace DMS.Services.MStore
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đại lý {Store.Code} - {Store.Name} vừa được thêm mới vào hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
-                        LinkWebsite = $"{StoreRoute.Detail}".Replace("*", Store.Id.ToString()),
+                        LinkWebsite = $"{StoreRoute.Master}/?id=*".Replace("*", Store.Id.ToString()),
                         LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
@@ -251,7 +251,7 @@ namespace DMS.Services.MStore
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đại lý {Store.Code} - {Store.Name} vừa được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
-                        LinkWebsite = $"{StoreRoute.Detail}".Replace("*", Store.Id.ToString()),
+                        LinkWebsite = $"{StoreRoute.Master}/?id=*".Replace("*", Store.Id.ToString()),
                         LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
