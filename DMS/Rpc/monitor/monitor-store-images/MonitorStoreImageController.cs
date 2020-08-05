@@ -334,6 +334,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                             },
                             Store = new MonitorStoreImage_StoreDTO
                             {
+                                Address = s.Address,
                                 Name = s.Name
                             }
                         };
