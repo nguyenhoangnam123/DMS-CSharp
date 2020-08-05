@@ -13,7 +13,7 @@ namespace DMS.Entities
         public string Name { get; set; }
         public long WorkflowParameterTypeId { get; set; }
 
-        public virtual WorkflowParameterType WorkflowParameterType { get; set; }
+        public WorkflowParameterType WorkflowParameterType { get; set; }
     }
 
     public class WorkflowOperatorFilter : FilterEntity
