@@ -15,7 +15,7 @@ namespace DMS.Models
         public string Code { get; set; }
         public string Name { get; set; }
         public long SaleEmployeeId { get; set; }
-        public long? OrganizationId { get; set; }
+        public long OrganizationId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime RealStartDate { get; set; }
         public DateTime? EndDate { get; set; }
