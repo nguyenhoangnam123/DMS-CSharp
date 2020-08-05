@@ -454,6 +454,7 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.ListStore), HttpPost]
         public async Task<List<Mobile_StoreDTO>> ListStore([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Search = Mobile_StoreFilterDTO.Search;
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
@@ -465,7 +466,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.Code = Mobile_StoreFilterDTO.Code;
             StoreFilter.Name = Mobile_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = Mobile_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = Mobile_StoreFilterDTO.OrganizationId;
+            StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId.Value };
             StoreFilter.StoreTypeId = Mobile_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
@@ -851,7 +852,7 @@ namespace DMS.Rpc.mobile
             StoreScoutingFilter.CreatedAt = Mobile_StoreScoutingFilterDTO.CreatedAt;
             StoreScoutingFilter.AppUserId = new IdFilter { Equal = appUser.Id };
             StoreScoutingFilter.DistrictId = Mobile_StoreScoutingFilterDTO.DistrictId;
-            StoreScoutingFilter.OrganizationId = Mobile_StoreScoutingFilterDTO.OrganizationId;
+            StoreScoutingFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId.Value };
             StoreScoutingFilter.ProvinceId = Mobile_StoreScoutingFilterDTO.ProvinceId;
             StoreScoutingFilter.WardId = Mobile_StoreScoutingFilterDTO.WardId;
             StoreScoutingFilter.StoreScoutingStatusId = Mobile_StoreScoutingFilterDTO.StoreScoutingStatusId;
@@ -878,7 +879,7 @@ namespace DMS.Rpc.mobile
             StoreScoutingFilter.CreatedAt = Mobile_StoreScoutingFilterDTO.CreatedAt;
             StoreScoutingFilter.AppUserId = new IdFilter { Equal = appUser.Id };
             StoreScoutingFilter.DistrictId = Mobile_StoreScoutingFilterDTO.DistrictId;
-            StoreScoutingFilter.OrganizationId = Mobile_StoreScoutingFilterDTO.OrganizationId;
+            StoreScoutingFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId.Value };
             StoreScoutingFilter.ProvinceId = Mobile_StoreScoutingFilterDTO.ProvinceId;
             StoreScoutingFilter.WardId = Mobile_StoreScoutingFilterDTO.WardId;
             StoreScoutingFilter.StoreScoutingStatusId = Mobile_StoreScoutingFilterDTO.StoreScoutingStatusId;
