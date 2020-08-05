@@ -116,17 +116,6 @@ namespace DMS.Repositories
                 WorkflowDefinitionId = filter.Selects.Contains(WorkflowParameterSelect.WorkflowDefinition) ? q.WorkflowDefinitionId : default(long),
                 Code = filter.Selects.Contains(WorkflowParameterSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(WorkflowParameterSelect.Name) ? q.Name : default(string),
-                WorkflowDefinition = filter.Selects.Contains(WorkflowParameterSelect.WorkflowDefinition) && q.WorkflowDefinition != null ? new WorkflowDefinition
-                {
-                    Id = q.WorkflowDefinition.Id,
-                    Code = q.WorkflowDefinition.Code,
-                    Name = q.WorkflowDefinition.Name,
-                    WorkflowTypeId = q.WorkflowDefinition.WorkflowTypeId,
-                    StartDate = q.WorkflowDefinition.StartDate,
-                    EndDate = q.WorkflowDefinition.EndDate,
-                    StatusId = q.WorkflowDefinition.StatusId,
-                    UpdatedAt = q.WorkflowDefinition.UpdatedAt,
-                } : null,
             }).ToListAsync();
             return WorkflowParameters;
         }
@@ -157,17 +146,6 @@ namespace DMS.Repositories
                 WorkflowDefinitionId = x.WorkflowDefinitionId,
                 Code = x.Code,
                 Name = x.Name,
-                WorkflowDefinition = x.WorkflowDefinition == null ? null : new WorkflowDefinition
-                {
-                    Id = x.WorkflowDefinition.Id,
-                    Code = x.WorkflowDefinition.Code,
-                    Name = x.WorkflowDefinition.Name,
-                    WorkflowTypeId = x.WorkflowDefinition.WorkflowTypeId,
-                    StartDate = x.WorkflowDefinition.StartDate,
-                    EndDate = x.WorkflowDefinition.EndDate,
-                    StatusId = x.WorkflowDefinition.StatusId,
-                    UpdatedAt = x.WorkflowDefinition.UpdatedAt,
-                },
             }).FirstOrDefaultAsync();
 
             if (WorkflowParameter == null)

@@ -12,6 +12,7 @@ namespace DMS.Entities
         public string Code { get; set; }
         public string Name { get; set; }
         public long SaleEmployeeId { get; set; }
+        public long OrganizationId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime RealStartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -21,6 +22,7 @@ namespace DMS.Entities
         public long CreatorId { get; set; }
         public AppUser Creator { get; set; }
         public ERouteType ERouteType { get; set; }
+        public Organization Organization { get; set; }
         public RequestState RequestState { get; set; }
         public AppUser SaleEmployee { get; set; }
         public Status Status { get; set; }
@@ -71,6 +73,7 @@ namespace DMS.Entities
         ERouteType = 6,
         RequestState = 7,
         Status = 8,
+        Organization = 9,
         Creator = 12,
         CreatedAt = 50,
         UpdatedAt = 51,
@@ -90,6 +93,7 @@ namespace DMS.Entities
         RequestState = E._7,
         Status = E._8,
         RealStartDate = E._9,
+        Organization = E._10,
         Creator = E._12,
     }
 }

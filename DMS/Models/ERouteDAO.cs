@@ -15,6 +15,7 @@ namespace DMS.Models
         public string Code { get; set; }
         public string Name { get; set; }
         public long SaleEmployeeId { get; set; }
+        public long OrganizationId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime RealStartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -28,6 +29,7 @@ namespace DMS.Models
 
         public virtual AppUserDAO Creator { get; set; }
         public virtual ERouteTypeDAO ERouteType { get; set; }
+        public virtual OrganizationDAO Organization { get; set; }
         public virtual RequestStateDAO RequestState { get; set; }
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StatusDAO Status { get; set; }

@@ -46,18 +46,17 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.OrganizationId != null)
             {
-                query = query.Where(q => q.SaleEmployee.OrganizationId.HasValue);
                 if (filter.OrganizationId.Equal != null)
                 {
                     OrganizationDAO OrganizationDAO = DataContext.Organization
                         .Where(o => o.Id == filter.OrganizationId.Equal.Value).FirstOrDefault();
-                    query = query.Where(q => q.SaleEmployee.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    query = query.Where(q => q.Organization.Path.StartsWith(OrganizationDAO.Path));
                 }
                 if (filter.OrganizationId.NotEqual != null)
                 {
                     OrganizationDAO OrganizationDAO = DataContext.Organization
                         .Where(o => o.Id == filter.OrganizationId.NotEqual.Value).FirstOrDefault();
-                    query = query.Where(q => !q.SaleEmployee.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    query = query.Where(q => !q.Organization.Path.StartsWith(OrganizationDAO.Path));
                 }
                 if (filter.OrganizationId.In != null)
                 {
@@ -66,7 +65,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q =>  Ids.Contains(q.SaleEmployee.OrganizationId.Value));
+                    query = query.Where(q =>  Ids.Contains(q.OrganizationId));
                 }
                 if (filter.OrganizationId.NotIn != null)
                 {
@@ -75,7 +74,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q => !Ids.Contains(q.SaleEmployee.OrganizationId.Value));
+                    query = query.Where(q => !Ids.Contains(q.OrganizationId));
                 }
             }
             if (filter.AppUserId != null)
@@ -163,6 +162,9 @@ namespace DMS.Repositories
                         case ERouteOrder.SaleEmployee:
                             query = query.OrderBy(q => q.SaleEmployeeId);
                             break;
+                        case ERouteOrder.Organization:
+                            query = query.OrderBy(q => q.OrganizationId);
+                            break;
                         case ERouteOrder.StartDate:
                             query = query.OrderBy(q => q.StartDate);
                             break;
@@ -198,6 +200,9 @@ namespace DMS.Repositories
                         case ERouteOrder.SaleEmployee:
                             query = query.OrderByDescending(q => q.SaleEmployeeId);
                             break;
+                        case ERouteOrder.Organization:
+                            query = query.OrderByDescending(q => q.OrganizationId);
+                            break;
                         case ERouteOrder.StartDate:
                             query = query.OrderByDescending(q => q.StartDate);
                             break;
@@ -231,6 +236,7 @@ namespace DMS.Repositories
                 Code = filter.Selects.Contains(ERouteSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(ERouteSelect.Name) ? q.Name : default(string),
                 SaleEmployeeId = filter.Selects.Contains(ERouteSelect.SaleEmployee) ? q.SaleEmployeeId : default(long),
+                OrganizationId = filter.Selects.Contains(ERouteSelect.Organization) ? q.OrganizationId : default(long),
                 StartDate = filter.Selects.Contains(ERouteSelect.StartDate) ? q.StartDate : default(DateTime),
                 EndDate = filter.Selects.Contains(ERouteSelect.EndDate) ? q.EndDate : default(DateTime?),
                 ERouteTypeId = filter.Selects.Contains(ERouteSelect.ERouteType) ? q.ERouteTypeId : default(long),
@@ -245,6 +251,19 @@ namespace DMS.Repositories
                     Address = q.Creator.Address,
                     Email = q.Creator.Email,
                     Phone = q.Creator.Phone,
+                } : null,
+                Organization = filter.Selects.Contains(ERouteSelect.Organization) && q.Organization != null ? new Organization
+                {
+                    Id = q.Organization.Id,
+                    Code = q.Organization.Code,
+                    Name = q.Organization.Name,
+                    Address = q.Organization.Address,
+                    Phone = q.Organization.Phone,
+                    Path = q.Organization.Path,
+                    ParentId = q.Organization.ParentId,
+                    Email = q.Organization.Email,
+                    StatusId = q.Organization.StatusId,
+                    Level = q.Organization.Level
                 } : null,
                 ERouteType = filter.Selects.Contains(ERouteSelect.ERouteType) && q.ERouteType != null ? new ERouteType
                 {
@@ -307,6 +326,7 @@ namespace DMS.Repositories
                 Code = x.Code,
                 Name = x.Name,
                 SaleEmployeeId = x.SaleEmployeeId,
+                OrganizationId = x.OrganizationId,
                 StartDate = x.StartDate,
                 EndDate = x.EndDate,
                 ERouteTypeId = x.ERouteTypeId,
@@ -327,6 +347,19 @@ namespace DMS.Repositories
                     Id = x.ERouteType.Id,
                     Code = x.ERouteType.Code,
                     Name = x.ERouteType.Name,
+                },
+                Organization = x.Organization == null ? null : new Organization
+                {
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    Address = x.Organization.Address,
+                    Phone = x.Organization.Phone,
+                    Path = x.Organization.Path,
+                    ParentId = x.Organization.ParentId,
+                    Email = x.Organization.Email,
+                    StatusId = x.Organization.StatusId,
+                    Level = x.Organization.Level
                 },
                 RequestState = x.RequestState == null ? null : new RequestState
                 {
@@ -408,6 +441,7 @@ namespace DMS.Repositories
             ERouteDAO.Code = ERoute.Code;
             ERouteDAO.Name = ERoute.Name;
             ERouteDAO.SaleEmployeeId = ERoute.SaleEmployeeId;
+            ERouteDAO.OrganizationId = ERoute.OrganizationId;
             ERouteDAO.StartDate = ERoute.StartDate;
             ERouteDAO.RealStartDate = ERoute.RealStartDate;
             ERouteDAO.EndDate = ERoute.EndDate;
@@ -433,6 +467,7 @@ namespace DMS.Repositories
             ERouteDAO.Code = ERoute.Code;
             ERouteDAO.Name = ERoute.Name;
             ERouteDAO.SaleEmployeeId = ERoute.SaleEmployeeId;
+            ERouteDAO.OrganizationId = ERoute.OrganizationId;
             ERouteDAO.StartDate = ERoute.StartDate;
             ERouteDAO.EndDate = ERoute.EndDate;
             ERouteDAO.RealStartDate = ERoute.RealStartDate;
@@ -468,6 +503,7 @@ namespace DMS.Repositories
                 ERouteDAO.Code = ERoute.Code;
                 ERouteDAO.Name = ERoute.Name;
                 ERouteDAO.SaleEmployeeId = ERoute.SaleEmployeeId;
+                ERouteDAO.OrganizationId = ERoute.OrganizationId;
                 ERouteDAO.StartDate = ERoute.StartDate;
                 ERouteDAO.EndDate = ERoute.EndDate;
                 ERouteDAO.ERouteTypeId = ERoute.ERouteTypeId;

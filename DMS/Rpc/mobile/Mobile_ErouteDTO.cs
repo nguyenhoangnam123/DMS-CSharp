@@ -10,6 +10,7 @@ namespace DMS.Rpc.mobile
         public string Code { get; set; }
         public string Name { get; set; }
         public long SaleEmployeeId { get; set; }
+        public long OrganizationId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long? ERouteTypeId { get; set; }
@@ -25,6 +26,7 @@ namespace DMS.Rpc.mobile
             this.Code = ERoute.Code;
             this.Name = ERoute.Name;
             this.SaleEmployeeId = ERoute.SaleEmployeeId;
+            this.OrganizationId = ERoute.OrganizationId;
             this.StartDate = ERoute.StartDate;
             this.EndDate = ERoute.EndDate;
             this.ERouteTypeId = ERoute.ERouteTypeId;
@@ -43,6 +45,7 @@ namespace DMS.Rpc.mobile
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public IdFilter SaleEmployeeId { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public DateFilter StartDate { get; set; }
         public DateFilter EndDate { get; set; }
         public IdFilter ERouteTypeId { get; set; }

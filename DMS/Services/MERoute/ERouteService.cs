@@ -123,6 +123,7 @@ namespace DMS.Services.MERoute
                 int diff = (7 + (ERoute.StartDate.DayOfWeek - DayOfWeek.Monday)) % 7;
                 ERoute.RealStartDate = ERoute.StartDate.AddDays(-1 * diff);
                 ERoute.CreatorId = CurrentContext.UserId;
+                ERoute.OrganizationId = CurrentUser.OrganizationId.Value;
                 ERoute.RequestStateId = RequestStateEnum.NEW.Id;
                 await UOW.Begin();
                 await UOW.ERouteRepository.Create(ERoute);

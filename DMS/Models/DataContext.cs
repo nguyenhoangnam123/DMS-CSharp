@@ -816,6 +816,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ERoute_ERouteType");
 
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.ERoutes)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERoute_Organization");
+
                 entity.HasOne(d => d.RequestState)
                     .WithMany(p => p.ERoutes)
                     .HasForeignKey(d => d.RequestStateId)
@@ -1370,8 +1376,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<IndirectSalesOrderTransactionDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Discount).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Revenue).HasColumnType("decimal(18, 4)");

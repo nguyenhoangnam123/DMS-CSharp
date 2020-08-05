@@ -212,6 +212,7 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrder.DeliveryAddress = Mobile_IndirectSalesOrderDTO.DeliveryAddress;
             IndirectSalesOrder.SellerStoreId = Mobile_IndirectSalesOrderDTO.SellerStoreId;
             IndirectSalesOrder.SaleEmployeeId = Mobile_IndirectSalesOrderDTO.SaleEmployeeId;
+            IndirectSalesOrder.OrganizationId = Mobile_IndirectSalesOrderDTO.OrganizationId;
             IndirectSalesOrder.OrderDate = Mobile_IndirectSalesOrderDTO.OrderDate;
             IndirectSalesOrder.DeliveryDate = Mobile_IndirectSalesOrderDTO.DeliveryDate;
             IndirectSalesOrder.RequestStateId = Mobile_IndirectSalesOrderDTO.RequestStateId;
@@ -254,6 +255,19 @@ namespace DMS.Rpc.mobile
                 Id = Mobile_IndirectSalesOrderDTO.EditedPriceStatus.Id,
                 Code = Mobile_IndirectSalesOrderDTO.EditedPriceStatus.Code,
                 Name = Mobile_IndirectSalesOrderDTO.EditedPriceStatus.Name,
+            };
+            IndirectSalesOrder.Organization = Mobile_IndirectSalesOrderDTO.Organization == null ? null : new Organization
+            {
+                Id = Mobile_IndirectSalesOrderDTO.Organization.Id,
+                Code = Mobile_IndirectSalesOrderDTO.Organization.Code,
+                Name = Mobile_IndirectSalesOrderDTO.Organization.Name,
+                ParentId = Mobile_IndirectSalesOrderDTO.Organization.ParentId,
+                Path = Mobile_IndirectSalesOrderDTO.Organization.Path,
+                Level = Mobile_IndirectSalesOrderDTO.Organization.Level,
+                StatusId = Mobile_IndirectSalesOrderDTO.Organization.StatusId,
+                Phone = Mobile_IndirectSalesOrderDTO.Organization.Phone,
+                Address = Mobile_IndirectSalesOrderDTO.Organization.Address,
+                Email = Mobile_IndirectSalesOrderDTO.Organization.Email,
             };
             IndirectSalesOrder.SaleEmployee = Mobile_IndirectSalesOrderDTO.SaleEmployee == null ? null : new AppUser
             {
@@ -508,6 +522,7 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrder.DeliveryAddress = Mobile_IndirectSalesOrderDTO.DeliveryAddress;
             IndirectSalesOrder.SellerStoreId = Mobile_IndirectSalesOrderDTO.SellerStoreId;
             IndirectSalesOrder.SaleEmployeeId = Mobile_IndirectSalesOrderDTO.SaleEmployeeId;
+            IndirectSalesOrder.OrganizationId = Mobile_IndirectSalesOrderDTO.OrganizationId;
             IndirectSalesOrder.OrderDate = Mobile_IndirectSalesOrderDTO.OrderDate;
             IndirectSalesOrder.DeliveryDate = Mobile_IndirectSalesOrderDTO.DeliveryDate;
             IndirectSalesOrder.RequestStateId = Mobile_IndirectSalesOrderDTO.RequestStateId;
@@ -544,6 +559,19 @@ namespace DMS.Rpc.mobile
                 TaxCode = Mobile_IndirectSalesOrderDTO.BuyerStore.TaxCode,
                 LegalEntity = Mobile_IndirectSalesOrderDTO.BuyerStore.LegalEntity,
                 StatusId = Mobile_IndirectSalesOrderDTO.BuyerStore.StatusId,
+            };
+            IndirectSalesOrder.Organization = Mobile_IndirectSalesOrderDTO.Organization == null ? null : new Organization
+            {
+                Id = Mobile_IndirectSalesOrderDTO.Organization.Id,
+                Code = Mobile_IndirectSalesOrderDTO.Organization.Code,
+                Name = Mobile_IndirectSalesOrderDTO.Organization.Name,
+                ParentId = Mobile_IndirectSalesOrderDTO.Organization.ParentId,
+                Path = Mobile_IndirectSalesOrderDTO.Organization.Path,
+                Level = Mobile_IndirectSalesOrderDTO.Organization.Level,
+                StatusId = Mobile_IndirectSalesOrderDTO.Organization.StatusId,
+                Phone = Mobile_IndirectSalesOrderDTO.Organization.Phone,
+                Address = Mobile_IndirectSalesOrderDTO.Organization.Address,
+                Email = Mobile_IndirectSalesOrderDTO.Organization.Email,
             };
             IndirectSalesOrder.EditedPriceStatus = Mobile_IndirectSalesOrderDTO.EditedPriceStatus == null ? null : new EditedPriceStatus
             {

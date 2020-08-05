@@ -10,6 +10,7 @@ namespace DMS.Models
             AppUserERouteScopes = new HashSet<AppUserDAO>();
             AppUserOrganizations = new HashSet<AppUserDAO>();
             DirectPriceLists = new HashSet<DirectPriceListDAO>();
+            ERoutes = new HashSet<ERouteDAO>();
             IndirectPriceLists = new HashSet<IndirectPriceListDAO>();
             IndirectSalesOrderTransactions = new HashSet<IndirectSalesOrderTransactionDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
@@ -42,6 +43,7 @@ namespace DMS.Models
         public virtual ICollection<AppUserDAO> AppUserERouteScopes { get; set; }
         public virtual ICollection<AppUserDAO> AppUserOrganizations { get; set; }
         public virtual ICollection<DirectPriceListDAO> DirectPriceLists { get; set; }
+        public virtual ICollection<ERouteDAO> ERoutes { get; set; }
         public virtual ICollection<IndirectPriceListDAO> IndirectPriceLists { get; set; }
         public virtual ICollection<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactions { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
