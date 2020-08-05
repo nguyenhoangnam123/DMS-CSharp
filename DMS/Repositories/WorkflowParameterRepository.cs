@@ -112,10 +112,11 @@ namespace DMS.Repositories
         {
             List<WorkflowParameter> WorkflowParameters = await query.Select(q => new WorkflowParameter()
             {
-                Id = filter.Selects.Contains(WorkflowParameterSelect.Id) ? q.Id : default(long),
-                WorkflowDefinitionId = filter.Selects.Contains(WorkflowParameterSelect.WorkflowDefinition) ? q.WorkflowDefinitionId : default(long),
-                Code = filter.Selects.Contains(WorkflowParameterSelect.Code) ? q.Code : default(string),
-                Name = filter.Selects.Contains(WorkflowParameterSelect.Name) ? q.Name : default(string),
+                Id = q.Id,
+                WorkflowDefinitionId = q.WorkflowDefinitionId,
+                Code = q.Code,
+                Name = q.Name,
+                WorkflowParameterTypeId = q.WorkflowParameterTypeId,
             }).ToListAsync();
             return WorkflowParameters;
         }
@@ -146,6 +147,7 @@ namespace DMS.Repositories
                 WorkflowDefinitionId = x.WorkflowDefinitionId,
                 Code = x.Code,
                 Name = x.Name,
+                WorkflowParameterTypeId = x.WorkflowParameterTypeId,
             }).FirstOrDefaultAsync();
 
             if (WorkflowParameter == null)
@@ -160,6 +162,7 @@ namespace DMS.Repositories
             WorkflowParameterDAO.WorkflowDefinitionId = WorkflowParameter.WorkflowDefinitionId;
             WorkflowParameterDAO.Code = WorkflowParameter.Code;
             WorkflowParameterDAO.Name = WorkflowParameter.Name;
+            WorkflowParameterDAO.WorkflowParameterTypeId = WorkflowParameter.WorkflowParameterTypeId;
             DataContext.WorkflowParameter.Add(WorkflowParameterDAO);
             await DataContext.SaveChangesAsync();
             WorkflowParameter.Id = WorkflowParameterDAO.Id;
@@ -176,6 +179,7 @@ namespace DMS.Repositories
             WorkflowParameterDAO.WorkflowDefinitionId = WorkflowParameter.WorkflowDefinitionId;
             WorkflowParameterDAO.Code = WorkflowParameter.Code;
             WorkflowParameterDAO.Name = WorkflowParameter.Name;
+            WorkflowParameterDAO.WorkflowParameterTypeId = WorkflowParameter.WorkflowParameterTypeId;
             await DataContext.SaveChangesAsync();
             await SaveReference(WorkflowParameter);
             return true;
@@ -197,6 +201,7 @@ namespace DMS.Repositories
                 WorkflowParameterDAO.WorkflowDefinitionId = WorkflowParameter.WorkflowDefinitionId;
                 WorkflowParameterDAO.Code = WorkflowParameter.Code;
                 WorkflowParameterDAO.Name = WorkflowParameter.Name;
+                WorkflowParameterDAO.WorkflowParameterTypeId = WorkflowParameter.WorkflowParameterTypeId;
                 WorkflowParameterDAOs.Add(WorkflowParameterDAO);
             }
             await DataContext.BulkMergeAsync(WorkflowParameterDAOs);

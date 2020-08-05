@@ -21,6 +21,7 @@ namespace DMS.Entities
         public DateTime UpdatedAt { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }
         public List<WorkflowParameter> WorkflowParameters { get; set; }
+        public List<WorkflowDirectionCondition> WorkflowDirectionConditions { get; set; }
 
 
         public bool Equals(WorkflowDirection other)

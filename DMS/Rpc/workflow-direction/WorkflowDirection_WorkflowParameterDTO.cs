@@ -17,4 +17,11 @@ namespace DMS.Rpc.workflow_direction
             this.Name = WorkflowParameter.Name;
         }
     }
+
+    public class WorkflowDirection_WorkflowParameterFilterDTO : DataDTO
+    {
+        public IdFilter Id { get; set; }
+        public StringFilter Code { get; set; }
+        public StringFilter Name { get; set; }
+    }
 }

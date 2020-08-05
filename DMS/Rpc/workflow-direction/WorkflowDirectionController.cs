@@ -18,12 +18,16 @@ namespace DMS.Rpc.workflow_direction
         private IWorkflowStepService WorkflowStepService;
         private IWorkflowDefinitionService WorkflowDefinitionService;
         private IWorkflowDirectionService WorkflowDirectionService;
+        private IWorkflowParameterService WorkflowParameterService;
+        private IWorkflowOperatorService WorkflowOperatorService;
         private ICurrentContext CurrentContext;
         public WorkflowDirectionController(
             IAppUserService AppUserService,
             IWorkflowStepService WorkflowStepService,
             IWorkflowDefinitionService WorkflowDefinitionService,
             IWorkflowDirectionService WorkflowDirectionService,
+            IWorkflowParameterService WorkflowParameterService,
+            IWorkflowOperatorService WorkflowOperatorService,
             ICurrentContext CurrentContext
         )
         {
@@ -31,6 +35,8 @@ namespace DMS.Rpc.workflow_direction
             this.WorkflowStepService = WorkflowStepService;
             this.WorkflowDefinitionService = WorkflowDefinitionService;
             this.WorkflowDirectionService = WorkflowDirectionService;
+            this.WorkflowParameterService = WorkflowParameterService;
+            this.WorkflowOperatorService = WorkflowOperatorService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -471,6 +477,7 @@ namespace DMS.Rpc.workflow_direction
                 .Select(x => new WorkflowDirection_WorkflowStepDTO(x)).ToList();
             return WorkflowDirection_WorkflowStepDTOs;
         }
+
         [Route(WorkflowDirectionRoute.SingleListWorkflowDefinition), HttpPost]
         public async Task<List<WorkflowDirection_WorkflowDefinitionDTO>> SingleListWorkflowDefinition([FromBody] WorkflowDirection_WorkflowDefinitionFilterDTO WorkflowDirection_WorkflowDefinitionFilterDTO)
         {
@@ -498,6 +505,51 @@ namespace DMS.Rpc.workflow_direction
             return WorkflowDirection_WorkflowDefinitionDTOs;
         }
 
+        [Route(WorkflowDirectionRoute.SingleListWorkflowParameter), HttpPost]
+        public async Task<List<WorkflowDirection_WorkflowParameterDTO>> SingleListWorkflowParameter([FromBody] WorkflowDirection_WorkflowParameterFilterDTO WorkflowDirection_WorkflowParameterFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            WorkflowParameterFilter WorkflowParameterFilter = new WorkflowParameterFilter();
+            WorkflowParameterFilter.Skip = 0;
+            WorkflowParameterFilter.Take = 20;
+            WorkflowParameterFilter.OrderBy = WorkflowParameterOrder.Id;
+            WorkflowParameterFilter.OrderType = OrderType.ASC;
+            WorkflowParameterFilter.Selects = WorkflowParameterSelect.ALL;
+            WorkflowParameterFilter.Id = WorkflowDirection_WorkflowParameterFilterDTO.Id;
+            WorkflowParameterFilter.Code = WorkflowDirection_WorkflowParameterFilterDTO.Code;
+            WorkflowParameterFilter.Name = WorkflowDirection_WorkflowParameterFilterDTO.Name;
+          
+
+            List<WorkflowParameter> WorkflowParameters = await WorkflowParameterService.List(WorkflowParameterFilter);
+            List<WorkflowDirection_WorkflowParameterDTO> WorkflowDirection_WorkflowParameterDTOs = WorkflowParameters
+                .Select(x => new WorkflowDirection_WorkflowParameterDTO(x)).ToList();
+            return WorkflowDirection_WorkflowParameterDTOs;
+        }
+
+        [Route(WorkflowDirectionRoute.SingleListWorkflowOperator), HttpPost]
+        public async Task<List<WorkflowDirection_WorkflowOperatorDTO>> SingleListWorkflowOperator([FromBody] WorkflowDirection_WorkflowOperatorFilterDTO WorkflowDirection_WorkflowOperatorFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            WorkflowOperatorFilter WorkflowOperatorFilter = new WorkflowOperatorFilter();
+            WorkflowOperatorFilter.Skip = 0;
+            WorkflowOperatorFilter.Take = 20;
+            WorkflowOperatorFilter.OrderBy = WorkflowOperatorOrder.Id;
+            WorkflowOperatorFilter.OrderType = OrderType.ASC;
+            WorkflowOperatorFilter.Selects = WorkflowOperatorSelect.ALL;
+            WorkflowOperatorFilter.Id = WorkflowDirection_WorkflowOperatorFilterDTO.Id;
+            WorkflowOperatorFilter.Code = WorkflowDirection_WorkflowOperatorFilterDTO.Code;
+            WorkflowOperatorFilter.Name = WorkflowDirection_WorkflowOperatorFilterDTO.Name;
+            WorkflowOperatorFilter.WorkflowParameterTypeId = WorkflowDirection_WorkflowOperatorFilterDTO.WorkflowParameterTypeId;
+
+            List<WorkflowOperator> WorkflowOperators = await WorkflowOperatorService.List(WorkflowOperatorFilter);
+            List<WorkflowDirection_WorkflowOperatorDTO> WorkflowDirection_WorkflowOperatorDTOs = WorkflowOperators
+                .Select(x => new WorkflowDirection_WorkflowOperatorDTO(x)).ToList();
+            return WorkflowDirection_WorkflowOperatorDTOs;
+        }
     }
 }
 

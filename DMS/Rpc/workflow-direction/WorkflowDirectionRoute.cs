@@ -23,6 +23,8 @@ namespace DMS.Rpc.workflow_direction
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListWorkflowStep = Default + "/single-list-workflow-step";
         public const string SingleListWorkflowDefinition = Default + "/single-list-workflow-definition";
+        public const string SingleListWorkflowParameter = Default + "/single-list-workflow-parameter";
+        public const string SingleListWorkflowOperator = Default + "/single-list-workflow-operator";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
@@ -36,12 +38,12 @@ namespace DMS.Rpc.workflow_direction
                 Master, Count, List, Get,
                 FilterListWorkflowStep, FilterListWorkflowDefinition,
                 Detail, Create,
-                SingleListWorkflowStep, SingleListWorkflowDefinition, SingleListAppUser } },
+                SingleListWorkflowStep, SingleListWorkflowDefinition, SingleListAppUser, SingleListWorkflowParameter, SingleListWorkflowOperator, } },
             { "Sửa", new List<string> {
                 Master, Count, List, Get,
                 FilterListWorkflowStep, FilterListWorkflowDefinition,
                 Detail, Update,
-                SingleListWorkflowStep, SingleListWorkflowDefinition, SingleListAppUser } },
+                SingleListWorkflowStep, SingleListWorkflowDefinition, SingleListAppUser, SingleListWorkflowParameter, SingleListWorkflowOperator, } },
             { "Xoá", new List<string> {
                 Master, Count, List, Get,
                 FilterListWorkflowStep, FilterListWorkflowDefinition,
