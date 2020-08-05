@@ -192,6 +192,7 @@ namespace DMS.Rpc.e_route
             ERoute.Code = ERoute_ERouteDTO.Code;
             ERoute.Name = ERoute_ERouteDTO.Name;
             ERoute.SaleEmployeeId = ERoute_ERouteDTO.SaleEmployeeId;
+            ERoute.OrganizationId = ERoute_ERouteDTO.OrganizationId;
             ERoute.StartDate = ERoute_ERouteDTO.StartDate;
             ERoute.EndDate = ERoute_ERouteDTO.EndDate;
             ERoute.ERouteTypeId = ERoute_ERouteDTO.ERouteTypeId;
@@ -214,6 +215,19 @@ namespace DMS.Rpc.e_route
                 Avatar = ERoute_ERouteDTO.Creator.Avatar,
                 Birthday = ERoute_ERouteDTO.Creator.Birthday,
                 ProvinceId = ERoute_ERouteDTO.Creator.ProvinceId,
+            };
+            ERoute.Organization = ERoute_ERouteDTO.Organization == null ? null : new Organization
+            {
+                Id = ERoute_ERouteDTO.Organization.Id,
+                Code = ERoute_ERouteDTO.Organization.Code,
+                Name = ERoute_ERouteDTO.Organization.Name,
+                ParentId = ERoute_ERouteDTO.Organization.ParentId,
+                Path = ERoute_ERouteDTO.Organization.Path,
+                Level = ERoute_ERouteDTO.Organization.Level,
+                StatusId = ERoute_ERouteDTO.Organization.StatusId,
+                Phone = ERoute_ERouteDTO.Organization.Phone,
+                Address = ERoute_ERouteDTO.Organization.Address,
+                Email = ERoute_ERouteDTO.Organization.Email,
             };
             ERoute.ERouteType = ERoute_ERouteDTO.ERouteType == null ? null : new ERouteType
             {

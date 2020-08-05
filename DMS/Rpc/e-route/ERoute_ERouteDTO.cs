@@ -12,6 +12,7 @@ namespace DMS.Rpc.e_route
         public string Code { get; set; }
         public string Name { get; set; }
         public long SaleEmployeeId { get; set; }
+        public long OrganizationId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long ERouteTypeId { get; set; }
@@ -20,6 +21,7 @@ namespace DMS.Rpc.e_route
         public long CreatorId { get; set; }
         public ERoute_AppUserDTO Creator { get; set; }
         public ERoute_ERouteTypeDTO ERouteType { get; set; }
+        public ERoute_OrganizationDTO Organization { get; set; }
         public ERoute_RequestStateDTO RequestState { get; set; }
         public ERoute_AppUserDTO SaleEmployee { get; set; }
         public ERoute_StatusDTO Status { get; set; }
@@ -33,6 +35,7 @@ namespace DMS.Rpc.e_route
             this.Code = ERoute.Code;
             this.Name = ERoute.Name;
             this.SaleEmployeeId = ERoute.SaleEmployeeId;
+            this.OrganizationId = ERoute.OrganizationId;
             this.StartDate = ERoute.StartDate;
             this.EndDate = ERoute.EndDate;
             this.ERouteTypeId = ERoute.ERouteTypeId;
@@ -43,6 +46,7 @@ namespace DMS.Rpc.e_route
             this.ERouteType = ERoute.ERouteType == null ? null : new ERoute_ERouteTypeDTO(ERoute.ERouteType);
             this.RequestState = ERoute.RequestState == null ? null : new ERoute_RequestStateDTO(ERoute.RequestState);
             this.SaleEmployee = ERoute.SaleEmployee == null ? null : new ERoute_AppUserDTO(ERoute.SaleEmployee);
+            this.Organization = ERoute.Organization == null ? null : new ERoute_OrganizationDTO(ERoute.Organization);
             this.Status = ERoute.Status == null ? null : new ERoute_StatusDTO(ERoute.Status);
             this.CreatedAt = ERoute.CreatedAt;
             this.UpdatedAt = ERoute.UpdatedAt;
