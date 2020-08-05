@@ -62,6 +62,7 @@ namespace DMS.Repositories
                 if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.USE_INDIRECT_SALES_ORDER))
                     SystemConfigurationDAO.Value = SystemConfiguration.USE_INDIRECT_SALES_ORDER.ToString();
             }
+            await DataContext.SaveChangesAsync();
             return true;
         }
 
