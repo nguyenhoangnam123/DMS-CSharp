@@ -5,8 +5,8 @@ namespace DMS.Rpc.workflow_definition
 {
     public class WorkflowDefinitionRoute : Root
     {
-        public const string Master = Module + "/workflow-definition/workflow-definition-master";
-        public const string Detail = Module + "/workflow-definition/workflow-definition-detail";
+        public const string Master = Module + "/workflow/workflow-definition-master";
+        public const string Detail = Module + "/workflow/workflow-definition-detail";
         private const string Default = Rpc + Module + "/workflow-definition";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

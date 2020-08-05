@@ -342,6 +342,7 @@ namespace DMS.Rpc.e_route
         [Route(ERouteRoute.FilterListAppUser), HttpPost]
         public async Task<List<ERoute_AppUserDTO>> FilterListAppUser([FromBody] ERoute_AppUserFilterDTO ERoute_AppUserFilterDTO)
         {
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             AppUserFilter AppUserFilter = new AppUserFilter();
             AppUserFilter.Skip = 0;
             AppUserFilter.Take = 20;
@@ -357,7 +358,7 @@ namespace DMS.Rpc.e_route
             AppUserFilter.Phone = ERoute_AppUserFilterDTO.Phone;
             AppUserFilter.PositionId = ERoute_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = ERoute_AppUserFilterDTO.Department;
-            AppUserFilter.OrganizationId = ERoute_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
             AppUserFilter.SexId = ERoute_AppUserFilterDTO.SexId;
             AppUserFilter.StatusId = ERoute_AppUserFilterDTO.StatusId;
             AppUserFilter.Birthday = ERoute_AppUserFilterDTO.Birthday;
@@ -374,6 +375,7 @@ namespace DMS.Rpc.e_route
         [Route(ERouteRoute.FilterListStore), HttpPost]
         public async Task<List<ERoute_StoreDTO>> FilterListStore([FromBody] ERoute_StoreFilterDTO ERoute_StoreFilterDTO)
         {
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Skip = 0;
             StoreFilter.Take = 20;
@@ -384,7 +386,7 @@ namespace DMS.Rpc.e_route
             StoreFilter.Code = ERoute_StoreFilterDTO.Code;
             StoreFilter.Name = ERoute_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
+            StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
             StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = ERoute_StoreFilterDTO.StoreGroupingId;
             StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
@@ -477,6 +479,7 @@ namespace DMS.Rpc.e_route
         [Route(ERouteRoute.SingleListAppUser), HttpPost]
         public async Task<List<ERoute_AppUserDTO>> SingleListAppUser([FromBody] ERoute_AppUserFilterDTO ERoute_AppUserFilterDTO)
         {
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             AppUserFilter AppUserFilter = new AppUserFilter();
             AppUserFilter.Skip = 0;
             AppUserFilter.Take = 20;
@@ -492,7 +495,7 @@ namespace DMS.Rpc.e_route
             AppUserFilter.Phone = ERoute_AppUserFilterDTO.Phone;
             AppUserFilter.PositionId = ERoute_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = ERoute_AppUserFilterDTO.Department;
-            AppUserFilter.OrganizationId = ERoute_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
             AppUserFilter.SexId = ERoute_AppUserFilterDTO.SexId;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             AppUserFilter.Birthday = ERoute_AppUserFilterDTO.Birthday;
@@ -573,6 +576,7 @@ namespace DMS.Rpc.e_route
         [Route(ERouteRoute.SingleListStore), HttpPost]
         public async Task<List<ERoute_StoreDTO>> SingleListStore([FromBody] ERoute_StoreFilterDTO ERoute_StoreFilterDTO)
         {
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Skip = 0;
             StoreFilter.Take = 20;
@@ -583,7 +587,7 @@ namespace DMS.Rpc.e_route
             StoreFilter.Code = ERoute_StoreFilterDTO.Code;
             StoreFilter.Name = ERoute_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
+            StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
             StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = ERoute_StoreFilterDTO.StoreGroupingId;
             StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
@@ -669,12 +673,13 @@ namespace DMS.Rpc.e_route
         [Route(ERouteRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] ERoute_StoreFilterDTO ERoute_StoreFilterDTO)
         {
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Id = ERoute_StoreFilterDTO.Id;
             StoreFilter.Code = ERoute_StoreFilterDTO.Code;
             StoreFilter.Name = ERoute_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
+            StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
             StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
             StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;
@@ -696,6 +701,7 @@ namespace DMS.Rpc.e_route
         [Route(ERouteRoute.ListStore), HttpPost]
         public async Task<List<ERoute_StoreDTO>> ListStore([FromBody] ERoute_StoreFilterDTO ERoute_StoreFilterDTO)
         {
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Skip = ERoute_StoreFilterDTO.Skip;
             StoreFilter.Take = ERoute_StoreFilterDTO.Take;
@@ -706,7 +712,7 @@ namespace DMS.Rpc.e_route
             StoreFilter.Code = ERoute_StoreFilterDTO.Code;
             StoreFilter.Name = ERoute_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
+            StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
             StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
             StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;

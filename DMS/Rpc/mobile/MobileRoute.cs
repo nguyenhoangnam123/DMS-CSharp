@@ -24,6 +24,7 @@ namespace DMS.Rpc.mobile
         public const string SaveImage64 = Default + "/save-image-64";
         public const string UpdateAlbum = Default + "/update-album";
         public const string GetNotification = Default + "/get-notification";
+        public const string UpdateGPS = Default + "/update-gps";
 
         public const string SingleListAlbum = Default + "/single-list-album";
         public const string SingleListAppUser = Default + "/single-list-app-user";
