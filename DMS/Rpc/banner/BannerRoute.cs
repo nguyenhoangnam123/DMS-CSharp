@@ -5,6 +5,7 @@ namespace DMS.Rpc.banner
 {
     public class BannerRoute : Root
     {
+        public const string Parent = Module + "/application-banner";
         public const string Master = Module + "/application-banner/banner/banner-master";
         public const string Detail = Module + "/application-banner/banner/banner-detail/*";
         private const string Default = Rpc + Module + "/banner";
@@ -32,48 +33,48 @@ namespace DMS.Rpc.banner
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string>
-            {
+            { "Tìm kiếm", new List<string> {
+                Parent,
                 Master,
                 Detail,Count,List,Get,
                 FilterListAppUser, FilterListStatus}
             },
-            { "Thêm mới", new List<string>
-            {
+            { "Thêm mới", new List<string> {
+                Parent,
                 Master,
                 Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Create,
                 SingleListAppUser, SingleListAppUser, SingleListStatus}
             },
-            { "Sửa", new List<string>
-            {
+            { "Sửa", new List<string> {
+                Parent,
                 Master,
                 Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Update,
                 SingleListAppUser, SingleListAppUser, SingleListStatus}
             },
-            { "Lưu ảnh", new List<string>
-            {
+            { "Lưu ảnh", new List<string> {
+                Parent,
                 SaveImage}
             },
-            { "Xoá", new List<string>
-            {
+            { "Xoá", new List<string> {
+                Parent,
                 Master,
                 Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Delete,
                 SingleListAppUser, SingleListAppUser, SingleListStatus}
             },
-            { "Xoá nhiều", new List<string>
-            {
+            { "Xoá nhiều", new List<string> {
+                Parent,
                 Master,
                 Detail,Count,List,Get, BulkDelete,
                 FilterListAppUser, FilterListStatus}
             },
-            { "Xuất excel", new List<string>
-            {
+            { "Xuất excel", new List<string> {
+                Parent,
                 Master,
                 Detail,Count,List,Get, Export,
                 FilterListAppUser, FilterListStatus}
             },
-            { "Nhập excel", new List<string>
-            {
+            { "Nhập excel", new List<string> {
+                Parent,
                 Master,
                 Detail,Count,List,Get, ExportTemplate, Import,
                 FilterListAppUser, FilterListStatus}

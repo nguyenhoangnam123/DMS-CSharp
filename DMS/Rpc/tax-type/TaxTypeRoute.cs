@@ -5,6 +5,7 @@ namespace DMS.Rpc.tax_type
 {
     public class TaxTypeRoute : Root
     {
+        public const string Parent = Module + "/product-category";
         public const string Master = Module + "/product-category/tax-type/tax-type-master";
         public const string Detail = Module + "/product-category/tax-type/tax-type-detail/*";
         private const string Default = Rpc + Module + "/tax-type";
@@ -26,26 +27,33 @@ namespace DMS.Rpc.tax_type
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
+                Parent,
                 Master, Count, List, Get, } },
             { "Thêm", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Detail, Create,
                 SingleListStatus, } },
             { "Sửa", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Detail, Update,
                 SingleListStatus, } },
             { "Xoá", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Detail, Delete,
                 SingleListStatus, } },
             { "Xoá nhiều", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 BulkDelete } },
             { "Xuất excel", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Export } },
             { "Nhập excel", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Import } },
         };

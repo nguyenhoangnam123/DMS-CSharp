@@ -5,6 +5,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 {
     public class ReportStoreCheckedRoute : Root
     {
+        public const string Parent = Module + "/store-checking-report";
         public const string Master = Module + "/store-checking-report/store-checked-report-master";
 
         private const string Default = Rpc + Module + "/store-checked-report";
@@ -28,7 +29,9 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Export, FilterListOrganization, FilterListAppUser, FilterListStore, FilterListStoreType, FilterListStoreGrouping  } },
+                Parent,
+                Master, Count, List, Export, 
+                FilterListOrganization, FilterListAppUser, FilterListStore, FilterListStoreType, FilterListStoreGrouping  } },
 
         };
     }

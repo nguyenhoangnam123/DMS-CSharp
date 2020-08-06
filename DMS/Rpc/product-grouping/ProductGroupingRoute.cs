@@ -5,6 +5,7 @@ namespace DMS.Rpc.product_grouping
 {
     public class ProductGroupingRoute : Root
     {
+        public const string Parent = Module + "/product-category";
         public const string Master = Module + "/product-category/product-grouping/product-grouping-master";
         public const string Detail = Module + "/product-category/product-grouping/product-grouping-detail/*";
         private const string Default = Rpc + Module + "/product-grouping";
@@ -34,35 +35,49 @@ namespace DMS.Rpc.product_grouping
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct, } },
+                Parent,
+                Master, Count, List, Get,
+                FilterListProductGrouping, FilterListProduct, } },
 
             { "Thêm", new List<string> {
-                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListProductGrouping, FilterListProduct,
                 Detail, Create,
                 SingleListProductGrouping, SingleListProduct,
                 CountProduct, ListProduct, } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListProductGrouping, FilterListProduct,
                 Detail, Update,
                 SingleListProductGrouping, SingleListProduct,
                 CountProduct, ListProduct,} },
 
             { "Xoá", new List<string> {
-                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListProductGrouping, FilterListProduct,
                 Detail, Delete,
                 SingleListProductGrouping, SingleListProduct, } },
 
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,
+                Parent,
+                Master, Count, List, Get,
+                FilterListProductGrouping, FilterListProduct,
                 BulkDelete } },
 
             { "Xuất excel", new List<string> {
-                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListProductGrouping, FilterListProduct,
                 Export } },
 
             { "Nhập excel", new List<string> {
-                Master, Count, List, Get, FilterListProductGrouping, FilterListProduct,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListProductGrouping, FilterListProduct,
                 ExportTemplate, Import } },
         };
     }

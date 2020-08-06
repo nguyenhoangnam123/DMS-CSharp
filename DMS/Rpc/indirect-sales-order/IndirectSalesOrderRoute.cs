@@ -6,6 +6,7 @@ namespace DMS.Rpc.indirect_sales_order
 {
     public class IndirectSalesOrderRoute : Root
     {
+        public const string Parent = Module + "/sale-order";
         public const string Master = Module + "/sale-order/indirect-sales-order/indirect-sales-order-master";
         public const string Detail = Module + "/sale-order/indirect-sales-order/indirect-sales-order-detail/*";
         public const string Mobile = Module + ".indirect-sales-order.*";
@@ -64,11 +65,13 @@ namespace DMS.Rpc.indirect_sales_order
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
+                Parent,
                 Master, Count, List, Get, 
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 CountItem, ListItem,} },
 
             { "Thêm", new List<string> {
+                Parent,
                 Master, Count, List, Get, 
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Create, Approve, Reject,
@@ -77,6 +80,7 @@ namespace DMS.Rpc.indirect_sales_order
                 CountItem, ListItem, CountStore, ListStore, } },
 
             { "Sửa", new List<string> {
+                Parent,
                 Master, Count, List, Get, 
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Update, Approve, Reject,
@@ -85,12 +89,14 @@ namespace DMS.Rpc.indirect_sales_order
                 CountItem, ListItem, CountStore, ListStore, } },
 
             { "Xoá", new List<string> {
+                Parent,
                 Master, Count, List, Get, 
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Delete, Approve, Reject,
                 } },
 
             { "Xuất excel", new List<string> {
+                Parent,
                 Master, Count, List, Get, 
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Export } },

@@ -6,6 +6,7 @@ namespace DMS.Rpc.monitor_store_problems
 {
     public class MonitorStoreProblemRoute : Root
     {
+        public const string Parent = Module + "/monitor";
         public const string Master = Module + "/monitor/monitor-store-problem/monitor-store-problem-master";
         public const string Detail = Module + "/monitor/monitor-store-problem/monitor-store-problem-detail/*";
         public const string Mobile = Module + ".problem.*";
@@ -43,21 +44,29 @@ namespace DMS.Rpc.monitor_store_problems
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
+                Parent,
+                Master, Count, List, Get,
+                FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
                 CountProblemHistory, ListProblemHistory, Export } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get,  FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
+                Parent,
+                Master, Count, List, Get,  
+                FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
                 Detail, Update,
                 SingleListAppUser, SingleListOrganization, SingleListProblemStatus, SingleListProblemType, SingleListStore, } },
 
             { "Xoá", new List<string> {
-                Master, Count, List, Get,  FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
                 Detail, Delete,
                 SingleListAppUser, SingleListOrganization, SingleListProblemStatus, SingleListProblemType, SingleListStore, } },
 
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get, FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
                 CountProblemHistory, ListProblemHistory,
                 BulkDelete } },
 

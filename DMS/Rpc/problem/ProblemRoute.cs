@@ -6,6 +6,7 @@ namespace DMS.Rpc.problem
 {
     public class ProblemRoute : Root
     {
+        public const string Parent = Module + "/problem";
         public const string Master = Module + "/problem/problem-master";
         public const string Detail = Module + "/problem/problem-detail/*";
         public const string Mobile = Module + ".problem.*";
@@ -43,22 +44,30 @@ namespace DMS.Rpc.problem
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListAppUser, FilterListProblemStatus, FilterListProblemType, FilterListStore, FilterListStoreChecking, } },
+                Parent,
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListProblemStatus, FilterListProblemType, FilterListStore, FilterListStoreChecking, } },
 
             { "Thêm", new List<string> {
-                Master, Count, List, Get,  FilterListAppUser, FilterListProblemStatus, FilterListProblemType, FilterListStore, FilterListStoreChecking,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListProblemStatus, FilterListProblemType, FilterListStore, FilterListStoreChecking,
                 Detail, Create, SaveImage,
-                 SingleListAppUser, SingleListProblemStatus, SingleListProblemType, SingleListStore, SingleListStoreChecking, } },
+                SingleListAppUser, SingleListProblemStatus, SingleListProblemType, SingleListStore, SingleListStoreChecking, } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get,  FilterListAppUser, FilterListProblemStatus, FilterListProblemType, FilterListStore, FilterListStoreChecking,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListProblemStatus, FilterListProblemType, FilterListStore, FilterListStoreChecking,
                 Detail, Update, SaveImage,
-                 SingleListAppUser, SingleListProblemStatus, SingleListProblemType, SingleListStore, SingleListStoreChecking, } },
+                SingleListAppUser, SingleListProblemStatus, SingleListProblemType, SingleListStore, SingleListStoreChecking, } },
 
             { "Xoá", new List<string> {
-                Master, Count, List, Get,  FilterListAppUser, FilterListProblemStatus, FilterListProblemType, FilterListStore, FilterListStoreChecking,
+                Parent,
+                Master, Count, List, Get,  
+                FilterListAppUser, FilterListProblemStatus, FilterListProblemType, FilterListStore, FilterListStoreChecking,
                 Detail, Delete,
-                 SingleListAppUser, SingleListProblemStatus, SingleListProblemType, SingleListStore, SingleListStoreChecking, } },
+                SingleListAppUser, SingleListProblemStatus, SingleListProblemType, SingleListStore, SingleListStoreChecking, } },
 
         };
     }

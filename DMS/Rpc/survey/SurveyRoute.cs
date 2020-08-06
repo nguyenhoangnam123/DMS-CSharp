@@ -6,6 +6,7 @@ namespace DMS.Rpc.survey
 {
     public class SurveyRoute : Root
     {
+        public const string Parent = Module + "/knowledge";
         public const string Master = Module + "/knowledge/survey/survey-master";
         public const string Detail = Module + "/knowledge/survey/survey-detail/*";
         public const string Mobile = Module + ".survey.*";
@@ -41,27 +42,33 @@ namespace DMS.Rpc.survey
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, } },
             { "Thêm", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType,
                 Detail, Create,
                 SingleListAppUser, SingleListStatus, SingleListSurveyQuestionType, SingleListSurveyOptionType,  } },
             { "Sửa", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType,
                 Detail, Update,
                 SingleListAppUser, SingleListStatus, SingleListSurveyQuestionType, SingleListSurveyOptionType, } },
             { "Xoá", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType,
                 Delete, } },
             { "Trả lời", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType,
                 GetSurveyForm, SaveSurveyForm } },
             { "Xuất Excel", new List<string> {
+                Parent,
                 Master, Count, List, Get, Export,
                 FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType,
                 Delete, } },

@@ -8,6 +8,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
 {
     public class ReportSalesOrderByEmployeeAndItemRoute : Root
     {
+        public const string Parent = Module + "/sales-order-report";
         public const string Master = Module + "/sales-order-report/sales-order-by-employee-and-items-report-master";
 
         private const string Default = Rpc + Module + "/sales-order-by-employee-and-items-report";
@@ -29,7 +30,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Total, Export, FilterListOrganization, FilterListAppUser } },
+                Parent,
+                Master, Count, List, Total, Export,
+                FilterListOrganization, FilterListAppUser } },
 
         };
     }

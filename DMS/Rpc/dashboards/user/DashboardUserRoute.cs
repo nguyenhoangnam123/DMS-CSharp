@@ -8,6 +8,7 @@ namespace DMS.Rpc.dashboards.user
 {
     public class DashboardUserRoute : Root
     {
+        public const string Parent = Module + "/dashboards";
         public const string Master = Module + "/dashboards/user";
         private const string Default = Rpc + Module + "/dashboards/user";
 
@@ -29,6 +30,7 @@ namespace DMS.Rpc.dashboards.user
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Hiển thị", new List<string> {
+                Parent,
                 Master,
                 SalesQuantity, StoreChecking, Revenue, StatisticIndirectSalesOrder, ListIndirectSalesOrder, ListComment,
                 FilterListTime

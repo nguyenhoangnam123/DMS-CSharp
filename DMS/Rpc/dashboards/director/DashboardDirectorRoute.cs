@@ -8,6 +8,7 @@ namespace DMS.Rpc.dashboards.director
 {
     public class DashboardDirectorRoute : Root
     {
+        public const string Parent = Module + "/dashboards";
         public const string Master = Module + "/dashboards/director";
         private const string Default = Rpc + Module + "/dashboards/director";
         public const string CountStore = Default + "/count-store";
@@ -37,6 +38,7 @@ namespace DMS.Rpc.dashboards.director
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Hiển thị", new List<string> {
+                Parent,
                 Master,
                 CountStore, CountIndirectSalesOrder, RevenueTotal, ItemSalesTotal, CountStoreChecking, StatisticToday, StatisticYesterday,
                 StoreCoverage, SaleEmployeeLocation, ListIndirectSalesOrder, Top5RevenueByProduct, Top5RevenueByStore, RevenueFluctuation, SaledItemFluctuation,

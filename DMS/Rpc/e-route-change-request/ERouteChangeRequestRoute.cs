@@ -6,6 +6,7 @@ namespace DMS.Rpc.e_route_change_request
 {
     public class ERouteChangeRequestRoute : Root
     {
+        public const string Parent = Module + "/route";
         public const string Master = Module + "/route/e-route-change-request/e-route-change-request-master";
         public const string Detail = Module + "/route/e-route-change-request/e-route-change-request-detail/*";
         private const string Default = Rpc + Module + "/e-route-change-request";
@@ -49,26 +50,36 @@ namespace DMS.Rpc.e_route_change_request
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore,FilterListERouteType, } },
+                Parent,
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore,FilterListERouteType, } },
 
             { "Thêm", new List<string> {
-                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Create, GetDraft,
                 SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent, SingleListERouteType, SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore, } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
+                Parent,
+                Master, Count, List, Get,
+                FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Update,
                 SingleListAppUser, SingleListERoute, SingleListRequestState,  SingleListStore, SingleListERouteChangeRequestContent, SingleListERouteType,  SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore,  } },
 
             { "Xoá", new List<string> {
-                Master, Count, List, Get,  FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 Detail, Delete, } },
 
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get, FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListERoute, FilterListRequestState,  FilterListStore, FilterListERouteType,
                 BulkDelete } },
 
         };

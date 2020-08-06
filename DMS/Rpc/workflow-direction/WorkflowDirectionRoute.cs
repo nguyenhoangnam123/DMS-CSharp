@@ -5,6 +5,7 @@ namespace DMS.Rpc.workflow_direction
 {
     public class WorkflowDirectionRoute : Root
     {
+        public const string Parent = Module + "/workflow";
         public const string Master = Module + "/workflow/workflow-direction-master";
         public const string Detail = Module + "/workflow/workflow-direction-detail";
         private const string Default = Rpc + Module + "/workflow-direction";
@@ -32,19 +33,23 @@ namespace DMS.Rpc.workflow_direction
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListWorkflowStep, FilterListWorkflowDefinition, FilterListAppUser} },
             { "Thêm", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListWorkflowStep, FilterListWorkflowDefinition,
                 Detail, Create,
                 SingleListWorkflowStep, SingleListWorkflowDefinition, SingleListAppUser, SingleListWorkflowParameter, SingleListWorkflowOperator, } },
             { "Sửa", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListWorkflowStep, FilterListWorkflowDefinition,
                 Detail, Update,
                 SingleListWorkflowStep, SingleListWorkflowDefinition, SingleListAppUser, SingleListWorkflowParameter, SingleListWorkflowOperator, } },
             { "Xoá", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListWorkflowStep, FilterListWorkflowDefinition,
                 Delete, } },

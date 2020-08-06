@@ -5,6 +5,7 @@ namespace DMS.Rpc.organization
 {
     public class OrganizationRoute : Root
     {
+        public const string Parent = Module + "/account";
         public const string Master = Module + "/account/organization/organization-master";
         public const string Detail = Module + "/account/organization/organization-detail/*";
         private const string Default = Rpc + Module + "/organization";
@@ -26,8 +27,14 @@ namespace DMS.Rpc.organization
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { Master, Count, List, Get, FilterListOrganization, FilterListStatus, FilterListAppUser, } },
-            { "Xuất excel", new List<string> { Master, Count, List, Get, FilterListOrganization, FilterListStatus, FilterListAppUser, Export } },
+            { "Tìm kiếm", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListOrganization, FilterListStatus, FilterListAppUser, } },
+            { "Xuất excel", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                FilterListOrganization, FilterListStatus, FilterListAppUser, Export } },
         };
     }
 }

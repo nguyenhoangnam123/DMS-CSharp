@@ -5,6 +5,7 @@ namespace DMS.Rpc.store_type
 {
     public class StoreTypeRoute : Root
     {
+        public const string Parent = Module + "/location";
         public const string Master = Module + "/location/store-type/store-type-master";
         public const string Detail = Module + "/location/store-type/store-type-detail/*";
         private const string Default = Rpc + Module + "/store-type";
@@ -24,20 +25,25 @@ namespace DMS.Rpc.store_type
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
+                Parent,
                 Master, Count, List, Get, } },
             { "Thêm", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Detail, Create,
                 SingleListStatus, } },
             { "Sửa", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Detail, Update,
                 SingleListStatus, } },
             { "Xoá", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Detail, Delete,
                 SingleListStatus, } },
             { "Xoá nhiều", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 BulkDelete } },
         };

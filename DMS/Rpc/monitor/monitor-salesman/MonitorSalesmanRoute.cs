@@ -5,6 +5,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 {
     public class MonitorSalesmanRoute : Root
     {
+        public const string Parent = Module + "/monitor";
         public const string Master = Module + "/monitor/monitor-salesman/monitor-salesman-master";
 
         private const string Default = Rpc + Module + "/monitor-salesman";
@@ -26,7 +27,9 @@ namespace DMS.Rpc.monitor.monitor_salesman
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, Export, FilterListOrganization, FilterListAppUser, } },
+                Parent,
+                Master, Count, List, Get, Export, 
+                FilterListOrganization, FilterListAppUser, } },
         };
     }
 }
