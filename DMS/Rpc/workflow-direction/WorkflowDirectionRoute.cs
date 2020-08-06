@@ -6,8 +6,8 @@ namespace DMS.Rpc.workflow_direction
     public class WorkflowDirectionRoute : Root
     {
         public const string Parent = Module + "/workflow";
-        public const string Master = Module + "/workflow/workflow-direction-master";
-        public const string Detail = Module + "/workflow/workflow-direction-detail";
+        public const string Master = Module + "/workflow/workflow-direction/workflow-direction-master";
+        public const string Detail = Module + "/workflow/workflow-direction/workflow-direction-detail/*";
         private const string Default = Rpc + Module + "/workflow-direction";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

@@ -36,6 +36,7 @@ namespace DMS.Rpc
         //    // Convert "InputFile.docx" to Pdf written to outputStream
         //    documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
         //    return File(MemoryStream.ToArray(), "application/octet-stream", "VTB_TaiLieuCustomize.pdf");
+
         //}
     }
 }

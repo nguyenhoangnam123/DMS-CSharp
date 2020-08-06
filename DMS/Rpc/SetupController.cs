@@ -569,8 +569,6 @@ namespace DMS.Rpc
         [HttpGet, Route("rpc/dms/setup/init-enum")]
         public ActionResult InitEnum()
         {
-            InitDirectPriceListTypeEnum();
-            InitIndirectPriceListTypeEnum();
             InitEditedPriceStatusEnum();
             InitProblemTypeEnum();
             InitProblemStatusEnum();
@@ -705,28 +703,6 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.ResellerStatus.BulkSynchronize(ResellerStatusEnumList);
-        }
-
-        private void InitIndirectPriceListTypeEnum()
-        {
-            List<IndirectPriceListTypeDAO> IndirectPriceListTypeEnumList = IndirectPriceListTypeEnum.IndirectPriceListTypeEnumList.Select(item => new IndirectPriceListTypeDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.IndirectPriceListType.BulkSynchronize(IndirectPriceListTypeEnumList);
-        }
-
-        private void InitDirectPriceListTypeEnum()
-        {
-            List<DirectPriceListTypeDAO> DirectPriceListTypeEnumList = DirectPriceListTypeEnum.DirectPriceListTypeEnumList.Select(item => new DirectPriceListTypeDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.DirectPriceListType.BulkSynchronize(DirectPriceListTypeEnumList);
         }
 
         private void InitSurveyQuestionTypeEnum()

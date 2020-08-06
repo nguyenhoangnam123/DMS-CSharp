@@ -1,6 +1,9 @@
 ﻿using DMS.Rpc.album;
 using DMS.Services.MAlbum;
 using DMS.Services.MStatus;
+using LightBDD.Framework;
+using LightBDD.Framework.Scenarios;
+using LightBDD.NUnit3;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
@@ -19,23 +22,22 @@ namespace DMS.Tests.TAlbum
         {
             var StatusService = provider.GetService<IStatusService>();
             var AlbumService = provider.GetService<IAlbumService>();
-            AlbumController = new AlbumController(StatusService, AlbumService, currentContext);
+            AlbumController = new AlbumController(StatusService, AlbumService, CurrentContext);
         }
 
-        [Test]
-        public async Task FullData()
-        {
-            // arrange
-            Album_AlbumDTO Album_AlbumDTO = new Album_AlbumDTO
-            {
-                Name = "ABC",
-                StatusId = 1,
-            };
+        //[Scenario]
+        //[Label("List Album")]
+        //public async Task Valid_ReturnTrue()
+        //{
+        //    await Clean();
+        //    await Runner.AddAsyncSteps(
+        //        _ => Given_Admin_Context(),
+        //        _ => Given_Permission(),
+        //        _ => When_List_Action(Input),
+        //        _ => Then_Assert_Valid_GoodsReceiptPO(resultList)
+        //    ).RunAsync();
+        //}
 
-            //act
-            await AlbumController.Create(Album_AlbumDTO);
-
-            //assert
-        }
+        
     }
 }
