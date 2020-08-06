@@ -399,10 +399,12 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     if (CompetitorProblems.Count > i)
                     {
                         Info.CompetitorProblemCode = CompetitorProblems[i].Code;
+                        Info.CompetitorProblemId = CompetitorProblems[i].Id;
                     }
                     if (StoreProblems.Count > i)
                     {
                         Info.StoreProblemCode = StoreProblems[i].Code;
+                        Info.StoreProblemId = StoreProblems[i].Id;
                     }
                 }
             }
