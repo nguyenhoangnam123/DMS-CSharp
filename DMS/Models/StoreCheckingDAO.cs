@@ -16,8 +16,12 @@ namespace DMS.Models
         public long SaleEmployeeId { get; set; }
         public decimal? Longitude { get; set; }
         public decimal? Latitude { get; set; }
+        public decimal? CheckOutLongitude { get; set; }
+        public decimal? CheckOutLatitude { get; set; }
         public DateTime? CheckInAt { get; set; }
         public DateTime? CheckOutAt { get; set; }
+        public long? CheckInDistance { get; set; }
+        public long? CheckOutDistance { get; set; }
         public long? IndirectSalesOrderCounter { get; set; }
         public long? ImageCounter { get; set; }
         public bool Planned { get; set; }
