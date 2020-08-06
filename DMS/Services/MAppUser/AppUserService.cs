@@ -134,7 +134,7 @@ namespace DMS.Services.MAppUser
             try
             {
                 await UOW.AppUserRepository.SimpleUpdate(AppUser);
-                AppUser = await UOW.AppUserRepository.Get(Id);
+                AppUser = await UOW.AppUserRepository.Get(AppUser.Id);
                 return AppUser;
             }
             catch (Exception ex)
