@@ -6,6 +6,7 @@ namespace DMS.Rpc.store
 {
     public class StoreRoute : Root
     {
+        public const string Parent = Module + "/location";
         public const string Master = Module + "/location/store/store-master";
         public const string Detail = Module + "/location/store/store-detail/*";
         public const string Mobile = Module + ".store.*";
@@ -55,26 +56,40 @@ namespace DMS.Rpc.store
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore } },
+                Parent,
+                Master, Count, List, Get, 
+                FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore } },
             { "Thêm", new List<string> {
-                Master, Count, List, Get, GetDraft,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
+                Parent,
+                Master, Count, List, Get, GetDraft,  
+                FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, Create, CreateStoreScouting, SaveImage,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore} },
             { "Sửa", new List<string> {
-                Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, Update, SaveImage,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore} },
             { "Xoá", new List<string> {
-                Master, Count, List, Get,  FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
+                Parent,
+                Master, Count, List, Get,  
+                FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Delete, } },
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, BulkDelete } },
             { "Xuất excel", new List<string> {
-                Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, Export } },
             { "Nhập excel", new List<string> {
-                Master, Count, List, Get, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore,
                 Detail, ExportTemplate, Import } },
         };
     }

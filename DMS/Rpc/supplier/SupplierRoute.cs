@@ -5,6 +5,7 @@ namespace DMS.Rpc.supplier
 {
     public class SupplierRoute : Root
     {
+        public const string Parent = Module + "/partner";
         public const string Master = Module + "/partner/supplier/supplier-master";
         public const string Detail = Module + "/partner/supplier/supplier-detail/*";
         private const string Default = Rpc + Module + "/supplier";
@@ -31,21 +32,31 @@ namespace DMS.Rpc.supplier
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListStatus} },
+                Parent,
+                Master, Count, List, Get, 
+                FilterListStatus} },
             { "Thêm", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListStatus,
                 Detail, Create,
                 SingleListDistrict, SingleListPersonInCharge, SingleListProvince, SingleListStatus, SingleListWard, } },
             { "Sửa", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListStatus,
                 Detail, Update,
                 SingleListDistrict, SingleListPersonInCharge, SingleListProvince, SingleListStatus, SingleListWard, } },
             { "Xoá", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListStatus,
                 Detail, Delete,
                 SingleListDistrict, SingleListPersonInCharge, SingleListProvince, SingleListStatus, SingleListWard, } },
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get,
+                FilterListStatus,
                 BulkDelete } },
         };
     }

@@ -6,6 +6,7 @@ namespace DMS.Rpc.role
 {
     public class RoleRoute : Root
     {
+        public const string Parent = Module + "/account";
         public const string Master = Module + "/account/role/role-master";
         public const string Detail = Module + "/account/role/role-detail/*";
         private const string Default = Rpc + Module + "/role";
@@ -60,16 +61,19 @@ namespace DMS.Rpc.role
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
+                Parent,
                 Master, Count, List, Get, Clone, 
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, SingleListCurrentUser } },
             { "Thêm", new List<string> {
+                Parent,
                 Master, Count, List, Get, Clone, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, SingleListERouteType, SingleListRequestState,
                 Detail, Create, GetMenu,
                 SingleListStatus ,SingleListCurrentUser} },
             { "Sửa", new List<string> {
+                Parent,
                 Master, Count, List, Get, Clone, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, SingleListERouteType, 
@@ -77,6 +81,7 @@ namespace DMS.Rpc.role
                 Detail, Update, GetMenu, 
                  } },
              { "Gán người dùng", new List<string> {
+                 Parent,
                 Master, Count, List, Get, Clone,
                 CountAppUser, ListAppUser,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
@@ -84,11 +89,13 @@ namespace DMS.Rpc.role
                 Detail, AssignAppUser,
                 } },
              { "Tạo nhanh quyền", new List<string> {
+                 Parent,
                 Master, Count, List, Get, Clone,
                 Detail, CreatePermission, GetMenu, Master, Count, List, Get, CountPermission, ListPermission, GetPermission, CreatePermission, UpdatePermission, DeletePermission,
                  SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator, SingleListCurrentUser,} },
             { "Xoá", new List<string> {
+                Parent,
                 Master, Count, List, Get, Clone,
                 SingleListAppUser, SingleListStatus, SingleListMenu, SingleListBrand, SingleListOrganization, SingleListProduct, SingleListProductGrouping, SingleListProductType, SingleListReseller,
                 SingleListStore, SingleListStoreGrouping, SingleListStoreType, SingleListSupplier, SingleListWarehouse, SingleListField, SingleListPermissionOperator,SingleListCurrentUser,

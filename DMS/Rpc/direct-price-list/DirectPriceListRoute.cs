@@ -6,6 +6,7 @@ namespace DMS.Rpc.direct_price_list
 {
     public class DirectPriceListRoute : Root
     {
+        public const string Parent = Module + "/direct-price-list";
         public const string Master = Module + "/direct-price-list/direct-price-list-master";
         public const string Detail = Module + "/direct-price-list/direct-price-list-detail";
         private const string Default = Rpc + Module + "/direct-price-list";
@@ -57,13 +58,34 @@ namespace DMS.Rpc.direct_price_list
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { Master, Count, List, Get, FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, } },
-            { "Thêm", new List<string> { Master, Count, List, Get,  FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, Detail, Create,  SingleListDirectPriceListType, SingleListOrganization, SingleListStatus, SingleListItem, SingleListStoreGrouping, SingleListStore, SingleListStoreType, } },
-            { "Sửa", new List<string> { Master, Count, List, Get,  FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, Detail, Update,  SingleListDirectPriceListType, SingleListOrganization, SingleListStatus, SingleListItem, SingleListStoreGrouping, SingleListStore, SingleListStoreType, } },
-            { "Xoá", new List<string> { Master, Count, List, Get,  FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, Detail, Delete,  SingleListDirectPriceListType, SingleListOrganization, SingleListStatus, SingleListItem, SingleListStoreGrouping, SingleListStore, SingleListStoreType, } },
-            { "Xoá nhiều", new List<string> { Master, Count, List, Get, FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, BulkDelete } },
-            { "Xuất excel", new List<string> { Master, Count, List, Get, FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, Export } },
-            { "Nhập excel", new List<string> { Master, Count, List, Get, FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, ExportTemplate, Import } },
+            { "Tìm kiếm", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, } },
+            { "Thêm", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, Detail, Create,  SingleListDirectPriceListType, SingleListOrganization, SingleListStatus, SingleListItem, SingleListStoreGrouping, SingleListStore, SingleListStoreType, } },
+            { "Sửa", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, Detail, Update,  SingleListDirectPriceListType, SingleListOrganization, SingleListStatus, SingleListItem, SingleListStoreGrouping, SingleListStore, SingleListStoreType, } },
+            { "Xoá", new List<string> {
+                Parent,
+                Master, Count, List, Get,  
+                FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, Detail, Delete,  SingleListDirectPriceListType, SingleListOrganization, SingleListStatus, SingleListItem, SingleListStoreGrouping, SingleListStore, SingleListStoreType, } },
+            { "Xoá nhiều", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, BulkDelete } },
+            { "Xuất excel", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, Export } },
+            { "Nhập excel", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListDirectPriceListType, FilterListOrganization, FilterListStatus, FilterListItem, FilterListStoreGrouping, FilterListStore, FilterListStoreType, ExportTemplate, Import } },
         };
     }
 }

@@ -5,6 +5,7 @@ namespace DMS.Rpc.reseller
 {
     public class ResellerRoute : Root
     {
+        public const string Parent = Module + "/reseller";
         public const string Master = Module + "/reseller/reseller-master";
         public const string Detail = Module + "/reseller/reseller-detail";
         private const string Default = Rpc + Module + "/reseller";
@@ -42,33 +43,47 @@ namespace DMS.Rpc.reseller
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus, } },
+                Parent,
+                Master, Count, List, Get, 
+                FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus, } },
 
             { "Thêm", new List<string> {
-                Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
                 Detail, Create,
                 SingleListOrganization, SingleListResellerStatus, SingleListResellerType, SingleListAppUser, SingleListStatus, CountStore, ListStore } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
                 Detail, Update,
                 SingleListOrganization, SingleListResellerStatus, SingleListResellerType, SingleListAppUser, SingleListStatus, CountStore, ListStore } },
 
             { "Xoá", new List<string> {
-                Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
                 Detail, Delete,
                 SingleListOrganization, SingleListResellerStatus, SingleListResellerType, SingleListAppUser, SingleListStatus, CountStore, ListStore } },
 
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
                 BulkDelete } },
 
             { "Xuất excel", new List<string> {
-                Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
+                Parent,
+                Master, Count, List, Get,
+                FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
                 Export } },
 
             { "Nhập excel", new List<string> {
-                Master, Count, List, Get, FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListOrganization, FilterListResellerStatus, FilterListResellerType, FilterListAppUser, FilterListStatus,
                 ExportTemplate, Import } },
         };
     }

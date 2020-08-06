@@ -5,6 +5,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 {
     public class MonitorStoreCheckerRoute : Root
     {
+        public const string Parent = Module + "/monitor";
         public const string Master = Module + "/monitor/monitor-store-checker/monitor-store-checker-master";
 
         private const string Default = Rpc + Module + "/monitor-store-checker";
@@ -29,7 +30,9 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, Export, FilterListOrganization,FilterListAppUser,FilterListChecking, FilterListImage,FilterListSalesOrder  } },
+                Parent,
+                Master, Count, List, Get, Export,
+                FilterListOrganization,FilterListAppUser,FilterListChecking, FilterListImage,FilterListSalesOrder  } },
 
         };
     }

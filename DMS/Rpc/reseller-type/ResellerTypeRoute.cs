@@ -5,6 +5,7 @@ namespace DMS.Rpc.reseller_type
 {
     public class ResellerTypeRoute : Root
     {
+        public const string Parent = Module + "/reseller-type";
         public const string Master = Module + "/reseller-type/reseller-type-master";
         public const string Detail = Module + "/reseller-type/reseller-type-detail";
         private const string Default = Rpc + Module + "/reseller-type";
@@ -28,32 +29,46 @@ namespace DMS.Rpc.reseller_type
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
+                Parent,
                 Master, Count, List, Get, FilterListStatus, } },
 
-            { "Thêm", new List<string> { Master, Count, List, Get, FilterListStatus,
+            { "Thêm", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListStatus,
                 Detail, Create,
                 SingleListStatus, } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListStatus,
                 Detail, Update,
                 SingleListStatus, } },
 
             { "Xoá", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get,
+                FilterListStatus,
                 Detail, Delete,
                 SingleListStatus, } },
 
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListStatus,
                 BulkDelete } },
 
             { "Xuất excel", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListStatus,
                 Export } },
 
             { "Nhập excel", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListStatus,
                 ExportTemplate, Import } },
         };
     }

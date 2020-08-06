@@ -8,6 +8,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
 {
     public class MonitorStoreImageRoute : Root
     {
+        public const string Parent = Module + "/monitor";
         public const string Master = Module + "/monitor/monitor-store-image/monitor-store-image-master";
 
         private const string Default = Rpc + Module + "/monitor-store-image";
@@ -32,7 +33,9 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, Export, FilterListOrganization, FilterListAppUser, FilterListStore, FilterListHasImage, FilterListHasOrder } },
+                Parent,
+                Master, Count, List, Get, Export,
+                FilterListOrganization, FilterListAppUser, FilterListStore, FilterListHasImage, FilterListHasOrder } },
         };
     }
 }

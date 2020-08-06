@@ -6,6 +6,7 @@ namespace DMS.Rpc.notification
 {
     public class NotificationRoute : Root
     {
+        public const string Parent = Module + "/alert";
         public const string Master = Module + "/alert/notification/notification-master";
         public const string Detail = Module + "/alert/notification/notification-detail/*";
         public const string Mobile = Module + ".notification.*";
@@ -43,10 +44,22 @@ namespace DMS.Rpc.notification
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { Master, Count, List, Get, FilterListOrganization, FilterListNotificationStatus, FilterListAppUser } },
-            { "Thêm", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Create, Send, SingleListAppUser, SingleListOrganization, SingleListNotificationStatus } },
-            { "Sửa", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Update, Send, SingleListAppUser, SingleListOrganization, SingleListNotificationStatus } },
-            { "Xoá", new List<string> { Master, Count, List, Get,  FilterListOrganization, Detail, Delete, SingleListAppUser, SingleListOrganization, SingleListNotificationStatus } },
+            { "Tìm kiếm", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListOrganization, FilterListNotificationStatus, FilterListAppUser } },
+            { "Thêm", new List<string> {
+                Parent,
+                Master, Count, List, Get,  
+                FilterListOrganization, Detail, Create, Send, SingleListAppUser, SingleListOrganization, SingleListNotificationStatus } },
+            { "Sửa", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListOrganization, Detail, Update, Send, SingleListAppUser, SingleListOrganization, SingleListNotificationStatus } },
+            { "Xoá", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                FilterListOrganization, Detail, Delete, SingleListAppUser, SingleListOrganization, SingleListNotificationStatus } },
         };
     }
 }

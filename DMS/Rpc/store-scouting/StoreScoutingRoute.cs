@@ -23,6 +23,7 @@ namespace DMS.Rpc.store_scouting
 {
     public class StoreScoutingRoute : Root
     {
+        public const string Parent = Module + "/location";
         public const string Master = Module + "/location/store-scouting/store-scouting-master";
         public const string Detail = Module + "/location/store-scouting/store-scouting-detail/*";
         public const string Mobile = Module + ".store-scouting.*";
@@ -64,23 +65,31 @@ namespace DMS.Rpc.store_scouting
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
-                Master, Count, List, Get, FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, } },
+            { "Tìm kiếm", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, } },
 
-            { "Thêm", new List<string> { 
-                Master, Count, List, Get,  FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
+            { "Thêm", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
                 Detail, Create, 
-                 SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
+                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
 
-            { "Sửa", new List<string> { 
-                Master, Count, List, Get,  FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
+            { "Sửa", new List<string> {
+                Parent,
+                Master, Count, List, Get,  
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
                 Detail, Update, 
-                 SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
+                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
 
-            { "Từ chối", new List<string> { 
-                Master, Count, List, Get,  FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
+            { "Từ chối", new List<string> {
+                Parent,
+                Master, Count, List, Get, 
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
                 Detail, Reject, 
-                 SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
+                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
 
         };
     }

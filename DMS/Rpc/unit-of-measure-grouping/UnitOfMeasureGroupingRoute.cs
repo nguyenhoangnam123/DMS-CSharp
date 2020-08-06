@@ -5,6 +5,7 @@ namespace DMS.Rpc.unit_of_measure_grouping
 {
     public class UnitOfMeasureGroupingRoute : Root
     {
+        public const string Parent = Module + "/product-category";
         public const string Master = Module + "/product-category/unit-of-measure-grouping/unit-of-measure-grouping-master";
         public const string Detail = Module + "/product-category/unit-of-measure-grouping/unit-of-measure-grouping-detail/*";
         private const string Default = Rpc + Module + "/unit-of-measure-grouping";
@@ -28,21 +29,31 @@ namespace DMS.Rpc.unit_of_measure_grouping
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListUnitOfMeasure } },
+                Parent,
+                Master, Count, List, Get, 
+                FilterListUnitOfMeasure } },
             { "Thêm", new List<string> {
+                Parent,
                 Master, Count, List, Get,
+                FilterListUnitOfMeasure,
                 Detail, Create,
                 SingleListStatus, SingleListUnitOfMeasure, FilterListUnitOfMeasure } },
             { "Sửa", new List<string> {
+                Parent,
                 Master, Count, List, Get,
+                FilterListUnitOfMeasure,
                 Detail, Update,
                 SingleListStatus, SingleListUnitOfMeasure,FilterListUnitOfMeasure } },
             { "Xoá", new List<string> {
+                Parent,
                 Master, Count, List, Get,
+                FilterListUnitOfMeasure,
                 Detail, Delete,
                 SingleListStatus, SingleListUnitOfMeasure,FilterListUnitOfMeasure } },
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get, FilterListUnitOfMeasure,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListUnitOfMeasure,
                 BulkDelete } },
         };
     }

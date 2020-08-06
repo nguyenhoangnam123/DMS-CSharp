@@ -5,6 +5,7 @@ namespace DMS.Rpc.position
 {
     public class PositionRoute : Root
     {
+        public const string Parent = Module + "/account";
         public const string Master = Module + "/account/position/position-master";
         public const string Detail = Module + "/account/position/position-detail/*";
         private const string Default = Rpc + Module + "/position";
@@ -22,7 +23,9 @@ namespace DMS.Rpc.position
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListStatus, SingleListStatus, } },
+                Parent,
+                Master, Count, List, Get,
+                FilterListStatus, SingleListStatus, } },
         };
     }
 }

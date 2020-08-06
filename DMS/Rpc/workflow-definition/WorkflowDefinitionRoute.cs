@@ -5,6 +5,7 @@ namespace DMS.Rpc.workflow_definition
 {
     public class WorkflowDefinitionRoute : Root
     {
+        public const string Parent = Module + "/workflow";
         public const string Master = Module + "/workflow/workflow-definition-master";
         public const string Detail = Module + "/workflow/workflow-definition-detail";
         private const string Default = Rpc + Module + "/workflow-definition";
@@ -41,19 +42,23 @@ namespace DMS.Rpc.workflow_definition
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, FilterListRole, FilterListStatus } },
             { "Thêm", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, FilterListRole, FilterListStatus,
                 Detail, Create,
                 SingleListAppUser, SingleListWorkflowType, SingleListWorkflowDirection, SingleListWorkflowStep, SingleListWorkflowParameter, SingleListRole, SingleListStatus } },
             { "Sửa", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, FilterListRole, FilterListStatus,
                 Detail, Update,
                 SingleListAppUser, SingleListWorkflowType, SingleListWorkflowDirection, SingleListWorkflowStep, SingleListWorkflowParameter, SingleListRole, SingleListStatus } },
             { "Xoá", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, FilterListRole, FilterListStatus,
                 Detail, Delete,

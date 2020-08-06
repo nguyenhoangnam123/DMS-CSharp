@@ -8,6 +8,7 @@ namespace DMS.Rpc.dashboards.monitor
 {
     public class DashboardMonitorRoute : Root
     {
+        public const string Parent = Module + "/dashboards";
         public const string Master = Module + "/dashboards/monitor";
         private const string Default = Rpc + Module + "/dashboards/monitor";
         public const string StoreChecking = Default + "/store-checking";
@@ -29,6 +30,7 @@ namespace DMS.Rpc.dashboards.monitor
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Hiển thị", new List<string> {
+                Parent,
                 Master,
                 StoreChecking, SaleEmployeeOnline, StatisticIndirectSalesOrder, ImageStoreCheking, StoreCoverage, SaleEmployeeLocation,
                 ListIndirectSalesOrder, TopSaleEmployeeStoreChecking, FilterListTime

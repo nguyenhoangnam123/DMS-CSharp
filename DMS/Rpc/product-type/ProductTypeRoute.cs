@@ -5,6 +5,7 @@ namespace DMS.Rpc.product_type
 {
     public class ProductTypeRoute : Root
     {
+        public const string Parent = Module + "/product-category";
         public const string Master = Module + "/product-category/product-type/product-type-master";
         public const string Detail = Module + "/product-category/product-type/product-type-detail/*";
         private const string Default = Rpc + Module + "/product-type";
@@ -26,25 +27,35 @@ namespace DMS.Rpc.product_type
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Get, FilterListStatus, } },
+                Parent,
+                Master, Count, List, Get, 
+                FilterListStatus, } },
 
             { "Thêm", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get,
+                FilterListStatus,
                 Detail, Create,
                 SingleListStatus, } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get,
+                FilterListStatus,
                 Detail, Update,
                 SingleListStatus, } },
 
             { "Xoá", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get,
+                FilterListStatus,
                 Detail, Delete,
                 SingleListStatus, } },
 
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get, FilterListStatus,
+                Parent,
+                Master, Count, List, Get, 
+                FilterListStatus,
                 BulkDelete } },
 
         };

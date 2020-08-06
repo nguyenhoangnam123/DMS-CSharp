@@ -6,6 +6,7 @@ namespace DMS.Rpc.warehouse
 {
     public class WarehouseRoute : Root
     {
+        public const string Parent = Module + "/inventory";
         public const string Master = Module + "/inventory/warehouse/warehouse-master";
         public const string Detail = Module + "/inventory/warehouse/warehouse-detail/*";
         private const string Default = Rpc + Module + "/warehouse";
@@ -44,33 +45,40 @@ namespace DMS.Rpc.warehouse
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
+                Parent,
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
                 CountHistory, ListHistory,
                 } },
             { "Thêm", new List<string> {
+                Parent,
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
                 Create, CountHistory, ListHistory,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Sửa", new List<string> {
+                Parent,
                 Master, Count, List, Get,GetPreview,
                 FilterListOrganization, FilterListStatus,
                 Detail, Update, CountHistory, ListHistory,
                 SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListItem, } },
             { "Xoá", new List<string> {
+                Parent,
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
                 Detail, Delete,
                 } },
             { "Xoá nhiều", new List<string> {
+                Parent,
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListStatus,
                 BulkDelete } },
             { "Xuất excel", new List<string> {
+                Parent,
                 Master, Count, List, Get, FilterListOrganization, FilterListStatus,
                 Detail, ExportInventory } },
             { "Nhập excel", new List<string> {
+                Parent,
                 Master, Count, List, Get, FilterListOrganization, FilterListStatus,
                 Detail, ExportTemplate, ImportInventory } },
         };

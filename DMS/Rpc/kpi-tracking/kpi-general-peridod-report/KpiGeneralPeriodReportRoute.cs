@@ -5,6 +5,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 {
     public class KpiGeneralPeriodReportRoute : Root
     {
+        public const string Parent = Module + "/kpi-tracking";
         public const string Master = Module + "/kpi-tracking/kpi-general-period-report/kpi-general-period-report-master";
 
         private const string Default = Rpc + Module + "/kpi-general-period-report";
@@ -27,7 +28,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Export, FilterListOrganization,FilterListAppUser,FilterListKpiYear, FilterListKpiPeriod} },
+                Parent,
+                Master, Count, List, Export,
+                FilterListOrganization,FilterListAppUser,FilterListKpiYear, FilterListKpiPeriod} },
 
         };
     }

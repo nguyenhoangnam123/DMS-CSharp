@@ -6,6 +6,7 @@ namespace DMS.Rpc.indirect_price_list
 {
     public class IndirectPriceListRoute : Root
     {
+        public const string Parent = Module + "/indirect-price-list";
         public const string Master = Module + "/indirect-price-list/indirect-price-list-master";
         public const string Detail = Module + "/indirect-price-list/indirect-price-list-detail";
         private const string Default = Rpc + Module + "/indirect-price-list";

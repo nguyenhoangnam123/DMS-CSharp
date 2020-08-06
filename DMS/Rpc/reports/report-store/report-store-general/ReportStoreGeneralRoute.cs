@@ -5,6 +5,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 {
     public class ReportStoreGeneralRoute : Root
     {
+        public const string Parent = Module + "/store-report";
         public const string Master = Module + "/store-report/store-general-report-master";
 
         private const string Default = Rpc + Module + "/store-general-report";
@@ -29,7 +30,9 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List, Export, FilterListOrganization, FilterListStore, FilterListStoreType, FilterListStoreGrouping  } },
+                Parent,
+                Master, Count, List, Export, 
+                FilterListOrganization, FilterListStore, FilterListStoreType, FilterListStoreGrouping  } },
 
         };
     }

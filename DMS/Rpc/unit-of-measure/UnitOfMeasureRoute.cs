@@ -5,6 +5,7 @@ namespace DMS.Rpc.unit_of_measure
 {
     public class UnitOfMeasureRoute : Root
     {
+        public const string Parent = Module + "/product-category";
         public const string Master = Module + "/product-category/unit-of-measure/unit-of-measure-master";
         public const string Detail = Module + "/product-category/unit-of-measure/unit-of-measure-detail/*";
         private const string Default = Rpc + Module + "/unit-of-measure";
@@ -26,26 +27,33 @@ namespace DMS.Rpc.unit_of_measure
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
+                Parent,
                 Master, Count, List, Get, } },
             { "Thêm", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Detail, Create,
                 SingleListStatus, } },
             { "Sửa", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Detail, Update,
                 SingleListStatus, } },
             { "Xoá", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Detail, Delete,
                 SingleListStatus, } },
             { "Xoá nhiều", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 BulkDelete } },
             { "Xuất excel", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Export } },
             { "Nhập excel", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 Import } },
         };

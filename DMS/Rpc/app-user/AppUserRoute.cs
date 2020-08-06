@@ -6,6 +6,7 @@ namespace DMS.Rpc.app_user
 {
     public class AppUserRoute : Root
     {
+        public const string Parent = Module + "/account";
         public const string Master = Module + "/account/app-user/app-user-master";
         public const string Detail = Module + "/account/app-user/app-user-detail/*";
         private const string Default = Rpc + Module + "/app-user";
@@ -35,10 +36,12 @@ namespace DMS.Rpc.app_user
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
+                Parent, 
                 Master, Count, List, Get,
                 FilterListPosition, FilterListOrganization, FilterListStatus,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, CountRole, ListRole}},
             { "Sửa", new List<string> {
+                Parent,
                 Master, Count, List, Get,
                 FilterListPosition,
                 Detail, Get, Update, 
