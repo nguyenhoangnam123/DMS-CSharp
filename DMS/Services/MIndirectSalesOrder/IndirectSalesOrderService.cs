@@ -615,66 +615,77 @@ namespace DMS.Services.MIndirectSalesOrder
         private async Task<List<Item>> ApplyPrice(List<Item> Items, long StoreId)
         {
             var CurrrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-            var OrganizationIds = CurrrentUser.Organization.Path.Split('.').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => long.Parse(x)).OrderByDescending(x => x).ToList();
+            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Path = new StringFilter { StartWith = CurrrentUser.Organization.Path },
+                Selects = OrganizationSelect.Id
+            };
+            var OrganizationIds = (await UOW.OrganizationRepository.List(OrganizationFilter)).Select(x => x.Id).ToList();
             var Store = await UOW.StoreRepository.Get(StoreId);
             var ItemIds = Items.Select(x => x.Id).ToList();
             Dictionary<long, decimal> result = new Dictionary<long, decimal>();
-            IndirectPriceListItemMappingFilter IndirectPriceListItemMappingFilter = new IndirectPriceListItemMappingFilter
+            PriceListItemMappingFilter PriceListItemMappingFilter = new PriceListItemMappingFilter
             {
                 ItemId = new IdFilter { In = ItemIds },
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = IndirectPriceListItemMappingSelect.ALL,
-                IndirectPriceListTypeId = new IdFilter { Equal = Enums.IndirectPriceListTypeEnum.ALLSTORE.Id },
+                Selects = PriceListItemMappingSelect.ALL,
+                PriceListTypeId = new IdFilter { Equal = Enums.PriceListTypeEnum.ALLSTORE.Id },
+                SalesOrderTypeId = new IdFilter { Equal = Enums.SalesOrderTypeEnum.INDIRECT.Id },
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             };
-            var IndirectPriceListItemMappingAllStore = await UOW.IndirectPriceListItemMappingItemMappingRepository.List(IndirectPriceListItemMappingFilter);
+            var PriceListItemMappingAllStore = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
 
-            IndirectPriceListItemMappingFilter = new IndirectPriceListItemMappingFilter
+            PriceListItemMappingFilter = new PriceListItemMappingFilter
             {
                 ItemId = new IdFilter { In = ItemIds },
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = IndirectPriceListItemMappingSelect.ALL,
-                IndirectPriceListTypeId = new IdFilter { Equal = Enums.IndirectPriceListTypeEnum.STOREGROUPING.Id },
+                Selects = PriceListItemMappingSelect.ALL,
+                PriceListTypeId = new IdFilter { Equal = Enums.PriceListTypeEnum.STOREGROUPING.Id },
+                SalesOrderTypeId = new IdFilter { Equal = Enums.SalesOrderTypeEnum.INDIRECT.Id },
                 StoreGroupingId = new IdFilter { Equal = Store.StoreGroupingId },
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             };
-            var IndirectPriceListItemMappingStoreGrouping = await UOW.IndirectPriceListItemMappingItemMappingRepository.List(IndirectPriceListItemMappingFilter);
+            var PriceListItemMappingStoreGrouping = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
 
-            IndirectPriceListItemMappingFilter = new IndirectPriceListItemMappingFilter
+            PriceListItemMappingFilter = new PriceListItemMappingFilter
             {
                 ItemId = new IdFilter { In = ItemIds },
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = IndirectPriceListItemMappingSelect.ALL,
-                IndirectPriceListTypeId = new IdFilter { Equal = Enums.IndirectPriceListTypeEnum.STORETYPE.Id },
+                Selects = PriceListItemMappingSelect.ALL,
+                PriceListTypeId = new IdFilter { Equal = Enums.PriceListTypeEnum.STORETYPE.Id },
+                SalesOrderTypeId = new IdFilter { Equal = Enums.SalesOrderTypeEnum.INDIRECT.Id },
                 StoreGroupingId = new IdFilter { Equal = Store.StoreTypeId },
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             };
-            var IndirectPriceListItemMappingStoreType = await UOW.IndirectPriceListItemMappingItemMappingRepository.List(IndirectPriceListItemMappingFilter);
+            var PriceListItemMappingStoreType = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
 
-            IndirectPriceListItemMappingFilter = new IndirectPriceListItemMappingFilter
+            PriceListItemMappingFilter = new PriceListItemMappingFilter
             {
                 ItemId = new IdFilter { In = ItemIds },
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = IndirectPriceListItemMappingSelect.ALL,
-                IndirectPriceListTypeId = new IdFilter { Equal = Enums.IndirectPriceListTypeEnum.DETAILS.Id },
+                Selects = PriceListItemMappingSelect.ALL,
+                PriceListTypeId = new IdFilter { Equal = Enums.PriceListTypeEnum.DETAILS.Id },
+                SalesOrderTypeId = new IdFilter { Equal = Enums.SalesOrderTypeEnum.INDIRECT.Id },
                 StoreId = new IdFilter { Equal = StoreId },
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             };
-            var IndirectPriceListItemMappingStoreDetail = await UOW.IndirectPriceListItemMappingItemMappingRepository.List(IndirectPriceListItemMappingFilter);
+            var PriceListItemMappingStoreDetail = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
 
-            List<IndirectPriceListItemMapping> IndirectPriceListItemMappings = new List<IndirectPriceListItemMapping>();
-            IndirectPriceListItemMappings.AddRange(IndirectPriceListItemMappingAllStore);
-            IndirectPriceListItemMappings.AddRange(IndirectPriceListItemMappingStoreGrouping);
-            IndirectPriceListItemMappings.AddRange(IndirectPriceListItemMappingStoreType);
-            IndirectPriceListItemMappings.AddRange(IndirectPriceListItemMappingStoreDetail);
+            List<PriceListItemMapping> PriceListItemMappings = new List<PriceListItemMapping>();
+            PriceListItemMappings.AddRange(PriceListItemMappingAllStore);
+            PriceListItemMappings.AddRange(PriceListItemMappingStoreGrouping);
+            PriceListItemMappings.AddRange(PriceListItemMappingStoreType);
+            PriceListItemMappings.AddRange(PriceListItemMappingStoreDetail);
             foreach (var ItemId in ItemIds)
             {
                 result.Add(ItemId, decimal.MaxValue);
@@ -685,7 +696,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 foreach (var OrganizationId in OrganizationIds)
                 {
                     long targetPrice = long.MaxValue;
-                    targetPrice = IndirectPriceListItemMappings.Where(x => x.ItemId == ItemId && x.IndirectPriceList.OrganizationId == OrganizationId).Select(x => x.Price).DefaultIfEmpty(long.MaxValue).Min();
+                    targetPrice = PriceListItemMappings.Where(x => x.ItemId == ItemId && x.PriceList.OrganizationId == OrganizationId).Select(x => x.Price).DefaultIfEmpty(long.MaxValue).Min();
                     if (targetPrice < long.MaxValue)
                     {
                         result[ItemId] = targetPrice;

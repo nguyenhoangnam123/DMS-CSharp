@@ -569,8 +569,8 @@ namespace DMS.Rpc
         [HttpGet, Route("rpc/dms/setup/init-enum")]
         public ActionResult InitEnum()
         {
-            InitDirectPriceListTypeEnum();
-            InitIndirectPriceListTypeEnum();
+            InitPriceListTypeEnum();
+            InitSalesOrderTypeEnum();
             InitEditedPriceStatusEnum();
             InitProblemTypeEnum();
             InitProblemStatusEnum();
@@ -707,26 +707,26 @@ namespace DMS.Rpc
             DataContext.ResellerStatus.BulkSynchronize(ResellerStatusEnumList);
         }
 
-        private void InitIndirectPriceListTypeEnum()
+        private void InitPriceListTypeEnum()
         {
-            List<IndirectPriceListTypeDAO> IndirectPriceListTypeEnumList = IndirectPriceListTypeEnum.IndirectPriceListTypeEnumList.Select(item => new IndirectPriceListTypeDAO
+            List<PriceListTypeDAO> PriceListTypeEnumList = PriceListTypeEnum.PriceListTypeEnumList.Select(item => new PriceListTypeDAO
             {
                 Id = item.Id,
                 Code = item.Code,
                 Name = item.Name,
             }).ToList();
-            DataContext.IndirectPriceListType.BulkSynchronize(IndirectPriceListTypeEnumList);
+            DataContext.PriceListType.BulkSynchronize(PriceListTypeEnumList);
         }
 
-        private void InitDirectPriceListTypeEnum()
+        private void InitSalesOrderTypeEnum()
         {
-            List<DirectPriceListTypeDAO> DirectPriceListTypeEnumList = DirectPriceListTypeEnum.DirectPriceListTypeEnumList.Select(item => new DirectPriceListTypeDAO
+            List<SalesOrderTypeDAO> SalesOrderTypeEnumList = SalesOrderTypeEnum.SalesOrderTypeEnumList.Select(item => new SalesOrderTypeDAO
             {
                 Id = item.Id,
                 Code = item.Code,
                 Name = item.Name,
             }).ToList();
-            DataContext.DirectPriceListType.BulkSynchronize(DirectPriceListTypeEnumList);
+            DataContext.SalesOrderType.BulkSynchronize(SalesOrderTypeEnumList);
         }
 
         private void InitSurveyQuestionTypeEnum()

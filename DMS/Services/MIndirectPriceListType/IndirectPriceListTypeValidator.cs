@@ -4,18 +4,18 @@ using DMS.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MIndirectPriceListType
+namespace DMS.Services.MPriceListType
 {
-    public interface IIndirectPriceListTypeValidator : IServiceScoped
+    public interface IPriceListTypeValidator : IServiceScoped
     {
-        Task<bool> Create(IndirectPriceListType IndirectPriceListType);
-        Task<bool> Update(IndirectPriceListType IndirectPriceListType);
-        Task<bool> Delete(IndirectPriceListType IndirectPriceListType);
-        Task<bool> BulkDelete(List<IndirectPriceListType> IndirectPriceListTypes);
-        Task<bool> Import(List<IndirectPriceListType> IndirectPriceListTypes);
+        Task<bool> Create(PriceListType PriceListType);
+        Task<bool> Update(PriceListType PriceListType);
+        Task<bool> Delete(PriceListType PriceListType);
+        Task<bool> BulkDelete(List<PriceListType> PriceListTypes);
+        Task<bool> Import(List<PriceListType> PriceListTypes);
     }
 
-    public class IndirectPriceListTypeValidator : IIndirectPriceListTypeValidator
+    public class PriceListTypeValidator : IPriceListTypeValidator
     {
         public enum ErrorCode
         {
@@ -25,55 +25,55 @@ namespace DMS.Services.MIndirectPriceListType
         private IUOW UOW;
         private ICurrentContext CurrentContext;
 
-        public IndirectPriceListTypeValidator(IUOW UOW, ICurrentContext CurrentContext)
+        public PriceListTypeValidator(IUOW UOW, ICurrentContext CurrentContext)
         {
             this.UOW = UOW;
             this.CurrentContext = CurrentContext;
         }
 
-        public async Task<bool> ValidateId(IndirectPriceListType IndirectPriceListType)
+        public async Task<bool> ValidateId(PriceListType PriceListType)
         {
-            IndirectPriceListTypeFilter IndirectPriceListTypeFilter = new IndirectPriceListTypeFilter
+            PriceListTypeFilter PriceListTypeFilter = new PriceListTypeFilter
             {
                 Skip = 0,
                 Take = 10,
-                Id = new IdFilter { Equal = IndirectPriceListType.Id },
-                Selects = IndirectPriceListTypeSelect.Id
+                Id = new IdFilter { Equal = PriceListType.Id },
+                Selects = PriceListTypeSelect.Id
             };
 
-            int count = await UOW.IndirectPriceListTypeRepository.Count(IndirectPriceListTypeFilter);
+            int count = await UOW.PriceListTypeRepository.Count(PriceListTypeFilter);
             if (count == 0)
-                IndirectPriceListType.AddError(nameof(IndirectPriceListTypeValidator), nameof(IndirectPriceListType.Id), ErrorCode.IdNotExisted);
+                PriceListType.AddError(nameof(PriceListTypeValidator), nameof(PriceListType.Id), ErrorCode.IdNotExisted);
             return count == 1;
         }
 
-        public async Task<bool> Create(IndirectPriceListType IndirectPriceListType)
+        public async Task<bool> Create(PriceListType PriceListType)
         {
-            return IndirectPriceListType.IsValidated;
+            return PriceListType.IsValidated;
         }
 
-        public async Task<bool> Update(IndirectPriceListType IndirectPriceListType)
+        public async Task<bool> Update(PriceListType PriceListType)
         {
-            if (await ValidateId(IndirectPriceListType))
+            if (await ValidateId(PriceListType))
             {
             }
-            return IndirectPriceListType.IsValidated;
+            return PriceListType.IsValidated;
         }
 
-        public async Task<bool> Delete(IndirectPriceListType IndirectPriceListType)
+        public async Task<bool> Delete(PriceListType PriceListType)
         {
-            if (await ValidateId(IndirectPriceListType))
+            if (await ValidateId(PriceListType))
             {
             }
-            return IndirectPriceListType.IsValidated;
+            return PriceListType.IsValidated;
         }
 
-        public async Task<bool> BulkDelete(List<IndirectPriceListType> IndirectPriceListTypes)
+        public async Task<bool> BulkDelete(List<PriceListType> PriceListTypes)
         {
             return true;
         }
 
-        public async Task<bool> Import(List<IndirectPriceListType> IndirectPriceListTypes)
+        public async Task<bool> Import(List<PriceListType> PriceListTypes)
         {
             return true;
         }

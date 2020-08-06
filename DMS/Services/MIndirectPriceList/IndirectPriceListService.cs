@@ -1,140 +1,141 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MIndirectPriceList
+namespace DMS.Services.MPriceList
 {
-    public interface IIndirectPriceListService : IServiceScoped
+    public interface IPriceListService : IServiceScoped
     {
-        Task<int> Count(IndirectPriceListFilter IndirectPriceListFilter);
-        Task<List<IndirectPriceList>> List(IndirectPriceListFilter IndirectPriceListFilter);
-        Task<IndirectPriceList> Get(long Id);
-        Task<IndirectPriceList> Create(IndirectPriceList IndirectPriceList);
-        Task<IndirectPriceList> Update(IndirectPriceList IndirectPriceList);
-        Task<IndirectPriceList> Delete(IndirectPriceList IndirectPriceList);
-        Task<List<IndirectPriceList>> BulkDelete(List<IndirectPriceList> IndirectPriceLists);
-        Task<List<IndirectPriceList>> Import(List<IndirectPriceList> IndirectPriceLists);
-        IndirectPriceListFilter ToFilter(IndirectPriceListFilter IndirectPriceListFilter);
+        Task<int> Count(PriceListFilter PriceListFilter);
+        Task<List<PriceList>> List(PriceListFilter PriceListFilter);
+        Task<PriceList> Get(long Id);
+        Task<PriceList> Create(PriceList PriceList);
+        Task<PriceList> Update(PriceList PriceList);
+        Task<PriceList> Delete(PriceList PriceList);
+        Task<List<PriceList>> BulkDelete(List<PriceList> PriceLists);
+        Task<List<PriceList>> Import(List<PriceList> PriceLists);
+        Task<PriceListFilter> ToFilter(PriceListFilter filter);
     }
 
-    public class IndirectPriceListService : BaseService, IIndirectPriceListService
+    public class PriceListService : BaseService, IPriceListService
     {
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IIndirectPriceListValidator IndirectPriceListValidator;
+        private IPriceListValidator PriceListValidator;
 
-        public IndirectPriceListService(
+        public PriceListService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IIndirectPriceListValidator IndirectPriceListValidator
+            IPriceListValidator PriceListValidator
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.IndirectPriceListValidator = IndirectPriceListValidator;
+            this.PriceListValidator = PriceListValidator;
         }
-        public async Task<int> Count(IndirectPriceListFilter IndirectPriceListFilter)
+        public async Task<int> Count(PriceListFilter PriceListFilter)
         {
             try
             {
-                int result = await UOW.IndirectPriceListRepository.Count(IndirectPriceListFilter);
+                int result = await UOW.PriceListRepository.Count(PriceListFilter);
                 return result;
             }
             catch (Exception ex)
             {
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
                     throw new MessageException(ex.InnerException);
                 }
             }
         }
 
-        public async Task<List<IndirectPriceList>> List(IndirectPriceListFilter IndirectPriceListFilter)
+        public async Task<List<PriceList>> List(PriceListFilter PriceListFilter)
         {
             try
             {
-                List<IndirectPriceList> IndirectPriceLists = await UOW.IndirectPriceListRepository.List(IndirectPriceListFilter);
-                return IndirectPriceLists;
+                List<PriceList> PriceLists = await UOW.PriceListRepository.List(PriceListFilter);
+                return PriceLists;
             }
             catch (Exception ex)
             {
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
                     throw new MessageException(ex.InnerException);
                 }
             }
         }
-        public async Task<IndirectPriceList> Get(long Id)
+        public async Task<PriceList> Get(long Id)
         {
-            IndirectPriceList IndirectPriceList = await UOW.IndirectPriceListRepository.Get(Id);
-            if (IndirectPriceList == null)
+            PriceList PriceList = await UOW.PriceListRepository.Get(Id);
+            if (PriceList == null)
                 return null;
-            return IndirectPriceList;
+            return PriceList;
         }
 
-        public async Task<IndirectPriceList> Create(IndirectPriceList IndirectPriceList)
+        public async Task<PriceList> Create(PriceList PriceList)
         {
-            if (!await IndirectPriceListValidator.Create(IndirectPriceList))
-                return IndirectPriceList;
+            if (!await PriceListValidator.Create(PriceList))
+                return PriceList;
 
             try
             {
                 await UOW.Begin();
-                await UOW.IndirectPriceListRepository.Create(IndirectPriceList);
+                await UOW.PriceListRepository.Create(PriceList);
                 await UOW.Commit();
 
-                await Logging.CreateAuditLog(IndirectPriceList, new { }, nameof(IndirectPriceListService));
-                return await UOW.IndirectPriceListRepository.Get(IndirectPriceList.Id);
+                await Logging.CreateAuditLog(PriceList, new { }, nameof(PriceListService));
+                return await UOW.PriceListRepository.Get(PriceList.Id);
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
                     throw new MessageException(ex.InnerException);
                 }
             }
         }
 
-        public async Task<IndirectPriceList> Update(IndirectPriceList IndirectPriceList)
+        public async Task<PriceList> Update(PriceList PriceList)
         {
-            if (!await IndirectPriceListValidator.Update(IndirectPriceList))
-                return IndirectPriceList;
+            if (!await PriceListValidator.Update(PriceList))
+                return PriceList;
             try
             {
-                var oldData = await UOW.IndirectPriceListRepository.Get(IndirectPriceList.Id);
+                var oldData = await UOW.PriceListRepository.Get(PriceList.Id);
 
                 await UOW.Begin();
-                await UOW.IndirectPriceListRepository.Update(IndirectPriceList);
+                await UOW.PriceListRepository.Update(PriceList);
                 await UOW.Commit();
 
-                var newData = await UOW.IndirectPriceListRepository.Get(IndirectPriceList.Id);
-                await Logging.CreateAuditLog(newData, oldData, nameof(IndirectPriceListService));
+                var newData = await UOW.PriceListRepository.Get(PriceList.Id);
+                await Logging.CreateAuditLog(newData, oldData, nameof(PriceListService));
                 return newData;
             }
             catch (Exception ex)
@@ -142,115 +143,137 @@ namespace DMS.Services.MIndirectPriceList
                 await UOW.Rollback();
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
                     throw new MessageException(ex.InnerException);
                 }
             }
         }
 
-        public async Task<IndirectPriceList> Delete(IndirectPriceList IndirectPriceList)
+        public async Task<PriceList> Delete(PriceList PriceList)
         {
-            if (!await IndirectPriceListValidator.Delete(IndirectPriceList))
-                return IndirectPriceList;
+            if (!await PriceListValidator.Delete(PriceList))
+                return PriceList;
 
             try
             {
                 await UOW.Begin();
-                await UOW.IndirectPriceListRepository.Delete(IndirectPriceList);
+                await UOW.PriceListRepository.Delete(PriceList);
                 await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, IndirectPriceList, nameof(IndirectPriceListService));
-                return IndirectPriceList;
+                await Logging.CreateAuditLog(new { }, PriceList, nameof(PriceListService));
+                return PriceList;
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
                     throw new MessageException(ex.InnerException);
                 }
             }
         }
 
-        public async Task<List<IndirectPriceList>> BulkDelete(List<IndirectPriceList> IndirectPriceLists)
+        public async Task<List<PriceList>> BulkDelete(List<PriceList> PriceLists)
         {
-            if (!await IndirectPriceListValidator.BulkDelete(IndirectPriceLists))
-                return IndirectPriceLists;
+            if (!await PriceListValidator.BulkDelete(PriceLists))
+                return PriceLists;
 
             try
             {
                 await UOW.Begin();
-                await UOW.IndirectPriceListRepository.BulkDelete(IndirectPriceLists);
+                await UOW.PriceListRepository.BulkDelete(PriceLists);
                 await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, IndirectPriceLists, nameof(IndirectPriceListService));
-                return IndirectPriceLists;
+                await Logging.CreateAuditLog(new { }, PriceLists, nameof(PriceListService));
+                return PriceLists;
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
                     throw new MessageException(ex.InnerException);
                 }
             }
         }
 
-        public async Task<List<IndirectPriceList>> Import(List<IndirectPriceList> IndirectPriceLists)
+        public async Task<List<PriceList>> Import(List<PriceList> PriceLists)
         {
-            if (!await IndirectPriceListValidator.Import(IndirectPriceLists))
-                return IndirectPriceLists;
+            if (!await PriceListValidator.Import(PriceLists))
+                return PriceLists;
             try
             {
                 await UOW.Begin();
-                await UOW.IndirectPriceListRepository.BulkMerge(IndirectPriceLists);
+                await UOW.PriceListRepository.BulkMerge(PriceLists);
                 await UOW.Commit();
 
-                await Logging.CreateAuditLog(IndirectPriceLists, new { }, nameof(IndirectPriceListService));
-                return IndirectPriceLists;
+                await Logging.CreateAuditLog(PriceLists, new { }, nameof(PriceListService));
+                return PriceLists;
             }
             catch (Exception ex)
             {
                 await UOW.Rollback();
                 if (ex.InnerException == null)
                 {
-                    await Logging.CreateSystemLog(ex, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
                     throw new MessageException(ex);
                 }
                 else
                 {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectPriceListService));
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
                     throw new MessageException(ex.InnerException);
                 }
             }
         }
 
-        public IndirectPriceListFilter ToFilter(IndirectPriceListFilter filter)
+        public async Task<PriceListFilter> ToFilter(PriceListFilter filter)
         {
-            if (filter.OrFilter == null) filter.OrFilter = new List<IndirectPriceListFilter>();
+            if (filter.OrFilter == null) filter.OrFilter = new List<PriceListFilter>();
             if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
             foreach (var currentFilter in CurrentContext.Filters)
             {
-                IndirectPriceListFilter subFilter = new IndirectPriceListFilter();
+                PriceListFilter subFilter = new PriceListFilter();
                 filter.OrFilter.Add(subFilter);
                 List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = FilterBuilder.Merge(subFilter.Id, FilterPermissionDefinition.IdFilter); if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
+                        subFilter.Code = FilterBuilder.Merge(subFilter.Code, FilterPermissionDefinition.StringFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
+                        subFilter.Name = FilterBuilder.Merge(subFilter.Name, FilterPermissionDefinition.StringFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.StartDate))
+                        subFilter.StartDate = FilterBuilder.Merge(subFilter.StartDate, FilterPermissionDefinition.DateFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.EndDate))
+                        subFilter.EndDate = FilterBuilder.Merge(subFilter.EndDate, FilterPermissionDefinition.DateFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
+                        subFilter.StatusId = FilterBuilder.Merge(subFilter.StatusId, FilterPermissionDefinition.IdFilter); if (FilterPermissionDefinition.Name == nameof(subFilter.OrganizationId))
+                        subFilter.OrganizationId = FilterBuilder.Merge(subFilter.OrganizationId, FilterPermissionDefinition.IdFilter); if (FilterPermissionDefinition.Name == nameof(subFilter.PriceListTypeId))
+                        subFilter.PriceListTypeId = FilterBuilder.Merge(subFilter.PriceListTypeId, FilterPermissionDefinition.IdFilter); if (FilterPermissionDefinition.Name == nameof(subFilter.SalesOrderTypeId))
+                        subFilter.SalesOrderTypeId = FilterBuilder.Merge(subFilter.SalesOrderTypeId, FilterPermissionDefinition.IdFilter); if (FilterPermissionDefinition.Name == nameof(CurrentContext.UserId) && FilterPermissionDefinition.IdFilter != null)
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.IS.Id)
+                        {
+                        }
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.ISNT.Id)
+                        {
+                        }
+                    }
                 }
             }
             return filter;

@@ -7,8 +7,7 @@ namespace DMS.Models
     {
         public StoreTypeDAO()
         {
-            DirectPriceListStoreTypeMappings = new HashSet<DirectPriceListStoreTypeMappingDAO>();
-            IndirectPriceListStoreTypeMappings = new HashSet<IndirectPriceListStoreTypeMappingDAO>();
+            PriceListStoreTypeMappings = new HashSet<PriceListStoreTypeMappingDAO>();
             Stores = new HashSet<StoreDAO>();
         }
 
@@ -22,8 +21,7 @@ namespace DMS.Models
         public bool Used { get; set; }
 
         public virtual StatusDAO Status { get; set; }
-        public virtual ICollection<DirectPriceListStoreTypeMappingDAO> DirectPriceListStoreTypeMappings { get; set; }
-        public virtual ICollection<IndirectPriceListStoreTypeMappingDAO> IndirectPriceListStoreTypeMappings { get; set; }
+        public virtual ICollection<PriceListStoreTypeMappingDAO> PriceListStoreTypeMappings { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
     }
 }
