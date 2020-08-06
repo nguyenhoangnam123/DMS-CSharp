@@ -6,8 +6,8 @@ namespace DMS.Rpc.workflow_step
     public class WorkflowStepRoute : Root
     {
         public const string Parent = Module + "/workflow";
-        public const string Master = Module + "/workflow/workflow-step-master";
-        public const string Detail = Module + "/workflow/workflow-step-detail";
+        public const string Master = Module + "/workflow/workflow-step/workflow-step-master";
+        public const string Detail = Module + "/workflow/workflow-step/workflow-step-detail/*";
         private const string Default = Rpc + Module + "/workflow-step";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
