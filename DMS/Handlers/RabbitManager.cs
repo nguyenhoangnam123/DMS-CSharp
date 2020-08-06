@@ -1,4 +1,5 @@
 ﻿using Common;
+using Helpers;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -24,6 +25,8 @@ namespace DMS.Handlers
 
         public void PublishList<T>(List<EventMessage<T>> message, GenericEnum routeKey) where T : DataEntity
         {
+            if (!StaticParams.EnableExternalService)
+                return;
             if (message == null)
                 return;
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Helpers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.ObjectPool;
 using RabbitMQ.Client;
 using System.Threading;
@@ -11,18 +12,21 @@ namespace DMS.Handlers
 
         public RabbitModelPooledObjectPolicy(IConfiguration Configuration)
         {
-            var factory = new ConnectionFactory
+            if (StaticParams.EnableExternalService)
             {
-                HostName = Configuration["RabbitConfig:Hostname"],
-                UserName = Configuration["RabbitConfig:Username"],
-                Password = Configuration["RabbitConfig:Password"],
-                VirtualHost = Configuration["RabbitConfig:VirtualHost"],
-                Port = int.Parse(Configuration["RabbitConfig:Port"]),
-            };
+                var factory = new ConnectionFactory
+                {
+                    HostName = Configuration["RabbitConfig:Hostname"],
+                    UserName = Configuration["RabbitConfig:Username"],
+                    Password = Configuration["RabbitConfig:Password"],
+                    VirtualHost = Configuration["RabbitConfig:VirtualHost"],
+                    Port = int.Parse(Configuration["RabbitConfig:Port"]),
+                };
 
-            // create connection  
-            _connection = factory.CreateConnection();
-            _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
+                // create connection  
+                _connection = factory.CreateConnection();
+                _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
+            }
         }
 
         public IModel Create()
