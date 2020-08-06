@@ -132,7 +132,7 @@ namespace DMS.Services.MStoreScouting
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 foreach (var Id in RecipientIds)
                 {
-                    UserNotification NotificationUtils = new UserNotification
+                    UserNotification UserNotification = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đại lý cắm cờ {StoreScouting.Code} - {StoreScouting.Name} vừa được thêm mới vào hệ thống bởi {User.DisplayName}",
@@ -143,7 +143,7 @@ namespace DMS.Services.MStoreScouting
                         SenderId = CurrentContext.UserId,
                         RecipientId = Id,
                     };
-                    UserNotifications.Add(NotificationUtils);
+                    UserNotifications.Add(UserNotification);
                 }
 
                 await NotificationService.BulkSend(UserNotifications);
@@ -246,7 +246,7 @@ namespace DMS.Services.MStoreScouting
                 await UOW.Commit();
 
                 DateTime Now = StaticParams.DateTimeNow;
-                UserNotification NotificationUtils = new UserNotification
+                UserNotification UserNotification = new UserNotification
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"{oldData.Name} đã bị từ chối bởi {CurrentUser.DisplayName}.",
@@ -257,7 +257,7 @@ namespace DMS.Services.MStoreScouting
                     SenderId = CurrentContext.UserId,
                     RecipientId = Creator.Id
                 };
-                await NotificationService.BulkSend(new List<UserNotification> { NotificationUtils });
+                await NotificationService.BulkSend(new List<UserNotification> { UserNotification });
 
                 Mail mail = new Mail
                 {

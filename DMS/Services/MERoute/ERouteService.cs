@@ -131,7 +131,7 @@ namespace DMS.Services.MERoute
                 await UOW.Commit();
 
                 DateTime Now = StaticParams.DateTimeNow;
-                UserNotification NotificationUtils = new UserNotification
+                UserNotification UserNotifications = new UserNotification
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được thêm mới cho anh/chị bởi {CurrentUser.DisplayName}",
@@ -142,7 +142,7 @@ namespace DMS.Services.MERoute
                     SenderId = CurrentContext.UserId,
                     RecipientId = ERoute.SaleEmployeeId
                 };
-                await NotificationService.BulkSend(new List<UserNotification> { NotificationUtils });
+                await NotificationService.BulkSend(new List<UserNotification> { UserNotifications });
 
                 await Logging.CreateAuditLog(ERoute, new { }, nameof(ERouteService));
                 return await UOW.ERouteRepository.Get(ERoute.Id);
@@ -179,7 +179,7 @@ namespace DMS.Services.MERoute
                 await UOW.Commit();
 
                 DateTime Now = StaticParams.DateTimeNow;
-                UserNotification NotificationUtils = new UserNotification
+                UserNotification UserNotifications = new UserNotification
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được cập nhật cho anh/chị bởi {CurrentUser.DisplayName}",
@@ -190,7 +190,7 @@ namespace DMS.Services.MERoute
                     SenderId = CurrentContext.UserId,
                     RecipientId = ERoute.SaleEmployeeId
                 };
-                await NotificationService.BulkSend(new List<UserNotification> { NotificationUtils });
+                await NotificationService.BulkSend(new List<UserNotification> { UserNotifications });
 
                 var newData = await UOW.ERouteRepository.Get(ERoute.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(ERouteService));
@@ -225,7 +225,7 @@ namespace DMS.Services.MERoute
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 DateTime Now = StaticParams.DateTimeNow;
-                UserNotification NotificationUtils = new UserNotification
+                UserNotification UserNotifications = new UserNotification
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName}",
@@ -234,7 +234,7 @@ namespace DMS.Services.MERoute
                     SenderId = CurrentContext.UserId,
                     RecipientId = ERoute.SaleEmployeeId
                 };
-                await NotificationService.BulkSend(new List<UserNotification> { NotificationUtils });
+                await NotificationService.BulkSend(new List<UserNotification> { UserNotifications });
 
                 await Logging.CreateAuditLog(new { }, ERoute, nameof(ERouteService));
                 return ERoute;

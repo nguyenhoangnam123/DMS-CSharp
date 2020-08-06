@@ -143,7 +143,7 @@ namespace DMS.Services.MProblem
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 foreach (var id in RecipientIds)
                 {
-                    UserNotification NotificationUtils = new UserNotification
+                    UserNotification UserNotification = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Vấn đề {Problem.Code} của đại lý {Problem.Store.Code} - {Problem.Store.Name} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName}",
@@ -154,7 +154,7 @@ namespace DMS.Services.MProblem
                         SenderId = CurrentContext.UserId,
                         RecipientId = id
                     };
-                    UserNotifications.Add(NotificationUtils);
+                    UserNotifications.Add(UserNotification);
                 }
 
                 await NotificationService.BulkSend(UserNotifications);
@@ -222,7 +222,7 @@ namespace DMS.Services.MProblem
                     var RecipientIds = await UOW.PermissionRepository.ListAppUser(ProblemRoute.Update);
                     foreach (var id in RecipientIds)
                     {
-                        UserNotification NotificationUtils = new UserNotification
+                        UserNotification UserNotification = new UserNotification
                         {
                             TitleWeb = $"Thông báo từ DMS",
                             ContentWeb = $"Vấn đề {Problem.Code} của đại lý {Problem.Store.Code} - {Problem.Store.Name} đã chuyển trạng thái {status} bởi {CurrentUser.DisplayName}",
@@ -233,7 +233,7 @@ namespace DMS.Services.MProblem
                             SenderId = CurrentContext.UserId,
                             RecipientId = id
                         };
-                        UserNotifications.Add(NotificationUtils);
+                        UserNotifications.Add(UserNotification);
                     }
 
                     await NotificationService.BulkSend(UserNotifications);

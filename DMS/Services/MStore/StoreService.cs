@@ -172,7 +172,7 @@ namespace DMS.Services.MStore
                     }
                     await UOW.StoreScoutingRepository.Update(StoreScouting);
 
-                    UserNotification Notification = new UserNotification
+                    UserNotification UserNotification = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đại lý cắm cờ {StoreScouting.Code} - {StoreScouting.Name} đã được mở đại lý bởi {CurrentUser.DisplayName}.",
@@ -183,7 +183,7 @@ namespace DMS.Services.MStore
                         Time = StaticParams.DateTimeNow,
                         Unread = false
                     };
-                    UserNotifications.Add(Notification);
+                    UserNotifications.Add(UserNotification);
                 }
                 await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
                 await UOW.Commit();
