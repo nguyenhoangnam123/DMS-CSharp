@@ -172,7 +172,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 foreach (var Id in RecipientIds)
                 {
-                    UserNotification NotificationUtils = new UserNotification
+                    UserNotification UserNotification = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName}",
@@ -183,7 +183,7 @@ namespace DMS.Services.MIndirectSalesOrder
                         SenderId = CurrentContext.UserId,
                         RecipientId = Id
                     };
-                    UserNotifications.Add(NotificationUtils);
+                    UserNotifications.Add(UserNotification);
                 }
 
                 await NotificationService.BulkSend(UserNotifications);
@@ -228,7 +228,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 foreach (var Id in RecipientIds)
                 {
-                    UserNotification NotificationUtils = new UserNotification
+                    UserNotification UserNotification = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được cập nhật thông tin bởi {CurrentUser.DisplayName}",
@@ -239,7 +239,7 @@ namespace DMS.Services.MIndirectSalesOrder
                         SenderId = CurrentContext.UserId,
                         RecipientId = Id
                     };
-                    UserNotifications.Add(NotificationUtils);
+                    UserNotifications.Add(UserNotification);
                 }
 
                 await NotificationService.BulkSend(UserNotifications);
@@ -286,7 +286,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 foreach (var Id in RecipientIds)
                 {
-                    UserNotification NotificationUtils = new UserNotification
+                    UserNotification UserNotification = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName}",
@@ -295,7 +295,7 @@ namespace DMS.Services.MIndirectSalesOrder
                         SenderId = CurrentContext.UserId,
                         RecipientId = Id
                     };
-                    UserNotifications.Add(NotificationUtils);
+                    UserNotifications.Add(UserNotification);
                 }
 
                 await NotificationService.BulkSend(UserNotifications);
