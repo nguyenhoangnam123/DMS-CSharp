@@ -175,7 +175,7 @@ namespace DMS.Services.MStore
                     UserNotification Notification = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
-                        ContentWeb = $"Đại lý cắm cờ {StoreScouting.Code} - {StoreScouting.Name} đã được mở đại lý bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        ContentWeb = $"Đại lý cắm cờ {StoreScouting.Code} - {StoreScouting.Name} đã được mở đại lý bởi {CurrentUser.DisplayName}.",
                         LinkWebsite = $"{StoreRoute.Master}/?id=*".Replace("*", Store.Id.ToString()),
                         LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
                         RecipientId = StoreScouting.CreatorId,
@@ -196,7 +196,7 @@ namespace DMS.Services.MStore
                     UserNotification UserNotification = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
-                        ContentWeb = $"Đại lý {Store.Code} - {Store.Name} vừa được thêm mới vào hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        ContentWeb = $"Đại lý {Store.Code} - {Store.Name} vừa được thêm mới vào hệ thống bởi {CurrentUser.DisplayName}.",
                         LinkWebsite = $"{StoreRoute.Master}/?id=*".Replace("*", Store.Id.ToString()),
                         LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
                         RecipientId = Id,
@@ -250,7 +250,7 @@ namespace DMS.Services.MStore
                     UserNotification UserNotification = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
-                        ContentWeb = $"Đại lý {Store.Code} - {Store.Name} vừa được cập nhật thông tin bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        ContentWeb = $"Đại lý {Store.Code} - {Store.Name} vừa được cập nhật thông tin bởi {CurrentUser.DisplayName}.",
                         LinkWebsite = $"{StoreRoute.Master}/?id=*".Replace("*", Store.Id.ToString()),
                         LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
                         RecipientId = Id,
@@ -303,7 +303,7 @@ namespace DMS.Services.MStore
                     UserNotification UserNotification = new UserNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
-                        ContentWeb = $"Đại lý {Store.Code} - {Store.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                        ContentWeb = $"Đại lý {Store.Code} - {Store.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName}.",
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,
@@ -354,7 +354,7 @@ namespace DMS.Services.MStore
                         UserNotification UserNotification = new UserNotification
                         {
                             TitleWeb = $"Thông báo từ DMS",
-                            ContentWeb = $"Đại lý {Store.Code} - {Store.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
+                            ContentWeb = $"Đại lý {Store.Code} - {Store.Name} đã được xoá khỏi hệ thống bởi {CurrentUser.DisplayName}.",
                             RecipientId = Id,
                             SenderId = CurrentContext.UserId,
                             Time = StaticParams.DateTimeNow,
