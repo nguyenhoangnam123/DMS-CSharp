@@ -4,18 +4,18 @@ using DMS.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MIndirectPriceList
+namespace DMS.Services.MPriceList
 {
-    public interface IIndirectPriceListValidator : IServiceScoped
+    public interface IPriceListValidator : IServiceScoped
     {
-        Task<bool> Create(IndirectPriceList IndirectPriceList);
-        Task<bool> Update(IndirectPriceList IndirectPriceList);
-        Task<bool> Delete(IndirectPriceList IndirectPriceList);
-        Task<bool> BulkDelete(List<IndirectPriceList> IndirectPriceLists);
-        Task<bool> Import(List<IndirectPriceList> IndirectPriceLists);
+        Task<bool> Create(PriceList PriceList);
+        Task<bool> Update(PriceList PriceList);
+        Task<bool> Delete(PriceList PriceList);
+        Task<bool> BulkDelete(List<PriceList> PriceLists);
+        Task<bool> Import(List<PriceList> PriceLists);
     }
 
-    public class IndirectPriceListValidator : IIndirectPriceListValidator
+    public class PriceListValidator : IPriceListValidator
     {
         public enum ErrorCode
         {
@@ -25,55 +25,55 @@ namespace DMS.Services.MIndirectPriceList
         private IUOW UOW;
         private ICurrentContext CurrentContext;
 
-        public IndirectPriceListValidator(IUOW UOW, ICurrentContext CurrentContext)
+        public PriceListValidator(IUOW UOW, ICurrentContext CurrentContext)
         {
             this.UOW = UOW;
             this.CurrentContext = CurrentContext;
         }
 
-        public async Task<bool> ValidateId(IndirectPriceList IndirectPriceList)
+        public async Task<bool> ValidateId(PriceList PriceList)
         {
-            IndirectPriceListFilter IndirectPriceListFilter = new IndirectPriceListFilter
+            PriceListFilter PriceListFilter = new PriceListFilter
             {
                 Skip = 0,
                 Take = 10,
-                Id = new IdFilter { Equal = IndirectPriceList.Id },
-                Selects = IndirectPriceListSelect.Id
+                Id = new IdFilter { Equal = PriceList.Id },
+                Selects = PriceListSelect.Id
             };
 
-            int count = await UOW.IndirectPriceListRepository.Count(IndirectPriceListFilter);
+            int count = await UOW.PriceListRepository.Count(PriceListFilter);
             if (count == 0)
-                IndirectPriceList.AddError(nameof(IndirectPriceListValidator), nameof(IndirectPriceList.Id), ErrorCode.IdNotExisted);
+                PriceList.AddError(nameof(PriceListValidator), nameof(PriceList.Id), ErrorCode.IdNotExisted);
             return count == 1;
         }
 
-        public async Task<bool> Create(IndirectPriceList IndirectPriceList)
+        public async Task<bool> Create(PriceList PriceList)
         {
-            return IndirectPriceList.IsValidated;
+            return PriceList.IsValidated;
         }
 
-        public async Task<bool> Update(IndirectPriceList IndirectPriceList)
+        public async Task<bool> Update(PriceList PriceList)
         {
-            if (await ValidateId(IndirectPriceList))
+            if (await ValidateId(PriceList))
             {
             }
-            return IndirectPriceList.IsValidated;
+            return PriceList.IsValidated;
         }
 
-        public async Task<bool> Delete(IndirectPriceList IndirectPriceList)
+        public async Task<bool> Delete(PriceList PriceList)
         {
-            if (await ValidateId(IndirectPriceList))
+            if (await ValidateId(PriceList))
             {
             }
-            return IndirectPriceList.IsValidated;
+            return PriceList.IsValidated;
         }
 
-        public async Task<bool> BulkDelete(List<IndirectPriceList> IndirectPriceLists)
+        public async Task<bool> BulkDelete(List<PriceList> PriceLists)
         {
             return true;
         }
 
-        public async Task<bool> Import(List<IndirectPriceList> IndirectPriceLists)
+        public async Task<bool> Import(List<PriceList> PriceLists)
         {
             return true;
         }

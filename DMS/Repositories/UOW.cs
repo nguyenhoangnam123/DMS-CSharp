@@ -14,9 +14,6 @@ namespace DMS.Repositories
         IAppUserRepository AppUserRepository { get; }
         IBannerRepository BannerRepository { get; }
         IBrandRepository BrandRepository { get; }
-        IDirectPriceListRepository DirectPriceListRepository { get; }
-        IDirectPriceListTypeRepository DirectPriceListTypeRepository { get; }
-        IDirectPriceListItemMappingItemMappingRepository DirectPriceListItemMappingItemMappingRepository { get; }
         IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; }
         IDirectSalesOrderRepository DirectSalesOrderRepository { get; }
         IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; }
@@ -30,9 +27,9 @@ namespace DMS.Repositories
         IEventMessageRepository EventMessageRepository { get; }
         IFieldRepository FieldRepository { get; }
         IImageRepository ImageRepository { get; }
-        IIndirectPriceListRepository IndirectPriceListRepository { get; }
-        IIndirectPriceListTypeRepository IndirectPriceListTypeRepository { get; }
-        IIndirectPriceListItemMappingItemMappingRepository IndirectPriceListItemMappingItemMappingRepository { get; }
+        IPriceListRepository PriceListRepository { get; }
+        IPriceListTypeRepository PriceListTypeRepository { get; }
+        IPriceListItemMappingItemMappingRepository PriceListItemMappingItemMappingRepository { get; }
         IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; }
         IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; }
         IIndirectSalesOrderPromotionRepository IndirectSalesOrderPromotionRepository { get; }
@@ -71,6 +68,7 @@ namespace DMS.Repositories
         IResellerStatusRepository ResellerStatusRepository { get; }
         IResellerTypeRepository ResellerTypeRepository { get; }
         IRoleRepository RoleRepository { get; }
+        ISalesOrderTypeRepository SalesOrderTypeRepository { get; }
         ISexRepository SexRepository { get; }
         IStatusRepository StatusRepository { get; }
         IStoreScoutingRepository StoreScoutingRepository { get; }
@@ -112,9 +110,6 @@ namespace DMS.Repositories
         public IAppUserRepository AppUserRepository { get; private set; }
         public IBannerRepository BannerRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
-        public IDirectPriceListRepository DirectPriceListRepository { get; private set; }
-        public IDirectPriceListTypeRepository DirectPriceListTypeRepository { get; private set; }
-        public IDirectPriceListItemMappingItemMappingRepository DirectPriceListItemMappingItemMappingRepository { get; private set; }
         public IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; private set; }
         public IDirectSalesOrderRepository DirectSalesOrderRepository { get; private set; }
         public IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; private set; }
@@ -128,9 +123,9 @@ namespace DMS.Repositories
         public IFieldRepository FieldRepository { get; private set; }
         public IEventMessageRepository EventMessageRepository { get; private set; }
         public IImageRepository ImageRepository { get; private set; }
-        public IIndirectPriceListRepository IndirectPriceListRepository { get; private set; }
-        public IIndirectPriceListTypeRepository IndirectPriceListTypeRepository { get; private set; }
-        public IIndirectPriceListItemMappingItemMappingRepository IndirectPriceListItemMappingItemMappingRepository { get; private set; }
+        public IPriceListRepository PriceListRepository { get; private set; }
+        public IPriceListTypeRepository PriceListTypeRepository { get; private set; }
+        public IPriceListItemMappingItemMappingRepository PriceListItemMappingItemMappingRepository { get; private set; }
         public IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; private set; }
         public IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; private set; }
         public IIndirectSalesOrderPromotionRepository IndirectSalesOrderPromotionRepository { get; private set; }
@@ -169,6 +164,7 @@ namespace DMS.Repositories
         public IResellerStatusRepository ResellerStatusRepository { get; private set; }
         public IResellerTypeRepository ResellerTypeRepository { get; private set; }
         public IRoleRepository RoleRepository { get; private set; }
+        public ISalesOrderTypeRepository SalesOrderTypeRepository { get; private set; }
         public ISexRepository SexRepository { get; private set; }
         public IStatusRepository StatusRepository { get; private set; }
         public IStoreScoutingRepository StoreScoutingRepository { get; private set; }
@@ -209,9 +205,6 @@ namespace DMS.Repositories
             AppUserRepository = new AppUserRepository(DataContext);
             BrandRepository = new BrandRepository(DataContext);
             BannerRepository = new BannerRepository(DataContext);
-            DirectPriceListRepository = new DirectPriceListRepository(DataContext);
-            DirectPriceListTypeRepository = new DirectPriceListTypeRepository(DataContext);
-            DirectPriceListItemMappingItemMappingRepository = new DirectPriceListItemMappingItemMappingRepository(DataContext);
             DirectSalesOrderContentRepository = new DirectSalesOrderContentRepository(DataContext);
             DirectSalesOrderRepository = new DirectSalesOrderRepository(DataContext);
             DirectSalesOrderPromotionRepository = new DirectSalesOrderPromotionRepository(DataContext);
@@ -225,9 +218,9 @@ namespace DMS.Repositories
             FieldRepository = new FieldRepository(DataContext);
             EventMessageRepository = new EventMessageRepository(DataContext);
             ImageRepository = new ImageRepository(DataContext);
-            IndirectPriceListRepository = new IndirectPriceListRepository(DataContext);
-            IndirectPriceListTypeRepository = new IndirectPriceListTypeRepository(DataContext);
-            IndirectPriceListItemMappingItemMappingRepository = new IndirectPriceListItemMappingItemMappingRepository(DataContext);
+            PriceListRepository = new PriceListRepository(DataContext);
+            PriceListTypeRepository = new PriceListTypeRepository(DataContext);
+            PriceListItemMappingItemMappingRepository = new PriceListItemMappingItemMappingRepository(DataContext);
             IndirectSalesOrderContentRepository = new IndirectSalesOrderContentRepository(DataContext);
             IndirectSalesOrderRepository = new IndirectSalesOrderRepository(DataContext);
             IndirectSalesOrderPromotionRepository = new IndirectSalesOrderPromotionRepository(DataContext);
@@ -266,6 +259,7 @@ namespace DMS.Repositories
             ResellerStatusRepository = new ResellerStatusRepository(DataContext);
             ResellerTypeRepository = new ResellerTypeRepository(DataContext);
             RoleRepository = new RoleRepository(DataContext);
+            SalesOrderTypeRepository = new SalesOrderTypeRepository(DataContext);
             SexRepository = new SexRepository(DataContext);
             StatusRepository = new StatusRepository(DataContext);
             StoreScoutingStatusRepository = new StoreScoutingStatusRepository(DataContext);

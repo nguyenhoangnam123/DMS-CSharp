@@ -27,7 +27,14 @@ namespace DMS.Entities
     public class PriceListItemMappingFilter : FilterEntity
     {
         public IdFilter PriceListId { get; set; }
+        public IdFilter PriceListTypeId { get; set; }
+        public IdFilter SalesOrderTypeId { get; set; }
+        public IdFilter OrganizationId { get; set; }
+        public IdFilter StoreId { get; set; }
+        public IdFilter StoreGroupingId { get; set; }
+        public IdFilter StoreTypeId { get; set; }
         public IdFilter ItemId { get; set; }
+        public IdFilter StatusId { get; set; }
         public LongFilter Price { get; set; }
         public List<PriceListItemMappingFilter> OrFilter { get; set; }
         public PriceListItemMappingOrder OrderBy { get; set; }

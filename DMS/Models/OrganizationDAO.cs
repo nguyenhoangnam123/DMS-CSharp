@@ -9,15 +9,14 @@ namespace DMS.Models
         {
             AppUserERouteScopes = new HashSet<AppUserDAO>();
             AppUserOrganizations = new HashSet<AppUserDAO>();
-            DirectPriceLists = new HashSet<DirectPriceListDAO>();
             ERoutes = new HashSet<ERouteDAO>();
-            IndirectPriceLists = new HashSet<IndirectPriceListDAO>();
             IndirectSalesOrderTransactions = new HashSet<IndirectSalesOrderTransactionDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
             InverseParent = new HashSet<OrganizationDAO>();
             KpiGenerals = new HashSet<KpiGeneralDAO>();
             KpiItems = new HashSet<KpiItemDAO>();
             Notifications = new HashSet<NotificationDAO>();
+            PriceLists = new HashSet<PriceListDAO>();
             Resellers = new HashSet<ResellerDAO>();
             Stores = new HashSet<StoreDAO>();
             Warehouses = new HashSet<WarehouseDAO>();
@@ -42,15 +41,14 @@ namespace DMS.Models
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserDAO> AppUserERouteScopes { get; set; }
         public virtual ICollection<AppUserDAO> AppUserOrganizations { get; set; }
-        public virtual ICollection<DirectPriceListDAO> DirectPriceLists { get; set; }
         public virtual ICollection<ERouteDAO> ERoutes { get; set; }
-        public virtual ICollection<IndirectPriceListDAO> IndirectPriceLists { get; set; }
         public virtual ICollection<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactions { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
         public virtual ICollection<OrganizationDAO> InverseParent { get; set; }
         public virtual ICollection<KpiGeneralDAO> KpiGenerals { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItems { get; set; }
         public virtual ICollection<NotificationDAO> Notifications { get; set; }
+        public virtual ICollection<PriceListDAO> PriceLists { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
         public virtual ICollection<WarehouseDAO> Warehouses { get; set; }
