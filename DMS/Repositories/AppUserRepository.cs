@@ -391,6 +391,10 @@ namespace DMS.Repositories
                 ProvinceId = x.ProvinceId,
                 Latitude = x.Latitude,
                 Longitude = x.Longitude,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                RowId = x.RowId,
                 Organization = x.Organization == null ? null : new Organization
                 {
                     Id = x.Organization.Id,

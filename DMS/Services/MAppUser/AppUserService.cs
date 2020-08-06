@@ -134,9 +134,7 @@ namespace DMS.Services.MAppUser
             try
             {
                 await UOW.AppUserRepository.SimpleUpdate(AppUser);
-
-                AppUser = await Get(AppUser.Id);
-                RabbitManager.PublishSingle(new EventMessage<AppUser>(AppUser, AppUser.RowId), RoutingKeyEnum.AppUserSync);
+                AppUser = await UOW.AppUserRepository.Get(Id);
                 return AppUser;
             }
             catch (Exception ex)
