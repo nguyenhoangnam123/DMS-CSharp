@@ -259,7 +259,7 @@ namespace DMS.Services.MProduct
                         {
                             TitleWeb = $"Thông báo từ DMS",
                             ContentWeb = $"Sản phẩm {Product.Code} - {Product.Name} đã được đưa vào danh sách sản phẩm mới bởi {CurrentUser.DisplayName} vào lúc {StaticParams.DateTimeNow}",
-                            LinkWebsite = $"{ProductRoute.Detail}".Replace("*", Product.Id.ToString()),
+                            LinkWebsite = $"{ProductRoute.Master}/?id=*".Replace("*", Product.Id.ToString()),
                             LinkMobile = $"{ProductRoute.Mobile}".Replace("*", Product.Id.ToString()),
                             RecipientId = Id,
                             SenderId = CurrentContext.UserId,
