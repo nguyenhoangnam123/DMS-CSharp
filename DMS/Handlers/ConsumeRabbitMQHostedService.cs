@@ -23,57 +23,63 @@ namespace DMS.Handlers
         internal List<IHandler> Handlers = new List<IHandler>();
         public ConsumeRabbitMQHostedService(IPooledObjectPolicy<IModel> objectPolicy, IConfiguration Configuration)
         {
-            this.Configuration = Configuration;
-            string exchangeName = "exchange";
-            _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 1);
-            _channel = _objectPool.Get();
-            _channel.ExchangeDeclare(exchangeName, ExchangeType.Topic, true, false);
-            _channel.QueueDeclare(StaticParams.ModuleName, true, false, false, null);
-
-            List<Type> handlerTypes = typeof(ConsumeRabbitMQHostedService).Assembly.GetTypes()
-                .Where(x => typeof(Handler).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract)
-                .ToList();
-            foreach (Type type in handlerTypes)
+            if (StaticParams.EnableExternalService)
             {
-                Handler handler = (Handler)Activator.CreateInstance(type);
-                Handlers.Add(handler);
-            }
+                this.Configuration = Configuration;
+                string exchangeName = "exchange";
+                _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 1);
+                _channel = _objectPool.Get();
+                _channel.ExchangeDeclare(exchangeName, ExchangeType.Topic, true, false);
+                _channel.QueueDeclare(StaticParams.ModuleName, true, false, false, null);
 
-            foreach (IHandler handler in Handlers)
-            {
-                handler.QueueBind(_channel, StaticParams.ModuleName, exchangeName);
+                List<Type> handlerTypes = typeof(ConsumeRabbitMQHostedService).Assembly.GetTypes()
+                    .Where(x => typeof(Handler).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract)
+                    .ToList();
+                foreach (Type type in handlerTypes)
+                {
+                    Handler handler = (Handler)Activator.CreateInstance(type);
+                    Handlers.Add(handler);
+                }
+
+                foreach (IHandler handler in Handlers)
+                {
+                    handler.QueueBind(_channel, StaticParams.ModuleName, exchangeName);
+                }
+                _channel.BasicQos(0, 1, false);
             }
-            _channel.BasicQos(0, 1, false);
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            stoppingToken.ThrowIfCancellationRequested();
-
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += (ch, ea) =>
+            if (StaticParams.EnableExternalService)
             {
+                stoppingToken.ThrowIfCancellationRequested();
+
+                var consumer = new EventingBasicConsumer(_channel);
+                consumer.Received += (ch, ea) =>
+                {
                 // received message  
                 var content = System.Text.Encoding.UTF8.GetString(ea.Body.ToArray());
-                var routingKey = ea.RoutingKey;
+                    var routingKey = ea.RoutingKey;
                 // handle the received message  
                 try
-                {
-                    _ = HandleMessage(routingKey, content);
-                    _channel.BasicAck(ea.DeliveryTag, false);
-                }
-                catch (Exception e)
-                {
-                    _channel.BasicNack(ea.DeliveryTag, false, true);
-                }
-            };
+                    {
+                        _ = HandleMessage(routingKey, content);
+                        _channel.BasicAck(ea.DeliveryTag, false);
+                    }
+                    catch (Exception e)
+                    {
+                        _channel.BasicNack(ea.DeliveryTag, false, true);
+                    }
+                };
 
-            consumer.Shutdown += OnConsumerShutdown;
-            consumer.Registered += OnConsumerRegistered;
-            consumer.Unregistered += OnConsumerUnregistered;
-            consumer.ConsumerCancelled += OnConsumerCancelled;
+                consumer.Shutdown += OnConsumerShutdown;
+                consumer.Registered += OnConsumerRegistered;
+                consumer.Unregistered += OnConsumerUnregistered;
+                consumer.ConsumerCancelled += OnConsumerCancelled;
 
-            _channel.BasicConsume(StaticParams.ModuleName, false, consumer);
+                _channel.BasicConsume(StaticParams.ModuleName, false, consumer);
+            }
             return Task.CompletedTask;
         }
 

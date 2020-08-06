@@ -80,7 +80,7 @@ namespace DMS.Rpc.kpi_general
         }
 
         [Route(KpiGeneralRoute.Get), HttpPost]
-        public async Task<ActionResult<KpiGeneral_KpiGeneralDTO>> Get([FromBody]KpiGeneral_KpiGeneralDTO KpiGeneral_KpiGeneralDTO)
+        public async Task<ActionResult<KpiGeneral_KpiGeneralDTO>> Get([FromBody] KpiGeneral_KpiGeneralDTO KpiGeneral_KpiGeneralDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -103,7 +103,7 @@ namespace DMS.Rpc.kpi_general
             }
             return KpiGeneral_KpiGeneralDTO;
         }
-        
+
         [Route(KpiGeneralRoute.GetDraft), HttpPost]
         public async Task<ActionResult<KpiGeneral_KpiGeneralDTO>> GetDraft([FromBody] KpiGeneral_KpiGeneralDTO kpiGeneral_KpiGeneralDTO)
         {
@@ -1234,8 +1234,15 @@ namespace DMS.Rpc.kpi_general
             AppUserFilter.OrganizationId = KpiGeneral_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            {
+                if (AppUserFilter.Id.In == null) AppUserFilter.Id.In = new List<long>();
+                AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
+            }
+
             return await KpiGeneralService.CountAppUser(AppUserFilter, KpiGeneral_AppUserFilterDTO.KpiYearId);
         }
+
         [Route(KpiGeneralRoute.ListAppUser), HttpPost]
         public async Task<List<KpiGeneral_AppUserDTO>> ListAppUser([FromBody] KpiGeneral_AppUserFilterDTO KpiGeneral_AppUserFilterDTO)
         {
@@ -1252,6 +1259,12 @@ namespace DMS.Rpc.kpi_general
             AppUserFilter.OrganizationId = KpiGeneral_AppUserFilterDTO.OrganizationId;
             AppUserFilter.Phone = KpiGeneral_AppUserFilterDTO.Phone;
             AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            {
+                if (AppUserFilter.Id.In == null) AppUserFilter.Id.In = new List<long>();
+                AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
+            }
 
             List<AppUser> AppUsers = await KpiGeneralService.ListAppUser(AppUserFilter, KpiGeneral_AppUserFilterDTO.KpiYearId);
             List<KpiGeneral_AppUserDTO> KpiGeneral_AppUserDTOs = AppUsers
@@ -1289,7 +1302,7 @@ namespace DMS.Rpc.kpi_general
                 }
             }
 
-          
+
             return KpiGeneralContentKpiPeriodMappingEnables;
         }
     }

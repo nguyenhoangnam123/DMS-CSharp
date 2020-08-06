@@ -1340,10 +1340,14 @@ namespace DMS.Rpc.kpi_item
             AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
-            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            {
+                if (AppUserFilter.Id.In == null) AppUserFilter.Id.In = new List<long>();
+                AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
+            }
 
             return await KpiItemService.CountAppUser(AppUserFilter, KpiItem_AppUserFilterDTO.KpiYearId, KpiItem_AppUserFilterDTO.KpiPeriodId);
         }
+
         [Route(KpiItemRoute.ListAppUser), HttpPost]
         public async Task<List<KpiItem_AppUserDTO>> ListAppUser([FromBody] KpiItem_AppUserFilterDTO KpiItem_AppUserFilterDTO)
         {
@@ -1362,7 +1366,10 @@ namespace DMS.Rpc.kpi_item
             AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
-            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            {
+                if (AppUserFilter.Id.In == null) AppUserFilter.Id.In = new List<long>();
+                AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
+            }
 
             List<AppUser> AppUsers = await KpiItemService.ListAppUser(AppUserFilter, KpiItem_AppUserFilterDTO.KpiYearId, KpiItem_AppUserFilterDTO.KpiPeriodId);
             List<KpiItem_AppUserDTO> KpiItem_AppUserDTOs = AppUsers

@@ -293,7 +293,8 @@ namespace DMS.Services.MKpiItem
 
                 var KpiItems = await UOW.KpiItemRepository.List(KpiItemFilter);
                 var AppUserIds = KpiItems.Select(x => x.EmployeeId).ToList();
-                AppUserFilter.Id = new IdFilter { NotIn = AppUserIds };
+                if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+                AppUserFilter.Id.NotIn = AppUserIds;
                 AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email;
 
                 var AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
@@ -332,7 +333,8 @@ namespace DMS.Services.MKpiItem
                 var KpiItems = await UOW.KpiItemRepository.List(KpiItemFilter);
                 var AppUserIds = KpiItems.Select(x => x.EmployeeId).ToList();
 
-                AppUserFilter.Id = new IdFilter { NotIn = AppUserIds };
+                if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+                AppUserFilter.Id.NotIn = AppUserIds;
 
                 var count = await UOW.AppUserRepository.Count(AppUserFilter);
                 return count;
