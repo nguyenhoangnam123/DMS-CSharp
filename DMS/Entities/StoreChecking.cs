@@ -13,8 +13,12 @@ namespace DMS.Entities
         public long SaleEmployeeId { get; set; }
         public decimal? Longitude { get; set; }
         public decimal? Latitude { get; set; }
+        public decimal? CheckOutLongitude { get; set; }
+        public decimal? CheckOutLatitude { get; set; }
         public DateTime? CheckInAt { get; set; }
         public DateTime? CheckOutAt { get; set; }
+        public long? CheckInDistance { get; set; }
+        public long? CheckOutDistance { get; set; }
         public long? CountIndirectSalesOrder { get; set; }
         public long? ImageCounter { get; set; }
         public bool Planned { get; set; }
@@ -77,5 +81,9 @@ namespace DMS.Entities
         CheckOutAt = E._6,
         CountIndirectSalesOrder = E._7,
         CountImage = E._8,
+        CheckOutLongitude = E._9,
+        CheckOutLatitude = E._10,
+        CheckInDistance = E._11,
+        CheckOutDistance = E._12,
     }
 }

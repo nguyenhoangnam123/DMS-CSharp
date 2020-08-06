@@ -15,6 +15,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
         public string Duaration { get; set; }
+        public string CheckInDistance { get; set; }
+        public string CheckOutDistance { get; set; }
         public string DeviceName { get; set; }
         public long ImageCounter { get; set; }
         public bool Planned { get; set; }

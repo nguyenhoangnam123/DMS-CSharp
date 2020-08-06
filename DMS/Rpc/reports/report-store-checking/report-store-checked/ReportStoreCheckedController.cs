@@ -358,12 +358,15 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             SaleEmployeeId = x.SaleEmployeeId,
                             StoreName = x.Store.Name,
                             StoreCode = x.Store.Code,
-                            StoreAddress = x.Store.Address
+                            StoreAddress = x.Store.Address,
+                            CheckInDistance = $"{x.CheckInDistance} m",
+                            CheckOutDistance = $"{x.CheckOutDistance} m",
                         }).ToList();
                     foreach (var StoreChecking in ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings)
                     {
-                        var TotalMinuteChecking = StoreChecking.CheckOut.Subtract(StoreChecking.CheckIn).Minutes;
-                        StoreChecking.Duaration = $"{TotalMinuteChecking / 60} : {TotalMinuteChecking % 60}";
+                        var TotalMinuteChecking = StoreChecking.CheckOut.Subtract(StoreChecking.CheckIn).TotalSeconds;
+                        TimeSpan timeSpan = TimeSpan.FromSeconds(TotalMinuteChecking);
+                        StoreChecking.Duaration = $"{timeSpan.Hours.ToString().PadLeft(2,'0')}:, {timeSpan.Minutes.ToString().PadLeft(2, '0')}";
                         var HasSalesOrder = SalesOrders.Where(x => x.StoreCheckingId == StoreChecking.Id).FirstOrDefault();
                         if (HasSalesOrder == null)
                             StoreChecking.SalesOrder = false;

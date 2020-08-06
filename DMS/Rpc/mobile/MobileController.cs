@@ -1110,8 +1110,12 @@ namespace DMS.Rpc.mobile
             StoreChecking.SaleEmployeeId = Mobile_StoreCheckingDTO.SaleEmployeeId;
             StoreChecking.Longitude = Mobile_StoreCheckingDTO.Longitude;
             StoreChecking.Latitude = Mobile_StoreCheckingDTO.Latitude;
+            StoreChecking.CheckOutLongitude = Mobile_StoreCheckingDTO.CheckOutLongitude;
+            StoreChecking.CheckOutLatitude = Mobile_StoreCheckingDTO.CheckOutLatitude;
             StoreChecking.CheckInAt = Mobile_StoreCheckingDTO.CheckInAt;
             StoreChecking.CheckOutAt = Mobile_StoreCheckingDTO.CheckOutAt;
+            StoreChecking.CheckInDistance = Mobile_StoreCheckingDTO.CheckInDistance;
+            StoreChecking.CheckOutDistance = Mobile_StoreCheckingDTO.CheckOutDistance;
             StoreChecking.CountIndirectSalesOrder = Mobile_StoreCheckingDTO.CountIndirectSalesOrder;
             StoreChecking.ImageCounter = Mobile_StoreCheckingDTO.CountImage;
             StoreChecking.IsOpenedStore = Mobile_StoreCheckingDTO.IsOpenedStore;

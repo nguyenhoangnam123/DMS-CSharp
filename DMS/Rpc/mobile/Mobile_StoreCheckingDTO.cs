@@ -13,8 +13,12 @@ namespace DMS.Rpc.mobile
         public long SaleEmployeeId { get; set; }
         public decimal? Longitude { get; set; }
         public decimal? Latitude { get; set; }
+        public decimal? CheckOutLongitude { get; set; }
+        public decimal? CheckOutLatitude { get; set; }
         public DateTime? CheckInAt { get; set; }
         public DateTime? CheckOutAt { get; set; }
+        public long? CheckInDistance { get; set; }
+        public long? CheckOutDistance { get; set; }
         public long? CountIndirectSalesOrder { get; set; }
         public long? CountImage { get; set; }
         public bool IsOpenedStore { get; set; }
@@ -29,8 +33,12 @@ namespace DMS.Rpc.mobile
             this.SaleEmployeeId = StoreChecking.SaleEmployeeId;
             this.Longitude = StoreChecking.Longitude;
             this.Latitude = StoreChecking.Latitude;
+            this.CheckOutLongitude = StoreChecking.CheckOutLongitude;
+            this.CheckOutLatitude = StoreChecking.CheckOutLatitude;
             this.CheckInAt = StoreChecking.CheckInAt;
             this.CheckOutAt = StoreChecking.CheckOutAt;
+            this.CheckInDistance = StoreChecking.CheckInDistance;
+            this.CountIndirectSalesOrder = StoreChecking.CountIndirectSalesOrder;
             this.CountIndirectSalesOrder = StoreChecking.CountIndirectSalesOrder;
             this.CountImage = StoreChecking.ImageCounter;
             this.IsOpenedStore = StoreChecking.IsOpenedStore;

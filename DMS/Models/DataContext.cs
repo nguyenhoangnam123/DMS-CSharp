@@ -2786,6 +2786,10 @@ namespace DMS.Models
 
                 entity.Property(e => e.CheckOutAt).HasColumnType("datetime");
 
+                entity.Property(e => e.CheckOutLatitude).HasColumnType("decimal(18, 6)");
+
+                entity.Property(e => e.CheckOutLongitude).HasColumnType("decimal(18, 6)");
+
                 entity.Property(e => e.DeviceName).HasMaxLength(200);
 
                 entity.Property(e => e.Latitude).HasColumnType("decimal(18, 6)");
