@@ -906,7 +906,7 @@ namespace DMS.Repositories
                     IndirectSalesOrderTransactionDAO IndirectSalesOrderTransactionDAO = new IndirectSalesOrderTransactionDAO
                     {
                         IndirectSalesOrderId = IndirectSalesOrder.Id,
-                        ItemId = IndirectSalesOrderContent.Id,
+                        ItemId = IndirectSalesOrderContent.ItemId,
                         OrganizationId = IndirectSalesOrder.OrganizationId,
                         TypeId = IndirectSalesOrderTransactionTypeEnum.SALES_CONTENT.Id,
                         UnitOfMeasureId = IndirectSalesOrderContent.PrimaryUnitOfMeasureId,
@@ -925,7 +925,7 @@ namespace DMS.Repositories
                     IndirectSalesOrderTransactionDAO IndirectSalesOrderTransactionDAO = new IndirectSalesOrderTransactionDAO
                     {
                         IndirectSalesOrderId = IndirectSalesOrder.Id,
-                        ItemId = IndirectSalesOrderPromotion.Id,
+                        ItemId = IndirectSalesOrderPromotion.ItemId,
                         OrganizationId = IndirectSalesOrder.OrganizationId,
                         TypeId = IndirectSalesOrderTransactionTypeEnum.PROMOTION.Id,
                         UnitOfMeasureId = IndirectSalesOrderPromotion.PrimaryUnitOfMeasureId,
