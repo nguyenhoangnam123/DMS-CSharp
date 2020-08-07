@@ -11,6 +11,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         public string Code { get; set; }
 
         public string Name { get; set; }
+        public string Address { get; set; }
 
         public string Telephone { get; set; }
 
@@ -26,6 +27,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             this.Code = Store.Code;
 
             this.Name = Store.Name;
+            this.Address = Store.Address;
 
             this.Telephone = Store.Telephone;
 
