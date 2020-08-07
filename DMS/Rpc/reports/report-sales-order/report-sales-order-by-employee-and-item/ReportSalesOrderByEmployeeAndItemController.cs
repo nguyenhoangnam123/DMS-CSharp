@@ -15,6 +15,9 @@ using Helpers;
 using Microsoft.EntityFrameworkCore;
 using DMS.Services.MProduct;
 using DMS.Services.MAppUser;
+using System.IO;
+using System.Dynamic;
+using NGS.Templater;
 
 namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_item
 {
@@ -529,6 +532,54 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalSalesStock = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.SelectMany(x => x.SaleEmployees)
                 .SelectMany(x => x.Items).Sum(x => x.SaleStock);
             return ReportSalesOrderByEmployeeAndItem_TotalDTO;
+        }
+
+        [Route(ReportSalesOrderByEmployeeAndItemRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            DateTime Start = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
+               StaticParams.DateTimeNow.Date :
+               ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.GreaterEqual.Value.Date;
+
+            DateTime End = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.LessEqual == null ?
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
+
+            ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Skip = 0;
+            ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Take = int.MaxValue;
+            List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO> ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs = (await List(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO)).Value;
+
+            ReportSalesOrderByEmployeeAndItem_TotalDTO ReportSalesOrderByEmployeeAndItem_TotalDTO = await Total(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO);
+            long stt = 1;
+            foreach (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
+            {
+                foreach (var SaleEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
+                {
+                    SaleEmployee.STT = stt;
+                    stt++;
+                }
+            }
+
+            
+            string path = "Templates/Report_Sales_Order_By_Employee_And_Item.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.ToString("dd-MM-yyyy");
+            Data.End = End.ToString("dd-MM-yyyy");
+            Data.ReportSalesOrderByEmployeeAndItems = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs;
+            Data.Total = ReportSalesOrderByEmployeeAndItem_TotalDTO;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportSalesOrderByEmployeeAndItem.xlsx");
         }
     }
 }
