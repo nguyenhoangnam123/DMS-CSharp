@@ -8,10 +8,12 @@ namespace DMS.Rpc.workflow_definition
         public const string Parent = Module + "/workflow";
         public const string Master = Module + "/workflow/workflow-definition/workflow-definition-master";
         public const string Detail = Module + "/workflow/workflow-definition/workflow-definition-detail/*";
+        public const string Preview = Module + "/workflow/workflow-definition/workflow-definition-preview/*";
         private const string Default = Rpc + Module + "/workflow-definition";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string GetDirection = Default + "/get-direction";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
@@ -43,7 +45,7 @@ namespace DMS.Rpc.workflow_definition
         {
             { "Tìm kiếm", new List<string> {
                 Parent,
-                Master, Count, List, Get,
+                Master, Count, List, Get, Preview, GetDirection,
                 FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, FilterListRole, FilterListStatus } },
             { "Thêm", new List<string> {
                 Parent,

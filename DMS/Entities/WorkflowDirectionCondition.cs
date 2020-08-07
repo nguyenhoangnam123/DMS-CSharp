@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Common;
+using System;
 using System.Collections.Generic;
 
 namespace DMS.Entities
 {
-    public partial class WorkflowDirectionCondition
+    public class WorkflowDirectionCondition : DataEntity
     {
         public long Id { get; set; }
         public long WorkflowDirectionId { get; set; }
