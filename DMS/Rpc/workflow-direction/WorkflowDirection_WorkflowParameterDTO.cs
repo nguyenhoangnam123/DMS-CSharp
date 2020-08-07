@@ -8,6 +8,7 @@ namespace DMS.Rpc.workflow_direction
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public long WorkflowParameterTypeId { get; set; }
 
         public WorkflowDirection_WorkflowParameterDTO() { }
         public WorkflowDirection_WorkflowParameterDTO(WorkflowParameter WorkflowParameter)
@@ -15,6 +16,7 @@ namespace DMS.Rpc.workflow_direction
             this.Id = WorkflowParameter.Id;
             this.Code = WorkflowParameter.Code;
             this.Name = WorkflowParameter.Name;
+            this.WorkflowParameterTypeId = WorkflowParameter.WorkflowParameterTypeId;
         }
     }
 
