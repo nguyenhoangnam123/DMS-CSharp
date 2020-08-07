@@ -330,6 +330,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                         Id = StoreChecking.Store.Id,
                         Code = StoreChecking.Store.Code,
                         Name = StoreChecking.Store.Name,
+                        Address = StoreChecking.Store.Address,
                         Telephone = StoreChecking.Store.Telephone,
                         StatusId = StoreChecking.Store.StatusId,
                     }
