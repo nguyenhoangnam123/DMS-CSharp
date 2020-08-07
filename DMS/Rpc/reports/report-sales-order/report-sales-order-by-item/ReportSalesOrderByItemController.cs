@@ -15,6 +15,9 @@ using DMS.Services.MIndirectSalesOrder;
 using DMS.Services.MOrganization;
 using Microsoft.EntityFrameworkCore;
 using DMS.Repositories;
+using System.IO;
+using System.Dynamic;
+using NGS.Templater;
 
 namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
 {
@@ -372,6 +375,53 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                 .Sum(x => x.Quantity);
             
             return ReportSalesOrderByItem_TotalDTO;
+        }
+
+        [Route(ReportSalesOrderByItemRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            DateTime Start = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date?.GreaterEqual == null ?
+               StaticParams.DateTimeNow.Date :
+               ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date.GreaterEqual.Value.Date;
+
+            DateTime End = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date?.LessEqual == null ?
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
+
+            ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Skip = 0;
+            ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Take = int.MaxValue;
+            List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO> ReportSalesOrderByItem_ReportSalesOrderByItemDTOs = (await List(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO)).Value;
+
+            ReportSalesOrderByItem_TotalDTO ReportSalesOrderByItem_TotalDTO = await Total(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO);
+            long stt = 1;
+            foreach (ReportSalesOrderByItem_ReportSalesOrderByItemDTO ReportSalesOrderByItem_ReportSalesOrderByItemDTO in ReportSalesOrderByItem_ReportSalesOrderByItemDTOs)
+            {
+                foreach (var Item in ReportSalesOrderByItem_ReportSalesOrderByItemDTO.ItemDetails)
+                {
+                    Item.STT = stt;
+                    stt++;
+                }
+            }
+
+            string path = "Templates/Report_Sales_Order_By_Item.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.ToString("dd-MM-yyyy");
+            Data.End = End.ToString("dd-MM-yyyy");
+            Data.ReportSalesOrderByItems = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs;
+            Data.Total = ReportSalesOrderByItem_TotalDTO;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportSalesOrderByItem.xlsx");
         }
     }
 }

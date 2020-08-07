@@ -14,6 +14,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
 
     public class ReportSalesOrderByItem_ItemDetailDTO : DataDTO
     {
+        public long STT { get; set; }
         public long ItemId { get; set; }
         public string ItemCode { get; set; }
         public string ItemName { get; set; }
