@@ -321,6 +321,14 @@ namespace DMS.Rpc.workflow_direction
                 StatusId = WorkflowDirection_WorkflowDirectionDTO.WorkflowDefinition.StatusId,
                 UpdatedAt = WorkflowDirection_WorkflowDirectionDTO.WorkflowDefinition.UpdatedAt,
             };
+            WorkflowDirection.WorkflowDirectionConditions = WorkflowDirection_WorkflowDirectionDTO.WorkflowDirectionConditions?.Select(x => new WorkflowDirectionCondition
+            {
+                Id = x.Id,
+                Value = x.Value,
+                WorkflowDirectionId = x.WorkflowDirectionId,
+                WorkflowOperatorId = x.WorkflowOperatorId,
+                WorkflowParameterId = x.WorkflowParameterId,
+            }).ToList();
             WorkflowDirection.BaseLanguage = CurrentContext.Language;
             return WorkflowDirection;
         }
