@@ -585,22 +585,6 @@ namespace DMS.Rpc.workflow_direction
             OrganizationFilter.Address = WorkflowDirection_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = WorkflowDirection_OrganizationFilterDTO.Email;
 
-            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
-            if (CurrentContext.Filters != null)
-            {
-                foreach (var currentFilter in CurrentContext.Filters)
-                {
-                    OrganizationFilter subFilter = new OrganizationFilter();
-                    OrganizationFilter.OrFilter.Add(subFilter);
-                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
-                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
-                    {
-                        if (FilterPermissionDefinition.Name == "OrganizationId")
-                            subFilter.Id = FilterPermissionDefinition.IdFilter;
-                    }
-                }
-            }
-
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<WorkflowDirection_OrganizationDTO> WorkflowDirection_OrganizationDTOs = Organizations
                 .Select(x => new WorkflowDirection_OrganizationDTO(x)).ToList();
