@@ -21,11 +21,12 @@ namespace DMS.Rpc.workflow_direction
         public const string FilterListWorkflowStep = Default + "/filter-list-workflow-step";
         public const string FilterListWorkflowDefinition = Default + "/filter-list-workflow-definition";
 
-        public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListWorkflowStep = Default + "/single-list-workflow-step";
         public const string SingleListWorkflowDefinition = Default + "/single-list-workflow-definition";
         public const string SingleListWorkflowParameter = Default + "/single-list-workflow-parameter";
         public const string SingleListWorkflowOperator = Default + "/single-list-workflow-operator";
+        public const string SingleListAppUser = Default + "/single-list-app-user";
+        public const string SingleListOrganization = Default + "/single-list-organization";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };

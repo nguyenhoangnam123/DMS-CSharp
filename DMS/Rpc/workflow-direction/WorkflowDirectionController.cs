@@ -1,6 +1,7 @@
 using Common;
 using DMS.Entities;
 using DMS.Services.MAppUser;
+using DMS.Services.MOrganization;
 using DMS.Services.MWorkflow;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
@@ -20,6 +21,7 @@ namespace DMS.Rpc.workflow_direction
         private IWorkflowDirectionService WorkflowDirectionService;
         private IWorkflowParameterService WorkflowParameterService;
         private IWorkflowOperatorService WorkflowOperatorService;
+        private IOrganizationService OrganizationService;
         private ICurrentContext CurrentContext;
         public WorkflowDirectionController(
             IAppUserService AppUserService,
@@ -28,6 +30,7 @@ namespace DMS.Rpc.workflow_direction
             IWorkflowDirectionService WorkflowDirectionService,
             IWorkflowParameterService WorkflowParameterService,
             IWorkflowOperatorService WorkflowOperatorService,
+            IOrganizationService OrganizationService,
             ICurrentContext CurrentContext
         )
         {
@@ -37,6 +40,7 @@ namespace DMS.Rpc.workflow_direction
             this.WorkflowDirectionService = WorkflowDirectionService;
             this.WorkflowParameterService = WorkflowParameterService;
             this.WorkflowOperatorService = WorkflowOperatorService;
+            this.OrganizationService = OrganizationService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -559,6 +563,48 @@ namespace DMS.Rpc.workflow_direction
             List<WorkflowDirection_WorkflowOperatorDTO> WorkflowDirection_WorkflowOperatorDTOs = WorkflowOperators
                 .Select(x => new WorkflowDirection_WorkflowOperatorDTO(x)).ToList();
             return WorkflowDirection_WorkflowOperatorDTOs;
+        }
+
+        [Route(WorkflowDirectionRoute.SingleListOrganization), HttpPost]
+        public async Task<List<WorkflowDirection_OrganizationDTO>> SingleListOrganization([FromBody] WorkflowDirection_OrganizationFilterDTO WorkflowDirection_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = 99999;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.Id = WorkflowDirection_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = WorkflowDirection_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = WorkflowDirection_OrganizationFilterDTO.Name;
+            OrganizationFilter.ParentId = WorkflowDirection_OrganizationFilterDTO.ParentId;
+            OrganizationFilter.Path = WorkflowDirection_OrganizationFilterDTO.Path;
+            OrganizationFilter.Level = WorkflowDirection_OrganizationFilterDTO.Level;
+            OrganizationFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            OrganizationFilter.Phone = WorkflowDirection_OrganizationFilterDTO.Phone;
+            OrganizationFilter.Address = WorkflowDirection_OrganizationFilterDTO.Address;
+            OrganizationFilter.Email = WorkflowDirection_OrganizationFilterDTO.Email;
+
+            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
+            if (CurrentContext.Filters != null)
+            {
+                foreach (var currentFilter in CurrentContext.Filters)
+                {
+                    OrganizationFilter subFilter = new OrganizationFilter();
+                    OrganizationFilter.OrFilter.Add(subFilter);
+                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                    {
+                        if (FilterPermissionDefinition.Name == "OrganizationId")
+                            subFilter.Id = FilterPermissionDefinition.IdFilter;
+                    }
+                }
+            }
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<WorkflowDirection_OrganizationDTO> WorkflowDirection_OrganizationDTOs = Organizations
+                .Select(x => new WorkflowDirection_OrganizationDTO(x)).ToList();
+            return WorkflowDirection_OrganizationDTOs;
         }
     }
 }
