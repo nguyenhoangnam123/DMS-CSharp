@@ -572,7 +572,6 @@ namespace DMS.Rpc
             InitPriceListTypeEnum();
             InitSalesOrderTypeEnum();
             InitEditedPriceStatusEnum();
-            InitProblemTypeEnum();
             InitProblemStatusEnum();
             InitResellerStatusEnum();
             InitStatusEnum();
@@ -750,17 +749,6 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.SurveyOptionType.BulkSynchronize(SurveyOptionTypeEnumList);
-        }
-
-        private void InitProblemTypeEnum()
-        {
-            List<ProblemTypeDAO> ProblemTypeEnumList = ProblemTypeEnum.ProblemTypeEnumList.Select(item => new ProblemTypeDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.ProblemType.BulkSynchronize(ProblemTypeEnumList);
         }
 
         private void InitProblemStatusEnum()

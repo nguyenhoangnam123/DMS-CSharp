@@ -366,14 +366,12 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             {
                 List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == StoreId).ToList();
                 List<long> SubStoreCheckingIds = StoreCheckingDAOs.Where(sc => sc.StoreId == StoreId).Select(sc => sc.Id).ToList();
-                List<ProblemDAO> CompetitorProblems = ProblemDAOs.Where(p => SubStoreCheckingIds.Contains(p.StoreCheckingId.Value) && p.ProblemTypeId == ProblemTypeEnum.COMPETITOR.Id).ToList();
-                List<ProblemDAO> StoreProblems = ProblemDAOs.Where(p => SubStoreCheckingIds.Contains(p.StoreCheckingId.Value) && p.ProblemTypeId == ProblemTypeEnum.STORE.Id).ToList();
+                List<ProblemDAO> Problems = ProblemDAOs.Where(p => SubStoreCheckingIds.Contains(p.StoreCheckingId.Value)).ToList();
                 List<StoreCheckingImageMappingDAO> SubStoreCheckingImageMappingDAOs = StoreCheckingImageMappingDAOs.Where(sc => SubStoreCheckingIds.Contains(sc.StoreCheckingId)).ToList();
 
                 int Max = 1;
                 Max = SubIndirectSalesOrderDAOs.Count > Max ? IndirectSalesOrderDAOs.Count : Max;
-                Max = CompetitorProblems.Count > Max ? CompetitorProblems.Count : Max;
-                Max = StoreProblems.Count > Max ? StoreProblems.Count : Max;
+                Max = Problems.Count > Max ? Problems.Count : Max;
                 StoreDAO storeDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
                 MonitorStoreChecker_MonitorStoreCheckerDetailDTO MonitorStoreChecker_MonitorStoreCheckerDetailDTO = new MonitorStoreChecker_MonitorStoreCheckerDetailDTO
                 {
@@ -396,15 +394,10 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                         Info.IndirectSalesOrderCode = SubIndirectSalesOrderDAOs[i].Code;
                         Info.Sales = SubIndirectSalesOrderDAOs[i].Total;
                     }
-                    if (CompetitorProblems.Count > i)
+                    if (Problems.Count > i)
                     {
-                        Info.CompetitorProblemCode = CompetitorProblems[i].Code;
-                        Info.CompetitorProblemId = CompetitorProblems[i].Id;
-                    }
-                    if (StoreProblems.Count > i)
-                    {
-                        Info.StoreProblemCode = StoreProblems[i].Code;
-                        Info.StoreProblemId = StoreProblems[i].Id;
+                        Info.ProblemCode = Problems[i].Code;
+                        Info.ProblemId = Problems[i].Id;
                     }
                 }
             }

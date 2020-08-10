@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -55,7 +56,13 @@ namespace DMS.Services.MProblem
                 Problem.AddError(nameof(ProblemValidator), nameof(Problem.ProblemType), ErrorCode.ProblemTypeEmpty);
             else
             {
-                if(Problem.ProblemTypeId != Enums.ProblemTypeEnum.COMPETITOR.Id && Problem.ProblemTypeId != Enums.ProblemTypeEnum.STORE.Id)
+                ProblemTypeFilter ProblemTypeFilter = new ProblemTypeFilter
+                {
+                    Id = new IdFilter { Equal = Problem.ProblemTypeId },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                };
+                int count = await UOW.ProblemTypeRepository.Count(ProblemTypeFilter);
+                if(count == 0)
                     Problem.AddError(nameof(ProblemValidator), nameof(Problem.ProblemType), ErrorCode.ProblemTypeNotExisted);
             }
             return Problem.IsValidated;

@@ -2066,15 +2066,17 @@ namespace DMS.Models
 
             modelBuilder.Entity<ProblemTypeDAO>(entity =>
             {
-                entity.ToTable("ProblemType", "ENUM");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<ProductDAO>(entity =>
