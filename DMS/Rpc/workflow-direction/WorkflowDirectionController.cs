@@ -53,7 +53,7 @@ namespace DMS.Rpc.workflow_direction
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId == null || !WorkflowDirection_WorkflowDirectionFilterDTO.Id.HasValue)
+            if (WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId == null || !WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId.HasValue)
                 return 0;
 
             WorkflowDirectionFilter WorkflowDirectionFilter = ConvertFilterDTOToFilterEntity(WorkflowDirection_WorkflowDirectionFilterDTO);
@@ -67,7 +67,7 @@ namespace DMS.Rpc.workflow_direction
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId == null || !WorkflowDirection_WorkflowDirectionFilterDTO.Id.HasValue)
+            if (WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId == null || !WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId.HasValue)
                 return new List<WorkflowDirection_WorkflowDirectionDTO>();
 
             WorkflowDirectionFilter WorkflowDirectionFilter = ConvertFilterDTOToFilterEntity(WorkflowDirection_WorkflowDirectionFilterDTO);
