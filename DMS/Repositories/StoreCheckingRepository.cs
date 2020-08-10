@@ -322,6 +322,7 @@ namespace DMS.Repositories
                     StoreId = x.StoreId,
                     SaleEmployeeId = x.SaleEmployeeId,
                     ShootingAt = x.ShootingAt,
+                    Distance = x.Distance,
                     Album = new Album
                     {
                         Id = x.Album.Id,
@@ -455,6 +456,7 @@ namespace DMS.Repositories
                     StoreCheckingImageMappingDAO.StoreId = StoreChecking.StoreId;
                     StoreCheckingImageMappingDAO.SaleEmployeeId = StoreChecking.SaleEmployeeId;
                     StoreCheckingImageMappingDAO.ShootingAt = StoreCheckingImageMapping.ShootingAt;
+                    StoreCheckingImageMappingDAO.Distance = StoreCheckingImageMapping.Distance;
                     StoreCheckingImageMappingDAOs.Add(StoreCheckingImageMappingDAO);
                 }
                 await DataContext.StoreCheckingImageMapping.BulkMergeAsync(StoreCheckingImageMappingDAOs);

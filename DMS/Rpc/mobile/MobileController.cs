@@ -1127,6 +1127,7 @@ namespace DMS.Rpc.mobile
                     StoreId = x.StoreId,
                     SaleEmployeeId = x.SaleEmployeeId,
                     ShootingAt = x.ShootingAt,
+                    Distance = x.Distance,
                     Album = x.Album == null ? null : new Album
                     {
                         Id = x.Album.Id,

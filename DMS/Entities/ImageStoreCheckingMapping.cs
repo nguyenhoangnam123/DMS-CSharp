@@ -14,6 +14,7 @@ namespace DMS.Entities
         public long StoreId { get; set; }
         public long SaleEmployeeId { get; set; }
         public DateTime ShootingAt { get; set; }
+        public decimal? Distance { get; set; }
         public Album Album { get; set; }
         public AppUser SaleEmployee { get; set; }
         public Image Image { get; set; }

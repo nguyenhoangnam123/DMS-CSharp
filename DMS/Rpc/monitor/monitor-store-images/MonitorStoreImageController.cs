@@ -346,6 +346,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                             ShootingAt = scim.ShootingAt,
                             StoreCheckingId = scim.StoreCheckingId,
                             StoreId = scim.StoreId,
+                            Distance = scim.Distance,
                             Album = new MonitorStoreImage_AlbumDTO
                             {
                                 Id = a.Id,
