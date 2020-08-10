@@ -171,7 +171,7 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(PriceListSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(PriceListSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(PriceListSelect.Name) ? q.Name : default(string),
-                StartDate = filter.Selects.Contains(PriceListSelect.StartDate) ? q.StartDate : default(DateTime),
+                StartDate = filter.Selects.Contains(PriceListSelect.StartDate) ? q.StartDate : default(DateTime?),
                 EndDate = filter.Selects.Contains(PriceListSelect.EndDate) ? q.EndDate : default(DateTime?),
                 StatusId = filter.Selects.Contains(PriceListSelect.Status) ? q.StatusId : default(long),
                 OrganizationId = filter.Selects.Contains(PriceListSelect.Organization) ? q.OrganizationId : default(long),
