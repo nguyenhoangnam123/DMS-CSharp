@@ -238,6 +238,20 @@ namespace DMS.Repositories
                     WorkflowDirectionId = x.WorkflowDirectionId,
                     WorkflowOperatorId = x.WorkflowOperatorId,
                     WorkflowParameterId = x.WorkflowParameterId,
+                    WorkflowOperator = new WorkflowOperator
+                    {
+                        Id = x.WorkflowOperator.Id,
+                        Code = x.WorkflowOperator.Code,
+                        Name = x.WorkflowOperator.Name,
+                    },
+                    WorkflowParameter = new WorkflowParameter
+                    {
+                        Id = x.WorkflowParameter.Id,
+                        Code = x.WorkflowParameter.Code,
+                        Name = x.WorkflowParameter.Name,
+                        WorkflowParameterTypeId = x.WorkflowParameter.WorkflowParameterTypeId,
+                        WorkflowTypeId = x.WorkflowParameter.WorkflowTypeId,
+                    },
                 }).ToListAsync();
 
             WorkflowDirection.WorkflowParameters = await DataContext.WorkflowParameter

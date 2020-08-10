@@ -29,7 +29,7 @@ namespace DMS.Rpc.workflow_direction
             this.WorkflowDirection = WorkflowDirectionCondition.WorkflowDirection == null ? null : new WorkflowDirection_WorkflowDirectionDTO(WorkflowDirectionCondition.WorkflowDirection);
             this.WorkflowOperator = WorkflowDirectionCondition.WorkflowOperator == null ? null : new WorkflowDirection_WorkflowOperatorDTO(WorkflowDirectionCondition.WorkflowOperator);
             this.WorkflowParameter = WorkflowDirectionCondition.WorkflowParameter == null ? null : new WorkflowDirection_WorkflowParameterDTO(WorkflowDirectionCondition.WorkflowParameter);
-            this.Errors = WorkflowDirection.Errors;
+            this.Errors = WorkflowDirectionCondition.Errors;
         }
     }
 }
