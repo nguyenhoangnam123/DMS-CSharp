@@ -38,8 +38,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
         public DateTime? CheckIn { get; set; }
         public DateTime? CheckOut { get; set; }
         public List<MonitorSalesman_IndirectSalesOrderDTO> IndirectSalesOrders { get; set; }
-        public List<MonitorSalesman_ProblemDTO> StoreProblems { get; set; }
-        public List<MonitorSalesman_ProblemDTO> CompetitorProblems { get; set; }
+        public List<MonitorSalesman_ProblemDTO> Problems { get; set; }
         public string Image { get; set; }
         public decimal Longitude { get; set; }
         public decimal Latitude { get; set; }

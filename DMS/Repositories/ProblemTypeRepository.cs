@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Helpers;
 
 namespace DMS.Repositories
 {
@@ -27,17 +28,24 @@ namespace DMS.Repositories
         {
             if (filter == null)
                 return query.Where(q => false);
+            query = query.Where(q => !q.DeletedAt.HasValue);
+            if (filter.CreatedAt != null)
+                query = query.Where(q => q.CreatedAt, filter.CreatedAt);
+            if (filter.UpdatedAt != null)
+                query = query.Where(q => q.UpdatedAt, filter.UpdatedAt);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.Code != null)
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
+            if (filter.StatusId != null)
+                query = query.Where(q => q.StatusId, filter.StatusId);
             query = OrFilter(query, filter);
             return query;
         }
 
-        private IQueryable<ProblemTypeDAO> OrFilter(IQueryable<ProblemTypeDAO> query, ProblemTypeFilter filter)
+         private IQueryable<ProblemTypeDAO> OrFilter(IQueryable<ProblemTypeDAO> query, ProblemTypeFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -51,10 +59,12 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Code, ProblemTypeFilter.Code);
                 if (ProblemTypeFilter.Name != null)
                     queryable = queryable.Where(q => q.Name, ProblemTypeFilter.Name);
+                if (ProblemTypeFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, ProblemTypeFilter.StatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }
+        }    
 
         private IQueryable<ProblemTypeDAO> DynamicOrder(IQueryable<ProblemTypeDAO> query, ProblemTypeFilter filter)
         {
@@ -72,6 +82,9 @@ namespace DMS.Repositories
                         case ProblemTypeOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
+                        case ProblemTypeOrder.Status:
+                            query = query.OrderBy(q => q.StatusId);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -85,6 +98,9 @@ namespace DMS.Repositories
                             break;
                         case ProblemTypeOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
+                            break;
+                        case ProblemTypeOrder.Status:
+                            query = query.OrderByDescending(q => q.StatusId);
                             break;
                     }
                     break;
@@ -100,6 +116,9 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(ProblemTypeSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(ProblemTypeSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(ProblemTypeSelect.Name) ? q.Name : default(string),
+                StatusId = filter.Selects.Contains(ProblemTypeSelect.Status) ? q.StatusId : default(long),
+                CreatedAt = q.CreatedAt,
+                UpdatedAt = q.UpdatedAt,
             }).ToListAsync();
             return ProblemTypes;
         }
@@ -126,9 +145,12 @@ namespace DMS.Repositories
             ProblemType ProblemType = await DataContext.ProblemType.AsNoTracking()
             .Where(x => x.Id == Id).Select(x => new ProblemType()
             {
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
                 Id = x.Id,
                 Code = x.Code,
                 Name = x.Name,
+                StatusId = x.StatusId,
             }).FirstOrDefaultAsync();
 
             if (ProblemType == null)

@@ -274,13 +274,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     MonitorSalesman_StoreCheckingDTO.StoreName = StoreDAO.Name;
                     MonitorSalesman_StoreCheckingDTO.Address = StoreDAO.Address;
 
-                    MonitorSalesman_StoreCheckingDTO.CompetitorProblems = ProblemDAOs.Where(p => p.StoreId == StoreId && p.ProblemTypeId == ProblemTypeEnum.COMPETITOR.Id)
-                     .Select(p => new MonitorSalesman_ProblemDTO
-                     {
-                         Id = p.Id,
-                         Code = p.Code,
-                     }).ToList();
-                    MonitorSalesman_StoreCheckingDTO.StoreProblems = ProblemDAOs.Where(p => p.StoreId == StoreId && p.ProblemTypeId == ProblemTypeEnum.STORE.Id)
+                    MonitorSalesman_StoreCheckingDTO.Problems = ProblemDAOs.Where(p => p.StoreId == StoreId)
                      .Select(p => new MonitorSalesman_ProblemDTO
                      {
                          Id = p.Id,
@@ -337,16 +331,14 @@ namespace DMS.Rpc.monitor.monitor_salesman
             List<MonitorSalesman_MonitorSalesmanDetailDTO> MonitorStoreChecker_MonitorStoreCheckerDetailDTOs = new List<MonitorSalesman_MonitorSalesmanDetailDTO>();
             foreach (long StoreId in StoreIds)
             {
-                List<ProblemDAO> CompetitorProblems = ProblemDAOs.Where(p => p.StoreId == StoreId && p.ProblemTypeId == ProblemTypeEnum.COMPETITOR.Id).ToList();
-                List<ProblemDAO> StoreProblems = ProblemDAOs.Where(p => p.StoreId == StoreId && p.ProblemTypeId == ProblemTypeEnum.STORE.Id).ToList();
+                List<ProblemDAO> Problems = ProblemDAOs.Where(p => p.StoreId == StoreId).ToList();
                 List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == StoreId).ToList();
                 List<long> SubStoreCheckingIds = StoreCheckingDAOs.Where(sc => sc.StoreId == StoreId).Select(sc => sc.Id).ToList();
                 List<StoreCheckingImageMappingDAO> SubStoreCheckingImageMappingDAOs = StoreCheckingImageMappingDAOs.Where(sc => SubStoreCheckingIds.Contains(sc.StoreCheckingId)).ToList();
 
                 int Max = 1;
                 Max = SubIndirectSalesOrderDAOs.Count > Max ? IndirectSalesOrderDAOs.Count : Max;
-                Max = CompetitorProblems.Count > Max ? CompetitorProblems.Count : Max;
-                Max = StoreProblems.Count > Max ? StoreProblems.Count : Max;
+                Max = Problems.Count > Max ? Problems.Count : Max;
                 StoreDAO storeDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
                 MonitorSalesman_MonitorSalesmanDetailDTO MonitorStoreChecker_MonitorStoreCheckerDetailDTO = new MonitorSalesman_MonitorSalesmanDetailDTO
                 {
@@ -369,15 +361,10 @@ namespace DMS.Rpc.monitor.monitor_salesman
                         Info.IndirectSalesOrderCode = SubIndirectSalesOrderDAOs[i].Code;
                         Info.Sales = SubIndirectSalesOrderDAOs[i].Total;
                     }
-                    if (CompetitorProblems.Count > i)
+                    if (Problems.Count > i)
                     {
-                        Info.CompetitorProblemId = CompetitorProblems[i].Id;
-                        Info.CompetitorProblemCode = CompetitorProblems[i].Code;
-                    }
-                    if (StoreProblems.Count > i)
-                    {
-                        Info.StoreProblemId = StoreProblems[i].Id;
-                        Info.StoreProblemCode = StoreProblems[i].Code;
+                        Info.CompetitorProblemId = Problems[i].Id;
+                        Info.CompetitorProblemCode = Problems[i].Code;
                     }
                 }
             }
