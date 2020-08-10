@@ -11,9 +11,12 @@ using Hangfire.Annotations;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NGS.Templater;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -369,6 +372,51 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 }
             }
             return ReportStoreGeneral_ReportStoreGeneralDTOs;
+        }
+
+        [Route(ReportStoreGeneralRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportStoreGeneral_ReportStoreGeneralFilterDTO ReportStoreGeneral_ReportStoreGeneralFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            DateTime Start = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.GreaterEqual == null ?
+               StaticParams.DateTimeNow.Date :
+               ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.GreaterEqual.Value.Date;
+
+            DateTime End = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.LessEqual == null ?
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
+
+            ReportStoreGeneral_ReportStoreGeneralFilterDTO.Skip = 0;
+            ReportStoreGeneral_ReportStoreGeneralFilterDTO.Take = int.MaxValue;
+            List<ReportStoreGeneral_ReportStoreGeneralDTO> ReportStoreGeneral_ReportStoreGeneralDTOs = (await List(ReportStoreGeneral_ReportStoreGeneralFilterDTO)).Value;
+
+            long stt = 1;
+            foreach (ReportStoreGeneral_ReportStoreGeneralDTO ReportStoreGeneral_ReportStoreGeneralDTO in ReportStoreGeneral_ReportStoreGeneralDTOs)
+            {
+                foreach (var Store in ReportStoreGeneral_ReportStoreGeneralDTO.Stores)
+                {
+                    Store.STT = stt;
+                    stt++;
+                }
+            }
+
+            string path = "Templates/Report_Store_General.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.ToString("dd-MM-yyyy");
+            Data.End = End.ToString("dd-MM-yyyy");
+            Data.ReportStoreGenerals = ReportStoreGeneral_ReportStoreGeneralDTOs;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportStoreGeneral.xlsx");
         }
     }
 }

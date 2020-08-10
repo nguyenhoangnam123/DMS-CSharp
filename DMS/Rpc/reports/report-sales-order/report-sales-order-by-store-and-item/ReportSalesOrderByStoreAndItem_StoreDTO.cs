@@ -9,6 +9,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
 {
     public class ReportSalesOrderByStoreAndItem_StoreDTO : DataDTO
     {
+        public long STT { get; set; }
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }

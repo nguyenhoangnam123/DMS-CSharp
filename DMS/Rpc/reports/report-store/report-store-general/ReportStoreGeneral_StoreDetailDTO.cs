@@ -9,6 +9,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 {
     public class ReportStoreGeneral_StoreDetailDTO : DataDTO
     {
+        public long STT { get; set; }
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
@@ -23,6 +24,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         public long SKUCounter => SKUItemIds?.Count() ?? 0;
         public decimal TotalRevenue { get; set; }
         public DateTime LastOrder { get; set; }
+        public string LastOrderDisplay => LastOrder == DateTime.MinValue ? "" : LastOrder.ToLongDateString();
         internal HashSet<long> StoreCheckingPlannedIds { get; set; }
         internal HashSet<long> StoreCheckingUnPlannedIds { get; set; }
         internal HashSet<long> SKUItemIds { get; set; }
