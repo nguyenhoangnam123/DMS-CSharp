@@ -214,9 +214,6 @@ namespace DMS.Repositories
                         case AppUserOrder.Organization:
                             query = query.OrderBy(q => q.OrganizationId);
                             break;
-                        case AppUserOrder.ERouteScope:
-                            query = query.OrderBy(q => q.ERouteScopeId);
-                            break;
                         case AppUserOrder.Province:
                             query = query.OrderBy(q => q.ProvinceId);
                             break;
@@ -261,9 +258,6 @@ namespace DMS.Repositories
                         case AppUserOrder.Organization:
                             query = query.OrderByDescending(q => q.OrganizationId);
                             break;
-                        case AppUserOrder.ERouteScope:
-                            query = query.OrderByDescending(q => q.ERouteScopeId);
-                            break;
                         case AppUserOrder.Province:
                             query = query.OrderByDescending(q => q.ProvinceId);
                             break;
@@ -291,7 +285,6 @@ namespace DMS.Repositories
                 PositionId = filter.Selects.Contains(AppUserSelect.Position) ? q.PositionId : default(long),
                 Department = filter.Selects.Contains(AppUserSelect.Department) ? q.Department : default(string),
                 OrganizationId = filter.Selects.Contains(AppUserSelect.Organization) ? q.OrganizationId : default(long?),
-                ERouteScopeId = filter.Selects.Contains(AppUserSelect.ERouteScope) ? q.ERouteScopeId : default(long?),
                 ProvinceId = filter.Selects.Contains(AppUserSelect.Province) ? q.ProvinceId : default(long),
                 Latitude = filter.Selects.Contains(AppUserSelect.Latitude) ? q.Latitude : default(decimal?),
                 Longitude = filter.Selects.Contains(AppUserSelect.Longitude) ? q.Longitude : default(decimal?),
@@ -307,19 +300,6 @@ namespace DMS.Repositories
                     Email = q.Organization.Email,
                     StatusId = q.Organization.StatusId,
                     Level = q.Organization.Level
-                } : null,
-                ERouteScope = filter.Selects.Contains(AppUserSelect.ERouteScope) && q.ERouteScope != null ? new Organization
-                {
-                    Id = q.ERouteScope.Id,
-                    Code = q.ERouteScope.Code,
-                    Name = q.ERouteScope.Name,
-                    Address = q.ERouteScope.Address,
-                    Phone = q.ERouteScope.Phone,
-                    Path = q.ERouteScope.Path,
-                    ParentId = q.ERouteScope.ParentId,
-                    Email = q.ERouteScope.Email,
-                    StatusId = q.ERouteScope.StatusId,
-                    Level = q.ERouteScope.Level
                 } : null,
                 Province = filter.Selects.Contains(AppUserSelect.Province) && q.Province != null ? new Province
                 {
@@ -387,7 +367,6 @@ namespace DMS.Repositories
                 PositionId = x.PositionId,
                 Department = x.Department,
                 OrganizationId = x.OrganizationId,
-                ERouteScopeId = x.ERouteScopeId,
                 ProvinceId = x.ProvinceId,
                 Latitude = x.Latitude,
                 Longitude = x.Longitude,
@@ -407,19 +386,6 @@ namespace DMS.Repositories
                     Email = x.Organization.Email,
                     StatusId = x.Organization.StatusId,
                     Level = x.Organization.Level
-                },
-                ERouteScope = x.ERouteScope == null ? null : new Organization
-                {
-                    Id = x.ERouteScope.Id,
-                    Code = x.ERouteScope.Code,
-                    Name = x.ERouteScope.Name,
-                    Address = x.ERouteScope.Address,
-                    Phone = x.ERouteScope.Phone,
-                    Path = x.ERouteScope.Path,
-                    ParentId = x.ERouteScope.ParentId,
-                    Email = x.ERouteScope.Email,
-                    StatusId = x.ERouteScope.StatusId,
-                    Level = x.ERouteScope.Level
                 },
                 Position = x.Position == null ? null : new Position
                 {
@@ -464,6 +430,38 @@ namespace DMS.Repositories
                         Name = x.Role.Name,
                     },
                 }).ToListAsync();
+            AppUser.AppUserStoreMappings = await DataContext.AppUserStoreMapping
+                .Where(x => x.AppUserId == AppUser.Id)
+                .Select(x => new AppUserStoreMapping
+                {
+                    AppUserId = x.AppUserId,
+                    StoreId = x.StoreId,
+                    Store = new Store
+                    {
+                        Id = x.Store.Id,
+                        Code = x.Store.Code,
+                        Name = x.Store.Name,
+                        Address = x.Store.Address,
+                        StoreGroupingId = x.Store.StoreGroupingId,
+                        StoreTypeId = x.Store.StoreTypeId,
+                        OrganizationId = x.Store.OrganizationId,
+                        Organization = x.Store.Organization == null ? null : new Organization
+                        {
+                            Id = x.Store.Organization.Id,
+                            Name = x.Store.Organization.Name,
+                        },
+                        StoreGrouping = x.Store.StoreGrouping == null ? null : new StoreGrouping
+                        {
+                            Id = x.Store.StoreGrouping.Id,
+                            Name = x.Store.StoreGrouping.Name,
+                        },
+                        StoreType = x.Store.StoreType == null ? null : new StoreType
+                        {
+                            Id = x.Store.StoreType.Id,
+                            Name = x.Store.StoreType.Name,
+                        },
+                    },
+                }).ToListAsync();
 
             return AppUser;
         }
@@ -473,7 +471,21 @@ namespace DMS.Repositories
             AppUserDAO AppUserDAO = DataContext.AppUser.Where(x => x.Id == AppUser.Id).FirstOrDefault();
             if (AppUserDAO == null)
                 return false;
-            AppUserDAO.ERouteScopeId = AppUser.ERouteScopeId;
+            await DataContext.AppUserStoreMapping.Where(x => x.AppUserId == AppUser.Id).DeleteFromQueryAsync();
+            if(AppUser.AppUserStoreMappings != null)
+            {
+                List<AppUserStoreMappingDAO> AppUserStoreMappingDAOs = new List<AppUserStoreMappingDAO>();
+                foreach (var AppUserStoreMapping in AppUser.AppUserStoreMappings)
+                {
+                    AppUserStoreMappingDAO AppUserStoreMappingDAO = new AppUserStoreMappingDAO
+                    {
+                        AppUserId = AppUser.Id,
+                        StoreId = AppUserStoreMapping.StoreId
+                    };
+                    AppUserStoreMappingDAOs.Add(AppUserStoreMappingDAO);
+                }
+                await DataContext.AppUserStoreMapping.BulkMergeAsync(AppUserStoreMappingDAOs);
+            }
             AppUserDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             return true;

@@ -18,7 +18,6 @@ namespace DMS.Entities
         public long? PositionId { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
-        public long? ERouteScopeId { get; set; }
         public long StatusId { get; set; }
         public long? SexId { get; set; }
         public DateTime? Birthday { get; set; }
@@ -30,12 +29,12 @@ namespace DMS.Entities
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
         public Organization Organization { get; set; }
-        public Organization ERouteScope { get; set; }
         public Position Position { get; set; }
         public Province Province { get; set; }
         public Status Status { get; set; }
         public Sex Sex { get; set; }
         public List<AppUserRoleMapping> AppUserRoleMappings { get; set; }
+        public List<AppUserStoreMapping> AppUserStoreMappings { get; set; }
 
         public bool Equals(AppUser other)
         {
@@ -59,7 +58,6 @@ namespace DMS.Entities
         public IdFilter PositionId { get; set; }
         public StringFilter Department { get; set; }
         public IdFilter OrganizationId { get; set; }
-        public IdFilter ERouteScopeId { get; set; }
         public IdFilter SexId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter RoleId { get; set; }
@@ -87,7 +85,6 @@ namespace DMS.Entities
         Status = 11,
         Birthday = 12,
         Province = 13,
-        ERouteScope = 14,
     }
 
     [Flags]
@@ -112,6 +109,5 @@ namespace DMS.Entities
         Province = E._15,
         Latitude = E._16,
         Longitude = E._17,
-        ERouteScope = E._18
     }
 }

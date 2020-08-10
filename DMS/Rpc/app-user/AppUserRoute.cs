@@ -26,8 +26,14 @@ namespace DMS.Rpc.app_user
         public const string SingleListSex = Default + "/single-list-sex";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListRole = Default + "/single-list-role";
+        public const string SingleListStore = Default + "/single-list-store";
+        public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
+        public const string SingleListStoreType = Default + "/single-list-store-type";
+
         public const string CountRole = Default + "/count-role";
         public const string ListRole = Default + "/list-role";
+        public const string CountStore = Default + "/count-store";
+        public const string ListStore = Default + "/list-store";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(AppUserFilter.OrganizationId), FieldTypeEnum.ID.Id},

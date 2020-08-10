@@ -14,6 +14,7 @@ namespace DMS.Models
         public virtual DbSet<AppUserDAO> AppUser { get; set; }
         public virtual DbSet<AppUserPermissionDAO> AppUserPermission { get; set; }
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
+        public virtual DbSet<AppUserStoreMappingDAO> AppUserStoreMapping { get; set; }
         public virtual DbSet<BannerDAO> Banner { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
         public virtual DbSet<CounterDAO> Counter { get; set; }
@@ -285,8 +286,6 @@ namespace DMS.Models
                     .HasMaxLength(500)
                     .HasComment("Tên hiển thị");
 
-                entity.Property(e => e.ERouteScopeId).HasComment("Phạm vi đi tuyến - OrganizationId");
-
                 entity.Property(e => e.Email)
                     .HasMaxLength(500)
                     .HasComment("Địa chỉ email");
@@ -318,13 +317,8 @@ namespace DMS.Models
                     .HasMaxLength(500)
                     .HasComment("Tên đăng nhập");
 
-                entity.HasOne(d => d.ERouteScope)
-                    .WithMany(p => p.AppUserERouteScopes)
-                    .HasForeignKey(d => d.ERouteScopeId)
-                    .HasConstraintName("FK_AppUser_Organization1");
-
                 entity.HasOne(d => d.Organization)
-                    .WithMany(p => p.AppUserOrganizations)
+                    .WithMany(p => p.AppUsers)
                     .HasForeignKey(d => d.OrganizationId)
                     .HasConstraintName("FK_AppUser_Organization");
 
@@ -383,6 +377,23 @@ namespace DMS.Models
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AppUserRoleMapping_Role");
+            });
+
+            modelBuilder.Entity<AppUserStoreMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.AppUserId, e.StoreId });
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.AppUserStoreMappings)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AppUserStoreMapping_AppUser");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.AppUserStoreMappings)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AppUserStoreMapping_Store");
             });
 
             modelBuilder.Entity<BannerDAO>(entity =>

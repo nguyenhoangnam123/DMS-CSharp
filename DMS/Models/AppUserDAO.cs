@@ -8,6 +8,7 @@ namespace DMS.Models
         public AppUserDAO()
         {
             AppUserRoleMappings = new HashSet<AppUserRoleMappingDAO>();
+            AppUserStoreMappings = new HashSet<AppUserStoreMappingDAO>();
             Banners = new HashSet<BannerDAO>();
             DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
             ERouteChangeRequests = new HashSet<ERouteChangeRequestDAO>();
@@ -80,10 +81,6 @@ namespace DMS.Models
         /// </summary>
         public long? OrganizationId { get; set; }
         /// <summary>
-        /// Phạm vi đi tuyến - OrganizationId
-        /// </summary>
-        public long? ERouteScopeId { get; set; }
-        /// <summary>
         /// Tỉnh thành
         /// </summary>
         public long? ProvinceId { get; set; }
@@ -110,13 +107,13 @@ namespace DMS.Models
         /// </summary>
         public Guid RowId { get; set; }
 
-        public virtual OrganizationDAO ERouteScope { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual PositionDAO Position { get; set; }
         public virtual ProvinceDAO Province { get; set; }
         public virtual SexDAO Sex { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
+        public virtual ICollection<AppUserStoreMappingDAO> AppUserStoreMappings { get; set; }
         public virtual ICollection<BannerDAO> Banners { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
         public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }
