@@ -15,6 +15,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string UpdateAlbum = Default + "/update-album";
         public const string Export = Default + "/export";
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
@@ -23,6 +24,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public const string FilterListHasImage = Default + "/filter-list-has-image";
         public const string FilterListHasOrder = Default + "/filter-list-has-order";
 
+        public const string SingleListAlbum = Default + "/single-list-album";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(MonitorStoreImage_MonitorStoreImageFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
@@ -34,8 +36,19 @@ namespace DMS.Rpc.monitor.monitor_store_images
         {
             { "Tìm kiếm", new List<string> {
                 Parent,
-                Master, Count, List, Get, Export,
+                Master, Count, List, Get,
                 FilterListOrganization, FilterListAppUser, FilterListStore, FilterListHasImage, FilterListHasOrder } },
+            { "Cập nhật Album", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                UpdateAlbum,
+                FilterListOrganization, FilterListAppUser, FilterListStore, FilterListHasImage, FilterListHasOrder,
+                SingleListAlbum} },
+            { "Xuất Excel", new List<string> {
+                Parent,
+                Master, Count, List, Get, Export,
+                FilterListOrganization, FilterListAppUser, FilterListStore, FilterListHasImage, FilterListHasOrder,
+                SingleListAlbum} },
         };
     }
 }

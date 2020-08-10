@@ -2,6 +2,7 @@
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
+using DMS.Services.MAlbum;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
 using DMS.Services.MStore;
@@ -22,6 +23,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
     public class MonitorStoreImageController : MonitorController
     {
         private DataContext DataContext;
+        private IAlbumService AlbumService;
         private IStoreService StoreService;
         private IStoreCheckingService StoreCheckingService;
         private IAppUserService AppUserService;
@@ -29,6 +31,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
         private ICurrentContext CurrentContext;
         public MonitorStoreImageController
             (DataContext DataContext,
+            IAlbumService AlbumService,
             IOrganizationService OrganizationService,
             IAppUserService AppUserService,
             IStoreService StoreService,
@@ -36,6 +39,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
+            this.AlbumService = AlbumService;
             this.StoreService = StoreService;
             this.StoreCheckingService = StoreCheckingService;
             this.AppUserService = AppUserService;
@@ -137,6 +141,28 @@ namespace DMS.Rpc.monitor.monitor_store_images
             EnumList.Add(new EnumList { Id = 0, Name = "Không có đơn hàng" });
             EnumList.Add(new EnumList { Id = 1, Name = "Có đơn hàng" });
             return EnumList;
+        }
+
+        [Route(MonitorStoreImageRoute.SingleListAlbum), HttpPost]
+        public async Task<List<MonitorStoreImage_AlbumDTO>> SingleListAlbum([FromBody] MonitorStoreImage_AlbumFilterDTO MonitorStoreImage_AlbumFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AlbumFilter AlbumFilter = new AlbumFilter();
+            AlbumFilter.Skip = 0;
+            AlbumFilter.Take = 20;
+            AlbumFilter.OrderBy = AlbumOrder.Id;
+            AlbumFilter.OrderType = OrderType.ASC;
+            AlbumFilter.Selects = AlbumSelect.ALL;
+            AlbumFilter.Id = MonitorStoreImage_AlbumFilterDTO.Id;
+            AlbumFilter.Name = MonitorStoreImage_AlbumFilterDTO.Name;
+            AlbumFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Album> Albums = await AlbumService.List(AlbumFilter);
+            List<MonitorStoreImage_AlbumDTO> MonitorStoreImage_AlbumDTOs = Albums
+                .Select(x => new MonitorStoreImage_AlbumDTO(x)).ToList();
+            return MonitorStoreImage_AlbumDTOs;
         }
 
         [Route(MonitorStoreImageRoute.Count), HttpPost]
@@ -322,24 +348,46 @@ namespace DMS.Rpc.monitor.monitor_store_images
                             StoreId = scim.StoreId,
                             Album = new MonitorStoreImage_AlbumDTO
                             {
+                                Id = a.Id,
                                 Name = a.Name
                             },
                             Image = new MonitorStoreImage_ImageDTO
                             {
+                                Id = i.Id,
                                 Url = i.Url
                             },
                             SaleEmployee = new MonitorStoreImage_AppUserDTO
                             {
+                                Id = au.Id,
                                 DisplayName = au.DisplayName
                             },
                             Store = new MonitorStoreImage_StoreDTO
                             {
+                                Id = s.Id,
                                 Address = s.Address,
                                 Name = s.Name
                             }
                         };
 
             return await query.ToListAsync();
+        }
+
+        [Route(MonitorStoreImageRoute.UpdateAlbum), HttpPost]
+        public async Task<MonitorStoreImage_StoreCheckingImageMappingDTO> UpdateAlbum([FromBody] MonitorStoreImage_StoreCheckingImageMappingDTO MonitorStoreImage_StoreCheckingImageMappingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            var StoreCheckingImageMappingDAO = await DataContext
+                .StoreCheckingImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId &&
+                x.StoreCheckingId == MonitorStoreImage_StoreCheckingImageMappingDTO.StoreCheckingId)
+                .FirstOrDefaultAsync();
+            if(StoreCheckingImageMappingDAO != null)
+            {
+                StoreCheckingImageMappingDAO.AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId;
+                await DataContext.SaveChangesAsync();
+            }
+            return MonitorStoreImage_StoreCheckingImageMappingDTO;
         }
 
         [Route(MonitorStoreImageRoute.Export), HttpPost]
