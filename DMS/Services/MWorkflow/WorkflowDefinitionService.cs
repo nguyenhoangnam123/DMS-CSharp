@@ -29,7 +29,6 @@ namespace DMS.Services.MWorkflow
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IWorkflowDefinitionValidator WorkflowDefinitionValidator;
-        private List<WorkflowParameterStruct> StoreParameters, ERouteParameters;
         public WorkflowDefinitionService(
             IUOW UOW,
             ILogging Logging,
@@ -41,26 +40,6 @@ namespace DMS.Services.MWorkflow
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.WorkflowDefinitionValidator = WorkflowDefinitionValidator;
-
-            StoreParameters = new List<WorkflowParameterStruct>
-            {
-                new WorkflowParameterStruct
-                {
-                    Code = nameof(Store.OrganizationId),
-                    Name = "Đơn vị tổ chức",
-                    TypeId = WorkflowParameterTypeEnum.ID.Id,
-                },
-            };
-
-            ERouteParameters = new List<WorkflowParameterStruct>
-            {
-                new WorkflowParameterStruct
-                {
-                    Code = "OrganizationId",
-                    Name = "Đơn vị tổ chức",
-                    TypeId = WorkflowParameterTypeEnum.ID.Id,
-                },
-            };
         }
         public async Task<int> Count(WorkflowDefinitionFilter WorkflowDefinitionFilter)
         {
@@ -121,7 +100,6 @@ namespace DMS.Services.MWorkflow
             try
             {
                 await UOW.Begin();
-                InitParameter(WorkflowDefinition);
                 WorkflowDefinition.CreatorId = CurrentContext.UserId;
                 await UOW.WorkflowDefinitionRepository.Create(WorkflowDefinition);
                 await UOW.Commit();
@@ -152,7 +130,6 @@ namespace DMS.Services.MWorkflow
             try
             {
                 var oldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
-                InitParameter(WorkflowDefinition);
                 WorkflowDefinition.ModifierId = CurrentContext.UserId;
                 await UOW.Begin();
                 await UOW.WorkflowDefinitionRepository.Update(WorkflowDefinition);
@@ -279,29 +256,6 @@ namespace DMS.Services.MWorkflow
                 }
             }
             return filter;
-        }
-
-        private void InitParameter(WorkflowDefinition WorkflowDefinition)
-        {
-            if (WorkflowDefinition.WorkflowTypeId == WorkflowTypeEnum.STORE.Id)
-            {
-                WorkflowDefinition.WorkflowParameters = StoreParameters.Select(x => new WorkflowParameter
-                {
-                    Code = x.Code,
-                    Name = x.Name,
-                    WorkflowParameterTypeId = x.TypeId,
-                }).ToList();
-            }
-
-            if (WorkflowDefinition.WorkflowTypeId == WorkflowTypeEnum.EROUTE.Id)
-            {
-                WorkflowDefinition.WorkflowParameters = ERouteParameters.Select(x => new WorkflowParameter
-                {
-                    Code = x.Code,
-                    Name = x.Name,
-                    WorkflowParameterTypeId = x.TypeId,
-                }).ToList();
-            }
         }
     }
 }
