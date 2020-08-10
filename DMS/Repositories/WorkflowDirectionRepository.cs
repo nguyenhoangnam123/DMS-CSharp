@@ -195,6 +195,7 @@ namespace DMS.Repositories
                 BodyMailForCurrentStep = x.BodyMailForCurrentStep,
                 BodyMailForNextStep = x.BodyMailForNextStep,
                 StatusId = x.StatusId,
+                UpdatedAt = x.UpdatedAt,
                 FromStep = x.FromStep == null ? null : new WorkflowStep
                 {
                     Id = x.FromStep.Id,
