@@ -12,9 +12,12 @@ using Hangfire.Annotations;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NGS.Templater;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -159,7 +162,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
         }
 
         [Route(ReportStoreUncheckedRoute.List), HttpPost]
-        public async Task<List<ReportStoreUnchecked_ReportStoreUncheckedDTO>> List([FromBody] ReportStoreUnchecked_ReportStoreUncheckedFilterDTO ReportStoreUnchecked_ReportStoreUncheckedFilterDTO)
+        public async Task<ActionResult<List<ReportStoreUnchecked_ReportStoreUncheckedDTO>>> List([FromBody] ReportStoreUnchecked_ReportStoreUncheckedFilterDTO ReportStoreUnchecked_ReportStoreUncheckedFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -175,7 +178,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
             if (End.Subtract(Start).TotalDays > 7)
-                return new List<ReportStoreUnchecked_ReportStoreUncheckedDTO>();
+                return BadRequest("Chỉ được phép xem tối đã trong vòng 7 ngày");
 
             long? AppUserId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId?.Equal;
             long? ERouteId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId?.Equal;
@@ -267,6 +270,54 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             }
             ReportStoreUnchecked_ReportStoreUncheckedDTOs = ReportStoreUnchecked_ReportStoreUncheckedDTOs.Where(x => x.SaleEmployees.Any()).ToList();
             return ReportStoreUnchecked_ReportStoreUncheckedDTOs;
+        }
+
+        [Route(ReportStoreUncheckedRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportStoreUnchecked_ReportStoreUncheckedFilterDTO ReportStoreUnchecked_ReportStoreUncheckedFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            DateTime Start = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.GreaterEqual == null ?
+               StaticParams.DateTimeNow.Date :
+               ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.GreaterEqual.Value.Date;
+
+            DateTime End = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.LessEqual == null ?
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
+
+            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip = 0;
+            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take = int.MaxValue;
+            List<ReportStoreUnchecked_ReportStoreUncheckedDTO> ReportStoreUnchecked_ReportStoreUncheckedDTOs = (await List(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO)).Value;
+
+            long stt = 1;
+            foreach (ReportStoreUnchecked_ReportStoreUncheckedDTO ReportStoreUnchecked_ReportStoreUncheckedDTO in ReportStoreUnchecked_ReportStoreUncheckedDTOs)
+            {
+                foreach (var SaleEmployee in ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees)
+                {
+                    foreach (var Store in SaleEmployee.Stores)
+                    {
+                        Store.STT = stt;
+                        stt++;
+                    }
+                }
+            }
+
+            string path = "Templates/Report_Store_Unchecked.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.ToString("dd-MM-yyyy");
+            Data.End = End.ToString("dd-MM-yyyy");
+            Data.ReportStoreUncheckeds = ReportStoreUnchecked_ReportStoreUncheckedDTOs;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportStoreUnchecked.xlsx");
         }
     }
 }

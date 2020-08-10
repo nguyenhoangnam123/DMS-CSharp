@@ -407,6 +407,44 @@ namespace DMS.Rpc.price_list
             return PriceList_StatusDTOs;
         }
 
+        [Route(PriceListRoute.SingleListProductType), HttpPost]
+        public async Task<List<PriceList_ProductTypeDTO>> SingleListProductType([FromBody] PriceList_ProductTypeFilterDTO PriceList_ProductTypeFilterDTO)
+        {
+            ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
+            ProductTypeFilter.Skip = 0;
+            ProductTypeFilter.Take = 20;
+            ProductTypeFilter.OrderBy = ProductTypeOrder.Id;
+            ProductTypeFilter.OrderType = OrderType.ASC;
+            ProductTypeFilter.Selects = ProductTypeSelect.ALL;
+            ProductTypeFilter.Id = PriceList_ProductTypeFilterDTO.Id;
+            ProductTypeFilter.Code = PriceList_ProductTypeFilterDTO.Code;
+            ProductTypeFilter.Name = PriceList_ProductTypeFilterDTO.Name;
+            ProductTypeFilter.Description = PriceList_ProductTypeFilterDTO.Description;
+            ProductTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
+            List<PriceList_ProductTypeDTO> PriceList_ProductTypeDTOs = ProductTypes
+                .Select(x => new PriceList_ProductTypeDTO(x)).ToList();
+            return PriceList_ProductTypeDTOs;
+        }
+
+        [Route(PriceListRoute.SingleListProductGrouping), HttpPost]
+        public async Task<List<PriceList_ProductGroupingDTO>> SingleListProductGrouping([FromBody] PriceList_ProductGroupingFilterDTO PriceList_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<PriceList_ProductGroupingDTO> PriceList_ProductGroupingDTOs = ProductGroupings
+                .Select(x => new PriceList_ProductGroupingDTO(x)).ToList();
+            return PriceList_ProductGroupingDTOs;
+        }
+
         [Route(PriceListRoute.CountItem), HttpPost]
         public async Task<long> CountItem([FromBody] PriceList_ItemFilterDTO PriceList_ItemFilterDTO)
         {
@@ -446,43 +484,7 @@ namespace DMS.Rpc.price_list
                 .Select(x => new PriceList_ItemDTO(x)).ToList();
             return PriceList_ItemDTOs;
         }
-        [Route(PriceListRoute.CountStoreGrouping), HttpPost]
-        public async Task<long> CountStoreGrouping([FromBody] PriceList_StoreGroupingFilterDTO PriceList_StoreGroupingFilterDTO)
-        {
-            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
-            StoreGroupingFilter.Id = PriceList_StoreGroupingFilterDTO.Id;
-            StoreGroupingFilter.Code = PriceList_StoreGroupingFilterDTO.Code;
-            StoreGroupingFilter.Name = PriceList_StoreGroupingFilterDTO.Name;
-            StoreGroupingFilter.ParentId = PriceList_StoreGroupingFilterDTO.ParentId;
-            StoreGroupingFilter.Path = PriceList_StoreGroupingFilterDTO.Path;
-            StoreGroupingFilter.Level = PriceList_StoreGroupingFilterDTO.Level;
-            StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
-            return await StoreGroupingService.Count(StoreGroupingFilter);
-        }
-
-        [Route(PriceListRoute.ListStoreGrouping), HttpPost]
-        public async Task<List<PriceList_StoreGroupingDTO>> ListStoreGrouping([FromBody] PriceList_StoreGroupingFilterDTO PriceList_StoreGroupingFilterDTO)
-        {
-            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
-            StoreGroupingFilter.Skip = PriceList_StoreGroupingFilterDTO.Skip;
-            StoreGroupingFilter.Take = PriceList_StoreGroupingFilterDTO.Take;
-            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
-            StoreGroupingFilter.OrderType = OrderType.ASC;
-            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
-            StoreGroupingFilter.Id = PriceList_StoreGroupingFilterDTO.Id;
-            StoreGroupingFilter.Code = PriceList_StoreGroupingFilterDTO.Code;
-            StoreGroupingFilter.Name = PriceList_StoreGroupingFilterDTO.Name;
-            StoreGroupingFilter.ParentId = PriceList_StoreGroupingFilterDTO.ParentId;
-            StoreGroupingFilter.Path = PriceList_StoreGroupingFilterDTO.Path;
-            StoreGroupingFilter.Level = PriceList_StoreGroupingFilterDTO.Level;
-            StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-
-            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
-            List<PriceList_StoreGroupingDTO> PriceList_StoreGroupingDTOs = StoreGroupings
-                .Select(x => new PriceList_StoreGroupingDTO(x)).ToList();
-            return PriceList_StoreGroupingDTOs;
-        }
         [Route(PriceListRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] PriceList_StoreFilterDTO PriceList_StoreFilterDTO)
         {
@@ -553,37 +555,6 @@ namespace DMS.Rpc.price_list
             List<PriceList_StoreDTO> PriceList_StoreDTOs = Stores
                 .Select(x => new PriceList_StoreDTO(x)).ToList();
             return PriceList_StoreDTOs;
-        }
-        [Route(PriceListRoute.CountStoreType), HttpPost]
-        public async Task<long> CountStoreType([FromBody] PriceList_StoreTypeFilterDTO PriceList_StoreTypeFilterDTO)
-        {
-            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
-            StoreTypeFilter.Id = PriceList_StoreTypeFilterDTO.Id;
-            StoreTypeFilter.Code = PriceList_StoreTypeFilterDTO.Code;
-            StoreTypeFilter.Name = PriceList_StoreTypeFilterDTO.Name;
-            StoreTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-
-            return await StoreTypeService.Count(StoreTypeFilter);
-        }
-
-        [Route(PriceListRoute.ListStoreType), HttpPost]
-        public async Task<List<PriceList_StoreTypeDTO>> ListStoreType([FromBody] PriceList_StoreTypeFilterDTO PriceList_StoreTypeFilterDTO)
-        {
-            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
-            StoreTypeFilter.Skip = PriceList_StoreTypeFilterDTO.Skip;
-            StoreTypeFilter.Take = PriceList_StoreTypeFilterDTO.Take;
-            StoreTypeFilter.OrderBy = StoreTypeOrder.Id;
-            StoreTypeFilter.OrderType = OrderType.ASC;
-            StoreTypeFilter.Selects = StoreTypeSelect.ALL;
-            StoreTypeFilter.Id = PriceList_StoreTypeFilterDTO.Id;
-            StoreTypeFilter.Code = PriceList_StoreTypeFilterDTO.Code;
-            StoreTypeFilter.Name = PriceList_StoreTypeFilterDTO.Name;
-            StoreTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-
-            List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
-            List<PriceList_StoreTypeDTO> PriceList_StoreTypeDTOs = StoreTypes
-                .Select(x => new PriceList_StoreTypeDTO(x)).ToList();
-            return PriceList_StoreTypeDTOs;
         }
     }
 }
