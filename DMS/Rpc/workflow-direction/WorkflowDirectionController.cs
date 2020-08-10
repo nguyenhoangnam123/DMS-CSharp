@@ -2,6 +2,7 @@ using Common;
 using DMS.Entities;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
+using DMS.Services.MStatus;
 using DMS.Services.MWorkflow;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
@@ -22,6 +23,7 @@ namespace DMS.Rpc.workflow_direction
         private IWorkflowParameterService WorkflowParameterService;
         private IWorkflowOperatorService WorkflowOperatorService;
         private IOrganizationService OrganizationService;
+        private IStatusService StatusService;
         private ICurrentContext CurrentContext;
         public WorkflowDirectionController(
             IAppUserService AppUserService,
@@ -31,6 +33,7 @@ namespace DMS.Rpc.workflow_direction
             IWorkflowParameterService WorkflowParameterService,
             IWorkflowOperatorService WorkflowOperatorService,
             IOrganizationService OrganizationService,
+            IStatusService StatusService,
             ICurrentContext CurrentContext
         )
         {
@@ -41,6 +44,7 @@ namespace DMS.Rpc.workflow_direction
             this.WorkflowParameterService = WorkflowParameterService;
             this.WorkflowOperatorService = WorkflowOperatorService;
             this.OrganizationService = OrganizationService;
+            this.StatusService = StatusService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -436,6 +440,22 @@ namespace DMS.Rpc.workflow_direction
             return WorkflowDirection_WorkflowDefinitionDTOs;
         }
 
+        [Route(WorkflowDirectionRoute.FilterListStatus), HttpPost]
+        public async Task<List<WorkflowDirection_StatusDTO>> FilterListStatus()
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<WorkflowDirection_StatusDTO> WorkflowDirection_StatusDTOs = Statuses
+                .Select(x => new WorkflowDirection_StatusDTO(x)).ToList();
+            return WorkflowDirection_StatusDTOs;
+        }
+
         [Route(WorkflowDirectionRoute.SingleListAppUser), HttpPost]
         public async Task<List<WorkflowDirection_AppUserDTO>> SingleListAppUser([FromBody] WorkflowDirection_AppUserFilterDTO WorkflowDirection_AppUserFilterDTO)
         {
@@ -589,6 +609,22 @@ namespace DMS.Rpc.workflow_direction
             List<WorkflowDirection_OrganizationDTO> WorkflowDirection_OrganizationDTOs = Organizations
                 .Select(x => new WorkflowDirection_OrganizationDTO(x)).ToList();
             return WorkflowDirection_OrganizationDTOs;
+        }
+
+        [Route(WorkflowDirectionRoute.SingleListStatus), HttpPost]
+        public async Task<List<WorkflowDirection_StatusDTO>> SingleListStatus()
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<WorkflowDirection_StatusDTO> WorkflowDirection_StatusDTOs = Statuses
+                .Select(x => new WorkflowDirection_StatusDTO(x)).ToList();
+            return WorkflowDirection_StatusDTOs;
         }
     }
 }

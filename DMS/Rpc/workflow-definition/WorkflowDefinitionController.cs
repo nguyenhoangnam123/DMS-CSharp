@@ -778,7 +778,7 @@ namespace DMS.Rpc.workflow_definition
         }
 
         [Route(WorkflowDefinitionRoute.SingleListStatus), HttpPost]
-        public async Task<List<WorkflowDefinition_StatusDTO>> SingleListStatus([FromBody] WorkflowDefinition_StatusFilterDTO WorkflowDefinition_StatusFilterDTO)
+        public async Task<List<WorkflowDefinition_StatusDTO>> SingleListStatus()
         {
             StatusFilter StatusFilter = new StatusFilter();
             StatusFilter.Skip = 0;
@@ -828,7 +828,7 @@ namespace DMS.Rpc.workflow_definition
             return WorkflowDefinition_WorkflowDirectionDTOs;
         }
         [Route(WorkflowDefinitionRoute.FilterListStatus), HttpPost]
-        public async Task<List<WorkflowDefinition_StatusDTO>> FilterListStatus([FromBody] WorkflowDefinition_StatusFilterDTO WorkflowDefinition_StatusFilterDTO)
+        public async Task<List<WorkflowDefinition_StatusDTO>> FilterListStatus()
         {
             StatusFilter StatusFilter = new StatusFilter();
             StatusFilter.Skip = 0;
