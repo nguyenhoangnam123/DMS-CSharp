@@ -37,6 +37,7 @@ namespace DMS.Models
             Wards = new HashSet<WardDAO>();
             Warehouses = new HashSet<WarehouseDAO>();
             WorkflowDefinitions = new HashSet<WorkflowDefinitionDAO>();
+            WorkflowDirections = new HashSet<WorkflowDirectionDAO>();
         }
 
         public long Id { get; set; }
@@ -73,5 +74,6 @@ namespace DMS.Models
         public virtual ICollection<WardDAO> Wards { get; set; }
         public virtual ICollection<WarehouseDAO> Warehouses { get; set; }
         public virtual ICollection<WorkflowDefinitionDAO> WorkflowDefinitions { get; set; }
+        public virtual ICollection<WorkflowDirectionDAO> WorkflowDirections { get; set; }
     }
 }

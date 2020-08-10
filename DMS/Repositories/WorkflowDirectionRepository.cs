@@ -194,6 +194,7 @@ namespace DMS.Repositories
                 BodyMailForCreator = x.BodyMailForCreator,
                 BodyMailForCurrentStep = x.BodyMailForCurrentStep,
                 BodyMailForNextStep = x.BodyMailForNextStep,
+                StatusId = x.StatusId,
                 FromStep = x.FromStep == null ? null : new WorkflowStep
                 {
                     Id = x.FromStep.Id,
@@ -203,6 +204,12 @@ namespace DMS.Repositories
                     RoleId = x.FromStep.RoleId,
                     SubjectMailForReject = x.FromStep.SubjectMailForReject,
                     BodyMailForReject = x.FromStep.BodyMailForReject,
+                    Role = new Role
+                    {
+                        Id = x.FromStep.Role.Id,
+                        Code = x.FromStep.Role.Code,
+                        Name = x.FromStep.Role.Name,
+                    },
                 },
                 ToStep = x.ToStep == null ? null : new WorkflowStep
                 {
@@ -213,6 +220,12 @@ namespace DMS.Repositories
                     RoleId = x.ToStep.RoleId,
                     SubjectMailForReject = x.ToStep.SubjectMailForReject,
                     BodyMailForReject = x.ToStep.BodyMailForReject,
+                    Role = new Role
+                    {
+                        Id = x.ToStep.Role.Id,
+                        Code = x.ToStep.Role.Code,
+                        Name = x.ToStep.Role.Name,
+                    },
                 },
                 WorkflowDefinition = x.WorkflowDefinition == null ? null : new WorkflowDefinition
                 {
@@ -224,6 +237,12 @@ namespace DMS.Repositories
                     EndDate = x.WorkflowDefinition.EndDate,
                     StatusId = x.WorkflowDefinition.StatusId,
                     UpdatedAt = x.WorkflowDefinition.UpdatedAt,
+                },
+                Status = new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
                 },
             }).FirstOrDefaultAsync();
 
@@ -273,6 +292,7 @@ namespace DMS.Repositories
             WorkflowDirectionDAO.WorkflowDefinitionId = WorkflowDirection.WorkflowDefinitionId;
             WorkflowDirectionDAO.FromStepId = WorkflowDirection.FromStepId;
             WorkflowDirectionDAO.ToStepId = WorkflowDirection.ToStepId;
+            WorkflowDirectionDAO.StatusId = WorkflowDirection.StatusId;
             WorkflowDirectionDAO.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
             WorkflowDirectionDAO.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
             WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
@@ -297,6 +317,7 @@ namespace DMS.Repositories
             WorkflowDirectionDAO.WorkflowDefinitionId = WorkflowDirection.WorkflowDefinitionId;
             WorkflowDirectionDAO.FromStepId = WorkflowDirection.FromStepId;
             WorkflowDirectionDAO.ToStepId = WorkflowDirection.ToStepId;
+            WorkflowDirectionDAO.StatusId = WorkflowDirection.StatusId;
             WorkflowDirectionDAO.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
             WorkflowDirectionDAO.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
             WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
@@ -325,6 +346,7 @@ namespace DMS.Repositories
                 WorkflowDirectionDAO.WorkflowDefinitionId = WorkflowDirection.WorkflowDefinitionId;
                 WorkflowDirectionDAO.FromStepId = WorkflowDirection.FromStepId;
                 WorkflowDirectionDAO.ToStepId = WorkflowDirection.ToStepId;
+                WorkflowDirectionDAO.StatusId = WorkflowDirection.StatusId;
                 WorkflowDirectionDAO.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
                 WorkflowDirectionDAO.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
                 WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
