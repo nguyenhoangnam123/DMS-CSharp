@@ -274,8 +274,10 @@ namespace DMS.Repositories
             WorkflowDirectionDAO.FromStepId = WorkflowDirection.FromStepId;
             WorkflowDirectionDAO.ToStepId = WorkflowDirection.ToStepId;
             WorkflowDirectionDAO.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
+            WorkflowDirectionDAO.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
             WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
             WorkflowDirectionDAO.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
+            WorkflowDirectionDAO.BodyMailForCurrentStep = WorkflowDirection.BodyMailForCurrentStep;
             WorkflowDirectionDAO.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
             WorkflowDirectionDAO.CreatedAt = StaticParams.DateTimeNow;
             WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -296,8 +298,10 @@ namespace DMS.Repositories
             WorkflowDirectionDAO.FromStepId = WorkflowDirection.FromStepId;
             WorkflowDirectionDAO.ToStepId = WorkflowDirection.ToStepId;
             WorkflowDirectionDAO.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
+            WorkflowDirectionDAO.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
             WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
             WorkflowDirectionDAO.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
+            WorkflowDirectionDAO.BodyMailForCurrentStep = WorkflowDirection.BodyMailForCurrentStep;
             WorkflowDirectionDAO.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
             WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
@@ -322,8 +326,10 @@ namespace DMS.Repositories
                 WorkflowDirectionDAO.FromStepId = WorkflowDirection.FromStepId;
                 WorkflowDirectionDAO.ToStepId = WorkflowDirection.ToStepId;
                 WorkflowDirectionDAO.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
+                WorkflowDirectionDAO.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
                 WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
                 WorkflowDirectionDAO.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
+                WorkflowDirectionDAO.BodyMailForCurrentStep = WorkflowDirection.BodyMailForCurrentStep;
                 WorkflowDirectionDAO.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
                 WorkflowDirectionDAO.CreatedAt = StaticParams.DateTimeNow;
                 WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
