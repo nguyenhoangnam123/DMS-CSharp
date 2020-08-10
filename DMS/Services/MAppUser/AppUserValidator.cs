@@ -46,27 +46,10 @@ namespace DMS.Services.MAppUser
             return AppUser.IsValidated;
         }
 
-        public async Task<bool> ValidateOrganization(AppUser AppUser)
-        {
-            if (AppUser.ERouteScopeId.HasValue)
-            {
-                OrganizationFilter OrganizationFilter = new OrganizationFilter
-                {
-                    Id = new IdFilter { Equal = AppUser.ERouteScopeId }
-                };
-
-                var count = await UOW.OrganizationRepository.Count(OrganizationFilter);
-                if(count == 0)
-                    AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.ERouteScope), ErrorCode.ERouteScopeNotExisted);
-            }
-            return AppUser.IsValidated;
-        }
-
         public async Task<bool> Update(AppUser AppUser)
         {
             if (await ValidateId(AppUser))
             {
-                await ValidateOrganization(AppUser);
             }
             return AppUser.IsValidated;
         }

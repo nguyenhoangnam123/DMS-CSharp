@@ -6,6 +6,9 @@ using DMS.Services.MPosition;
 using DMS.Services.MRole;
 using DMS.Services.MSex;
 using DMS.Services.MStatus;
+using DMS.Services.MStore;
+using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreType;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using System;
@@ -16,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.app_user
 {
-    public class AppUserController : RpcController
+    public partial class AppUserController : RpcController
     {
         private IOrganizationService OrganizationService;
         private IPositionService PositionService;
@@ -24,6 +27,9 @@ namespace DMS.Rpc.app_user
         private IStatusService StatusService;
         private IRoleService RoleService;
         private IAppUserService AppUserService;
+        private IStoreService StoreService;
+        private IStoreGroupingService StoreGroupingService;
+        private IStoreTypeService StoreTypeService;
         private ICurrentContext CurrentContext;
         public AppUserController(
             IOrganizationService OrganizationService,
@@ -32,6 +38,9 @@ namespace DMS.Rpc.app_user
             IStatusService StatusService,
             IRoleService RoleService,
             IAppUserService AppUserService,
+            IStoreService StoreService,
+            IStoreGroupingService StoreGroupingService,
+            IStoreTypeService StoreTypeService,
             ICurrentContext CurrentContext
         )
         {
@@ -41,6 +50,9 @@ namespace DMS.Rpc.app_user
             this.StatusService = StatusService;
             this.RoleService = RoleService;
             this.AppUserService = AppUserService;
+            this.StoreService = StoreService;
+            this.StoreGroupingService = StoreGroupingService;
+            this.StoreTypeService = StoreTypeService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -71,7 +83,7 @@ namespace DMS.Rpc.app_user
         }
 
         [Route(AppUserRoute.Get), HttpPost]
-        public async Task<ActionResult<AppUser_AppUserDTO>> Get([FromBody]AppUser_AppUserDTO AppUser_AppUserDTO)
+        public async Task<ActionResult<AppUser_AppUserDTO>> Get([FromBody] AppUser_AppUserDTO AppUser_AppUserDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -262,7 +274,6 @@ namespace DMS.Rpc.app_user
             AppUser.PositionId = AppUser_AppUserDTO.PositionId;
             AppUser.Department = AppUser_AppUserDTO.Department;
             AppUser.OrganizationId = AppUser_AppUserDTO.OrganizationId;
-            AppUser.ERouteScopeId = AppUser_AppUserDTO.ERouteScopeId;
             AppUser.ProvinceId = AppUser_AppUserDTO.ProvinceId;
             AppUser.SexId = AppUser_AppUserDTO.SexId;
             AppUser.StatusId = AppUser_AppUserDTO.StatusId;
@@ -278,19 +289,6 @@ namespace DMS.Rpc.app_user
                 Phone = AppUser_AppUserDTO.Organization.Phone,
                 Address = AppUser_AppUserDTO.Organization.Address,
                 Email = AppUser_AppUserDTO.Organization.Email,
-            };
-            AppUser.ERouteScope = AppUser_AppUserDTO.ERouteScope == null ? null : new Organization
-            {
-                Id = AppUser_AppUserDTO.ERouteScope.Id,
-                Code = AppUser_AppUserDTO.ERouteScope.Code,
-                Name = AppUser_AppUserDTO.ERouteScope.Name,
-                ParentId = AppUser_AppUserDTO.ERouteScope.ParentId,
-                Path = AppUser_AppUserDTO.ERouteScope.Path,
-                Level = AppUser_AppUserDTO.ERouteScope.Level,
-                StatusId = AppUser_AppUserDTO.ERouteScope.StatusId,
-                Phone = AppUser_AppUserDTO.ERouteScope.Phone,
-                Address = AppUser_AppUserDTO.ERouteScope.Address,
-                Email = AppUser_AppUserDTO.ERouteScope.Email,
             };
             AppUser.Province = AppUser_AppUserDTO.Province == null ? null : new Province
             {
@@ -324,6 +322,18 @@ namespace DMS.Rpc.app_user
                         StatusId = x.Role.StatusId,
                     },
                 }).ToList();
+            AppUser.AppUserStoreMappings = AppUser_AppUserDTO.AppUserStoreMappings?
+                .Select(x => new AppUserStoreMapping
+                {
+                    StoreId = x.StoreId,
+                    Store = x.Store == null ? null : new Store
+                    {
+                        Id = x.Store.Id,
+                        Code = x.Store.Code,
+                        Name = x.Store.Name,
+                        StatusId = x.Store.StatusId,
+                    },
+                }).ToList();
             AppUser.BaseLanguage = CurrentContext.Language;
             return AppUser;
         }
@@ -347,242 +357,10 @@ namespace DMS.Rpc.app_user
             AppUserFilter.PositionId = AppUser_AppUserFilterDTO.PositionId;
             AppUserFilter.Department = AppUser_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = AppUser_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.ERouteScopeId = AppUser_AppUserFilterDTO.ERouteScopeId;
             AppUserFilter.SexId = AppUser_AppUserFilterDTO.SexId;
             AppUserFilter.StatusId = AppUser_AppUserFilterDTO.StatusId;
             AppUserFilter.ProvinceId = AppUser_AppUserFilterDTO.ProvinceId;
             return AppUserFilter;
-        }
-
-        [Route(AppUserRoute.FilterListOrganization), HttpPost]
-        public async Task<List<AppUser_OrganizationDTO>> FilterListOrganization([FromBody] AppUser_OrganizationFilterDTO AppUser_OrganizationFilterDTO)
-        {
-            OrganizationFilter OrganizationFilter = new OrganizationFilter();
-            OrganizationFilter.Skip = 0;
-            OrganizationFilter.Take = 99999;
-            OrganizationFilter.OrderBy = OrganizationOrder.Id;
-            OrganizationFilter.OrderType = OrderType.ASC;
-            OrganizationFilter.Selects = OrganizationSelect.ALL;
-            OrganizationFilter.Id = AppUser_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = AppUser_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = AppUser_OrganizationFilterDTO.Name;
-            OrganizationFilter.ParentId = AppUser_OrganizationFilterDTO.ParentId;
-            OrganizationFilter.Path = AppUser_OrganizationFilterDTO.Path;
-            OrganizationFilter.Level = AppUser_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = AppUser_OrganizationFilterDTO.StatusId;
-            OrganizationFilter.Phone = AppUser_OrganizationFilterDTO.Phone;
-            OrganizationFilter.Address = AppUser_OrganizationFilterDTO.Address;
-            OrganizationFilter.Email = AppUser_OrganizationFilterDTO.Email;
-
-            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
-            if (CurrentContext.Filters != null)
-            {
-                foreach (var currentFilter in CurrentContext.Filters)
-                {
-                    OrganizationFilter subFilter = new OrganizationFilter();
-                    OrganizationFilter.OrFilter.Add(subFilter);
-                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
-                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
-                    {
-                        if (FilterPermissionDefinition.Name == nameof(AppUserFilter.OrganizationId))
-                            subFilter.Id = FilterPermissionDefinition.IdFilter;
-                    }
-                }
-            }
-
-            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-            List<AppUser_OrganizationDTO> AppUser_OrganizationDTOs = Organizations
-                .Select(x => new AppUser_OrganizationDTO(x)).ToList();
-            return AppUser_OrganizationDTOs;
-        }
-
-        [Route(AppUserRoute.FilterListPosition), HttpPost]
-        public async Task<List<AppUser_PositionDTO>> FilterListPosition([FromBody] AppUser_PositionFilterDTO AppUser_PositionFilterDTO)
-        {
-            PositionFilter PositionFilter = new PositionFilter();
-            PositionFilter.Skip = 0;
-            PositionFilter.Take = 99999;
-            PositionFilter.OrderBy = PositionOrder.Id;
-            PositionFilter.OrderType = OrderType.ASC;
-            PositionFilter.Selects = PositionSelect.ALL;
-            PositionFilter.Id = AppUser_PositionFilterDTO.Id;
-            PositionFilter.Code = AppUser_PositionFilterDTO.Code;
-            PositionFilter.Name = AppUser_PositionFilterDTO.Name;
-            PositionFilter.StatusId = AppUser_PositionFilterDTO.StatusId;
-
-            List<Position> Positions = await PositionService.List(PositionFilter);
-            List<AppUser_PositionDTO> AppUser_PositionDTOs = Positions
-                .Select(x => new AppUser_PositionDTO(x)).ToList();
-            return AppUser_PositionDTOs;
-        }
-
-        [Route(AppUserRoute.FilterListStatus), HttpPost]
-        public async Task<List<AppUser_StatusDTO>> FilterListStatus([FromBody] AppUser_StatusFilterDTO AppUser_StatusFilterDTO)
-        {
-            StatusFilter StatusFilter = new StatusFilter();
-            StatusFilter.Skip = 0;
-            StatusFilter.Take = 20;
-            StatusFilter.OrderBy = StatusOrder.Id;
-            StatusFilter.OrderType = OrderType.ASC;
-            StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = AppUser_StatusFilterDTO.Id;
-            StatusFilter.Code = AppUser_StatusFilterDTO.Code;
-            StatusFilter.Name = AppUser_StatusFilterDTO.Name;
-
-            List<Status> Statuses = await StatusService.List(StatusFilter);
-            List<AppUser_StatusDTO> AppUser_StatusDTOs = Statuses
-                .Select(x => new AppUser_StatusDTO(x)).ToList();
-            return AppUser_StatusDTOs;
-        }
-
-        [Route(AppUserRoute.SingleListOrganization), HttpPost]
-        public async Task<List<AppUser_OrganizationDTO>> SingleListOrganization([FromBody] AppUser_OrganizationFilterDTO AppUser_OrganizationFilterDTO)
-        {
-            OrganizationFilter OrganizationFilter = new OrganizationFilter();
-            OrganizationFilter.Skip = 0;
-            OrganizationFilter.Take = 99999;
-            OrganizationFilter.OrderBy = OrganizationOrder.Id;
-            OrganizationFilter.OrderType = OrderType.ASC;
-            OrganizationFilter.Selects = OrganizationSelect.ALL;
-            OrganizationFilter.Id = AppUser_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = AppUser_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = AppUser_OrganizationFilterDTO.Name;
-            OrganizationFilter.ParentId = AppUser_OrganizationFilterDTO.ParentId;
-            OrganizationFilter.Path = AppUser_OrganizationFilterDTO.Path;
-            OrganizationFilter.Level = AppUser_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
-            OrganizationFilter.Phone = AppUser_OrganizationFilterDTO.Phone;
-            OrganizationFilter.Address = AppUser_OrganizationFilterDTO.Address;
-            OrganizationFilter.Email = AppUser_OrganizationFilterDTO.Email;
-
-            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
-            if (CurrentContext.Filters != null)
-            {
-                foreach (var currentFilter in CurrentContext.Filters)
-                {
-                    OrganizationFilter subFilter = new OrganizationFilter();
-                    OrganizationFilter.OrFilter.Add(subFilter);
-                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
-                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
-                    {
-                        if (FilterPermissionDefinition.Name == nameof(AppUserFilter.OrganizationId))
-                            subFilter.Id = FilterPermissionDefinition.IdFilter;
-                    }
-                }
-            }
-
-            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-            List<AppUser_OrganizationDTO> AppUser_OrganizationDTOs = Organizations
-                .Select(x => new AppUser_OrganizationDTO(x)).ToList();
-            return AppUser_OrganizationDTOs;
-        }
-
-        [Route(AppUserRoute.SingleListPosition), HttpPost]
-        public async Task<List<AppUser_PositionDTO>> SingleListPosition([FromBody] AppUser_PositionFilterDTO AppUser_PositionFilterDTO)
-        {
-            PositionFilter PositionFilter = new PositionFilter();
-            PositionFilter.Skip = 0;
-            PositionFilter.Take = 99999;
-            PositionFilter.OrderBy = PositionOrder.Id;
-            PositionFilter.OrderType = OrderType.ASC;
-            PositionFilter.Selects = PositionSelect.ALL;
-            PositionFilter.Id = AppUser_PositionFilterDTO.Id;
-            PositionFilter.Code = AppUser_PositionFilterDTO.Code;
-            PositionFilter.Name = AppUser_PositionFilterDTO.Name;
-            PositionFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
-
-            List<Position> Positions = await PositionService.List(PositionFilter);
-            List<AppUser_PositionDTO> AppUser_PositionDTOs = Positions
-                .Select(x => new AppUser_PositionDTO(x)).ToList();
-            return AppUser_PositionDTOs;
-        }
-
-        [Route(AppUserRoute.SingleListSex), HttpPost]
-        public async Task<List<AppUser_SexDTO>> SingleListSex([FromBody] AppUser_SexFilterDTO AppUser_SexFilterDTO)
-        {
-            SexFilter SexFilter = new SexFilter();
-            SexFilter.Skip = 0;
-            SexFilter.Take = 20;
-            SexFilter.OrderBy = SexOrder.Id;
-            SexFilter.OrderType = OrderType.ASC;
-            SexFilter.Selects = SexSelect.ALL;
-            SexFilter.Id = AppUser_SexFilterDTO.Id;
-            SexFilter.Code = AppUser_SexFilterDTO.Code;
-            SexFilter.Name = AppUser_SexFilterDTO.Name;
-
-            List<Sex> Sexes = await SexService.List(SexFilter);
-            List<AppUser_SexDTO> AppUser_SexDTOs = Sexes
-                .Select(x => new AppUser_SexDTO(x)).ToList();
-            return AppUser_SexDTOs;
-        }
-        [Route(AppUserRoute.SingleListStatus), HttpPost]
-        public async Task<List<AppUser_StatusDTO>> SingleListStatus([FromBody] AppUser_StatusFilterDTO AppUser_StatusFilterDTO)
-        {
-            StatusFilter StatusFilter = new StatusFilter();
-            StatusFilter.Skip = 0;
-            StatusFilter.Take = 20;
-            StatusFilter.OrderBy = StatusOrder.Id;
-            StatusFilter.OrderType = OrderType.ASC;
-            StatusFilter.Selects = StatusSelect.ALL;
-            StatusFilter.Id = AppUser_StatusFilterDTO.Id;
-            StatusFilter.Code = AppUser_StatusFilterDTO.Code;
-            StatusFilter.Name = AppUser_StatusFilterDTO.Name;
-
-            List<Status> Statuses = await StatusService.List(StatusFilter);
-            List<AppUser_StatusDTO> AppUser_StatusDTOs = Statuses
-                .Select(x => new AppUser_StatusDTO(x)).ToList();
-            return AppUser_StatusDTOs;
-        }
-        [Route(AppUserRoute.SingleListRole), HttpPost]
-        public async Task<List<AppUser_RoleDTO>> SingleListRole([FromBody] AppUser_RoleFilterDTO AppUser_RoleFilterDTO)
-        {
-            RoleFilter RoleFilter = new RoleFilter();
-            RoleFilter.Skip = 0;
-            RoleFilter.Take = 20;
-            RoleFilter.OrderBy = RoleOrder.Id;
-            RoleFilter.OrderType = OrderType.ASC;
-            RoleFilter.Selects = RoleSelect.ALL;
-            RoleFilter.Id = AppUser_RoleFilterDTO.Id;
-            RoleFilter.Code = AppUser_RoleFilterDTO.Code;
-            RoleFilter.Name = AppUser_RoleFilterDTO.Name;
-            RoleFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
-
-            List<Role> Roles = await RoleService.List(RoleFilter);
-            List<AppUser_RoleDTO> AppUser_RoleDTOs = Roles
-                .Select(x => new AppUser_RoleDTO(x)).ToList();
-            return AppUser_RoleDTOs;
-        }
-
-        [Route(AppUserRoute.CountRole), HttpPost]
-        public async Task<long> CountRole([FromBody] AppUser_RoleFilterDTO AppUser_RoleFilterDTO)
-        {
-            RoleFilter RoleFilter = new RoleFilter();
-            RoleFilter.Id = AppUser_RoleFilterDTO.Id;
-            RoleFilter.Code = AppUser_RoleFilterDTO.Code;
-            RoleFilter.Name = AppUser_RoleFilterDTO.Name;
-            RoleFilter.StatusId = AppUser_RoleFilterDTO.StatusId;
-
-            return await RoleService.Count(RoleFilter);
-        }
-
-        [Route(AppUserRoute.ListRole), HttpPost]
-        public async Task<List<AppUser_RoleDTO>> ListRole([FromBody] AppUser_RoleFilterDTO AppUser_RoleFilterDTO)
-        {
-            RoleFilter RoleFilter = new RoleFilter();
-            RoleFilter.Skip = AppUser_RoleFilterDTO.Skip;
-            RoleFilter.Take = AppUser_RoleFilterDTO.Take;
-            RoleFilter.OrderBy = RoleOrder.Id;
-            RoleFilter.OrderType = OrderType.ASC;
-            RoleFilter.Selects = RoleSelect.ALL;
-            RoleFilter.Id = AppUser_RoleFilterDTO.Id;
-            RoleFilter.Code = AppUser_RoleFilterDTO.Code;
-            RoleFilter.Name = AppUser_RoleFilterDTO.Name;
-            RoleFilter.StatusId = AppUser_RoleFilterDTO.StatusId;
-
-            List<Role> Roles = await RoleService.List(RoleFilter);
-            List<AppUser_RoleDTO> AppUser_RoleDTOs = Roles
-                .Select(x => new AppUser_RoleDTO(x)).ToList();
-            return AppUser_RoleDTOs;
         }
     }
 }

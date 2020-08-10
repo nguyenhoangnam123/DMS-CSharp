@@ -32,6 +32,7 @@ namespace DMS.Rpc.app_user
         public AppUser_SexDTO Sex { get; set; }
         public AppUser_StatusDTO Status { get; set; }
         public List<AppUser_AppUserRoleMappingDTO> AppUserRoleMappings { get; set; }
+        public List<AppUser_AppUserStoreMappingDTO> AppUserStoreMappings { get; set; }
         public AppUser_AppUserDTO() { }
         public AppUser_AppUserDTO(AppUser AppUser)
         {
@@ -46,16 +47,15 @@ namespace DMS.Rpc.app_user
             this.PositionId = AppUser.PositionId;
             this.Department = AppUser.Department;
             this.OrganizationId = AppUser.OrganizationId;
-            this.ERouteScopeId = AppUser.ERouteScopeId;
             this.SexId = AppUser.SexId;
             this.StatusId = AppUser.StatusId;
             this.Organization = AppUser.Organization == null ? null : new AppUser_OrganizationDTO(AppUser.Organization);
-            this.ERouteScope = AppUser.ERouteScope == null ? null : new AppUser_OrganizationDTO(AppUser.ERouteScope);
             this.Position = AppUser.Position == null ? null : new AppUser_PositionDTO(AppUser.Position);
             this.Province = AppUser.Province == null ? null : new AppUser_ProvinceDTO(AppUser.Province);
             this.Sex = AppUser.Sex == null ? null : new AppUser_SexDTO(AppUser.Sex);
             this.Status = AppUser.Status == null ? null : new AppUser_StatusDTO(AppUser.Status);
             this.AppUserRoleMappings = AppUser.AppUserRoleMappings?.Select(x => new AppUser_AppUserRoleMappingDTO(x)).ToList();
+            this.AppUserStoreMappings = AppUser.AppUserStoreMappings?.Select(x => new AppUser_AppUserStoreMappingDTO(x)).ToList();
             this.Errors = AppUser.Errors;
         }
     }
@@ -73,7 +73,6 @@ namespace DMS.Rpc.app_user
         public IdFilter PositionId { get; set; }
         public StringFilter Department { get; set; }
         public IdFilter OrganizationId { get; set; }
-        public IdFilter ERouteScopeId { get; set; }
         public IdFilter SexId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter ProvinceId { get; set; }

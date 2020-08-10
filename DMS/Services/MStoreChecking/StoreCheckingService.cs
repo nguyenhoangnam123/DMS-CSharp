@@ -262,23 +262,15 @@ namespace DMS.Services.MStoreChecking
         public async Task<long> CountStore(StoreFilter StoreFilter, IdFilter ERouteId)
         {
             var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-            if (AppUser.ERouteScopeId.HasValue)
-            {
-                List<long> OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Selects = OrganizationSelect.Id,
-                    Path = new StringFilter { StartWith = AppUser.ERouteScope.Path },
-                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-                })).Select(x => x.Id).ToList();
-
-                StoreFilter.OrganizationId = new IdFilter { In = OrganizationIds };
-            }
-            List<long> StoreIds;
+            List<long> StoreIds = new List<long>();
             if (ERouteId != null && ERouteId.HasValue)
             {
                 StoreIds = await ListStoreIds(ERouteId);
+                if (AppUser.AppUserStoreMappings.Any())
+                {
+                    var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                    StoreIds = StoreIds.Intersect(StoreInScopeIds).ToList();
+                }
                 StoreFilter.Id = new IdFilter { In = StoreIds };
             }
 
@@ -290,23 +282,15 @@ namespace DMS.Services.MStoreChecking
         {
             var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
 
-            if (AppUser.ERouteScopeId.HasValue)
-            {
-                List<long> OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Selects = OrganizationSelect.Id,
-                    Path = new StringFilter { StartWith = AppUser.ERouteScope.Path },
-                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-                })).Select(x => x.Id).ToList();
-
-                StoreFilter.OrganizationId = new IdFilter { In = OrganizationIds };
-            }
-            List<long> StoreIds;
+            List<long> StoreIds = new List<long>();
             if (ERouteId != null && ERouteId.HasValue)
             {
                 StoreIds = await ListStoreIds(ERouteId);
+                if (AppUser.AppUserStoreMappings.Any())
+                {
+                    var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                    StoreIds = StoreIds.Intersect(StoreInScopeIds).ToList();
+                }
                 StoreFilter.Id = new IdFilter { In = StoreIds };
             }
 
@@ -406,18 +390,10 @@ namespace DMS.Services.MStoreChecking
             {
                 var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 List<long> StoreIds = await ListStoreIds(ERouteId);
-                if (AppUser.ERouteScopeId.HasValue)
+                if (AppUser.AppUserStoreMappings.Any())
                 {
-                    List<long> OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
-                    {
-                        Skip = 0,
-                        Take = int.MaxValue,
-                        Selects = OrganizationSelect.Id,
-                        Path = new StringFilter { StartWith = AppUser.ERouteScope.Path },
-                        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-                    })).Select(x => x.Id).ToList();
-
-                    StoreFilter.OrganizationId = new IdFilter { In = OrganizationIds };
+                    var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                    StoreIds = StoreIds.Intersect(StoreInScopeIds).ToList();
                 }
 
                 StoreFilter.Id = new IdFilter { NotIn = StoreIds };
@@ -447,18 +423,10 @@ namespace DMS.Services.MStoreChecking
             {
                 var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 List<long> StoreIds = await ListStoreIds(ERouteId);
-                if (AppUser.ERouteScopeId.HasValue)
+                if (AppUser.AppUserStoreMappings.Any())
                 {
-                    List<long> OrganizationIds = (await UOW.OrganizationRepository.List(new OrganizationFilter
-                    {
-                        Skip = 0,
-                        Take = int.MaxValue,
-                        Selects = OrganizationSelect.Id,
-                        Path = new StringFilter { StartWith = AppUser.ERouteScope.Path },
-                        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-                    })).Select(x => x.Id).ToList();
-
-                    StoreFilter.OrganizationId = new IdFilter { In = OrganizationIds };
+                    var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                    StoreIds = StoreIds.Intersect(StoreInScopeIds).ToList();
                 }
 
                 StoreFilter.Id = new IdFilter { NotIn = StoreIds };

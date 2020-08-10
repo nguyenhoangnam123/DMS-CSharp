@@ -60,7 +60,6 @@ namespace DMS.Rpc.e_route
             this.Department = AppUser.Department;
 
             this.OrganizationId = AppUser.OrganizationId;
-            this.ERouteScopeId = AppUser.ERouteScopeId;
 
             this.SexId = AppUser.SexId;
 
@@ -98,7 +97,6 @@ namespace DMS.Rpc.e_route
         public StringFilter Department { get; set; }
 
         public IdFilter OrganizationId { get; set; }
-        public IdFilter ERouteScopeId { get; set; }
 
         public IdFilter SexId { get; set; }
 
