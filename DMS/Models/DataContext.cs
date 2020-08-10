@@ -3556,6 +3556,8 @@ namespace DMS.Models
             {
                 entity.ToTable("WorkflowParameter", "ENUM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);

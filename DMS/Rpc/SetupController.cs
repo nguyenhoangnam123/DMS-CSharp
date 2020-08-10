@@ -116,7 +116,7 @@ namespace DMS.Rpc
                     OrganizationDAO.UpdatedAt = Organization.UpdatedAt;
                     OrganizationDAO.DeletedAt = Organization.DeletedAt;
                     OrganizationDAO.RowId = Organization.RowId;
-                    
+
                 }
                 DataContext.Organization.BulkMerge(OrganizationInDB);
             }
@@ -751,6 +751,7 @@ namespace DMS.Rpc
             DataContext.SurveyOptionType.BulkSynchronize(SurveyOptionTypeEnumList);
         }
 
+
         private void InitProblemStatusEnum()
         {
             List<ProblemStatusDAO> ProblemStatusEnumList = ProblemStatusEnum.ProblemStatusEnumList.Select(item => new ProblemStatusDAO
@@ -832,7 +833,7 @@ namespace DMS.Rpc
         private void InitSystemConfigurationEnum()
         {
             List<SystemConfigurationDAO> SystemConfigurationDAOs = DataContext.SystemConfiguration.ToList();
-            foreach(GenericEnum item in SystemConfigurationEnum.SystemConfigurationEnumList)
+            foreach (GenericEnum item in SystemConfigurationEnum.SystemConfigurationEnumList)
             {
                 SystemConfigurationDAO SystemConfigurationDAO = SystemConfigurationDAOs.Where(sc => sc.Id == item.Id).FirstOrDefault();
                 if (SystemConfigurationDAO == null)
@@ -843,8 +844,8 @@ namespace DMS.Rpc
                     SystemConfigurationDAO.Name = item.Name;
                     SystemConfigurationDAO.Value = null;
                     SystemConfigurationDAOs.Add(SystemConfigurationDAO);
-                }    
-            }    
+                }
+            }
             DataContext.SystemConfiguration.BulkSynchronize(SystemConfigurationDAOs);
         }
 
@@ -926,6 +927,49 @@ namespace DMS.Rpc
             WorkflowOperatorDAOs.AddRange(DATE);
 
             DataContext.WorkflowOperator.BulkSynchronize(WorkflowOperatorDAOs);
+
+            List<WorkflowParameterDAO> WorkflowParameterDAOs = new List<WorkflowParameterDAO>();
+            List<WorkflowParameterDAO> STORE_PARAMETER = WorkflowParameterEnum.StoreEnumList.Select(item => new WorkflowParameterDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                WorkflowParameterTypeId = long.Parse(item.Value),
+                WorkflowTypeId = WorkflowTypeEnum.STORE.Id,
+            }).ToList();
+            WorkflowParameterDAOs.AddRange(STORE_PARAMETER);
+
+            List<WorkflowParameterDAO> EROUTE_PARAMETER = WorkflowParameterEnum.ERouteEnumList.Select(item => new WorkflowParameterDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                WorkflowParameterTypeId = long.Parse(item.Value),
+                WorkflowTypeId = WorkflowTypeEnum.EROUTE.Id,
+            }).ToList();
+            WorkflowParameterDAOs.AddRange(EROUTE_PARAMETER);
+
+            List<WorkflowParameterDAO> INDIRECT_SALES_ORDER_PARAMETER = WorkflowParameterEnum.IndirectSalesOrderEnumList.Select(item => new WorkflowParameterDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                WorkflowParameterTypeId = long.Parse(item.Value),
+                WorkflowTypeId = WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id,
+            }).ToList();
+            WorkflowParameterDAOs.AddRange(INDIRECT_SALES_ORDER_PARAMETER);
+
+            List<WorkflowParameterDAO> PRICE_LIST_PARAMETER = WorkflowParameterEnum.PriceListEnumList.Select(item => new WorkflowParameterDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                WorkflowParameterTypeId = long.Parse(item.Value),
+                WorkflowTypeId = WorkflowTypeEnum.PRICE_LIST.Id,
+            }).ToList();
+            WorkflowParameterDAOs.AddRange(PRICE_LIST_PARAMETER);
+
+            DataContext.WorkflowParameter.BulkMerge(WorkflowParameterDAOs);
         }
         #endregion
     }

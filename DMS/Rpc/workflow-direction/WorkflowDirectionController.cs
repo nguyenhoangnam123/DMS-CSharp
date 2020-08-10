@@ -53,6 +53,8 @@ namespace DMS.Rpc.workflow_direction
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            if (WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId == null || !WorkflowDirection_WorkflowDirectionFilterDTO.Id.HasValue)
+                return 0;
 
             WorkflowDirectionFilter WorkflowDirectionFilter = ConvertFilterDTOToFilterEntity(WorkflowDirection_WorkflowDirectionFilterDTO);
             WorkflowDirectionFilter = WorkflowDirectionService.ToFilter(WorkflowDirectionFilter);
@@ -65,6 +67,8 @@ namespace DMS.Rpc.workflow_direction
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            if (WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId == null || !WorkflowDirection_WorkflowDirectionFilterDTO.Id.HasValue)
+                return new List<WorkflowDirection_WorkflowDirectionDTO>();
 
             WorkflowDirectionFilter WorkflowDirectionFilter = ConvertFilterDTOToFilterEntity(WorkflowDirection_WorkflowDirectionFilterDTO);
             WorkflowDirectionFilter = WorkflowDirectionService.ToFilter(WorkflowDirectionFilter);
@@ -75,7 +79,7 @@ namespace DMS.Rpc.workflow_direction
         }
 
         [Route(WorkflowDirectionRoute.Get), HttpPost]
-        public async Task<ActionResult<WorkflowDirection_WorkflowDirectionDTO>> Get([FromBody]WorkflowDirection_WorkflowDirectionDTO WorkflowDirection_WorkflowDirectionDTO)
+        public async Task<ActionResult<WorkflowDirection_WorkflowDirectionDTO>> Get([FromBody] WorkflowDirection_WorkflowDirectionDTO WorkflowDirection_WorkflowDirectionDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -554,7 +558,7 @@ namespace DMS.Rpc.workflow_direction
             WorkflowParameterFilter.Id = WorkflowDirection_WorkflowParameterFilterDTO.Id;
             WorkflowParameterFilter.Code = WorkflowDirection_WorkflowParameterFilterDTO.Code;
             WorkflowParameterFilter.Name = WorkflowDirection_WorkflowParameterFilterDTO.Name;
-          
+
 
             List<WorkflowParameter> WorkflowParameters = await WorkflowParameterService.List(WorkflowParameterFilter);
             List<WorkflowDirection_WorkflowParameterDTO> WorkflowDirection_WorkflowParameterDTOs = WorkflowParameters
