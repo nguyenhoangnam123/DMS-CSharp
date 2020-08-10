@@ -19,6 +19,8 @@ using DMS.Services.MStatus;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
+using DMS.Services.MProductGrouping;
+using DMS.Services.MProductType;
 
 namespace DMS.Rpc.price_list
 {
@@ -33,6 +35,8 @@ namespace DMS.Rpc.price_list
         private ISalesOrderTypeService SalesOrderTypeService;
         private IStatusService StatusService;
         private IPriceListService PriceListService;
+        private IProductTypeService ProductTypeService;
+        private IProductGroupingService ProductGroupingService;
         private ICurrentContext CurrentContext;
         public PriceListController(
             IOrganizationService OrganizationService,
@@ -44,6 +48,8 @@ namespace DMS.Rpc.price_list
             ISalesOrderTypeService SalesOrderTypeService,
             IStatusService StatusService,
             IPriceListService PriceListService,
+            IProductTypeService ProductTypeService,
+            IProductGroupingService ProductGroupingService,
             ICurrentContext CurrentContext
         )
         {
@@ -56,6 +62,8 @@ namespace DMS.Rpc.price_list
             this.SalesOrderTypeService = SalesOrderTypeService;
             this.StatusService = StatusService;
             this.PriceListService = PriceListService;
+            this.ProductTypeService = ProductTypeService;
+            this.ProductGroupingService = ProductGroupingService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -86,7 +94,7 @@ namespace DMS.Rpc.price_list
         }
 
         [Route(PriceListRoute.Get), HttpPost]
-        public async Task<ActionResult<PriceList_PriceListDTO>> Get([FromBody]PriceList_PriceListDTO PriceList_PriceListDTO)
+        public async Task<ActionResult<PriceList_PriceListDTO>> Get([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -103,7 +111,7 @@ namespace DMS.Rpc.price_list
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(PriceList_PriceListDTO.Id))
                 return Forbid();
 
@@ -121,7 +129,7 @@ namespace DMS.Rpc.price_list
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(PriceList_PriceListDTO.Id))
                 return Forbid();
 
@@ -151,7 +159,7 @@ namespace DMS.Rpc.price_list
             else
                 return BadRequest(PriceList_PriceListDTO);
         }
-        
+
         [Route(PriceListRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -171,7 +179,7 @@ namespace DMS.Rpc.price_list
                 return BadRequest(PriceLists.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         [Route(PriceListRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -229,7 +237,7 @@ namespace DMS.Rpc.price_list
                     string OrganizationIdValue = worksheet.Cells[i + StartRow, OrganizationIdColumn].Value?.ToString();
                     string PriceListTypeIdValue = worksheet.Cells[i + StartRow, PriceListTypeIdColumn].Value?.ToString();
                     string SalesOrderTypeIdValue = worksheet.Cells[i + StartRow, SalesOrderTypeIdColumn].Value?.ToString();
-                    
+
                     PriceList PriceList = new PriceList();
                     PriceList.Code = CodeValue;
                     PriceList.Name = NameValue;
@@ -244,7 +252,7 @@ namespace DMS.Rpc.price_list
                     Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
                     PriceList.StatusId = Status == null ? 0 : Status.Id;
                     PriceList.Status = Status;
-                    
+
                     PriceLists.Add(PriceList);
                 }
             }
@@ -284,13 +292,13 @@ namespace DMS.Rpc.price_list
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(PriceListRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] PriceList_PriceListFilterDTO PriceList_PriceListFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -303,7 +311,7 @@ namespace DMS.Rpc.price_list
 
                 var PriceListHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -334,7 +342,7 @@ namespace DMS.Rpc.price_list
                 }
                 excel.GenerateWorksheet("PriceList", PriceListHeaders, PriceListData);
                 #endregion
-                
+
                 #region Organization
                 var OrganizationFilter = new OrganizationFilter();
                 OrganizationFilter.Selects = OrganizationSelect.ALL;
@@ -346,7 +354,7 @@ namespace DMS.Rpc.price_list
 
                 var OrganizationHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -390,7 +398,7 @@ namespace DMS.Rpc.price_list
 
                 var PriceListTypeHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -420,7 +428,7 @@ namespace DMS.Rpc.price_list
 
                 var SalesOrderTypeHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -450,7 +458,7 @@ namespace DMS.Rpc.price_list
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -479,14 +487,14 @@ namespace DMS.Rpc.price_list
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
                 #region PriceList
                 var PriceListHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -501,7 +509,7 @@ namespace DMS.Rpc.price_list
                 List<object[]> PriceListData = new List<object[]>();
                 excel.GenerateWorksheet("PriceList", PriceListHeaders, PriceListData);
                 #endregion
-                
+
                 #region Organization
                 var OrganizationFilter = new OrganizationFilter();
                 OrganizationFilter.Selects = OrganizationSelect.ALL;
@@ -513,7 +521,7 @@ namespace DMS.Rpc.price_list
 
                 var OrganizationHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -557,7 +565,7 @@ namespace DMS.Rpc.price_list
 
                 var PriceListTypeHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -587,7 +595,7 @@ namespace DMS.Rpc.price_list
 
                 var SalesOrderTypeHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -617,7 +625,7 @@ namespace DMS.Rpc.price_list
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",

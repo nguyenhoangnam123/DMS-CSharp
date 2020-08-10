@@ -46,6 +46,8 @@ namespace DMS.Rpc.price_list
         
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListItem = Default + "/single-list-item";
+        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
+        public const string SingleListProductType = Default + "/single-list-product-type";
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
         public const string SingleListStore = Default + "/single-list-store";
         public const string SingleListStoreType = Default + "/single-list-store-type";
@@ -55,12 +57,8 @@ namespace DMS.Rpc.price_list
 
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
-        public const string CountStoreGrouping = Default + "/count-store-grouping";
-        public const string ListStoreGrouping = Default + "/list-store-grouping";
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
-        public const string CountStoreType = Default + "/count-store-type";
-        public const string ListStoreType = Default + "/list-store-type";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -80,41 +78,40 @@ namespace DMS.Rpc.price_list
             { "Tìm kiếm", new List<string> { 
                 Master, Count, List,
                 Get, GetPreview,
-                
-                 FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, } },
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,} },
             { "Thêm", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus,  
-                Detail, Create, 
-                SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, 
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                Detail, Create,
+                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType,
                 Count, List, Count, List, Count, List, Count, List,  } },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus,  
-                Detail, Update, 
-                SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus,  
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                Detail, Update,
+                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType,
                 Count, List, Count, List, Count, List, Count, List,  } },
 
             { "Xoá", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus,  
-                Delete, 
-                SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus,  } },
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                Delete,
+                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType,  } },
 
             { "Xoá nhiều", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus,  
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 BulkDelete } },
 
             { "Xuất excel", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus,  
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 Export } },
 
             { "Nhập excel", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus,  
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 ExportTemplate, Import } },
         };
     }
