@@ -1,4 +1,5 @@
 using Common;
+using DMS.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -11,6 +12,18 @@ namespace DMS.Entities
         public long WorkflowParameterId { get; set; }
         public Guid RequestId { get; set; }
         public string Value { get; set; }
+        public long WorkflowParameterTypeId { get; set; }
+        public long? LongValue
+        {
+            get
+            {
+                if (Value == null)
+                    return null;
+                if (WorkflowParameterTypeId == WorkflowParameterTypeEnum.LONG.Id)
+                    return long.Parse(Value);
+                return null;
+            }
+        }
         public WorkflowParameter WorkflowParameter { get; set; }
 
         public bool Equals(RequestWorkflowParameterMapping other)

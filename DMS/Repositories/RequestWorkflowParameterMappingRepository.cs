@@ -31,6 +31,7 @@ namespace DMS.Repositories
                     RequestId = r.RequestId,
                     Value = r.Value,
                     WorkflowParameterId = r.WorkflowParameterId,
+                    WorkflowParameterTypeId = r.WorkflowParameter.WorkflowParameterTypeId,
                 }).ToListAsync();
             return RequestWorkflowParameterMappings;
         }
