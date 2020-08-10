@@ -16,7 +16,7 @@ namespace DMS.Rpc.price_list
         public long StatusId { get; set; }
         public long OrganizationId { get; set; }
         public long PriceListTypeId { get; set; }
-        public long SalesOrderTypeId { get; set; }
+        public long? SalesOrderTypeId { get; set; }
         public PriceList_PriceListTypeDTO PriceListType { get; set; }
         public PriceList_OrganizationDTO Organization { get; set; }
         public PriceList_SalesOrderTypeDTO SalesOrderType { get; set; }

@@ -2,7 +2,9 @@ using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
+using Helpers;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MPriceList
@@ -28,7 +30,10 @@ namespace DMS.Services.MPriceList
             NameOverLength,
             OrganizationEmpty,
             OrganizationNotExisted,
-            StatusNotExisted
+            StatusNotExisted,
+            PriceListTypeEmpty,
+            PriceListTypeNotExisted,
+            EndDateInvalid
         }
 
         private IUOW UOW;
@@ -120,6 +125,38 @@ namespace DMS.Services.MPriceList
             return PriceList.IsValidated;
         }
 
+        private async Task<bool> ValidateDate(PriceList PriceList)
+        {
+            if (PriceList.StartDate.HasValue)
+            {
+                if (PriceList.EndDate.HasValue)
+                {
+                    if(PriceList.EndDate.Value < StaticParams.DateTimeNow || PriceList.EndDate.Value <= PriceList.StartDate)
+                    {
+                        PriceList.AddError(nameof(PriceListValidator), nameof(PriceList.EndDate), ErrorCode.EndDateInvalid);
+                    }
+                }
+            }
+            return PriceList.IsValidated;
+        }
+
+        private async Task<bool> ValidatePriceListType(PriceList PriceList)
+        {
+            if(PriceList.PriceListTypeId == 0)
+            {
+                PriceList.AddError(nameof(PriceListValidator), nameof(PriceList.PriceListType), ErrorCode.PriceListTypeEmpty);
+            }
+            else
+            {
+                var PriceListTypeIds = PriceListTypeEnum.PriceListTypeEnumList.Select(x => x.Id).ToList();
+                if (!PriceListTypeIds.Contains(PriceList.PriceListTypeId))
+                {
+                    PriceList.AddError(nameof(PriceListValidator), nameof(PriceList.Organization), ErrorCode.PriceListTypeNotExisted);
+                }
+            }
+            return PriceList.IsValidated;
+        }
+
         private async Task<bool> ValidateStatus(PriceList PriceList)
         {
             if (StatusEnum.ACTIVE.Id != PriceList.StatusId && StatusEnum.INACTIVE.Id != PriceList.StatusId)
@@ -131,8 +168,10 @@ namespace DMS.Services.MPriceList
         {
             await ValidateCode(PriceList);
             await ValidateName(PriceList);
+            await ValidateDate(PriceList);
             await ValidateOrganization(PriceList);
             await ValidateStatus(PriceList);
+            await ValidatePriceListType(PriceList);
             return PriceList.IsValidated;
         }
 
@@ -140,6 +179,12 @@ namespace DMS.Services.MPriceList
         {
             if (await ValidateId(PriceList))
             {
+                await ValidateCode(PriceList);
+                await ValidateName(PriceList);
+                await ValidateDate(PriceList);
+                await ValidateOrganization(PriceList);
+                await ValidateStatus(PriceList);
+                await ValidatePriceListType(PriceList);
             }
             return PriceList.IsValidated;
         }
