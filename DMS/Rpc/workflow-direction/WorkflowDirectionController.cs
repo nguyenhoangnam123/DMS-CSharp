@@ -84,9 +84,6 @@ namespace DMS.Rpc.workflow_direction
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(WorkflowDirection_WorkflowDirectionDTO.Id))
-                return Forbid();
-
             WorkflowDirection WorkflowDirection = await WorkflowDirectionService.Get(WorkflowDirection_WorkflowDirectionDTO.Id);
             return new WorkflowDirection_WorkflowDirectionDTO(WorkflowDirection);
         }
@@ -96,10 +93,7 @@ namespace DMS.Rpc.workflow_direction
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            if (!await HasPermission(WorkflowDirection_WorkflowDirectionDTO.Id))
-                return Forbid();
-
+           
             WorkflowDirection WorkflowDirection = ConvertDTOToEntity(WorkflowDirection_WorkflowDirectionDTO);
             WorkflowDirection = await WorkflowDirectionService.Create(WorkflowDirection);
             WorkflowDirection_WorkflowDirectionDTO = new WorkflowDirection_WorkflowDirectionDTO(WorkflowDirection);
@@ -115,9 +109,6 @@ namespace DMS.Rpc.workflow_direction
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(WorkflowDirection_WorkflowDirectionDTO.Id))
-                return Forbid();
-
             WorkflowDirection WorkflowDirection = ConvertDTOToEntity(WorkflowDirection_WorkflowDirectionDTO);
             WorkflowDirection = await WorkflowDirectionService.Update(WorkflowDirection);
             WorkflowDirection_WorkflowDirectionDTO = new WorkflowDirection_WorkflowDirectionDTO(WorkflowDirection);
@@ -132,9 +123,6 @@ namespace DMS.Rpc.workflow_direction
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            if (!await HasPermission(WorkflowDirection_WorkflowDirectionDTO.Id))
-                return Forbid();
 
             WorkflowDirection WorkflowDirection = ConvertDTOToEntity(WorkflowDirection_WorkflowDirectionDTO);
             WorkflowDirection = await WorkflowDirectionService.Delete(WorkflowDirection);
@@ -270,23 +258,6 @@ namespace DMS.Rpc.workflow_direction
             return File(memoryStream.ToArray(), "application/octet-stream", "WorkflowDirection.xlsx");
         }
 
-        private async Task<bool> HasPermission(long Id)
-        {
-            WorkflowDirectionFilter WorkflowDirectionFilter = new WorkflowDirectionFilter();
-            WorkflowDirectionFilter = WorkflowDirectionService.ToFilter(WorkflowDirectionFilter);
-            if (Id == 0)
-            {
-
-            }
-            else
-            {
-                WorkflowDirectionFilter.Id = new IdFilter { Equal = Id };
-                int count = await WorkflowDirectionService.Count(WorkflowDirectionFilter);
-                if (count == 0)
-                    return false;
-            }
-            return true;
-        }
 
         private WorkflowDirection ConvertDTOToEntity(WorkflowDirection_WorkflowDirectionDTO WorkflowDirection_WorkflowDirectionDTO)
         {
