@@ -14,6 +14,7 @@ namespace DMS.Models
         public virtual DbSet<AppUserDAO> AppUser { get; set; }
         public virtual DbSet<AppUserPermissionDAO> AppUserPermission { get; set; }
         public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMapping { get; set; }
+        public virtual DbSet<AppUserStoreMappingDAO> AppUserStoreMapping { get; set; }
         public virtual DbSet<BannerDAO> Banner { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
         public virtual DbSet<CounterDAO> Counter { get; set; }
@@ -285,8 +286,6 @@ namespace DMS.Models
                     .HasMaxLength(500)
                     .HasComment("Tên hiển thị");
 
-                entity.Property(e => e.ERouteScopeId).HasComment("Phạm vi đi tuyến - OrganizationId");
-
                 entity.Property(e => e.Email)
                     .HasMaxLength(500)
                     .HasComment("Địa chỉ email");
@@ -318,13 +317,8 @@ namespace DMS.Models
                     .HasMaxLength(500)
                     .HasComment("Tên đăng nhập");
 
-                entity.HasOne(d => d.ERouteScope)
-                    .WithMany(p => p.AppUserERouteScopes)
-                    .HasForeignKey(d => d.ERouteScopeId)
-                    .HasConstraintName("FK_AppUser_Organization1");
-
                 entity.HasOne(d => d.Organization)
-                    .WithMany(p => p.AppUserOrganizations)
+                    .WithMany(p => p.AppUsers)
                     .HasForeignKey(d => d.OrganizationId)
                     .HasConstraintName("FK_AppUser_Organization");
 
@@ -383,6 +377,23 @@ namespace DMS.Models
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AppUserRoleMapping_Role");
+            });
+
+            modelBuilder.Entity<AppUserStoreMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.AppUserId, e.StoreId });
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.AppUserStoreMappings)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AppUserStoreMapping_AppUser");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.AppUserStoreMappings)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AppUserStoreMapping_Store");
             });
 
             modelBuilder.Entity<BannerDAO>(entity =>
@@ -789,6 +800,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ERouteTypeDAO>(entity =>
             {
+                entity.ToTable("ERouteType", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -802,6 +815,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<EditedPriceStatusDAO>(entity =>
             {
+                entity.ToTable("EditedPriceStatus", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -1339,6 +1354,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<KpiCriteriaGeneralDAO>(entity =>
             {
+                entity.ToTable("KpiCriteriaGeneral", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -1352,6 +1369,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<KpiCriteriaItemDAO>(entity =>
             {
+                entity.ToTable("KpiCriteriaItem", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code).HasMaxLength(500);
@@ -1361,6 +1380,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<KpiCriteriaTotalDAO>(entity =>
             {
+                entity.ToTable("KpiCriteriaTotal", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code).HasMaxLength(500);
@@ -1545,6 +1566,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<KpiPeriodDAO>(entity =>
             {
+                entity.ToTable("KpiPeriod", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code).HasMaxLength(50);
@@ -1554,6 +1577,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<KpiYearDAO>(entity =>
             {
+                entity.ToTable("KpiYear", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -1620,6 +1645,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<NotificationStatusDAO>(entity =>
             {
+                entity.ToTable("NotificationStatus", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -1927,6 +1954,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<PriceListTypeDAO>(entity =>
             {
+                entity.ToTable("PriceListType", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -2022,6 +2051,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ProblemStatusDAO>(entity =>
             {
+                entity.ToTable("ProblemStatus", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -2035,6 +2066,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<ProblemTypeDAO>(entity =>
             {
+                entity.ToTable("ProblemType", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -2274,7 +2307,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<RequestStateDAO>(entity =>
             {
-                entity.ToTable("RequestState", "WF");
+                entity.ToTable("RequestState", "ENUM");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -2473,6 +2506,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<SalesOrderTypeDAO>(entity =>
             {
+                entity.ToTable("SalesOrderType", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -2567,7 +2602,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<StatusDAO>(entity =>
             {
-                entity.ToTable("Status", "MDM");
+                entity.ToTable("Status", "ENUM");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -2854,6 +2889,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<StoreScoutingStatusDAO>(entity =>
             {
+                entity.ToTable("StoreScoutingStatus", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -2999,6 +3036,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<SurveyOptionTypeDAO>(entity =>
             {
+                entity.ToTable("SurveyOptionType", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -3031,6 +3070,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<SurveyQuestionTypeDAO>(entity =>
             {
+                entity.ToTable("SurveyQuestionType", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
@@ -3121,6 +3162,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<SystemConfigurationDAO>(entity =>
             {
+                entity.ToTable("SystemConfiguration", "ENUM");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code).HasMaxLength(500);
@@ -3430,6 +3473,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
                 entity.Property(e => e.SubjectMailForCreator).HasMaxLength(500);
 
                 entity.Property(e => e.SubjectMailForCurrentStep).HasMaxLength(500);
@@ -3486,7 +3531,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowOperatorDAO>(entity =>
             {
-                entity.ToTable("WorkflowOperator", "WF");
+                entity.ToTable("WorkflowOperator", "ENUM");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -3507,7 +3552,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowParameterDAO>(entity =>
             {
-                entity.ToTable("WorkflowParameter", "WF");
+                entity.ToTable("WorkflowParameter", "ENUM");
 
                 entity.Property(e => e.Code)
                     .IsRequired()
@@ -3516,12 +3561,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
-
-                entity.HasOne(d => d.WorkflowDefinition)
-                    .WithMany(p => p.WorkflowParameters)
-                    .HasForeignKey(d => d.WorkflowDefinitionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_WorkflowParameter_WorkflowDefinition");
 
                 entity.HasOne(d => d.WorkflowParameterType)
                     .WithMany(p => p.WorkflowParameters)
@@ -3532,7 +3571,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowParameterTypeDAO>(entity =>
             {
-                entity.ToTable("WorkflowParameterType", "WF");
+                entity.ToTable("WorkflowParameterType", "ENUM");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -3547,7 +3586,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowStateDAO>(entity =>
             {
-                entity.ToTable("WorkflowState", "WF");
+                entity.ToTable("WorkflowState", "ENUM");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -3591,7 +3630,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<WorkflowTypeDAO>(entity =>
             {
-                entity.ToTable("WorkflowType", "WF");
+                entity.ToTable("WorkflowType", "ENUM");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 

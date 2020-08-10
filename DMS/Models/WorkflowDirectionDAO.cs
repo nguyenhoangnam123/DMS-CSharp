@@ -20,6 +20,7 @@ namespace DMS.Models
         public string BodyMailForCreator { get; set; }
         public string BodyMailForCurrentStep { get; set; }
         public string BodyMailForNextStep { get; set; }
+        public long StatusId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }

@@ -8,6 +8,7 @@ namespace DMS.Models
         public StoreDAO()
         {
             AlbumImageMappings = new HashSet<AlbumImageMappingDAO>();
+            AppUserStoreMappings = new HashSet<AppUserStoreMappingDAO>();
             DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
             ERouteChangeRequestContents = new HashSet<ERouteChangeRequestContentDAO>();
             ERouteContents = new HashSet<ERouteContentDAO>();
@@ -64,6 +65,7 @@ namespace DMS.Models
         public virtual StoreTypeDAO StoreType { get; set; }
         public virtual WardDAO Ward { get; set; }
         public virtual ICollection<AlbumImageMappingDAO> AlbumImageMappings { get; set; }
+        public virtual ICollection<AppUserStoreMappingDAO> AppUserStoreMappings { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
         public virtual ICollection<ERouteChangeRequestContentDAO> ERouteChangeRequestContents { get; set; }
         public virtual ICollection<ERouteContentDAO> ERouteContents { get; set; }

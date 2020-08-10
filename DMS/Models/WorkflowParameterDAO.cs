@@ -12,12 +12,11 @@ namespace DMS.Models
         }
 
         public long Id { get; set; }
-        public long WorkflowDefinitionId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public long WorkflowTypeId { get; set; }
         public long WorkflowParameterTypeId { get; set; }
 
-        public virtual WorkflowDefinitionDAO WorkflowDefinition { get; set; }
         public virtual WorkflowParameterTypeDAO WorkflowParameterType { get; set; }
         public virtual ICollection<RequestWorkflowParameterMappingDAO> RequestWorkflowParameterMappings { get; set; }
         public virtual ICollection<WorkflowDirectionConditionDAO> WorkflowDirectionConditions { get; set; }
