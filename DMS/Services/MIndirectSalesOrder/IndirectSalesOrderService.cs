@@ -615,6 +615,7 @@ namespace DMS.Services.MIndirectSalesOrder
         private async Task<List<Item>> ApplyPrice(List<Item> Items, long StoreId)
         {
             var CurrrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            SystemConfiguration SystemConfiguration = await UOW.SystemConfigurationRepository.Get();
             OrganizationFilter OrganizationFilter = new OrganizationFilter
             {
                 Skip = 0,
@@ -632,10 +633,10 @@ namespace DMS.Services.MIndirectSalesOrder
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = PriceListItemMappingSelect.ALL,
-                PriceListTypeId = new IdFilter { Equal = Enums.PriceListTypeEnum.ALLSTORE.Id },
-                SalesOrderTypeId = new IdFilter { Equal = Enums.SalesOrderTypeEnum.INDIRECT.Id },
+                PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.ALLSTORE.Id },
+                SalesOrderTypeId = new IdFilter { Equal = SalesOrderTypeEnum.INDIRECT.Id },
                 OrganizationId = new IdFilter { In = OrganizationIds },
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
             };
             var PriceListItemMappingAllStore = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
 
@@ -645,11 +646,11 @@ namespace DMS.Services.MIndirectSalesOrder
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = PriceListItemMappingSelect.ALL,
-                PriceListTypeId = new IdFilter { Equal = Enums.PriceListTypeEnum.STOREGROUPING.Id },
-                SalesOrderTypeId = new IdFilter { Equal = Enums.SalesOrderTypeEnum.INDIRECT.Id },
+                PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.STOREGROUPING.Id },
+                SalesOrderTypeId = new IdFilter { Equal = SalesOrderTypeEnum.INDIRECT.Id },
                 StoreGroupingId = new IdFilter { Equal = Store.StoreGroupingId },
                 OrganizationId = new IdFilter { In = OrganizationIds },
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
             };
             var PriceListItemMappingStoreGrouping = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
 
@@ -659,8 +660,8 @@ namespace DMS.Services.MIndirectSalesOrder
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = PriceListItemMappingSelect.ALL,
-                PriceListTypeId = new IdFilter { Equal = Enums.PriceListTypeEnum.STORETYPE.Id },
-                SalesOrderTypeId = new IdFilter { Equal = Enums.SalesOrderTypeEnum.INDIRECT.Id },
+                PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.STORETYPE.Id },
+                SalesOrderTypeId = new IdFilter { Equal = SalesOrderTypeEnum.INDIRECT.Id },
                 StoreGroupingId = new IdFilter { Equal = Store.StoreTypeId },
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
@@ -673,11 +674,11 @@ namespace DMS.Services.MIndirectSalesOrder
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = PriceListItemMappingSelect.ALL,
-                PriceListTypeId = new IdFilter { Equal = Enums.PriceListTypeEnum.DETAILS.Id },
-                SalesOrderTypeId = new IdFilter { Equal = Enums.SalesOrderTypeEnum.INDIRECT.Id },
+                PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.DETAILS.Id },
+                SalesOrderTypeId = new IdFilter { Equal = SalesOrderTypeEnum.INDIRECT.Id },
                 StoreId = new IdFilter { Equal = StoreId },
                 OrganizationId = new IdFilter { In = OrganizationIds },
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
             };
             var PriceListItemMappingStoreDetail = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
 
@@ -691,27 +692,64 @@ namespace DMS.Services.MIndirectSalesOrder
                 result.Add(ItemId, decimal.MaxValue);
             }
 
-            foreach (var ItemId in ItemIds)
+            //Áp giá theo cấu hình
+            //Ưu tiên lấy giá thấp hơn
+            if(SystemConfiguration.PRIORITY_USE_PRICE_LIST == 0)
             {
-                foreach (var OrganizationId in OrganizationIds)
+                foreach (var ItemId in ItemIds)
                 {
-                    long targetPrice = long.MaxValue;
-                    targetPrice = PriceListItemMappings.Where(x => x.ItemId == ItemId && x.PriceList.OrganizationId == OrganizationId).Select(x => x.Price).DefaultIfEmpty(long.MaxValue).Min();
-                    if (targetPrice < long.MaxValue)
+                    foreach (var OrganizationId in OrganizationIds)
                     {
-                        result[ItemId] = targetPrice;
-                        break;
+                        long targetPrice = long.MaxValue;
+                        targetPrice = PriceListItemMappings.Where(x => x.ItemId == ItemId && x.PriceList.OrganizationId == OrganizationId)
+                            .Select(x => x.Price)
+                            .DefaultIfEmpty(long.MaxValue)
+                            .Min();
+                        if (targetPrice < long.MaxValue)
+                        {
+                            result[ItemId] = targetPrice;
+                            break;
+                        }
+                    }
+                }
+
+                foreach (var ItemId in ItemIds)
+                {
+                    if (result[ItemId] == decimal.MaxValue)
+                    {
+                        result[ItemId] = Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice).FirstOrDefault();
                     }
                 }
             }
-
-            foreach (var ItemId in ItemIds)
+            //Ưu tiên lấy giá cao hơn
+            else if (SystemConfiguration.PRIORITY_USE_PRICE_LIST == 1)
             {
-                if (result[ItemId] == decimal.MaxValue)
+                foreach (var ItemId in ItemIds)
                 {
-                    result[ItemId] = Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice).FirstOrDefault();
+                    foreach (var OrganizationId in OrganizationIds)
+                    {
+                        long targetPrice = long.MinValue;
+                        targetPrice = PriceListItemMappings.Where(x => x.ItemId == ItemId && x.PriceList.OrganizationId == OrganizationId)
+                            .Select(x => x.Price)
+                            .DefaultIfEmpty(long.MinValue)
+                            .Max();
+                        if (targetPrice > long.MinValue)
+                        {
+                            result[ItemId] = targetPrice;
+                            break;
+                        }
+                    }
+                }
+
+                foreach (var ItemId in ItemIds)
+                {
+                    if (result[ItemId] == decimal.MinValue)
+                    {
+                        result[ItemId] = Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice).FirstOrDefault();
+                    }
                 }
             }
+            
             return Items;
         }
 

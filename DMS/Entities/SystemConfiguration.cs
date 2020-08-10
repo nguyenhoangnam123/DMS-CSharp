@@ -13,6 +13,10 @@ namespace DMS.Entities
         public bool USE_DIRECT_SALES_ORDER { get; set; }
         public bool USE_INDIRECT_SALES_ORDER { get; set; }
         public bool ALLOW_EDIT_KPI_IN_PERIOD { get; set; }
+        /// <summary>
+        /// 0: lấy giá thấp
+        /// 1: lấy giá cao
+        /// </summary>
         public long PRIORITY_USE_PRICE_LIST { get; set; }
         public long PRIORITY_USE_PROMOTION { get; set; }
         public long STORE_CHECKING_MINIMUM_TIME { get; set; }

@@ -33,58 +33,60 @@ namespace DMS.Repositories
                 query = query.Where(q => q.ItemId, filter.ItemId);
             if (filter.Price != null)
                 query = query.Where(q => q.Price, filter.Price);
-            //if (filter.PriceListTypeId != null)
-            //{
-            //    query = query.Where(q => q.PriceList.PriceListTypeId, filter.PriceListTypeId);
-            //}
-            //if (filter.StoreGroupingId != null)
-            //{
-            //    if (filter.StoreGroupingId.Equal.HasValue)
-            //    {
-            //        StoreGroupingDAO StoreGroupingDAO = DataContext.StoreGrouping.Where(x => x.Id == filter.StoreGroupingId.Equal.Value).FirstOrDefault();
-            //        if (StoreGroupingDAO != null && StoreGroupingDAO.StatusId == Enums.StatusEnum.ACTIVE.Id)
-            //            query = from q in query
-            //                    join sg in DataContext.PriceListStoreGroupingMapping on q.PriceListId equals sg.PriceListId
-            //                    where sg.StoreGroupingId == StoreGroupingDAO.Id
-            //                    select q;
-            //    }
-            //}
-            //if (filter.StoreTypeId != null)
-            //{
-            //    if (filter.StoreTypeId.Equal.HasValue)
-            //    {
-            //        StoreTypeDAO StoreTypeDAO = DataContext.StoreType.Where(x => x.Id == filter.StoreTypeId.Equal.Value).FirstOrDefault();
-            //        if (StoreTypeDAO != null && StoreTypeDAO.StatusId == Enums.StatusEnum.ACTIVE.Id)
-            //            query = from q in query
-            //                    join st in DataContext.PriceListStoreTypeMapping on q.PriceListId equals st.PriceListId
-            //                    where st.StoreTypeId == StoreTypeDAO.Id
-            //                    select q;
-            //    }
-            //}
+            if (filter.PriceListTypeId != null)
+            {
+                query = query.Where(q => q.PriceList.PriceListTypeId, filter.PriceListTypeId);
+            }
+            if (filter.StoreGroupingId != null)
+            {
+                if (filter.StoreGroupingId.Equal.HasValue)
+                {
+                    StoreGroupingDAO StoreGroupingDAO = DataContext.StoreGrouping.Where(x => x.Id == filter.StoreGroupingId.Equal.Value).FirstOrDefault();
+                    if (StoreGroupingDAO != null && StoreGroupingDAO.StatusId == Enums.StatusEnum.ACTIVE.Id)
+                        query = from q in query
+                                join sg in DataContext.PriceListStoreGroupingMapping on q.PriceListId equals sg.PriceListId
+                                where sg.StoreGroupingId == StoreGroupingDAO.Id
+                                select q;
+                }
+            }
+            if (filter.StoreTypeId != null)
+            {
+                if (filter.StoreTypeId.Equal.HasValue)
+                {
+                    StoreTypeDAO StoreTypeDAO = DataContext.StoreType.Where(x => x.Id == filter.StoreTypeId.Equal.Value).FirstOrDefault();
+                    if (StoreTypeDAO != null && StoreTypeDAO.StatusId == Enums.StatusEnum.ACTIVE.Id)
+                        query = from q in query
+                                join st in DataContext.PriceListStoreTypeMapping on q.PriceListId equals st.PriceListId
+                                where st.StoreTypeId == StoreTypeDAO.Id
+                                select q;
+                }
+            }
 
-            //if (filter.StoreId != null)
-            //{
-            //    if (filter.StoreId.Equal.HasValue)
-            //    {
-            //        StoreDAO StoreDAO = DataContext.Store.Where(x => x.Id == filter.StoreId.Equal.Value).FirstOrDefault();
-            //        if (StoreDAO != null && StoreDAO.StatusId == Enums.StatusEnum.ACTIVE.Id)
-            //            query = from q in query
-            //                    join s in DataContext.PriceListStoreMapping on q.PriceListId equals s.PriceListId
-            //                    where s.StoreId == StoreDAO.Id
-            //                    select q;
-            //    }
-            //}
+            if (filter.StoreId != null)
+            {
+                if (filter.StoreId.Equal.HasValue)
+                {
+                    StoreDAO StoreDAO = DataContext.Store.Where(x => x.Id == filter.StoreId.Equal.Value).FirstOrDefault();
+                    if (StoreDAO != null && StoreDAO.StatusId == Enums.StatusEnum.ACTIVE.Id)
+                        query = from q in query
+                                join s in DataContext.PriceListStoreMapping on q.PriceListId equals s.PriceListId
+                                where s.StoreId == StoreDAO.Id
+                                select q;
+                }
+            }
 
-            //if (filter.OrganizationId != null)
-            //{
-            //    query = query.Where(q => q.PriceList.OrganizationId, filter.OrganizationId);
-            //}
+            if (filter.OrganizationId != null)
+            {
+                query = query.Where(q => q.PriceList.OrganizationId, filter.OrganizationId);
+            }
 
-            //if (filter.StatusId != null)
-            //    query = query.Where(q => q.PriceList.StatusId, filter.StatusId);
+            if (filter.StatusId != null)
+                query = query.Where(q => q.PriceList.StatusId, filter.StatusId);
 
-            query = query.Where(q => q.PriceList.StartDate <= StaticParams.DateTimeNow);
-            query = query.Where(q => q.PriceList.EndDate.HasValue == false || (q.PriceList.EndDate.HasValue && q.PriceList.EndDate >= StaticParams.DateTimeNow));
+            query = query.Where(q => q.PriceList.StartDate.HasValue == false || 
+                (q.PriceList.StartDate.HasValue == true && q.PriceList.StartDate.Value <= StaticParams.DateTimeNow));
+            query = query.Where(q => q.PriceList.EndDate.HasValue == false || 
+                (q.PriceList.EndDate.HasValue && q.PriceList.EndDate.Value >= StaticParams.DateTimeNow));
 
             return query;
         }
