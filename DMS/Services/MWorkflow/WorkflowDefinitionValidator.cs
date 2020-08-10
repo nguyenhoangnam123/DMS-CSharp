@@ -106,7 +106,7 @@ namespace DMS.Services.MWorkflow
         {
             if (WorkflowDefinition.WorkflowTypeId == 0)
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.WorkflowType), ErrorCode.WorkflowTypeEmpty);
-            else if (WorkflowDefinition.WorkflowTypeId != WorkflowTypeEnum.ORDER.Id && WorkflowDefinition.WorkflowTypeId != WorkflowTypeEnum.PRODUCT.Id &&
+            else if (WorkflowDefinition.WorkflowTypeId != WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id && WorkflowDefinition.WorkflowTypeId != WorkflowTypeEnum.PRICE_LIST.Id &&
                 WorkflowDefinition.WorkflowTypeId != WorkflowTypeEnum.EROUTE.Id && WorkflowDefinition.WorkflowTypeId != WorkflowTypeEnum.STORE.Id)
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.WorkflowType), ErrorCode.WorkflowTypeNotExisted);
             return WorkflowDefinition.IsValidated;

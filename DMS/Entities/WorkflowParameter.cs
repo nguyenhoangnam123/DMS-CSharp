@@ -9,7 +9,7 @@ namespace DMS.Entities
     public class WorkflowParameter : DataEntity, IEquatable<WorkflowParameter>
     {
         public long Id { get; set; }
-        public long WorkflowDefinitionId { get; set; }
+        public long WorkflowTypeId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public long WorkflowParameterTypeId { get; set; }
@@ -27,7 +27,7 @@ namespace DMS.Entities
     public class WorkflowParameterFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
-        public IdFilter WorkflowDefinitionId { get; set; }
+        public IdFilter WorkflowTypeId { get; set; }
         public IdFilter WorkflowParameterTypeId { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
@@ -40,7 +40,7 @@ namespace DMS.Entities
     public enum WorkflowParameterOrder
     {
         Id = 0,
-        WorkflowDefinition = 1,
+        WorkflowType = 1,
         Name = 2,
         Code = 3,
     }

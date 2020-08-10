@@ -14,7 +14,7 @@ namespace DMS.Rpc.workflow_definition
         public WorkflowDefinition_WorkflowParameterDTO(WorkflowParameter WorkflowParameter)
         {
             this.Id = WorkflowParameter.Id;
-            this.WorkflowDefinitionId = WorkflowParameter.WorkflowDefinitionId;
+            this.WorkflowDefinitionId = WorkflowParameter.WorkflowTypeId;
             this.Code = WorkflowParameter.Code;
             this.Name = WorkflowParameter.Name;
             this.Errors = WorkflowParameter.Errors;

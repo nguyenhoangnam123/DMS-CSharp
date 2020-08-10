@@ -90,7 +90,7 @@ namespace DMS.Services.MWorkflow
                 return null;
             List<WorkflowParameter> WorkflowParameters = await UOW.WorkflowParameterRepository.List(new WorkflowParameterFilter
             {
-                WorkflowDefinitionId = new IdFilter { Equal = WorkflowDirection.WorkflowDefinitionId },
+                WorkflowTypeId = new IdFilter { Equal = WorkflowDirection.WorkflowDefinitionId },
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = WorkflowParameterSelect.ALL,

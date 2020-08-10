@@ -34,8 +34,8 @@ namespace DMS.Repositories
                 return query.Where(q => false);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
-            if (filter.WorkflowDefinitionId != null)
-                query = query.Where(q => q.WorkflowDefinitionId, filter.WorkflowDefinitionId);
+            if (filter.WorkflowTypeId != null)
+                query = query.Where(q => q.WorkflowTypeId, filter.WorkflowTypeId);
             if (filter.Code != null)
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
@@ -54,8 +54,8 @@ namespace DMS.Repositories
                 IQueryable<WorkflowParameterDAO> queryable = query;
                 if (WorkflowParameterFilter.Id != null)
                     queryable = queryable.Where(q => q.Id, WorkflowParameterFilter.Id);
-                if (WorkflowParameterFilter.WorkflowDefinitionId != null)
-                    queryable = queryable.Where(q => q.WorkflowDefinitionId, WorkflowParameterFilter.WorkflowDefinitionId);
+                if (WorkflowParameterFilter.WorkflowTypeId != null)
+                    queryable = queryable.Where(q => q.WorkflowTypeId, WorkflowParameterFilter.WorkflowTypeId);
                 if (WorkflowParameterFilter.Code != null)
                     queryable = queryable.Where(q => q.Code, WorkflowParameterFilter.Code);
                 if (WorkflowParameterFilter.Name != null)
@@ -75,8 +75,8 @@ namespace DMS.Repositories
                         case WorkflowParameterOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
-                        case WorkflowParameterOrder.WorkflowDefinition:
-                            query = query.OrderBy(q => q.WorkflowDefinitionId);
+                        case WorkflowParameterOrder.WorkflowType:
+                            query = query.OrderBy(q => q.WorkflowTypeId);
                             break;
                         case WorkflowParameterOrder.Name:
                             query = query.OrderBy(q => q.Name);
@@ -92,8 +92,8 @@ namespace DMS.Repositories
                         case WorkflowParameterOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
                             break;
-                        case WorkflowParameterOrder.WorkflowDefinition:
-                            query = query.OrderByDescending(q => q.WorkflowDefinitionId);
+                        case WorkflowParameterOrder.WorkflowType:
+                            query = query.OrderByDescending(q => q.WorkflowTypeId);
                             break;
                         case WorkflowParameterOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
@@ -113,7 +113,7 @@ namespace DMS.Repositories
             List<WorkflowParameter> WorkflowParameters = await query.Select(q => new WorkflowParameter()
             {
                 Id = q.Id,
-                WorkflowDefinitionId = q.WorkflowDefinitionId,
+                WorkflowTypeId = q.WorkflowTypeId,
                 Code = q.Code,
                 Name = q.Name,
                 WorkflowParameterTypeId = q.WorkflowParameterTypeId,
@@ -144,7 +144,7 @@ namespace DMS.Repositories
             .Where(x => x.Id == Id).Select(x => new WorkflowParameter()
             {
                 Id = x.Id,
-                WorkflowDefinitionId = x.WorkflowDefinitionId,
+                WorkflowTypeId = x.WorkflowTypeId,
                 Code = x.Code,
                 Name = x.Name,
                 WorkflowParameterTypeId = x.WorkflowParameterTypeId,
@@ -159,7 +159,7 @@ namespace DMS.Repositories
         {
             WorkflowParameterDAO WorkflowParameterDAO = new WorkflowParameterDAO();
             WorkflowParameterDAO.Id = WorkflowParameter.Id;
-            WorkflowParameterDAO.WorkflowDefinitionId = WorkflowParameter.WorkflowDefinitionId;
+            WorkflowParameterDAO.WorkflowTypeId = WorkflowParameter.WorkflowTypeId;
             WorkflowParameterDAO.Code = WorkflowParameter.Code;
             WorkflowParameterDAO.Name = WorkflowParameter.Name;
             WorkflowParameterDAO.WorkflowParameterTypeId = WorkflowParameter.WorkflowParameterTypeId;
@@ -176,7 +176,7 @@ namespace DMS.Repositories
             if (WorkflowParameterDAO == null)
                 return false;
             WorkflowParameterDAO.Id = WorkflowParameter.Id;
-            WorkflowParameterDAO.WorkflowDefinitionId = WorkflowParameter.WorkflowDefinitionId;
+            WorkflowParameterDAO.WorkflowTypeId = WorkflowParameter.WorkflowTypeId;
             WorkflowParameterDAO.Code = WorkflowParameter.Code;
             WorkflowParameterDAO.Name = WorkflowParameter.Name;
             WorkflowParameterDAO.WorkflowParameterTypeId = WorkflowParameter.WorkflowParameterTypeId;
@@ -198,7 +198,7 @@ namespace DMS.Repositories
             {
                 WorkflowParameterDAO WorkflowParameterDAO = new WorkflowParameterDAO();
                 WorkflowParameterDAO.Id = WorkflowParameter.Id;
-                WorkflowParameterDAO.WorkflowDefinitionId = WorkflowParameter.WorkflowDefinitionId;
+                WorkflowParameterDAO.WorkflowTypeId = WorkflowParameter.WorkflowTypeId;
                 WorkflowParameterDAO.Code = WorkflowParameter.Code;
                 WorkflowParameterDAO.Name = WorkflowParameter.Name;
                 WorkflowParameterDAO.WorkflowParameterTypeId = WorkflowParameter.WorkflowParameterTypeId;

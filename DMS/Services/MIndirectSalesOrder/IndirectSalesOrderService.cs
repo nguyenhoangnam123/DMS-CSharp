@@ -722,7 +722,7 @@ namespace DMS.Services.MIndirectSalesOrder
             else
                 IndirectSalesOrder = await Update(IndirectSalesOrder);
             Dictionary<string, string> Parameters = MapParameters(IndirectSalesOrder);
-            bool Approved = await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.ORDER.Id, Parameters);
+            bool Approved = await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
             if (Approved == false)
                 return null;
             return await Get(IndirectSalesOrder.Id);
@@ -732,7 +732,7 @@ namespace DMS.Services.MIndirectSalesOrder
         {
             IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
             Dictionary<string, string> Parameters = MapParameters(IndirectSalesOrder);
-            bool Rejected = await WorkflowService.Reject(IndirectSalesOrder.RowId, WorkflowTypeEnum.ORDER.Id, Parameters);
+            bool Rejected = await WorkflowService.Reject(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
             if (Rejected == false)
                 return null;
             return await Get(IndirectSalesOrder.Id);

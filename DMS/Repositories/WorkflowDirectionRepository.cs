@@ -241,13 +241,13 @@ namespace DMS.Repositories
                 }).ToListAsync();
 
             WorkflowDirection.WorkflowParameters = await DataContext.WorkflowParameter
-                .Where(x => x.WorkflowDefinitionId == WorkflowDirection.WorkflowDefinitionId)
+                .Where(x => x.WorkflowTypeId == WorkflowDirection.WorkflowDefinition.WorkflowTypeId)
                 .Select(x => new WorkflowParameter
                 {
                     Id = x.Id,
                     Code = x.Code,
                     Name = x.Name,
-                    WorkflowDefinitionId = x.WorkflowDefinitionId,
+                    WorkflowTypeId = x.WorkflowTypeId,
                     WorkflowParameterTypeId = x.WorkflowParameterTypeId,
                 }).ToListAsync();
             return WorkflowDirection;

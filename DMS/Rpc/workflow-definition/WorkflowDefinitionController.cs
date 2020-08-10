@@ -328,7 +328,7 @@ namespace DMS.Rpc.workflow_definition
                     WorkflowParameterData.Add(new Object[]
                     {
                         WorkflowParameter.Id,
-                        WorkflowParameter.WorkflowDefinitionId,
+                        WorkflowParameter.WorkflowTypeId,
                         WorkflowParameter.Name,
                     });
                 }
@@ -601,7 +601,7 @@ namespace DMS.Rpc.workflow_definition
             WorkflowParameterFilter.OrderType = OrderType.ASC;
             WorkflowParameterFilter.Selects = WorkflowParameterSelect.ALL;
             WorkflowParameterFilter.Id = WorkflowDefinition_WorkflowParameterFilterDTO.Id;
-            WorkflowParameterFilter.WorkflowDefinitionId = WorkflowDefinition_WorkflowParameterFilterDTO.WorkflowDefinitionId;
+            WorkflowParameterFilter.WorkflowTypeId = WorkflowDefinition_WorkflowParameterFilterDTO.WorkflowDefinitionId;
             WorkflowParameterFilter.Code = WorkflowDefinition_WorkflowParameterFilterDTO.Code;
             WorkflowParameterFilter.Name = WorkflowDefinition_WorkflowParameterFilterDTO.Name;
 
@@ -745,7 +745,7 @@ namespace DMS.Rpc.workflow_definition
             WorkflowParameterFilter.OrderType = OrderType.ASC;
             WorkflowParameterFilter.Selects = WorkflowParameterSelect.ALL;
             WorkflowParameterFilter.Id = WorkflowDefinition_WorkflowParameterFilterDTO.Id;
-            WorkflowParameterFilter.WorkflowDefinitionId = WorkflowDefinition_WorkflowParameterFilterDTO.WorkflowDefinitionId;
+            WorkflowParameterFilter.WorkflowTypeId = WorkflowDefinition_WorkflowParameterFilterDTO.WorkflowDefinitionId;
             WorkflowParameterFilter.Code = WorkflowDefinition_WorkflowParameterFilterDTO.Code;
             WorkflowParameterFilter.Name = WorkflowDefinition_WorkflowParameterFilterDTO.Name;
 
