@@ -1,14 +1,18 @@
 using Common;
-using DMS.Entities;
-using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using OfficeOpenXml;
+using DMS.Repositories;
+using DMS.Entities;
+using DMS.Enums;
 
 namespace DMS.Services.MWorkflow
 {
-    public interface IWorkflowParameterTypeService : IServiceScoped
+    public interface IWorkflowParameterTypeService :  IServiceScoped
     {
         Task<int> Count(WorkflowParameterTypeFilter WorkflowParameterTypeFilter);
         Task<List<WorkflowParameterType>> List(WorkflowParameterTypeFilter WorkflowParameterTypeFilter);

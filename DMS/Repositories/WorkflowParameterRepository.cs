@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Helpers;
 
 namespace DMS.Repositories
 {
@@ -14,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(WorkflowParameterFilter WorkflowParameterFilter);
         Task<List<WorkflowParameter>> List(WorkflowParameterFilter WorkflowParameterFilter);
         Task<WorkflowParameter> Get(long Id);
-        Task<bool> Create(WorkflowParameter WorkflowParameter);
-        Task<bool> Update(WorkflowParameter WorkflowParameter);
-        Task<bool> Delete(WorkflowParameter WorkflowParameter);
-        Task<bool> BulkMerge(List<WorkflowParameter> WorkflowParameters);
-        Task<bool> BulkDelete(List<WorkflowParameter> WorkflowParameters);
     }
     public class WorkflowParameterRepository : IWorkflowParameterRepository
     {
@@ -34,12 +30,14 @@ namespace DMS.Repositories
                 return query.Where(q => false);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
-            if (filter.WorkflowTypeId != null)
-                query = query.Where(q => q.WorkflowTypeId, filter.WorkflowTypeId);
             if (filter.Code != null)
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
+            if (filter.WorkflowTypeId != null)
+                query = query.Where(q => q.WorkflowTypeId, filter.WorkflowTypeId);
+            if (filter.WorkflowParameterTypeId != null)
+                query = query.Where(q => q.WorkflowParameterTypeId, filter.WorkflowParameterTypeId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -54,12 +52,14 @@ namespace DMS.Repositories
                 IQueryable<WorkflowParameterDAO> queryable = query;
                 if (WorkflowParameterFilter.Id != null)
                     queryable = queryable.Where(q => q.Id, WorkflowParameterFilter.Id);
-                if (WorkflowParameterFilter.WorkflowTypeId != null)
-                    queryable = queryable.Where(q => q.WorkflowTypeId, WorkflowParameterFilter.WorkflowTypeId);
                 if (WorkflowParameterFilter.Code != null)
                     queryable = queryable.Where(q => q.Code, WorkflowParameterFilter.Code);
                 if (WorkflowParameterFilter.Name != null)
                     queryable = queryable.Where(q => q.Name, WorkflowParameterFilter.Name);
+                if (WorkflowParameterFilter.WorkflowTypeId != null)
+                    queryable = queryable.Where(q => q.WorkflowTypeId, WorkflowParameterFilter.WorkflowTypeId);
+                if (WorkflowParameterFilter.WorkflowParameterTypeId != null)
+                    queryable = queryable.Where(q => q.WorkflowParameterTypeId, WorkflowParameterFilter.WorkflowParameterTypeId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -75,14 +75,17 @@ namespace DMS.Repositories
                         case WorkflowParameterOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
-                        case WorkflowParameterOrder.WorkflowType:
-                            query = query.OrderBy(q => q.WorkflowTypeId);
+                        case WorkflowParameterOrder.Code:
+                            query = query.OrderBy(q => q.Code);
                             break;
                         case WorkflowParameterOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
-                        case WorkflowParameterOrder.Code:
-                            query = query.OrderBy(q => q.Code);
+                        case WorkflowParameterOrder.WorkflowType:
+                            query = query.OrderBy(q => q.WorkflowTypeId);
+                            break;
+                        case WorkflowParameterOrder.WorkflowParameterType:
+                            query = query.OrderBy(q => q.WorkflowParameterTypeId);
                             break;
                     }
                     break;
@@ -92,14 +95,17 @@ namespace DMS.Repositories
                         case WorkflowParameterOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
                             break;
-                        case WorkflowParameterOrder.WorkflowType:
-                            query = query.OrderByDescending(q => q.WorkflowTypeId);
+                        case WorkflowParameterOrder.Code:
+                            query = query.OrderByDescending(q => q.Code);
                             break;
                         case WorkflowParameterOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
                             break;
-                        case WorkflowParameterOrder.Code:
-                            query = query.OrderByDescending(q => q.Code);
+                        case WorkflowParameterOrder.WorkflowType:
+                            query = query.OrderByDescending(q => q.WorkflowTypeId);
+                            break;
+                        case WorkflowParameterOrder.WorkflowParameterType:
+                            query = query.OrderByDescending(q => q.WorkflowParameterTypeId);
                             break;
                     }
                     break;
@@ -112,11 +118,17 @@ namespace DMS.Repositories
         {
             List<WorkflowParameter> WorkflowParameters = await query.Select(q => new WorkflowParameter()
             {
-                Id = q.Id,
-                WorkflowTypeId = q.WorkflowTypeId,
-                Code = q.Code,
-                Name = q.Name,
-                WorkflowParameterTypeId = q.WorkflowParameterTypeId,
+                Id = filter.Selects.Contains(WorkflowParameterSelect.Id) ? q.Id : default(long),
+                Code = filter.Selects.Contains(WorkflowParameterSelect.Code) ? q.Code : default(string),
+                Name = filter.Selects.Contains(WorkflowParameterSelect.Name) ? q.Name : default(string),
+                WorkflowTypeId = filter.Selects.Contains(WorkflowParameterSelect.WorkflowType) ? q.WorkflowTypeId : default(long),
+                WorkflowParameterTypeId = filter.Selects.Contains(WorkflowParameterSelect.WorkflowParameterType) ? q.WorkflowParameterTypeId : default(long),
+                WorkflowParameterType = filter.Selects.Contains(WorkflowParameterSelect.WorkflowParameterType) && q.WorkflowParameterType != null ? new WorkflowParameterType
+                {
+                    Id = q.WorkflowParameterType.Id,
+                    Code = q.WorkflowParameterType.Code,
+                    Name = q.WorkflowParameterType.Name,
+                } : null,
             }).ToListAsync();
             return WorkflowParameters;
         }
@@ -144,10 +156,16 @@ namespace DMS.Repositories
             .Where(x => x.Id == Id).Select(x => new WorkflowParameter()
             {
                 Id = x.Id,
-                WorkflowTypeId = x.WorkflowTypeId,
                 Code = x.Code,
                 Name = x.Name,
+                WorkflowTypeId = x.WorkflowTypeId,
                 WorkflowParameterTypeId = x.WorkflowParameterTypeId,
+                WorkflowParameterType = x.WorkflowParameterType == null ? null : new WorkflowParameterType
+                {
+                    Id = x.WorkflowParameterType.Id,
+                    Code = x.WorkflowParameterType.Code,
+                    Name = x.WorkflowParameterType.Name,
+                },
             }).FirstOrDefaultAsync();
 
             if (WorkflowParameter == null)
@@ -155,70 +173,5 @@ namespace DMS.Repositories
 
             return WorkflowParameter;
         }
-        public async Task<bool> Create(WorkflowParameter WorkflowParameter)
-        {
-            WorkflowParameterDAO WorkflowParameterDAO = new WorkflowParameterDAO();
-            WorkflowParameterDAO.Id = WorkflowParameter.Id;
-            WorkflowParameterDAO.WorkflowTypeId = WorkflowParameter.WorkflowTypeId;
-            WorkflowParameterDAO.Code = WorkflowParameter.Code;
-            WorkflowParameterDAO.Name = WorkflowParameter.Name;
-            WorkflowParameterDAO.WorkflowParameterTypeId = WorkflowParameter.WorkflowParameterTypeId;
-            DataContext.WorkflowParameter.Add(WorkflowParameterDAO);
-            await DataContext.SaveChangesAsync();
-            WorkflowParameter.Id = WorkflowParameterDAO.Id;
-            await SaveReference(WorkflowParameter);
-            return true;
-        }
-
-        public async Task<bool> Update(WorkflowParameter WorkflowParameter)
-        {
-            WorkflowParameterDAO WorkflowParameterDAO = DataContext.WorkflowParameter.Where(x => x.Id == WorkflowParameter.Id).FirstOrDefault();
-            if (WorkflowParameterDAO == null)
-                return false;
-            WorkflowParameterDAO.Id = WorkflowParameter.Id;
-            WorkflowParameterDAO.WorkflowTypeId = WorkflowParameter.WorkflowTypeId;
-            WorkflowParameterDAO.Code = WorkflowParameter.Code;
-            WorkflowParameterDAO.Name = WorkflowParameter.Name;
-            WorkflowParameterDAO.WorkflowParameterTypeId = WorkflowParameter.WorkflowParameterTypeId;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(WorkflowParameter);
-            return true;
-        }
-
-        public async Task<bool> Delete(WorkflowParameter WorkflowParameter)
-        {
-            await DataContext.WorkflowParameter.Where(x => x.Id == WorkflowParameter.Id).DeleteFromQueryAsync();
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<WorkflowParameter> WorkflowParameters)
-        {
-            List<WorkflowParameterDAO> WorkflowParameterDAOs = new List<WorkflowParameterDAO>();
-            foreach (WorkflowParameter WorkflowParameter in WorkflowParameters)
-            {
-                WorkflowParameterDAO WorkflowParameterDAO = new WorkflowParameterDAO();
-                WorkflowParameterDAO.Id = WorkflowParameter.Id;
-                WorkflowParameterDAO.WorkflowTypeId = WorkflowParameter.WorkflowTypeId;
-                WorkflowParameterDAO.Code = WorkflowParameter.Code;
-                WorkflowParameterDAO.Name = WorkflowParameter.Name;
-                WorkflowParameterDAO.WorkflowParameterTypeId = WorkflowParameter.WorkflowParameterTypeId;
-                WorkflowParameterDAOs.Add(WorkflowParameterDAO);
-            }
-            await DataContext.BulkMergeAsync(WorkflowParameterDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<WorkflowParameter> WorkflowParameters)
-        {
-            List<long> Ids = WorkflowParameters.Select(x => x.Id).ToList();
-            await DataContext.WorkflowParameter
-                .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
-            return true;
-        }
-
-        private async Task SaveReference(WorkflowParameter WorkflowParameter)
-        {
-        }
-
     }
 }
