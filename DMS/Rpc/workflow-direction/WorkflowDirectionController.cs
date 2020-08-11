@@ -273,6 +273,7 @@ namespace DMS.Rpc.workflow_direction
             WorkflowDirection.BodyMailForCurrentStep = WorkflowDirection_WorkflowDirectionDTO.BodyMailForCurrentStep;
             WorkflowDirection.BodyMailForNextStep = WorkflowDirection_WorkflowDirectionDTO.BodyMailForNextStep;
             WorkflowDirection.UpdatedAt = WorkflowDirection_WorkflowDirectionDTO.UpdatedAt;
+            WorkflowDirection.StatusId = WorkflowDirection_WorkflowDirectionDTO.StatusId;
             WorkflowDirection.FromStep = WorkflowDirection_WorkflowDirectionDTO.FromStep == null ? null : new WorkflowStep
             {
                 Id = WorkflowDirection_WorkflowDirectionDTO.FromStep.Id,
@@ -292,6 +293,12 @@ namespace DMS.Rpc.workflow_direction
                 RoleId = WorkflowDirection_WorkflowDirectionDTO.ToStep.RoleId,
                 SubjectMailForReject = WorkflowDirection_WorkflowDirectionDTO.ToStep.SubjectMailForReject,
                 BodyMailForReject = WorkflowDirection_WorkflowDirectionDTO.ToStep.BodyMailForReject,
+            };
+            WorkflowDirection.Status = WorkflowDirection_WorkflowDirectionDTO.Status == null ? null : new Status
+            {
+                Id = WorkflowDirection_WorkflowDirectionDTO.Status.Id,
+                Code = WorkflowDirection_WorkflowDirectionDTO.Status.Code,
+                Name = WorkflowDirection_WorkflowDirectionDTO.Status.Name,
             };
             WorkflowDirection.WorkflowDefinition = WorkflowDirection_WorkflowDirectionDTO.WorkflowDefinition == null ? null : new WorkflowDefinition
             {

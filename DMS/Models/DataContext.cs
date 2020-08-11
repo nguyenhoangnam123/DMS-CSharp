@@ -3492,6 +3492,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WorkflowDirection_WorkflowStep");
 
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.WorkflowDirections)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowDirection_Status");
+
                 entity.HasOne(d => d.ToStep)
                     .WithMany(p => p.WorkflowDirectionToSteps)
                     .HasForeignKey(d => d.ToStepId)

@@ -26,6 +26,7 @@ namespace DMS.Models
         public DateTime? DeletedAt { get; set; }
 
         public virtual WorkflowStepDAO FromStep { get; set; }
+        public virtual StatusDAO Status { get; set; }
         public virtual WorkflowStepDAO ToStep { get; set; }
         public virtual WorkflowDefinitionDAO WorkflowDefinition { get; set; }
         public virtual ICollection<WorkflowDirectionConditionDAO> WorkflowDirectionConditions { get; set; }
