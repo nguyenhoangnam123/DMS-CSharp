@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using Common;
 using DMS.Services.MRole;
@@ -31,13 +32,19 @@ namespace DMS.Rpc
         public async Task<ActionResult> Export()
         {
             byte[] arr = System.IO.File.ReadAllBytes("Templates/Store_Export.xlsx");
-            MemoryStream MemoryStream = new MemoryStream(arr);
-            var documentConverter = new DocumentConverter(MemoryStream, DocumentFormat.Xlsx);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            var documentConverter = new DocumentConverter(input, DocumentFormat.Xlsx);
 
             // Convert "InputFile.docx" to Pdf written to outputStream
-            documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Store_Export.pdf");
-
+            documentConverter.ConvertTo(output, DocumentFormat.Pdf);
+            ContentDisposition cd = new ContentDisposition
+            {
+                FileName = "tore_Export.pdf",
+                Inline = true,
+            };
+            Response.Headers.Add("Content-Disposition", cd.ToString());
+            return File(output.ToArray(), "application/pdf;charset=utf-8");
         }
     }
 }
