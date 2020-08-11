@@ -3,9 +3,9 @@ using DMS.Entities;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DMS.Rpc.mobile
+namespace DMS.Rpc.price_list
 {
-    public class Mobile_ProductDTO : DataDTO
+    public class PriceList_ProductDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -26,14 +26,10 @@ namespace DMS.Rpc.mobile
         public string OtherName { get; set; }
         public string TechnicalName { get; set; }
         public string Note { get; set; }
-        public Mobile_ProductTypeDTO ProductType { get; set; }
-        public Mobile_SupplierDTO Supplier { get; set; }
-        public Mobile_TaxTypeDTO TaxType { get; set; }
-        public Mobile_UnitOfMeasureDTO UnitOfMeasure { get; set; }
-        public Mobile_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping { get; set; }
+        public PriceList_ProductTypeDTO ProductType { get; set; }
         public List<PriceList_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
-        public Mobile_ProductDTO() { }
-        public Mobile_ProductDTO(Product Product)
+        public PriceList_ProductDTO() { }
+        public PriceList_ProductDTO(Product Product)
         {
             this.Id = Product.Id;
             this.Code = Product.Code;
@@ -54,17 +50,13 @@ namespace DMS.Rpc.mobile
             this.OtherName = Product.OtherName;
             this.TechnicalName = Product.TechnicalName;
             this.Note = Product.Note;
-            this.ProductType = Product.ProductType == null ? null : new Mobile_ProductTypeDTO(Product.ProductType);
-            this.Supplier = Product.Supplier == null ? null : new Mobile_SupplierDTO(Product.Supplier);
-            this.TaxType = Product.TaxType == null ? null : new Mobile_TaxTypeDTO(Product.TaxType);
-            this.UnitOfMeasure = Product.UnitOfMeasure == null ? null : new Mobile_UnitOfMeasureDTO(Product.UnitOfMeasure);
-            this.UnitOfMeasureGrouping = Product.UnitOfMeasureGrouping == null ? null : new Mobile_UnitOfMeasureGroupingDTO(Product.UnitOfMeasureGrouping);
+            this.ProductType = Product.ProductType == null ? null : new PriceList_ProductTypeDTO(Product.ProductType);
             this.ProductProductGroupingMappings = Product.ProductProductGroupingMappings?.Select(x => new PriceList_ProductProductGroupingMappingDTO(x)).ToList();
             this.Errors = Product.Errors;
         }
     }
 
-    public class Mobile_ProductFilterDTO : FilterDTO
+    public class PriceList_ProductFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }

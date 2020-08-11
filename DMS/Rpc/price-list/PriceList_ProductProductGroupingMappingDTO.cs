@@ -1,20 +1,20 @@
 ﻿using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.mobile
+namespace DMS.Rpc.price_list
 {
     public class PriceList_ProductProductGroupingMappingDTO : DataDTO
     {
         public long ProductId { get; set; }
         public long ProductGroupingId { get; set; }
-        public Mobile_ProductGroupingDTO ProductGrouping { get; set; }
+        public PriceList_ProductGroupingDTO ProductGrouping { get; set; }
 
         public PriceList_ProductProductGroupingMappingDTO() { }
         public PriceList_ProductProductGroupingMappingDTO(ProductProductGroupingMapping ProductProductGroupingMapping)
         {
             this.ProductId = ProductProductGroupingMapping.ProductId;
             this.ProductGroupingId = ProductProductGroupingMapping.ProductGroupingId;
-            this.ProductGrouping = ProductProductGroupingMapping.ProductGrouping == null ? null : new Mobile_ProductGroupingDTO(ProductProductGroupingMapping.ProductGrouping);
+            this.ProductGrouping = ProductProductGroupingMapping.ProductGrouping == null ? null : new PriceList_ProductGroupingDTO(ProductProductGroupingMapping.ProductGrouping);
         }
     }
 

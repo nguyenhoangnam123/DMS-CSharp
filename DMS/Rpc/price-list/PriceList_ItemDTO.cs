@@ -22,7 +22,7 @@ namespace DMS.Rpc.price_list
 
         public long StatusId { get; set; }
 
-
+        public PriceList_ProductDTO Product { get; set; }
         public PriceList_ItemDTO() { }
         public PriceList_ItemDTO(Item Item)
         {
@@ -42,7 +42,7 @@ namespace DMS.Rpc.price_list
             this.RetailPrice = Item.RetailPrice;
 
             this.StatusId = Item.StatusId;
-
+            this.Product = Item.Product == null ? null : new PriceList_ProductDTO(Item.Product);
             this.Errors = Item.Errors;
         }
     }
