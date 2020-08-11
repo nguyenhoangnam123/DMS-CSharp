@@ -1,18 +1,19 @@
+using System;
+using System.Collections.Generic;
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
 
 namespace DMS.Entities
 {
     public class WorkflowParameter : DataEntity, IEquatable<WorkflowParameter>
     {
         public long Id { get; set; }
-        public long WorkflowTypeId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public long WorkflowTypeId { get; set; }
         public long WorkflowParameterTypeId { get; set; }
+        public WorkflowParameterType WorkflowParameterType { get; set; }
 
         public bool Equals(WorkflowParameter other)
         {
@@ -27,10 +28,10 @@ namespace DMS.Entities
     public class WorkflowParameterFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
-        public IdFilter WorkflowTypeId { get; set; }
-        public IdFilter WorkflowParameterTypeId { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public IdFilter WorkflowTypeId { get; set; }
+        public IdFilter WorkflowParameterTypeId { get; set; }
         public List<WorkflowParameterFilter> OrFilter { get; set; }
         public WorkflowParameterOrder OrderBy { get; set; }
         public WorkflowParameterSelect Selects { get; set; }
@@ -40,9 +41,10 @@ namespace DMS.Entities
     public enum WorkflowParameterOrder
     {
         Id = 0,
-        WorkflowType = 1,
+        Code = 1,
         Name = 2,
-        Code = 3,
+        WorkflowType = 3,
+        WorkflowParameterType = 4,
     }
 
     [Flags]
@@ -50,8 +52,9 @@ namespace DMS.Entities
     {
         ALL = E.ALL,
         Id = E._0,
-        WorkflowDefinition = E._1,
+        Code = E._1,
         Name = E._2,
-        Code = E._3,
+        WorkflowType = E._3,
+        WorkflowParameterType = E._4,
     }
 }

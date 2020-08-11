@@ -18,6 +18,7 @@ namespace DMS.Rpc.workflow_direction
         public string SubjectMailForReject { get; set; }
 
         public string BodyMailForReject { get; set; }
+        public WorkflowDirection_RoleDTO Role {get;set;}
 
 
         public WorkflowDirection_WorkflowStepDTO() { }
@@ -30,6 +31,7 @@ namespace DMS.Rpc.workflow_direction
             this.RoleId = WorkflowStep.RoleId;
             this.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
             this.BodyMailForReject = WorkflowStep.BodyMailForReject;
+            this.Role = WorkflowStep.Role == null ? null : new WorkflowDirection_RoleDTO(WorkflowStep.Role);
             this.Errors = WorkflowStep.Errors;
         }
     }
