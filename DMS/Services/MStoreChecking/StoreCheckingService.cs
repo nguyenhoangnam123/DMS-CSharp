@@ -28,6 +28,8 @@ namespace DMS.Services.MStoreChecking
         Task<List<Store>> ListStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId);
         Task<long> CountStoreUnPlanned(StoreFilter StoreFilter, IdFilter ERouteId);
         Task<List<Store>> ListStoreUnPlanned(StoreFilter StoreFilter, IdFilter ERouteId);
+        Task<long> CountStoreInScope(StoreFilter StoreFilter, IdFilter ERouteId);
+        Task<List<Store>> ListStoreInScope(StoreFilter StoreFilter, IdFilter ERouteId);
         StoreCheckingFilter ToFilter(StoreCheckingFilter StoreCheckingFilter);
     }
 
@@ -118,7 +120,7 @@ namespace DMS.Services.MStoreChecking
                 StoreChecking.CheckInAt = StaticParams.DateTimeNow;
                 StoreChecking.SaleEmployeeId = CurrentContext.UserId;
 
-                List<long> StorePlannedIds = await ListStoreIds(null);
+                List<long> StorePlannedIds = await ListStoreIds(null, true);
                 if (StorePlannedIds.Contains(StoreChecking.StoreId))
                 {
                     StoreChecking.Planned = true;
@@ -265,7 +267,7 @@ namespace DMS.Services.MStoreChecking
             List<long> StoreIds = new List<long>();
             if (ERouteId != null && ERouteId.HasValue)
             {
-                StoreIds = await ListStoreIds(ERouteId);
+                StoreIds = await ListStoreIds(ERouteId, true);
                 if (AppUser.AppUserStoreMappings.Any())
                 {
                     var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
@@ -285,7 +287,7 @@ namespace DMS.Services.MStoreChecking
             List<long> StoreIds = new List<long>();
             if (ERouteId != null && ERouteId.HasValue)
             {
-                StoreIds = await ListStoreIds(ERouteId);
+                StoreIds = await ListStoreIds(ERouteId, true);
                 if (AppUser.AppUserStoreMappings.Any())
                 {
                     var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
@@ -319,7 +321,7 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
-                List<long> StoreIds = await ListStoreIds(ERouteId);
+                List<long> StoreIds = await ListStoreIds(ERouteId, true);
                 StoreFilter.Id = new IdFilter { In = StoreIds };
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 int count = await UOW.StoreRepository.Count(StoreFilter);
@@ -345,7 +347,7 @@ namespace DMS.Services.MStoreChecking
             try
             {
                 // lấy danh sách tất cả các đại lý trong kế hoạch
-                List<long> StoreIds = await ListStoreIds(ERouteId);
+                List<long> StoreIds = await ListStoreIds(ERouteId, true);
 
                 StoreFilter.Id = new IdFilter { In = StoreIds };
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
@@ -389,7 +391,7 @@ namespace DMS.Services.MStoreChecking
             try
             {
                 var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                List<long> StoreIds = await ListStoreIds(ERouteId);
+                List<long> StoreIds = await ListStoreIds(ERouteId, false);
                 if (AppUser.AppUserStoreMappings.Any())
                 {
                     var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
@@ -421,15 +423,17 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
+                DateTime Now = StaticParams.DateTimeNow.Date;
                 var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                List<long> StoreIds = await ListStoreIds(ERouteId);
+                List<long> StoreIds = await ListStoreIds(ERouteId, false);
+                
                 if (AppUser.AppUserStoreMappings.Any())
                 {
                     var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
                     StoreIds = StoreIds.Intersect(StoreInScopeIds).ToList();
                 }
 
-                StoreFilter.Id = new IdFilter { NotIn = StoreIds };
+                StoreFilter.Id = new IdFilter { In = StoreIds };
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
                 StoreIds = Stores.Select(x => x.Id).ToList();
@@ -449,6 +453,106 @@ namespace DMS.Services.MStoreChecking
                     Store.HasChecking = count != 0 ? true : false;
                 }
                 return Stores;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreCheckingService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreCheckingService));
+                    throw new MessageException(ex.InnerException);
+                };
+            }
+        }
+
+        public async Task<long> CountStoreInScope(StoreFilter StoreFilter, IdFilter ERouteId)
+        {
+            try
+            {
+                var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                var StorePlanned = await ListStorePlanned(StoreFilter, ERouteId);
+                var StoreUnPlanned = await ListStoreUnPlanned(StoreFilter, ERouteId);
+                var StorePlannedIds = StorePlanned.Select(x => x.Id).ToList();
+                var StoreUnPlannedIds = StoreUnPlanned.Select(x => x.Id).ToList();
+                List<long> StoreIds = new List<long>();
+                StoreIds.AddRange(StorePlannedIds);
+                StoreIds.AddRange(StoreUnPlannedIds);
+                StoreIds = StoreIds.Distinct().ToList();
+                if (AppUser.AppUserStoreMappings.Any())
+                {
+                    var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                    StoreIds = StoreInScopeIds.Except(StoreIds).ToList();
+
+                    StoreFilter.Id = new IdFilter { In = StoreIds };
+                    StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+
+                    int count = await UOW.StoreRepository.Count(StoreFilter);
+                    return count;
+                }
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreCheckingService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreCheckingService));
+                    throw new MessageException(ex.InnerException);
+                };
+            }
+        }
+
+        public async Task<List<Store>> ListStoreInScope(StoreFilter StoreFilter, IdFilter ERouteId)
+        {
+            try
+            {
+                var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                var StorePlanned = await ListStorePlanned(StoreFilter, ERouteId);
+                var StoreUnPlanned = await ListStoreUnPlanned(StoreFilter, ERouteId);
+                var StorePlannedIds = StorePlanned.Select(x => x.Id).ToList();
+                var StoreUnPlannedIds = StoreUnPlanned.Select(x => x.Id).ToList();
+                List<long> StoreIds = new List<long>();
+                StoreIds.AddRange(StorePlannedIds);
+                StoreIds.AddRange(StoreUnPlannedIds);
+                StoreIds = StoreIds.Distinct().ToList();
+
+                if (AppUser.AppUserStoreMappings.Any())
+                {
+                    var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                    StoreIds = StoreInScopeIds.Except(StoreIds).ToList();
+
+                    StoreFilter.Id = new IdFilter { In = StoreIds };
+                    StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+                    List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+                    StoreIds = Stores.Select(x => x.Id).ToList();
+                    StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = StoreCheckingSelect.ALL,
+                        StoreId = new IdFilter { In = StoreIds },
+                        SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                        CheckOutAt = new DateFilter { GreaterEqual = StaticParams.DateTimeNow.Date, Less = StaticParams.DateTimeNow.Date.AddDays(1) }
+                    };
+                    List<StoreChecking> StoreCheckings = await UOW.StoreCheckingRepository.List(StoreCheckingFilter);
+                    foreach (var Store in Stores)
+                    {
+                        var count = StoreCheckings.Where(x => x.StoreId == Store.Id).Count();
+                        Store.HasChecking = count != 0 ? true : false;
+                    }
+                    return Stores;
+                }
+
+                return new List<Store>();
             }
             catch (Exception ex)
             {
@@ -490,7 +594,7 @@ namespace DMS.Services.MStoreChecking
         }
 
         // Lấy danh sách tất cả các đại lý theo kế hoạch
-        private async Task<List<long>> ListStoreIds(IdFilter ERouteId)
+        private async Task<List<long>> ListStoreIds(IdFilter ERouteId, bool Planned)
         {
             DateTime Now = StaticParams.DateTimeNow.Date;
             List<long> ERouteIds = (await UOW.ERouteRepository.List(new ERouteFilter
@@ -517,7 +621,7 @@ namespace DMS.Services.MStoreChecking
             foreach (var ERouteContent in ERouteContents)
             {
                 var index = (Now - ERouteContent.ERoute.RealStartDate).Days % 28;
-                if (ERouteContent.ERouteContentDays[index].Planned == true)
+                if (ERouteContent.ERouteContentDays[index].Planned == Planned)
                     StoreIds.Add(ERouteContent.StoreId);
             }
 

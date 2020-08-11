@@ -58,6 +58,8 @@ namespace DMS.Rpc.mobile
         public const string ListStorePlanned = Default + "/list-store-planned";
         public const string CountStoreUnPlanned = Default + "/count-store-unplanned";
         public const string ListStoreUnPlanned = Default + "/list-store-unplanned";
+        public const string CountStoreInScope = Default + "/count-store-in-scope";
+        public const string ListStoreInScope = Default + "/list-store-in-scope";
         public const string CountProblem = Default + "/count-problem";
         public const string ListProblem = Default + "/list-problem";
         public const string GetProblem = Default + "/get-problem";
@@ -87,7 +89,7 @@ namespace DMS.Rpc.mobile
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
                 Detail, CheckIn,  UpdateStoreChecking, CheckOut,
                 CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm,
-                CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
+                CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListProvince, SingleListDistrict, SingleListWard, } },
         };
     }
