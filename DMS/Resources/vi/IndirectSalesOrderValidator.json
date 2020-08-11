@@ -1,7 +1,8 @@
 ﻿{
   "IndirectSalesOrder": {
     "Id": {
-      "IdNotExisted": "Id không tồn tại"
+      "IdNotExisted": "Id không tồn tại",
+      "ContentEmpty": "Chưa thêm sản phẩm"
     },
     "BuyerStore": {
       "BuyerStoreNotExisted": "Đại lý mua không tồn tại",

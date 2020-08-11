@@ -37,7 +37,8 @@ namespace DMS.Services.MIndirectSalesOrder
             QuantityEmpty,
             ItemNotExisted,
             QuantityInvalid,
-            SellerStoreEqualBuyerStore
+            SellerStoreEqualBuyerStore,
+            ContentEmpty
         }
 
         private IUOW UOW;
@@ -140,7 +141,7 @@ namespace DMS.Services.MIndirectSalesOrder
 
         private async Task<bool> ValidateContent(IndirectSalesOrder IndirectSalesOrder)
         {
-            if (IndirectSalesOrder.IndirectSalesOrderContents != null)
+            if (IndirectSalesOrder.IndirectSalesOrderContents != null && IndirectSalesOrder.IndirectSalesOrderContents.Any())
             {
                 var ItemIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.ItemId).ToList();
                 var ProductIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.Item.ProductId).ToList();
@@ -225,6 +226,13 @@ namespace DMS.Services.MIndirectSalesOrder
 
                     }
                     
+                }
+            }
+            else
+            {
+                if(IndirectSalesOrder.IndirectSalesOrderPromotions == null || !IndirectSalesOrder.IndirectSalesOrderPromotions.Any())
+                {
+                    IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.Id), ErrorCode.ContentEmpty);
                 }
             }
 
