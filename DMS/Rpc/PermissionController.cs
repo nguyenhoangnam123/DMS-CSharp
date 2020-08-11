@@ -30,8 +30,9 @@ namespace DMS.Rpc
         [HttpGet, Route("rpc/dms/permission/test-export")]
         public async Task<ActionResult> Export()
         {
-            MemoryStream MemoryStream = new MemoryStream();
-            var documentConverter = new DocumentConverter("Templates/Store_Export.xlsx");
+            byte[] arr = System.IO.File.ReadAllBytes("Templates/Store_Export.xlsx");
+            MemoryStream MemoryStream = new MemoryStream(arr);
+            var documentConverter = new DocumentConverter(MemoryStream, DocumentFormat.Xlsx);
 
             // Convert "InputFile.docx" to Pdf written to outputStream
             documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
