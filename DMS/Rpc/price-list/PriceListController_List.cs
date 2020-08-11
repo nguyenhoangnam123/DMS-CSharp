@@ -407,6 +407,25 @@ namespace DMS.Rpc.price_list
             return PriceList_StatusDTOs;
         }
 
+        [Route(PriceListRoute.SingleListProvince), HttpPost]
+        public async Task<List<PriceList_ProvinceDTO>> SingleListProvince([FromBody] PriceList_ProvinceFilterDTO PriceList_ProvinceFilterDTO)
+        {
+            ProvinceFilter ProvinceFilter = new ProvinceFilter();
+            ProvinceFilter.Skip = PriceList_ProvinceFilterDTO.Skip;
+            ProvinceFilter.Take = PriceList_ProvinceFilterDTO.Take;
+            ProvinceFilter.OrderBy = ProvinceOrder.Priority;
+            ProvinceFilter.OrderType = OrderType.ASC;
+            ProvinceFilter.Selects = ProvinceSelect.ALL;
+            ProvinceFilter.Id = PriceList_ProvinceFilterDTO.Id;
+            ProvinceFilter.Name = PriceList_ProvinceFilterDTO.Name;
+            ProvinceFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
+            List<PriceList_ProvinceDTO> PriceList_ProvinceDTOs = Provinces
+                .Select(x => new PriceList_ProvinceDTO(x)).ToList();
+            return PriceList_ProvinceDTOs;
+        }
+
         [Route(PriceListRoute.SingleListProductType), HttpPost]
         public async Task<List<PriceList_ProductTypeDTO>> SingleListProductType([FromBody] PriceList_ProductTypeFilterDTO PriceList_ProductTypeFilterDTO)
         {

@@ -351,13 +351,10 @@ namespace DMS.Rpc.warehouse
         }
 
         [Route(WarehouseRoute.ExportTemplate), HttpPost]
-        public async Task<ActionResult<FileResult>> ExportTemplate([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
+        public async Task<FileResult> ExportTemplate([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            if (!await HasPermission(Warehouse_WarehouseDTO.Id))
-                return Forbid();
 
             long WarehouseId = Warehouse_WarehouseDTO?.Id ?? 0;
             Warehouse Warehouse = await WarehouseService.Get(WarehouseId);

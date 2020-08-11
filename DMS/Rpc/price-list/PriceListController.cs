@@ -21,6 +21,8 @@ using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
+using DMS.Enums;
+using DMS.Services.MProvince;
 
 namespace DMS.Rpc.price_list
 {
@@ -36,6 +38,7 @@ namespace DMS.Rpc.price_list
         private IStatusService StatusService;
         private IPriceListService PriceListService;
         private IProductTypeService ProductTypeService;
+        private IProvinceService ProvinceService;
         private IProductGroupingService ProductGroupingService;
         private ICurrentContext CurrentContext;
         public PriceListController(
@@ -48,6 +51,7 @@ namespace DMS.Rpc.price_list
             ISalesOrderTypeService SalesOrderTypeService,
             IStatusService StatusService,
             IPriceListService PriceListService,
+            IProvinceService ProvinceService,
             IProductTypeService ProductTypeService,
             IProductGroupingService ProductGroupingService,
             ICurrentContext CurrentContext
@@ -62,6 +66,7 @@ namespace DMS.Rpc.price_list
             this.SalesOrderTypeService = SalesOrderTypeService;
             this.StatusService = StatusService;
             this.PriceListService = PriceListService;
+            this.ProvinceService = ProvinceService;
             this.ProductTypeService = ProductTypeService;
             this.ProductGroupingService = ProductGroupingService;
             this.CurrentContext = CurrentContext;
@@ -180,473 +185,61 @@ namespace DMS.Rpc.price_list
             return true;
         }
 
-        [Route(PriceListRoute.Import), HttpPost]
-        public async Task<ActionResult> Import(IFormFile file)
+        [Route(PriceListRoute.ExportTemplateItem), HttpPost]
+        public async Task<FileResult> ExportTemplate()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            PriceListTypeFilter PriceListTypeFilter = new PriceListTypeFilter
+
+            var ItemFilter = new ItemFilter
             {
+                Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name,
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = PriceListTypeSelect.ALL
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
             };
-            List<PriceListType> PriceListTypes = await PriceListTypeService.List(PriceListTypeFilter);
-            SalesOrderTypeFilter SalesOrderTypeFilter = new SalesOrderTypeFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = SalesOrderTypeSelect.ALL
-            };
-            List<SalesOrderType> SalesOrderTypes = await SalesOrderTypeService.List(SalesOrderTypeFilter);
-            StatusFilter StatusFilter = new StatusFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StatusSelect.ALL
-            };
-            List<Status> Statuses = await StatusService.List(StatusFilter);
-            List<PriceList> PriceLists = new List<PriceList>();
-            using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
-            {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return Ok(PriceLists);
-                int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int StartDateColumn = 3 + StartColumn;
-                int EndDateColumn = 4 + StartColumn;
-                int StatusIdColumn = 5 + StartColumn;
-                int OrganizationIdColumn = 6 + StartColumn;
-                int PriceListTypeIdColumn = 7 + StartColumn;
-                int SalesOrderTypeIdColumn = 8 + StartColumn;
-
-                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
-                {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, StartColumn].Value?.ToString()))
-                        break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string StartDateValue = worksheet.Cells[i + StartRow, StartDateColumn].Value?.ToString();
-                    string EndDateValue = worksheet.Cells[i + StartRow, EndDateColumn].Value?.ToString();
-                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    string OrganizationIdValue = worksheet.Cells[i + StartRow, OrganizationIdColumn].Value?.ToString();
-                    string PriceListTypeIdValue = worksheet.Cells[i + StartRow, PriceListTypeIdColumn].Value?.ToString();
-                    string SalesOrderTypeIdValue = worksheet.Cells[i + StartRow, SalesOrderTypeIdColumn].Value?.ToString();
-
-                    PriceList PriceList = new PriceList();
-                    PriceList.Code = CodeValue;
-                    PriceList.Name = NameValue;
-                    PriceList.StartDate = DateTime.TryParse(StartDateValue, out DateTime StartDate) ? StartDate : DateTime.Now;
-                    PriceList.EndDate = DateTime.TryParse(EndDateValue, out DateTime EndDate) ? EndDate : DateTime.Now;
-                    PriceListType PriceListType = PriceListTypes.Where(x => x.Id.ToString() == PriceListTypeIdValue).FirstOrDefault();
-                    PriceList.PriceListTypeId = PriceListType == null ? 0 : PriceListType.Id;
-                    PriceList.PriceListType = PriceListType;
-                    SalesOrderType SalesOrderType = SalesOrderTypes.Where(x => x.Id.ToString() == SalesOrderTypeIdValue).FirstOrDefault();
-                    PriceList.SalesOrderTypeId = SalesOrderType == null ? 0 : SalesOrderType.Id;
-                    PriceList.SalesOrderType = SalesOrderType;
-                    Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
-                    PriceList.StatusId = Status == null ? 0 : Status.Id;
-                    PriceList.Status = Status;
-
-                    PriceLists.Add(PriceList);
-                }
-            }
-            PriceLists = await PriceListService.Import(PriceLists);
-            if (PriceLists.All(x => x.IsValidated))
-                return Ok(true);
-            else
-            {
-                List<string> Errors = new List<string>();
-                for (int i = 0; i < PriceLists.Count; i++)
-                {
-                    PriceList PriceList = PriceLists[i];
-                    if (!PriceList.IsValidated)
-                    {
-                        string Error = $"Dòng {i + 2} có lỗi:";
-                        if (PriceList.Errors.ContainsKey(nameof(PriceList.Id)))
-                            Error += PriceList.Errors[nameof(PriceList.Id)];
-                        if (PriceList.Errors.ContainsKey(nameof(PriceList.Code)))
-                            Error += PriceList.Errors[nameof(PriceList.Code)];
-                        if (PriceList.Errors.ContainsKey(nameof(PriceList.Name)))
-                            Error += PriceList.Errors[nameof(PriceList.Name)];
-                        if (PriceList.Errors.ContainsKey(nameof(PriceList.StartDate)))
-                            Error += PriceList.Errors[nameof(PriceList.StartDate)];
-                        if (PriceList.Errors.ContainsKey(nameof(PriceList.EndDate)))
-                            Error += PriceList.Errors[nameof(PriceList.EndDate)];
-                        if (PriceList.Errors.ContainsKey(nameof(PriceList.StatusId)))
-                            Error += PriceList.Errors[nameof(PriceList.StatusId)];
-                        if (PriceList.Errors.ContainsKey(nameof(PriceList.OrganizationId)))
-                            Error += PriceList.Errors[nameof(PriceList.OrganizationId)];
-                        if (PriceList.Errors.ContainsKey(nameof(PriceList.PriceListTypeId)))
-                            Error += PriceList.Errors[nameof(PriceList.PriceListTypeId)];
-                        if (PriceList.Errors.ContainsKey(nameof(PriceList.SalesOrderTypeId)))
-                            Error += PriceList.Errors[nameof(PriceList.SalesOrderTypeId)];
-                        Errors.Add(Error);
-                    }
-                }
-                return BadRequest(Errors);
-            }
-        }
-
-        [Route(PriceListRoute.Export), HttpPost]
-        public async Task<FileResult> Export([FromBody] PriceList_PriceListFilterDTO PriceList_PriceListFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+            var Items = await ItemService.List(ItemFilter);
 
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
-                #region PriceList
-                var PriceListFilter = ConvertFilterDTOToFilterEntity(PriceList_PriceListFilterDTO);
-                PriceListFilter.Skip = 0;
-                PriceListFilter.Take = int.MaxValue;
-                PriceListFilter = await PriceListService.ToFilter(PriceListFilter);
-                List<PriceList> PriceLists = await PriceListService.List(PriceListFilter);
-
-                var PriceListHeaders = new List<string[]>()
+                var InventoryHeaders = new List<string[]>()
                 {
                     new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                        "StartDate",
-                        "EndDate",
-                        "StatusId",
-                        "OrganizationId",
-                        "PriceListTypeId",
-                        "SalesOrderTypeId",
+                        "STT",
+                        "Mã sản phẩm",
+                        "Giá bán"
                     }
                 };
-                List<object[]> PriceListData = new List<object[]>();
-                for (int i = 0; i < PriceLists.Count; i++)
+                List<object[]> data = new List<object[]>();
+                data.Add(new object[]
                 {
-                    var PriceList = PriceLists[i];
-                    PriceListData.Add(new Object[]
-                    {
-                        PriceList.Id,
-                        PriceList.Code,
-                        PriceList.Name,
-                        PriceList.StartDate,
-                        PriceList.EndDate,
-                        PriceList.StatusId,
-                        PriceList.OrganizationId,
-                        PriceList.PriceListTypeId,
-                        PriceList.SalesOrderTypeId,
-                    });
-                }
-                excel.GenerateWorksheet("PriceList", PriceListHeaders, PriceListData);
-                #endregion
+                    
+                });
+                excel.GenerateWorksheet("Gia ban", InventoryHeaders, data);
 
-                #region Organization
-                var OrganizationFilter = new OrganizationFilter();
-                OrganizationFilter.Selects = OrganizationSelect.ALL;
-                OrganizationFilter.OrderBy = OrganizationOrder.Id;
-                OrganizationFilter.OrderType = OrderType.ASC;
-                OrganizationFilter.Skip = 0;
-                OrganizationFilter.Take = int.MaxValue;
-                List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-
-                var OrganizationHeaders = new List<string[]>()
+                data.Clear();
+                var PriceListHeader = new List<string[]>()
                 {
                     new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                        "ParentId",
-                        "Path",
-                        "Level",
-                        "StatusId",
-                        "Phone",
-                        "Email",
-                        "Address",
+                        "Mã sản phẩm",
+                        "Tên sản phẩm",
                     }
                 };
-                List<object[]> OrganizationData = new List<object[]>();
-                for (int i = 0; i < Organizations.Count; i++)
+                for (int i = 0; i < Items.Count; i++)
                 {
-                    var Organization = Organizations[i];
-                    OrganizationData.Add(new Object[]
+                    var Item = Items[i];
+                    data.Add(new Object[]
                     {
-                        Organization.Id,
-                        Organization.Code,
-                        Organization.Name,
-                        Organization.ParentId,
-                        Organization.Path,
-                        Organization.Level,
-                        Organization.StatusId,
-                        Organization.Phone,
-                        Organization.Email,
-                        Organization.Address,
+                        Item.Code,
+                        Item.Name,
                     });
                 }
-                excel.GenerateWorksheet("Organization", OrganizationHeaders, OrganizationData);
-                #endregion
-                #region PriceListType
-                var PriceListTypeFilter = new PriceListTypeFilter();
-                PriceListTypeFilter.Selects = PriceListTypeSelect.ALL;
-                PriceListTypeFilter.OrderBy = PriceListTypeOrder.Id;
-                PriceListTypeFilter.OrderType = OrderType.ASC;
-                PriceListTypeFilter.Skip = 0;
-                PriceListTypeFilter.Take = int.MaxValue;
-                List<PriceListType> PriceListTypes = await PriceListTypeService.List(PriceListTypeFilter);
-
-                var PriceListTypeHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> PriceListTypeData = new List<object[]>();
-                for (int i = 0; i < PriceListTypes.Count; i++)
-                {
-                    var PriceListType = PriceListTypes[i];
-                    PriceListTypeData.Add(new Object[]
-                    {
-                        PriceListType.Id,
-                        PriceListType.Code,
-                        PriceListType.Name,
-                    });
-                }
-                excel.GenerateWorksheet("PriceListType", PriceListTypeHeaders, PriceListTypeData);
-                #endregion
-                #region SalesOrderType
-                var SalesOrderTypeFilter = new SalesOrderTypeFilter();
-                SalesOrderTypeFilter.Selects = SalesOrderTypeSelect.ALL;
-                SalesOrderTypeFilter.OrderBy = SalesOrderTypeOrder.Id;
-                SalesOrderTypeFilter.OrderType = OrderType.ASC;
-                SalesOrderTypeFilter.Skip = 0;
-                SalesOrderTypeFilter.Take = int.MaxValue;
-                List<SalesOrderType> SalesOrderTypes = await SalesOrderTypeService.List(SalesOrderTypeFilter);
-
-                var SalesOrderTypeHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> SalesOrderTypeData = new List<object[]>();
-                for (int i = 0; i < SalesOrderTypes.Count; i++)
-                {
-                    var SalesOrderType = SalesOrderTypes[i];
-                    SalesOrderTypeData.Add(new Object[]
-                    {
-                        SalesOrderType.Id,
-                        SalesOrderType.Code,
-                        SalesOrderType.Name,
-                    });
-                }
-                excel.GenerateWorksheet("SalesOrderType", SalesOrderTypeHeaders, SalesOrderTypeData);
-                #endregion
-                #region Status
-                var StatusFilter = new StatusFilter();
-                StatusFilter.Selects = StatusSelect.ALL;
-                StatusFilter.OrderBy = StatusOrder.Id;
-                StatusFilter.OrderType = OrderType.ASC;
-                StatusFilter.Skip = 0;
-                StatusFilter.Take = int.MaxValue;
-                List<Status> Statuses = await StatusService.List(StatusFilter);
-
-                var StatusHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> StatusData = new List<object[]>();
-                for (int i = 0; i < Statuses.Count; i++)
-                {
-                    var Status = Statuses[i];
-                    StatusData.Add(new Object[]
-                    {
-                        Status.Id,
-                        Status.Code,
-                        Status.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
-                #endregion
+                
+                excel.GenerateWorksheet("San pham", PriceListHeader, data);
                 excel.Save();
             }
-            return File(memoryStream.ToArray(), "application/octet-stream", "PriceList.xlsx");
-        }
-
-        [Route(PriceListRoute.ExportTemplate), HttpPost]
-        public async Task<FileResult> ExportTemplate([FromBody] PriceList_PriceListFilterDTO PriceList_PriceListFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
-            {
-                #region PriceList
-                var PriceListHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                        "StartDate",
-                        "EndDate",
-                        "StatusId",
-                        "OrganizationId",
-                        "PriceListTypeId",
-                        "SalesOrderTypeId",
-                    }
-                };
-                List<object[]> PriceListData = new List<object[]>();
-                excel.GenerateWorksheet("PriceList", PriceListHeaders, PriceListData);
-                #endregion
-
-                #region Organization
-                var OrganizationFilter = new OrganizationFilter();
-                OrganizationFilter.Selects = OrganizationSelect.ALL;
-                OrganizationFilter.OrderBy = OrganizationOrder.Id;
-                OrganizationFilter.OrderType = OrderType.ASC;
-                OrganizationFilter.Skip = 0;
-                OrganizationFilter.Take = int.MaxValue;
-                List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-
-                var OrganizationHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                        "ParentId",
-                        "Path",
-                        "Level",
-                        "StatusId",
-                        "Phone",
-                        "Email",
-                        "Address",
-                    }
-                };
-                List<object[]> OrganizationData = new List<object[]>();
-                for (int i = 0; i < Organizations.Count; i++)
-                {
-                    var Organization = Organizations[i];
-                    OrganizationData.Add(new Object[]
-                    {
-                        Organization.Id,
-                        Organization.Code,
-                        Organization.Name,
-                        Organization.ParentId,
-                        Organization.Path,
-                        Organization.Level,
-                        Organization.StatusId,
-                        Organization.Phone,
-                        Organization.Email,
-                        Organization.Address,
-                    });
-                }
-                excel.GenerateWorksheet("Organization", OrganizationHeaders, OrganizationData);
-                #endregion
-                #region PriceListType
-                var PriceListTypeFilter = new PriceListTypeFilter();
-                PriceListTypeFilter.Selects = PriceListTypeSelect.ALL;
-                PriceListTypeFilter.OrderBy = PriceListTypeOrder.Id;
-                PriceListTypeFilter.OrderType = OrderType.ASC;
-                PriceListTypeFilter.Skip = 0;
-                PriceListTypeFilter.Take = int.MaxValue;
-                List<PriceListType> PriceListTypes = await PriceListTypeService.List(PriceListTypeFilter);
-
-                var PriceListTypeHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> PriceListTypeData = new List<object[]>();
-                for (int i = 0; i < PriceListTypes.Count; i++)
-                {
-                    var PriceListType = PriceListTypes[i];
-                    PriceListTypeData.Add(new Object[]
-                    {
-                        PriceListType.Id,
-                        PriceListType.Code,
-                        PriceListType.Name,
-                    });
-                }
-                excel.GenerateWorksheet("PriceListType", PriceListTypeHeaders, PriceListTypeData);
-                #endregion
-                #region SalesOrderType
-                var SalesOrderTypeFilter = new SalesOrderTypeFilter();
-                SalesOrderTypeFilter.Selects = SalesOrderTypeSelect.ALL;
-                SalesOrderTypeFilter.OrderBy = SalesOrderTypeOrder.Id;
-                SalesOrderTypeFilter.OrderType = OrderType.ASC;
-                SalesOrderTypeFilter.Skip = 0;
-                SalesOrderTypeFilter.Take = int.MaxValue;
-                List<SalesOrderType> SalesOrderTypes = await SalesOrderTypeService.List(SalesOrderTypeFilter);
-
-                var SalesOrderTypeHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> SalesOrderTypeData = new List<object[]>();
-                for (int i = 0; i < SalesOrderTypes.Count; i++)
-                {
-                    var SalesOrderType = SalesOrderTypes[i];
-                    SalesOrderTypeData.Add(new Object[]
-                    {
-                        SalesOrderType.Id,
-                        SalesOrderType.Code,
-                        SalesOrderType.Name,
-                    });
-                }
-                excel.GenerateWorksheet("SalesOrderType", SalesOrderTypeHeaders, SalesOrderTypeData);
-                #endregion
-                #region Status
-                var StatusFilter = new StatusFilter();
-                StatusFilter.Selects = StatusSelect.ALL;
-                StatusFilter.OrderBy = StatusOrder.Id;
-                StatusFilter.OrderType = OrderType.ASC;
-                StatusFilter.Skip = 0;
-                StatusFilter.Take = int.MaxValue;
-                List<Status> Statuses = await StatusService.List(StatusFilter);
-
-                var StatusHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> StatusData = new List<object[]>();
-                for (int i = 0; i < Statuses.Count; i++)
-                {
-                    var Status = Statuses[i];
-                    StatusData.Add(new Object[]
-                    {
-                        Status.Id,
-                        Status.Code,
-                        Status.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
-                #endregion
-                excel.Save();
-            }
-            return File(memoryStream.ToArray(), "application/octet-stream", "PriceList.xlsx");
+            return File(memoryStream.ToArray(), "application/octet-stream", "Template_PriceList_Item.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)
