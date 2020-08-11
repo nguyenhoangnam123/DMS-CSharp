@@ -30,9 +30,12 @@ namespace DMS.Rpc.price_list
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-tempate";
+        public const string ImportItem = Default + "/import-item";
+        public const string ExportItem = Default + "/export-item";
+        public const string ExportTemplateItem = Default + "/export-tempate-item";
+        public const string ImportStore = Default + "/import-store";
+        public const string ExportStore = Default + "/export-store";
+        public const string ExportTemplateStore = Default + "/export-tempate-store";
         public const string BulkDelete = Default + "/bulk-delete";
         
         public const string FilterListOrganization = Default + "/filter-list-organization";
@@ -46,6 +49,7 @@ namespace DMS.Rpc.price_list
         
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListItem = Default + "/single-list-item";
+        public const string SingleListProvince = Default + "/single-list-province";
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
         public const string SingleListProductType = Default + "/single-list-product-type";
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
@@ -85,7 +89,7 @@ namespace DMS.Rpc.price_list
                 Master, Count, List, Get, GetPreview,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 Detail, Create,
-                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType,
+                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
                 Count, List, Count, List, Count, List, Count, List,
                 CountItem, ListItem, CountStore, ListStore
                 } },
@@ -94,7 +98,7 @@ namespace DMS.Rpc.price_list
                 Master, Count, List, Get, GetPreview,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 Detail, Update,
-                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType,
+                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
                 Count, List, Count, List, Count, List, Count, List,
                 CountItem, ListItem, CountStore, ListStore
                 }},
@@ -103,7 +107,7 @@ namespace DMS.Rpc.price_list
                 Master, Count, List, Get, GetPreview,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 Delete,
-                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType,
+                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
                 CountItem, ListItem, CountStore, ListStore} },
 
             { "Xoá nhiều", new List<string> {
@@ -115,13 +119,13 @@ namespace DMS.Rpc.price_list
             { "Xuất excel", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
-                Export,
+                ExportItem, ExportStore,
                 CountItem, ListItem, CountStore, ListStore} },
 
             { "Nhập excel", new List<string> {
                 Master, Count, List, Get, GetPreview,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
-                ExportTemplate, Import,
+                ExportTemplateItem, ExportTemplateStore, ImportItem, ImportStore,
                 CountItem, ListItem, CountStore, ListStore} },
         };
     }
