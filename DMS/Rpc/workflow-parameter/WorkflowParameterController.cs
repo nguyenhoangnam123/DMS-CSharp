@@ -17,15 +17,18 @@ namespace DMS.Rpc.workflow_parameter
     public partial class WorkflowParameterController : RpcController
     {
         private IWorkflowParameterTypeService WorkflowParameterTypeService;
+        private IWorkflowTypeService WorkflowTypeService;
         private IWorkflowParameterService WorkflowParameterService;
         private ICurrentContext CurrentContext;
         public WorkflowParameterController(
             IWorkflowParameterTypeService WorkflowParameterTypeService,
+            IWorkflowTypeService WorkflowTypeService,
             IWorkflowParameterService WorkflowParameterService,
             ICurrentContext CurrentContext
         )
         {
             this.WorkflowParameterTypeService = WorkflowParameterTypeService;
+            this.WorkflowTypeService = WorkflowTypeService;
             this.WorkflowParameterService = WorkflowParameterService;
             this.CurrentContext = CurrentContext;
         }

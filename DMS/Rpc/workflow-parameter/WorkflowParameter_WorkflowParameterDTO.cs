@@ -14,6 +14,7 @@ namespace DMS.Rpc.workflow_parameter
         public long WorkflowTypeId { get; set; }
         public long WorkflowParameterTypeId { get; set; }
         public WorkflowParameter_WorkflowParameterTypeDTO WorkflowParameterType { get; set; }
+        public WorkflowParameter_WorkflowTypeDTO WorkflowType { get; set; }
         public WorkflowParameter_WorkflowParameterDTO() {}
         public WorkflowParameter_WorkflowParameterDTO(WorkflowParameter WorkflowParameter)
         {
@@ -23,6 +24,7 @@ namespace DMS.Rpc.workflow_parameter
             this.WorkflowTypeId = WorkflowParameter.WorkflowTypeId;
             this.WorkflowParameterTypeId = WorkflowParameter.WorkflowParameterTypeId;
             this.WorkflowParameterType = WorkflowParameter.WorkflowParameterType == null ? null : new WorkflowParameter_WorkflowParameterTypeDTO(WorkflowParameter.WorkflowParameterType);
+            this.WorkflowType = WorkflowParameter.WorkflowType == null ? null : new WorkflowParameter_WorkflowTypeDTO(WorkflowParameter.WorkflowType);
             this.Errors = WorkflowParameter.Errors;
         }
     }

@@ -14,7 +14,7 @@ namespace DMS.Enums
         public static GenericEnum PRICE_LIST = new GenericEnum { Id = 4, Code = "PRICE_LIST", Name = "Bảng giá" };
         public static List<GenericEnum> WorkflowTypeEnumList = new List<GenericEnum>()
         {
-            STORE, EROUTE, INDIRECT_SALES_ORDER
+            STORE, EROUTE, INDIRECT_SALES_ORDER, PRICE_LIST
         };
     }
 
