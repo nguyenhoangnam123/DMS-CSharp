@@ -259,6 +259,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 x.CheckOutAt.HasValue && x.CheckOutAt.Value >= StartDate && x.CheckOutAt.Value <= EndDate)
                 .Select(x => new StoreCheckingDAO
                 {
+                    StoreId = x.StoreId,
                     SaleEmployeeId = x.SaleEmployeeId,
                     Id = x.Id,
                     CheckInAt = x.CheckInAt,
