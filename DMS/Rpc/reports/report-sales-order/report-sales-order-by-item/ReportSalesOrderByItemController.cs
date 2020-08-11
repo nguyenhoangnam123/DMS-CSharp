@@ -395,20 +395,24 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                 .ToListAsync();
 
             ReportSalesOrderByItem_TotalDTO.TotalDiscount = IndirectSalesOrderTransactions
-                .Select(x => x.Discount)
+                .Where(x => x.Discount.HasValue)
+                .Select(x => x.Discount.Value)
                 .DefaultIfEmpty(0)
-                .Sum(x => x.Value);
+                .Sum();
             ReportSalesOrderByItem_TotalDTO.TotalRevenue = IndirectSalesOrderTransactions
-                .Select(x => x.Revenue)
+                .Where(x => x.Revenue.HasValue)
+                .Select(x => x.Revenue.Value)
                 .DefaultIfEmpty(0)
-                .Sum(x => x.Value);
+                .Sum();
             ReportSalesOrderByItem_TotalDTO.TotalPromotionStock = IndirectSalesOrderTransactions
                 .Where(x => x.TypeId == IndirectSalesOrderTransactionTypeEnum.PROMOTION.Id)
-                .Sum(x => x.Quantity);
+                .Select(x => x.Quantity)
+                .Sum();
             ReportSalesOrderByItem_TotalDTO.TotalSalesStock = IndirectSalesOrderTransactions
                 .Where(x => x.TypeId == IndirectSalesOrderTransactionTypeEnum.SALES_CONTENT.Id)
-                .Sum(x => x.Quantity);
-            
+                .Select(x => x.Quantity)
+                .Sum();
+
             return ReportSalesOrderByItem_TotalDTO;
         }
 
