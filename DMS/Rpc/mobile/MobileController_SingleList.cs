@@ -382,8 +382,8 @@ namespace DMS.Rpc.mobile
             BannerFilter.Selects = BannerSelect.ALL;
             BannerFilter.Skip = Mobile_BannerFilterDTO.Skip;
             BannerFilter.Take = Mobile_BannerFilterDTO.Take;
-            BannerFilter.OrderBy = Mobile_BannerFilterDTO.OrderBy;
-            BannerFilter.OrderType = Mobile_BannerFilterDTO.OrderType;
+            BannerFilter.OrderBy = BannerOrder.Priority;
+            BannerFilter.OrderType = OrderType.ASC;
             BannerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Banner> Banners = await BannerService.List(BannerFilter);
