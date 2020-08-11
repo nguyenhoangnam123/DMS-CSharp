@@ -33,7 +33,11 @@ namespace DMS.Services.MPriceList
             StatusNotExisted,
             PriceListTypeEmpty,
             PriceListTypeNotExisted,
-            EndDateInvalid
+            EndDateInvalid,
+            ItemNotExisted,
+            StoreNotExisted,
+            StoreTypeNotExisted,
+            StoreGroupingNotExisted
         }
 
         private IUOW UOW;
@@ -163,6 +167,87 @@ namespace DMS.Services.MPriceList
                 PriceList.AddError(nameof(PriceListValidator), nameof(PriceList.Status), ErrorCode.StatusNotExisted);
             return PriceList.IsValidated;
         }
+        
+        private async Task<bool> ValidateMapping(PriceList PriceList)
+        {
+            if(PriceList.PriceListItemMappings != null)
+            {
+                var ItemIds = PriceList.PriceListItemMappings.Select(x => x.ItemId).ToList();
+                var ListItemInDB = await UOW.ItemRepository.List(new ItemFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter { In = ItemIds },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                });
+                var Ids = ListItemInDB.Select(x => x.Id).ToList();
+                var ExceptIds = ItemIds.Except(Ids).ToList();
+                foreach (var PriceListItemMapping in PriceList.PriceListItemMappings)
+                {
+                    if(ExceptIds.Contains(PriceListItemMapping.ItemId))
+                        PriceListItemMapping.AddError(nameof(PriceListValidator), nameof(PriceListItemMapping.Item), ErrorCode.ItemNotExisted);
+                }
+            }
+
+            if (PriceList.PriceListStoreMappings != null)
+            {
+                var StoreIds = PriceList.PriceListStoreMappings.Select(x => x.StoreId).ToList();
+                var ListStoreInDB = await UOW.StoreRepository.List(new StoreFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter { In = StoreIds },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                });
+                var Ids = ListStoreInDB.Select(x => x.Id).ToList();
+                var ExceptIds = StoreIds.Except(Ids).ToList();
+                foreach (var PriceListStoreMapping in PriceList.PriceListStoreMappings)
+                {
+                    if (ExceptIds.Contains(PriceListStoreMapping.StoreId))
+                        PriceListStoreMapping.AddError(nameof(PriceListValidator), nameof(PriceListStoreMapping.Store), ErrorCode.StoreNotExisted);
+                }
+            }
+
+            if (PriceList.PriceListStoreTypeMappings != null)
+            {
+                var StoreTypeIds = PriceList.PriceListStoreTypeMappings.Select(x => x.StoreTypeId).ToList();
+                var ListStoreTypeInDB = await UOW.StoreTypeRepository.List(new StoreTypeFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter { In = StoreTypeIds },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                });
+                var Ids = ListStoreTypeInDB.Select(x => x.Id).ToList();
+                var ExceptIds = StoreTypeIds.Except(Ids).ToList();
+                foreach (var PriceListStoreTypeMapping in PriceList.PriceListStoreTypeMappings)
+                {
+                    if (ExceptIds.Contains(PriceListStoreTypeMapping.StoreTypeId))
+                        PriceListStoreTypeMapping.AddError(nameof(PriceListValidator), nameof(PriceListStoreTypeMapping.StoreType), ErrorCode.StoreTypeNotExisted);
+                }
+            }
+
+            if (PriceList.PriceListStoreGroupingMappings != null)
+            {
+                var StoreGroupingIds = PriceList.PriceListStoreGroupingMappings.Select(x => x.StoreGroupingId).ToList();
+                var ListStoreGroupingInDB = await UOW.StoreGroupingRepository.List(new StoreGroupingFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter { In = StoreGroupingIds },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                });
+                var Ids = ListStoreGroupingInDB.Select(x => x.Id).ToList();
+                var ExceptIds = StoreGroupingIds.Except(Ids).ToList();
+                foreach (var PriceListStoreGroupingMapping in PriceList.PriceListStoreGroupingMappings)
+                {
+                    if (ExceptIds.Contains(PriceListStoreGroupingMapping.StoreGroupingId))
+                        PriceListStoreGroupingMapping.AddError(nameof(PriceListValidator), nameof(PriceListStoreGroupingMapping.StoreGrouping), ErrorCode.StoreGroupingNotExisted);
+                }
+            }
+
+            return PriceList.IsValidated;
+        }
 
         public async Task<bool> Create(PriceList PriceList)
         {
@@ -172,6 +257,7 @@ namespace DMS.Services.MPriceList
             await ValidateOrganization(PriceList);
             await ValidateStatus(PriceList);
             await ValidatePriceListType(PriceList);
+            await ValidateMapping(PriceList);
             return PriceList.IsValidated;
         }
 
@@ -185,6 +271,7 @@ namespace DMS.Services.MPriceList
                 await ValidateOrganization(PriceList);
                 await ValidateStatus(PriceList);
                 await ValidatePriceListType(PriceList);
+                await ValidateMapping(PriceList);
             }
             return PriceList.IsValidated;
         }

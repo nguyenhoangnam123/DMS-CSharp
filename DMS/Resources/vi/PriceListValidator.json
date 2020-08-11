@@ -25,6 +25,26 @@
     },
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
+    },
+    "PriceListItemMapping": {
+      "Item": {
+        "ItemNotExisted": "Sản phẩm không tồn tại"
+      }
+    },
+    "PriceListStoreMapping": {
+      "Store": {
+        "StoreNotExisted": "Đại lý không tồn tại"
+      }
+    },
+    "PriceListStoreTypeMapping": {
+      "StoreType": {
+        "StoreTypeNotExisted": "Loại đại lý không tồn tại"
+      }
+    },
+    "PriceListStoreGroupingMapping": {
+      "StoreGrouping": {
+        "StoreGroupingNotExisted": "Nhóm đại lý không tồn tại"
+      }
     }
   }
 }
