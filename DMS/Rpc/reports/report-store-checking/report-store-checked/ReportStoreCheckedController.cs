@@ -366,7 +366,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     {
                         var TotalMinuteChecking = StoreChecking.CheckOut.Subtract(StoreChecking.CheckIn).TotalSeconds;
                         TimeSpan timeSpan = TimeSpan.FromSeconds(TotalMinuteChecking);
-                        StoreChecking.Duaration = $"{timeSpan.Hours.ToString().PadLeft(2,'0')}:, {timeSpan.Minutes.ToString().PadLeft(2, '0')}";
+                        StoreChecking.Duaration = $"{timeSpan.Hours.ToString().PadLeft(2,'0')}: {timeSpan.Minutes.ToString().PadLeft(2, '0')}";
                         var HasSalesOrder = SalesOrders.Where(x => x.StoreCheckingId == StoreChecking.Id).FirstOrDefault();
                         if (HasSalesOrder == null)
                             StoreChecking.SalesOrder = false;

@@ -23,11 +23,14 @@ using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
 using DMS.Enums;
 using DMS.Services.MProvince;
+using DMS.Services.MAppUser;
+using System.Text;
 
 namespace DMS.Rpc.price_list
 {
     public partial class PriceListController : RpcController
     {
+        private IAppUserService AppUserService;
         private IOrganizationService OrganizationService;
         private IItemService ItemService;
         private IStoreGroupingService StoreGroupingService;
@@ -42,6 +45,7 @@ namespace DMS.Rpc.price_list
         private IProductGroupingService ProductGroupingService;
         private ICurrentContext CurrentContext;
         public PriceListController(
+            IAppUserService AppUserService,
             IOrganizationService OrganizationService,
             IItemService ItemService,
             IStoreGroupingService StoreGroupingService,
@@ -57,6 +61,7 @@ namespace DMS.Rpc.price_list
             ICurrentContext CurrentContext
         )
         {
+            this.AppUserService = AppUserService;
             this.OrganizationService = OrganizationService;
             this.ItemService = ItemService;
             this.StoreGroupingService = StoreGroupingService;
@@ -185,8 +190,299 @@ namespace DMS.Rpc.price_list
             return true;
         }
 
+        [Route(PriceListRoute.ImportItem), HttpPost]
+        public async Task<ActionResult<List<PriceList_PriceListItemMappingDTO>>> ImportItem([FromForm] long PriceListId, [FromForm] IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(PriceListId))
+                return Forbid();
+
+            PriceList PriceList = await PriceListService.Get(PriceListId);
+            if (PriceList == null)
+                return BadRequest("Bảng giá không tồn tại");
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            if (!FileInfo.Extension.Equals(".xlsx"))
+                return BadRequest("Định dạng file không hợp lệ");
+
+            ItemFilter ItemFilter = new ItemFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ItemSelect.ALL
+            };
+
+            List<Item> Items = await ItemService.List(ItemFilter);
+            StringBuilder errorContent = new StringBuilder();
+            PriceList.PriceListItemMappings = new List<PriceListItemMapping>();
+            using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Gia ban"];
+                if (worksheet == null)
+                    return BadRequest("File không đúng biểu mẫu import");
+                int StartColumn = 1;
+                int StartRow = 1;
+                int SttColumnn = 0 + StartColumn;
+                int ItemCodeColumn = 1 + StartColumn;
+                int PriceColumn = 2 + StartColumn;
+
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    string stt = worksheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
+                    if (stt != null && stt.ToLower() == "END".ToLower())
+                        break;
+
+                    string ItemCodeValue = worksheet.Cells[i + StartRow, ItemCodeColumn].Value?.ToString();
+                    string PriceValue = worksheet.Cells[i + StartRow, PriceColumn].Value?.ToString();
+                    if (string.IsNullOrWhiteSpace(ItemCodeValue) && i != worksheet.Dimension.End.Row)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã sản phẩm");
+                    }
+                    else if (string.IsNullOrWhiteSpace(ItemCodeValue) && i == worksheet.Dimension.End.Row)
+                        break;
+
+                    PriceListItemMapping PriceListItemMapping = new PriceListItemMapping();
+                    var ItemItem = Items.Where(x => x.Code == ItemCodeValue).FirstOrDefault();
+
+                    PriceListItemMapping.PriceListId = PriceList.Id;
+                    PriceListItemMapping.ItemId = ItemItem.Id;
+                    if (long.TryParse(PriceValue, out long Price))
+                    {
+                        PriceListItemMapping.Price = Price;
+                        if(Price < 0)
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Giá bán không hợp lệ");
+                    }
+                    else
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập giá bán");
+                    }
+
+                    PriceList.PriceListItemMappings.Add(PriceListItemMapping);
+                }
+                if (errorContent.Length > 0)
+                    return BadRequest(errorContent.ToString());
+            }
+            PriceList = await PriceListService.Update(PriceList);
+            List<PriceList_PriceListItemMappingDTO> PriceList_PriceListItemMappingDTOs = PriceList.PriceListItemMappings
+                 .Select(c => new PriceList_PriceListItemMappingDTO(c)).ToList();
+            for (int i = 0; i < PriceList.PriceListItemMappings.Count; i++)
+            {
+                if (!PriceList.PriceListItemMappings[i].IsValidated)
+                {
+                    foreach (var Error in PriceList.PriceListItemMappings[i].Errors)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
+                    }
+                }
+            }
+            if (PriceList.PriceListItemMappings.Any(x => !x.IsValidated))
+                return BadRequest(errorContent.ToString());
+            return PriceList_PriceListItemMappingDTOs;
+        }
+
+        [Route(PriceListRoute.ImportStore), HttpPost]
+        public async Task<ActionResult<List<PriceList_PriceListStoreMappingDTO>>> ImportStore([FromForm] long PriceListId, [FromForm] IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(PriceListId))
+                return Forbid();
+
+            PriceList PriceList = await PriceListService.Get(PriceListId);
+            if (PriceList == null)
+                return BadRequest("Bảng giá không tồn tại");
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            if (!FileInfo.Extension.Equals(".xlsx"))
+                return BadRequest("Định dạng file không hợp lệ");
+
+            StoreFilter StoreFilter = new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.ALL
+            };
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            StringBuilder errorContent = new StringBuilder();
+            PriceList.PriceListStoreMappings = new List<PriceListStoreMapping>();
+            using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Daily_Apdung"];
+                if (worksheet == null)
+                    return BadRequest("File không đúng biểu mẫu import");
+                int StartColumn = 1;
+                int StartRow = 1;
+                int SttColumnn = 0 + StartColumn;
+                int StoreCodeColumn = 1 + StartColumn;
+
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    string stt = worksheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
+                    if (stt != null && stt.ToLower() == "END".ToLower())
+                        break;
+
+                    string StoreCodeValue = worksheet.Cells[i + StartRow, StoreCodeColumn].Value?.ToString();
+                    if (string.IsNullOrWhiteSpace(StoreCodeValue) && i != worksheet.Dimension.End.Row)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã đại lý");
+                    }
+                    else if (string.IsNullOrWhiteSpace(StoreCodeValue) && i == worksheet.Dimension.End.Row)
+                        break;
+
+                    PriceListStoreMapping PriceListStoreMapping = new PriceListStoreMapping();
+                    var StoreStore = Stores.Where(x => x.Code == StoreCodeValue).FirstOrDefault();
+
+                    PriceListStoreMapping.PriceListId = PriceList.Id;
+                    PriceListStoreMapping.StoreId = StoreStore.Id;
+                    PriceList.PriceListStoreMappings.Add(PriceListStoreMapping);
+                }
+                if (errorContent.Length > 0)
+                    return BadRequest(errorContent.ToString());
+            }
+            PriceList = await PriceListService.Update(PriceList);
+            List<PriceList_PriceListStoreMappingDTO> PriceList_PriceListStoreMappingDTOs = PriceList.PriceListStoreMappings
+                 .Select(c => new PriceList_PriceListStoreMappingDTO(c)).ToList();
+            for (int i = 0; i < PriceList.PriceListStoreMappings.Count; i++)
+            {
+                if (!PriceList.PriceListStoreMappings[i].IsValidated)
+                {
+                    foreach (var Error in PriceList.PriceListStoreMappings[i].Errors)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
+                    }
+                }
+            }
+            if (PriceList.PriceListStoreMappings.Any(x => !x.IsValidated))
+                return BadRequest(errorContent.ToString());
+            return PriceList_PriceListStoreMappingDTOs;
+        }
+
+        [Route(PriceListRoute.ExportItem), HttpPost]
+        public async Task<ActionResult<FileResult>> ExportItem([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(PriceList_PriceListDTO.Id))
+                return Forbid();
+
+            long PriceListId = PriceList_PriceListDTO?.Id ?? 0;
+            PriceList PriceList = await PriceListService.Get(PriceListId);
+            if (PriceList == null)
+                return null;
+
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            {
+                var PriceListItemMappingHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "STT",
+                        "Mã sản phẩm",
+                        "Giá bán"
+                    }
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < PriceList.PriceListItemMappings.Count; i++)
+                {
+                    var PriceListItemMapping = PriceList.PriceListItemMappings[i];
+                    data.Add(new Object[]
+                    {
+                        i+1,
+                        PriceListItemMapping.Item?.Code,
+                        PriceListItemMapping.Price,
+                    });
+                }
+                excel.GenerateWorksheet("Gia ban", PriceListItemMappingHeader, data);
+
+                var ItemHeaders = new List<string[]>()
+                {
+                    new string[]
+                    {
+                        "Mã sản phẩm",
+                        "Tên sản phẩm",
+                    }
+                };
+                data = new List<object[]>();
+                for (int i = 0; i < PriceList.PriceListItemMappings.Count; i++)
+                {
+                    var PriceListItemMapping = PriceList.PriceListItemMappings[i];
+                    data.Add(new Object[]
+                    {
+                        PriceListItemMapping.Item?.Code,
+                        PriceListItemMapping.Item?.Name,
+                    });
+                }
+                excel.GenerateWorksheet("San pham", ItemHeaders, data);
+                excel.Save();
+            }
+            return File(memoryStream.ToArray(), "application/octet-stream", $"{PriceList.Code}_Item.xlsx");
+        }
+
+        [Route(PriceListRoute.ExportStore), HttpPost]
+        public async Task<ActionResult<FileResult>> ExportStore([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(PriceList_PriceListDTO.Id))
+                return Forbid();
+
+            long PriceListId = PriceList_PriceListDTO?.Id ?? 0;
+            PriceList PriceList = await PriceListService.Get(PriceListId);
+            if (PriceList == null)
+                return null;
+
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            {
+                var PriceListStoreMappingHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "STT",
+                        "Mã đại lý"
+                    }
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < PriceList.PriceListStoreMappings.Count; i++)
+                {
+                    var PriceListStoreMapping = PriceList.PriceListStoreMappings[i];
+                    data.Add(new Object[]
+                    {
+                        i+1,
+                        PriceListStoreMapping.Store?.Code,
+                    });
+                }
+                excel.GenerateWorksheet("Daily_Apdung", PriceListStoreMappingHeader, data);
+
+                var StoreHeaders = new List<string[]>()
+                {
+                    new string[]
+                    {
+                        "Mã đại lý",
+                        "Tên đại lý",
+                    }
+                };
+                data = new List<object[]>();
+                for (int i = 0; i < PriceList.PriceListStoreMappings.Count; i++)
+                {
+                    var PriceListStoreMapping = PriceList.PriceListStoreMappings[i];
+                    data.Add(new Object[]
+                    {
+                        PriceListStoreMapping.Store?.Code,
+                        PriceListStoreMapping.Store?.Name,
+                    });
+                }
+                excel.GenerateWorksheet("Dai ly", StoreHeaders, data);
+                excel.Save();
+            }
+            return File(memoryStream.ToArray(), "application/octet-stream", $"{PriceList.Code}_Store.xlsx");
+        }
+
         [Route(PriceListRoute.ExportTemplateItem), HttpPost]
-        public async Task<FileResult> ExportTemplate()
+        public async Task<FileResult> ExportTemplateItem()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -200,46 +496,61 @@ namespace DMS.Rpc.price_list
             };
             var Items = await ItemService.List(ItemFilter);
 
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            MemoryStream MemoryStream = new MemoryStream();
+            string tempPath = "Templates/Pricelist_Item.xlsx";
+            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
             {
-                var InventoryHeaders = new List<string[]>()
+                var worksheet = xlPackage.Workbook.Worksheets["San pham"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow = 2;
+                int numberCell = 1;
+                for (var i = 0; i < Items.Count; i++)
                 {
-                    new string[] {
-                        "STT",
-                        "Mã sản phẩm",
-                        "Giá bán"
-                    }
-                };
-                List<object[]> data = new List<object[]>();
-                data.Add(new object[]
-                {
-                    
-                });
-                excel.GenerateWorksheet("Gia ban", InventoryHeaders, data);
-
-                data.Clear();
-                var PriceListHeader = new List<string[]>()
-                {
-                    new string[] {
-                        "Mã sản phẩm",
-                        "Tên sản phẩm",
-                    }
-                };
-                for (int i = 0; i < Items.Count; i++)
-                {
-                    var Item = Items[i];
-                    data.Add(new Object[]
-                    {
-                        Item.Code,
-                        Item.Name,
-                    });
+                    Item Item = Items[i];
+                    worksheet.Cells[startRow + i, numberCell].Value = Item.Code;
+                    worksheet.Cells[startRow + i, numberCell + 1].Value = Item.Name;
                 }
-                
-                excel.GenerateWorksheet("San pham", PriceListHeader, data);
-                excel.Save();
+                xlPackage.SaveAs(MemoryStream);
             }
-            return File(memoryStream.ToArray(), "application/octet-stream", "Template_PriceList_Item.xlsx");
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Template_PriceList_Item.xlsx");
+        }
+
+        [Route(PriceListRoute.ExportTemplateStore), HttpPost]
+        public async Task<FileResult> ExportTemplateStore()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            var appUser = await AppUserService.Get(CurrentContext.UserId);
+            var StoreFilter = new StoreFilter
+            {
+                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name,
+                Skip = 0,
+                Take = int.MaxValue,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                OrganizationId = new IdFilter { Equal = appUser.OrganizationId }
+            };
+            var Stores = await StoreService.List(StoreFilter);
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            MemoryStream MemoryStream = new MemoryStream();
+            string tempPath = "Templates/Pricelist_Store.xlsx";
+            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            {
+                var worksheet = xlPackage.Workbook.Worksheets["Daily"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow = 2;
+                int numberCell = 1;
+                for (var i = 0; i < Stores.Count; i++)
+                {
+                    Store Store = Stores[i];
+                    worksheet.Cells[startRow + i, numberCell].Value = Store.Code;
+                    worksheet.Cells[startRow + i, numberCell + 1].Value = Store.Name;
+                }
+                xlPackage.SaveAs(MemoryStream);
+            }
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Template_PriceList_Store.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)

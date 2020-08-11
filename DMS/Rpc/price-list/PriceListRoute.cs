@@ -32,10 +32,10 @@ namespace DMS.Rpc.price_list
         public const string Delete = Default + "/delete";
         public const string ImportItem = Default + "/import-item";
         public const string ExportItem = Default + "/export-item";
-        public const string ExportTemplateItem = Default + "/export-tempate-item";
+        public const string ExportTemplateItem = Default + "/export-template-item";
         public const string ImportStore = Default + "/import-store";
         public const string ExportStore = Default + "/export-store";
-        public const string ExportTemplateStore = Default + "/export-tempate-store";
+        public const string ExportTemplateStore = Default + "/export-template-store";
         public const string BulkDelete = Default + "/bulk-delete";
         
         public const string FilterListOrganization = Default + "/filter-list-organization";

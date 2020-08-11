@@ -546,7 +546,7 @@ namespace DMS.Rpc.store
                         "STT",
                         "Mã đại lý",
                         "Tên đại lý",
-                        "Đơn Vị Quản Lý",
+                        "Đơn vị quản lý",
                         "Đại lý cấp cha",
                         "Cấp đại lý" ,
                         "Nhóm đại lý",
