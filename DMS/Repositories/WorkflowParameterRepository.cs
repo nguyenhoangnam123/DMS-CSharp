@@ -121,13 +121,19 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(WorkflowParameterSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(WorkflowParameterSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(WorkflowParameterSelect.Name) ? q.Name : default(string),
-                WorkflowTypeId = filter.Selects.Contains(WorkflowParameterSelect.WorkflowType) ? q.WorkflowTypeId : default(long),
                 WorkflowParameterTypeId = filter.Selects.Contains(WorkflowParameterSelect.WorkflowParameterType) ? q.WorkflowParameterTypeId : default(long),
                 WorkflowParameterType = filter.Selects.Contains(WorkflowParameterSelect.WorkflowParameterType) && q.WorkflowParameterType != null ? new WorkflowParameterType
                 {
                     Id = q.WorkflowParameterType.Id,
                     Code = q.WorkflowParameterType.Code,
                     Name = q.WorkflowParameterType.Name,
+                } : null,
+                WorkflowTypeId = filter.Selects.Contains(WorkflowParameterSelect.WorkflowType) ? q.WorkflowTypeId : default(long),
+                WorkflowType = filter.Selects.Contains(WorkflowParameterSelect.WorkflowType) && q.WorkflowType != null ? new WorkflowType
+                {
+                    Id = q.WorkflowType.Id,
+                    Code = q.WorkflowType.Code,
+                    Name = q.WorkflowType.Name,
                 } : null,
             }).ToListAsync();
             return WorkflowParameters;

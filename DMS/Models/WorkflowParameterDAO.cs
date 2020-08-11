@@ -18,6 +18,7 @@ namespace DMS.Models
         public long WorkflowParameterTypeId { get; set; }
 
         public virtual WorkflowParameterTypeDAO WorkflowParameterType { get; set; }
+        public virtual WorkflowTypeDAO WorkflowType { get; set; }
         public virtual ICollection<RequestWorkflowParameterMappingDAO> RequestWorkflowParameterMappings { get; set; }
         public virtual ICollection<WorkflowDirectionConditionDAO> WorkflowDirectionConditions { get; set; }
     }

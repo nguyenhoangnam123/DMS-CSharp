@@ -34,6 +34,25 @@ namespace DMS.Rpc.workflow_parameter
                 .Select(x => new WorkflowParameter_WorkflowParameterTypeDTO(x)).ToList();
             return WorkflowParameter_WorkflowParameterTypeDTOs;
         }
+
+        [Route(WorkflowParameterRoute.FilterListWorkflowType), HttpPost]
+        public async Task<List<WorkflowParameter_WorkflowTypeDTO>> FilterListWorkflowType()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            WorkflowTypeFilter WorkflowTypeFilter = new WorkflowTypeFilter();
+            WorkflowTypeFilter.Skip = 0;
+            WorkflowTypeFilter.Take = 20;
+            WorkflowTypeFilter.OrderBy = WorkflowTypeOrder.Id;
+            WorkflowTypeFilter.OrderType = OrderType.ASC;
+            WorkflowTypeFilter.Selects = WorkflowTypeSelect.ALL;
+
+            List<WorkflowType> WorkflowTypes = await WorkflowTypeService.List(WorkflowTypeFilter);
+            List<WorkflowParameter_WorkflowTypeDTO> WorkflowParameter_WorkflowTypeDTOs = WorkflowTypes
+                .Select(x => new WorkflowParameter_WorkflowTypeDTO(x)).ToList();
+            return WorkflowParameter_WorkflowTypeDTOs;
+        }
     }
 }
 

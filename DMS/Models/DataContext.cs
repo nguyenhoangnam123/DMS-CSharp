@@ -3578,6 +3578,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.WorkflowParameterTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WorkflowParameter_WorkflowParameterType");
+
+                entity.HasOne(d => d.WorkflowType)
+                    .WithMany(p => p.WorkflowParameters)
+                    .HasForeignKey(d => d.WorkflowTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowParameter_WorkflowType");
             });
 
             modelBuilder.Entity<WorkflowParameterTypeDAO>(entity =>

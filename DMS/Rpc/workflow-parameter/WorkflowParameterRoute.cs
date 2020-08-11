@@ -24,6 +24,7 @@ namespace DMS.Rpc.workflow_parameter
         public const string List = Default + "/list";
         
         public const string FilterListWorkflowParameterType = Default + "/filter-list-workflow-parameter-type";
+        public const string FilterListWorkflowType = Default + "/filter-list-workflow-type";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(WorkflowParameterFilter.Id), FieldTypeEnum.ID.Id },
@@ -38,7 +39,7 @@ namespace DMS.Rpc.workflow_parameter
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List,
-                FilterListWorkflowParameterType, } },
+                FilterListWorkflowParameterType, FilterListWorkflowType, } },
         };
     }
 }
