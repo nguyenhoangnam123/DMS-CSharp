@@ -16,8 +16,9 @@ namespace DMS.Rpc.workflow_parameter
 {
     public class WorkflowParameterRoute : Root
     {
-        public const string Master = Module + "/workflow-parameter/workflow-parameter-master";
-        public const string Detail = Module + "/workflow-parameter/workflow-parameter-detail";
+        public const string Parent = Module + "/workflow";
+        public const string Master = Module + "/workflow/workflow-parameter/workflow-parameter-master";
+        public const string Detail = Module + "/workflow/workflow-parameter/workflow-parameter-detail";
         private const string Default = Rpc + Module + "/workflow-parameter";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
@@ -34,7 +35,8 @@ namespace DMS.Rpc.workflow_parameter
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> { 
+            { "Tìm kiếm", new List<string> {
+                Parent,
                 Master, Count, List,
                 FilterListWorkflowParameterType, } },
         };
