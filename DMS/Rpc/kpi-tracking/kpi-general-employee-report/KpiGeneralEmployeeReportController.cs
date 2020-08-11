@@ -248,7 +248,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     IndirectSalesOrderContents = x.IndirectSalesOrderContents.Select(c => new IndirectSalesOrderContentDAO
                     {
                         IndirectSalesOrderId = x.Id,
-                        Quantity = c.Quantity,
+                        RequestedQuantity = c.RequestedQuantity,
                         ItemId = c.ItemId,
                     }).ToList(),
                 })
@@ -275,6 +275,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     CreatedAt = x.CreatedAt,
                     Stores = x.Stores.Select(c => new StoreDAO
                     {
+                        Id = c.Id,
                         StoreScoutingId = c.StoreScoutingId
                     }).ToList()
                 })
