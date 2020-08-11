@@ -27,16 +27,16 @@ namespace DMS.Rpc
             return await PermissionService.ListPath(CurrentContext.UserId);
         }
 
-        //[HttpGet, Route("rpc/dms/permission/test-export")]
-        //public async Task<ActionResult> Export()
-        //{
-        //    MemoryStream MemoryStream = new MemoryStream();
-        //    var documentConverter = new DocumentConverter("D:\\VTB_TaiLieuCustomize-v0.1.docx");
+        [HttpGet, Route("rpc/dms/permission/test-export")]
+        public async Task<ActionResult> Export()
+        {
+            MemoryStream MemoryStream = new MemoryStream();
+            var documentConverter = new DocumentConverter("Templates/Store_Export.xlsx");
 
-        //    // Convert "InputFile.docx" to Pdf written to outputStream
-        //    documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
-        //    return File(MemoryStream.ToArray(), "application/octet-stream", "VTB_TaiLieuCustomize.pdf");
+            // Convert "InputFile.docx" to Pdf written to outputStream
+            documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Store_Export.pdf");
 
-        //}
+        }
     }
 }
