@@ -25,6 +25,7 @@ using DMS.Enums;
 using DMS.Services.MProvince;
 using DMS.Services.MAppUser;
 using System.Text;
+using DMS.Services.MPriceListItemHistory;
 
 namespace DMS.Rpc.price_list
 {
@@ -37,6 +38,7 @@ namespace DMS.Rpc.price_list
         private IStoreService StoreService;
         private IStoreTypeService StoreTypeService;
         private IPriceListTypeService PriceListTypeService;
+        private IPriceListItemHistoryService PriceListItemHistoryService;
         private ISalesOrderTypeService SalesOrderTypeService;
         private IStatusService StatusService;
         private IPriceListService PriceListService;
@@ -52,6 +54,7 @@ namespace DMS.Rpc.price_list
             IStoreService StoreService,
             IStoreTypeService StoreTypeService,
             IPriceListTypeService PriceListTypeService,
+            IPriceListItemHistoryService PriceListItemHistoryService,
             ISalesOrderTypeService SalesOrderTypeService,
             IStatusService StatusService,
             IPriceListService PriceListService,
@@ -68,6 +71,7 @@ namespace DMS.Rpc.price_list
             this.StoreService = StoreService;
             this.StoreTypeService = StoreTypeService;
             this.PriceListTypeService = PriceListTypeService;
+            this.PriceListItemHistoryService = PriceListItemHistoryService;
             this.SalesOrderTypeService = SalesOrderTypeService;
             this.StatusService = StatusService;
             this.PriceListService = PriceListService;

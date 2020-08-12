@@ -170,13 +170,14 @@ namespace DMS.Services.MPriceList
         
         private async Task<bool> ValidateMapping(PriceList PriceList)
         {
-            if(PriceList.PriceListItemMappings != null)
+            if(PriceList.PriceListItemMappings != null && PriceList.PriceListItemMappings.Any())
             {
                 var ItemIds = PriceList.PriceListItemMappings.Select(x => x.ItemId).ToList();
                 var ListItemInDB = await UOW.ItemRepository.List(new ItemFilter
                 {
                     Skip = 0,
                     Take = int.MaxValue,
+                    Selects = ItemSelect.Id,
                     Id = new IdFilter { In = ItemIds },
                     StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
                 });
@@ -189,13 +190,14 @@ namespace DMS.Services.MPriceList
                 }
             }
 
-            if (PriceList.PriceListStoreMappings != null)
+            if (PriceList.PriceListStoreMappings != null && PriceList.PriceListStoreMappings.Any())
             {
                 var StoreIds = PriceList.PriceListStoreMappings.Select(x => x.StoreId).ToList();
                 var ListStoreInDB = await UOW.StoreRepository.List(new StoreFilter
                 {
                     Skip = 0,
                     Take = int.MaxValue,
+                    Selects = StoreSelect.Id,
                     Id = new IdFilter { In = StoreIds },
                     StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
                 });
@@ -208,13 +210,14 @@ namespace DMS.Services.MPriceList
                 }
             }
 
-            if (PriceList.PriceListStoreTypeMappings != null)
+            if (PriceList.PriceListStoreTypeMappings != null && PriceList.PriceListStoreTypeMappings.Any())
             {
                 var StoreTypeIds = PriceList.PriceListStoreTypeMappings.Select(x => x.StoreTypeId).ToList();
                 var ListStoreTypeInDB = await UOW.StoreTypeRepository.List(new StoreTypeFilter
                 {
                     Skip = 0,
                     Take = int.MaxValue,
+                    Selects = StoreTypeSelect.Id,
                     Id = new IdFilter { In = StoreTypeIds },
                     StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
                 });
@@ -227,15 +230,17 @@ namespace DMS.Services.MPriceList
                 }
             }
 
-            if (PriceList.PriceListStoreGroupingMappings != null)
+            if (PriceList.PriceListStoreGroupingMappings != null && PriceList.PriceListStoreGroupingMappings.Any())
             {
                 var StoreGroupingIds = PriceList.PriceListStoreGroupingMappings.Select(x => x.StoreGroupingId).ToList();
                 var ListStoreGroupingInDB = await UOW.StoreGroupingRepository.List(new StoreGroupingFilter
                 {
                     Skip = 0,
                     Take = int.MaxValue,
+                    Selects = StoreGroupingSelect.Id,
                     Id = new IdFilter { In = StoreGroupingIds },
-                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+
                 });
                 var Ids = ListStoreGroupingInDB.Select(x => x.Id).ToList();
                 var ExceptIds = StoreGroupingIds.Except(Ids).ToList();

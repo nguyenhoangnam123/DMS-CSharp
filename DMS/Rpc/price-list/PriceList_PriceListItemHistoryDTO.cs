@@ -32,7 +32,7 @@ namespace DMS.Rpc.price_list
         }
     }
 
-    public class PriceList_PriceListItemHistoryFilter : FilterDTO
+    public class PriceList_PriceListItemHistoryFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public IdFilter PriceListId { get; set; }

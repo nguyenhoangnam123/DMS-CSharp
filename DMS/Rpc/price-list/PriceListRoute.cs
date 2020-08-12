@@ -64,6 +64,8 @@ namespace DMS.Rpc.price_list
         public const string ListItem = Default + "/list-item";
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
+        public const string CountPriceListItemHistory = Default + "/count-price-list-item-history";
+        public const string ListPriceListItemHistory = Default + "/list-price-list-item-history";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {

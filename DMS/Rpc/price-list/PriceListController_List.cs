@@ -410,6 +410,8 @@ namespace DMS.Rpc.price_list
         [Route(PriceListRoute.SingleListProvince), HttpPost]
         public async Task<List<PriceList_ProvinceDTO>> SingleListProvince([FromBody] PriceList_ProvinceFilterDTO PriceList_ProvinceFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
             ProvinceFilter ProvinceFilter = new ProvinceFilter();
             ProvinceFilter.Skip = PriceList_ProvinceFilterDTO.Skip;
             ProvinceFilter.Take = PriceList_ProvinceFilterDTO.Take;
@@ -429,6 +431,8 @@ namespace DMS.Rpc.price_list
         [Route(PriceListRoute.SingleListProductType), HttpPost]
         public async Task<List<PriceList_ProductTypeDTO>> SingleListProductType([FromBody] PriceList_ProductTypeFilterDTO PriceList_ProductTypeFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
             ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
             ProductTypeFilter.Skip = 0;
             ProductTypeFilter.Take = 20;
@@ -450,6 +454,8 @@ namespace DMS.Rpc.price_list
         [Route(PriceListRoute.SingleListProductGrouping), HttpPost]
         public async Task<List<PriceList_ProductGroupingDTO>> SingleListProductGrouping([FromBody] PriceList_ProductGroupingFilterDTO PriceList_ProductGroupingFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
             ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
             ProductGroupingFilter.Skip = 0;
             ProductGroupingFilter.Take = int.MaxValue;
@@ -467,6 +473,8 @@ namespace DMS.Rpc.price_list
         [Route(PriceListRoute.CountItem), HttpPost]
         public async Task<long> CountItem([FromBody] PriceList_ItemFilterDTO PriceList_ItemFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
             ItemFilter ItemFilter = new ItemFilter();
             ItemFilter.Id = PriceList_ItemFilterDTO.Id;
             ItemFilter.ProductId = PriceList_ItemFilterDTO.ProductId;
@@ -483,6 +491,8 @@ namespace DMS.Rpc.price_list
         [Route(PriceListRoute.ListItem), HttpPost]
         public async Task<List<PriceList_ItemDTO>> ListItem([FromBody] PriceList_ItemFilterDTO PriceList_ItemFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
             ItemFilter ItemFilter = new ItemFilter();
             ItemFilter.Skip = PriceList_ItemFilterDTO.Skip;
             ItemFilter.Take = PriceList_ItemFilterDTO.Take;
@@ -507,6 +517,9 @@ namespace DMS.Rpc.price_list
         [Route(PriceListRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] PriceList_StoreFilterDTO PriceList_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Id = PriceList_StoreFilterDTO.Id;
             StoreFilter.Code = PriceList_StoreFilterDTO.Code;
@@ -539,6 +552,9 @@ namespace DMS.Rpc.price_list
         [Route(PriceListRoute.ListStore), HttpPost]
         public async Task<List<PriceList_StoreDTO>> ListStore([FromBody] PriceList_StoreFilterDTO PriceList_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Skip = PriceList_StoreFilterDTO.Skip;
             StoreFilter.Take = PriceList_StoreFilterDTO.Take;
@@ -574,6 +590,49 @@ namespace DMS.Rpc.price_list
             List<PriceList_StoreDTO> PriceList_StoreDTOs = Stores
                 .Select(x => new PriceList_StoreDTO(x)).ToList();
             return PriceList_StoreDTOs;
+        }
+
+        [Route(PriceListRoute.CountPriceListItemHistory), HttpPost]
+        public async Task<long> CountPriceListItemHistory([FromBody] PriceList_PriceListItemHistoryFilterDTO PriceList_PriceListItemHistoryFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            PriceListItemHistoryFilter PriceListItemHistoryFilter = new PriceListItemHistoryFilter
+            {
+                ItemId = PriceList_PriceListItemHistoryFilterDTO.ItemId,
+                PriceListId = PriceList_PriceListItemHistoryFilterDTO.PriceListId,
+                ModifierId = PriceList_PriceListItemHistoryFilterDTO.ModifierId,
+                UpdatedAt = PriceList_PriceListItemHistoryFilterDTO.UpdatedAt,
+            };
+
+            return await PriceListItemHistoryService.Count(PriceListItemHistoryFilter);
+        }
+
+        [Route(PriceListRoute.ListPriceListItemHistory), HttpPost]
+        public async Task<List<PriceList_PriceListItemHistoryDTO>> ListPriceListItemHistory([FromBody] PriceList_PriceListItemHistoryFilterDTO PriceList_PriceListItemHistoryFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            PriceListItemHistoryFilter PriceListItemHistoryFilter = new PriceListItemHistoryFilter
+            {
+                Skip = PriceList_PriceListItemHistoryFilterDTO.Skip,
+                Take = PriceList_PriceListItemHistoryFilterDTO.Take,
+                Selects = ItemHistorySelect.ALL,
+                OrderBy = ItemHistoryOrder.Time,
+                OrderType = OrderType.DESC,
+                ItemId = PriceList_PriceListItemHistoryFilterDTO.ItemId,
+                PriceListId = PriceList_PriceListItemHistoryFilterDTO.PriceListId,
+                ModifierId = PriceList_PriceListItemHistoryFilterDTO.ModifierId,
+                UpdatedAt = PriceList_PriceListItemHistoryFilterDTO.UpdatedAt,
+            };
+
+            List<PriceListItemHistory> PriceListItemHistories = await PriceListItemHistoryService.List(PriceListItemHistoryFilter);
+            List<PriceList_PriceListItemHistoryDTO> PriceList_PriceListItemHistoryDTOs = PriceListItemHistories
+                .Select(x => new PriceList_PriceListItemHistoryDTO(x))
+                .ToList();
+            return PriceList_PriceListItemHistoryDTOs;
         }
     }
 }

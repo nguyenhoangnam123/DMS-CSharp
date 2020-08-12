@@ -27,9 +27,6 @@ namespace DMS.Repositories
         IEventMessageRepository EventMessageRepository { get; }
         IFieldRepository FieldRepository { get; }
         IImageRepository ImageRepository { get; }
-        IPriceListRepository PriceListRepository { get; }
-        IPriceListTypeRepository PriceListTypeRepository { get; }
-        IPriceListItemMappingItemMappingRepository PriceListItemMappingItemMappingRepository { get; }
         IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; }
         IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; }
         IIndirectSalesOrderPromotionRepository IndirectSalesOrderPromotionRepository { get; }
@@ -52,6 +49,10 @@ namespace DMS.Repositories
         IPermissionOperatorRepository PermissionOperatorRepository { get; }
         IPermissionRepository PermissionRepository { get; }
         IPositionRepository PositionRepository { get; }
+        IPriceListRepository PriceListRepository { get; }
+        IPriceListTypeRepository PriceListTypeRepository { get; }
+        IPriceListItemHistoryRepository PriceListItemHistoryRepository { get; }
+        IPriceListItemMappingItemMappingRepository PriceListItemMappingItemMappingRepository { get; }
         IProblemRepository ProblemRepository { get; }
         IProblemHistoryRepository ProblemHistoryRepository { get; }
         IProblemTypeRepository ProblemTypeRepository { get; }
@@ -123,9 +124,6 @@ namespace DMS.Repositories
         public IFieldRepository FieldRepository { get; private set; }
         public IEventMessageRepository EventMessageRepository { get; private set; }
         public IImageRepository ImageRepository { get; private set; }
-        public IPriceListRepository PriceListRepository { get; private set; }
-        public IPriceListTypeRepository PriceListTypeRepository { get; private set; }
-        public IPriceListItemMappingItemMappingRepository PriceListItemMappingItemMappingRepository { get; private set; }
         public IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; private set; }
         public IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; private set; }
         public IIndirectSalesOrderPromotionRepository IndirectSalesOrderPromotionRepository { get; private set; }
@@ -148,6 +146,10 @@ namespace DMS.Repositories
         public IPermissionOperatorRepository PermissionOperatorRepository { get; private set; }
         public IPermissionRepository PermissionRepository { get; private set; }
         public IPositionRepository PositionRepository { get; private set; }
+        public IPriceListRepository PriceListRepository { get; private set; }
+        public IPriceListTypeRepository PriceListTypeRepository { get; private set; }
+        public IPriceListItemHistoryRepository PriceListItemHistoryRepository { get; private set; }
+        public IPriceListItemMappingItemMappingRepository PriceListItemMappingItemMappingRepository { get; private set; }
         public IProblemRepository ProblemRepository { get; private set; }
         public IProblemHistoryRepository ProblemHistoryRepository { get; private set; }
         public IProblemTypeRepository ProblemTypeRepository { get; private set; }
@@ -218,9 +220,6 @@ namespace DMS.Repositories
             FieldRepository = new FieldRepository(DataContext);
             EventMessageRepository = new EventMessageRepository(DataContext);
             ImageRepository = new ImageRepository(DataContext);
-            PriceListRepository = new PriceListRepository(DataContext);
-            PriceListTypeRepository = new PriceListTypeRepository(DataContext);
-            PriceListItemMappingItemMappingRepository = new PriceListItemMappingItemMappingRepository(DataContext);
             IndirectSalesOrderContentRepository = new IndirectSalesOrderContentRepository(DataContext);
             IndirectSalesOrderRepository = new IndirectSalesOrderRepository(DataContext);
             IndirectSalesOrderPromotionRepository = new IndirectSalesOrderPromotionRepository(DataContext);
@@ -243,6 +242,10 @@ namespace DMS.Repositories
             PermissionOperatorRepository = new PermissionOperatorRepository(DataContext);
             PermissionRepository = new PermissionRepository(DataContext);
             PositionRepository = new PositionRepository(DataContext);
+            PriceListRepository = new PriceListRepository(DataContext);
+            PriceListTypeRepository = new PriceListTypeRepository(DataContext);
+            PriceListItemHistoryRepository = new PriceListItemHistoryRepository(DataContext);
+            PriceListItemMappingItemMappingRepository = new PriceListItemMappingItemMappingRepository(DataContext);
             ProblemRepository = new ProblemRepository(DataContext);
             ProblemTypeRepository = new ProblemTypeRepository(DataContext);
             ProblemHistoryRepository = new ProblemHistoryRepository(DataContext);
