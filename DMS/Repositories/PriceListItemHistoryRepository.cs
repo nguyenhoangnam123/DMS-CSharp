@@ -33,9 +33,6 @@ namespace DMS.Repositories
         {
             if (filter == null)
                 return query.Where(q => false);
-            query = query.Where(q => !q.DeletedAt.HasValue);
-            if (filter.CreatedAt != null)
-                query = query.Where(q => q.CreatedAt, filter.CreatedAt);
             if (filter.UpdatedAt != null)
                 query = query.Where(q => q.UpdatedAt, filter.UpdatedAt);
             if (filter.Id != null)
@@ -198,7 +195,6 @@ namespace DMS.Repositories
                     PriceListTypeId = q.PriceList.PriceListTypeId,
                     SalesOrderTypeId = q.PriceList.SalesOrderTypeId,
                 } : null,
-                CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
             }).ToListAsync();
             return PriceListItemHistories;
@@ -226,7 +222,6 @@ namespace DMS.Repositories
             PriceListItemHistory PriceListItemHistory = await DataContext.PriceListItemHistory.AsNoTracking()
             .Where(x => x.Id == Id).Select(x => new PriceListItemHistory()
             {
-                CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
                 Id = x.Id,
                 PriceListId = x.PriceListId,
@@ -295,7 +290,6 @@ namespace DMS.Repositories
             PriceListItemHistoryDAO.NewPrice = PriceListItemHistory.NewPrice;
             PriceListItemHistoryDAO.ModifierId = PriceListItemHistory.ModifierId;
             PriceListItemHistoryDAO.Source = PriceListItemHistory.Source;
-            PriceListItemHistoryDAO.CreatedAt = StaticParams.DateTimeNow;
             PriceListItemHistoryDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.PriceListItemHistory.Add(PriceListItemHistoryDAO);
             await DataContext.SaveChangesAsync();
@@ -324,7 +318,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(PriceListItemHistory PriceListItemHistory)
         {
-            await DataContext.PriceListItemHistory.Where(x => x.Id == PriceListItemHistory.Id).UpdateFromQueryAsync(x => new PriceListItemHistoryDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.PriceListItemHistory.Where(x => x.Id == PriceListItemHistory.Id).DeleteFromQueryAsync();
             return true;
         }
         
@@ -341,7 +335,6 @@ namespace DMS.Repositories
                 PriceListItemHistoryDAO.NewPrice = PriceListItemHistory.NewPrice;
                 PriceListItemHistoryDAO.ModifierId = PriceListItemHistory.ModifierId;
                 PriceListItemHistoryDAO.Source = PriceListItemHistory.Source;
-                PriceListItemHistoryDAO.CreatedAt = StaticParams.DateTimeNow;
                 PriceListItemHistoryDAO.UpdatedAt = StaticParams.DateTimeNow;
                 PriceListItemHistoryDAOs.Add(PriceListItemHistoryDAO);
             }
@@ -354,7 +347,7 @@ namespace DMS.Repositories
             List<long> Ids = PriceListItemHistories.Select(x => x.Id).ToList();
             await DataContext.PriceListItemHistory
                 .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new PriceListItemHistoryDAO { DeletedAt = StaticParams.DateTimeNow });
+                .DeleteFromQueryAsync();
             return true;
         }
 

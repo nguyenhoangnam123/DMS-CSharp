@@ -19,6 +19,8 @@ namespace DMS.Entities
         public DateTime UpdatedAt { get; set; }
         public string Source { get; set; }
         public AppUser Modifier { get; set; }
+        public Item Item { get; set; }
+        public PriceList PriceList { get; set; }
         public bool Equals(PriceListItemHistory other)
         {
             return other != null && Id == other.Id;
@@ -38,9 +40,9 @@ namespace DMS.Entities
         public LongFilter NewPrice { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public StringFilter Source { get; set; }
-        public List<ItemHistoryFilter> OrFilter { get; set; }
-        public ItemHistoryOrder OrderBy { get; set; }
-        public ItemHistorySelect Selects { get; set; }
+        public List<PriceListItemHistoryFilter> OrFilter { get; set; }
+        public PriceListItemHistoryOrder OrderBy { get; set; }
+        public PriceListItemHistorySelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]

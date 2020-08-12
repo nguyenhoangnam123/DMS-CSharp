@@ -619,8 +619,8 @@ namespace DMS.Rpc.price_list
             {
                 Skip = PriceList_PriceListItemHistoryFilterDTO.Skip,
                 Take = PriceList_PriceListItemHistoryFilterDTO.Take,
-                Selects = ItemHistorySelect.ALL,
-                OrderBy = ItemHistoryOrder.Time,
+                Selects = PriceListItemHistorySelect.ALL,
+                OrderBy = PriceListItemHistoryOrder.UpdatedAt,
                 OrderType = OrderType.DESC,
                 ItemId = PriceList_PriceListItemHistoryFilterDTO.ItemId,
                 PriceListId = PriceList_PriceListItemHistoryFilterDTO.PriceListId,
