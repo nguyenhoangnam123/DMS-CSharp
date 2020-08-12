@@ -13,7 +13,7 @@ namespace DMS.Entities
         public long Price { get; set; }
         public Item Item { get; set; }
         public PriceList PriceList { get; set; }
-
+        public List<PriceListItemHistory> PriceListItemHistories { get; set; }
         public bool Equals(PriceListItemMapping other)
         {
             return true;

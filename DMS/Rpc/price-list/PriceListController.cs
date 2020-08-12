@@ -144,6 +144,7 @@ namespace DMS.Rpc.price_list
                 return Forbid();
 
             PriceList PriceList = ConvertDTOToEntity(PriceList_PriceListDTO);
+            PriceList.Source = "Website";
             PriceList = await PriceListService.Update(PriceList);
             PriceList_PriceListDTO = new PriceList_PriceListDTO(PriceList);
             if (PriceList.IsValidated)
@@ -263,6 +264,7 @@ namespace DMS.Rpc.price_list
                 if (errorContent.Length > 0)
                     return BadRequest(errorContent.ToString());
             }
+            PriceList.Source = "Excel";
             PriceList = await PriceListService.Update(PriceList);
             List<PriceList_PriceListItemMappingDTO> PriceList_PriceListItemMappingDTOs = PriceList.PriceListItemMappings
                  .Select(c => new PriceList_PriceListItemMappingDTO(c)).ToList();
@@ -619,6 +621,17 @@ namespace DMS.Rpc.price_list
                 ItemId = x.ItemId,
                 PriceListId = x.PriceListId,
                 Price = x.Price,
+                PriceListItemHistories = x.PriceListItemHistories?.Select(x => new PriceListItemHistory
+                {
+                    Id = x.Id,
+                    ItemId = x.ItemId,
+                    PriceListId = x.PriceListId,
+                    ModifierId = x.ModifierId,
+                    NewPrice = x.NewPrice,
+                    OldPrice = x.OldPrice,
+                    UpdatedAt = x.UpdatedAt,
+                    Source = x.Source,
+                }).ToList()
             }).ToList();
             PriceList.PriceListStoreMappings = PriceList_PriceListDTO.PriceListStoreMappings?.Select(x => new PriceListStoreMapping
             {

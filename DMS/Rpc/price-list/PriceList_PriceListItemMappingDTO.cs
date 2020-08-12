@@ -1,5 +1,7 @@
 using Common;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.price_list
 {
@@ -9,7 +11,7 @@ namespace DMS.Rpc.price_list
         public long ItemId { get; set; }
         public long Price { get; set; }
         public PriceList_ItemDTO Item { get; set; }
-
+        public List<PriceList_PriceListItemHistoryDTO> PriceListItemHistories { get; set; }
         public PriceList_PriceListItemMappingDTO() { }
         public PriceList_PriceListItemMappingDTO(PriceListItemMapping PriceListItemMapping)
         {
@@ -17,6 +19,7 @@ namespace DMS.Rpc.price_list
             this.ItemId = PriceListItemMapping.ItemId;
             this.Price = PriceListItemMapping.Price;
             this.Item = PriceListItemMapping.Item == null ? null : new PriceList_ItemDTO(PriceListItemMapping.Item);
+            this.PriceListItemHistories = PriceListItemMapping.PriceListItemHistories?.Select(x => new PriceList_PriceListItemHistoryDTO(x)).ToList();
             this.Errors = PriceListItemMapping.Errors;
         }
     }

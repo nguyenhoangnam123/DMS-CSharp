@@ -371,6 +371,35 @@ namespace DMS.Repositories
                     },
                 }).ToListAsync();
 
+            if(PriceList.PriceListItemMappings != null && PriceList.PriceListItemMappings.Any())
+            {
+                var ItemIds = PriceList.PriceListItemMappings.Select(x => x.ItemId).ToList();
+                var PriceListItemHistories = await DataContext.PriceListItemHistory
+                    .Where(x => x.PriceListId == PriceList.Id && ItemIds.Contains(x.ItemId))
+                    .Select(x => new PriceListItemHistory
+                    {
+                        Id = x.Id,
+                        ItemId = x.ItemId,
+                        PriceListId = x.PriceListId,
+                        ModifierId = x.ModifierId,
+                        UpdatedAt = x.UpdatedAt,
+                        Source = x.Source,
+                        NewPrice = x.NewPrice,
+                        OldPrice = x.OldPrice,
+                        Modifier = x.Modifier == null ? null : new AppUser
+                        {
+                            Username = x.Modifier.Username,
+                            DisplayName = x.Modifier.DisplayName,
+                        },
+                    }).ToListAsync();
+
+                foreach (var PriceListItemMapping in PriceList.PriceListItemMappings)
+                {
+                    PriceListItemMapping.PriceListItemHistories = PriceListItemHistories
+                        .Where(x => x.ItemId == PriceListItemMapping.ItemId && x.PriceListId == PriceListItemMapping.PriceListId)
+                        .ToList();
+                }
+            }
             return PriceList;
         }
         public async Task<bool> Create(PriceList PriceList)
@@ -469,6 +498,42 @@ namespace DMS.Repositories
                     PriceListItemMappingDAOs.Add(PriceListItemMappingDAO);
                 }
                 await DataContext.PriceListItemMapping.BulkMergeAsync(PriceListItemMappingDAOs);
+
+                List<long> ItemIds = PriceListItemMappingDAOs.Select(x => x.ItemId).ToList();
+                List<PriceListItemHistoryDAO> PriceListItemHistoryDAOs = await DataContext.PriceListItemHistory
+                    .Where(x => x.PriceListId == PriceList.Id && ItemIds.Contains(x.ItemId)).ToListAsync();
+
+                foreach (PriceListItemMapping PriceListItemMapping in PriceList.PriceListItemMappings)
+                {
+                    PriceListItemMappingDAO PriceListItemMappingDAO = PriceListItemMappingDAOs
+                       .Where(x => x.ItemId == PriceListItemMapping.ItemId).FirstOrDefault();
+                    if (PriceListItemMappingDAO != null)
+                    {
+                        if (PriceListItemMapping.PriceListItemHistories != null)
+                        {
+                            foreach (PriceListItemHistory PriceListItemHistory in PriceListItemMapping.PriceListItemHistories)
+                            {
+                                PriceListItemHistoryDAO PriceListItemHistoryDAO = PriceListItemHistoryDAOs.Where(x => x.Id == PriceListItemHistory.Id && x.Id != 0).FirstOrDefault();
+                                if (PriceListItemHistoryDAO == null)
+                                {
+                                    PriceListItemHistoryDAO = new PriceListItemHistoryDAO
+                                    {
+                                        ItemId = PriceListItemMappingDAO.ItemId,
+                                        ModifierId = PriceListItemHistory.ModifierId,
+                                        OldPrice = PriceListItemHistory.OldPrice,
+                                        NewPrice = PriceListItemHistory.NewPrice,
+                                        PriceListId = PriceList.Id,
+                                        Source = PriceListItemHistory.Source,
+                                        UpdatedAt = StaticParams.DateTimeNow
+                                    };
+                                    PriceListItemHistoryDAOs.Add(PriceListItemHistoryDAO);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                await DataContext.PriceListItemHistory.BulkMergeAsync(PriceListItemHistoryDAOs);
             }
             await DataContext.PriceListStoreGroupingMapping
                 .Where(x => x.PriceListId == PriceList.Id)
