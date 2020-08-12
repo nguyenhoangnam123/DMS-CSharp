@@ -21,7 +21,16 @@ namespace DMS.Rpc.problem_type
         private const string Default = Rpc + Module + "/problem-type";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
-
+        public const string GetPreview = Default + "/get-preview";
+        public const string Get = Default + "/get";
+        public const string Create = Default + "/create";
+        public const string Update = Default + "/update";
+        public const string Delete = Default + "/delete";
+        public const string Import = Default + "/import";
+        public const string Export = Default + "/export";
+        public const string ExportTemplate = Default + "/export-tempate";
+        public const string BulkDelete = Default + "/bulk-delete";
+        
         public const string FilterListStatus = Default + "/filter-list-status";
         public const string SingleListStatus = Default + "/single-list-status";
 
@@ -37,9 +46,43 @@ namespace DMS.Rpc.problem_type
         {
             { "Tìm kiếm", new List<string> { 
                 Master, Count, List,
+                Get, GetPreview,
+                FilterListStatus, 
+                 } },
+            { "Thêm", new List<string> { 
+                Master, Count, List, Get, GetPreview,
                 FilterListStatus,
+                Detail, Create,
                 SingleListStatus,
                  } },
+
+            { "Sửa", new List<string> { 
+                Master, Count, List, Get, GetPreview,
+                FilterListStatus,
+                Detail, Update,
+                SingleListStatus,
+                 } },
+
+            { "Xoá", new List<string> { 
+                Master, Count, List, Get, GetPreview,
+                FilterListStatus,
+                Delete, 
+                 } },
+
+            { "Xoá nhiều", new List<string> { 
+                Master, Count, List, Get, GetPreview,
+                FilterListStatus,
+                BulkDelete } },
+
+            { "Xuất excel", new List<string> { 
+                Master, Count, List, Get, GetPreview,
+                FilterListStatus,
+                Export } },
+
+            { "Nhập excel", new List<string> { 
+                Master, Count, List, Get, GetPreview,
+                FilterListStatus,
+                ExportTemplate, Import } },
         };
     }
 }

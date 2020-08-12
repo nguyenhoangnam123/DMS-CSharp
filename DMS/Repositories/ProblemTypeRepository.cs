@@ -15,6 +15,11 @@ namespace DMS.Repositories
         Task<int> Count(ProblemTypeFilter ProblemTypeFilter);
         Task<List<ProblemType>> List(ProblemTypeFilter ProblemTypeFilter);
         Task<ProblemType> Get(long Id);
+        Task<bool> Create(ProblemType ProblemType);
+        Task<bool> Update(ProblemType ProblemType);
+        Task<bool> Delete(ProblemType ProblemType);
+        Task<bool> BulkMerge(List<ProblemType> ProblemTypes);
+        Task<bool> BulkDelete(List<ProblemType> ProblemTypes);
     }
     public class ProblemTypeRepository : IProblemTypeRepository
     {
@@ -158,5 +163,73 @@ namespace DMS.Repositories
 
             return ProblemType;
         }
+        public async Task<bool> Create(ProblemType ProblemType)
+        {
+            ProblemTypeDAO ProblemTypeDAO = new ProblemTypeDAO();
+            ProblemTypeDAO.Id = ProblemType.Id;
+            ProblemTypeDAO.Code = ProblemType.Code;
+            ProblemTypeDAO.Name = ProblemType.Name;
+            ProblemTypeDAO.StatusId = ProblemType.StatusId;
+            ProblemTypeDAO.CreatedAt = StaticParams.DateTimeNow;
+            ProblemTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
+            DataContext.ProblemType.Add(ProblemTypeDAO);
+            await DataContext.SaveChangesAsync();
+            ProblemType.Id = ProblemTypeDAO.Id;
+            await SaveReference(ProblemType);
+            return true;
+        }
+
+        public async Task<bool> Update(ProblemType ProblemType)
+        {
+            ProblemTypeDAO ProblemTypeDAO = DataContext.ProblemType.Where(x => x.Id == ProblemType.Id).FirstOrDefault();
+            if (ProblemTypeDAO == null)
+                return false;
+            ProblemTypeDAO.Id = ProblemType.Id;
+            ProblemTypeDAO.Code = ProblemType.Code;
+            ProblemTypeDAO.Name = ProblemType.Name;
+            ProblemTypeDAO.StatusId = ProblemType.StatusId;
+            ProblemTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
+            await DataContext.SaveChangesAsync();
+            await SaveReference(ProblemType);
+            return true;
+        }
+
+        public async Task<bool> Delete(ProblemType ProblemType)
+        {
+            await DataContext.ProblemType.Where(x => x.Id == ProblemType.Id).UpdateFromQueryAsync(x => new ProblemTypeDAO { DeletedAt = StaticParams.DateTimeNow });
+            return true;
+        }
+        
+        public async Task<bool> BulkMerge(List<ProblemType> ProblemTypes)
+        {
+            List<ProblemTypeDAO> ProblemTypeDAOs = new List<ProblemTypeDAO>();
+            foreach (ProblemType ProblemType in ProblemTypes)
+            {
+                ProblemTypeDAO ProblemTypeDAO = new ProblemTypeDAO();
+                ProblemTypeDAO.Id = ProblemType.Id;
+                ProblemTypeDAO.Code = ProblemType.Code;
+                ProblemTypeDAO.Name = ProblemType.Name;
+                ProblemTypeDAO.StatusId = ProblemType.StatusId;
+                ProblemTypeDAO.CreatedAt = StaticParams.DateTimeNow;
+                ProblemTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
+                ProblemTypeDAOs.Add(ProblemTypeDAO);
+            }
+            await DataContext.BulkMergeAsync(ProblemTypeDAOs);
+            return true;
+        }
+
+        public async Task<bool> BulkDelete(List<ProblemType> ProblemTypes)
+        {
+            List<long> Ids = ProblemTypes.Select(x => x.Id).ToList();
+            await DataContext.ProblemType
+                .Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new ProblemTypeDAO { DeletedAt = StaticParams.DateTimeNow });
+            return true;
+        }
+
+        private async Task SaveReference(ProblemType ProblemType)
+        {
+        }
+        
     }
 }

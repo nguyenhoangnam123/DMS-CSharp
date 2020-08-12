@@ -24,6 +24,9 @@
       },
       "SurveyOptions": {
         "SurveyOptionsEmpty": "Chưa tạo các lựa chọn cho câu hỏi"
+      },
+      "IsMandatory": {
+        "QuestionIsMandatory": "Câu hỏi này bắt buộc trả lời"
       }
     },
     "SurveyQuestions": {
