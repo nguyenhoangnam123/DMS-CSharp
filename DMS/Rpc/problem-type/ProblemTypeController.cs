@@ -11,19 +11,23 @@ using System.IO;
 using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MProblemType;
+using DMS.Services.MStatus;
 
 namespace DMS.Rpc.problem_type
 {
     public partial class ProblemTypeController : RpcController
     {
         private IProblemTypeService ProblemTypeService;
+        private IStatusService StatusService;
         private ICurrentContext CurrentContext;
         public ProblemTypeController(
             IProblemTypeService ProblemTypeService,
+            IStatusService StatusService,
             ICurrentContext CurrentContext
         )
         {
             this.ProblemTypeService = ProblemTypeService;
+            this.StatusService = StatusService;
             this.CurrentContext = CurrentContext;
         }
 

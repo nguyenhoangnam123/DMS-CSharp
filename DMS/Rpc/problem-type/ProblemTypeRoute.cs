@@ -21,10 +21,10 @@ namespace DMS.Rpc.problem_type
         private const string Default = Rpc + Module + "/problem-type";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
-        
-        
 
-        
+        public const string FilterListStatus = Default + "/filter-list-status";
+        public const string SingleListStatus = Default + "/single-list-status";
+
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(ProblemTypeFilter.Id), FieldTypeEnum.ID.Id },
@@ -37,8 +37,8 @@ namespace DMS.Rpc.problem_type
         {
             { "Tìm kiếm", new List<string> { 
                 Master, Count, List,
-                
-                
+                FilterListStatus,
+                SingleListStatus,
                  } },
         };
     }

@@ -195,7 +195,7 @@ namespace DMS.Rpc.price_list
             return PriceList_SalesOrderTypeDTOs;
         }
         [Route(PriceListRoute.FilterListStatus), HttpPost]
-        public async Task<List<PriceList_StatusDTO>> FilterListStatus([FromBody] PriceList_StatusFilterDTO PriceList_StatusFilterDTO)
+        public async Task<List<PriceList_StatusDTO>> FilterListStatus()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -388,7 +388,7 @@ namespace DMS.Rpc.price_list
             return PriceList_SalesOrderTypeDTOs;
         }
         [Route(PriceListRoute.SingleListStatus), HttpPost]
-        public async Task<List<PriceList_StatusDTO>> SingleListStatus([FromBody] PriceList_StatusFilterDTO PriceList_StatusFilterDTO)
+        public async Task<List<PriceList_StatusDTO>> SingleListStatus()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
