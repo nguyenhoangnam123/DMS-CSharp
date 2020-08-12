@@ -2,6 +2,7 @@ using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
+using Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,7 @@ namespace DMS.Services.MERoute
             StatusNotExisted,
             StartDateEmpty,
             EndDateEmpty,
+            EndDateWrong,
             StoreEmpty,
             ERouteInUsed,
             ERouteContentsEmpty
@@ -167,6 +169,18 @@ namespace DMS.Services.MERoute
                     ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.StartDate), ErrorCode.StartDateEmpty);
                 if (ERoute.EndDate == null || ERoute.EndDate == default(DateTime))
                     ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.EndDate), ErrorCode.EndDateEmpty);
+            }
+
+            if (ERoute.EndDate.HasValue)
+            {
+                if (ERoute.EndDate.Value.Date < StaticParams.DateTimeNow.Date)
+                {
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.EndDate), ErrorCode.EndDateWrong);
+                }
+                else if (ERoute.EndDate.Value < ERoute.StartDate)
+                {
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.EndDate), ErrorCode.EndDateWrong);
+                }
             }
 
             return ERoute.IsValidated;

@@ -31,7 +31,8 @@
       "StartDateEmpty": "Chưa nhập ngày bắt đầu"
     },
     "EndDate": {
-      "EndDateEmpty": "Chưa nhập ngày kết thúc"
+      "EndDateEmpty": "Chưa nhập ngày kết thúc",
+      "EndDateWrong": "Ngày kết thúc không hợp lệ"
     },
     "ERouteContents": {
       "ERouteContentsEmpty": "Chưa tạo nội dung cho tuyến"
