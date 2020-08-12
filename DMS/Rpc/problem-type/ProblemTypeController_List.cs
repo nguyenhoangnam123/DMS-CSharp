@@ -55,8 +55,6 @@ namespace DMS.Rpc.problem_type
                 .Select(x => new ProblemType_StatusDTO(x)).ToList();
             return ProblemType_StatusDTOs;
         }
-
-
     }
 }
 
