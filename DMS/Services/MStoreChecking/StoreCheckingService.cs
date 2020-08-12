@@ -392,13 +392,13 @@ namespace DMS.Services.MStoreChecking
             {
                 var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 List<long> StoreIds = await ListStoreIds(ERouteId, false);
-                if (AppUser.AppUserStoreMappings.Any())
+                if (AppUser.AppUserStoreMappings != null)
                 {
                     var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
                     StoreIds = StoreIds.Intersect(StoreInScopeIds).ToList();
                 }
 
-                StoreFilter.Id = new IdFilter { NotIn = StoreIds };
+                StoreFilter.Id = new IdFilter { In = StoreIds };
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
 
                 int count = await UOW.StoreRepository.Count(StoreFilter);
@@ -426,8 +426,8 @@ namespace DMS.Services.MStoreChecking
                 DateTime Now = StaticParams.DateTimeNow.Date;
                 var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 List<long> StoreIds = await ListStoreIds(ERouteId, false);
-                
-                if (AppUser.AppUserStoreMappings.Any())
+
+                if (AppUser.AppUserStoreMappings != null)
                 {
                     var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
                     StoreIds = StoreIds.Intersect(StoreInScopeIds).ToList();
@@ -482,7 +482,7 @@ namespace DMS.Services.MStoreChecking
                 StoreIds.AddRange(StorePlannedIds);
                 StoreIds.AddRange(StoreUnPlannedIds);
                 StoreIds = StoreIds.Distinct().ToList();
-                if (AppUser.AppUserStoreMappings.Any())
+                if (AppUser.AppUserStoreMappings != null)
                 {
                     var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
                     StoreIds = StoreInScopeIds.Except(StoreIds).ToList();
@@ -525,7 +525,7 @@ namespace DMS.Services.MStoreChecking
                 StoreIds.AddRange(StoreUnPlannedIds);
                 StoreIds = StoreIds.Distinct().ToList();
 
-                if (AppUser.AppUserStoreMappings.Any())
+                if (AppUser.AppUserStoreMappings != null)
                 {
                     var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
                     StoreIds = StoreInScopeIds.Except(StoreIds).ToList();
