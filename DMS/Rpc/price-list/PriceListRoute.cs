@@ -20,8 +20,9 @@ namespace DMS.Rpc.price_list
 {
     public class PriceListRoute : Root
     {
-        public const string Master = Module + "/price-list/price-list-master";
-        public const string Detail = Module + "/price-list/price-list-detail";
+        public const string Parent = Module + "/price-list-and-promotion";
+        public const string Master = Module + "/price-list-and-promotion/price-list/price-list-master";
+        public const string Detail = Module + "/price-list-and-promotion/price-list/price-list-detail/*";
         private const string Default = Rpc + Module + "/price-list";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
@@ -63,6 +64,8 @@ namespace DMS.Rpc.price_list
         public const string ListItem = Default + "/list-item";
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
+        public const string CountPriceListItemHistory = Default + "/count-price-list-item-history";
+        public const string ListPriceListItemHistory = Default + "/list-price-list-item-history";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -80,53 +83,57 @@ namespace DMS.Rpc.price_list
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, Count, List,
+                Parent, Master, Count, List,
                 Get, GetPreview,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
-                CountItem, ListItem, CountStore, ListStore,
+                CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
                 } },
             { "Thêm", new List<string> {
-                Master, Count, List, Get, GetPreview,
+                Parent, Master, Count, List, Get, GetPreview,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 Detail, Create,
                 SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
                 Count, List, Count, List, Count, List, Count, List,
-                CountItem, ListItem, CountStore, ListStore
+                CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
                 } },
 
             { "Sửa", new List<string> {
-                Master, Count, List, Get, GetPreview,
+                Parent, Master, Count, List, Get, GetPreview,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 Detail, Update,
                 SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
                 Count, List, Count, List, Count, List, Count, List,
-                CountItem, ListItem, CountStore, ListStore
+                CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
                 }},
 
             { "Xoá", new List<string> {
-                Master, Count, List, Get, GetPreview,
+                Parent, Master, Count, List, Get, GetPreview,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 Delete,
                 SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
-                CountItem, ListItem, CountStore, ListStore} },
+                CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
+                } },
 
             { "Xoá nhiều", new List<string> {
-                Master, Count, List, Get, GetPreview,
+                Parent, Master, Count, List, Get, GetPreview,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 BulkDelete,
-                CountItem, ListItem, CountStore, ListStore} },
+                CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
+                } },
 
             { "Xuất excel", new List<string> {
-                Master, Count, List, Get, GetPreview,
+                Parent, Master, Count, List, Get, GetPreview,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 ExportItem, ExportStore,
-                CountItem, ListItem, CountStore, ListStore} },
+                CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
+                } },
 
             { "Nhập excel", new List<string> {
-                Master, Count, List, Get, GetPreview,
+                Parent, Master, Count, List, Get, GetPreview,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 ExportTemplateItem, ExportTemplateStore, ImportItem, ImportStore,
-                CountItem, ListItem, CountStore, ListStore} },
+                CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
+                } },
         };
     }
 }

@@ -70,6 +70,7 @@ namespace DMS.Models
         public virtual DbSet<PermissionOperatorDAO> PermissionOperator { get; set; }
         public virtual DbSet<PositionDAO> Position { get; set; }
         public virtual DbSet<PriceListDAO> PriceList { get; set; }
+        public virtual DbSet<PriceListItemHistoryDAO> PriceListItemHistory { get; set; }
         public virtual DbSet<PriceListItemMappingDAO> PriceListItemMapping { get; set; }
         public virtual DbSet<PriceListStoreGroupingMappingDAO> PriceListStoreGroupingMapping { get; set; }
         public virtual DbSet<PriceListStoreMappingDAO> PriceListStoreMapping { get; set; }
@@ -1877,6 +1878,33 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectPriceList_Status");
+            });
+
+            modelBuilder.Entity<PriceListItemHistoryDAO>(entity =>
+            {
+                entity.Property(e => e.Source)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.PriceListItemHistories)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceListItemHistory_Item");
+
+                entity.HasOne(d => d.Modifier)
+                    .WithMany(p => p.PriceListItemHistories)
+                    .HasForeignKey(d => d.ModifierId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceListItemHistory_AppUser");
+
+                entity.HasOne(d => d.PriceList)
+                    .WithMany(p => p.PriceListItemHistories)
+                    .HasForeignKey(d => d.PriceListId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceListItemHistory_PriceList");
             });
 
             modelBuilder.Entity<PriceListItemMappingDAO>(entity =>

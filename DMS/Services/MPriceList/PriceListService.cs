@@ -5,6 +5,7 @@ using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MPriceList
@@ -129,6 +130,7 @@ namespace DMS.Services.MPriceList
             try
             {
                 var oldData = await UOW.PriceListRepository.Get(PriceList.Id);
+                await BuildData(PriceList);
 
                 await UOW.Begin();
                 await UOW.PriceListRepository.Update(PriceList);
@@ -277,6 +279,35 @@ namespace DMS.Services.MPriceList
                 }
             }
             return filter;
+        }
+
+        private async Task<PriceList> BuildData(PriceList PriceList)
+        {
+            PriceList oldData = await UOW.PriceListRepository.Get(PriceList.Id);
+            if (oldData != null)
+            {
+                foreach (PriceListItemMapping PriceListItemMapping in PriceList.PriceListItemMappings)
+                {
+                    if (PriceListItemMapping.PriceListItemHistories == null)
+                        PriceListItemMapping.PriceListItemHistories = new List<PriceListItemHistory>();
+                    PriceListItemMapping PriceListItemMappingInDB = oldData.PriceListItemMappings.Where(i => i.ItemId == PriceListItemMapping.ItemId).FirstOrDefault();
+                    if (PriceListItemMappingInDB != null)
+                    {
+                        if (PriceListItemMapping.Price != PriceListItemMappingInDB.Price)
+                        {
+                            PriceListItemHistory PriceListItemHistory = new PriceListItemHistory();
+                            PriceListItemHistory.ItemId = PriceListItemMapping.ItemId;
+                            PriceListItemHistory.PriceListId = PriceList.Id;
+                            PriceListItemHistory.OldPrice = PriceListItemMappingInDB.Price;
+                            PriceListItemHistory.NewPrice = PriceListItemMapping.Price;
+                            PriceListItemHistory.Source = PriceList.Source;
+                            PriceListItemHistory.ModifierId = CurrentContext.UserId;
+                            PriceListItemMapping.PriceListItemHistories.Add(PriceListItemHistory);
+                        }
+                    }
+                }
+            }
+            return PriceList;
         }
     }
 }

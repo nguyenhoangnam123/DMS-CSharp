@@ -16,6 +16,7 @@ namespace DMS.Models
             ItemHistories = new HashSet<ItemHistoryDAO>();
             ItemImageMappings = new HashSet<ItemImageMappingDAO>();
             KpiItemContents = new HashSet<KpiItemContentDAO>();
+            PriceListItemHistories = new HashSet<PriceListItemHistoryDAO>();
             PriceListItemMappings = new HashSet<PriceListItemMappingDAO>();
         }
 
@@ -43,6 +44,7 @@ namespace DMS.Models
         public virtual ICollection<ItemHistoryDAO> ItemHistories { get; set; }
         public virtual ICollection<ItemImageMappingDAO> ItemImageMappings { get; set; }
         public virtual ICollection<KpiItemContentDAO> KpiItemContents { get; set; }
+        public virtual ICollection<PriceListItemHistoryDAO> PriceListItemHistories { get; set; }
         public virtual ICollection<PriceListItemMappingDAO> PriceListItemMappings { get; set; }
     }
 }

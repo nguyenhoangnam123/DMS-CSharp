@@ -17,7 +17,7 @@ namespace DMS.Rpc.problem_type
     public class ProblemTypeRoute : Root
     {
         public const string Master = Module + "/problem-type/problem-type-master";
-        public const string Detail = Module + "/problem-type/problem-type-detail";
+        public const string Detail = Module + "/problem-type/problem-type-detail/*";
         private const string Default = Rpc + Module + "/problem-type";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
