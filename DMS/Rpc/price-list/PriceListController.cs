@@ -614,6 +614,27 @@ namespace DMS.Rpc.price_list
                 Code = PriceList_PriceListDTO.Status.Code,
                 Name = PriceList_PriceListDTO.Status.Name,
             };
+            PriceList.PriceListItemMappings = PriceList_PriceListDTO.PriceListItemMappings?.Select(x => new PriceListItemMapping
+            {
+                ItemId = x.ItemId,
+                PriceListId = x.PriceListId,
+                Price = x.Price,
+            }).ToList();
+            PriceList.PriceListStoreMappings = PriceList_PriceListDTO.PriceListStoreMappings?.Select(x => new PriceListStoreMapping
+            {
+                StoreId = x.StoreId,
+                PriceListId = x.PriceListId,
+            }).ToList();
+            PriceList.PriceListStoreTypeMappings = PriceList_PriceListDTO.PriceListStoreTypeMappings?.Select(x => new PriceListStoreTypeMapping
+            {
+                StoreTypeId = x.StoreTypeId,
+                PriceListId = x.PriceListId,
+            }).ToList();
+            PriceList.PriceListStoreGroupingMappings = PriceList_PriceListDTO.PriceListStoreGroupingMappings?.Select(x => new PriceListStoreGroupingMapping
+            {
+                StoreGroupingId = x.StoreGroupingId,
+                PriceListId = x.PriceListId,
+            }).ToList();
             PriceList.BaseLanguage = CurrentContext.Language;
             return PriceList;
         }
