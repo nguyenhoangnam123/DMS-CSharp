@@ -27,7 +27,10 @@
       }
     },
     "SurveyQuestions": {
-      "SurveyQuestionsEmpty": "Chưa tạo câu hỏi"
+      "SurveyQuestionsEmpty": "Chưa tạo câu hỏi",
+      "IsMandatory": {
+        "QuestionIsMandatory": "Câu hỏi này bắt buộc trả lời"
+      }
     }
   }
 }
