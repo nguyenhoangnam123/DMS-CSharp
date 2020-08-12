@@ -12,9 +12,12 @@ using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using NGS.Templater;
 using RestSharp.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -448,6 +451,42 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             };
 
             return KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs;
+        }
+
+        [Route(KpiGeneralEmployeeReportRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId == null)
+                return BadRequest("Chưa chọn nhân viên");
+
+            KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.Skip = 0;
+            KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.Take = int.MaxValue;
+            List<KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO> KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs = (await List(KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO)).Value;
+            var SaleEmployee = await AppUserService.Get(KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId.Equal.Value);
+            long stt = 1;
+            foreach (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO in KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs)
+            {
+                KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO.STT = stt;
+                stt++;
+            }
+
+            List<KpiGeneralEmployeeReport_ExportDTO> KpiGeneralEmployeeReport_ExportDTOs = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs?.Select(x => new KpiGeneralEmployeeReport_ExportDTO(x)).ToList();
+            string path = "Templates/KpiGeneral_Employee_Report.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Username = SaleEmployee.Username;
+            Data.DisplayName = SaleEmployee.DisplayName;
+            Data.KpiGeneralEmployeeReports = KpiGeneralEmployeeReport_ExportDTOs;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "KpiGeneralEmployeeReport.xlsx");
         }
 
         private Tuple<DateTime, DateTime> DateTimeConvert(long? KpiPeriodId, long? KpiYearId)
