@@ -14,6 +14,7 @@ namespace DMS.Services
         Task CleanEventMessage();
         Task CleanHangfire();
         Task CompleteStoreCheckout();
+        Task CreateStoreUnchecking();
     }
     public class MaintenanceService : IMaintenanceService
     {
@@ -53,6 +54,55 @@ namespace DMS.Services
                 StoreCheckingDAO.CheckOutAt = StoreCheckingDAO.CheckInAt.Value.Date.AddDays(1).AddSeconds(-1);
             }
             await DataContext.SaveChangesAsync();
+        }
+
+        public async Task CreateStoreUnchecking()
+        {
+            DateTime End = StaticParams.DateTimeNow.Date;
+            DateTime Start = End.AddDays(-1);
+            List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
+                .Where(ec => (!ec.ERoute.EndDate.HasValue || Start <= ec.ERoute.EndDate) && ec.ERoute.StartDate <= End)
+                .Include(ec => ec.ERoute)
+                .Include(ec => ec.ERouteContentDays)
+                .ToListAsync();
+            List<StoreUncheckingDAO> PlannedStoreUncheckingDAOs = new List<StoreUncheckingDAO>();
+            List<StoreUncheckingDAO> StoreUncheckingDAOs = new List<StoreUncheckingDAO>();
+            foreach(ERouteContentDAO ERouteContentDAO in ERouteContentDAOs)
+            {
+                StoreUncheckingDAO StoreUncheckingDAO = PlannedStoreUncheckingDAOs.Where(su =>
+                    su.Date == Start &&
+                    su.AppUserId == ERouteContentDAO.ERoute.SaleEmployeeId &&
+                    su.StoreId == ERouteContentDAO.StoreId
+                ).FirstOrDefault();
+                if (StoreUncheckingDAO == null)
+                {
+                    if (Start >= ERouteContentDAO.ERoute.RealStartDate)
+                    {
+                        long gap = (Start - ERouteContentDAO.ERoute.RealStartDate).Days % 28;
+                        if (ERouteContentDAO.ERouteContentDays.Any(ecd => ecd.OrderDay == gap && ecd.Planned))
+                        {
+                            StoreUncheckingDAO = new StoreUncheckingDAO
+                            {
+                                AppUserId = ERouteContentDAO.ERoute.SaleEmployeeId,
+                                Date = Start,
+                                StoreId = ERouteContentDAO.StoreId,
+                            };
+                            PlannedStoreUncheckingDAOs.Add(StoreUncheckingDAO);
+                        }
+                    }
+                }
+            }
+            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.Where(sc => sc.CheckOutAt.HasValue &&
+                Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End).ToListAsync();
+            foreach(StoreUncheckingDAO StoreUncheckingDAO in PlannedStoreUncheckingDAOs)
+            {
+                if (!StoreCheckingDAOs.Any(sc => sc.SaleEmployeeId == StoreUncheckingDAO.AppUserId && sc.StoreId == StoreUncheckingDAO.StoreId))
+                {
+                    StoreUncheckingDAOs.Add(StoreUncheckingDAO);
+                }
+            }
+
+            await DataContext.StoreUnchecking.BulkInsertAsync(StoreUncheckingDAOs);
         }
     }
 }
