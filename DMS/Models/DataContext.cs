@@ -111,6 +111,7 @@ namespace DMS.Models
         public virtual DbSet<StoreScoutingDAO> StoreScouting { get; set; }
         public virtual DbSet<StoreScoutingStatusDAO> StoreScoutingStatus { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
+        public virtual DbSet<StoreUncheckingDAO> StoreUnchecking { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
         public virtual DbSet<SurveyDAO> Survey { get; set; }
         public virtual DbSet<SurveyOptionDAO> SurveyOption { get; set; }
@@ -2956,6 +2957,11 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreType_Status");
+            });
+
+            modelBuilder.Entity<StoreUncheckingDAO>(entity =>
+            {
+                entity.Property(e => e.Date).HasColumnType("date");
             });
 
             modelBuilder.Entity<SupplierDAO>(entity =>

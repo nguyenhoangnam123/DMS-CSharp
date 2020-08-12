@@ -52,7 +52,7 @@ namespace DMS.Rpc.app_user
                 FilterListPosition,
                 Detail, Get, Update, 
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole,
-                CountRole, ListRole}},
+                CountRole, ListRole, CountStore, ListStore}},
         };
     }
 }

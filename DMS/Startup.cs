@@ -190,6 +190,7 @@ namespace DMS
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily);
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily);
                 RecurringJob.AddOrUpdate<MaintenanceService>("CompleteStoreCheckout", x => x.CompleteStoreCheckout(), Cron.Daily);
+                RecurringJob.AddOrUpdate<MaintenanceService>("CreateStoreUnchecking", x => x.CreateStoreUnchecking(), Cron.Daily);
             };
             onChange();
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);
