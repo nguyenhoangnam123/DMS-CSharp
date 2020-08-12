@@ -189,7 +189,12 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
             if (AppUserId.HasValue)
                 AppUserIds = AppUserIds.Where(x => x == AppUserId.Value).ToList();
-
+            if (ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId != null && ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId.HasValue)
+                AppUserIds = AppUserIds
+                    .Where(a => 
+                        ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId.Equal.HasValue && 
+                        a == ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId.Equal.Value)
+                    .ToList();
             AppUserIds = AppUserIds
                 .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
                 .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
@@ -198,15 +203,19 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id))
                 .Include(x => x.Organization)
                 .ToListAsync();
-            List<ERouteDAO> ERouteDAOs = await DataContext.ERoute.Where(e =>
-                AppUserIds.Contains(e.SaleEmployeeId) &&
-                Start <= e.EndDate && e.StartDate <= End)
-                .Include(e => e.ERouteContents)
-                    .ThenInclude(ec => ec.ERouteContentDays)
+
+            IQueryable<ERouteDAO> ERouteDAOQuery = DataContext.ERoute;
+            if (ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId != null && ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId.HasValue)
+                ERouteDAOQuery = ERouteDAOQuery.Where(e => e.Id, ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId);
+            List<ERouteDAO> ERouteDAOs = await ERouteDAOQuery.Where(e =>
+                   AppUserIds.Contains(e.SaleEmployeeId) &&
+                   Start <= e.EndDate && e.StartDate <= End)
+                .Include(e => e.ERouteContents).ThenInclude(ec => ec.ERouteContentDays)
                 .ToListAsync();
-            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.Where(sc =>
-                sc.CheckOutAt.HasValue &&
-                Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
+            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
+                .Where(sc =>
+                    sc.CheckOutAt.HasValue &&
+                    Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
             List<long> StoreIds = ERouteDAOs.SelectMany(e => e.ERouteContents.Select(ec => ec.StoreId)).ToList();
             List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id))

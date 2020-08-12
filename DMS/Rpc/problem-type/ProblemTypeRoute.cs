@@ -31,6 +31,9 @@ namespace DMS.Rpc.problem_type
         public const string ExportTemplate = Default + "/export-tempate";
         public const string BulkDelete = Default + "/bulk-delete";
         
+        public const string FilterListStatus = Default + "/filter-list-status";
+        public const string SingleListStatus = Default + "/single-list-status";
+
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(ProblemTypeFilter.Id), FieldTypeEnum.ID.Id },
@@ -44,41 +47,41 @@ namespace DMS.Rpc.problem_type
             { "Tìm kiếm", new List<string> { 
                 Master, Count, List,
                 Get, GetPreview,
-                
+                FilterListStatus, 
                  } },
             { "Thêm", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                 
-                Detail, Create, 
-                
+                FilterListStatus,
+                Detail, Create,
+                SingleListStatus,
                  } },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                 
-                Detail, Update, 
-                 
+                FilterListStatus,
+                Detail, Update,
+                SingleListStatus,
                  } },
 
             { "Xoá", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                 
+                FilterListStatus,
                 Delete, 
                  } },
 
             { "Xoá nhiều", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                 
+                FilterListStatus,
                 BulkDelete } },
 
             { "Xuất excel", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                 
+                FilterListStatus,
                 Export } },
 
             { "Nhập excel", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                 
+                FilterListStatus,
                 ExportTemplate, Import } },
         };
     }
