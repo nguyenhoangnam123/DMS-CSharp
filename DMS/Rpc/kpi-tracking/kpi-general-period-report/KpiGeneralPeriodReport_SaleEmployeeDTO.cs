@@ -5,6 +5,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 {
     public class KpiGeneralPeriodReport_SaleEmployeeDTO : DataDTO
     {
+        public long STT { get; set; }
         public long SaleEmployeeId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }

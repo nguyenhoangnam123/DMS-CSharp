@@ -11,9 +11,12 @@ using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using NGS.Templater;
 using RestSharp.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -467,6 +470,48 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     .ToList();
             }
             return kpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs.Where(x => x.SaleEmployees.Any()).ToList();
+        }
+
+        [Route(KpiGeneralPeriodReportRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId == null) return BadRequest("Chưa chọn kì KPI");
+            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId == null) return BadRequest("Chưa chọn năm KPI");
+
+            var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId.Equal.Value).FirstOrDefault();
+            var KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId.Equal.Value).FirstOrDefault();
+
+            KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Skip = 0;
+            KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Take = int.MaxValue;
+            List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO> KpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs = (await List(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO)).Value;
+
+            long stt = 1;
+            foreach (KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO in KpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs)
+            {
+                foreach (var SaleEmployee in KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO.SaleEmployees)
+                {
+                    SaleEmployee.STT = stt;
+                    stt++;
+                }
+            }
+
+            List<KpiGeneralPeriodReport_ExportDTO> KpiGeneralPeriodReport_ExportDTOs = KpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs?.Select(x => new KpiGeneralPeriodReport_ExportDTO(x)).ToList();
+            string path = "Templates/KpiGeneral_Period_Report.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.KpiPeriod = KpiPeriod.Name;
+            Data.KpiYear = KpiYear.Name;
+            Data.KpiGeneralPeriodReports = KpiGeneralPeriodReport_ExportDTOs;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "KpiGeneralPeriodReport.xlsx");
         }
 
         private Tuple<DateTime, DateTime> DateTimeConvert(long KpiPeriodId, long KpiYearId)
