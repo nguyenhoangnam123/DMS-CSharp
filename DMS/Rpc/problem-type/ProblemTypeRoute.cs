@@ -21,9 +21,15 @@ namespace DMS.Rpc.problem_type
         private const string Default = Rpc + Module + "/problem-type";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
-        
-        
-
+        public const string GetPreview = Default + "/get-preview";
+        public const string Get = Default + "/get";
+        public const string Create = Default + "/create";
+        public const string Update = Default + "/update";
+        public const string Delete = Default + "/delete";
+        public const string Import = Default + "/import";
+        public const string Export = Default + "/export";
+        public const string ExportTemplate = Default + "/export-tempate";
+        public const string BulkDelete = Default + "/bulk-delete";
         
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -37,9 +43,43 @@ namespace DMS.Rpc.problem_type
         {
             { "Tìm kiếm", new List<string> { 
                 Master, Count, List,
-                
+                Get, GetPreview,
                 
                  } },
+            { "Thêm", new List<string> { 
+                Master, Count, List, Get, GetPreview,
+                 
+                Detail, Create, 
+                
+                 } },
+
+            { "Sửa", new List<string> { 
+                Master, Count, List, Get, GetPreview,
+                 
+                Detail, Update, 
+                 
+                 } },
+
+            { "Xoá", new List<string> { 
+                Master, Count, List, Get, GetPreview,
+                 
+                Delete, 
+                 } },
+
+            { "Xoá nhiều", new List<string> { 
+                Master, Count, List, Get, GetPreview,
+                 
+                BulkDelete } },
+
+            { "Xuất excel", new List<string> { 
+                Master, Count, List, Get, GetPreview,
+                 
+                Export } },
+
+            { "Nhập excel", new List<string> { 
+                Master, Count, List, Get, GetPreview,
+                 
+                ExportTemplate, Import } },
         };
     }
 }
