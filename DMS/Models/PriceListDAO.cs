@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public PriceListDAO()
         {
+            PriceListItemHistories = new HashSet<PriceListItemHistoryDAO>();
             PriceListItemMappings = new HashSet<PriceListItemMappingDAO>();
             PriceListStoreGroupingMappings = new HashSet<PriceListStoreGroupingMappingDAO>();
             PriceListStoreMappings = new HashSet<PriceListStoreMappingDAO>();
@@ -30,6 +31,7 @@ namespace DMS.Models
         public virtual PriceListTypeDAO PriceListType { get; set; }
         public virtual SalesOrderTypeDAO SalesOrderType { get; set; }
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<PriceListItemHistoryDAO> PriceListItemHistories { get; set; }
         public virtual ICollection<PriceListItemMappingDAO> PriceListItemMappings { get; set; }
         public virtual ICollection<PriceListStoreGroupingMappingDAO> PriceListStoreGroupingMappings { get; set; }
         public virtual ICollection<PriceListStoreMappingDAO> PriceListStoreMappings { get; set; }
