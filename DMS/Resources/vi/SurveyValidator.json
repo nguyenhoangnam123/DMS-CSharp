@@ -24,13 +24,13 @@
       },
       "SurveyOptions": {
         "SurveyOptionsEmpty": "Chưa tạo các lựa chọn cho câu hỏi"
-      }
-    },
-    "SurveyQuestions": {
-      "SurveyQuestionsEmpty": "Chưa tạo câu hỏi",
+      },
       "IsMandatory": {
         "QuestionIsMandatory": "Câu hỏi này bắt buộc trả lời"
       }
+    },
+    "SurveyQuestions": {
+      "SurveyQuestionsEmpty": "Chưa tạo câu hỏi"
     }
   }
 }
