@@ -31,7 +31,7 @@ namespace DMS.Rpc.mobile
         public Mobile_TaxTypeDTO TaxType { get; set; }
         public Mobile_UnitOfMeasureDTO UnitOfMeasure { get; set; }
         public Mobile_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping { get; set; }
-        public List<PriceList_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
+        public List<Mobile_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
         public Mobile_ProductDTO() { }
         public Mobile_ProductDTO(Product Product)
         {
@@ -59,7 +59,7 @@ namespace DMS.Rpc.mobile
             this.TaxType = Product.TaxType == null ? null : new Mobile_TaxTypeDTO(Product.TaxType);
             this.UnitOfMeasure = Product.UnitOfMeasure == null ? null : new Mobile_UnitOfMeasureDTO(Product.UnitOfMeasure);
             this.UnitOfMeasureGrouping = Product.UnitOfMeasureGrouping == null ? null : new Mobile_UnitOfMeasureGroupingDTO(Product.UnitOfMeasureGrouping);
-            this.ProductProductGroupingMappings = Product.ProductProductGroupingMappings?.Select(x => new PriceList_ProductProductGroupingMappingDTO(x)).ToList();
+            this.ProductProductGroupingMappings = Product.ProductProductGroupingMappings?.Select(x => new Mobile_ProductProductGroupingMappingDTO(x)).ToList();
             this.Errors = Product.Errors;
         }
     }

@@ -3,14 +3,14 @@ using DMS.Entities;
 
 namespace DMS.Rpc.mobile
 {
-    public class PriceList_ProductProductGroupingMappingDTO : DataDTO
+    public class Mobile_ProductProductGroupingMappingDTO : DataDTO
     {
         public long ProductId { get; set; }
         public long ProductGroupingId { get; set; }
         public Mobile_ProductGroupingDTO ProductGrouping { get; set; }
 
-        public PriceList_ProductProductGroupingMappingDTO() { }
-        public PriceList_ProductProductGroupingMappingDTO(ProductProductGroupingMapping ProductProductGroupingMapping)
+        public Mobile_ProductProductGroupingMappingDTO() { }
+        public Mobile_ProductProductGroupingMappingDTO(ProductProductGroupingMapping ProductProductGroupingMapping)
         {
             this.ProductId = ProductProductGroupingMapping.ProductId;
             this.ProductGroupingId = ProductProductGroupingMapping.ProductGroupingId;

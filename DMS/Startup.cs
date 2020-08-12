@@ -63,9 +63,7 @@ namespace DMS
             LicenseManager.AddLicense("2456;100-FPT", "3f0586d1-0216-5005-8b7a-9080b0bedb5e");
             string licenseErrorMessage;
             if (!LicenseManager.ValidateLicense(out licenseErrorMessage))
-            {
                 throw new Exception(licenseErrorMessage);
-            }
             //DocumentUltimateConfiguration.Current.LicenseKey = "QTSHF7N4NU-MFTCJGT46Z-CPSL9AZA1Q-U4GPFSM1CG-DYHAPW27KX-K2FU3HUSX2-KE37RR548K-Z8JF";
         }
 
