@@ -241,12 +241,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                             ItemId = x.Key.ItemId,
                         };
 
-            var keys = await query.Skip(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Skip)
+            var keys = await query
+                .OrderBy(x => x.OrganizationId).ThenBy(x => x.ItemId)
+                .Skip(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Skip)
                 .Take(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Take)
                 .ToListAsync();
 
             var OrgIds = keys.Select(x => x.OrganizationId).Distinct().ToList();
-            var OrganizationNames = await DataContext.Organization.Where(x => OrgIds.Contains(x.Id)).Select(x => x.Name).ToListAsync();
+            var OrganizationNames = await DataContext.Organization.Where(x => OrgIds.Contains(x.Id)).OrderBy(x => x.Id).Select(x => x.Name).ToListAsync();
             List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO> ReportSalesOrderByItem_ReportSalesOrderByItemDTOs = new List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO>();
             foreach (var OrganizationName in OrganizationNames)
             {
