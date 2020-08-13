@@ -206,7 +206,7 @@ namespace DMS.Rpc.problem_type
         }
         
         [Route(ProblemTypeRoute.Export), HttpPost]
-        public async Task<FileResult> Export([FromBody] ProblemType_ProblemTypeFilterDTO ProblemType_ProblemTypeFilterDTO)
+        public async Task<ActionResult> Export([FromBody] ProblemType_ProblemTypeFilterDTO ProblemType_ProblemTypeFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -251,7 +251,7 @@ namespace DMS.Rpc.problem_type
         }
 
         [Route(ProblemTypeRoute.ExportTemplate), HttpPost]
-        public async Task<FileResult> ExportTemplate([FromBody] ProblemType_ProblemTypeFilterDTO ProblemType_ProblemTypeFilterDTO)
+        public async Task<ActionResult> ExportTemplate([FromBody] ProblemType_ProblemTypeFilterDTO ProblemType_ProblemTypeFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);

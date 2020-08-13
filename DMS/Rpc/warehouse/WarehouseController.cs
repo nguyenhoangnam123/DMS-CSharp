@@ -301,7 +301,7 @@ namespace DMS.Rpc.warehouse
         }
 
         [Route(WarehouseRoute.ExportInventory), HttpPost]
-        public async Task<ActionResult<FileResult>> ExportInventory([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
+        public async Task<ActionResult> ExportInventory([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -351,7 +351,7 @@ namespace DMS.Rpc.warehouse
         }
 
         [Route(WarehouseRoute.ExportTemplate), HttpPost]
-        public async Task<FileResult> ExportTemplate([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
+        public async Task<ActionResult> ExportTemplate([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);

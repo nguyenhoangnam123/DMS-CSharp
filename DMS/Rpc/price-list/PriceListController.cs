@@ -366,7 +366,7 @@ namespace DMS.Rpc.price_list
         }
 
         [Route(PriceListRoute.ExportItem), HttpPost]
-        public async Task<ActionResult<FileResult>> ExportItem([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
+        public async Task<ActionResult> ExportItem([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -428,7 +428,7 @@ namespace DMS.Rpc.price_list
         }
 
         [Route(PriceListRoute.ExportStore), HttpPost]
-        public async Task<ActionResult<FileResult>> ExportStore([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
+        public async Task<ActionResult> ExportStore([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -488,7 +488,7 @@ namespace DMS.Rpc.price_list
         }
 
         [Route(PriceListRoute.ExportTemplateItem), HttpPost]
-        public async Task<FileResult> ExportTemplateItem()
+        public async Task<ActionResult> ExportTemplateItem()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -523,7 +523,7 @@ namespace DMS.Rpc.price_list
         }
 
         [Route(PriceListRoute.ExportTemplateStore), HttpPost]
-        public async Task<FileResult> ExportTemplateStore()
+        public async Task<ActionResult> ExportTemplateStore()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
