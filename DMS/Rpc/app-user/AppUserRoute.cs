@@ -45,13 +45,14 @@ namespace DMS.Rpc.app_user
                 Parent, 
                 Master, Count, List, Get,
                 FilterListPosition, FilterListOrganization, FilterListStatus,
-                SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, CountRole, ListRole}},
+                SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, SingleListStore, SingleListStoreGrouping, SingleListStoreType,
+                CountRole, ListRole}},
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get,
                 FilterListPosition,
                 Detail, Get, Update, 
-                SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole,
+                SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, SingleListStore, SingleListStoreGrouping, SingleListStoreType,
                 CountRole, ListRole, CountStore, ListStore}},
         };
     }

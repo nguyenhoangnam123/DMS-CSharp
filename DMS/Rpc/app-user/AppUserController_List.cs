@@ -305,13 +305,7 @@ namespace DMS.Rpc.app_user
             StoreFilter.ProvinceId = AppUser_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = AppUser_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = AppUser_StoreFilterDTO.WardId;
-            StoreFilter.Address = AppUser_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = AppUser_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = AppUser_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = AppUser_StoreFilterDTO.Longitude;
-            StoreFilter.OwnerName = AppUser_StoreFilterDTO.OwnerName;
-            StoreFilter.OwnerPhone = AppUser_StoreFilterDTO.OwnerPhone;
-            StoreFilter.OwnerEmail = AppUser_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StoreGroupingId = AppUser_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             StoreFilter = StoreService.ToFilter(StoreFilter);
             return await StoreService.Count(StoreFilter);
@@ -338,13 +332,8 @@ namespace DMS.Rpc.app_user
             StoreFilter.ProvinceId = AppUser_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = AppUser_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = AppUser_StoreFilterDTO.WardId;
-            StoreFilter.Address = AppUser_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = AppUser_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = AppUser_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = AppUser_StoreFilterDTO.Longitude;
-            StoreFilter.OwnerName = AppUser_StoreFilterDTO.OwnerName;
-            StoreFilter.OwnerPhone = AppUser_StoreFilterDTO.OwnerPhone;
-            StoreFilter.OwnerEmail = AppUser_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StoreGroupingId = AppUser_StoreFilterDTO.StoreGroupingId;
+         
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             StoreFilter = StoreService.ToFilter(StoreFilter);
             List<Store> Stores = await StoreService.List(StoreFilter);
