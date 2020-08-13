@@ -13,6 +13,10 @@ using DMS.Services.MOrganization;
 using DMS.Entities;
 using DMS.Services.MStore;
 using DMS.Enums;
+using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreType;
+using DMS.Services.MProductGrouping;
+using DMS.Services.MProductType;
 
 namespace DMS.Rpc
 {
@@ -198,6 +202,198 @@ namespace DMS.Rpc
             List<long> StoreIds = Stores.Select(a => a.Id).ToList();
 
             return StoreIds;
+        }
+
+        protected async Task<List<long>> FilterStoreGrouping(IStoreGroupingService StoreGroupingService, ICurrentContext CurrentContext)
+        {
+            List<long> In = null;
+            List<long> NotIn = null;
+            foreach (var currentFilter in CurrentContext.Filters)
+            {
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == "StoreGroupingId")
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal != null)
+                        {
+                            if (In == null) In = new List<long>();
+                            In.Add(FilterPermissionDefinition.IdFilter.Equal.Value);
+                        }
+                        if (FilterPermissionDefinition.IdFilter.In != null)
+                        {
+                            if (In == null) In = new List<long>();
+                            In.AddRange(FilterPermissionDefinition.IdFilter.In);
+                        }
+
+                        if (FilterPermissionDefinition.IdFilter.NotEqual != null)
+                        {
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.Add(FilterPermissionDefinition.IdFilter.NotEqual.Value);
+                        }
+                        if (FilterPermissionDefinition.IdFilter.NotIn != null)
+                        {
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.AddRange(FilterPermissionDefinition.IdFilter.NotIn);
+                        }
+                    }
+                }
+            }
+
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(new StoreGroupingFilter
+            {
+                Id = new IdFilter { In = In, NotIn = NotIn },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreGroupingSelect.Id,
+            });
+            List<long> StoreGroupingIds = StoreGroupings.Select(a => a.Id).ToList();
+
+            return StoreGroupingIds;
+        }
+
+        protected async Task<List<long>> FilterStoreType(IStoreTypeService StoreTypeService, ICurrentContext CurrentContext)
+        {
+            List<long> In = null;
+            List<long> NotIn = null;
+            foreach (var currentFilter in CurrentContext.Filters)
+            {
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == "StoreTypeId")
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal != null)
+                        {
+                            if (In == null) In = new List<long>();
+                            In.Add(FilterPermissionDefinition.IdFilter.Equal.Value);
+                        }
+                        if (FilterPermissionDefinition.IdFilter.In != null)
+                        {
+                            if (In == null) In = new List<long>();
+                            In.AddRange(FilterPermissionDefinition.IdFilter.In);
+                        }
+
+                        if (FilterPermissionDefinition.IdFilter.NotEqual != null)
+                        {
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.Add(FilterPermissionDefinition.IdFilter.NotEqual.Value);
+                        }
+                        if (FilterPermissionDefinition.IdFilter.NotIn != null)
+                        {
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.AddRange(FilterPermissionDefinition.IdFilter.NotIn);
+                        }
+                    }
+                }
+            }
+
+            List<StoreType> StoreTypes = await StoreTypeService.List(new StoreTypeFilter
+            {
+                Id = new IdFilter { In = In, NotIn = NotIn },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreTypeSelect.Id,
+            });
+            List<long> StoreTypeIds = StoreTypes.Select(a => a.Id).ToList();
+
+            return StoreTypeIds;
+        }
+
+        protected async Task<List<long>> FilterProductGrouping(IProductGroupingService ProductGroupingService, ICurrentContext CurrentContext)
+        {
+            List<long> In = null;
+            List<long> NotIn = null;
+            foreach (var currentFilter in CurrentContext.Filters)
+            {
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == "ProductGroupingId")
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal != null)
+                        {
+                            if (In == null) In = new List<long>();
+                            In.Add(FilterPermissionDefinition.IdFilter.Equal.Value);
+                        }
+                        if (FilterPermissionDefinition.IdFilter.In != null)
+                        {
+                            if (In == null) In = new List<long>();
+                            In.AddRange(FilterPermissionDefinition.IdFilter.In);
+                        }
+
+                        if (FilterPermissionDefinition.IdFilter.NotEqual != null)
+                        {
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.Add(FilterPermissionDefinition.IdFilter.NotEqual.Value);
+                        }
+                        if (FilterPermissionDefinition.IdFilter.NotIn != null)
+                        {
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.AddRange(FilterPermissionDefinition.IdFilter.NotIn);
+                        }
+                    }
+                }
+            }
+
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
+            {
+                Id = new IdFilter { In = In, NotIn = NotIn },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProductGroupingSelect.Id,
+            });
+            List<long> ProductGroupingIds = ProductGroupings.Select(a => a.Id).ToList();
+
+            return ProductGroupingIds;
+        }
+
+        protected async Task<List<long>> FilterProductType(IProductTypeService ProductTypeService, ICurrentContext CurrentContext)
+        {
+            List<long> In = null;
+            List<long> NotIn = null;
+            foreach (var currentFilter in CurrentContext.Filters)
+            {
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == "ProductTypeId")
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal != null)
+                        {
+                            if (In == null) In = new List<long>();
+                            In.Add(FilterPermissionDefinition.IdFilter.Equal.Value);
+                        }
+                        if (FilterPermissionDefinition.IdFilter.In != null)
+                        {
+                            if (In == null) In = new List<long>();
+                            In.AddRange(FilterPermissionDefinition.IdFilter.In);
+                        }
+
+                        if (FilterPermissionDefinition.IdFilter.NotEqual != null)
+                        {
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.Add(FilterPermissionDefinition.IdFilter.NotEqual.Value);
+                        }
+                        if (FilterPermissionDefinition.IdFilter.NotIn != null)
+                        {
+                            if (NotIn == null) NotIn = new List<long>();
+                            NotIn.AddRange(FilterPermissionDefinition.IdFilter.NotIn);
+                        }
+                    }
+                }
+            }
+
+            List<ProductType> ProductTypes = await ProductTypeService.List(new ProductTypeFilter
+            {
+                Id = new IdFilter { In = In, NotIn = NotIn },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProductTypeSelect.Id,
+            });
+            List<long> ProductTypeIds = ProductTypes.Select(a => a.Id).ToList();
+
+            return ProductTypeIds;
         }
 
         /// <summary>

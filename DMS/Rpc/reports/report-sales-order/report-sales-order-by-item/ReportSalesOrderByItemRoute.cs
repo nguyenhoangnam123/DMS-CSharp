@@ -27,7 +27,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             { nameof(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
             { nameof(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ProductGroupingId), FieldTypeEnum.ID.Id },
             { nameof(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ProductTypeId), FieldTypeEnum.ID.Id },
-            { nameof(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ItemId), FieldTypeEnum.ID.Id },
             { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 

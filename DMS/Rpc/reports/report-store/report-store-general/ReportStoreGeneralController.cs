@@ -119,6 +119,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             StoreGroupingFilter.Path = ReportStoreGeneral_StoreGroupingFilterDTO.Path;
             StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
+            if (StoreGroupingFilter.Id == null) StoreGroupingFilter.Id = new IdFilter();
+            StoreGroupingFilter.Id.In = await FilterStoreGrouping(StoreGroupingService, CurrentContext);
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<ReportStoreGeneral_StoreGroupingDTO> ReportStoreGeneral_StoreGroupingDTOs = StoreGroupings
                 .Select(x => new ReportStoreGeneral_StoreGroupingDTO(x)).ToList();
@@ -142,6 +144,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             StoreTypeFilter.Name = ReportStoreGeneral_StoreTypeFilterDTO.Name;
             StoreTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
+            if (StoreTypeFilter.Id == null) StoreTypeFilter.Id = new IdFilter();
+            StoreTypeFilter.Id.In = await FilterStoreType(StoreTypeService, CurrentContext);
             List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
             List<ReportStoreGeneral_StoreTypeDTO> ReportStoreGeneral_StoreTypeDTOs = StoreTypes
                 .Select(x => new ReportStoreGeneral_StoreTypeDTO(x)).ToList();
