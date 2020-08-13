@@ -15,6 +15,9 @@ using Helpers;
 using Microsoft.EntityFrameworkCore;
 using DMS.Services.MProduct;
 using DMS.Services.MAppUser;
+using System.IO;
+using System.Dynamic;
+using NGS.Templater;
 
 namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
 {
@@ -361,6 +364,54 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             };
 
             return ReportSalesOrderGeneral_TotalDTO;
+        }
+
+        [Route(ReportSalesOrderGeneralRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            DateTime Start = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
+               StaticParams.DateTimeNow.Date :
+               ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value.Date;
+
+            DateTime End = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
+
+            ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.Skip = 0;
+            ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.Take = int.MaxValue;
+            List<ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO> ReportSalesOrderGeneral_ReportSalesOrderGeneralDTOs = (await List(ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO)).Value;
+
+            ReportSalesOrderGeneral_TotalDTO ReportSalesOrderGeneral_TotalDTO = await Total(ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO);
+            long stt = 1;
+            foreach (ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO in ReportSalesOrderGeneral_ReportSalesOrderGeneralDTOs)
+            {
+                foreach (var IndirectSalesOrder in ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO.IndirectSalesOrders)
+                {
+                    IndirectSalesOrder.STT = stt;
+                    stt++;
+                    IndirectSalesOrder.eOrderDate = IndirectSalesOrder.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                }
+            }
+
+            string path = "Templates/Report_Sales_Order_General.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.ToString("dd-MM-yyyy");
+            Data.End = End.ToString("dd-MM-yyyy");
+            Data.ReportSalesOrderGenerals = ReportSalesOrderGeneral_ReportSalesOrderGeneralDTOs;
+            Data.Total = ReportSalesOrderGeneral_TotalDTO;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportSalesOrderGeneral.xlsx");
         }
     }
 }
