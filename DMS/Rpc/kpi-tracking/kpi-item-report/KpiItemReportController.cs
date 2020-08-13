@@ -12,9 +12,12 @@ using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using NGS.Templater;
 using RestSharp.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -345,12 +348,15 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         foreach (var content in IndirectSalesOrder.IndirectSalesOrderContents)
                         {
                             if (content.ItemId == ItemContent.ItemId)
+                            {
                                 ItemContent.IndirectQuantity += content.RequestedQuantity;
+                            }    
                         }
                     }
                     //tỉ lệ
-                    ItemContent.IndirectQuantityRatio = ItemContent.IndirectQuantityPlanned == 0 ?
-                        0.00m : Math.Round((ItemContent.IndirectQuantity / ItemContent.IndirectQuantityPlanned) * 100, 2);
+                    ItemContent.IndirectQuantityRatio = ItemContent.IndirectQuantityPlanned == 0 || ItemContent.IndirectQuantityPlanned  == null ?
+                        null : (decimal?)
+                        Math.Round((ItemContent.IndirectQuantity / ItemContent.IndirectQuantityPlanned.Value) * 100, 2);
                     #endregion
 
                     #region Doanh thu theo đơn hàng gián tiếp
@@ -376,8 +382,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                     }
                     ItemContent.IndirectRevenue = Math.Round(ItemContent.IndirectRevenue, 0);
                     //tỉ lệ
-                    ItemContent.IndirectRevenueRatio = ItemContent.IndirectRevenuePlanned == 0 ?
-                        0.00m : Math.Round((ItemContent.IndirectRevenue / ItemContent.IndirectRevenuePlanned) * 100, 2);
+                    ItemContent.IndirectRevenueRatio = ItemContent.IndirectRevenuePlanned == 0 || ItemContent.IndirectRevenuePlanned == null ?
+                        null : (decimal?)
+                        Math.Round((ItemContent.IndirectRevenue / ItemContent.IndirectRevenuePlanned.Value) * 100, 2);
                     #endregion
 
                     #region Số đơn hàng gián tiếp
@@ -398,8 +405,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         }
                     }
                     //tỉ lệ
-                    ItemContent.IndirectAmountRatio = ItemContent.IndirectAmountPlanned == 0 ?
-                        0.00m : Math.Round((ItemContent.IndirectAmount / ItemContent.IndirectAmountPlanned) * 100, 2);
+                    ItemContent.IndirectAmountRatio = ItemContent.IndirectAmountPlanned == null || ItemContent.IndirectAmountPlanned == 0 ?
+                        null : (decimal?)
+                        Math.Round((ItemContent.IndirectAmount.Value / ItemContent.IndirectAmountPlanned.Value) * 100, 2);
                     #endregion
 
                     #region Đại lý theo đơn hàng gián tiếp
@@ -420,14 +428,58 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         }
                     }
                     //tỉ lệ
-                    ItemContent.IndirectStoreRatio = ItemContent.IndirectStorePlanned == 0 ?
-                        0.00m : Math.Round((ItemContent.IndirectStore / ItemContent.IndirectStorePlanned) * 100, 2);
+                    ItemContent.IndirectStoreRatio = ItemContent.IndirectStorePlanned == null || ItemContent.IndirectStorePlanned == 0 ?
+                        null : (decimal?)
+                        Math.Round((ItemContent.IndirectStore.Value / ItemContent.IndirectStorePlanned.Value) * 100, 2);
                     #endregion
                 }
             };
             KpiItemReport_KpiItemReportDTOs = KpiItemReport_KpiItemReportDTOs.Where(x => x.ItemContents.Any()).ToList();
             return KpiItemReport_KpiItemReportDTOs;
         }
+
+        [Route(KpiItemReportRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] KpiItemReport_KpiItemReportFilterDTO KpiItemReport_KpiItemReportFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            if (KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal.HasValue == false) return BadRequest("Chưa chọn kì KPI");
+            if (KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.HasValue == false) return BadRequest("Chưa chọn năm KPI");
+
+            var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId.Equal.Value).FirstOrDefault();
+            var KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiItemReport_KpiItemReportFilterDTO.KpiYearId.Equal.Value).FirstOrDefault();
+
+            KpiItemReport_KpiItemReportFilterDTO.Skip = 0;
+            KpiItemReport_KpiItemReportFilterDTO.Take = int.MaxValue;
+            List<KpiItemReport_KpiItemReportDTO> KpiItemReport_KpiItemReportDTOs = (await List(KpiItemReport_KpiItemReportFilterDTO)).Value;
+
+            long stt = 1;
+            foreach (KpiItemReport_KpiItemReportDTO KpiItemReport_KpiItemReportDTO in KpiItemReport_KpiItemReportDTOs)
+            {
+                foreach (var ItemContent in KpiItemReport_KpiItemReportDTO.ItemContents)
+                {
+                    ItemContent.STT = stt;
+                    stt++;
+                }
+            }
+
+            List<KpiItemReport_ExportDTO> KpiItemReport_ExportDTOs = KpiItemReport_KpiItemReportDTOs?.Select(x => new KpiItemReport_ExportDTO(x)).ToList();
+            string path = "Templates/Kpi_Item_Report.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.KpiPeriod = KpiPeriod.Name;
+            Data.KpiYear = KpiYear.Name;
+            Data.KpiItemReports = KpiItemReport_ExportDTOs;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "KpiItemReport.xlsx");
+        }
+
 
         private Tuple<DateTime, DateTime> DateTimeConvert(long KpiPeriodId, long KpiYearId)
         {

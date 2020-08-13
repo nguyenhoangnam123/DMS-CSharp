@@ -300,6 +300,25 @@ namespace DMS.Repositories
                         SalePrice = x.Item.SalePrice,
                         RetailPrice = x.Item.RetailPrice,
                         StatusId = x.Item.StatusId,
+                        Product = x.Item.Product == null ? null : new Product
+                        {
+                            Id = x.Item.Product.Id,
+                            ProductProductGroupingMappings = x.Item.Product.ProductProductGroupingMappings != null ?
+                            x.Item.Product.ProductProductGroupingMappings.Select(p => new ProductProductGroupingMapping
+                            {
+                                ProductId = p.ProductId,
+                                ProductGroupingId = p.ProductGroupingId,
+                                ProductGrouping = new ProductGrouping
+                                {
+                                    Id = p.ProductGrouping.Id,
+                                    Code = p.ProductGrouping.Code,
+                                    Name = p.ProductGrouping.Name,
+                                    ParentId = p.ProductGrouping.ParentId,
+                                    Path = p.ProductGrouping.Path,
+                                    Description = p.ProductGrouping.Description,
+                                },
+                            }).ToList() : null,
+                        }
                     },
                 }).ToListAsync();
             PriceList.PriceListStoreGroupingMappings = await DataContext.PriceListStoreGroupingMapping.AsNoTracking()
@@ -353,6 +372,29 @@ namespace DMS.Repositories
                         TaxCode = x.Store.TaxCode,
                         LegalEntity = x.Store.LegalEntity,
                         StatusId = x.Store.StatusId,
+                        Province = x.Store.Province == null ? null : new Province
+                        {
+                            Id = x.Store.Province.Id,
+                            Name = x.Store.Province.Name,
+                            Priority = x.Store.Province.Priority,
+                            StatusId = x.Store.Province.StatusId,
+                        },
+                        StoreGrouping = x.Store.StoreGrouping == null ? null : new StoreGrouping
+                        {
+                            Id = x.Store.StoreGrouping.Id,
+                            Code = x.Store.StoreGrouping.Code,
+                            Name = x.Store.StoreGrouping.Name,
+                            ParentId = x.Store.StoreGrouping.ParentId,
+                            Path = x.Store.StoreGrouping.Path,
+                            Level = x.Store.StoreGrouping.Level,
+                        },
+                        StoreType = x.Store.StoreType == null ? null : new StoreType
+                        {
+                            Id = x.Store.StoreType.Id,
+                            Code = x.Store.StoreType.Code,
+                            Name = x.Store.StoreType.Name,
+                            StatusId = x.Store.StoreType.StatusId,
+                        },
                     },
                 }).ToListAsync();
             PriceList.PriceListStoreTypeMappings = await DataContext.PriceListStoreTypeMapping.AsNoTracking()
@@ -371,7 +413,7 @@ namespace DMS.Repositories
                     },
                 }).ToListAsync();
 
-            if(PriceList.PriceListItemMappings != null && PriceList.PriceListItemMappings.Any())
+            if (PriceList.PriceListItemMappings != null && PriceList.PriceListItemMappings.Any())
             {
                 var ItemIds = PriceList.PriceListItemMappings.Select(x => x.ItemId).ToList();
                 var PriceListItemHistories = await DataContext.PriceListItemHistory
