@@ -121,6 +121,9 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
+            AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
+            StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
+
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<Mobile_StoreDTO> Mobile_StoreDTOs = Stores
                 .Select(x => new Mobile_StoreDTO(x)).ToList();
@@ -447,6 +450,8 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerPhone = Mobile_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
+            StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
 
             return await StoreCheckingService.CountStore(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
         }
@@ -485,6 +490,8 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerPhone = Mobile_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
+            StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
 
             List<Store> Stores = await StoreCheckingService.ListStore(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
             List<Mobile_StoreDTO> Mobile_StoreDTOs = Stores
@@ -527,6 +534,8 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerPhone = Mobile_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
+            StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
 
             return await StoreCheckingService.CountStorePlanned(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
         }
@@ -566,6 +575,8 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerPhone = Mobile_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
+            StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
 
             List<Store> Stores = await StoreCheckingService.ListStorePlanned(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
             List<Mobile_StoreDTO> Mobile_StoreDTOs = Stores
@@ -608,6 +619,8 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerPhone = Mobile_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
+            StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
 
             return await StoreCheckingService.CountStoreUnPlanned(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
         }
@@ -647,6 +660,8 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerPhone = Mobile_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
+            StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
 
             List<Store> Stores = await StoreCheckingService.ListStoreUnPlanned(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
             List<Mobile_StoreDTO> Mobile_StoreDTOs = Stores
@@ -689,6 +704,8 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerPhone = Mobile_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
+            StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
 
             return await StoreCheckingService.CountStoreInScope(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
         }
@@ -728,6 +745,8 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerPhone = Mobile_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
+            StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
 
             List<Store> Stores = await StoreCheckingService.ListStoreInScope(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
             List<Mobile_StoreDTO> Mobile_StoreDTOs = Stores

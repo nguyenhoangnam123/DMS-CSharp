@@ -771,7 +771,7 @@ namespace DMS.Repositories
                 return false;
             IndirectSalesOrderDAO.Id = IndirectSalesOrder.Id;
             IndirectSalesOrderDAO.Code = IndirectSalesOrder.Code;
-            IndirectSalesOrderDAO.OrganizationId = IndirectSalesOrder.OrganizationId;
+            //IndirectSalesOrderDAO.OrganizationId = IndirectSalesOrder.OrganizationId;
             IndirectSalesOrderDAO.BuyerStoreId = IndirectSalesOrder.BuyerStoreId;
             IndirectSalesOrderDAO.PhoneNumber = IndirectSalesOrder.PhoneNumber;
             IndirectSalesOrderDAO.StoreAddress = IndirectSalesOrder.StoreAddress;
