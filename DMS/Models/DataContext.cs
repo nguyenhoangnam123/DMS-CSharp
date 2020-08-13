@@ -2962,6 +2962,18 @@ namespace DMS.Models
             modelBuilder.Entity<StoreUncheckingDAO>(entity =>
             {
                 entity.Property(e => e.Date).HasColumnType("date");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.StoreUncheckings)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreUnchecking_AppUser");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.StoreUncheckings)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreUnchecking_Store");
             });
 
             modelBuilder.Entity<SupplierDAO>(entity =>

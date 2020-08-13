@@ -305,6 +305,7 @@ namespace DMS.Rpc.app_user
             StoreFilter.ProvinceId = AppUser_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = AppUser_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = AppUser_StoreFilterDTO.WardId;
+            StoreFilter.StoreGroupingId = AppUser_StoreFilterDTO.StoreGroupingId;
             StoreFilter.Address = AppUser_StoreFilterDTO.Address;
             StoreFilter.DeliveryAddress = AppUser_StoreFilterDTO.DeliveryAddress;
             StoreFilter.Latitude = AppUser_StoreFilterDTO.Latitude;
@@ -338,6 +339,7 @@ namespace DMS.Rpc.app_user
             StoreFilter.ProvinceId = AppUser_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = AppUser_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = AppUser_StoreFilterDTO.WardId;
+            StoreFilter.StoreGroupingId = AppUser_StoreFilterDTO.StoreGroupingId;
             StoreFilter.Address = AppUser_StoreFilterDTO.Address;
             StoreFilter.DeliveryAddress = AppUser_StoreFilterDTO.DeliveryAddress;
             StoreFilter.Latitude = AppUser_StoreFilterDTO.Latitude;
