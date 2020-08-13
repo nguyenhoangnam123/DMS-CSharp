@@ -9,5 +9,8 @@ namespace DMS.Models
         public long AppUserId { get; set; }
         public long StoreId { get; set; }
         public DateTime Date { get; set; }
+
+        public virtual AppUserDAO AppUser { get; set; }
+        public virtual StoreDAO Store { get; set; }
     }
 }

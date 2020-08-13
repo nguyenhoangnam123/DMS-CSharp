@@ -189,40 +189,23 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
             if (AppUserId.HasValue)
                 AppUserIds = AppUserIds.Where(x => x == AppUserId.Value).ToList();
-
-            IQueryable<ERouteDAO> ERouteDAOQuery = DataContext.ERoute;
-            if (ERouteId.HasValue)
-                ERouteDAOQuery = ERouteDAOQuery.Where(e => e.Id == ERouteId.Value);
-            AppUserIds = await ERouteDAOQuery.Where(e =>
-                  AppUserIds.Contains(e.SaleEmployeeId) &&
-                  OrganizationIds.Contains(e.SaleEmployee.OrganizationId.Value) &&
-                  Start <= e.EndDate && e.StartDate <= End)
-                .Select(e => e.SaleEmployeeId).Distinct().ToListAsync();
-
-            AppUserIds = AppUserIds
-              .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
-              .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
-              .ToList();
+            AppUserIds = await (from su in DataContext.StoreUnchecking
+                                join a in DataContext.AppUser on su.AppUserId equals a.Id
+                                where AppUserIds.Contains(a.Id)
+                                orderby a.Organization.Name, a.DisplayName
+                                select su.AppUserId)
+                          .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
+                          .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
+                          .ToListAsync();
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id))
-                .Include(x => x.Organization)
+                .Include(au => au.Organization)
                 .ToListAsync();
-
-            ERouteDAOQuery = DataContext.ERoute;
-            if (ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId != null && ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId.HasValue)
-                ERouteDAOQuery = ERouteDAOQuery.Where(e => e.Id, ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId);
-            List<ERouteDAO> ERouteDAOs = await ERouteDAOQuery.Where(e =>
-                   AppUserIds.Contains(e.SaleEmployeeId) &&
-                   Start <= e.EndDate && e.StartDate <= End)
-                .Include(e => e.ERouteContents).ThenInclude(ec => ec.ERouteContentDays)
-                .ToListAsync();
-            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(sc =>
-                    sc.CheckOutAt.HasValue &&
-                    Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
-                .ToListAsync();
-            List<long> StoreIds = ERouteDAOs.SelectMany(e => e.ERouteContents.Select(ec => ec.StoreId)).ToList();
-            List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id))
-                .Include(s => s.StoreType)
+            List<StoreUncheckingDAO> StoreUncheckingDAOs = await DataContext.StoreUnchecking
+                .Where(su =>
+                    AppUserIds.Contains(su.AppUserId) &&
+                    Start <= su.Date && su.Date <= End
+                    )
+                .Include(su => su.Store.StoreType)
                 .ToListAsync();
 
             List<string> OrganizationNames = AppUserDAOs.Select(x => x.Organization.Name).Distinct().ToList();
@@ -246,32 +229,19 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
                 for (DateTime index = Start; index < End; index = index.AddDays(1))
                 {
-                    var SubERouteDAOs = ERouteDAOs.Where(e => e.SaleEmployeeId == AppUserDAO.Id).ToList();
-                    foreach (var ERouteDAO in SubERouteDAOs)
+                    var SubStoreUncheckingDAOs = StoreUncheckingDAOs.Where(e => e.AppUserId == AppUserDAO.Id && e.Date == index).ToList();
+                    foreach (var StoreUncheckingDAO in SubStoreUncheckingDAOs)
                     {
-                        foreach (var ERouteContentDAO in ERouteDAO.ERouteContents)
+                        ReportStoreUnchecked_StoreDTO ReportStoreUnchecked_StoreDTO = new ReportStoreUnchecked_StoreDTO
                         {
-                            var gap = (index - ERouteDAO.RealStartDate).Days % 28;
-                            var SubStoreCheckingDAOs = StoreCheckingDAOs.Where(sc => sc.CheckOutAt.Value == index).ToList();
-                            if (ERouteContentDAO.ERouteContentDays.ElementAt(gap).Planned == true)
-                            {
-                                if (SubStoreCheckingDAOs.Count == 0 || !SubStoreCheckingDAOs.Any(sc => sc.StoreId == ERouteContentDAO.StoreId))
-                                {
-                                    StoreDAO StoreDAO = StoreDAOs.Where(s => s.Id == ERouteContentDAO.StoreId).FirstOrDefault();
-                                    ReportStoreUnchecked_StoreDTO ReportStoreUnchecked_StoreDTO = new ReportStoreUnchecked_StoreDTO
-                                    {
-                                        Date = index,
-                                        ERouteCode = ERouteDAO.Code,
-                                        StoreAddress = StoreDAO.Address,
-                                        StoreCode = StoreDAO.Code,
-                                        StoreName = StoreDAO.Name,
-                                        StorePhone = StoreDAO.OwnerPhone,
-                                        StoreTypeName = StoreDAO.StoreType.Name,
-                                    };
-                                    ReportStoreUnChecked_SaleEmployeeDTO.Stores.Add(ReportStoreUnchecked_StoreDTO);
-                                }
-                            }
-                        }
+                            Date = index,
+                            StoreAddress = StoreUncheckingDAO.Store.Address,
+                            StoreCode = StoreUncheckingDAO.Store.Code,
+                            StoreName = StoreUncheckingDAO.Store.Name,
+                            StorePhone = StoreUncheckingDAO.Store.OwnerPhone,
+                            StoreTypeName = StoreUncheckingDAO.Store.StoreType.Name,
+                        };
+                        ReportStoreUnChecked_SaleEmployeeDTO.Stores.Add(ReportStoreUnchecked_StoreDTO);
                     }
                 }
                 ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees.Add(ReportStoreUnChecked_SaleEmployeeDTO);
