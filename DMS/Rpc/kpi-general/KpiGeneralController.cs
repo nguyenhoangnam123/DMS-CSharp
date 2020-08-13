@@ -1032,6 +1032,31 @@ namespace DMS.Rpc.kpi_general
                 .Select(x => new KpiGeneral_AppUserDTO(x)).ToList();
             return KpiGeneral_AppUserDTOs;
         }
+
+        [Route(KpiGeneralRoute.FilterListCreator), HttpPost]
+        public async Task<List<KpiGeneral_AppUserDTO>> FilterListCreator([FromBody] KpiGeneral_AppUserFilterDTO KpiGeneral_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            var appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = KpiGeneral_AppUserFilterDTO.Id;
+            AppUserFilter.Username = KpiGeneral_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = KpiGeneral_AppUserFilterDTO.DisplayName;
+            AppUserFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<KpiGeneral_AppUserDTO> KpiGeneral_AppUserDTOs = AppUsers
+                .Select(x => new KpiGeneral_AppUserDTO(x)).ToList();
+            return KpiGeneral_AppUserDTOs;
+        }
         [Route(KpiGeneralRoute.FilterListKpiYear), HttpPost]
         public async Task<List<KpiGeneral_KpiYearDTO>> FilterListKpiYear([FromBody] KpiGeneral_KpiYearFilterDTO KpiGeneral_KpiYearFilterDTO)
         {
