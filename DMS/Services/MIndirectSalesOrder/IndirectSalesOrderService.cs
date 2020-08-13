@@ -154,11 +154,12 @@ namespace DMS.Services.MIndirectSalesOrder
             try
             {
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                var SaleEmployee = await UOW.AppUserRepository.Get(IndirectSalesOrder.SaleEmployeeId);
                 await Calculator(IndirectSalesOrder);
                 await UOW.Begin();
                 IndirectSalesOrder.RequestStateId = RequestStateEnum.NEW.Id;
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
-                IndirectSalesOrder.OrganizationId = CurrentUser.OrganizationId.Value;
+                IndirectSalesOrder.OrganizationId = SaleEmployee.OrganizationId.Value;
                 await UOW.IndirectSalesOrderRepository.Create(IndirectSalesOrder);
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);
