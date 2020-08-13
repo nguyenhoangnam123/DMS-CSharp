@@ -40,6 +40,9 @@
     "ERouteContent": {
       "Store": {
         "StoreEmpty": "Chưa chọn đại lý"
+      },
+      "Id": {
+        "PlannedEmpty": "Chưa lập lịch đi tuyến cho cửa hàng"
       }
     }
   }
