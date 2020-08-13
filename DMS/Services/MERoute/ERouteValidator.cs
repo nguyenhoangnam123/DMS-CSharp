@@ -40,7 +40,8 @@ namespace DMS.Services.MERoute
             EndDateWrong,
             StoreEmpty,
             ERouteInUsed,
-            ERouteContentsEmpty
+            ERouteContentsEmpty,
+            PlannedEmpty
         }
 
         private IUOW UOW;
@@ -206,6 +207,31 @@ namespace DMS.Services.MERoute
                 {
                     if (listIdsNotExisted.Contains(ERouteContent.StoreId))
                         ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreEmpty);
+                    else
+                    {
+                        var days = new List<bool>
+                        {
+                            ERouteContent.Monday,
+                            ERouteContent.Tuesday,
+                            ERouteContent.Wednesday,
+                            ERouteContent.Thursday,
+                            ERouteContent.Friday,
+                            ERouteContent.Saturday,
+                            ERouteContent.Sunday,
+                        };
+                        var week = new List<bool>
+                        {
+                            ERouteContent.Week1,
+                            ERouteContent.Week2,
+                            ERouteContent.Week3,
+                            ERouteContent.Week4,
+                        };
+
+                        if(!days.Any(x => x == true) || !week.Any(x => x == true))
+                        {
+                            ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Id), ErrorCode.PlannedEmpty);
+                        }
+                    }
                 }
             }
             else

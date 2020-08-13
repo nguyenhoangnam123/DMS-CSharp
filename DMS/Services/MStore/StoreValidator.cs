@@ -51,7 +51,8 @@ namespace DMS.Services.MStore
             StatusNotExisted,
             StoreHasChild,
             StoreScoutingHasOpened,
-            StoreScoutingHasRejected
+            StoreScoutingHasRejected,
+            StoreInUsed
         }
 
         private IUOW UOW;
@@ -508,6 +509,10 @@ namespace DMS.Services.MStore
         {
             if (await ValidateId(Store))
             {
+                if (Store.Used)
+                {
+                    Store.AddError(nameof(StoreValidator), nameof(Store.Id), ErrorCode.StoreInUsed);
+                }
                 await ValidateStoreHasChild(Store);
             }
             return Store.IsValidated;

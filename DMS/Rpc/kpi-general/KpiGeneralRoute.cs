@@ -39,6 +39,7 @@ namespace DMS.Rpc.kpi_general
         public const string BulkDelete = Default + "/bulk-delete";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
+        public const string FilterListCreator = Default + "/filter-list-creator";
         public const string FilterListKpiYear = Default + "/filter-list-kpi-year";
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListStatus = Default + "/filter-list-status";
@@ -64,11 +65,11 @@ namespace DMS.Rpc.kpi_general
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Get, GetPreview,
-                 FilterListAppUser, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral, } },
+                FilterListAppUser, FilterListCreator, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral, } },
             { "Thêm", new List<string> {
                 Parent,
                 Master, Count, List, Get, GetPreview, CountAppUser, ListAppUser,
-                FilterListAppUser, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral,
+                FilterListAppUser, FilterListCreator, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral,
                 Detail, Create,
                 SingleListAppUser, SingleListKpiYear, SingleListOrganization, SingleListStatus,  SingleListKpiCriteriaGeneral, GetDraft,
                 Count, List, Count, List, Count, List, Count, List, Count, List, Count, List,  } },
@@ -76,7 +77,7 @@ namespace DMS.Rpc.kpi_general
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get, GetPreview, ListAppUser, CountAppUser,
-                FilterListAppUser, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral,
+                FilterListAppUser, FilterListCreator, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral,
                 Detail, Update,
                 SingleListAppUser, SingleListKpiYear, SingleListOrganization, SingleListStatus,  SingleListKpiCriteriaGeneral, GetDraft,
                 Count, List, Count, List, Count, List, Count, List, Count, List, Count, List,  } },
@@ -84,26 +85,26 @@ namespace DMS.Rpc.kpi_general
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get, GetPreview,
-                FilterListAppUser, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral,
+                FilterListAppUser, FilterListCreator, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral,
                 Delete,
                 SingleListAppUser, SingleListKpiYear, SingleListOrganization, SingleListStatus,  SingleListKpiCriteriaGeneral,  } },
 
             { "Xoá nhiều", new List<string> {
                 Parent,
                 Master, Count, List, Get, GetPreview,
-                FilterListAppUser, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral,
+                FilterListAppUser, FilterListCreator, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral,
                 BulkDelete } },
 
             { "Xuất excel", new List<string> {
                 Parent,
                 Master, Count, List, Get, GetPreview,
-                FilterListAppUser, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral,
+                FilterListAppUser, FilterListCreator, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral,
                 Export } },
 
             { "Nhập excel", new List<string> {
                 Parent,
                 Master, Count, List, Get, GetPreview,
-                FilterListAppUser, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral,
+                FilterListAppUser, FilterListCreator, FilterListKpiYear, FilterListOrganization, FilterListStatus,  FilterListKpiCriteriaGeneral,
                 ExportTemplate, Import } },
         };
     }

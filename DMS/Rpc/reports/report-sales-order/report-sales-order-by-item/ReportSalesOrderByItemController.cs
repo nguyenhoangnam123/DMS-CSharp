@@ -91,6 +91,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             ProductGroupingFilter.Code = ReportSalesOrderByItem_ProductGroupingFilterDTO.Code;
             ProductGroupingFilter.Name = ReportSalesOrderByItem_ProductGroupingFilterDTO.Name;
 
+            if (ProductGroupingFilter.Id == null) ProductGroupingFilter.Id = new IdFilter();
+            ProductGroupingFilter.Id.In = await FilterProductGrouping(ProductGroupingService, CurrentContext);
             List<ProductGrouping> ReportSalesOrderByItemGroupings = await ProductGroupingService.List(ProductGroupingFilter);
             List<ReportSalesOrderByItem_ProductGroupingDTO> ReportSalesOrderByItem_ProductGroupingDTOs = ReportSalesOrderByItemGroupings
                 .Select(x => new ReportSalesOrderByItem_ProductGroupingDTO(x)).ToList();
@@ -114,6 +116,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             ProductTypeFilter.Name = ReportSalesOrderByItem_ProductTypeFilterDTO.Name;
             ProductTypeFilter.StatusId = ReportSalesOrderByItem_ProductTypeFilterDTO.StatusId;
 
+            if (ProductTypeFilter.Id == null) ProductTypeFilter.Id = new IdFilter();
+            ProductTypeFilter.Id.In = await FilterProductType(ProductTypeService, CurrentContext);
             List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
             List<ReportSalesOrderByItem_ProductTypeDTO> ReportSalesOrderByItem_ProductTypeDTOs = ProductTypes
                 .Select(x => new ReportSalesOrderByItem_ProductTypeDTO(x)).ToList();
@@ -237,12 +241,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                             ItemId = x.Key.ItemId,
                         };
 
-            var keys = await query.Skip(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Skip)
+            var keys = await query
+                .OrderBy(x => x.OrganizationId).ThenBy(x => x.ItemId)
+                .Skip(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Skip)
                 .Take(ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Take)
                 .ToListAsync();
 
             var OrgIds = keys.Select(x => x.OrganizationId).Distinct().ToList();
-            var OrganizationNames = await DataContext.Organization.Where(x => OrgIds.Contains(x.Id)).Select(x => x.Name).ToListAsync();
+            var OrganizationNames = await DataContext.Organization.Where(x => OrgIds.Contains(x.Id)).OrderBy(x => x.Id).Select(x => x.Name).ToListAsync();
             List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO> ReportSalesOrderByItem_ReportSalesOrderByItemDTOs = new List<ReportSalesOrderByItem_ReportSalesOrderByItemDTO>();
             foreach (var OrganizationName in OrganizationNames)
             {

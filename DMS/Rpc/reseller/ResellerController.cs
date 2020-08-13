@@ -335,7 +335,7 @@ namespace DMS.Rpc.reseller
 
 
         [Route(ResellerRoute.Export), HttpPost]
-        public async Task<FileResult> Export([FromBody] Reseller_ResellerFilterDTO Reseller_ResellerFilterDTO)
+        public async Task<ActionResult> Export([FromBody] Reseller_ResellerFilterDTO Reseller_ResellerFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);

@@ -173,7 +173,7 @@ namespace DMS.Rpc.survey
         }
 
         [Route(SurveyRoute.Export), HttpPost]
-        public async Task<FileResult> Export([FromBody] Survey_SurveyFilterDTO Survey_SurveyFilterDTO)
+        public async Task<ActionResult> Export([FromBody] Survey_SurveyFilterDTO Survey_SurveyFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
