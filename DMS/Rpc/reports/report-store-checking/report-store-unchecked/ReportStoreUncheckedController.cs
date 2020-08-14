@@ -177,8 +177,6 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             DateTime End = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
-            if (End.Subtract(Start).TotalDays > 7)
-                return BadRequest("Chỉ được phép xem tối đã trong vòng 7 ngày");
 
             long? AppUserId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId?.Equal;
             long? ERouteId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId?.Equal;
@@ -266,8 +264,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             DateTime End = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
-            if (End.Subtract(Start).Days > 31)
-                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
+           
 
             ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip = 0;
             ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take = int.MaxValue;
