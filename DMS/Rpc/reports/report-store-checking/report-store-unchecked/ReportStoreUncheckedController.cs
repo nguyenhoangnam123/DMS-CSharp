@@ -229,20 +229,20 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
                 for (DateTime index = Start; index < End; index = index.AddDays(1))
                 {
-                    var SubStoreUncheckingDAOs = StoreUncheckingDAOs.Where(e => e.AppUserId == AppUserDAO.Id && e.Date == index).ToList();
-                    foreach (var StoreUncheckingDAO in SubStoreUncheckingDAOs)
-                    {
-                        ReportStoreUnchecked_StoreDTO ReportStoreUnchecked_StoreDTO = new ReportStoreUnchecked_StoreDTO
+                    var ReportStoreUnchecked_StoreDTOs = StoreUncheckingDAOs.Where(e => e.AppUserId == AppUserDAO.Id && e.Date == index)
+                        .Select(x => new ReportStoreUnchecked_StoreDTO
                         {
-                            Date = index,
-                            StoreAddress = StoreUncheckingDAO.Store.Address,
-                            StoreCode = StoreUncheckingDAO.Store.Code,
-                            StoreName = StoreUncheckingDAO.Store.Name,
-                            StorePhone = StoreUncheckingDAO.Store.OwnerPhone,
-                            StoreTypeName = StoreUncheckingDAO.Store.StoreType.Name,
-                        };
-                        ReportStoreUnChecked_SaleEmployeeDTO.Stores.Add(ReportStoreUnchecked_StoreDTO);
-                    }
+                            Date = x.Date,
+                            AppUserId = x.AppUserId,
+                            StoreAddress = x.Store.Address,
+                            StoreCode = x.Store.Code,
+                            StoreName = x.Store.Name,
+                            StorePhone = x.Store.OwnerPhone,
+                            StoreTypeName = x.Store.StoreType.Name,
+                        })
+                        .Distinct()
+                        .ToList();
+                    ReportStoreUnChecked_SaleEmployeeDTO.Stores.AddRange(ReportStoreUnchecked_StoreDTOs);
                 }
                 ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees.Add(ReportStoreUnChecked_SaleEmployeeDTO);
             }
