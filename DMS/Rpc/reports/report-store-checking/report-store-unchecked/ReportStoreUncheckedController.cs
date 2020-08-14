@@ -163,8 +163,6 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                 where AppUserIds.Contains(a.Id)
                                 orderby a.Organization.Name, a.DisplayName
                                 select su.AppUserId)
-                          .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
-                          .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
                           .ToListAsync();
             int count = AppUserIds.Count();
             return count;
@@ -201,9 +199,10 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                 where AppUserIds.Contains(a.Id)
                                 orderby a.Organization.Name, a.DisplayName
                                 select su.AppUserId)
-                          .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
-                          .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
-                          .ToListAsync();
+                                .Distinct()
+                                .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
+                                .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
+                                .ToListAsync();
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id))
                 .Include(au => au.Organization)
                 .ToListAsync();
