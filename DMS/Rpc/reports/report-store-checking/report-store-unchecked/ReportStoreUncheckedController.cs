@@ -155,8 +155,17 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             List<long> AppUserIds, OrganizationIds;
             (AppUserIds, OrganizationIds) = await FilterOrganizationAndUser(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.OrganizationId,
                 AppUserService, OrganizationService, CurrentContext, DataContext);
+
             if (AppUserId.HasValue)
                 AppUserIds = AppUserIds.Where(x => x == AppUserId.Value).ToList();
+            AppUserIds = await (from su in DataContext.StoreUnchecking
+                                join a in DataContext.AppUser on su.AppUserId equals a.Id
+                                where AppUserIds.Contains(a.Id)
+                                orderby a.Organization.Name, a.DisplayName
+                                select su.AppUserId)
+                          .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
+                          .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
+                          .ToListAsync();
             int count = AppUserIds.Count();
             return count;
         }
