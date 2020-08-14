@@ -796,6 +796,7 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(IndirectSalesOrder IndirectSalesOrder)
         {
+            await DataContext.IndirectSalesOrderTransaction.Where(x => x.IndirectSalesOrderId == IndirectSalesOrder.Id).DeleteFromQueryAsync();
             await DataContext.IndirectSalesOrderContent.Where(x => x.IndirectSalesOrderId == IndirectSalesOrder.Id).DeleteFromQueryAsync();
             await DataContext.IndirectSalesOrderPromotion.Where(x => x.IndirectSalesOrderId == IndirectSalesOrder.Id).DeleteFromQueryAsync();
             await DataContext.IndirectSalesOrder.Where(x => x.Id == IndirectSalesOrder.Id).DeleteFromQueryAsync();
