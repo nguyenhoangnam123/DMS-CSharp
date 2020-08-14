@@ -220,7 +220,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (BuyerStoreId.HasValue == false || i.BuyerStoreId == BuyerStoreId.Value) &&
                         (SellerStoreId.HasValue == false || i.SellerStoreId == SellerStoreId.Value) &&
-                        (AppUserIds.Contains(i.SaleEmployeeId)) &&
                         OrganizationIds.Contains(i.OrganizationId)
                         select i;
 
@@ -274,9 +273,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             foreach (ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO in ReportSalesOrderGeneral_ReportSalesOrderGeneralDTOs)
             {
                 var Org = OrganizationDAOs.Where(x => x.Name == ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO.OrganizationName).FirstOrDefault();
-                var SaleEmployeeIds = AppUsers.Where(x => x.OrganizationId.HasValue && x.OrganizationId.Value == Org.Id).Select(x => x.Id).ToList();
                 ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO.IndirectSalesOrders = IndirectSalesOrderDAOs
-                    .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId))
+                    .Where(x => x.OrganizationId==Org.Id)
                     .Select(x => new ReportSalesOrderGeneral_IndirectSalesOrderDTO
                     {
                         Id = x.Id,
