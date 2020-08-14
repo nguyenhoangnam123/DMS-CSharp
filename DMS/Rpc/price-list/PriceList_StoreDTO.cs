@@ -31,6 +31,7 @@ namespace DMS.Rpc.price_list
         public long StatusId { get; set; }
         public long? WorkflowDefinitionId { get; set; }
         public long? RequestStateId { get; set; }
+        public PriceList_OrganizationDTO Organization { get; set; }
         public PriceList_ProvinceDTO Province { get; set; }
         public PriceList_StoreGroupingDTO StoreGrouping { get; set; }
         public PriceList_StoreTypeDTO StoreType { get; set; }
@@ -62,6 +63,7 @@ namespace DMS.Rpc.price_list
             this.LegalEntity = Store.LegalEntity;
             this.StatusId = Store.StatusId;
             this.Province = Store.Province == null ? null : new PriceList_ProvinceDTO(Store.Province);
+            this.Organization = Store.Organization == null ? null : new PriceList_OrganizationDTO(Store.Organization);
             this.StoreGrouping = Store.StoreGrouping == null ? null : new PriceList_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new PriceList_StoreTypeDTO(Store.StoreType);
             this.Errors = Store.Errors;
