@@ -197,6 +197,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                 AppUserIds = AppUserIds.Where(x => x == AppUserId.Value).ToList();
             AppUserIds = await DataContext.StoreUnchecking.Where(su => AppUserIds.Contains(su.AppUserId))
                                 .Select(su => su.AppUserId)
+                                .OrderBy(su => su)
                                 .Distinct()
                                 .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
                                 .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
