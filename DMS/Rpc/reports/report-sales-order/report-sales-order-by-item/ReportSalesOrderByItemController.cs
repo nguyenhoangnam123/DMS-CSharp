@@ -261,11 +261,15 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             var ItemIds = keys.Select(x => x.ItemId).Distinct().ToList();
             var queryTransaction = from t in DataContext.IndirectSalesOrderTransaction
                                    join i in DataContext.Item on t.ItemId equals i.Id
+                                   join p in DataContext.Product on i.ProductId equals p.Id
+                                   join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
                                    join ind in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals ind.Id
                                    join u in DataContext.UnitOfMeasure on t.UnitOfMeasureId equals u.Id
                                    join o in DataContext.Organization on t.OrganizationId equals o.Id
                                    where OrgIds.Contains(t.OrganizationId) &&
-                                   ItemIds.Contains(t.ItemId)
+                                   ItemIds.Contains(t.ItemId) &&
+                                   (ProductTypeId.HasValue == false || p.ProductTypeId == ProductTypeId) &&
+                                   (ProductGroupingId.HasValue == false || ppgm.ProductGroupingId == ProductGroupingId)
                                    select new IndirectSalesOrderTransactionDAO
                                    {
                                        Id = t.Id,
@@ -394,11 +398,49 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             var keys = await query.ToListAsync();
 
             var OrgIds = keys.Select(x => x.OrganizationId).Distinct().ToList();
+
             var ItemIds = keys.Select(x => x.ItemId).Distinct().ToList();
-            var IndirectSalesOrderTransactions = await DataContext.IndirectSalesOrderTransaction
-                .Where(x => OrgIds.Contains(x.OrganizationId))
-                .Where(x => ItemIds.Contains(x.ItemId))
-                .ToListAsync();
+            var queryTransaction = from t in DataContext.IndirectSalesOrderTransaction
+                                   join i in DataContext.Item on t.ItemId equals i.Id
+                                   join p in DataContext.Product on i.ProductId equals p.Id
+                                   join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
+                                   join ind in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals ind.Id
+                                   join u in DataContext.UnitOfMeasure on t.UnitOfMeasureId equals u.Id
+                                   join o in DataContext.Organization on t.OrganizationId equals o.Id
+                                   where OrgIds.Contains(t.OrganizationId) &&
+                                   ItemIds.Contains(t.ItemId) &&
+                                   (ProductTypeId.HasValue == false || p.ProductTypeId == ProductTypeId) &&
+                                   (ProductGroupingId.HasValue == false || ppgm.ProductGroupingId == ProductGroupingId)
+                                   select new IndirectSalesOrderTransactionDAO
+                                   {
+                                       Id = t.Id,
+                                       ItemId = t.ItemId,
+                                       Discount = t.Discount,
+                                       IndirectSalesOrderId = t.IndirectSalesOrderId,
+                                       OrganizationId = t.OrganizationId,
+                                       Quantity = t.Quantity,
+                                       Revenue = t.Revenue,
+                                       TypeId = t.TypeId,
+                                       UnitOfMeasureId = t.UnitOfMeasureId,
+                                       IndirectSalesOrder = new IndirectSalesOrderDAO
+                                       {
+                                           BuyerStoreId = ind.BuyerStoreId
+                                       },
+                                       Item = new ItemDAO
+                                       {
+                                           Code = i.Code,
+                                           Name = i.Name,
+                                       },
+                                       Organization = new OrganizationDAO
+                                       {
+                                           Name = o.Name
+                                       },
+                                       UnitOfMeasure = new UnitOfMeasureDAO
+                                       {
+                                           Name = u.Name
+                                       }
+                                   };
+            var IndirectSalesOrderTransactions = await queryTransaction.ToListAsync();
 
             ReportSalesOrderByItem_TotalDTO.TotalDiscount = IndirectSalesOrderTransactions
                 .Where(x => x.Discount.HasValue)
