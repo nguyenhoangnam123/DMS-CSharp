@@ -195,11 +195,9 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
             if (AppUserId.HasValue)
                 AppUserIds = AppUserIds.Where(x => x == AppUserId.Value).ToList();
-            AppUserIds = await (from su in DataContext.StoreUnchecking
-                                join a in DataContext.AppUser on su.AppUserId equals a.Id
-                                where AppUserIds.Contains(a.Id)
-                                orderby a.Organization.Name, a.DisplayName
-                                select su.AppUserId)
+            AppUserIds = await DataContext.StoreUnchecking.Where(su => AppUserIds.Contains(su.AppUserId))
+                                .Select(su => su.AppUserId)
+                                .Distinct()
                                 .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
                                 .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
                                 .ToListAsync();
@@ -274,7 +272,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             DateTime End = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
-           
+
 
             ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip = 0;
             ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take = int.MaxValue;
