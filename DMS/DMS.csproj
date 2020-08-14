@@ -118,4 +118,10 @@
   <ItemGroup>
     <Folder Include="Services\MWorkflowParameter\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Resources\vi\StoreScoutingValidator.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

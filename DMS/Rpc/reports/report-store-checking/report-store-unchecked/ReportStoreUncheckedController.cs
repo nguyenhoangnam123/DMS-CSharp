@@ -155,8 +155,16 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             List<long> AppUserIds, OrganizationIds;
             (AppUserIds, OrganizationIds) = await FilterOrganizationAndUser(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.OrganizationId,
                 AppUserService, OrganizationService, CurrentContext, DataContext);
+
             if (AppUserId.HasValue)
                 AppUserIds = AppUserIds.Where(x => x == AppUserId.Value).ToList();
+            AppUserIds = await (from su in DataContext.StoreUnchecking
+                                join a in DataContext.AppUser on su.AppUserId equals a.Id
+                                where AppUserIds.Contains(a.Id)
+                                orderby a.Organization.Name, a.DisplayName
+                                select su.AppUserId)
+                                .Distinct()
+                                .ToListAsync();
             int count = AppUserIds.Count();
             return count;
         }
@@ -177,8 +185,6 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             DateTime End = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
-            if (End.Subtract(Start).TotalDays > 7)
-                return BadRequest("Chỉ được phép xem tối đã trong vòng 7 ngày");
 
             long? AppUserId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId?.Equal;
             long? ERouteId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId?.Equal;
@@ -189,14 +195,16 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
             if (AppUserId.HasValue)
                 AppUserIds = AppUserIds.Where(x => x == AppUserId.Value).ToList();
-            AppUserIds = await (from su in DataContext.StoreUnchecking
-                                join a in DataContext.AppUser on su.AppUserId equals a.Id
-                                where AppUserIds.Contains(a.Id)
-                                orderby a.Organization.Name, a.DisplayName
-                                select su.AppUserId)
-                          .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
-                          .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
-                          .ToListAsync();
+            AppUserIds = (await DataContext.StoreUnchecking.Where(su => AppUserIds.Contains(su.AppUserId))
+                                .Select(su => su.AppUser)
+                                .Distinct()
+                                .OrderBy(su => su.Organization.Name).ThenBy(su => su.DisplayName)
+                                .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
+                                .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
+                                .ToListAsync())
+                                .Select(x => x.Id)
+                                .ToList();
+
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id))
                 .Include(au => au.Organization)
                 .ToListAsync();
@@ -229,20 +237,20 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
                 for (DateTime index = Start; index < End; index = index.AddDays(1))
                 {
-                    var SubStoreUncheckingDAOs = StoreUncheckingDAOs.Where(e => e.AppUserId == AppUserDAO.Id && e.Date == index).ToList();
-                    foreach (var StoreUncheckingDAO in SubStoreUncheckingDAOs)
-                    {
-                        ReportStoreUnchecked_StoreDTO ReportStoreUnchecked_StoreDTO = new ReportStoreUnchecked_StoreDTO
+                    var ReportStoreUnchecked_StoreDTOs = StoreUncheckingDAOs.Where(e => e.AppUserId == AppUserDAO.Id && e.Date == index)
+                        .Select(x => new ReportStoreUnchecked_StoreDTO
                         {
-                            Date = index,
-                            StoreAddress = StoreUncheckingDAO.Store.Address,
-                            StoreCode = StoreUncheckingDAO.Store.Code,
-                            StoreName = StoreUncheckingDAO.Store.Name,
-                            StorePhone = StoreUncheckingDAO.Store.OwnerPhone,
-                            StoreTypeName = StoreUncheckingDAO.Store.StoreType.Name,
-                        };
-                        ReportStoreUnChecked_SaleEmployeeDTO.Stores.Add(ReportStoreUnchecked_StoreDTO);
-                    }
+                            Date = x.Date,
+                            AppUserId = x.AppUserId,
+                            StoreAddress = x.Store.Address,
+                            StoreCode = x.Store.Code,
+                            StoreName = x.Store.Name,
+                            StorePhone = x.Store.OwnerPhone,
+                            StoreTypeName = x.Store.StoreType.Name,
+                        })
+                        .Distinct()
+                        .ToList();
+                    ReportStoreUnChecked_SaleEmployeeDTO.Stores.AddRange(ReportStoreUnchecked_StoreDTOs);
                 }
                 ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees.Add(ReportStoreUnChecked_SaleEmployeeDTO);
             }
@@ -259,6 +267,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip = 0;
+            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take = int.MaxValue;
             DateTime Start = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.GreaterEqual == null ?
                StaticParams.DateTimeNow.Date :
                ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.GreaterEqual.Value.Date;
@@ -266,8 +276,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             DateTime End = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
-            if (End.Subtract(Start).Days > 31)
-                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
+
 
             ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip = 0;
             ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take = int.MaxValue;

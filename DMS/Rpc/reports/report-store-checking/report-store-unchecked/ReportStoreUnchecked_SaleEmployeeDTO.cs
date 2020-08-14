@@ -1,6 +1,7 @@
 ﻿using Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 {
@@ -12,15 +13,24 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
         public List<ReportStoreUnchecked_StoreDTO> Stores { get; set; }
     }
 
-    public class ReportStoreUnchecked_StoreDTO : DataDTO
+    public class ReportStoreUnchecked_StoreDTO : DataDTO, IEquatable<ReportStoreUnchecked_StoreDTO>
     {
         public long STT { get; set; }
         public DateTime Date { get; set; }
-        public string ERouteCode { get; set; }
+        public long AppUserId { get; set; }
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
         public string StoreTypeName { get; set; }
         public string StorePhone { get; set; }
         public string StoreAddress { get; set; }
+
+        public bool Equals(ReportStoreUnchecked_StoreDTO other)
+        {
+            if (other == null)
+                return false;
+            return Date == other.Date &&
+                 AppUserId == other.AppUserId &&
+                 StoreCode == other.StoreCode;
+        }
     }
 }

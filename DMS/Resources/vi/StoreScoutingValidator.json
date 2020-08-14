@@ -1,0 +1,29 @@
+﻿{
+  "StoreScouting": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại"
+    },
+    "OwnerPhone": {
+      "OwnerPhoneEmpty": "Số điện thoại chưa điền",
+      "OwnerPhoneOverLength": "Số điện thoại quá 255 ký tự",
+      "OwnerPhoneInUsed": "Số điện thoại đã được sử dụng"
+    },
+    "Address": {
+      "AddressEmpty": "Địa chỉ chưa điền",
+      "AddressOverLength": "Địa chỉ dài quá 3000 ký tự"
+    },
+    "ProvinceId": {
+      "ProvinceNotExisted": "Tỉnh/Thành không tồn tại"
+    },
+    "DistrictId": {
+      "DistrictNotExisted": "Quận/Huyện không tồn tại"
+    },
+    "WardId": {
+      "WardNotExisted": "Phường/Xã không tồn tại"
+    },
+    "StoreScoutingStatus": {
+      "StoreScoutingHasOpened": "Yêu cầu cắm cờ đã được mở",
+      "StoreScoutingHasRejected": "Yêu cầu cắm cờ đã bị từ chối"
+    }
+  }
+}
