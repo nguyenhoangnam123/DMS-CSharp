@@ -503,9 +503,12 @@ namespace DMS.Rpc.price_list
             var Items = await ItemService.List(ItemFilter);
 
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            MemoryStream MemoryStream = new MemoryStream();
+            
             string tempPath = "Templates/Pricelist_Item.xlsx";
-            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            byte[] arr = System.IO.File.ReadAllBytes(tempPath);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            using (var xlPackage = new ExcelPackage(input))
             {
                 var worksheet = xlPackage.Workbook.Worksheets["San pham"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
@@ -517,9 +520,9 @@ namespace DMS.Rpc.price_list
                     worksheet.Cells[startRow + i, numberCell].Value = Item.Code;
                     worksheet.Cells[startRow + i, numberCell + 1].Value = Item.Name;
                 }
-                xlPackage.SaveAs(MemoryStream);
+                xlPackage.SaveAs(output);
             }
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Template_PriceList_Item.xlsx");
+            return File(output.ToArray(), "application/octet-stream", "Template_PriceList_Item.xlsx");
         }
 
         [Route(PriceListRoute.ExportTemplateStore), HttpPost]
@@ -540,9 +543,11 @@ namespace DMS.Rpc.price_list
             var Stores = await StoreService.List(StoreFilter);
 
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            MemoryStream MemoryStream = new MemoryStream();
             string tempPath = "Templates/Pricelist_Store.xlsx";
-            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            byte[] arr = System.IO.File.ReadAllBytes(tempPath);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            using (var xlPackage = new ExcelPackage(input))
             {
                 var worksheet = xlPackage.Workbook.Worksheets["Daily"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
@@ -554,9 +559,9 @@ namespace DMS.Rpc.price_list
                     worksheet.Cells[startRow + i, numberCell].Value = Store.Code;
                     worksheet.Cells[startRow + i, numberCell + 1].Value = Store.Name;
                 }
-                xlPackage.SaveAs(MemoryStream);
+                xlPackage.SaveAs(output);
             }
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Template_PriceList_Store.xlsx");
+            return File(output.ToArray(), "application/octet-stream", "Template_PriceList_Store.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)
