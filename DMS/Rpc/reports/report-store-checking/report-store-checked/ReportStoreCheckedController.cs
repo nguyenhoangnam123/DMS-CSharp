@@ -12,9 +12,12 @@ using Hangfire.Annotations;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NGS.Templater;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -345,6 +348,9 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 {
                     ReportStoreChecked_StoreCheckingGroupByDateDTO ReportStoreChecked_StoreCheckingGroupByDateDTO = new ReportStoreChecked_StoreCheckingGroupByDateDTO();
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.Date = i;
+                    ReportStoreChecked_StoreCheckingGroupByDateDTO.DateString = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                    var dayOfWeek = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).DayOfWeek.ToString();
+                    ReportStoreChecked_StoreCheckingGroupByDateDTO.dayOfWeek = DayOfWeekEnum.DayOfWeekEnumList.Where(x => x.Code == dayOfWeek).Select(x => x.Name).FirstOrDefault();
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings = storeCheckings.Where(x => x.SaleEmployeeId == ReportStoreChecked_SaleEmployeeDTO.SaleEmployeeId)
                         .Where(x => x.CheckOutAt.Value.Date == i)
                         .Select(x => new ReportStoreChecked_StoreCheckingDTO
@@ -364,9 +370,12 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         }).ToList();
                     foreach (var StoreChecking in ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings)
                     {
+                        StoreChecking.eCheckIn = StoreChecking.CheckIn.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                        StoreChecking.eCheckOut = StoreChecking.CheckOut.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+
                         var TotalMinuteChecking = StoreChecking.CheckOut.Subtract(StoreChecking.CheckIn).TotalSeconds;
                         TimeSpan timeSpan = TimeSpan.FromSeconds(TotalMinuteChecking);
-                        StoreChecking.Duaration = $"{timeSpan.Hours.ToString().PadLeft(2,'0')}: {timeSpan.Minutes.ToString().PadLeft(2, '0')}";
+                        StoreChecking.Duaration = $"{timeSpan.Hours.ToString().PadLeft(2,'0')} : {timeSpan.Minutes.ToString().PadLeft(2, '0')} : {timeSpan.Seconds.ToString().PadLeft(2, '0')}";
                         var HasSalesOrder = SalesOrders.Where(x => x.StoreCheckingId == StoreChecking.Id).FirstOrDefault();
                         if (HasSalesOrder == null)
                             StoreChecking.SalesOrder = false;
@@ -387,6 +396,51 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             }
             ReportStoreChecked_ReportStoreCheckedDTOs = ReportStoreChecked_ReportStoreCheckedDTOs.Where(x => x.SaleEmployees.Any()).ToList();
             return ReportStoreChecked_ReportStoreCheckedDTOs;
+        }
+
+        [Route(ReportStoreCheckedRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportStoreChecked_ReportStoreCheckedFilterDTO ReportStoreChecked_ReportStoreCheckedFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            DateTime Start = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.GreaterEqual == null ?
+               StaticParams.DateTimeNow.Date :
+               ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.GreaterEqual.Value.Date;
+
+            DateTime End = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.LessEqual == null ?
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
+
+            ReportStoreChecked_ReportStoreCheckedFilterDTO.Skip = 0;
+            ReportStoreChecked_ReportStoreCheckedFilterDTO.Take = int.MaxValue;
+            List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = (await List(ReportStoreChecked_ReportStoreCheckedFilterDTO)).Value;
+
+            long stt = 1;
+            foreach (ReportStoreChecked_ReportStoreCheckedDTO ReportStoreChecked_ReportStoreCheckedDTO in ReportStoreChecked_ReportStoreCheckedDTOs)
+            {
+                foreach (var SaleEmployee in ReportStoreChecked_ReportStoreCheckedDTO.SaleEmployees)
+                {
+                    SaleEmployee.STT = stt;
+                    stt++;
+                }
+            }
+
+            string path = "Templates/Report_Store_Checked.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.ToString("dd-MM-yyyy");
+            Data.End = End.ToString("dd-MM-yyyy");
+            Data.ReportStoreCheckeds = ReportStoreChecked_ReportStoreCheckedDTOs;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportStoreChecked.xlsx");
         }
     }
 }
