@@ -163,7 +163,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                 where AppUserIds.Contains(a.Id)
                                 orderby a.Organization.Name, a.DisplayName
                                 select su.AppUserId)
-                          .ToListAsync();
+                                .Distinct()
+                                .ToListAsync();
             int count = AppUserIds.Count();
             return count;
         }
