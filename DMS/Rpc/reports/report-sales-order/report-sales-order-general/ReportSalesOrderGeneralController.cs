@@ -225,6 +225,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                         select i;
 
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await query
+                .OrderBy(x => x.OrganizationId).ThenByDescending(x => x.OrderDate)
                 .Skip(ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.Skip)
                 .Take(ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.Take)
                 .ToListAsync();
@@ -240,7 +241,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                 Selects = StoreSelect.Id | StoreSelect.Name
             });
             var OrgIds = IndirectSalesOrderDAOs.Select(x => x.OrganizationId).Distinct().ToList();
-            var Orgs = OrganizationDAOs.Where(x => OrgIds.Contains(x.Id)).OrderBy(x => x.Id).ToList();
+            var Orgs = OrganizationDAOs.Where(x => OrgIds.Contains(x.Id)).ToList();
             List<string> OrganizationNames = Orgs.Select(o => o.Name).Distinct().ToList();
             List<ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO> ReportSalesOrderGeneral_ReportSalesOrderGeneralDTOs = OrganizationNames.Select(on => new ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO
             {
