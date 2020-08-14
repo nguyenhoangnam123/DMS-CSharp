@@ -257,6 +257,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip = 0;
+            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take = int.MaxValue;
             DateTime Start = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.GreaterEqual == null ?
                StaticParams.DateTimeNow.Date :
                ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.GreaterEqual.Value.Date;
