@@ -360,16 +360,6 @@ namespace DMS.Services.MStoreChecking
             {
                 var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 List<long> StoreIds = await ListStoreIds(ERouteId, false);
-                List<ERoute> ERoutes = await UOW.ERouteRepository.List(new ERouteFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Selects = ERouteSelect.ALL,
-                    AppUserId = new IdFilter { Equal = CurrentContext.UserId }
-                });
-                List<long> PlannedStore = ERoutes.SelectMany(x => x.ERouteContents.Select(c => c.StoreId).ToList()).ToList();
-                StoreIds = PlannedStore.Except(StoreIds).ToList();
-                StoreFilter.Id.In = StoreIds;
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 int count = await UOW.StoreRepository.Count(StoreFilter);
                 //if (AppUser.AppUserStoreMappings != null)
@@ -406,16 +396,6 @@ namespace DMS.Services.MStoreChecking
                 DateTime Now = StaticParams.DateTimeNow.Date;
                 var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 List<long> StoreIds = await ListStoreIds(ERouteId, false);
-
-                List<ERoute> ERoutes = await UOW.ERouteRepository.List(new ERouteFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Selects = ERouteSelect.ALL,
-                    AppUserId = new IdFilter { Equal = CurrentContext.UserId }
-                });
-                List<long> PlannedStore = ERoutes.SelectMany(x => x.ERouteContents.Select(c => c.StoreId).ToList()).ToList();
-                StoreIds = PlannedStore.Except(StoreIds).ToList();
                 StoreFilter.Id.In = StoreIds;
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
