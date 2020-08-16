@@ -628,7 +628,6 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.ListStoreUnPlanned), HttpPost]
         public async Task<List<Mobile_StoreDTO>> ListStoreUnPlanned([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
-            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
 
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Search = Mobile_StoreFilterDTO.Search;
@@ -641,7 +640,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.Code = Mobile_StoreFilterDTO.Code;
             StoreFilter.Name = Mobile_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = Mobile_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreFilter.StoreTypeId = Mobile_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
@@ -660,6 +658,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerPhone = Mobile_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
             AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
             StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
 
@@ -713,7 +712,6 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.ListStoreInScope), HttpPost]
         public async Task<List<Mobile_StoreDTO>> ListStoreInScope([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
-            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
 
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Search = Mobile_StoreFilterDTO.Search;
@@ -726,7 +724,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.Code = Mobile_StoreFilterDTO.Code;
             StoreFilter.Name = Mobile_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = Mobile_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreFilter.StoreTypeId = Mobile_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;

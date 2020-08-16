@@ -295,6 +295,18 @@ namespace DMS.Repositories
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
             }).ToListAsync();
+
+            if (filter.Selects.Contains(ERouteSelect.ERouteContent))
+            {
+                List<long> ERouteIds = ERoutes.Select(x => x.Id).ToList();
+                List<ERouteContent> ERouteContents = await DataContext.ERouteContent
+                    .Where(x => ERouteIds.Contains(x.ERouteId))
+                    .Select(x => new ERouteContent
+                    {
+                        Id = x.Id,
+                        StoreId = x.StoreId,
+                    }).ToListAsync();
+            }    
             return ERoutes;
         }
 

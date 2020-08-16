@@ -95,5 +95,6 @@ namespace DMS.Entities
         RealStartDate = E._9,
         Organization = E._10,
         Creator = E._12,
+        ERouteContent = E._13,
     }
 }
