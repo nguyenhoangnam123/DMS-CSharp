@@ -18,6 +18,7 @@ namespace DMS.Rpc.price_list
         public DateTime UpdatedAt { get; set; }
         public string Source { get; set; }
         public PriceList_AppUserDTO Modifier { get; set; }
+        public PriceList_PriceListItemHistoryDTO() { }
         public PriceList_PriceListItemHistoryDTO(PriceListItemHistory PriceListItemHistory)
         {
             this.Id = PriceListItemHistory.Id;
