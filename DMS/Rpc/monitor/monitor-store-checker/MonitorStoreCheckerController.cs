@@ -335,7 +335,6 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 throw new BindException(ModelState);
             long SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.SaleEmployeeId;
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.Date;
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
             List<long> StoreIds = new List<long>();
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
@@ -372,6 +371,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 int Max = 1;
                 Max = SubIndirectSalesOrderDAOs.Count > Max ? IndirectSalesOrderDAOs.Count : Max;
                 Max = Problems.Count > Max ? Problems.Count : Max;
+                Max = SubStoreCheckingImageMappingDAOs.Count > Max ? SubStoreCheckingImageMappingDAOs.Count : Max;
                 StoreDAO storeDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
                 MonitorStoreChecker_MonitorStoreCheckerDetailDTO MonitorStoreChecker_MonitorStoreCheckerDetailDTO = new MonitorStoreChecker_MonitorStoreCheckerDetailDTO
                 {
@@ -389,6 +389,10 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                         Info.ImagePath = SubStoreCheckingImageMappingDAOs.Select(i => i.Image.Url).FirstOrDefault();
                     }
 
+                    if(SubStoreCheckingImageMappingDAOs.Count > i)
+                    {
+                        Info.ImagePath = SubStoreCheckingImageMappingDAOs[i].Image.Url;
+                    }
                     if (SubIndirectSalesOrderDAOs.Count > i)
                     {
                         Info.IndirectSalesOrderCode = SubIndirectSalesOrderDAOs[i].Code;
