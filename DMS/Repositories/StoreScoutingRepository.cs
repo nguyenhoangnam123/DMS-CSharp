@@ -272,8 +272,8 @@ namespace DMS.Repositories
                 DistrictId = filter.Selects.Contains(StoreScoutingSelect.District) ? q.DistrictId : default(long?),
                 WardId = filter.Selects.Contains(StoreScoutingSelect.Ward) ? q.WardId : default(long?),
                 Address = filter.Selects.Contains(StoreScoutingSelect.Address) ? q.Address : default(string),
-                Latitude = filter.Selects.Contains(StoreScoutingSelect.Latitude) ? q.Latitude : default(decimal?),
-                Longitude = filter.Selects.Contains(StoreScoutingSelect.Longitude) ? q.Longitude : default(decimal?),
+                Latitude = filter.Selects.Contains(StoreScoutingSelect.Latitude) ? q.Latitude : default(decimal),
+                Longitude = filter.Selects.Contains(StoreScoutingSelect.Longitude) ? q.Longitude : default(decimal),
                 CreatorId = filter.Selects.Contains(StoreScoutingSelect.Creator) ? q.CreatorId : default(long),
                 StoreScoutingStatusId = filter.Selects.Contains(StoreScoutingSelect.StoreScoutingStatus) ? q.StoreScoutingStatusId : default(long),
                 Creator = filter.Selects.Contains(StoreScoutingSelect.Creator) && q.Creator != null ? new AppUser

@@ -18,8 +18,8 @@ namespace DMS.Rpc.mobile
         public long? WardId { get; set; }
         public long? OrganizationId { get; set; }
         public string Address { get; set; }
-        public decimal? Latitude { get; set; }
-        public decimal? Longitude { get; set; }
+        public decimal Latitude { get; set; }
+        public decimal Longitude { get; set; }
         public long CreatorId { get; set; }
         public long StoreScoutingStatusId { get; set; }
         public Mobile_OrganizationDTO Organization { get; set; }

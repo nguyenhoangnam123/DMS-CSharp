@@ -16,8 +16,8 @@ namespace DMS.Rpc.store_scouting
         public long? DistrictId { get; set; }
         public long? WardId { get; set; }
         public string Address { get; set; }
-        public decimal? Latitude { get; set; }
-        public decimal? Longitude { get; set; }
+        public decimal Latitude { get; set; }
+        public decimal Longitude { get; set; }
         public long CreatorId { get; set; }
         public long StoreScoutingStatusId { get; set; }
         public string Link { get; set; }

@@ -34,9 +34,9 @@ namespace DMS.Rpc.indirect_sales_order
 
         public string DeliveryAddress { get; set; }
 
-        public decimal? Latitude { get; set; }
+        public decimal Latitude { get; set; }
 
-        public decimal? Longitude { get; set; }
+        public decimal Longitude { get; set; }
 
         public decimal? DeliveryLatitude { get; set; }
 

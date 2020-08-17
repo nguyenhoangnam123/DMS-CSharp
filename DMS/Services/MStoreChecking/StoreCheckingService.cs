@@ -4,6 +4,7 @@ using DMS.Enums;
 using DMS.Handlers;
 using DMS.Repositories;
 using DMS.Services.MImage;
+using GeoCoordinatePortable;
 using Helpers;
 using System;
 using System.Collections.Generic;
@@ -11,12 +12,14 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace DMS.Services.MStoreChecking
 {
     public interface IStoreCheckingService : IServiceScoped
     {
         Task<int> Count(StoreCheckingFilter StoreCheckingFilter);
         Task<List<StoreChecking>> List(StoreCheckingFilter StoreCheckingFilter);
+
         Task<StoreChecking> Get(long Id);
         Task<StoreChecking> CheckIn(StoreChecking StoreChecking);
         Task<StoreChecking> Update(StoreChecking StoreChecking);
@@ -330,11 +333,18 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
+                int skip = StoreFilter.Skip;
+                int take = StoreFilter.Take;
                 // lấy danh sách tất cả các đại lý trong kế hoạch
                 List<long> StoreIds = await ListStoreIds(ERouteId, true);
                 StoreFilter.Id = new IdFilter { In = StoreIds };
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+                StoreFilter.Skip = 0;
+                StoreFilter.Take = int.MaxValue;
                 List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+                if (StoreFilter.Latitude.Equal.HasValue && StoreFilter.Longitude.Equal.HasValue)
+                    Stores = await ListRecentStore(Stores, StoreFilter.Latitude.Equal.Value, StoreFilter.Longitude.Equal.Value);
+                Stores = Stores.Skip(skip).Take(take).ToList();
                 Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
@@ -383,12 +393,17 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
-                DateTime Now = StaticParams.DateTimeNow.Date;
-                var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                int skip = StoreFilter.Skip;
+                int take = StoreFilter.Take;
                 List<long> StoreIds = await ListStoreIds(ERouteId, false);
                 StoreFilter.Id.In = StoreIds;
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+                StoreFilter.Skip = 0;
+                StoreFilter.Take = int.MaxValue;
                 List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+                if (StoreFilter.Latitude.Equal.HasValue && StoreFilter.Longitude.Equal.HasValue)
+                    Stores = await ListRecentStore(Stores, StoreFilter.Latitude.Equal.Value, StoreFilter.Longitude.Equal.Value);
+                Stores = Stores.Skip(skip).Take(take).ToList();
                 Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
@@ -433,7 +448,15 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
+                int skip = StoreFilter.Skip;
+                int take = StoreFilter.Take;
+                StoreFilter.Skip = 0;
+                StoreFilter.Take = int.MaxValue;
                 List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+                if (StoreFilter.Latitude.Equal.HasValue && StoreFilter.Longitude.Equal.HasValue)
+                    Stores = await ListRecentStore(Stores, StoreFilter.Latitude.Equal.Value, StoreFilter.Longitude.Equal.Value);
+                Stores = Stores.Skip(skip).Take(take).ToList();
+
                 Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
@@ -452,7 +475,7 @@ namespace DMS.Services.MStoreChecking
             }
         }
 
-        private async  Task<List<Store>> CheckStoreChecking(List<Store> Stores)
+        private async Task<List<Store>> CheckStoreChecking(List<Store> Stores)
         {
             List<long> StoreIds = Stores.Select(x => x.Id).ToList();
             StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
@@ -530,6 +553,17 @@ namespace DMS.Services.MStoreChecking
             }
 
             return StoreIds;
+        }
+
+        private async Task<List<Store>> ListRecentStore(List<Store> Stores, decimal CurrentLatitude, decimal CurrentLongitude)
+        {
+            GeoCoordinate sCoord = new GeoCoordinate((double)CurrentLatitude, (double)CurrentLongitude);
+            foreach (Store Store in Stores)
+            {
+                GeoCoordinate eCoord = new GeoCoordinate((double)Store.Latitude, (double)Store.Longitude);
+                Store.Distance = sCoord.GetDistanceTo(eCoord);
+            }
+            return Stores;
         }
     }
 }

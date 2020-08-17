@@ -22,8 +22,8 @@ namespace DMS.Entities
         public long? WardId { get; set; }
         public string Address { get; set; }
         public string DeliveryAddress { get; set; }
-        public decimal? Latitude { get; set; }
-        public decimal? Longitude { get; set; }
+        public decimal Latitude { get; set; }
+        public decimal Longitude { get; set; }
         public decimal? DeliveryLatitude { get; set; }
         public decimal? DeliveryLongitude { get; set; }
         public string OwnerName { get; set; }
@@ -53,6 +53,7 @@ namespace DMS.Entities
         public List<RequestWorkflowStepMapping> StoreWorkflows { get; set; }
         public List<RequestWorkflowStepMapping> RequestWorkflowStepMappings { get; set; }
         public List<StoreChecking> StoreCheckings { get; set; }
+        public double Distance { get; set; }
         public bool Equals(Store other)
         {
             return other != null && Id == other.Id;

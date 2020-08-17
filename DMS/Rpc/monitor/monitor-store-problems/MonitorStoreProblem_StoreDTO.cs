@@ -34,9 +34,9 @@ namespace DMS.Rpc.monitor_store_problems
 
         public string DeliveryAddress { get; set; }
 
-        public decimal? Latitude { get; set; }
+        public decimal Latitude { get; set; }
 
-        public decimal? Longitude { get; set; }
+        public decimal Longitude { get; set; }
 
         public decimal? DeliveryLatitude { get; set; }
 
