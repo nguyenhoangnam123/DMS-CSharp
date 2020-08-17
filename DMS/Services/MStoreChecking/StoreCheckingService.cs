@@ -287,6 +287,9 @@ namespace DMS.Services.MStoreChecking
             List<Store> Stores;
             if (StoreFilter.Latitude.Equal.HasValue && StoreFilter.Longitude.Equal.HasValue)
             {
+                // Lấy danh sách tất cả các cửa hàng ra
+                // Tính khoảng cách
+                // sắp xếp theo khoảng cách
                 int skip = StoreFilter.Skip;
                 int take = StoreFilter.Take;
                 StoreFilter.Skip = 0;
@@ -349,7 +352,9 @@ namespace DMS.Services.MStoreChecking
                 {
                     int skip = StoreFilter.Skip;
                     int take = StoreFilter.Take;
-                    // lấy danh sách tất cả các đại lý trong kế hoạch
+                    // Lấy danh sách tất cả các cửa hàng trong tuyến ra
+                    // Tính khoảng cách
+                    // sắp xếp theo thứ tự ưu tiên trước rồi đến khoảng cách
                     Dictionary<long, long> StoreIds = await ListOnlineStoreIds(ERouteId, true);
                     StoreFilter.Id = new IdFilter { In = StoreIds.Select(x => x.Key).ToList() };
                     StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
@@ -432,6 +437,9 @@ namespace DMS.Services.MStoreChecking
             
                 if (StoreFilter.Latitude.Equal.HasValue && StoreFilter.Longitude.Equal.HasValue)
                 {
+                    // Lấy danh sách tất cả các cửa hàng ngoại tuyến ra
+                    // Tính khoảng cách
+                    // sắp xếp theo thứ tự ưu tiên trước rồi đến khoảng cách
                     int skip = StoreFilter.Skip;
                     int take = StoreFilter.Take;
                     Dictionary<long, long> StoreIds = await ListOfflineStoreIds(ERouteId, false);
@@ -480,6 +488,8 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
+                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
                 var count = await UOW.StoreRepository.Count(StoreFilter);
                 return count;
             }
@@ -508,10 +518,14 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
+                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
                 List<Store> Stores;
                 if (StoreFilter.Latitude.Equal.HasValue && StoreFilter.Longitude.Equal.HasValue)
                 {
-
+                    // Lấy danh sách tất cả các cửa hàng trong phạm vi ra
+                    // Tính khoảng cách
+                    // sắp xếp theo khoảng cách
                     int skip = StoreFilter.Skip;
                     int take = StoreFilter.Take;
                     StoreFilter.Skip = 0;
