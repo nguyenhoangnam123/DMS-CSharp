@@ -255,7 +255,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 {
                     List<StoreCheckingDAO> SubStoreCheckingDAOs = StoreCheckingDAOs.Where(s => s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId &&
                             StoreId == s.StoreId &&
-                            Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End).OrderByDescending(s => s.CheckOutAt).ToList();
+                            Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End).OrderByDescending(s => s.CheckInAt).ToList();
                     StoreCheckingDAO Checked = SubStoreCheckingDAOs.FirstOrDefault();
                     StoreDAO StoreDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
                     MonitorSalesman_StoreCheckingDTO MonitorSalesman_StoreCheckingDTO = new MonitorSalesman_StoreCheckingDTO();
@@ -274,18 +274,20 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     MonitorSalesman_StoreCheckingDTO.StoreName = StoreDAO.Name;
                     MonitorSalesman_StoreCheckingDTO.Address = StoreDAO.Address;
 
-                    MonitorSalesman_StoreCheckingDTO.Problems = ProblemDAOs.Where(p => p.StoreId == StoreId)
+                    MonitorSalesman_StoreCheckingDTO.Problem = ProblemDAOs.Where(p => p.StoreId == StoreId)
+                     .OrderByDescending(x => x.NoteAt)
                      .Select(p => new MonitorSalesman_ProblemDTO
                      {
                          Id = p.Id,
                          Code = p.Code,
-                     }).ToList();
-                    MonitorSalesman_StoreCheckingDTO.IndirectSalesOrders = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == StoreId)
+                     }).FirstOrDefault();
+                    MonitorSalesman_StoreCheckingDTO.IndirectSalesOrder = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == StoreId)
+                     .OrderByDescending(x => x.OrderDate)
                      .Select(i => new MonitorSalesman_IndirectSalesOrderDTO
                      {
                          Id = i.Id,
                          Code = i.Code,
-                     }).ToList();
+                     }).FirstOrDefault();
 
                 };
             }
