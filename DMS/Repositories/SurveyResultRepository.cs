@@ -115,10 +115,17 @@ namespace DMS.Repositories
             }).ToListAsync();
 
             var SurveyResultIds = SurveyResults.Select(x => x.Id).ToList();
+            var SurveyResultTexts = await DataContext.SurveyResultText.Where(x => SurveyResultIds.Contains(x.SurveyResultId)).ToListAsync();
             var SurveyResultSingles = await DataContext.SurveyResultSingle.Where(x => SurveyResultIds.Contains(x.SurveyResultId)).ToListAsync();
             var SurveyResultCells = await DataContext.SurveyResultCell.Where(x => SurveyResultIds.Contains(x.SurveyResultId)).ToListAsync();
             foreach (var SurveyResult in SurveyResults)
             {
+                SurveyResult.SurveyResultTexts = SurveyResultTexts.Where(x => x.SurveyResultId == SurveyResult.Id).Select(x => new SurveyResultText
+                {
+                    SurveyQuestionId = x.SurveyQuestionId,
+                    SurveyResultId = x.SurveyResultId,
+                    Content = x.Content,
+                }).ToList();
                 SurveyResult.SurveyResultSingles = SurveyResultSingles.Where(x => x.SurveyResultId == SurveyResult.Id).Select(x => new SurveyResultSingle
                 {
                     SurveyOptionId = x.SurveyOptionId,
@@ -163,6 +170,12 @@ namespace DMS.Repositories
                 StoreId = x.StoreId,
                 SurveyId = x.SurveyId,
                 Time = x.Time,
+                StoreScoutingId = x.StoreScoutingId,
+                RespondentAddress = x.RespondentAddress,
+                RespondentEmail = x.RespondentEmail,
+                RespondentName = x.RespondentName,
+                RespondentPhone = x.RespondentPhone,
+                SurveyRespondentTypeId = x.SurveyRespondentTypeId,
                 AppUser = x.AppUser == null ? null : new AppUser
                 {
                     Id = x.AppUser.Id,
@@ -174,6 +187,18 @@ namespace DMS.Repositories
                     Id = x.Store.Id,
                     Code = x.Store.Code,
                     Name = x.Store.Name,
+                },
+                StoreScouting = x.StoreScouting == null ? null : new StoreScouting
+                {
+                    Id = x.StoreScouting.Id,
+                    Code = x.StoreScouting.Code,
+                    Name = x.StoreScouting.Name,
+                },
+                SurveyRespondentType = x.SurveyRespondentType == null ? null : new SurveyRespondentType
+                {
+                    Id = x.SurveyRespondentType.Id,
+                    Code = x.SurveyRespondentType.Code,
+                    Name = x.SurveyRespondentType.Name,
                 },
             }).FirstOrDefaultAsync();
 
@@ -196,6 +221,14 @@ namespace DMS.Repositories
                     SurveyQuestionId = x.SurveyQuestionId,
                     SurveyOptionId = x.SurveyOptionId,
                 }).ToListAsync();
+            SurveyResult.SurveyResultTexts = await DataContext.SurveyResultText.AsNoTracking()
+                .Where(x => x.SurveyResultId == SurveyResult.Id)
+                .Select(x => new SurveyResultText
+                {
+                    SurveyResultId = x.SurveyResultId,
+                    SurveyQuestionId = x.SurveyQuestionId,
+                    Content = x.Content,
+                }).ToListAsync();
             return SurveyResult;
         }
 
@@ -206,7 +239,13 @@ namespace DMS.Repositories
             SurveyResult.RowId = Guid.NewGuid();
             SurveyResultDAO SurveyResultDAO = new SurveyResultDAO();
             SurveyResultDAO.AppUserId = SurveyResult.AppUserId;
+            SurveyResultDAO.RespondentPhone = SurveyResult.RespondentPhone;
+            SurveyResultDAO.RespondentName = SurveyResult.RespondentName;
+            SurveyResultDAO.RespondentEmail = SurveyResult.RespondentEmail;
+            SurveyResultDAO.RespondentAddress = SurveyResult.RespondentAddress;
+            SurveyResultDAO.SurveyRespondentTypeId = SurveyResult.SurveyRespondentTypeId;
             SurveyResultDAO.StoreId = SurveyResult.StoreId;
+            SurveyResultDAO.StoreScoutingId = SurveyResult.StoreScoutingId;
             SurveyResultDAO.SurveyId = SurveyResult.SurveyId;
             SurveyResultDAO.Time = SurveyResult.Time;
             SurveyResultDAO.RowId = SurveyResult.RowId;
@@ -255,7 +294,21 @@ namespace DMS.Repositories
                     RowOptionId = s.RowOptionId,
                 }).ToList();
 
+            List<SurveyResultTextDAO> SurveyResultTextDAOs = SurveyResult.SurveyResultTexts
+               .Select(s => new
+               {
+                   SurveyResultId = SurveyResult.Id,
+                   s.Content,
+                   s.SurveyQuestionId,
+               }).Distinct()
+               .Select(s => new SurveyResultTextDAO
+               {
+                   SurveyResultId = s.SurveyResultId,
+                   Content = s.Content,
+                   SurveyQuestionId = s.SurveyQuestionId,
+               }).ToList();
 
+            await DataContext.SurveyResultText.BulkInsertAsync(SurveyResultTextDAOs);
             await DataContext.SurveyResultSingle.BulkInsertAsync(SurveyResultSingleDAOs);
             await DataContext.SurveyResultCell.BulkInsertAsync(SurveyResultCellDAOs);
         }

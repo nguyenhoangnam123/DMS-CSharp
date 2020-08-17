@@ -10,16 +10,27 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public long SurveyId { get; set; }
+        public string RespondentName { get; set; }
+        public string RespondentPhone { get; set; }
+        public string RespondentEmail { get; set; }
+        public string RespondentAddress { get; set; }
         public long AppUserId { get; set; }
-        public long StoreId { get; set; }
+        public long? StoreId { get; set; }
+        public long? StoreScoutingId { get; set; }
         public DateTime Time { get; set; }
         public Guid RowId { get; set; }
 
         public AppUser AppUser { get; set; }
         public Store Store { get; set; }
-        public Survey Survey { get; set; }
+        public StoreScouting StoreScouting { get; set; }
+        public Survey Survey { get; set; } 
+        public List<SurveyResultText> SurveyResultTexts { get; set; }
         public List<SurveyResultCell> SurveyResultCells { get; set; }
         public List<SurveyResultSingle> SurveyResultSingles { get; set; }
+
+        public long SurveyRespondentTypeId { get; set; }
+        public SurveyRespondentType SurveyRespondentType { get; set; }
+
         public bool Equals(SurveyResult other)
         {
             return other != null && Id == other.Id;

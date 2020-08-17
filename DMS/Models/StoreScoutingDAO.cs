@@ -8,6 +8,7 @@ namespace DMS.Models
         public StoreScoutingDAO()
         {
             Stores = new HashSet<StoreDAO>();
+            SurveyResults = new HashSet<SurveyResultDAO>();
         }
 
         public long Id { get; set; }
@@ -33,5 +34,6 @@ namespace DMS.Models
         public virtual StoreScoutingStatusDAO StoreScoutingStatus { get; set; }
         public virtual WardDAO Ward { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
+        public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
     }
 }

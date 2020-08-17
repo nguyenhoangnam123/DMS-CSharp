@@ -118,9 +118,11 @@ namespace DMS.Models
         public virtual DbSet<SurveyOptionTypeDAO> SurveyOptionType { get; set; }
         public virtual DbSet<SurveyQuestionDAO> SurveyQuestion { get; set; }
         public virtual DbSet<SurveyQuestionTypeDAO> SurveyQuestionType { get; set; }
+        public virtual DbSet<SurveyRespondentTypeDAO> SurveyRespondentType { get; set; }
         public virtual DbSet<SurveyResultDAO> SurveyResult { get; set; }
         public virtual DbSet<SurveyResultCellDAO> SurveyResultCell { get; set; }
         public virtual DbSet<SurveyResultSingleDAO> SurveyResultSingle { get; set; }
+        public virtual DbSet<SurveyResultTextDAO> SurveyResultText { get; set; }
         public virtual DbSet<SystemConfigurationDAO> SystemConfiguration { get; set; }
         public virtual DbSet<TaxTypeDAO> TaxType { get; set; }
         public virtual DbSet<UnitOfMeasureDAO> UnitOfMeasure { get; set; }
@@ -3132,8 +3134,27 @@ namespace DMS.Models
                     .HasMaxLength(500);
             });
 
+            modelBuilder.Entity<SurveyRespondentTypeDAO>(entity =>
+            {
+                entity.ToTable("SurveyRespondentType", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code).HasMaxLength(50);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
+            });
+
             modelBuilder.Entity<SurveyResultDAO>(entity =>
             {
+                entity.Property(e => e.RespondentAddress).HasMaxLength(500);
+
+                entity.Property(e => e.RespondentEmail).HasMaxLength(500);
+
+                entity.Property(e => e.RespondentName).HasMaxLength(500);
+
+                entity.Property(e => e.RespondentPhone).HasMaxLength(500);
+
                 entity.Property(e => e.Time).HasColumnType("datetime");
 
                 entity.HasOne(d => d.AppUser)
@@ -3145,14 +3166,24 @@ namespace DMS.Models
                 entity.HasOne(d => d.Store)
                     .WithMany(p => p.SurveyResults)
                     .HasForeignKey(d => d.StoreId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SurveyResult_Store");
+                    .HasConstraintName("FK_SurveyResult_Store2");
+
+                entity.HasOne(d => d.StoreScouting)
+                    .WithMany(p => p.SurveyResults)
+                    .HasForeignKey(d => d.StoreScoutingId)
+                    .HasConstraintName("FK_SurveyResult_StoreScouting");
 
                 entity.HasOne(d => d.Survey)
                     .WithMany(p => p.SurveyResults)
                     .HasForeignKey(d => d.SurveyId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyResult_Survey");
+
+                entity.HasOne(d => d.SurveyRespondentType)
+                    .WithMany(p => p.SurveyResults)
+                    .HasForeignKey(d => d.SurveyRespondentTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyResult_SurveyRespondentType");
             });
 
             modelBuilder.Entity<SurveyResultCellDAO>(entity =>
@@ -3207,6 +3238,26 @@ namespace DMS.Models
                     .HasForeignKey(d => d.SurveyResultId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyResultSingle_SurveyResult");
+            });
+
+            modelBuilder.Entity<SurveyResultTextDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.SurveyResultId, e.SurveyQuestionId })
+                    .HasName("PK_SurveyRessultText");
+
+                entity.Property(e => e.Content).HasMaxLength(500);
+
+                entity.HasOne(d => d.SurveyQuestion)
+                    .WithMany(p => p.SurveyResultTexts)
+                    .HasForeignKey(d => d.SurveyQuestionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyRessultText_SurveyQuestion");
+
+                entity.HasOne(d => d.SurveyResult)
+                    .WithMany(p => p.SurveyResultTexts)
+                    .HasForeignKey(d => d.SurveyResultId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyRessultText_SurveyResult");
             });
 
             modelBuilder.Entity<SystemConfigurationDAO>(entity =>

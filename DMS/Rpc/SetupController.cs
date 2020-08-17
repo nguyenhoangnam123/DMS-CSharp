@@ -577,8 +577,7 @@ namespace DMS.Rpc
             InitStatusEnum();
             InitERouteTypeEnum();
             InitNotificationStatusEnum();
-            InitSurveyQuestionTypeEnum();
-            InitSurveyOptionTypeEnum();
+            InitSurveyEnum();
             InitUsedVariationEnum();
             InitKpiEnum();
             InitPermissionEnum();
@@ -728,7 +727,7 @@ namespace DMS.Rpc
             DataContext.SalesOrderType.BulkSynchronize(SalesOrderTypeEnumList);
         }
 
-        private void InitSurveyQuestionTypeEnum()
+        private void InitSurveyEnum()
         {
             List<SurveyQuestionTypeDAO> SurveyQuestionTypeEnumList = SurveyQuestionTypeEnum.SurveyQuestionTypeEnumList.Select(item => new SurveyQuestionTypeDAO
             {
@@ -738,10 +737,6 @@ namespace DMS.Rpc
             }).ToList();
             DataContext.SurveyQuestionType.BulkSynchronize(SurveyQuestionTypeEnumList);
 
-        }
-
-        private void InitSurveyOptionTypeEnum()
-        {
             List<SurveyOptionTypeDAO> SurveyOptionTypeEnumList = SurveyOptionTypeEnum.SurveyOptionTypeEnumList.Select(item => new SurveyOptionTypeDAO
             {
                 Id = item.Id,
@@ -749,8 +744,15 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.SurveyOptionType.BulkSynchronize(SurveyOptionTypeEnumList);
-        }
 
+            List<SurveyRespondentTypeDAO> SurveyRespondentTypeEnumList = SurveyRespondentTypeEnum.SurveyRespondentTypeEnumList.Select(item => new SurveyRespondentTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.SurveyRespondentType.BulkSynchronize(SurveyRespondentTypeEnumList);
+        }
 
         private void InitProblemStatusEnum()
         {

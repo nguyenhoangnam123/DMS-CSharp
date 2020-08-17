@@ -11,6 +11,10 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public string RespondentName { get; set; }
+        public string RespondentPhone { get; set; }
+        public string RespondentEmail { get; set; }
+        public string RespondentAddress { get; set; }
         public bool Used { get; set; }
         public DateTime StartAt { get; set; }
         public DateTime? EndAt { get; set; }
@@ -19,6 +23,9 @@ namespace DMS.Entities
         public long ResultCounter { get; set; }
         public DateTime AnswerAt { get; set; }
         public long StoreId { get; set; }
+        public long StoreScoutingId { get; set; }
+        public long SurveyRespondentTypeId { get; set; }
+        public SurveyRespondentType SurveyRespondentType { get; set; }
         public AppUser Creator { get; set; }
         public Status Status { get; set; }
         public List<SurveyQuestion> SurveyQuestions { get; set; }

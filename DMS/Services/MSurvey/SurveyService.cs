@@ -336,6 +336,10 @@ namespace DMS.Services.MSurvey
                                 }
                             }
                         }
+                        if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_TEXT.Id)
+                        {
+                            SurveyQuestion.TextResult = "";
+                        }    
                     }
                 }
                 return Survey;
@@ -368,9 +372,17 @@ namespace DMS.Services.MSurvey
                 SurveyResult.SurveyId = Survey.Id;
                 SurveyResult.AppUserId = CurrentContext.UserId;
                 SurveyResult.StoreId = Survey.StoreId;
+                SurveyResult.StoreScoutingId = Survey.StoreScoutingId;
+                SurveyResult.SurveyRespondentTypeId = Survey.SurveyRespondentTypeId;
                 SurveyResult.Time = StaticParams.DateTimeNow;
+                SurveyResult.RespondentAddress = Survey.RespondentAddress;
+                SurveyResult.RespondentEmail = Survey.RespondentEmail;
+                SurveyResult.RespondentName = Survey.RespondentName;
+                SurveyResult.RespondentPhone = Survey.RespondentPhone;
+               
                 SurveyResult.SurveyResultSingles = new List<SurveyResultSingle>();
                 SurveyResult.SurveyResultCells = new List<SurveyResultCell>();
+                SurveyResult.SurveyResultTexts = new List<SurveyResultText>();
                 if (Survey.SurveyQuestions != null)
                 {
                     foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
@@ -419,6 +431,16 @@ namespace DMS.Services.MSurvey
                                     }
                                 }
                             }
+                        }
+
+                        if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_TEXT.Id)
+                        {
+                            SurveyResultText SurveyResultText = new SurveyResultText
+                            {
+                                SurveyQuestionId = SurveyQuestion.Id,
+                                Content = SurveyQuestion.TextResult,
+                            };
+                            SurveyResult.SurveyResultTexts.Add(SurveyResultText);
                         }
                     }
                 }

@@ -17,7 +17,7 @@ namespace DMS.Entities
         public List<SurveyOption> SurveyOptions { get; set; }
         public Dictionary<long, Dictionary<long, bool>> TableResult { get; set; }
         public Dictionary<long, bool> ListResult { get; set; }
-
+        public string TextResult { get; set; }
         public bool Equals(SurveyQuestion other)
         {
             return other != null && Id == other.Id;
