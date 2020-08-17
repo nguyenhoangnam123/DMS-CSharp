@@ -371,9 +371,6 @@ namespace DMS.Rpc.price_list
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(PriceList_PriceListDTO.Id))
-                return Forbid();
-
             long PriceListId = PriceList_PriceListDTO?.Id ?? 0;
             PriceList PriceList = await PriceListService.Get(PriceListId);
             if (PriceList == null)
@@ -432,9 +429,6 @@ namespace DMS.Rpc.price_list
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            if (!await HasPermission(PriceList_PriceListDTO.Id))
-                return Forbid();
 
             long PriceListId = PriceList_PriceListDTO?.Id ?? 0;
             PriceList PriceList = await PriceListService.Get(PriceListId);

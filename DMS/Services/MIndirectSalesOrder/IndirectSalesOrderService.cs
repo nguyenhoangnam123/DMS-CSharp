@@ -167,8 +167,8 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.Commit();
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
 
-                var RecipientIds = await ListReceipientId(CurrentUser, IndirectSalesOrderRoute.Approve);
-
+                var RecipientIds = await ListReceipientId(SaleEmployee, IndirectSalesOrderRoute.Approve);
+                RecipientIds.Add(IndirectSalesOrder.SaleEmployeeId);
                 DateTime Now = StaticParams.DateTimeNow;
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 foreach (var Id in RecipientIds)
@@ -223,25 +223,21 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.Commit();
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var RecipientIds = await ListReceipientId(CurrentUser, IndirectSalesOrderRoute.Approve);
 
                 DateTime Now = StaticParams.DateTimeNow;
                 List<UserNotification> UserNotifications = new List<UserNotification>();
-                foreach (var Id in RecipientIds)
+                UserNotification UserNotification = new UserNotification
                 {
-                    UserNotification UserNotification = new UserNotification
-                    {
-                        TitleWeb = $"Thông báo từ DMS",
-                        ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được cập nhật thông tin bởi {CurrentUser.DisplayName}",
-                        LinkWebsite = $"{IndirectSalesOrderRoute.Master}/?id=*".Replace("*", IndirectSalesOrder.Id.ToString()),
-                        LinkMobile = $"{IndirectSalesOrderRoute.Mobile}".Replace("*", IndirectSalesOrder.Id.ToString()),
-                        Time = Now,
-                        Unread = true,
-                        SenderId = CurrentContext.UserId,
-                        RecipientId = Id
-                    };
-                    UserNotifications.Add(UserNotification);
-                }
+                    TitleWeb = $"Thông báo từ DMS",
+                    ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được cập nhật thông tin bởi {CurrentUser.DisplayName}",
+                    LinkWebsite = $"{IndirectSalesOrderRoute.Master}/?id=*".Replace("*", IndirectSalesOrder.Id.ToString()),
+                    LinkMobile = $"{IndirectSalesOrderRoute.Mobile}".Replace("*", IndirectSalesOrder.Id.ToString()),
+                    Time = Now,
+                    Unread = true,
+                    SenderId = CurrentContext.UserId,
+                    RecipientId = IndirectSalesOrder.SaleEmployeeId
+                };
+                UserNotifications.Add(UserNotification);
 
                 await NotificationService.BulkSend(UserNotifications);
 
@@ -786,7 +782,7 @@ namespace DMS.Services.MIndirectSalesOrder
             return Parameters;
         }
 
-        private async Task<List<long>> ListReceipientId(AppUser CurrentUser, string Path)
+        private async Task<List<long>> ListReceipientId(AppUser AppUser, string Path)
         {
             var Ids = await UOW.PermissionRepository.ListAppUser(Path);
             OrganizationFilter OrganizationFilter = new OrganizationFilter
@@ -799,7 +795,7 @@ namespace DMS.Services.MIndirectSalesOrder
 
             var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
             var OrganizationIds = Organizations
-                .Where(x => x.Path.StartsWith(CurrentUser.Organization.Path) || CurrentUser.Organization.Path.StartsWith(x.Path))
+                .Where(x => x.Path.StartsWith(AppUser.Organization.Path) || AppUser.Organization.Path.StartsWith(x.Path))
                 .Select(x => x.Id)
                 .ToList();
 
