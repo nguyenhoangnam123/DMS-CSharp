@@ -384,6 +384,7 @@ namespace DMS.Rpc.price_list
                     new string[] {
                         "STT",
                         "Mã sản phẩm",
+                        "Tên sản phẩm",
                         "Giá bán"
                     }
                 };
@@ -395,30 +396,11 @@ namespace DMS.Rpc.price_list
                     {
                         i+1,
                         PriceListItemMapping.Item?.Code,
+                        PriceListItemMapping.Item?.Name,
                         PriceListItemMapping.Price,
                     });
                 }
                 excel.GenerateWorksheet("Gia ban", PriceListItemMappingHeader, data);
-
-                var ItemHeaders = new List<string[]>()
-                {
-                    new string[]
-                    {
-                        "Mã sản phẩm",
-                        "Tên sản phẩm",
-                    }
-                };
-                data = new List<object[]>();
-                for (int i = 0; i < PriceList.PriceListItemMappings.Count; i++)
-                {
-                    var PriceListItemMapping = PriceList.PriceListItemMappings[i];
-                    data.Add(new Object[]
-                    {
-                        PriceListItemMapping.Item?.Code,
-                        PriceListItemMapping.Item?.Name,
-                    });
-                }
-                excel.GenerateWorksheet("San pham", ItemHeaders, data);
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", $"{PriceList.Code}_Item.xlsx");
@@ -442,7 +424,8 @@ namespace DMS.Rpc.price_list
                 {
                     new string[] {
                         "STT",
-                        "Mã đại lý"
+                        "Mã đại lý",
+                        "Tên đại lý"
                     }
                 };
                 List<object[]> data = new List<object[]>();
@@ -453,29 +436,11 @@ namespace DMS.Rpc.price_list
                     {
                         i+1,
                         PriceListStoreMapping.Store?.Code,
+                        PriceListStoreMapping.Store?.Name,
                     });
                 }
                 excel.GenerateWorksheet("Daily_Apdung", PriceListStoreMappingHeader, data);
 
-                var StoreHeaders = new List<string[]>()
-                {
-                    new string[]
-                    {
-                        "Mã đại lý",
-                        "Tên đại lý",
-                    }
-                };
-                data = new List<object[]>();
-                for (int i = 0; i < PriceList.PriceListStoreMappings.Count; i++)
-                {
-                    var PriceListStoreMapping = PriceList.PriceListStoreMappings[i];
-                    data.Add(new Object[]
-                    {
-                        PriceListStoreMapping.Store?.Code,
-                        PriceListStoreMapping.Store?.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Dai ly", StoreHeaders, data);
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", $"{PriceList.Code}_Store.xlsx");
