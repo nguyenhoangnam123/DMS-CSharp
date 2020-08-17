@@ -186,11 +186,11 @@ namespace DMS
                         RecurringJob.RemoveIfExists(recurringJob.Id);
                     }
                 }
-
-                RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Daily);
-                RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), Cron.Daily);
-                RecurringJob.AddOrUpdate<MaintenanceService>("CompleteStoreCheckout", x => x.CompleteStoreCheckout(), Cron.Daily);
-                RecurringJob.AddOrUpdate<MaintenanceService>("CreateStoreUnchecking", x => x.CreateStoreUnchecking(), Cron.Daily);
+                string daily = "59 16 * * *";
+                RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), daily);
+                RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), daily);
+                RecurringJob.AddOrUpdate<MaintenanceService>("CompleteStoreCheckout", x => x.CompleteStoreCheckout(), daily);
+                RecurringJob.AddOrUpdate<MaintenanceService>("CreateStoreUnchecking", x => x.CreateStoreUnchecking(), daily);
             };
             onChange();
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);
