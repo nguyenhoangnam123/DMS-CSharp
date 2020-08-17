@@ -6,6 +6,7 @@ using Common;
 using DMS.Entities;
 using DMS;
 using DMS.Repositories;
+using DMS.Enums;
 
 namespace DMS.Services.MProblemType
 {
@@ -23,6 +24,13 @@ namespace DMS.Services.MProblemType
         public enum ErrorCode
         {
             IdNotExisted,
+            CodeEmpty,
+            CodeHasSpecialCharacter,
+            CodeExisted,
+            NameEmpty,
+            NameOverLength,
+            StatusNotExisted,
+            ProblemTypeInUsed
         }
 
         private IUOW UOW;
@@ -50,8 +58,60 @@ namespace DMS.Services.MProblemType
             return count == 1;
         }
 
+        public async Task<bool> ValidateCode(ProblemType ProblemType)
+        {
+            if (string.IsNullOrWhiteSpace(ProblemType.Code))
+            {
+                ProblemType.AddError(nameof(ProblemTypeValidator), nameof(ProblemType.Code), ErrorCode.CodeEmpty);
+            }
+            else
+            {
+                var Code = ProblemType.Code;
+                if (ProblemType.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(ProblemType.Code))
+                {
+                    ProblemType.AddError(nameof(ProblemTypeValidator), nameof(ProblemType.Code), ErrorCode.CodeHasSpecialCharacter);
+                }
+
+                ProblemTypeFilter ProblemTypeFilter = new ProblemTypeFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { NotEqual = ProblemType.Id },
+                    Code = new StringFilter { Equal = ProblemType.Code },
+                    Selects = ProblemTypeSelect.Code
+                };
+
+                int count = await UOW.ProblemTypeRepository.Count(ProblemTypeFilter);
+                if (count != 0)
+                    ProblemType.AddError(nameof(ProblemTypeValidator), nameof(ProblemType.Code), ErrorCode.CodeExisted);
+            }
+            return ProblemType.IsValidated;
+        }
+        public async Task<bool> ValidateName(ProblemType ProblemType)
+        {
+            if (string.IsNullOrWhiteSpace(ProblemType.Name))
+            {
+                ProblemType.AddError(nameof(ProblemTypeValidator), nameof(ProblemType.Name), ErrorCode.NameEmpty);
+            }
+            else if (ProblemType.Name.Length > 255)
+            {
+                ProblemType.AddError(nameof(ProblemTypeValidator), nameof(ProblemType.Name), ErrorCode.NameOverLength);
+            }
+            return ProblemType.IsValidated;
+        }
+
+        public async Task<bool> ValidateStatus(ProblemType ProblemType)
+        {
+            if (StatusEnum.ACTIVE.Id != ProblemType.StatusId && StatusEnum.INACTIVE.Id != ProblemType.StatusId)
+                ProblemType.AddError(nameof(ProblemTypeValidator), nameof(ProblemType.Status), ErrorCode.StatusNotExisted);
+            return ProblemType.IsValidated;
+        }
+
         public async Task<bool>Create(ProblemType ProblemType)
         {
+            await ValidateCode(ProblemType);
+            await ValidateName(ProblemType);
+            await ValidateStatus(ProblemType);
             return ProblemType.IsValidated;
         }
 
@@ -59,6 +119,9 @@ namespace DMS.Services.MProblemType
         {
             if (await ValidateId(ProblemType))
             {
+                await ValidateCode(ProblemType);
+                await ValidateName(ProblemType);
+                await ValidateStatus(ProblemType);
             }
             return ProblemType.IsValidated;
         }
@@ -67,6 +130,11 @@ namespace DMS.Services.MProblemType
         {
             if (await ValidateId(ProblemType))
             {
+                ProblemType = await UOW.ProblemTypeRepository.Get(ProblemType.Id);
+                if (ProblemType.Used)
+                {
+                    ProblemType.AddError(nameof(ProblemTypeValidator), nameof(ProblemType.Id), ErrorCode.ProblemTypeInUsed);
+                }
             }
             return ProblemType.IsValidated;
         }

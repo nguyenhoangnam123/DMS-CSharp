@@ -6,6 +6,7 @@ using DMS.Services.MAppUser;
 using DMS.Services.MImage;
 using DMS.Services.MOrganization;
 using DMS.Services.MProblem;
+using DMS.Services.MProblemType;
 using DMS.Services.MStore;
 using DMS.Services.MStoreChecking;
 using Helpers;

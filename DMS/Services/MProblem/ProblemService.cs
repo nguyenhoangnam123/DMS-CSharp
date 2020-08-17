@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Handlers;
 using DMS.Repositories;
 using DMS.Rpc.monitor_store_problems;
 using DMS.Rpc.problem;
@@ -38,6 +39,7 @@ namespace DMS.Services.MProblem
         private IImageService ImageService;
         private IOrganizationService OrganizationService;
         private IProblemValidator ProblemValidator;
+        private IRabbitManager RabbitManager;
 
         public ProblemService(
             IUOW UOW,
@@ -46,7 +48,8 @@ namespace DMS.Services.MProblem
             ICurrentContext CurrentContext,
             IImageService ImageService,
             IOrganizationService OrganizationService,
-            IProblemValidator ProblemValidator
+            IProblemValidator ProblemValidator,
+            IRabbitManager RabbitManager
         )
         {
             this.UOW = UOW;
@@ -56,6 +59,7 @@ namespace DMS.Services.MProblem
             this.ImageService = ImageService;
             this.OrganizationService = OrganizationService;
             this.ProblemValidator = ProblemValidator;
+            this.RabbitManager = RabbitManager;
         }
         public async Task<int> Count(ProblemFilter ProblemFilter)
         {
@@ -135,6 +139,8 @@ namespace DMS.Services.MProblem
                 };
                 await UOW.ProblemRepository.Update(Problem);
                 await UOW.Commit();
+
+                NotifyUsed(Problem);
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 var RecipientIds = await UOW.PermissionRepository.ListAppUser(ProblemRoute.Update);
@@ -267,6 +273,8 @@ namespace DMS.Services.MProblem
                 await UOW.Begin();
                 await UOW.ProblemRepository.Update(Problem);
                 await UOW.Commit();
+
+                NotifyUsed(Problem);
 
                 var newData = await UOW.ProblemRepository.Get(Problem.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(ProblemService));
@@ -427,6 +435,20 @@ namespace DMS.Services.MProblem
             string path = $"/problem/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
             Image = await ImageService.Create(Image, path);
             return Image;
+        }
+
+        private void NotifyUsed(Problem Problem)
+        {
+            {
+                EventMessage<ProblemType> ProblemTypeMessage = new EventMessage<ProblemType>
+                {
+                    Content = new ProblemType { Id = Problem.ProblemTypeId },
+                    EntityName = nameof(Item),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                RabbitManager.PublishSingle(ProblemTypeMessage, RoutingKeyEnum.ProblemTypeUsed);
+            }
         }
     }
 }

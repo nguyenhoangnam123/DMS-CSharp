@@ -32,6 +32,7 @@ using DMS.Services.MSupplier;
 using DMS.Services.MProductGrouping;
 using System.Text;
 using DMS.Services.MNotification;
+using DMS.Services.MProblemType;
 
 namespace DMS.Rpc.mobile
 {
