@@ -21,8 +21,8 @@ namespace DMS.Rpc.mobile
         public long? WardId { get; set; }
         public string Address { get; set; }
         public string DeliveryAddress { get; set; }
-        public decimal? Latitude { get; set; }
-        public decimal? Longitude { get; set; }
+        public decimal Latitude { get; set; }
+        public decimal Longitude { get; set; }
         public decimal? DeliveryLatitude { get; set; }
         public decimal? DeliveryLongitude { get; set; }
         public string OwnerName { get; set; }
@@ -47,6 +47,7 @@ namespace DMS.Rpc.mobile
         public Mobile_StoreScoutingDTO StoreScouting { get; set; }
         public List<Mobile_StoreImageMappingDTO> StoreImageMappings { get; set; }
         public List<Mobile_StoreCheckingDTO> StoreCheckings { get; set; }
+        public double Distance { get; set; }
         public Mobile_StoreDTO() { }
         public Mobile_StoreDTO(Store Store)
         {
@@ -78,6 +79,7 @@ namespace DMS.Rpc.mobile
             this.HasChecking = Store.HasChecking;
             this.Used = Store.Used;
             this.StoreScoutingId = Store.StoreScoutingId;
+            this.Distance = Store.Distance;
             this.Status = Store.Status == null ? null : new Mobile_StatusDTO(Store.Status);
             this.District = Store.District == null ? null : new Mobile_DistrictDTO(Store.District);
             this.Organization = Store.Organization == null ? null : new Mobile_OrganizationDTO(Store.Organization);

@@ -19,8 +19,8 @@ namespace DMS.Rpc.direct_sales_order
         public long? WardId { get; set; }
         public string Address { get; set; }
         public string DeliveryAddress { get; set; }
-        public decimal? Latitude { get; set; }
-        public decimal? Longitude { get; set; }
+        public decimal Latitude { get; set; }
+        public decimal Longitude { get; set; }
         public decimal? DeliveryLatitude { get; set; }
         public decimal? DeliveryLongitude { get; set; }
         public string OwnerName { get; set; }
