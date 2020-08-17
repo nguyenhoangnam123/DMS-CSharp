@@ -123,8 +123,8 @@ namespace DMS.Services.MStoreChecking
                 StoreChecking.CheckInAt = StaticParams.DateTimeNow;
                 StoreChecking.SaleEmployeeId = CurrentContext.UserId;
 
-                List<long> StorePlannedIds = await ListStoreIds(null, true);
-                if (StorePlannedIds.Contains(StoreChecking.StoreId))
+                Dictionary<long, long> StorePlannedIds = await ListOnlineStoreIds(null, true);
+                if (StorePlannedIds.Any(x => x.Key == StoreChecking.StoreId))
                 {
                     StoreChecking.Planned = true;
                 }
@@ -264,52 +264,57 @@ namespace DMS.Services.MStoreChecking
             }
         }
 
+        /// <summary>
+        /// Danh sách store chung
+        /// </summary>
+        /// <param name="StoreFilter"></param>
+        /// <param name="ERouteId"></param>
+        /// <returns></returns>
         public async Task<long> CountStore(StoreFilter StoreFilter, IdFilter ERouteId)
         {
-            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-            List<long> StoreIds = new List<long>();
-            if (ERouteId != null && ERouteId.HasValue)
-            {
-                StoreIds = await ListStoreIds(ERouteId, true);
-                if (AppUser.AppUserStoreMappings.Any())
-                {
-                    var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-                    StoreIds = StoreIds.Intersect(StoreInScopeIds).ToList();
-                }
-                StoreFilter.Id = new IdFilter { In = StoreIds };
-            }
-
             int count = await UOW.StoreRepository.Count(StoreFilter);
             return count;
         }
 
+        /// <summary>
+        /// Danh sách store chung
+        /// </summary>
+        /// <param name="StoreFilter"></param>
+        /// <param name="ERouteId"></param>
+        /// <returns></returns>
         public async Task<List<Store>> ListStore(StoreFilter StoreFilter, IdFilter ERouteId)
         {
-            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-
-            List<long> StoreIds = new List<long>();
-            if (ERouteId != null && ERouteId.HasValue)
+            List<Store> Stores;
+            if (StoreFilter.Latitude.Equal.HasValue && StoreFilter.Longitude.Equal.HasValue)
             {
-                StoreIds = await ListStoreIds(ERouteId, true);
-                if (AppUser.AppUserStoreMappings.Any())
-                {
-                    var StoreInScopeIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-                    StoreIds = StoreIds.Intersect(StoreInScopeIds).ToList();
-                }
-                StoreFilter.Id = new IdFilter { In = StoreIds };
+                int skip = StoreFilter.Skip;
+                int take = StoreFilter.Take;
+                StoreFilter.Skip = 0;
+                StoreFilter.Take = int.MaxValue;
+                Stores = await UOW.StoreRepository.List(StoreFilter);
+                Stores = await ListRecentStore(Stores, StoreFilter.Latitude.Equal.Value, StoreFilter.Longitude.Equal.Value);
+                Stores = Stores.OrderBy(x => x.Distance).Skip(skip).Take(take).ToList();
             }
-
-            List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+            else
+            {
+                Stores = await UOW.StoreRepository.List(StoreFilter);
+            }    
             Stores = await CheckStoreChecking(Stores);
             return Stores;
         }
 
+        /// <summary>
+        /// Danh sách store theo tuyến trong ngày
+        /// </summary>
+        /// <param name="StoreFilter"></param>
+        /// <param name="ERouteId"></param>
+        /// <returns></returns>
         public async Task<long> CountStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId)
         {
             try
             {
-                List<long> StoreIds = await ListStoreIds(ERouteId, true);
-                StoreFilter.Id = new IdFilter { In = StoreIds };
+                Dictionary<long, long> StoreIds = await ListOnlineStoreIds(ERouteId, true);
+                StoreFilter.Id = new IdFilter { In = StoreIds.Select(x => x.Key).ToList() };
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 int count = await UOW.StoreRepository.Count(StoreFilter);
                 return count;
@@ -329,22 +334,40 @@ namespace DMS.Services.MStoreChecking
             }
         }
 
+        /// <summary>
+        /// Danh sách store theo tuyến trong ngày
+        /// </summary>
+        /// <param name="StoreFilter"></param>
+        /// <param name="ERouteId"></param>
+        /// <returns></returns>
         public async Task<List<Store>> ListStorePlanned(StoreFilter StoreFilter, IdFilter ERouteId)
         {
             try
             {
-                int skip = StoreFilter.Skip;
-                int take = StoreFilter.Take;
-                // lấy danh sách tất cả các đại lý trong kế hoạch
-                List<long> StoreIds = await ListStoreIds(ERouteId, true);
-                StoreFilter.Id = new IdFilter { In = StoreIds };
-                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
-                StoreFilter.Skip = 0;
-                StoreFilter.Take = int.MaxValue;
-                List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+                List<Store> Stores;
                 if (StoreFilter.Latitude.Equal.HasValue && StoreFilter.Longitude.Equal.HasValue)
+                {
+                    int skip = StoreFilter.Skip;
+                    int take = StoreFilter.Take;
+                    // lấy danh sách tất cả các đại lý trong kế hoạch
+                    Dictionary<long, long> StoreIds = await ListOnlineStoreIds(ERouteId, true);
+                    StoreFilter.Id = new IdFilter { In = StoreIds.Select(x => x.Key).ToList() };
+                    StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+                    StoreFilter.Skip = 0;
+                    StoreFilter.Take = int.MaxValue;
+                    Stores = await UOW.StoreRepository.List(StoreFilter);
                     Stores = await ListRecentStore(Stores, StoreFilter.Latitude.Equal.Value, StoreFilter.Longitude.Equal.Value);
-                Stores = Stores.Skip(skip).Take(take).ToList();
+                    Stores = (from s in Stores
+                              join id in StoreIds on s.Id equals id.Key
+                              orderby id.Value, s.Distance
+                              select s)
+                            .Skip(skip).Take(take).ToList();
+                }
+                else
+                {
+                    Stores = await UOW.StoreRepository.List(StoreFilter);
+                }    
+              
                 Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
@@ -363,13 +386,19 @@ namespace DMS.Services.MStoreChecking
             }
         }
 
+        /// <summary>
+        /// Danh sách store theo tuyến nhưng không trong ngày
+        /// </summary>
+        /// <param name="StoreFilter"></param>
+        /// <param name="ERouteId"></param>
+        /// <returns></returns>
         public async Task<long> CountStoreUnPlanned(StoreFilter StoreFilter, IdFilter ERouteId)
         {
             try
             {
                 var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                List<long> StoreIds = await ListStoreIds(ERouteId, false);
-                StoreFilter.Id.In = StoreIds;
+                Dictionary<long, long> StoreIds = await ListOfflineStoreIds(ERouteId, false);
+                StoreFilter.Id.In = StoreIds.Select(x => x.Key).ToList();
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 int count = await UOW.StoreRepository.Count(StoreFilter);
                 return count;
@@ -389,21 +418,40 @@ namespace DMS.Services.MStoreChecking
             }
         }
 
+        /// <summary>
+        /// Danh sách store theo tuyến nhưng không trong ngày
+        /// </summary>
+        /// <param name="StoreFilter"></param>
+        /// <param name="ERouteId"></param>
+        /// <returns></returns>
         public async Task<List<Store>> ListStoreUnPlanned(StoreFilter StoreFilter, IdFilter ERouteId)
         {
             try
             {
-                int skip = StoreFilter.Skip;
-                int take = StoreFilter.Take;
-                List<long> StoreIds = await ListStoreIds(ERouteId, false);
-                StoreFilter.Id.In = StoreIds;
-                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
-                StoreFilter.Skip = 0;
-                StoreFilter.Take = int.MaxValue;
-                List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+                List<Store> Stores;
+            
                 if (StoreFilter.Latitude.Equal.HasValue && StoreFilter.Longitude.Equal.HasValue)
+                {
+                    int skip = StoreFilter.Skip;
+                    int take = StoreFilter.Take;
+                    Dictionary<long, long> StoreIds = await ListOfflineStoreIds(ERouteId, false);
+                    StoreFilter.Id.In = StoreIds.Select(x => x.Key).ToList();
+                    StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+                    StoreFilter.Skip = 0;
+                    StoreFilter.Take = int.MaxValue;
+                    Stores = await UOW.StoreRepository.List(StoreFilter);
                     Stores = await ListRecentStore(Stores, StoreFilter.Latitude.Equal.Value, StoreFilter.Longitude.Equal.Value);
-                Stores = Stores.Skip(skip).Take(take).ToList();
+
+                    Stores = (from s in Stores
+                              join id in StoreIds on s.Id equals id.Key
+                              orderby id.Value, s.Distance
+                              select s)
+                           .Skip(skip).Take(take).ToList();
+                }
+                else
+                {
+                    Stores = await UOW.StoreRepository.List(StoreFilter);
+                }    
                 Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
@@ -422,6 +470,12 @@ namespace DMS.Services.MStoreChecking
             }
         }
 
+        /// <summary>
+        /// Danh sách store theo phạm vi
+        /// </summary>
+        /// <param name="StoreFilter"></param>
+        /// <param name="ERouteId"></param>
+        /// <returns></returns>
         public async Task<long> CountStoreInScope(StoreFilter StoreFilter, IdFilter ERouteId)
         {
             try
@@ -444,19 +498,32 @@ namespace DMS.Services.MStoreChecking
             }
         }
 
+        /// <summary>
+        /// Danh sách store theo phạm vi
+        /// </summary>
+        /// <param name="StoreFilter"></param>
+        /// <param name="ERouteId"></param>
+        /// <returns></returns>
         public async Task<List<Store>> ListStoreInScope(StoreFilter StoreFilter, IdFilter ERouteId)
         {
             try
             {
-                int skip = StoreFilter.Skip;
-                int take = StoreFilter.Take;
-                StoreFilter.Skip = 0;
-                StoreFilter.Take = int.MaxValue;
-                List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+                List<Store> Stores;
                 if (StoreFilter.Latitude.Equal.HasValue && StoreFilter.Longitude.Equal.HasValue)
-                    Stores = await ListRecentStore(Stores, StoreFilter.Latitude.Equal.Value, StoreFilter.Longitude.Equal.Value);
-                Stores = Stores.Skip(skip).Take(take).ToList();
+                {
 
+                    int skip = StoreFilter.Skip;
+                    int take = StoreFilter.Take;
+                    StoreFilter.Skip = 0;
+                    StoreFilter.Take = int.MaxValue;
+                    Stores = await UOW.StoreRepository.List(StoreFilter);
+                    Stores = await ListRecentStore(Stores, StoreFilter.Latitude.Equal.Value, StoreFilter.Longitude.Equal.Value);
+                    Stores = Stores.OrderBy(s => s.Distance).Skip(skip).Take(take).ToList();
+                }
+                else
+                {
+                    Stores = await UOW.StoreRepository.List(StoreFilter);
+                }    
                 Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
@@ -521,7 +588,7 @@ namespace DMS.Services.MStoreChecking
         }
 
         // Lấy danh sách tất cả các đại lý theo kế hoạch
-        private async Task<List<long>> ListStoreIds(IdFilter ERouteId, bool Planned)
+        private async Task<Dictionary<long, long>> ListOnlineStoreIds(IdFilter ERouteId, bool Planned)
         {
             DateTime Now = StaticParams.DateTimeNow.Date;
             List<long> ERouteIds = (await UOW.ERouteRepository.List(new ERouteFilter
@@ -544,12 +611,78 @@ namespace DMS.Services.MStoreChecking
                 Selects = ERouteContentSelect.Id | ERouteContentSelect.Store | ERouteContentSelect.ERoute
             });
 
-            List<long> StoreIds = new List<long>();
+            Dictionary<long, long> StoreIds = new Dictionary<long, long>();
             foreach (var ERouteContent in ERouteContents)
             {
                 var index = (Now - ERouteContent.ERoute.RealStartDate).Days % 28;
                 if (ERouteContent.ERouteContentDays[index].Planned == Planned)
-                    StoreIds.Add(ERouteContent.StoreId);
+                {
+                    long StoreId = StoreIds.Where(x => x.Key == ERouteContent.StoreId)
+                        .Select(x => x.Key)
+                        .FirstOrDefault();
+                    if (StoreId == 0)
+                    {
+                        long value = ERouteContent.OrderNumber ?? int.MaxValue;
+                        StoreIds.Add(ERouteContent.StoreId, value);
+                    }
+                    else
+                    {
+                        long value = ERouteContent.OrderNumber ?? int.MaxValue;
+                        long oldValue = StoreIds[StoreId];
+                        if (oldValue > value)
+                            StoreIds[StoreId] = value;
+                    }
+                }
+            }
+
+            return StoreIds;
+        }
+
+        private async Task<Dictionary<long, long>> ListOfflineStoreIds(IdFilter ERouteId, bool Planned)
+        {
+            DateTime Now = StaticParams.DateTimeNow.Date;
+            List<long> ERouteIds = (await UOW.ERouteRepository.List(new ERouteFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                StartDate = new DateFilter { LessEqual = Now },
+                EndDate = new DateFilter { GreaterEqual = Now },
+                Id = ERouteId,
+                AppUserId = new IdFilter { Equal = CurrentContext.UserId },
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
+                Selects = ERouteSelect.Id
+            })).Select(x => x.Id).ToList();
+
+            List<ERouteContent> ERouteContents = await UOW.ERouteContentRepository.List(new ERouteContentFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                ERouteId = new IdFilter { In = ERouteIds },
+                Selects = ERouteContentSelect.Id | ERouteContentSelect.Store | ERouteContentSelect.ERoute
+            });
+
+            Dictionary<long, long> StoreIds = new Dictionary<long, long>();
+            foreach (var ERouteContent in ERouteContents)
+            {
+                var index = (Now - ERouteContent.ERoute.RealStartDate).Days % 28;
+                if (ERouteContent.ERouteContentDays[index].Planned != Planned)
+                {
+                    long StoreId = StoreIds.Where(x => x.Key == ERouteContent.StoreId)
+                        .Select(x => x.Key)
+                        .FirstOrDefault();
+                    if (StoreId == 0)
+                    {
+                        long value = ERouteContent.OrderNumber ?? int.MaxValue;
+                        StoreIds.Add(ERouteContent.StoreId, value);
+                    }
+                    else
+                    {
+                        long value = ERouteContent.OrderNumber ?? int.MaxValue;
+                        long oldValue = StoreIds[StoreId];
+                        if (oldValue > value)
+                            StoreIds[StoreId] = value;
+                    }
+                }
             }
 
             return StoreIds;
