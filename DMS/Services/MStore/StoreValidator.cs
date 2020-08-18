@@ -579,10 +579,6 @@ namespace DMS.Services.MStore
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
-                if (listCodeInDB.Contains(Store.Code))
-                {
-                    Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeExisted);
-                }
                 if (!listOrganizationCodeInDB.Contains(Store.Organization.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Organization), ErrorCode.OrganizationNotExisted);

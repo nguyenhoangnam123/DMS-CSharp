@@ -299,7 +299,7 @@ namespace DMS.Rpc.store
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name
+                Selects = StoreSelect.ALL
             });
             #endregion
 
@@ -436,7 +436,7 @@ namespace DMS.Rpc.store
                         {
                             Code = ProvinceCodeValue
                         };
-                        Store.ProvinceId = Provinces.Where(x => x.Code.Equals(ProvinceCodeValue)).Select(x => x.Id).FirstOrDefault();
+                        Store.ProvinceId = Provinces.Where(x => x.Code.Equals(ProvinceCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
                     }
 
                     if (!string.IsNullOrWhiteSpace(DistrictCodeValue))
@@ -445,7 +445,7 @@ namespace DMS.Rpc.store
                         {
                             Code = DistrictCodeValue
                         };
-                        Store.DistrictId = Districts.Where(x => x.Code.Equals(DistrictCodeValue)).Select(x => x.Id).FirstOrDefault();
+                        Store.DistrictId = Districts.Where(x => x.Code.Equals(DistrictCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
                     }
 
                     if (!string.IsNullOrWhiteSpace(WardCodeValue))
@@ -454,7 +454,7 @@ namespace DMS.Rpc.store
                         {
                             Code = WardCodeValue
                         };
-                        Store.WardId = Wards.Where(x => x.Code.Equals(WardCodeValue)).Select(x => x.Id).FirstOrDefault();
+                        Store.WardId = Wards.Where(x => x.Code.Equals(WardCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
                     }
 
                     if (string.IsNullOrEmpty(StatusNameValue))
