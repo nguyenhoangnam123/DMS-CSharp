@@ -223,6 +223,7 @@ namespace DMS.Rpc.mobile
             ProblemTypeFilter ProblemTypeFilter = new ProblemTypeFilter();
             ProblemTypeFilter.Skip = 0;
             ProblemTypeFilter.Take = 20;
+            ProblemTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ProblemTypeFilter.OrderBy = ProblemTypeOrder.Id;
             ProblemTypeFilter.OrderType = OrderType.ASC;
             ProblemTypeFilter.Selects = ProblemTypeSelect.ALL;
@@ -447,7 +448,7 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerPhone = Mobile_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            
+
 
             return await StoreCheckingService.CountStore(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
         }
