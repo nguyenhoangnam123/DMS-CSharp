@@ -218,6 +218,10 @@ namespace DMS.Rpc.survey
                                 header.Add($"{surveyQuestion.Content} [{SurveyOption.Content}]");
                             }
                         }
+                        if (surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_TEXT.Id)
+                        {
+                            header.Add($"{surveyQuestion.Content}");
+                        }
                     }
 
                 List<long> AppUserIds = SurveyResults.Select(sr => sr.AppUserId).ToList();
@@ -248,7 +252,6 @@ namespace DMS.Rpc.survey
                     if (Survey.SurveyQuestions != null)
                         foreach (SurveyQuestion surveyQuestion in Survey.SurveyQuestions)
                         {
-
                             if (surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_MULTIPLE_CHOICE.Id ||
                             surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id)
                             {
@@ -275,6 +278,15 @@ namespace DMS.Rpc.survey
                                             optionResults.Add(ColumnOption.Content);
                                     }
                                 }
+                            }
+                            if (surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_TEXT.Id)
+                            {
+                                List<SurveyResultText> SurveyResultTexts = SurveyResult.SurveyResultTexts.Where(sr => sr.SurveyQuestionId == surveyQuestion.Id).ToList();
+                                foreach (SurveyResultText SurveyResultText in SurveyResultTexts)
+                                {
+                                    optionResults.Add(SurveyResultText.Content);
+                                }
+                                optionResults.Add(surveyQuestion.TextResult);
                             }
                         }
                 }
