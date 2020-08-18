@@ -294,6 +294,13 @@ namespace DMS.Rpc.store
                 Take = int.MaxValue,
                 Selects = StatusSelect.Id | StatusSelect.Code | StatusSelect.Name
             });
+
+            List<Store> All = await StoreService.List(new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name
+            });
             #endregion
 
             List<Store> Stores = new List<Store>();
@@ -373,7 +380,11 @@ namespace DMS.Rpc.store
                     string StatusNameValue = worksheet.Cells[i + StartRow, StatusColumn].Value?.ToString();
                     #endregion
 
-                    Store Store = new Store();
+                    Store Store = All.Where(x => x.Code == CodeValue).FirstOrDefault();
+                    if(Store == null)
+                    {
+                        Store = new Store();
+                    }
                     Store.Code = CodeValue;
                     Store.Name = NameValue;
                     Store.LegalEntity = LegalEntityValue;
@@ -389,7 +400,6 @@ namespace DMS.Rpc.store
                     Store.OwnerName = OwnerNameValue;
                     Store.OwnerPhone = OwnerPhoneValue;
                     Store.OwnerEmail = OwnerEmailValue;
-
                     
                     Store.Organization = new Organization()
                     {
@@ -403,7 +413,6 @@ namespace DMS.Rpc.store
                         {
                             Code = ParentStoreCodeValue
                         };
-                        Store.ParentStoreId = ParentStores.Where(x => x.Code.Equals(ParentStoreCodeValue)).Select(x => x.Id).FirstOrDefault();
                     }
 
                     Store.StoreType = new StoreType
@@ -458,6 +467,16 @@ namespace DMS.Rpc.store
                     }
                     Stores.Add(Store);
                 }
+                var listCode = Stores.Select(x => x.Code).ToList();
+                var listCodeInDB = All.Select(x => x.Code).ToList();
+                for (int i = 0; i < Stores.Count; i++)
+                {
+                    if (Stores[i].ParentStore != null)
+                    {
+                        if (!listCode.Contains(Stores[i].ParentStore.Code) && !listCodeInDB.Contains(Stores[i].ParentStore.Code))
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: Đại lý cấp cha không tồn tại");
+                    }
+                }
                 if (errorContent.Length > 0)
                     return BadRequest(errorContent.ToString());
             }
@@ -469,10 +488,12 @@ namespace DMS.Rpc.store
             {
                 if (!Stores[i].IsValidated)
                 {
+                    errorContent.Append($"Lỗi dòng thứ {i + 2}:");
                     foreach (var Error in Stores[i].Errors)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
+                        errorContent.Append($" {Error.Value},");
                     }
+                    errorContent.AppendLine("");
                 }
             }
             if (Stores.Any(s => !s.IsValidated))
