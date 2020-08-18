@@ -875,10 +875,17 @@ namespace DMS.Rpc.mobile
             Survey.Id = Mobile_SurveyDTO.Id;
             Survey.Title = Mobile_SurveyDTO.Title;
             Survey.Description = Mobile_SurveyDTO.Description;
+            Survey.RespondentAddress = Mobile_SurveyDTO.RespondentAddress;
+            Survey.RespondentEmail = Mobile_SurveyDTO.RespondentEmail;
+            Survey.RespondentName = Mobile_SurveyDTO.RespondentName;
+            Survey.RespondentPhone = Mobile_SurveyDTO.RespondentPhone;
+            Survey.StoreId = Mobile_SurveyDTO.StoreId;
+            Survey.StoreScoutingId = Mobile_SurveyDTO.StoreScoutingId;
+            Survey.SurveyRespondentTypeId = Mobile_SurveyDTO.SurveyRespondentTypeId;
             Survey.StartAt = Mobile_SurveyDTO.StartAt;
             Survey.EndAt = Mobile_SurveyDTO.EndAt;
             Survey.StatusId = Mobile_SurveyDTO.StatusId;
-            Survey.StoreId = Mobile_SurveyDTO.StoreId;
+            
             Survey.SurveyQuestions = Mobile_SurveyDTO.SurveyQuestions?
                 .Select(x => new SurveyQuestion
                 {
@@ -901,6 +908,7 @@ namespace DMS.Rpc.mobile
                     }).ToList(),
                     TableResult = x.TableResult,
                     ListResult = x.ListResult,
+                    TextResult = x.TextResult,
                 }).ToList();
             Survey.BaseLanguage = CurrentContext.Language;
             Survey = await SurveyService.SaveForm(Survey);

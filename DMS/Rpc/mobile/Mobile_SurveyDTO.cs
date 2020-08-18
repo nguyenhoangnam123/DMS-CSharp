@@ -11,12 +11,18 @@ namespace DMS.Rpc.mobile
         public long Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public string RespondentAddress { get; set; }
+        public string RespondentEmail { get; set; }
+        public string RespondentName { get; set; }
+        public string RespondentPhone { get; set; }
         public bool Used { get; set; }
         public DateTime StartAt { get; set; }
         public DateTime? EndAt { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
         public long StoreId { get; set; }
+        public long StoreScoutingId { get; set; }
+        public long SurveyRespondentTypeId { get; set; }
         public long ResultCounter { get; set; }
         public List<Mobile_SurveyQuestionDTO> SurveyQuestions { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -33,6 +39,12 @@ namespace DMS.Rpc.mobile
             this.CreatorId = Survey.CreatorId;
             this.EndAt = Survey.EndAt;
             this.StatusId = Survey.StatusId;
+            this.StoreScoutingId = Survey.StoreScoutingId;
+            this.RespondentAddress = Survey.RespondentAddress;
+            this.RespondentEmail = Survey.RespondentEmail;
+            this.RespondentName = Survey.RespondentName;
+            this.RespondentPhone = Survey.RespondentPhone;
+            this.SurveyRespondentTypeId = Survey.SurveyRespondentTypeId;
             this.SurveyQuestions = Survey.SurveyQuestions?.Select(x => new Mobile_SurveyQuestionDTO(x)).ToList();
             this.CreatedAt = Survey.CreatedAt;
             this.UpdatedAt = Survey.UpdatedAt;

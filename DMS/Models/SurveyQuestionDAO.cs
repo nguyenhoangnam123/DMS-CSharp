@@ -10,6 +10,7 @@ namespace DMS.Models
             SurveyOptions = new HashSet<SurveyOptionDAO>();
             SurveyResultCells = new HashSet<SurveyResultCellDAO>();
             SurveyResultSingles = new HashSet<SurveyResultSingleDAO>();
+            SurveyResultTexts = new HashSet<SurveyResultTextDAO>();
         }
 
         public long Id { get; set; }
@@ -23,5 +24,6 @@ namespace DMS.Models
         public virtual ICollection<SurveyOptionDAO> SurveyOptions { get; set; }
         public virtual ICollection<SurveyResultCellDAO> SurveyResultCells { get; set; }
         public virtual ICollection<SurveyResultSingleDAO> SurveyResultSingles { get; set; }
+        public virtual ICollection<SurveyResultTextDAO> SurveyResultTexts { get; set; }
     }
 }
