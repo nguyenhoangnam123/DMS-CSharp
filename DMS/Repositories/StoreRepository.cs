@@ -408,6 +408,7 @@ namespace DMS.Repositories
                 District = filter.Selects.Contains(StoreSelect.District) && q.District != null ? new District
                 {
                     Id = q.District.Id,
+                    Code = q.District.Code,
                     Name = q.District.Name,
                     Priority = q.District.Priority,
                     ProvinceId = q.District.ProvinceId,
@@ -474,6 +475,7 @@ namespace DMS.Repositories
                 Province = filter.Selects.Contains(StoreSelect.Province) && q.Province != null ? new Province
                 {
                     Id = q.Province.Id,
+                    Code = q.Province.Code,
                     Name = q.Province.Name,
                     Priority = q.Province.Priority,
                     StatusId = q.Province.StatusId,
@@ -503,6 +505,7 @@ namespace DMS.Repositories
                 Ward = filter.Selects.Contains(StoreSelect.Ward) && q.Ward != null ? new Ward
                 {
                     Id = q.Ward.Id,
+                    Code = q.Ward.Code,
                     Name = q.Ward.Name,
                     Priority = q.Ward.Priority,
                     DistrictId = q.Ward.DistrictId,
