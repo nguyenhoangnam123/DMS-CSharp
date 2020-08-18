@@ -71,16 +71,23 @@ namespace DMS.Services.MSurvey
                 {
                     if (string.IsNullOrWhiteSpace(SurveyQuestion.Content))
                         SurveyQuestion.AddError(nameof(SurveyValidator), nameof(SurveyQuestion.Content), ErrorCode.ContentEmpty);
-                    if (SurveyQuestion.SurveyOptions == null || !SurveyQuestion.SurveyOptions.Any())
+                    if (SurveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_TEXT.Id)
                     {
-                        SurveyQuestion.AddError(nameof(SurveyValidator), nameof(SurveyQuestion.SurveyOptions), ErrorCode.SurveyOptionsEmpty);
+
                     }
                     else
-                        foreach (var SurveyOption in SurveyQuestion.SurveyOptions)
+                    {
+                        if (SurveyQuestion.SurveyOptions == null || !SurveyQuestion.SurveyOptions.Any())
                         {
-                            if (string.IsNullOrWhiteSpace(SurveyOption.Content))
-                                SurveyOption.AddError(nameof(SurveyValidator), nameof(SurveyOption.Content), ErrorCode.ContentSurveyOptionsEmpty);
+                            SurveyQuestion.AddError(nameof(SurveyValidator), nameof(SurveyQuestion.SurveyOptions), ErrorCode.SurveyOptionsEmpty);
                         }
+                        else
+                            foreach (var SurveyOption in SurveyQuestion.SurveyOptions)
+                            {
+                                if (string.IsNullOrWhiteSpace(SurveyOption.Content))
+                                    SurveyOption.AddError(nameof(SurveyValidator), nameof(SurveyOption.Content), ErrorCode.ContentSurveyOptionsEmpty);
+                            }
+                    }
                 }
             }
             return Survey.IsValidated;

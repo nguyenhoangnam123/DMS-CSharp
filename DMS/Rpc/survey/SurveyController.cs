@@ -241,11 +241,10 @@ namespace DMS.Rpc.survey
                     string Time = SurveyResult.Time.ToString("dd/MM/yyyy");
                     string StoreCode = SurveyResult.Store.Code;
                     string StoreName = SurveyResult.Store.Name;
-                    StringBuilder optionResult = new StringBuilder();
-                    optionResult.Append(Time);
-                    optionResult.Append(StoreName);
-                    optionResult.Append(StoreCode);
-                    optionResult.Append(AppUserName);
+                    optionResults.Add(Time);
+                    optionResults.Add(StoreName);
+                    optionResults.Add(StoreCode);
+                    optionResults.Add(AppUserName);
                     if (Survey.SurveyQuestions != null)
                         foreach (SurveyQuestion surveyQuestion in Survey.SurveyQuestions)
                         {
@@ -258,7 +257,7 @@ namespace DMS.Rpc.survey
                                 {
                                     SurveyOption SurveyOption = surveyQuestion.SurveyOptions.Where(so => so.Id == SurveyResultSingle.SurveyOptionId).FirstOrDefault();
                                     if (SurveyOption != null)
-                                        optionResult.Append(SurveyOption.Content);
+                                        optionResults.Add(SurveyOption.Content);
                                 }
 
                             }
@@ -273,12 +272,11 @@ namespace DMS.Rpc.survey
                                     {
                                         SurveyOption ColumnOption = surveyQuestion.SurveyOptions.Where(so => so.Id == SurveyResultCell.ColumnOptionId).FirstOrDefault();
                                         if (ColumnOption != null)
-                                            optionResult.Append(ColumnOption.Content);
+                                            optionResults.Add(ColumnOption.Content);
                                     }
                                 }
                             }
                         }
-                    optionResults.Add(optionResult.ToString());
                 }
 
                 var SurveyResultHeaders = new List<string[]>()
