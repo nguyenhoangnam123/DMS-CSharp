@@ -447,10 +447,15 @@ namespace DMS.Rpc.price_list
         }
 
         [Route(PriceListRoute.ExportTemplateItem), HttpPost]
-        public async Task<ActionResult> ExportTemplateItem()
+        public async Task<ActionResult> ExportTemplateItem([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            long PriceListId = PriceList_PriceListDTO?.Id ?? 0;
+            PriceList PriceList = await PriceListService.Get(PriceListId);
+            if (PriceList == null)
+                return BadRequest("Bảng giá không tồn tại");
 
             var ItemFilter = new ItemFilter
             {
@@ -469,16 +474,28 @@ namespace DMS.Rpc.price_list
             MemoryStream output = new MemoryStream();
             using (var xlPackage = new ExcelPackage(input))
             {
-                var worksheet = xlPackage.Workbook.Worksheets["San pham"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow = 2;
                 int numberCell = 1;
+                var priceListSheet = xlPackage.Workbook.Worksheets["Gia ban"];
+                for (var i = 0; i < PriceList.PriceListItemMappings.Count; i++)
+                {
+                    PriceListItemMapping PriceListItemMapping = PriceList.PriceListItemMappings[i];
+                    priceListSheet.Cells[startRow + i, numberCell].Value = i + 1;
+                    priceListSheet.Cells[startRow + i, numberCell + 1].Value = PriceListItemMapping.Item.Code;
+                    priceListSheet.Cells[startRow + i, numberCell + 2].Value = PriceListItemMapping.Price;
+                }
+
+                priceListSheet.Cells[startRow + PriceList.PriceListItemMappings.Count, numberCell].Value = "END";
+
+                var itemSheet = xlPackage.Workbook.Worksheets["San pham"];
                 for (var i = 0; i < Items.Count; i++)
                 {
                     Item Item = Items[i];
-                    worksheet.Cells[startRow + i, numberCell].Value = Item.Code;
-                    worksheet.Cells[startRow + i, numberCell + 1].Value = Item.Name;
+                    itemSheet.Cells[startRow + i, numberCell].Value = Item.Code;
+                    itemSheet.Cells[startRow + i, numberCell + 1].Value = Item.Name;
                 }
+                
                 xlPackage.SaveAs(output);
             }
             return File(output.ToArray(), "application/octet-stream", "Template_PriceList_Item.xlsx");

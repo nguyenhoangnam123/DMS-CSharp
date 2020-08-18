@@ -407,36 +407,50 @@ namespace DMS.Services.MStore
                     {
                         item.Id = Store.Id;
                         item.RowId = Store.RowId;
-                        item.StatusId = StatusEnum.ACTIVE.Id;
                     }
                     else
                     {
                         item.Id = 0;
                         item.RowId = Guid.NewGuid();
-                        item.StatusId = StatusEnum.ACTIVE.Id;
                     }
                 }
                 await UOW.StoreRepository.BulkMerge(Stores);
 
                 dbStores = await UOW.StoreRepository.List(StoreFilter);
-                foreach (var item in Stores)
+                foreach (var store in Stores)
                 {
-                    long StoreId = dbStores.Where(p => p.Code == item.Code)
+                    long StoreId = dbStores.Where(p => p.Code == store.Code)
                                 .Select(x => x.Id)
                                 .FirstOrDefault();
-                    item.Id = StoreId;
-                    if (item.ParentStore != null)
+                    store.Id = StoreId;
+                    if (store.ParentStore != null)
                     {
-                        long ParentStoreId = dbStores.Where(p => p.Code == item.ParentStore.Code)
+                        long ParentStoreId = dbStores.Where(p => p.Code == store.ParentStore.Code)
                                     .Select(x => x.Id)
                                     .FirstOrDefault();
-                        item.ParentStoreId = ParentStoreId;
+                        if(ParentStoreId != 0)
+                            store.ParentStoreId = ParentStoreId;
                     }
                 }
                 await UOW.StoreRepository.BulkMerge(Stores);
                 await UOW.Commit();
 
+                Stores = await UOW.StoreRepository.List(new StoreFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = StoreSelect.ALL,
+                    OrderBy = StoreOrder.Id,
+                    OrderType = OrderType.ASC,
+                });
                 await Logging.CreateAuditLog(Stores, new { }, nameof(StoreService));
+
+                List<EventMessage<Store>> eventMessages = new List<EventMessage<Store>>();
+                foreach (var Store in Stores)
+                {
+                    eventMessages.Add(new EventMessage<Store>(Store, Store.RowId));
+                }
+                RabbitManager.PublishList(eventMessages, RoutingKeyEnum.StoreSync);
                 return Stores;
             }
             catch (Exception ex)

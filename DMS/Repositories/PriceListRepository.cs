@@ -234,7 +234,8 @@ namespace DMS.Repositories
         public async Task<PriceList> Get(long Id)
         {
             PriceList PriceList = await DataContext.PriceList.AsNoTracking()
-            .Where(x => x.Id == Id).Select(x => new PriceList()
+            .Where(x => x.Id == Id)
+            .Where(x => x.DeletedAt == null).Select(x => new PriceList()
             {
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
