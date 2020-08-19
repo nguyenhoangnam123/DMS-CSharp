@@ -248,10 +248,10 @@ namespace DMS.Rpc.price_list
                         break;
 
                     PriceListItemMapping PriceListItemMapping = new PriceListItemMapping();
-                    var ItemItem = Items.Where(x => x.Code == ItemCodeValue).FirstOrDefault();
+                    var ItemItemId = Items.Where(x => x.Code == ItemCodeValue).Select(x => x.Id).FirstOrDefault();
 
                     PriceListItemMapping.PriceListId = PriceList.Id;
-                    PriceListItemMapping.ItemId = ItemItem.Id;
+                    PriceListItemMapping.ItemId = ItemItemId;
                     if (long.TryParse(PriceValue, out long Price))
                     {
                         PriceListItemMapping.Price = Price;
@@ -338,10 +338,10 @@ namespace DMS.Rpc.price_list
                         break;
 
                     PriceListStoreMapping PriceListStoreMapping = new PriceListStoreMapping();
-                    var StoreStore = Stores.Where(x => x.Code == StoreCodeValue).FirstOrDefault();
+                    var StoreStoreId = Stores.Where(x => x.Code == StoreCodeValue).Select(x => x.Id).FirstOrDefault();
 
                     PriceListStoreMapping.PriceListId = PriceList.Id;
-                    PriceListStoreMapping.StoreId = StoreStore.Id;
+                    PriceListStoreMapping.StoreId = StoreStoreId;
                     PriceList.PriceListStoreMappings.Add(PriceListStoreMapping);
                 }
                 if (errorContent.Length > 0)
@@ -452,11 +452,6 @@ namespace DMS.Rpc.price_list
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            long PriceListId = PriceList_PriceListDTO?.Id ?? 0;
-            PriceList PriceList = await PriceListService.Get(PriceListId);
-            if (PriceList == null)
-                return BadRequest("Bảng giá không tồn tại");
-
             var ItemFilter = new ItemFilter
             {
                 Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name,
@@ -478,16 +473,26 @@ namespace DMS.Rpc.price_list
                 int startRow = 2;
                 int numberCell = 1;
                 var priceListSheet = xlPackage.Workbook.Worksheets["Gia ban"];
-                for (var i = 0; i < PriceList.PriceListItemMappings.Count; i++)
+
+                long PriceListId = PriceList_PriceListDTO?.Id ?? 0;
+                PriceList PriceList = await PriceListService.Get(PriceListId);
+                if (PriceList == null)
                 {
-                    PriceListItemMapping PriceListItemMapping = PriceList.PriceListItemMappings[i];
-                    priceListSheet.Cells[startRow + i, numberCell].Value = i + 1;
-                    priceListSheet.Cells[startRow + i, numberCell + 1].Value = PriceListItemMapping.Item.Code;
-                    priceListSheet.Cells[startRow + i, numberCell + 2].Value = PriceListItemMapping.Price;
+                    priceListSheet.Cells[startRow , numberCell].Value = "END";
                 }
+                else
+                {
+                    for (var i = 0; i < PriceList.PriceListItemMappings.Count; i++)
+                    {
+                        PriceListItemMapping PriceListItemMapping = PriceList.PriceListItemMappings[i];
+                        priceListSheet.Cells[startRow + i, numberCell].Value = i + 1;
+                        priceListSheet.Cells[startRow + i, numberCell + 1].Value = PriceListItemMapping.Item.Code;
+                        priceListSheet.Cells[startRow + i, numberCell + 2].Value = PriceListItemMapping.Price;
+                    }
 
-                priceListSheet.Cells[startRow + PriceList.PriceListItemMappings.Count, numberCell].Value = "END";
-
+                    priceListSheet.Cells[startRow + PriceList.PriceListItemMappings.Count, numberCell].Value = "END";
+                }
+                
                 var itemSheet = xlPackage.Workbook.Worksheets["San pham"];
                 for (var i = 0; i < Items.Count; i++)
                 {
