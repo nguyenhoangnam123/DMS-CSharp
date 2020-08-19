@@ -412,7 +412,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             Data.Start = Start.ToString("dd-MM-yyyy");
             Data.End = End.ToString("dd-MM-yyyy");
             Data.MonitorSalesmans = MonitorSalesman_MonitorSalesmanDTOs;
-            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
             };

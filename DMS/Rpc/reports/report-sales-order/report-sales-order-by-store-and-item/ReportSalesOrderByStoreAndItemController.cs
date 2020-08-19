@@ -625,7 +625,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             Data.End = End.ToString("dd-MM-yyyy");
             Data.ReportSalesOrderByStoreAndItems = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs;
             Data.Total = ReportSalesOrderByStoreAndItem_TotalDTO;
-            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
             };

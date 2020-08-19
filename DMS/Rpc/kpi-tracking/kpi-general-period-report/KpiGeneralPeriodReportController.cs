@@ -506,7 +506,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
             Data.KpiPeriod = KpiPeriod.Name;
             Data.KpiYear = KpiYear.Name;
             Data.KpiGeneralPeriodReports = KpiGeneralPeriodReport_ExportDTOs;
-            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
             };
