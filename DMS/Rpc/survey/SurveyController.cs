@@ -196,7 +196,7 @@ namespace DMS.Rpc.survey
             Survey_AnswerStatisticsDTO.StoreCounter = SurveyResults.Where(s => s.StoreId.HasValue).Count();
             Survey_AnswerStatisticsDTO.StoreScoutingCounter = SurveyResults.Where(s => s.StoreScoutingId.HasValue).Count();
             Survey_AnswerStatisticsDTO.OtherCounter = SurveyResults.Where(s => !s.StoreId.HasValue && !s.StoreScoutingId.HasValue).Count();
-
+            Survey_AnswerStatisticsDTO.TotalCounter = SurveyResults.Count();
             Survey_AnswerStatisticsDTO.StoreResults = SurveyResults.Where(s => s.StoreId.HasValue).Select(x => new Survey_StoreResultStatisticsDTO
             {
                 OrganizationName = x.AppUser.Organization.Name,

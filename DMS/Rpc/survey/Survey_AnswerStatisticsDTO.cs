@@ -8,6 +8,7 @@ namespace DMS.Rpc.survey
 {
     public class Survey_AnswerStatisticsDTO : DataDTO
     {
+        public long TotalCounter { get; set; }
         public long StoreCounter { get; set; }
         public long StoreScoutingCounter { get; set; }
         public long OtherCounter { get; set; }
