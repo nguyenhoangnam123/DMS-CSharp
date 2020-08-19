@@ -5,6 +5,7 @@ using DMS.Services.MAppUser;
 using DMS.Services.MStatus;
 using DMS.Services.MSurvey;
 using DMS.Services.MSurveyResult;
+using GleamTech.FileSystems.AzureBlob;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using System;
@@ -71,7 +72,7 @@ namespace DMS.Rpc.survey
         }
 
         [Route(SurveyRoute.Get), HttpPost]
-        public async Task<ActionResult<Survey_SurveyDTO>> Get([FromBody]Survey_SurveyDTO Survey_SurveyDTO)
+        public async Task<ActionResult<Survey_SurveyDTO>> Get([FromBody] Survey_SurveyDTO Survey_SurveyDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -170,6 +171,55 @@ namespace DMS.Rpc.survey
                 return Survey_SurveyDTO;
             else
                 return BadRequest(Survey_SurveyDTO);
+        }
+
+
+        [Route(SurveyRoute.AnswerStatistics), HttpPost]
+        public async Task<ActionResult<Survey_AnswerStatisticsDTO>> AnswerStatistics([FromBody] Survey_SurveyDTO Survey_SurveyDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Survey_SurveyDTO.Id))
+                return Forbid();
+
+            List<SurveyResult> SurveyResults = await SurveyResultService.List(new SurveyResultFilter
+            {
+                Selects = SurveyResultSelect.Id | SurveyResultSelect.Store | SurveyResultSelect.AppUser | SurveyResultSelect.StoreScouting,
+                Skip = 0,
+                Take = int.MaxValue,
+                OrderBy = SurveyResultOrder.Time,
+                OrderType = OrderType.ASC
+            });
+
+            Survey_AnswerStatisticsDTO Survey_AnswerStatisticsDTO = new Survey_AnswerStatisticsDTO();
+            Survey_AnswerStatisticsDTO.StoreCounter = SurveyResults.Where(s => s.StoreId.HasValue).Count();
+            Survey_AnswerStatisticsDTO.StoreScoutingCounter = SurveyResults.Where(s => s.StoreScoutingId.HasValue).Count();
+            Survey_AnswerStatisticsDTO.OtherCounter = SurveyResults.Where(s => !s.StoreId.HasValue && !s.StoreScoutingId.HasValue).Count();
+
+            Survey_AnswerStatisticsDTO.StoreResults = SurveyResults.Where(s => s.StoreId.HasValue).Select(x => new Survey_StoreResultStatisticsDTO
+            {
+                OrganizationName = x.AppUser.Organization.Name,
+                StoreCode = x.Store.Code,
+                StoreName = x.Store.Name,
+            }).ToList();
+
+            Survey_AnswerStatisticsDTO.StoreScoutingResults = SurveyResults.Where(s => s.StoreScoutingId.HasValue).Select(x => new Survey_StoreScoutingResultStatisticsDTO
+            {
+                OrganizationName = x.AppUser.Organization.Name,
+                StoreScoutingCode = x.StoreScouting.Code,
+                StoreScoutingName = x.StoreScouting.Name,
+            }).ToList();
+
+            Survey_AnswerStatisticsDTO.OtherResults = SurveyResults.Where(s => !s.StoreId.HasValue && !s.StoreScoutingId.HasValue).Select(x => new Survey_OtherStatisticsDTO
+            {
+                DisplayName = x.AppUser.DisplayName,
+                Address = x.AppUser.Address,
+                Phone = x.AppUser.Phone,
+                Email = x.AppUser.Email,
+            }).ToList();
+
+            return Survey_AnswerStatisticsDTO;
         }
 
         [Route(SurveyRoute.Export), HttpPost]

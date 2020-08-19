@@ -72,5 +72,7 @@ namespace DMS.Entities
         AppUser = E._2,
         Store = E._3,
         Time = E._4,
+        Content = E._5,
+        StoreScouting = E._6,
     }
 }
