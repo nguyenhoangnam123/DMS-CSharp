@@ -19,6 +19,10 @@ using DMS.Services.MKpiCriteriaGeneral;
 using DMS.Services.MKpiPeriod;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
+using DMS.Enums;
+using System.Dynamic;
+using NGS.Templater;
+using DMS.Services.MKpiGeneralContent;
 
 namespace DMS.Rpc.kpi_general
 {
@@ -30,6 +34,7 @@ namespace DMS.Rpc.kpi_general
         private IStatusService StatusService;
         private IKpiCriteriaGeneralService KpiCriteriaGeneralService;
         private IKpiGeneralService KpiGeneralService;
+        private IKpiGeneralContentService KpiGeneralContentService;
         private IKpiPeriodService KpiPeriodService;
         private ICurrentContext CurrentContext;
         public KpiGeneralController(
@@ -39,6 +44,7 @@ namespace DMS.Rpc.kpi_general
             IStatusService StatusService,
             IKpiCriteriaGeneralService KpiCriteriaGeneralService,
             IKpiGeneralService KpiGeneralService,
+            IKpiGeneralContentService KpiGeneralContentService,
             IKpiPeriodService KpiPeriodService,
             ICurrentContext CurrentContext
         )
@@ -49,6 +55,7 @@ namespace DMS.Rpc.kpi_general
             this.StatusService = StatusService;
             this.KpiCriteriaGeneralService = KpiCriteriaGeneralService;
             this.KpiGeneralService = KpiGeneralService;
+            this.KpiGeneralContentService = KpiGeneralContentService;
             this.KpiPeriodService = KpiPeriodService;
             this.CurrentContext = CurrentContext;
         }
@@ -66,7 +73,7 @@ namespace DMS.Rpc.kpi_general
         }
 
         [Route(KpiGeneralRoute.List), HttpPost]
-        public async Task<ActionResult<List<KpiGeneral_KpiGeneralDTO>>> List([FromBody] KpiGeneral_KpiGeneralFilterDTO KpiGeneral_KpiGeneralFilterDTO)
+        public async Task<List<KpiGeneral_KpiGeneralDTO>> List([FromBody] KpiGeneral_KpiGeneralFilterDTO KpiGeneral_KpiGeneralFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -362,239 +369,284 @@ namespace DMS.Rpc.kpi_general
         }
 
         [Route(KpiGeneralRoute.Export), HttpPost]
-        public async Task<FileResult> Export([FromBody] KpiGeneral_KpiGeneralFilterDTO KpiGeneral_KpiGeneralFilterDTO)
+        public async Task<ActionResult> Export([FromBody] KpiGeneral_KpiGeneralFilterDTO KpiGeneral_KpiGeneralFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            if (KpiGeneral_KpiGeneralFilterDTO.KpiYearId.Equal.HasValue == false)
+                return BadRequest("Chưa chọn năm Kpi");
+
+            long KpiYearId = KpiGeneral_KpiGeneralFilterDTO.KpiYearId.Equal.Value;
+            var KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();
+
+            KpiGeneral_KpiGeneralFilterDTO.Skip = 0;
+            KpiGeneral_KpiGeneralFilterDTO.Take = int.MaxValue;
+            List<KpiGeneral_KpiGeneralDTO> KpiGeneral_KpiGeneralDTOs = await List(KpiGeneral_KpiGeneralFilterDTO);
+            var KpiGeneralIds = KpiGeneral_KpiGeneralDTOs.Select(x => x.Id).ToList();
+            List<KpiGeneralContent> KpiGeneralContents = await KpiGeneralContentService.List( new KpiGeneralContentFilter
             {
-                #region KpiGeneral
-                var KpiGeneralFilter = ConvertFilterDTOToFilterEntity(KpiGeneral_KpiGeneralFilterDTO);
-                KpiGeneralFilter.Skip = 0;
-                KpiGeneralFilter.Take = int.MaxValue;
-                KpiGeneralFilter = await KpiGeneralService.ToFilter(KpiGeneralFilter);
-                List<KpiGeneral> KpiGenerals = await KpiGeneralService.List(KpiGeneralFilter);
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiGeneralContentSelect.ALL,
+                KpiGeneralId = new IdFilter { In = KpiGeneralIds },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            });
+            List<KpiGeneral_KpiGeneralContentDTO> KpiGeneral_KpiGeneralContentDTOs = KpiGeneralContents
+                .Select(x => new KpiGeneral_KpiGeneralContentDTO(x)).ToList();
+            List<KpiGeneral_ExportDTO> KpiGeneral_ExportDTOs = new List<KpiGeneral_ExportDTO>();
+            foreach (var KpiGeneral in KpiGeneral_KpiGeneralDTOs)
+            {
+                KpiGeneral_ExportDTO KpiGeneral_ExportDTO = new KpiGeneral_ExportDTO();
+                KpiGeneral_ExportDTO.Username = KpiGeneral.Employee.Username;
+                KpiGeneral_ExportDTO.DisplayName = KpiGeneral.Employee.DisplayName;
 
-                var KpiGeneralHeaders = new List<string[]>()
+                #region Số lần viếng thăm đại lý
+                var NumberOfStoreVisitsContent = KpiGeneral_KpiGeneralContentDTOs
+                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id)
+                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                    .FirstOrDefault();
+                KpiGeneral_ExportDTO.NumberOfStoreVisits = new KpiGeneral_ExportCriterialDTO
                 {
-                    new string[] {
-                        "Id",
-                        "OrganizationId",
-                        "EmployeeId",
-                        "KpiYearId",
-                        "StatusId",
-                        "CreatorId",
-                    }
+                    Id = KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id,
+                    Name = KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Name
                 };
-                List<object[]> KpiGeneralData = new List<object[]>();
-                for (int i = 0; i < KpiGenerals.Count; i++)
+                if(NumberOfStoreVisitsContent != null)
                 {
-                    var KpiGeneral = KpiGenerals[i];
-                    KpiGeneralData.Add(new Object[]
-                    {
-                        KpiGeneral.Id,
-                        KpiGeneral.OrganizationId,
-                        KpiGeneral.EmployeeId,
-                        KpiGeneral.KpiYearId,
-                        KpiGeneral.StatusId,
-                        KpiGeneral.CreatorId,
-                    });
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.M1Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.M2Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.M3Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.M4Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.M5Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.M6Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.M7Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.M8Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.M9Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.M10Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.M11Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.M12Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.Q1Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.Q2Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.Q3Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.Q4Value = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                    KpiGeneral_ExportDTO.NumberOfStoreVisits.YValue = NumberOfStoreVisitsContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
                 }
-                excel.GenerateWorksheet("KpiGeneral", KpiGeneralHeaders, KpiGeneralData);
                 #endregion
 
-                #region AppUser
-                var AppUserFilter = new AppUserFilter();
-                AppUserFilter.Selects = AppUserSelect.ALL;
-                AppUserFilter.OrderBy = AppUserOrder.Id;
-                AppUserFilter.OrderType = OrderType.ASC;
-                AppUserFilter.Skip = 0;
-                AppUserFilter.Take = int.MaxValue;
-                List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-
-                var AppUserHeaders = new List<string[]>()
+                #region Số đại lý tạo mới
+                var NewStoresCreatedContent = KpiGeneral_KpiGeneralContentDTOs
+                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id)
+                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                    .FirstOrDefault();
+                KpiGeneral_ExportDTO.NewStoresCreated = new KpiGeneral_ExportCriterialDTO
                 {
-                    new string[] {
-                        "Id",
-                        "Username",
-                        "DisplayName",
-                        "Address",
-                        "Email",
-                        "Phone",
-                        "PositionId",
-                        "Department",
-                        "OrganizationId",
-                        "StatusId",
-                        "Avatar",
-                        "ProvinceId",
-                        "SexId",
-                        "Birthday",
-                    }
+                    Id = KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id,
+                    Name = KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Name
                 };
-                List<object[]> AppUserData = new List<object[]>();
-                for (int i = 0; i < AppUsers.Count; i++)
+                if(NewStoresCreatedContent != null)
                 {
-                    var AppUser = AppUsers[i];
-                    AppUserData.Add(new Object[]
-                    {
-                        AppUser.Id,
-                        AppUser.Username,
-                        AppUser.DisplayName,
-                        AppUser.Address,
-                        AppUser.Email,
-                        AppUser.Phone,
-                        AppUser.PositionId,
-                        AppUser.Department,
-                        AppUser.OrganizationId,
-                        AppUser.StatusId,
-                        AppUser.Avatar,
-                        AppUser.ProvinceId,
-                        AppUser.SexId,
-                        AppUser.Birthday,
-                    });
+                    KpiGeneral_ExportDTO.NewStoresCreated.M1Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.M2Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.M3Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.M4Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.M5Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.M6Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.M7Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.M8Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.M9Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.M10Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.M11Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.M12Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.Q1Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.Q2Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.Q3Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.Q4Value = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                    KpiGeneral_ExportDTO.NewStoresCreated.YValue = NewStoresCreatedContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
                 }
-                excel.GenerateWorksheet("AppUser", AppUserHeaders, AppUserData);
-                #endregion
-                #region KpiYear
-                var KpiYearFilter = new KpiYearFilter();
-                KpiYearFilter.Selects = KpiYearSelect.ALL;
-                KpiYearFilter.OrderBy = KpiYearOrder.Id;
-                KpiYearFilter.OrderType = OrderType.ASC;
-                KpiYearFilter.Skip = 0;
-                KpiYearFilter.Take = int.MaxValue;
-                List<KpiYear> KpiYears = await KpiYearService.List(KpiYearFilter);
-
-                var KpiYearHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> KpiYearData = new List<object[]>();
-                for (int i = 0; i < KpiYears.Count; i++)
-                {
-                    var KpiYear = KpiYears[i];
-                    KpiYearData.Add(new Object[]
-                    {
-                        KpiYear.Id,
-                        KpiYear.Code,
-                        KpiYear.Name,
-                    });
-                }
-                excel.GenerateWorksheet("KpiYear", KpiYearHeaders, KpiYearData);
-                #endregion
-                #region Organization
-                var OrganizationFilter = new OrganizationFilter();
-                OrganizationFilter.Selects = OrganizationSelect.ALL;
-                OrganizationFilter.OrderBy = OrganizationOrder.Id;
-                OrganizationFilter.OrderType = OrderType.ASC;
-                OrganizationFilter.Skip = 0;
-                OrganizationFilter.Take = int.MaxValue;
-                List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-
-                var OrganizationHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                        "ParentId",
-                        "Path",
-                        "Level",
-                        "StatusId",
-                        "Phone",
-                        "Email",
-                        "Address",
-                    }
-                };
-                List<object[]> OrganizationData = new List<object[]>();
-                for (int i = 0; i < Organizations.Count; i++)
-                {
-                    var Organization = Organizations[i];
-                    OrganizationData.Add(new Object[]
-                    {
-                        Organization.Id,
-                        Organization.Code,
-                        Organization.Name,
-                        Organization.ParentId,
-                        Organization.Path,
-                        Organization.Level,
-                        Organization.StatusId,
-                        Organization.Phone,
-                        Organization.Email,
-                        Organization.Address,
-                    });
-                }
-                excel.GenerateWorksheet("Organization", OrganizationHeaders, OrganizationData);
-                #endregion
-                #region Status
-                var StatusFilter = new StatusFilter();
-                StatusFilter.Selects = StatusSelect.ALL;
-                StatusFilter.OrderBy = StatusOrder.Id;
-                StatusFilter.OrderType = OrderType.ASC;
-                StatusFilter.Skip = 0;
-                StatusFilter.Take = int.MaxValue;
-                List<Status> Statuses = await StatusService.List(StatusFilter);
-
-                var StatusHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> StatusData = new List<object[]>();
-                for (int i = 0; i < Statuses.Count; i++)
-                {
-                    var Status = Statuses[i];
-                    StatusData.Add(new Object[]
-                    {
-                        Status.Id,
-                        Status.Code,
-                        Status.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
                 #endregion
 
-                #region KpiCriteriaGeneral
-                var KpiCriteriaGeneralFilter = new KpiCriteriaGeneralFilter();
-                KpiCriteriaGeneralFilter.Selects = KpiCriteriaGeneralSelect.ALL;
-                KpiCriteriaGeneralFilter.OrderBy = KpiCriteriaGeneralOrder.Id;
-                KpiCriteriaGeneralFilter.OrderType = OrderType.ASC;
-                KpiCriteriaGeneralFilter.Skip = 0;
-                KpiCriteriaGeneralFilter.Take = int.MaxValue;
-                List<KpiCriteriaGeneral> KpiCriteriaGenerals = await KpiCriteriaGeneralService.List(KpiCriteriaGeneralFilter);
-
-                var KpiCriteriaGeneralHeaders = new List<string[]>()
+                #region Số đại lý viếng thăm
+                var StoresVisitedContent = KpiGeneral_KpiGeneralContentDTOs
+                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.STORE_VISITED.Id)
+                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                    .FirstOrDefault();
+                KpiGeneral_ExportDTO.StoresVisited = new KpiGeneral_ExportCriterialDTO
                 {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
+                    Id = KpiCriteriaGeneralEnum.STORE_VISITED.Id,
+                    Name = KpiCriteriaGeneralEnum.STORE_VISITED.Name
                 };
-                List<object[]> KpiCriteriaGeneralData = new List<object[]>();
-                for (int i = 0; i < KpiCriteriaGenerals.Count; i++)
+                if(StoresVisitedContent != null)
                 {
-                    var KpiCriteriaGeneral = KpiCriteriaGenerals[i];
-                    KpiCriteriaGeneralData.Add(new Object[]
-                    {
-                        KpiCriteriaGeneral.Id,
-                        KpiCriteriaGeneral.Code,
-                        KpiCriteriaGeneral.Name,
-                    });
+                    KpiGeneral_ExportDTO.StoresVisited.M1Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.M2Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.M3Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.M4Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.M5Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.M6Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.M7Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.M8Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.M9Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.M10Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.M11Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.M12Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.Q1Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.Q2Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.Q3Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.Q4Value = StoresVisitedContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                    KpiGeneral_ExportDTO.StoresVisited.YValue = StoresVisitedContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
                 }
-                excel.GenerateWorksheet("KpiCriteriaGeneral", KpiCriteriaGeneralHeaders, KpiCriteriaGeneralData);
                 #endregion
-                excel.Save();
+
+                #region SKU/ Đơn hàng gián tiếp
+                var SKUIndirectOrderContent = KpiGeneral_KpiGeneralContentDTOs
+                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id)
+                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                    .FirstOrDefault();
+                KpiGeneral_ExportDTO.SKUIndirectOrder = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id,
+                    Name = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Name
+                };
+                if(SKUIndirectOrderContent != null)
+                {
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.M1Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.M2Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.M3Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.M4Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.M5Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.M6Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.M7Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.M8Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.M9Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.M10Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.M11Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.M12Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.Q1Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.Q2Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.Q3Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.Q4Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                    KpiGeneral_ExportDTO.SKUIndirectOrder.YValue = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
+                }
+                #endregion
+
+                #region Doanh thu đơn hàng gián tiếp
+                var TotalIndirectSalesAmountContent = KpiGeneral_KpiGeneralContentDTOs
+                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
+                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                    .FirstOrDefault();
+                KpiGeneral_ExportDTO.TotalIndirectSalesAmount = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id,
+                    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Name
+                };
+                if(TotalIndirectSalesAmountContent != null)
+                {
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.M1Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.M2Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.M3Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.M4Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.M5Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.M6Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.M7Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.M8Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.M9Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.M10Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.M11Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.M12Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.Q1Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.Q2Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.Q3Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.Q4Value = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                     KpiGeneral_ExportDTO.TotalIndirectSalesAmount.YValue = TotalIndirectSalesAmountContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
+                }
+                #endregion
+
+                #region Tổng sản lượng đơn hàng gián tiếp
+                var TotalIndirectQuantityContent = KpiGeneral_KpiGeneralContentDTOs
+                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id)
+                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                    .FirstOrDefault();
+                KpiGeneral_ExportDTO.TotalIndirectQuantity = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id,
+                    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Name
+                };
+                if(TotalIndirectQuantityContent != null)
+                {
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M1Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M2Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M3Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M4Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M5Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M6Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M7Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M8Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M9Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M10Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M11Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M12Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.Q1Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.Q2Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.Q3Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.Q4Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectQuantity.YValue = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
+                }
+                #endregion
+
+                #region Số đơn hàng gián tiếp
+                var TotalIndirectOrdersContent = KpiGeneral_KpiGeneralContentDTOs
+                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id)
+                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                    .FirstOrDefault();
+                KpiGeneral_ExportDTO.TotalIndirectOrders = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id,
+                    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Name
+                };
+                if(TotalIndirectOrdersContent != null)
+                {
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.M1Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.M2Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.M3Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.M4Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.M5Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.M6Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.M7Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.M8Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.M9Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.M10Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.M11Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.M12Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.Q1Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.Q2Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.Q3Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.Q4Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                    KpiGeneral_ExportDTO.TotalIndirectOrders.YValue = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
+                }
+                #endregion
+                KpiGeneral_ExportDTOs.Add(KpiGeneral_ExportDTO);
             }
-            return File(memoryStream.ToArray(), "application/octet-stream", "KpiGeneral.xlsx");
+
+            string path = "Templates/Kpi_General_Export.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.KpiYear = KpiYear.Name;
+            Data.KpiGenerals = KpiGeneral_ExportDTOs;
+            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "KpiGenerals.xlsx");
         }
 
         [Route(KpiGeneralRoute.ExportTemplate), HttpPost]
@@ -603,214 +655,34 @@ namespace DMS.Rpc.kpi_general
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            List<KpiCriteriaGeneral> KpiCriteriaGenerals = await KpiCriteriaGeneralService.List(new KpiCriteriaGeneralFilter
             {
-                #region KpiGeneral
-                var KpiGeneralHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "OrganizationId",
-                        "EmployeeId",
-                        "KpiYearId",
-                        "StatusId",
-                        "CreatorId",
-                    }
-                };
-                List<object[]> KpiGeneralData = new List<object[]>();
-                excel.GenerateWorksheet("KpiGeneral", KpiGeneralHeaders, KpiGeneralData);
-                #endregion
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiCriteriaGeneralSelect.Code | KpiCriteriaGeneralSelect.Name,
+                OrderBy = KpiCriteriaGeneralOrder.Id,
+                OrderType = OrderType.ASC
+            });
 
-                #region AppUser
-                var AppUserFilter = new AppUserFilter();
-                AppUserFilter.Selects = AppUserSelect.ALL;
-                AppUserFilter.OrderBy = AppUserOrder.Id;
-                AppUserFilter.OrderType = OrderType.ASC;
-                AppUserFilter.Skip = 0;
-                AppUserFilter.Take = int.MaxValue;
-                List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-
-                var AppUserHeaders = new List<string[]>()
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            MemoryStream MemoryStream = new MemoryStream();
+            string tempPath = "Templates/Kpi_General.xlsx";
+            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            {
+                #region sheet KpiCriteriaGeneral 
+                var worksheet_KpiCriteriaGeneral = xlPackage.Workbook.Worksheets["KpiCriteriaGeneral"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_KpiCriteriaGeneral = 2;
+                int numberCell_KpiCriteriaGenerals = 1;
+                for (var i = 0; i < KpiCriteriaGenerals.Count; i++)
                 {
-                    new string[] {
-                        "Id",
-                        "Username",
-                        "DisplayName",
-                        "Address",
-                        "Email",
-                        "Phone",
-                        "PositionId",
-                        "Department",
-                        "OrganizationId",
-                        "StatusId",
-                        "Avatar",
-                        "ProvinceId",
-                        "SexId",
-                        "Birthday",
-                    }
-                };
-                List<object[]> AppUserData = new List<object[]>();
-                for (int i = 0; i < AppUsers.Count; i++)
-                {
-                    var AppUser = AppUsers[i];
-                    AppUserData.Add(new Object[]
-                    {
-                        AppUser.Id,
-                        AppUser.Username,
-                        AppUser.DisplayName,
-                        AppUser.Address,
-                        AppUser.Email,
-                        AppUser.Phone,
-                        AppUser.PositionId,
-                        AppUser.Department,
-                        AppUser.OrganizationId,
-                        AppUser.StatusId,
-                        AppUser.Avatar,
-                        AppUser.ProvinceId,
-                        AppUser.SexId,
-                        AppUser.Birthday,
-                    });
+                    KpiCriteriaGeneral KpiCriteriaGeneral = KpiCriteriaGenerals[i];
+                    worksheet_KpiCriteriaGeneral.Cells[startRow_KpiCriteriaGeneral + i, numberCell_KpiCriteriaGenerals].Value = KpiCriteriaGeneral.Name;
                 }
-                excel.GenerateWorksheet("AppUser", AppUserHeaders, AppUserData);
                 #endregion
-                #region KpiYear
-                var KpiYearFilter = new KpiYearFilter();
-                KpiYearFilter.Selects = KpiYearSelect.ALL;
-                KpiYearFilter.OrderBy = KpiYearOrder.Id;
-                KpiYearFilter.OrderType = OrderType.ASC;
-                KpiYearFilter.Skip = 0;
-                KpiYearFilter.Take = int.MaxValue;
-                List<KpiYear> KpiYears = await KpiYearService.List(KpiYearFilter);
-
-                var KpiYearHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> KpiYearData = new List<object[]>();
-                for (int i = 0; i < KpiYears.Count; i++)
-                {
-                    var KpiYear = KpiYears[i];
-                    KpiYearData.Add(new Object[]
-                    {
-                        KpiYear.Id,
-                        KpiYear.Code,
-                        KpiYear.Name,
-                    });
-                }
-                excel.GenerateWorksheet("KpiYear", KpiYearHeaders, KpiYearData);
-                #endregion
-                #region Organization
-                var OrganizationFilter = new OrganizationFilter();
-                OrganizationFilter.Selects = OrganizationSelect.ALL;
-                OrganizationFilter.OrderBy = OrganizationOrder.Id;
-                OrganizationFilter.OrderType = OrderType.ASC;
-                OrganizationFilter.Skip = 0;
-                OrganizationFilter.Take = int.MaxValue;
-                List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-
-                var OrganizationHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                        "ParentId",
-                        "Path",
-                        "Level",
-                        "StatusId",
-                        "Phone",
-                        "Email",
-                        "Address",
-                    }
-                };
-                List<object[]> OrganizationData = new List<object[]>();
-                for (int i = 0; i < Organizations.Count; i++)
-                {
-                    var Organization = Organizations[i];
-                    OrganizationData.Add(new Object[]
-                    {
-                        Organization.Id,
-                        Organization.Code,
-                        Organization.Name,
-                        Organization.ParentId,
-                        Organization.Path,
-                        Organization.Level,
-                        Organization.StatusId,
-                        Organization.Phone,
-                        Organization.Email,
-                        Organization.Address,
-                    });
-                }
-                excel.GenerateWorksheet("Organization", OrganizationHeaders, OrganizationData);
-                #endregion
-                #region Status
-                var StatusFilter = new StatusFilter();
-                StatusFilter.Selects = StatusSelect.ALL;
-                StatusFilter.OrderBy = StatusOrder.Id;
-                StatusFilter.OrderType = OrderType.ASC;
-                StatusFilter.Skip = 0;
-                StatusFilter.Take = int.MaxValue;
-                List<Status> Statuses = await StatusService.List(StatusFilter);
-
-                var StatusHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> StatusData = new List<object[]>();
-                for (int i = 0; i < Statuses.Count; i++)
-                {
-                    var Status = Statuses[i];
-                    StatusData.Add(new Object[]
-                    {
-                        Status.Id,
-                        Status.Code,
-                        Status.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
-                #endregion
-                #region KpiCriteriaGeneral
-                var KpiCriteriaGeneralFilter = new KpiCriteriaGeneralFilter();
-                KpiCriteriaGeneralFilter.Selects = KpiCriteriaGeneralSelect.ALL;
-                KpiCriteriaGeneralFilter.OrderBy = KpiCriteriaGeneralOrder.Id;
-                KpiCriteriaGeneralFilter.OrderType = OrderType.ASC;
-                KpiCriteriaGeneralFilter.Skip = 0;
-                KpiCriteriaGeneralFilter.Take = int.MaxValue;
-                List<KpiCriteriaGeneral> KpiCriteriaGenerals = await KpiCriteriaGeneralService.List(KpiCriteriaGeneralFilter);
-
-                var KpiCriteriaGeneralHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> KpiCriteriaGeneralData = new List<object[]>();
-                for (int i = 0; i < KpiCriteriaGenerals.Count; i++)
-                {
-                    var KpiCriteriaGeneral = KpiCriteriaGenerals[i];
-                    KpiCriteriaGeneralData.Add(new Object[]
-                    {
-                        KpiCriteriaGeneral.Id,
-                        KpiCriteriaGeneral.Code,
-                        KpiCriteriaGeneral.Name,
-                    });
-                }
-                excel.GenerateWorksheet("KpiCriteriaGeneral", KpiCriteriaGeneralHeaders, KpiCriteriaGeneralData);
-                #endregion
-                excel.Save();
+                xlPackage.SaveAs(MemoryStream);
             }
-            return File(memoryStream.ToArray(), "application/octet-stream", "KpiGeneral.xlsx");
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Template_Kpi_General.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)

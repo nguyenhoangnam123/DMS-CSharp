@@ -37,6 +37,7 @@ namespace DMS.Repositories
         IKpiCriteriaItemRepository KpiCriteriaItemRepository { get; }
         IKpiCriteriaTotalRepository KpiCriteriaTotalRepository { get; }
         IKpiGeneralRepository KpiGeneralRepository { get; }
+        IKpiGeneralContentRepository KpiGeneralContentRepository { get; }
         IKpiItemRepository KpiItemRepository { get; }
         IKpiPeriodRepository KpiPeriodRepository { get; }
         IKpiYearRepository KpiYearRepository { get; }
@@ -136,6 +137,7 @@ namespace DMS.Repositories
         public IKpiCriteriaItemRepository KpiCriteriaItemRepository { get; private set; }
         public IKpiCriteriaTotalRepository KpiCriteriaTotalRepository { get; private set; }
         public IKpiGeneralRepository KpiGeneralRepository { get; private set; }
+        public IKpiGeneralContentRepository KpiGeneralContentRepository { get; private set; }
         public IKpiItemRepository KpiItemRepository { get; private set; }
         public IKpiPeriodRepository KpiPeriodRepository { get; private set; }
         public IKpiYearRepository KpiYearRepository { get; private set; }
@@ -232,6 +234,7 @@ namespace DMS.Repositories
             KpiCriteriaItemRepository = new KpiCriteriaItemRepository(DataContext);
             KpiCriteriaTotalRepository = new KpiCriteriaTotalRepository(DataContext);
             KpiGeneralRepository = new KpiGeneralRepository(DataContext);
+            KpiGeneralContentRepository = new KpiGeneralContentRepository(DataContext);
             KpiItemRepository = new KpiItemRepository(DataContext);
             KpiPeriodRepository = new KpiPeriodRepository(DataContext);
             KpiYearRepository = new KpiYearRepository(DataContext);
