@@ -105,6 +105,15 @@ namespace DMS.Repositories
                     Id = q.AppUser.Id,
                     Username = q.AppUser.Username,
                     DisplayName = q.AppUser.DisplayName,
+                    Address = q.AppUser.Address,
+                    Email = q.AppUser.Email,
+                    Phone = q.AppUser.Phone,
+                    Organization = q.AppUser.Organization == null ? null : new Organization
+                    {
+                        Id = q.AppUser.Organization.Id,
+                        Code = q.AppUser.Organization.Code,
+                        Name = q.AppUser.Organization.Name,
+                    },
                 } : null,
                 Store = filter.Selects.Contains(SurveyResultSelect.Store) && q.Store != null ? new Store
                 {
@@ -112,33 +121,42 @@ namespace DMS.Repositories
                     Code = q.Store.Code,
                     Name = q.Store.Name,
                 } : null,
+                StoreScouting = filter.Selects.Contains(SurveyResultSelect.StoreScouting) && q.StoreScouting != null ? new StoreScouting
+                {
+                    Id = q.StoreScouting.Id,
+                    Code = q.StoreScouting.Code,
+                    Name = q.StoreScouting.Name,
+                } : null,
             }).ToListAsync();
 
-            var SurveyResultIds = SurveyResults.Select(x => x.Id).ToList();
-            var SurveyResultTexts = await DataContext.SurveyResultText.Where(x => SurveyResultIds.Contains(x.SurveyResultId)).ToListAsync();
-            var SurveyResultSingles = await DataContext.SurveyResultSingle.Where(x => SurveyResultIds.Contains(x.SurveyResultId)).ToListAsync();
-            var SurveyResultCells = await DataContext.SurveyResultCell.Where(x => SurveyResultIds.Contains(x.SurveyResultId)).ToListAsync();
-            foreach (var SurveyResult in SurveyResults)
+            if (filter.Selects.Contains(SurveyResultSelect.Content))
             {
-                SurveyResult.SurveyResultTexts = SurveyResultTexts.Where(x => x.SurveyResultId == SurveyResult.Id).Select(x => new SurveyResultText
+                var SurveyResultIds = SurveyResults.Select(x => x.Id).ToList();
+                var SurveyResultTexts = await DataContext.SurveyResultText.Where(x => SurveyResultIds.Contains(x.SurveyResultId)).ToListAsync();
+                var SurveyResultSingles = await DataContext.SurveyResultSingle.Where(x => SurveyResultIds.Contains(x.SurveyResultId)).ToListAsync();
+                var SurveyResultCells = await DataContext.SurveyResultCell.Where(x => SurveyResultIds.Contains(x.SurveyResultId)).ToListAsync();
+                foreach (var SurveyResult in SurveyResults)
                 {
-                    SurveyQuestionId = x.SurveyQuestionId,
-                    SurveyResultId = x.SurveyResultId,
-                    Content = x.Content,
-                }).ToList();
-                SurveyResult.SurveyResultSingles = SurveyResultSingles.Where(x => x.SurveyResultId == SurveyResult.Id).Select(x => new SurveyResultSingle
-                {
-                    SurveyOptionId = x.SurveyOptionId,
-                    SurveyQuestionId = x.SurveyQuestionId,
-                    SurveyResultId = x.SurveyResultId,
-                }).ToList();
-                SurveyResult.SurveyResultCells = SurveyResultCells.Where(x => x.SurveyResultId == SurveyResult.Id).Select(x => new SurveyResultCell 
-                {
-                    ColumnOptionId = x.ColumnOptionId,
-                    RowOptionId = x.RowOptionId,
-                    SurveyQuestionId = x.SurveyQuestionId,
-                    SurveyResultId = x.SurveyResultId,
-                }).ToList();
+                    SurveyResult.SurveyResultTexts = SurveyResultTexts.Where(x => x.SurveyResultId == SurveyResult.Id).Select(x => new SurveyResultText
+                    {
+                        SurveyQuestionId = x.SurveyQuestionId,
+                        SurveyResultId = x.SurveyResultId,
+                        Content = x.Content,
+                    }).ToList();
+                    SurveyResult.SurveyResultSingles = SurveyResultSingles.Where(x => x.SurveyResultId == SurveyResult.Id).Select(x => new SurveyResultSingle
+                    {
+                        SurveyOptionId = x.SurveyOptionId,
+                        SurveyQuestionId = x.SurveyQuestionId,
+                        SurveyResultId = x.SurveyResultId,
+                    }).ToList();
+                    SurveyResult.SurveyResultCells = SurveyResultCells.Where(x => x.SurveyResultId == SurveyResult.Id).Select(x => new SurveyResultCell
+                    {
+                        ColumnOptionId = x.ColumnOptionId,
+                        RowOptionId = x.RowOptionId,
+                        SurveyQuestionId = x.SurveyQuestionId,
+                        SurveyResultId = x.SurveyResultId,
+                    }).ToList();
+                }
             }
             return SurveyResults;
         }

@@ -9,6 +9,8 @@ namespace Common
         int TimeZone { get; set; }
         string Language { get; set; }
         string Token { get; set; }
+        decimal? Latitude { get; set; }
+        decimal? Longitude { get; set; }
         List<long> RoleIds { get; set; }
         Dictionary<long, List<FilterPermissionDefinition>> Filters { get; set; }
     }
@@ -21,5 +23,7 @@ namespace Common
         public string Token { get; set; }
         public List<long> RoleIds { get; set; }
         public Dictionary<long, List<FilterPermissionDefinition>> Filters { get; set; }
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
     }
 }

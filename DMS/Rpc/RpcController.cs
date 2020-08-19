@@ -528,10 +528,16 @@ namespace DMS.Rpc
             string url = HttpContext.Request.Path.Value.ToLower().Substring(1);
             string TimeZone = HttpContext.Request.Headers["X-TimeZone"];
             string Language = HttpContext.Request.Headers["X-Language"];
+            string Latitude = HttpContext.Request.Headers["X-Latitude"];
+            string Longitude = HttpContext.Request.Headers["X-Longitude"];
             CurrentContext.Token = HttpContext.Request.Cookies["Token"];
             CurrentContext.UserId = UserId;
             CurrentContext.TimeZone = int.TryParse(TimeZone, out int t) ? t : 0;
             CurrentContext.Language = Language ?? "vi";
+            if (decimal.TryParse(Latitude, out decimal lat))
+                CurrentContext.Latitude = lat;
+            if (decimal.TryParse(Longitude, out decimal lon))
+                CurrentContext.Longitude = lon;
             context.Succeed(requirement);
         }
     }
