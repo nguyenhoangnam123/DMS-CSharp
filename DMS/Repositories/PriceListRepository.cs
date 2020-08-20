@@ -426,7 +426,6 @@ namespace DMS.Repositories
                         PriceListId = x.PriceListId,
                         ModifierId = x.ModifierId,
                         UpdatedAt = x.UpdatedAt,
-                        Source = x.Source,
                         NewPrice = x.NewPrice,
                         OldPrice = x.OldPrice,
                         Modifier = x.Modifier == null ? null : new AppUser
@@ -566,7 +565,6 @@ namespace DMS.Repositories
                                         OldPrice = PriceListItemHistory.OldPrice,
                                         NewPrice = PriceListItemHistory.NewPrice,
                                         PriceListId = PriceList.Id,
-                                        Source = PriceListItemHistory.Source,
                                         UpdatedAt = StaticParams.DateTimeNow
                                     };
                                     PriceListItemHistoryDAOs.Add(PriceListItemHistoryDAO);

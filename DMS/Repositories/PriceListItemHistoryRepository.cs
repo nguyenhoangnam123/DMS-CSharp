@@ -47,8 +47,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.NewPrice, filter.NewPrice);
             if (filter.ModifierId != null)
                 query = query.Where(q => q.ModifierId, filter.ModifierId);
-            if (filter.Source != null)
-                query = query.Where(q => q.Source, filter.Source);
             query = OrFilter(query, filter);
             return query;
         }
@@ -73,8 +71,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.NewPrice, PriceListItemHistoryFilter.NewPrice);
                 if (PriceListItemHistoryFilter.ModifierId != null)
                     queryable = queryable.Where(q => q.ModifierId, PriceListItemHistoryFilter.ModifierId);
-                if (PriceListItemHistoryFilter.Source != null)
-                    queryable = queryable.Where(q => q.Source, PriceListItemHistoryFilter.Source);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -105,9 +101,6 @@ namespace DMS.Repositories
                         case PriceListItemHistoryOrder.Modifier:
                             query = query.OrderBy(q => q.ModifierId);
                             break;
-                        case PriceListItemHistoryOrder.Source:
-                            query = query.OrderBy(q => q.Source);
-                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -131,9 +124,6 @@ namespace DMS.Repositories
                         case PriceListItemHistoryOrder.Modifier:
                             query = query.OrderByDescending(q => q.ModifierId);
                             break;
-                        case PriceListItemHistoryOrder.Source:
-                            query = query.OrderByDescending(q => q.Source);
-                            break;
                     }
                     break;
             }
@@ -151,7 +141,6 @@ namespace DMS.Repositories
                 OldPrice = filter.Selects.Contains(PriceListItemHistorySelect.OldPrice) ? q.OldPrice : default(long),
                 NewPrice = filter.Selects.Contains(PriceListItemHistorySelect.NewPrice) ? q.NewPrice : default(long),
                 ModifierId = filter.Selects.Contains(PriceListItemHistorySelect.Modifier) ? q.ModifierId : default(long),
-                Source = filter.Selects.Contains(PriceListItemHistorySelect.Source) ? q.Source : default(string),
                 Item = filter.Selects.Contains(PriceListItemHistorySelect.Item) && q.Item != null ? new Item
                 {
                     Id = q.Item.Id,
@@ -229,7 +218,6 @@ namespace DMS.Repositories
                 OldPrice = x.OldPrice,
                 NewPrice = x.NewPrice,
                 ModifierId = x.ModifierId,
-                Source = x.Source,
                 Item = x.Item == null ? null : new Item
                 {
                     Id = x.Item.Id,
@@ -289,7 +277,6 @@ namespace DMS.Repositories
             PriceListItemHistoryDAO.OldPrice = PriceListItemHistory.OldPrice;
             PriceListItemHistoryDAO.NewPrice = PriceListItemHistory.NewPrice;
             PriceListItemHistoryDAO.ModifierId = PriceListItemHistory.ModifierId;
-            PriceListItemHistoryDAO.Source = PriceListItemHistory.Source;
             PriceListItemHistoryDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.PriceListItemHistory.Add(PriceListItemHistoryDAO);
             await DataContext.SaveChangesAsync();
@@ -309,7 +296,6 @@ namespace DMS.Repositories
             PriceListItemHistoryDAO.OldPrice = PriceListItemHistory.OldPrice;
             PriceListItemHistoryDAO.NewPrice = PriceListItemHistory.NewPrice;
             PriceListItemHistoryDAO.ModifierId = PriceListItemHistory.ModifierId;
-            PriceListItemHistoryDAO.Source = PriceListItemHistory.Source;
             PriceListItemHistoryDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(PriceListItemHistory);
@@ -334,7 +320,6 @@ namespace DMS.Repositories
                 PriceListItemHistoryDAO.OldPrice = PriceListItemHistory.OldPrice;
                 PriceListItemHistoryDAO.NewPrice = PriceListItemHistory.NewPrice;
                 PriceListItemHistoryDAO.ModifierId = PriceListItemHistory.ModifierId;
-                PriceListItemHistoryDAO.Source = PriceListItemHistory.Source;
                 PriceListItemHistoryDAO.UpdatedAt = StaticParams.DateTimeNow;
                 PriceListItemHistoryDAOs.Add(PriceListItemHistoryDAO);
             }

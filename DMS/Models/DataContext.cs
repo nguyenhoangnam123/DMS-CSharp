@@ -1885,10 +1885,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<PriceListItemHistoryDAO>(entity =>
             {
-                entity.Property(e => e.Source)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Item)
@@ -2661,15 +2657,15 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeliveryAddress).HasMaxLength(3000);
 
-                entity.Property(e => e.DeliveryLatitude).HasColumnType("decimal(18, 6)");
+                entity.Property(e => e.DeliveryLatitude).HasColumnType("decimal(18, 15)");
 
-                entity.Property(e => e.DeliveryLongitude).HasColumnType("decimal(18, 6)");
+                entity.Property(e => e.DeliveryLongitude).HasColumnType("decimal(18, 15)");
 
-                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 6)");
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 15)");
 
                 entity.Property(e => e.LegalEntity).HasMaxLength(500);
 
-                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 6)");
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 15)");
 
                 entity.Property(e => e.Name).HasMaxLength(500);
 
@@ -2749,15 +2745,15 @@ namespace DMS.Models
 
                 entity.Property(e => e.CheckOutAt).HasColumnType("datetime");
 
-                entity.Property(e => e.CheckOutLatitude).HasColumnType("decimal(18, 6)");
+                entity.Property(e => e.CheckOutLatitude).HasColumnType("decimal(18, 15)");
 
-                entity.Property(e => e.CheckOutLongitude).HasColumnType("decimal(18, 6)");
+                entity.Property(e => e.CheckOutLongitude).HasColumnType("decimal(18, 15)");
 
                 entity.Property(e => e.DeviceName).HasMaxLength(200);
 
-                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 6)");
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 15)");
 
-                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 6)");
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 15)");
 
                 entity.HasOne(d => d.SaleEmployee)
                     .WithMany(p => p.StoreCheckings)

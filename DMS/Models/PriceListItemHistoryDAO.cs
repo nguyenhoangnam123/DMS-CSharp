@@ -12,7 +12,6 @@ namespace DMS.Models
         public long NewPrice { get; set; }
         public long ModifierId { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public string Source { get; set; }
 
         public virtual ItemDAO Item { get; set; }
         public virtual AppUserDAO Modifier { get; set; }

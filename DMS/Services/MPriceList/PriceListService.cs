@@ -300,7 +300,6 @@ namespace DMS.Services.MPriceList
                             PriceListItemHistory.PriceListId = PriceList.Id;
                             PriceListItemHistory.OldPrice = PriceListItemMappingInDB.Price;
                             PriceListItemHistory.NewPrice = PriceListItemMapping.Price;
-                            PriceListItemHistory.Source = PriceList.Source;
                             PriceListItemHistory.ModifierId = CurrentContext.UserId;
                             PriceListItemMapping.PriceListItemHistories.Add(PriceListItemHistory);
                         }
