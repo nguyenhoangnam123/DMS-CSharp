@@ -1299,7 +1299,7 @@ namespace DMS.Rpc.store
 
 
         [Route(StoreRoute.SingleListOrganization), HttpPost]
-        public async Task<List<Store_OrganizationDTO>> SingleListOrganization([FromBody] Store_OrganizationFilterDTO Store_OrganizationFilterDTO)
+        public async Task<List<Store_OrganizationDTO>> SingleListOrganization()
         {
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
             OrganizationFilter.Skip = 0;

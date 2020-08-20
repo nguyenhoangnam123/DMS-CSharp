@@ -2,6 +2,7 @@
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
+using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
 using DMS.Services.MSurvey;
 using DMS.Services.MSurveyResult;
@@ -25,6 +26,7 @@ namespace DMS.Rpc.survey
         private ISurveyResultService SurveyResultService;
         private IAppUserService AppUserService;
         private IStatusService StatusService;
+        private IOrganizationService OrganizationService;
         private ICurrentContext CurrentContext;
         public SurveyController(
             ISurveyQuestionTypeService SurveyQuestionTypeService,
@@ -33,6 +35,7 @@ namespace DMS.Rpc.survey
             ISurveyResultService SurveyResultService,
             IAppUserService AppUserService,
             IStatusService StatusService,
+            IOrganizationService OrganizationService,
             ICurrentContext CurrentContext
         )
         {
@@ -42,6 +45,7 @@ namespace DMS.Rpc.survey
             this.SurveyResultService = SurveyResultService;
             this.AppUserService = AppUserService;
             this.StatusService = StatusService;
+            this.OrganizationService = OrganizationService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -517,6 +521,26 @@ namespace DMS.Rpc.survey
             List<Survey_SurveyOptionTypeDTO> Survey_SurveyOptionTypeDTOs = SurveyOptionTypes
                 .Select(x => new Survey_SurveyOptionTypeDTO(x)).ToList();
             return Survey_SurveyOptionTypeDTOs;
+        }
+
+        [Route(SurveyRoute.FilterListOrganization), HttpPost]
+        public async Task<List<Survey_OrganizationDTO>> FilterListOrganization()
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = int.MaxValue;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<Survey_OrganizationDTO> Survey_OrganizationDTOs = Organizations
+                .Select(x => new Survey_OrganizationDTO(x)).ToList();
+            return Survey_OrganizationDTOs;
         }
 
         [Route(SurveyRoute.SingleListSurveyQuestionType), HttpPost]

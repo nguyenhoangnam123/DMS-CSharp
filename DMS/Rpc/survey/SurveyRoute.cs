@@ -26,6 +26,7 @@ namespace DMS.Rpc.survey
         public const string FilterListStatus = Default + "/filter-list-status";
         public const string FilterListSurveyOptionType = Default + "/filter-list-survey-option-type";
         public const string FilterListSurveyQuestionType = Default + "/filter-list-survey-question-type";
+        public const string FilterListOrganization = Default + "/filter-list-organization";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListStatus = Default + "/single-list-status";
