@@ -989,7 +989,7 @@ namespace DMS.Rpc.kpi_general
         }
 
         [Route(KpiGeneralRoute.ExportTemplate), HttpPost]
-        public async Task<FileResult> ExportTemplate([FromBody] KpiGeneral_KpiGeneralFilterDTO KpiGeneral_KpiGeneralFilterDTO)
+        public async Task<FileResult> ExportTemplate()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -1009,7 +1009,7 @@ namespace DMS.Rpc.kpi_general
             using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
             {
                 #region sheet KpiCriteriaGeneral 
-                var worksheet_KpiCriteriaGeneral = xlPackage.Workbook.Worksheets["KpiCriteriaGeneral"];
+                var worksheet_KpiCriteriaGeneral = xlPackage.Workbook.Worksheets["Chi tieu"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_KpiCriteriaGeneral = 2;
                 int numberCell_KpiCriteriaGenerals = 1;
