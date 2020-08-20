@@ -407,23 +407,25 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                         x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.STORE_VISITED.Id)
                        .Select(x => x.Value).FirstOrDefault();
                 //thực hiện
-                var StoreIds = StoreCheckingDAOs
-                    .Where(sc => sc.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
-                    .Select(x => x.StoreId)
-                    .ToList();
-                SaleEmployeeDTO.StoreIds = new HashSet<long>();
-                foreach (var StoreId in StoreIds)
+                if (SaleEmployeeDTO.StoresVisitedPLanned.HasValue)
                 {
-                    SaleEmployeeDTO.StoreIds.Add(StoreId);
-                }
-                if (SaleEmployeeDTO.StoresVisitedPLanned == 0)
+                    var StoreIds = StoreCheckingDAOs
+                        .Where(sc => sc.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
+                        .Select(x => x.StoreId)
+                        .ToList();
                     SaleEmployeeDTO.StoreIds = new HashSet<long>();
-                //tỉ lệ
-                SaleEmployeeDTO.StoresVisitedRatio = SaleEmployeeDTO.StoresVisitedPLanned == null || SaleEmployeeDTO.StoresVisitedPLanned.Value == 0
-                    ? null
-                    : (decimal?)Math.Round((SaleEmployeeDTO.StoresVisited.Value / SaleEmployeeDTO.StoresVisitedPLanned.Value) * 100, 2);
-                #endregion
-
+                    foreach (var StoreId in StoreIds)
+                    {
+                        SaleEmployeeDTO.StoreIds.Add(StoreId);
+                    }
+                    if (SaleEmployeeDTO.StoresVisitedPLanned == 0)
+                        SaleEmployeeDTO.StoreIds = new HashSet<long>();
+                    //tỉ lệ
+                    SaleEmployeeDTO.StoresVisitedRatio = SaleEmployeeDTO.StoresVisitedPLanned == null || SaleEmployeeDTO.StoresVisitedPLanned.Value == 0
+                        ? null
+                        : (decimal?)Math.Round((SaleEmployeeDTO.StoresVisited.Value / SaleEmployeeDTO.StoresVisitedPLanned.Value) * 100, 2);
+                    #endregion
+                }
                 #region Số cửa hàng tạo mới
                 //kế hoạch
                 SaleEmployeeDTO.NewStoreCreatedPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
@@ -440,8 +442,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     .Select(z => z.StoreScoutingId.Value)
                     .Count();
                 //tỉ lệ
-                SaleEmployeeDTO.NewStoreCreatedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == null || SaleEmployeeDTO.NewStoreCreatedPlanned.Value == 0 ?
-                    0.00m : Math.Round(SaleEmployeeDTO.NewStoreCreated.Value / SaleEmployeeDTO.NewStoreCreatedPlanned.Value * 100, 2);
+                SaleEmployeeDTO.NewStoreCreatedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == null || SaleEmployeeDTO.NewStoreCreatedPlanned.Value == 0 
+                    ? null
+                    : (decimal?)Math.Round(SaleEmployeeDTO.NewStoreCreated.Value / SaleEmployeeDTO.NewStoreCreatedPlanned.Value * 100, 2);
                 #endregion
 
                 #region Số lần viếng thăm cửa hàng
