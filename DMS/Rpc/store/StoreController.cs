@@ -327,11 +327,11 @@ namespace DMS.Rpc.store
                 int DistrictCodeColumn = 10 + StartColumn;
                 int WardCodeColumn = 11 + StartColumn;
                 int AddressColumn = 12 + StartColumn;
-                int LatitudeColumn = 13 + StartColumn;
-                int LongitudeColumn = 14 + StartColumn;
+                int LongitudeColumn = 13 + StartColumn;
+                int LatitudeColumn = 14 + StartColumn;
                 int DeliveryAddressColumn = 15 + StartColumn;
-                int DeliveryLatitudeColumn = 16 + StartColumn;
-                int DeliveryLongitudeColumn = 17 + StartColumn;
+                int DeliveryLongitudeColumn = 16 + StartColumn;
+                int DeliveryLatitudeColumn = 17 + StartColumn;
                 int TelephoneColumn = 18 + StartColumn;
                 int OwnerNameColumn = 19 + StartColumn;
                 int OwnerPhoneColumn = 20 + StartColumn;
@@ -366,12 +366,12 @@ namespace DMS.Rpc.store
                     string WardCodeValue = worksheet.Cells[i + StartRow, WardCodeColumn].Value?.ToString();
 
                     string AddressValue = worksheet.Cells[i + StartRow, AddressColumn].Value?.ToString();
-                    string LatitudeValue = worksheet.Cells[i + StartRow, LatitudeColumn].Value?.ToString();
                     string LongitudeValue = worksheet.Cells[i + StartRow, LongitudeColumn].Value?.ToString();
+                    string LatitudeValue = worksheet.Cells[i + StartRow, LatitudeColumn].Value?.ToString();
 
                     string DeliveryAddressValue = worksheet.Cells[i + StartRow, DeliveryAddressColumn].Value?.ToString();
-                    string DeliveryLatitudeValue = worksheet.Cells[i + StartRow, DeliveryLatitudeColumn].Value?.ToString();
                     string DeliveryLongitudeValue = worksheet.Cells[i + StartRow, DeliveryLongitudeColumn].Value?.ToString();
+                    string DeliveryLatitudeValue = worksheet.Cells[i + StartRow, DeliveryLatitudeColumn].Value?.ToString();
 
                     string TelephoneValue = worksheet.Cells[i + StartRow, TelephoneColumn].Value?.ToString();
                     string OwnerNameValue = worksheet.Cells[i + StartRow, OwnerNameColumn].Value?.ToString();
@@ -393,10 +393,10 @@ namespace DMS.Rpc.store
                     Store.Address = AddressValue;
                     Store.DeliveryAddress = DeliveryAddressValue;
                     //set mặc định vĩ độ kinh độ tại HN
-                    Store.Latitude = decimal.TryParse(LatitudeValue, out decimal Latitude) ? Latitude : 21;
                     Store.Longitude = decimal.TryParse(LongitudeValue, out decimal Longitude) ? Longitude : 106;
-                    Store.DeliveryLatitude = decimal.TryParse(DeliveryLatitudeValue, out decimal DeliveryLatitude) ? DeliveryLatitude : 21;
+                    Store.Latitude = decimal.TryParse(LatitudeValue, out decimal Latitude) ? Latitude : 21;
                     Store.DeliveryLongitude = decimal.TryParse(DeliveryLongitudeValue, out decimal DeliveryLongitude) ? DeliveryLongitude : 106;
+                    Store.DeliveryLatitude = decimal.TryParse(DeliveryLatitudeValue, out decimal DeliveryLatitude) ? DeliveryLatitude : 21;
                     Store.OwnerName = OwnerNameValue;
                     Store.OwnerPhone = OwnerPhoneValue;
                     Store.OwnerEmail = OwnerEmailValue;
@@ -608,11 +608,11 @@ namespace DMS.Rpc.store
                         Store.District?.Name,
                         Store.Ward?.Name,
                         Store.Address,
-                        Store.Latitude,
                         Store.Longitude,
+                        Store.Latitude,
                         Store.DeliveryAddress,
-                        Store.DeliveryLatitude,
                         Store.DeliveryLongitude,
+                        Store.DeliveryLatitude,
                         Store.Telephone,
                         Store.OwnerName,
                         Store.OwnerPhone,
