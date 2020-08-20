@@ -345,8 +345,9 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                         .Select(x => x.CheckOutAt.Value.Date)
                         .FirstOrDefault();
                     //tổng thời gian viếng thăm
-                    var TotalMinuteChecking = StoreCheckings.Sum(x => (x.CheckOutAt.Value.Subtract(x.CheckInAt.Value)).Minutes);
-                    Store.TotalCheckingTime = $"{TotalMinuteChecking / 60} : {TotalMinuteChecking % 60}";
+                    var TotalMinuteChecking = StoreCheckings.Sum(x => (x.CheckOutAt.Value.Subtract(x.CheckInAt.Value)).TotalSeconds);
+                    TimeSpan timeSpan = TimeSpan.FromSeconds(TotalMinuteChecking);
+                    Store.TotalCheckingTime = $"{timeSpan.Hours.ToString().PadLeft(2, '0')} : {timeSpan.Minutes.ToString().PadLeft(2, '0')} : {timeSpan.Seconds.ToString().PadLeft(2, '0')}";
 
                     //tổng doanh thu
                     Store.TotalRevenue = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Sum(x => x.Total);
@@ -371,7 +372,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                     {
                         if (Store.SKUItemIds == null)
                             Store.SKUItemIds = new HashSet<long>();
-                        Store.SKUItemIds.Add(IndirectSalesOrderContent.Id);
+                        Store.SKUItemIds.Add(IndirectSalesOrderContent.ItemId);
                     }
                 }
             }

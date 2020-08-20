@@ -64,6 +64,9 @@
     <None Update="Templates\Kpi_General.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\Kpi_General_Export.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\Kpi_Item.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
