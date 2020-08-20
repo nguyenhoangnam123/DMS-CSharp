@@ -370,8 +370,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         }).ToList();
                     foreach (var StoreChecking in ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings)
                     {
-                        StoreChecking.eCheckIn = StoreChecking.CheckIn.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-                        StoreChecking.eCheckOut = StoreChecking.CheckOut.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                        StoreChecking.eCheckIn = StoreChecking.CheckIn.AddHours(CurrentContext.TimeZone).ToString("HH:mm:ss");
+                        StoreChecking.eCheckOut = StoreChecking.CheckOut.AddHours(CurrentContext.TimeZone).ToString("HH:mm:ss");
 
                         var TotalMinuteChecking = StoreChecking.CheckOut.Subtract(StoreChecking.CheckIn).TotalSeconds;
                         TimeSpan timeSpan = TimeSpan.FromSeconds(TotalMinuteChecking);
@@ -417,13 +417,36 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             ReportStoreChecked_ReportStoreCheckedFilterDTO.Take = int.MaxValue;
             List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = (await List(ReportStoreChecked_ReportStoreCheckedFilterDTO)).Value;
 
-            long stt = 1;
+            List<ReportStoreChecked_ExportDTO> ReportStoreChecked_ExportDTOs = new List<ReportStoreChecked_ExportDTO>();
             foreach (ReportStoreChecked_ReportStoreCheckedDTO ReportStoreChecked_ReportStoreCheckedDTO in ReportStoreChecked_ReportStoreCheckedDTOs)
             {
                 foreach (var SaleEmployee in ReportStoreChecked_ReportStoreCheckedDTO.SaleEmployees)
                 {
-                    SaleEmployee.STT = stt;
-                    stt++;
+                    foreach(var StoreCheckingGroupByDate in SaleEmployee.StoreCheckingGroupByDates)
+                    {
+                        foreach(var StoreChecking in StoreCheckingGroupByDate.StoreCheckings)
+                        {
+                            ReportStoreChecked_ExportDTO ReportStoreChecked_ExportDTO = new ReportStoreChecked_ExportDTO
+                            {
+                                OrganizationName = ReportStoreChecked_ReportStoreCheckedDTO.OrganizationName,
+                                Username = SaleEmployee.Username,
+                                DisplayName = SaleEmployee.DisplayName,
+                                Date = StoreCheckingGroupByDate.DateString,
+                                DayOfWeek = StoreCheckingGroupByDate.dayOfWeek,
+                                StoreCode = StoreChecking.StoreCode,
+                                StoreName = StoreChecking.StoreName,
+                                StoreAddress = StoreChecking.StoreAddress,
+                                Device = StoreChecking.DeviceName,
+                                CheckIn = StoreChecking.eCheckIn,
+                                CheckOut = StoreChecking.eCheckOut,
+                                Duration = StoreChecking.Duaration,
+                                Image = StoreChecking.ImageCounter > 0 ? "X" : "",
+                                Planned = StoreChecking.Planned  ? "X" : "",
+                                Order = StoreChecking.SalesOrder ? "X" : "",
+                            };
+                            ReportStoreChecked_ExportDTOs.Add(ReportStoreChecked_ExportDTO);
+                        }
+                    }
                 }
             }
 
@@ -434,7 +457,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             dynamic Data = new ExpandoObject();
             Data.Start = Start.ToString("dd-MM-yyyy");
             Data.End = End.ToString("dd-MM-yyyy");
-            Data.ReportStoreCheckeds = ReportStoreChecked_ReportStoreCheckedDTOs;
+            Data.ReportStoreCheckeds = ReportStoreChecked_ExportDTOs;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
