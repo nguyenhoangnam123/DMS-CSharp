@@ -405,7 +405,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
             Data.End = End.ToString("dd-MM-yyyy");
             Data.ReportSalesOrderGenerals = ReportSalesOrderGeneral_ReportSalesOrderGeneralDTOs;
             Data.Total = ReportSalesOrderGeneral_TotalDTO;
-            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
             };

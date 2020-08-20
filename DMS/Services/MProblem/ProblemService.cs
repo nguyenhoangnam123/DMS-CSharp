@@ -4,7 +4,6 @@ using DMS.Enums;
 using DMS.Handlers;
 using DMS.Repositories;
 using DMS.Rpc.monitor_store_problems;
-using DMS.Rpc.problem;
 using DMS.Services.MImage;
 using DMS.Services.MNotification;
 using DMS.Services.MOrganization;
@@ -143,7 +142,7 @@ namespace DMS.Services.MProblem
                 NotifyUsed(Problem);
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var RecipientIds = await UOW.PermissionRepository.ListAppUser(ProblemRoute.Update);
+                var RecipientIds = await UOW.PermissionRepository.ListAppUser(MonitorStoreProblemRoute.Update);
 
                 DateTime Now = StaticParams.DateTimeNow;
                 List<UserNotification> UserNotifications = new List<UserNotification>();
@@ -251,7 +250,7 @@ namespace DMS.Services.MProblem
 
                   
                    
-                    var RecipientIds = await UOW.PermissionRepository.ListAppUser(ProblemRoute.Update);
+                    var RecipientIds = await UOW.PermissionRepository.ListAppUser(MonitorStoreProblemRoute.Update);
                     foreach (var id in RecipientIds)
                     {
                         UserNotification UserNotification = new UserNotification

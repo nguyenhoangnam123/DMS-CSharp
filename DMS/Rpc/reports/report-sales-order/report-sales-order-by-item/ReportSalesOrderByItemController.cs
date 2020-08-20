@@ -503,7 +503,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             Data.End = End.ToString("dd-MM-yyyy");
             Data.ReportSalesOrderByItems = ReportSalesOrderByItem_ReportSalesOrderByItemDTOs;
             Data.Total = ReportSalesOrderByItem_TotalDTO;
-            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
             };

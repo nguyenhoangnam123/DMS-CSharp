@@ -481,7 +481,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             Data.Username = SaleEmployee.Username;
             Data.DisplayName = SaleEmployee.DisplayName;
             Data.KpiGeneralEmployeeReports = KpiGeneralEmployeeReport_ExportDTOs;
-            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
             };

@@ -178,7 +178,7 @@ namespace DMS.Rpc.monitor_store_problems
             Data.Start = Start.ToString("dd-MM-yyyy");
             Data.End = End.ToString("dd-MM-yyyy");
             Data.MonitorStoreProblems = MonitorStoreProblem_ProblemDTOs;
-            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
             };

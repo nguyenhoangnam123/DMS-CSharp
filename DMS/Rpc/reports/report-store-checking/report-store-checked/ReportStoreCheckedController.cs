@@ -435,7 +435,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             Data.Start = Start.ToString("dd-MM-yyyy");
             Data.End = End.ToString("dd-MM-yyyy");
             Data.ReportStoreCheckeds = ReportStoreChecked_ReportStoreCheckedDTOs;
-            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
             };

@@ -415,7 +415,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             Data.Start = Start.ToString("dd-MM-yyyy");
             Data.End = End.ToString("dd-MM-yyyy");
             Data.ReportStoreGenerals = ReportStoreGeneral_ReportStoreGeneralDTOs;
-            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
             };
