@@ -843,7 +843,10 @@ namespace DMS.Rpc.mobile
             };
             Problem = await ProblemService.Create(Problem);
             if (Problem.IsValidated)
+            {
+                Mobile_ProblemDTO = new Mobile_ProblemDTO(Problem);
                 return Mobile_ProblemDTO;
+            }
             else
                 return BadRequest(Mobile_ProblemDTO);
         }

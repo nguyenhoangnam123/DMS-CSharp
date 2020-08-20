@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DMS.Services.MUsedVariation
+namespace DMS.Services.MProduct
 {
     public interface IUsedVariationService : IServiceScoped
     {
