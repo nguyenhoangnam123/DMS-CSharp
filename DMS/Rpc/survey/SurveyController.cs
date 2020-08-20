@@ -199,20 +199,25 @@ namespace DMS.Rpc.survey
             Survey_AnswerStatisticsDTO.TotalCounter = SurveyResults.Count();
             Survey_AnswerStatisticsDTO.StoreResults = SurveyResults.Where(s => s.StoreId.HasValue).Select(x => new Survey_StoreResultStatisticsDTO
             {
+                OrganizationId = x.AppUser.OrganizationId.Value,
                 OrganizationName = x.AppUser.Organization.Name,
+                StoreId = x.StoreId.Value,
                 StoreCode = x.Store.Code,
                 StoreName = x.Store.Name,
             }).ToList();
 
             Survey_AnswerStatisticsDTO.StoreScoutingResults = SurveyResults.Where(s => s.StoreScoutingId.HasValue).Select(x => new Survey_StoreScoutingResultStatisticsDTO
             {
+                OrganizationId = x.AppUser.OrganizationId.Value,
                 OrganizationName = x.AppUser.Organization.Name,
+                StoreScoutingId = x.StoreScoutingId.Value,
                 StoreScoutingCode = x.StoreScouting.Code,
                 StoreScoutingName = x.StoreScouting.Name,
             }).ToList();
 
             Survey_AnswerStatisticsDTO.OtherResults = SurveyResults.Where(s => !s.StoreId.HasValue && !s.StoreScoutingId.HasValue).Select(x => new Survey_OtherStatisticsDTO
             {
+                Id = x.AppUserId,
                 DisplayName = x.AppUser.DisplayName,
                 Address = x.AppUser.Address,
                 Phone = x.AppUser.Phone,

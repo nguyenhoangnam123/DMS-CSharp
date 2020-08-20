@@ -20,20 +20,25 @@ namespace DMS.Rpc.survey
 
     public class Survey_StoreResultStatisticsDTO : DataDTO
     {
+        public long StoreId { get; set; }
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
+        public long OrganizationId { get; set; }
         public string OrganizationName { get; set; }
     }
 
     public class Survey_StoreScoutingResultStatisticsDTO : DataDTO
     {
+        public long StoreScoutingId { get; set; }
         public string StoreScoutingCode { get; set; }
         public string StoreScoutingName { get; set; }
+        public long OrganizationId { get; set; }
         public string OrganizationName { get; set; }
     }
 
     public class Survey_OtherStatisticsDTO : DataDTO
     {
+        public long Id { get; set; }
         public string DisplayName { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
