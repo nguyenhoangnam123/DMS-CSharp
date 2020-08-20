@@ -371,7 +371,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                     {
                         if (Store.SKUItemIds == null)
                             Store.SKUItemIds = new HashSet<long>();
-                        Store.SKUItemIds.Add(IndirectSalesOrderContent.Id);
+                        Store.SKUItemIds.Add(IndirectSalesOrderContent.ItemId);
                     }
                 }
             }

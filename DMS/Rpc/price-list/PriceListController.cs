@@ -269,6 +269,7 @@ namespace DMS.Rpc.price_list
                     return BadRequest(errorContent.ToString());
             }
             PriceList.Source = "Excel";
+            PriceList.PriceListItemMappings = PriceList.PriceListItemMappings.Distinct().ToList();
             PriceList = await PriceListService.Update(PriceList);
             List<PriceList_PriceListItemMappingDTO> PriceList_PriceListItemMappingDTOs = PriceList.PriceListItemMappings
                  .Select(c => new PriceList_PriceListItemMappingDTO(c)).ToList();
@@ -347,6 +348,7 @@ namespace DMS.Rpc.price_list
                 if (errorContent.Length > 0)
                     return BadRequest(errorContent.ToString());
             }
+            PriceList.PriceListStoreMappings = PriceList.PriceListStoreMappings.Distinct().ToList();
             PriceList = await PriceListService.Update(PriceList);
             List<PriceList_PriceListStoreMappingDTO> PriceList_PriceListStoreMappingDTOs = PriceList.PriceListStoreMappings
                  .Select(c => new PriceList_PriceListStoreMappingDTO(c)).ToList();
