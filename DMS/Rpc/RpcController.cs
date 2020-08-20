@@ -17,6 +17,7 @@ using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
+using System.Globalization;
 
 namespace DMS.Rpc
 {
@@ -534,9 +535,9 @@ namespace DMS.Rpc
             CurrentContext.UserId = UserId;
             CurrentContext.TimeZone = int.TryParse(TimeZone, out int t) ? t : 0;
             CurrentContext.Language = Language ?? "vi";
-            if (decimal.TryParse(Latitude, out decimal lat))
+            if (decimal.TryParse(Latitude, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal lat))
                 CurrentContext.Latitude = lat;
-            if (decimal.TryParse(Longitude, out decimal lon))
+            if (decimal.TryParse(Longitude,NumberStyles.Any, CultureInfo.InvariantCulture, out decimal lon))
                 CurrentContext.Longitude = lon;
             context.Succeed(requirement);
         }
