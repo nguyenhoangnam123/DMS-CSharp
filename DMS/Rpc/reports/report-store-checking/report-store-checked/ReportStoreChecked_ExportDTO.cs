@@ -18,6 +18,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public string StoreAddress { get; set; }
         public string CheckIn { get; set; }
         public string CheckOut { get; set; }
+        public string CheckInDistance { get; set; }
+        public string CheckOutDistance { get; set; }
         public string Duration { get; set; }
         public string Device { get; set; }
         public string Planned { get; set; }

@@ -350,7 +350,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.Date = i;
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.DateString = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
                     var dayOfWeek = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).DayOfWeek.ToString();
-                    ReportStoreChecked_StoreCheckingGroupByDateDTO.dayOfWeek = DayOfWeekEnum.DayOfWeekEnumList.Where(x => x.Code == dayOfWeek).Select(x => x.Name).FirstOrDefault();
+                    ReportStoreChecked_StoreCheckingGroupByDateDTO.DayOfWeek = DayOfWeekEnum.DayOfWeekEnumList.Where(x => x.Code == dayOfWeek).Select(x => x.Name).FirstOrDefault();
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings = storeCheckings.Where(x => x.SaleEmployeeId == ReportStoreChecked_SaleEmployeeDTO.SaleEmployeeId)
                         .Where(x => x.CheckOutAt.Value.Date == i)
                         .Select(x => new ReportStoreChecked_StoreCheckingDTO
@@ -432,13 +432,15 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                                 Username = SaleEmployee.Username,
                                 DisplayName = SaleEmployee.DisplayName,
                                 Date = StoreCheckingGroupByDate.DateString,
-                                DayOfWeek = StoreCheckingGroupByDate.dayOfWeek,
+                                DayOfWeek = StoreCheckingGroupByDate.DayOfWeek,
                                 StoreCode = StoreChecking.StoreCode,
                                 StoreName = StoreChecking.StoreName,
                                 StoreAddress = StoreChecking.StoreAddress,
                                 Device = StoreChecking.DeviceName,
                                 CheckIn = StoreChecking.eCheckIn,
                                 CheckOut = StoreChecking.eCheckOut,
+                                CheckInDistance = StoreChecking.CheckInDistance,
+                                CheckOutDistance = StoreChecking.CheckOutDistance,
                                 Duration = StoreChecking.Duaration,
                                 Image = StoreChecking.ImageCounter > 0 ? "X" : "",
                                 Planned = StoreChecking.Planned  ? "X" : "",
