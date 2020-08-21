@@ -12,7 +12,7 @@ using DMS.Enums;
 
 namespace DMS.Services.MPriceListItemHistory
 {
-    public interface IPriceListItemHistoryService :  IServiceScoped
+    public interface IPriceListItemHistoryService : IServiceScoped
     {
         Task<int> Count(PriceListItemHistoryFilter PriceListItemHistoryFilter);
         Task<List<PriceListItemHistory>> List(PriceListItemHistoryFilter PriceListItemHistoryFilter);
@@ -94,7 +94,7 @@ namespace DMS.Services.MPriceListItemHistory
                 return null;
             return PriceListItemHistory;
         }
-       
+
         public async Task<PriceListItemHistory> Create(PriceListItemHistory PriceListItemHistory)
         {
             if (!await PriceListItemHistoryValidator.Create(PriceListItemHistory))
@@ -213,7 +213,7 @@ namespace DMS.Services.MPriceListItemHistory
                 }
             }
         }
-        
+
         public async Task<List<PriceListItemHistory>> Import(List<PriceListItemHistory> PriceListItemHistories)
         {
             if (!await PriceListItemHistoryValidator.Import(PriceListItemHistories))
@@ -241,8 +241,8 @@ namespace DMS.Services.MPriceListItemHistory
                     throw new MessageException(ex.InnerException);
                 }
             }
-        }     
-        
+        }
+
         public async Task<PriceListItemHistoryFilter> ToFilter(PriceListItemHistoryFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<PriceListItemHistoryFilter>();
@@ -255,36 +255,17 @@ namespace DMS.Services.MPriceListItemHistory
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = FilterBuilder.Merge(subFilter.Id, FilterPermissionDefinition.IdFilter);                    if (FilterPermissionDefinition.Name == nameof(subFilter.PriceListId))
-                        subFilter.PriceListId = FilterBuilder.Merge(subFilter.PriceListId, FilterPermissionDefinition.IdFilter);                    if (FilterPermissionDefinition.Name == nameof(subFilter.ItemId))
-                        subFilter.ItemId = FilterBuilder.Merge(subFilter.ItemId, FilterPermissionDefinition.IdFilter);                    if (FilterPermissionDefinition.Name == nameof(subFilter.OldPrice))
-                        
+                        subFilter.Id = FilterBuilder.Merge(subFilter.Id, FilterPermissionDefinition.IdFilter); 
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.PriceListId))
+                        subFilter.PriceListId = FilterBuilder.Merge(subFilter.PriceListId, FilterPermissionDefinition.IdFilter); 
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ItemId))
+                        subFilter.ItemId = FilterBuilder.Merge(subFilter.ItemId, FilterPermissionDefinition.IdFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.OldPrice))
                         subFilter.OldPrice = FilterBuilder.Merge(subFilter.OldPrice, FilterPermissionDefinition.LongFilter);
-                        
-                        
-                        
-                        
-                        
-                        
                     if (FilterPermissionDefinition.Name == nameof(subFilter.NewPrice))
-                        
                         subFilter.NewPrice = FilterBuilder.Merge(subFilter.NewPrice, FilterPermissionDefinition.LongFilter);
-                        
-                        
-                        
-                        
-                        
-                        
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ModifierId))
-                        subFilter.ModifierId = FilterBuilder.Merge(subFilter.ModifierId, FilterPermissionDefinition.IdFilter);                    if (FilterPermissionDefinition.Name == nameof(subFilter.Source))
-                        
-                        
-                        
-                        
-                        
-                        
-                        subFilter.Source = FilterBuilder.Merge(subFilter.Source, FilterPermissionDefinition.StringFilter);
-                        
+                        subFilter.ModifierId = FilterBuilder.Merge(subFilter.ModifierId, FilterPermissionDefinition.IdFilter); 
                     if (FilterPermissionDefinition.Name == nameof(CurrentContext.UserId) && FilterPermissionDefinition.IdFilter != null)
                     {
                         if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.IS.Id)

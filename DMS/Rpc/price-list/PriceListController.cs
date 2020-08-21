@@ -148,7 +148,6 @@ namespace DMS.Rpc.price_list
                 return Forbid();
 
             PriceList PriceList = ConvertDTOToEntity(PriceList_PriceListDTO);
-            PriceList.Source = "Website";
             PriceList = await PriceListService.Update(PriceList);
             PriceList_PriceListDTO = new PriceList_PriceListDTO(PriceList);
             if (PriceList.IsValidated)
@@ -206,7 +205,7 @@ namespace DMS.Rpc.price_list
 
             PriceList PriceList = await PriceListService.Get(PriceListId);
             if (PriceList == null)
-                return BadRequest("Bảng giá không tồn tại");
+                PriceList = new PriceList();
             FileInfo FileInfo = new FileInfo(file.FileName);
             if (!FileInfo.Extension.Equals(".xlsx"))
                 return BadRequest("Định dạng file không hợp lệ");
@@ -243,15 +242,21 @@ namespace DMS.Rpc.price_list
                     if (string.IsNullOrWhiteSpace(ItemCodeValue) && i != worksheet.Dimension.End.Row)
                     {
                         errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã sản phẩm");
+                        continue;
                     }
                     else if (string.IsNullOrWhiteSpace(ItemCodeValue) && i == worksheet.Dimension.End.Row)
                         break;
 
                     PriceListItemMapping PriceListItemMapping = new PriceListItemMapping();
-                    var ItemItemId = Items.Where(x => x.Code == ItemCodeValue).Select(x => x.Id).FirstOrDefault();
-
+                    var Item = Items.Where(x => x.Code == ItemCodeValue).FirstOrDefault();
+                    if(Item == null)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Mã sản phẩm không tồn tại");
+                        continue;
+                    }
                     PriceListItemMapping.PriceListId = PriceList.Id;
-                    PriceListItemMapping.ItemId = ItemItemId;
+                    PriceListItemMapping.ItemId = Item.Id;
+                    PriceListItemMapping.Item = Item;
                     if (long.TryParse(PriceValue, out long Price))
                     {
                         PriceListItemMapping.Price = Price;
@@ -268,23 +273,9 @@ namespace DMS.Rpc.price_list
                 if (errorContent.Length > 0)
                     return BadRequest(errorContent.ToString());
             }
-            PriceList.Source = "Excel";
             PriceList.PriceListItemMappings = PriceList.PriceListItemMappings.Distinct().ToList();
-            PriceList = await PriceListService.Update(PriceList);
             List<PriceList_PriceListItemMappingDTO> PriceList_PriceListItemMappingDTOs = PriceList.PriceListItemMappings
                  .Select(c => new PriceList_PriceListItemMappingDTO(c)).ToList();
-            for (int i = 0; i < PriceList.PriceListItemMappings.Count; i++)
-            {
-                if (!PriceList.PriceListItemMappings[i].IsValidated)
-                {
-                    foreach (var Error in PriceList.PriceListItemMappings[i].Errors)
-                    {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
-                    }
-                }
-            }
-            if (PriceList.PriceListItemMappings.Any(x => !x.IsValidated))
-                return BadRequest(errorContent.ToString());
             return PriceList_PriceListItemMappingDTOs;
         }
 
@@ -299,7 +290,7 @@ namespace DMS.Rpc.price_list
 
             PriceList PriceList = await PriceListService.Get(PriceListId);
             if (PriceList == null)
-                return BadRequest("Bảng giá không tồn tại");
+                PriceList = new PriceList();
             FileInfo FileInfo = new FileInfo(file.FileName);
             if (!FileInfo.Extension.Equals(".xlsx"))
                 return BadRequest("Định dạng file không hợp lệ");
@@ -334,36 +325,30 @@ namespace DMS.Rpc.price_list
                     if (string.IsNullOrWhiteSpace(StoreCodeValue) && i != worksheet.Dimension.End.Row)
                     {
                         errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã đại lý");
+                        continue;
                     }
                     else if (string.IsNullOrWhiteSpace(StoreCodeValue) && i == worksheet.Dimension.End.Row)
                         break;
 
                     PriceListStoreMapping PriceListStoreMapping = new PriceListStoreMapping();
-                    var StoreStoreId = Stores.Where(x => x.Code == StoreCodeValue).Select(x => x.Id).FirstOrDefault();
-
+                    var Store = Stores.Where(x => x.Code == StoreCodeValue).FirstOrDefault();
+                    if(Store == null)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Mã đại lý không tồn tại");
+                        continue;
+                    }
                     PriceListStoreMapping.PriceListId = PriceList.Id;
-                    PriceListStoreMapping.StoreId = StoreStoreId;
+                    PriceListStoreMapping.StoreId = Store.Id;
+                    PriceListStoreMapping.Store = Store;
                     PriceList.PriceListStoreMappings.Add(PriceListStoreMapping);
                 }
                 if (errorContent.Length > 0)
                     return BadRequest(errorContent.ToString());
             }
             PriceList.PriceListStoreMappings = PriceList.PriceListStoreMappings.Distinct().ToList();
-            PriceList = await PriceListService.Update(PriceList);
+
             List<PriceList_PriceListStoreMappingDTO> PriceList_PriceListStoreMappingDTOs = PriceList.PriceListStoreMappings
                  .Select(c => new PriceList_PriceListStoreMappingDTO(c)).ToList();
-            for (int i = 0; i < PriceList.PriceListStoreMappings.Count; i++)
-            {
-                if (!PriceList.PriceListStoreMappings[i].IsValidated)
-                {
-                    foreach (var Error in PriceList.PriceListStoreMappings[i].Errors)
-                    {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
-                    }
-                }
-            }
-            if (PriceList.PriceListStoreMappings.Any(x => !x.IsValidated))
-                return BadRequest(errorContent.ToString());
             return PriceList_PriceListStoreMappingDTOs;
         }
 
@@ -622,7 +607,6 @@ namespace DMS.Rpc.price_list
                     NewPrice = x.NewPrice,
                     OldPrice = x.OldPrice,
                     UpdatedAt = x.UpdatedAt,
-                    Source = x.Source,
                 }).ToList()
             }).ToList();
             PriceList.PriceListStoreMappings = PriceList_PriceListDTO.PriceListStoreMappings?.Select(x => new PriceListStoreMapping

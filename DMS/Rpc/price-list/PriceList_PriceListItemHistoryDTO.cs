@@ -16,7 +16,6 @@ namespace DMS.Rpc.price_list
         public long OldPrice { get; set; }
         public long NewPrice { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public string Source { get; set; }
         public PriceList_AppUserDTO Modifier { get; set; }
         public PriceList_PriceListItemHistoryDTO() { }
         public PriceList_PriceListItemHistoryDTO(PriceListItemHistory PriceListItemHistory)
@@ -28,7 +27,6 @@ namespace DMS.Rpc.price_list
             this.OldPrice = PriceListItemHistory.OldPrice;
             this.NewPrice = PriceListItemHistory.NewPrice;
             this.UpdatedAt = PriceListItemHistory.UpdatedAt;
-            this.Source = PriceListItemHistory.Source;
             this.Modifier = PriceListItemHistory.Modifier == null ? null : new PriceList_AppUserDTO(PriceListItemHistory.Modifier);
         }
     }
@@ -42,7 +40,6 @@ namespace DMS.Rpc.price_list
         public LongFilter OldPrice { get; set; }
         public LongFilter NewPrice { get; set; }
         public DateFilter UpdatedAt { get; set; }
-        public StringFilter Source { get; set; }
         public ItemHistoryOrder OrderBy { get; set; }
     }
 }
