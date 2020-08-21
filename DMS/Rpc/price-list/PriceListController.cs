@@ -598,6 +598,36 @@ namespace DMS.Rpc.price_list
                 ItemId = x.ItemId,
                 PriceListId = x.PriceListId,
                 Price = x.Price,
+                Item = new Item
+                {
+                    Id = x.Item.Id,
+                    ProductId = x.Item.ProductId,
+                    Code = x.Item.Code,
+                    Name = x.Item.Name,
+                    ScanCode = x.Item.ScanCode,
+                    SalePrice = x.Item.SalePrice,
+                    RetailPrice = x.Item.RetailPrice,
+                    StatusId = x.Item.StatusId,
+                    Product = x.Item.Product == null ? null : new Product
+                    {
+                        Id = x.Item.Product.Id,
+                        ProductProductGroupingMappings = x.Item.Product.ProductProductGroupingMappings != null ?
+                            x.Item.Product.ProductProductGroupingMappings.Select(p => new ProductProductGroupingMapping
+                            {
+                                ProductId = p.ProductId,
+                                ProductGroupingId = p.ProductGroupingId,
+                                ProductGrouping = new ProductGrouping
+                                {
+                                    Id = p.ProductGrouping.Id,
+                                    Code = p.ProductGrouping.Code,
+                                    Name = p.ProductGrouping.Name,
+                                    ParentId = p.ProductGrouping.ParentId,
+                                    Path = p.ProductGrouping.Path,
+                                    Description = p.ProductGrouping.Description,
+                                },
+                            }).ToList() : null,
+                    }
+                },
                 PriceListItemHistories = x.PriceListItemHistories?.Select(x => new PriceListItemHistory
                 {
                     Id = x.Id,
@@ -613,16 +643,81 @@ namespace DMS.Rpc.price_list
             {
                 StoreId = x.StoreId,
                 PriceListId = x.PriceListId,
+                Store = new Store
+                {
+                    Id = x.Store.Id,
+                    Code = x.Store.Code,
+                    Name = x.Store.Name,
+                    ParentStoreId = x.Store.ParentStoreId,
+                    OrganizationId = x.Store.OrganizationId,
+                    StoreTypeId = x.Store.StoreTypeId,
+                    StoreGroupingId = x.Store.StoreGroupingId,
+                    ResellerId = x.Store.ResellerId,
+                    Telephone = x.Store.Telephone,
+                    ProvinceId = x.Store.ProvinceId,
+                    DistrictId = x.Store.DistrictId,
+                    WardId = x.Store.WardId,
+                    Address = x.Store.Address,
+                    DeliveryAddress = x.Store.DeliveryAddress,
+                    DeliveryLatitude = x.Store.DeliveryLatitude,
+                    DeliveryLongitude = x.Store.DeliveryLongitude,
+                    OwnerName = x.Store.OwnerName,
+                    OwnerPhone = x.Store.OwnerPhone,
+                    OwnerEmail = x.Store.OwnerEmail,
+                    TaxCode = x.Store.TaxCode,
+                    LegalEntity = x.Store.LegalEntity,
+                    StatusId = x.Store.StatusId,
+                    Province = x.Store.Province == null ? null : new Province
+                    {
+                        Id = x.Store.Province.Id,
+                        Name = x.Store.Province.Name,
+                        Priority = x.Store.Province.Priority,
+                        StatusId = x.Store.Province.StatusId,
+                    },
+                    StoreGrouping = x.Store.StoreGrouping == null ? null : new StoreGrouping
+                    {
+                        Id = x.Store.StoreGrouping.Id,
+                        Code = x.Store.StoreGrouping.Code,
+                        Name = x.Store.StoreGrouping.Name,
+                        ParentId = x.Store.StoreGrouping.ParentId,
+                        Path = x.Store.StoreGrouping.Path,
+                        Level = x.Store.StoreGrouping.Level,
+                    },
+                    StoreType = x.Store.StoreType == null ? null : new StoreType
+                    {
+                        Id = x.Store.StoreType.Id,
+                        Code = x.Store.StoreType.Code,
+                        Name = x.Store.StoreType.Name,
+                        StatusId = x.Store.StoreType.StatusId,
+                    },
+                },
             }).ToList();
             PriceList.PriceListStoreTypeMappings = PriceList_PriceListDTO.PriceListStoreTypeMappings?.Select(x => new PriceListStoreTypeMapping
             {
                 StoreTypeId = x.StoreTypeId,
                 PriceListId = x.PriceListId,
+                StoreType = new StoreType
+                {
+                    Id = x.StoreType.Id,
+                    Code = x.StoreType.Code,
+                    Name = x.StoreType.Name,
+                    StatusId = x.StoreType.StatusId,
+                },
             }).ToList();
             PriceList.PriceListStoreGroupingMappings = PriceList_PriceListDTO.PriceListStoreGroupingMappings?.Select(x => new PriceListStoreGroupingMapping
             {
                 StoreGroupingId = x.StoreGroupingId,
                 PriceListId = x.PriceListId,
+                StoreGrouping = new StoreGrouping
+                {
+                    Id = x.StoreGrouping.Id,
+                    Code = x.StoreGrouping.Code,
+                    Name = x.StoreGrouping.Name,
+                    ParentId = x.StoreGrouping.ParentId,
+                    Path = x.StoreGrouping.Path,
+                    Level = x.StoreGrouping.Level,
+                    StatusId = x.StoreGrouping.StatusId,
+                },
             }).ToList();
             PriceList.BaseLanguage = CurrentContext.Language;
             return PriceList;

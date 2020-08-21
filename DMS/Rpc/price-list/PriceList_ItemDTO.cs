@@ -15,6 +15,7 @@ namespace DMS.Rpc.price_list
         public string Name { get; set; }
 
         public string ScanCode { get; set; }
+        public string OtherName { get; set; }
 
         public decimal SalePrice { get; set; }
 
@@ -36,6 +37,7 @@ namespace DMS.Rpc.price_list
             this.Name = Item.Name;
 
             this.ScanCode = Item.ScanCode;
+            this.OtherName = Item.Product?.OtherName;
 
             this.SalePrice = Item.SalePrice;
 
