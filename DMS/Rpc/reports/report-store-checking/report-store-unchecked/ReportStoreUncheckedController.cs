@@ -198,7 +198,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             AppUserIds = (await DataContext.StoreUnchecking.Where(su => AppUserIds.Contains(su.AppUserId))
                                 .Select(su => su.AppUser)
                                 .Distinct()
-                                .OrderBy(su => su.Organization.Name).ThenBy(su => su.DisplayName)
+                                .OrderBy(su => su.Organization.Path).ThenBy(su => su.DisplayName)
                                 .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
                                 .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
                                 .ToListAsync())
@@ -207,6 +207,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id))
                 .Include(au => au.Organization)
+                .OrderBy(su => su.Organization.Path)
                 .ToListAsync();
             List<StoreUncheckingDAO> StoreUncheckingDAOs = await DataContext.StoreUnchecking
                 .Where(su =>
@@ -216,10 +217,11 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                 .Include(su => su.Store.StoreType)
                 .ToListAsync();
 
-            List<string> OrganizationNames = AppUserDAOs.Select(x => x.Organization.Path).Distinct().ToList();
+            var  OrganizationNames = AppUserDAOs.Select(x => new { Path = x.Organization.Path, Name = x.Organization.Name }).Distinct().ToList();
             List<ReportStoreUnchecked_ReportStoreUncheckedDTO> ReportStoreUnchecked_ReportStoreUncheckedDTOs = OrganizationNames.Select(x => new ReportStoreUnchecked_ReportStoreUncheckedDTO
             {
-                OrganizationName = x,
+                OrganizationName = x.Name,
+                OrganizationPath = x.Path,
                 SaleEmployees = new List<ReportStoreUnchecked_SaleEmployeeDTO>()
             }).ToList();
             foreach (AppUserDAO AppUserDAO in AppUserDAOs)

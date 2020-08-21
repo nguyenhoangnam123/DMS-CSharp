@@ -20,8 +20,8 @@ namespace DMS.Rpc.mobile
         public DateTime? EndAt { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
-        public long StoreId { get; set; }
-        public long StoreScoutingId { get; set; }
+        public long? StoreId { get; set; }
+        public long? StoreScoutingId { get; set; }
         public long SurveyRespondentTypeId { get; set; }
         public long ResultCounter { get; set; }
         public List<Mobile_SurveyQuestionDTO> SurveyQuestions { get; set; }
