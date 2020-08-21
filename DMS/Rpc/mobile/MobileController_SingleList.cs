@@ -419,6 +419,9 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Search = Mobile_StoreFilterDTO.Search;
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
@@ -456,6 +459,9 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.ListStore), HttpPost]
         public async Task<List<Mobile_StoreDTO>> ListStore([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Search = Mobile_StoreFilterDTO.Search;
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
@@ -495,6 +501,9 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.CountStorePlanned), HttpPost]
         public async Task<long> CountStorePlanned([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Search = Mobile_StoreFilterDTO.Search;
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
@@ -531,6 +540,9 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.ListStorePlanned), HttpPost]
         public async Task<List<Mobile_StoreDTO>> ListStorePlanned([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Search = Mobile_StoreFilterDTO.Search;
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
@@ -570,6 +582,9 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.CountStoreUnPlanned), HttpPost]
         public async Task<long> CountStoreUnPlanned([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Search = Mobile_StoreFilterDTO.Search;
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
@@ -606,6 +621,8 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.ListStoreUnPlanned), HttpPost]
         public async Task<List<Mobile_StoreDTO>> ListStoreUnPlanned([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
 
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Search = Mobile_StoreFilterDTO.Search;
@@ -646,7 +663,8 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.CountStoreInScope), HttpPost]
         public async Task<long> CountStoreInScope([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
-            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
 
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Search = Mobile_StoreFilterDTO.Search;
@@ -659,7 +677,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.Code = Mobile_StoreFilterDTO.Code;
             StoreFilter.Name = Mobile_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = Mobile_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreFilter.StoreTypeId = Mobile_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
@@ -685,6 +702,9 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.ListStoreInScope), HttpPost]
         public async Task<List<Mobile_StoreDTO>> ListStoreInScope([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Search = Mobile_StoreFilterDTO.Search;
             StoreFilter.Skip = Mobile_StoreFilterDTO.Skip;
@@ -803,6 +823,9 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.CountProblem), HttpPost]
         public async Task<long> CountProblem([FromBody] Mobile_ProblemFilterDTO Mobile_ProblemFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
 
             ProblemFilter ProblemFilter = new ProblemFilter();
@@ -820,6 +843,9 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.ListProblem), HttpPost]
         public async Task<List<Mobile_ProblemDTO>> ListProblem([FromBody] Mobile_ProblemFilterDTO Mobile_ProblemFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
 
             ProblemFilter ProblemFilter = new ProblemFilter();
@@ -848,6 +874,7 @@ namespace DMS.Rpc.mobile
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
             Problem Problem = await ProblemService.Get(Mobile_ProblemDTO.Id);
             return new Mobile_ProblemDTO(Problem);
         }
@@ -855,6 +882,9 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.CountSurvey), HttpPost]
         public async Task<long> CountSurvey([FromBody] Mobile_SurveyFilterDTO Mobile_SurveyFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
 
             SurveyFilter SurveyFilter = new SurveyFilter();
@@ -878,6 +908,9 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.ListSurvey), HttpPost]
         public async Task<List<Mobile_SurveyDTO>> ListSurvey([FromBody] Mobile_SurveyFilterDTO Mobile_SurveyFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
 
             SurveyFilter SurveyFilter = new SurveyFilter();
@@ -904,6 +937,9 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.CountStoreScouting), HttpPost]
         public async Task<long> CountStoreScouting([FromBody] Mobile_StoreScoutingFilterDTO Mobile_StoreScoutingFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
 
             StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter();
@@ -931,6 +967,9 @@ namespace DMS.Rpc.mobile
         [Route(MobileRoute.ListStoreScouting), HttpPost]
         public async Task<List<Mobile_StoreScoutingDTO>> ListStoreScouting([FromBody] Mobile_StoreScoutingFilterDTO Mobile_StoreScoutingFilterDTO)
         {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
             AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
 
             StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter();

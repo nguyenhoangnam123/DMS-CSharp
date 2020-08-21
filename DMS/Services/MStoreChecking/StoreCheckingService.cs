@@ -285,23 +285,19 @@ namespace DMS.Services.MStoreChecking
         public async Task<List<Store>> ListStore(StoreFilter StoreFilter, IdFilter ERouteId)
         {
             List<Store> Stores;
-            if (CurrentContext.Latitude.HasValue &&  CurrentContext.Longitude.HasValue)
+            // Lấy danh sách tất cả các cửa hàng ra
+            // Tính khoảng cách
+            // sắp xếp theo khoảng cách
+            int skip = StoreFilter.Skip;
+            int take = StoreFilter.Take;
+            StoreFilter.Skip = 0;
+            StoreFilter.Take = int.MaxValue;
+            Stores = await UOW.StoreRepository.List(StoreFilter);
+            if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
             {
-                // Lấy danh sách tất cả các cửa hàng ra
-                // Tính khoảng cách
-                // sắp xếp theo khoảng cách
-                int skip = StoreFilter.Skip;
-                int take = StoreFilter.Take;
-                StoreFilter.Skip = 0;
-                StoreFilter.Take = int.MaxValue;
-                Stores = await UOW.StoreRepository.List(StoreFilter);
                 Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
-                Stores = Stores.OrderBy(x => x.Distance).Skip(skip).Take(take).ToList();
             }
-            else
-            {
-                Stores = await UOW.StoreRepository.List(StoreFilter);
-            }    
+            Stores = Stores.OrderBy(x => x.Distance).Skip(skip).Take(take).ToList();
             Stores = await CheckStoreChecking(Stores);
             return Stores;
         }
@@ -348,31 +344,27 @@ namespace DMS.Services.MStoreChecking
             try
             {
                 List<Store> Stores;
+                int skip = StoreFilter.Skip;
+                int take = StoreFilter.Take;
+                // Lấy danh sách tất cả các cửa hàng trong tuyến ra
+                // Tính khoảng cách
+                // sắp xếp theo thứ tự ưu tiên trước rồi đến khoảng cách
+                Dictionary<long, long> StoreIds = await ListOnlineStoreIds(ERouteId, true);
+                StoreFilter.Id = new IdFilter { In = StoreIds.Select(x => x.Key).ToList() };
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+                StoreFilter.Skip = 0;
+                StoreFilter.Take = int.MaxValue;
+                Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
                 {
-                    int skip = StoreFilter.Skip;
-                    int take = StoreFilter.Take;
-                    // Lấy danh sách tất cả các cửa hàng trong tuyến ra
-                    // Tính khoảng cách
-                    // sắp xếp theo thứ tự ưu tiên trước rồi đến khoảng cách
-                    Dictionary<long, long> StoreIds = await ListOnlineStoreIds(ERouteId, true);
-                    StoreFilter.Id = new IdFilter { In = StoreIds.Select(x => x.Key).ToList() };
-                    StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
-                    StoreFilter.Skip = 0;
-                    StoreFilter.Take = int.MaxValue;
-                    Stores = await UOW.StoreRepository.List(StoreFilter);
                     Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
-                    Stores = (from s in Stores
-                              join id in StoreIds on s.Id equals id.Key
-                              orderby id.Value, s.Distance
-                              select s)
-                            .Skip(skip).Take(take).ToList();
                 }
-                else
-                {
-                    Stores = await UOW.StoreRepository.List(StoreFilter);
-                }    
-              
+                Stores = (from s in Stores
+                          join id in StoreIds on s.Id equals id.Key
+                          orderby id.Value, s.Distance
+                          select s)
+                           .Skip(skip).Take(take).ToList();
+
                 Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
@@ -435,31 +427,26 @@ namespace DMS.Services.MStoreChecking
             {
                 List<Store> Stores;
 
+                // Lấy danh sách tất cả các cửa hàng ngoại tuyến ra
+                // Tính khoảng cách
+                // sắp xếp theo thứ tự ưu tiên trước rồi đến khoảng cách
+                int skip = StoreFilter.Skip;
+                int take = StoreFilter.Take;
+                Dictionary<long, long> StoreIds = await ListOfflineStoreIds(ERouteId, false);
+                StoreFilter.Id.In = StoreIds.Select(x => x.Key).ToList();
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+                StoreFilter.Skip = 0;
+                StoreFilter.Take = int.MaxValue;
+                Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
                 {
-                    // Lấy danh sách tất cả các cửa hàng ngoại tuyến ra
-                    // Tính khoảng cách
-                    // sắp xếp theo thứ tự ưu tiên trước rồi đến khoảng cách
-                    int skip = StoreFilter.Skip;
-                    int take = StoreFilter.Take;
-                    Dictionary<long, long> StoreIds = await ListOfflineStoreIds(ERouteId, false);
-                    StoreFilter.Id.In = StoreIds.Select(x => x.Key).ToList();
-                    StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
-                    StoreFilter.Skip = 0;
-                    StoreFilter.Take = int.MaxValue;
-                    Stores = await UOW.StoreRepository.List(StoreFilter);
                     Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
-
-                    Stores = (from s in Stores
-                              join id in StoreIds on s.Id equals id.Key
-                              orderby id.Value, s.Distance
-                              select s)
-                           .Skip(skip).Take(take).ToList();
                 }
-                else
-                {
-                    Stores = await UOW.StoreRepository.List(StoreFilter);
-                }    
+                Stores = (from s in Stores
+                          join id in StoreIds on s.Id equals id.Key
+                          orderby id.Value, s.Distance
+                          select s)
+                          .Skip(skip).Take(take).ToList();
                 Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
@@ -521,23 +508,19 @@ namespace DMS.Services.MStoreChecking
                 AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
                 List<Store> Stores;
+                // Lấy danh sách tất cả các cửa hàng trong phạm vi ra
+                // Tính khoảng cách
+                // sắp xếp theo khoảng cách
+                int skip = StoreFilter.Skip;
+                int take = StoreFilter.Take;
+                StoreFilter.Skip = 0;
+                StoreFilter.Take = int.MaxValue;
+                Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
                 {
-                    // Lấy danh sách tất cả các cửa hàng trong phạm vi ra
-                    // Tính khoảng cách
-                    // sắp xếp theo khoảng cách
-                    int skip = StoreFilter.Skip;
-                    int take = StoreFilter.Take;
-                    StoreFilter.Skip = 0;
-                    StoreFilter.Take = int.MaxValue;
-                    Stores = await UOW.StoreRepository.List(StoreFilter);
                     Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
-                    Stores = Stores.OrderBy(s => s.Distance).Skip(skip).Take(take).ToList();
                 }
-                else
-                {
-                    Stores = await UOW.StoreRepository.List(StoreFilter);
-                }    
+                Stores = Stores.OrderBy(s => s.Distance).Skip(skip).Take(take).ToList();
                 Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
