@@ -17,6 +17,7 @@ using DMS.Services.MProduct;
 using System.IO;
 using System.Dynamic;
 using NGS.Templater;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 
 namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_item
 {
@@ -169,7 +170,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             if (End.Subtract(Start).Days > 31)
                 return 0;
 
-                long? StoreId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreId?.Equal;
+            long? StoreId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreGroupingId?.Equal;
 
@@ -183,12 +184,32 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (StoreId.HasValue)
+            {
+                var listId = new List<long> { StoreId.Value };
+                StoreIds = StoreIds.Intersect(listId).ToList();
+            }
+            List<long> StoreTypeIds = await FilterStoreType(StoreTypeService, CurrentContext);
+            if (StoreTypeId.HasValue)
+            {
+                var listId = new List<long> { StoreTypeId.Value };
+                StoreTypeIds = StoreTypeIds.Intersect(listId).ToList();
+            }
+            List<long> StoreGroupingIds = await FilterStoreGrouping(StoreGroupingService, CurrentContext);
+            if (StoreGroupingId.HasValue)
+            {
+                var listId = new List<long> { StoreGroupingId.Value };
+                StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
+            }
+
             var query = from i in DataContext.IndirectSalesOrder
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
-                        (StoreId.HasValue == false || i.BuyerStoreId == StoreId.Value) &&
-                        (StoreTypeId.HasValue == false || s.StoreTypeId == StoreTypeId.Value) &&
-                        (StoreGroupingId.HasValue == false || s.StoreGroupingId == StoreGroupingId.Value) &&
+                        (StoreIds.Contains(i.BuyerStoreId)) &&
+                        (StoreTypeIds.Contains(s.StoreTypeId)) &&
+                        ((StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId)) ||
+                        (s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value) || s.StoreGroupingId.HasValue == false) &&
                         OrganizationIds.Contains(s.OrganizationId)
                         select s;
 
@@ -231,13 +252,32 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (StoreId.HasValue)
+            {
+                var listId = new List<long> { StoreId.Value };
+                StoreIds = StoreIds.Intersect(listId).ToList();
+            }
+            List<long> StoreTypeIds = await FilterStoreType(StoreTypeService, CurrentContext);
+            if (StoreTypeId.HasValue)
+            {
+                var listId = new List<long> { StoreTypeId.Value };
+                StoreTypeIds = StoreTypeIds.Intersect(listId).ToList();
+            }
+            List<long> StoreGroupingIds = await FilterStoreGrouping(StoreGroupingService, CurrentContext);
+            if (StoreGroupingId.HasValue)
+            {
+                var listId = new List<long> { StoreGroupingId.Value };
+                StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
+            }
             var query = from i in DataContext.IndirectSalesOrder
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
                         join o in DataContext.Organization on s.OrganizationId equals o.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
-                        (StoreId.HasValue == false || s.Id == StoreId.Value) &&
-                        (StoreTypeId.HasValue == false || s.StoreTypeId == StoreTypeId.Value) &&
-                        (StoreGroupingId.HasValue == false || s.StoreGroupingId == StoreGroupingId.Value) &&
+                        (StoreIds.Contains(i.BuyerStoreId)) &&
+                        (StoreTypeIds.Contains(s.StoreTypeId)) &&
+                        ((StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId)) ||
+                        (s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value) || s.StoreGroupingId.HasValue == false) &&
                         (OrganizationIds.Contains(s.OrganizationId))
                         select new Store
                         {
@@ -283,7 +323,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                     .ToList();
             }
 
-            List<long> StoreIds = Stores.Select(s => s.Id).ToList();
+            StoreIds = Stores.Select(s => s.Id).ToList();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(x => StoreIds.Contains(x.BuyerStoreId) && Start <= x.OrderDate && x.OrderDate <= End)
                 .ToListAsync();
@@ -435,14 +475,33 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (StoreId.HasValue)
+            {
+                var listId = new List<long> { StoreId.Value };
+                StoreIds = StoreIds.Intersect(listId).ToList();
+            }
+            List<long> StoreTypeIds = await FilterStoreType(StoreTypeService, CurrentContext);
+            if (StoreTypeId.HasValue)
+            {
+                var listId = new List<long> { StoreTypeId.Value };
+                StoreTypeIds = StoreTypeIds.Intersect(listId).ToList();
+            }
+            List<long> StoreGroupingIds = await FilterStoreGrouping(StoreGroupingService, CurrentContext);
+            if (StoreGroupingId.HasValue)
+            {
+                var listId = new List<long> { StoreGroupingId.Value };
+                StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
+            }
 
             var query = from i in DataContext.IndirectSalesOrder
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
                         join o in DataContext.Organization on s.OrganizationId equals o.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
-                        (StoreId.HasValue == false || s.Id == StoreId.Value) &&
-                        (StoreTypeId.HasValue == false || s.StoreTypeId == StoreTypeId.Value) &&
-                        (StoreGroupingId.HasValue == false || s.StoreGroupingId == StoreGroupingId.Value) &&
+                        (StoreIds.Contains(i.BuyerStoreId)) &&
+                        (StoreTypeIds.Contains(s.StoreTypeId)) &&
+                        ((StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId)) ||
+                        (s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value) || s.StoreGroupingId.HasValue == false) &&
                         (OrganizationIds.Contains(s.OrganizationId))
                         select new Store
                         {
@@ -481,7 +540,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                     .ToList();
             }
 
-            List<long> StoreIds = Stores.Select(s => s.Id).ToList();
+            StoreIds = Stores.Select(s => s.Id).ToList();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(x => StoreIds.Contains(x.BuyerStoreId) && Start <= x.OrderDate && x.OrderDate <= End)
                 .ToListAsync();
