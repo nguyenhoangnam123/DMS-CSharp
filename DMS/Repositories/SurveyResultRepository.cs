@@ -1,6 +1,8 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Models;
+using Hangfire.States;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -261,12 +263,18 @@ namespace DMS.Repositories
             SurveyResultDAO.RespondentName = SurveyResult.RespondentName;
             SurveyResultDAO.RespondentEmail = SurveyResult.RespondentEmail;
             SurveyResultDAO.RespondentAddress = SurveyResult.RespondentAddress;
-            SurveyResultDAO.SurveyRespondentTypeId = SurveyResult.SurveyRespondentTypeId;
             SurveyResultDAO.StoreId = SurveyResult.StoreId;
             SurveyResultDAO.StoreScoutingId = SurveyResult.StoreScoutingId;
             SurveyResultDAO.SurveyId = SurveyResult.SurveyId;
             SurveyResultDAO.Time = SurveyResult.Time;
             SurveyResultDAO.RowId = SurveyResult.RowId;
+            if (SurveyResultDAO.StoreId.HasValue)
+                SurveyResultDAO.SurveyRespondentTypeId = SurveyRespondentTypeEnum.STORE.Id;
+            else if (SurveyResultDAO.StoreScoutingId.HasValue)
+                SurveyResultDAO.SurveyRespondentTypeId = SurveyRespondentTypeEnum.STORE_SCOUTING.Id;
+            else
+                SurveyResultDAO.SurveyRespondentTypeId = SurveyRespondentTypeEnum.OTHER.Id;
+
             DataContext.SurveyResult.Add(SurveyResultDAO);
             await DataContext.SaveChangesAsync();
             SurveyResult.Id = SurveyResultDAO.Id;

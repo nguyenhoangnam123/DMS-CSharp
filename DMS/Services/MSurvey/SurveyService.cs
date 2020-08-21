@@ -444,7 +444,9 @@ namespace DMS.Services.MSurvey
                         }
                     }
                 }
+                await UOW.Begin();
                 await UOW.SurveyResultRepository.Create(SurveyResult);
+                await UOW.Commit();
                 return await GetForm(Survey.Id);
             }
             catch (Exception ex)

@@ -22,8 +22,8 @@ namespace DMS.Entities
         public long CreatorId { get; set; }
         public long ResultCounter { get; set; }
         public DateTime AnswerAt { get; set; }
-        public long StoreId { get; set; }
-        public long StoreScoutingId { get; set; }
+        public long? StoreId { get; set; }
+        public long? StoreScoutingId { get; set; }
         public long SurveyRespondentTypeId { get; set; }
         public SurveyRespondentType SurveyRespondentType { get; set; }
         public AppUser Creator { get; set; }

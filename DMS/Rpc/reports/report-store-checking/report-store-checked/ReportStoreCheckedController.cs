@@ -319,16 +319,12 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 
             var AppUserIds = await query.Select(x => x.Id).Distinct().ToListAsync();
 
-            AppUserFilter AppUserFilter = new AppUserFilter
-            {
-                Id = new IdFilter { In = AppUserIds },
-                OrganizationId = new IdFilter { In = OrganizationIds },
-                Skip = ReportStoreChecker_ReportStoreCheckedFilterDTO.Skip,
-                Take = ReportStoreChecker_ReportStoreCheckedFilterDTO.Take,
-                OrderBy = AppUserOrder.DisplayName,
-                Selects = AppUserSelect.ALL
-            };
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id) && OrganizationIds.Contains(au.OrganizationId.Value))
+                .Include(au => au.Organization)
+                .OrderBy(su => su.Organization.Path)
+                .Skip(ReportStoreChecker_ReportStoreCheckedFilterDTO.Skip)
+                .Take(ReportStoreChecker_ReportStoreCheckedFilterDTO.Take)
+                .ToListAsync();
 
             List<StoreDAO> StoreDAOs = await DataContext.Store.Where(x => OrganizationIds.Contains(x.OrganizationId) &&
                 (StoreId == null || x.Id == StoreId.Value) &&
@@ -336,7 +332,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 (StoreGroupingId == null || x.StoreGroupingId == StoreGroupingId.Value))
                 .ToListAsync();
 
-            List<ReportStoreChecked_SaleEmployeeDTO> ReportStoreChecked_SaleEmployeeDTOs = AppUsers.Select(au => new ReportStoreChecked_SaleEmployeeDTO
+            List<ReportStoreChecked_SaleEmployeeDTO> ReportStoreChecked_SaleEmployeeDTOs = AppUserDAOs.Select(au => new ReportStoreChecked_SaleEmployeeDTO
             {
                 SaleEmployeeId = au.Id,
                 Username = au.Username,
@@ -345,7 +341,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 OrganizationPath = au.Organization?.Path,
             }).ToList();
 
-            List<string> OrganizationNames = ReportStoreChecked_SaleEmployeeDTOs.Select(se => se.OrganizationPath).Distinct().ToList();
+            List<string> OrganizationNames = ReportStoreChecked_SaleEmployeeDTOs.Select(se => se.OrganizationName).Distinct().ToList();
             OrganizationNames = OrganizationNames.OrderBy(x => x).ToList();
             List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = OrganizationNames.Select(on => new ReportStoreChecked_ReportStoreCheckedDTO
             {
@@ -358,7 +354,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     .ToList();
             }
 
-            AppUserIds = AppUsers.Select(s => s.Id).ToList();
+            AppUserIds = AppUserDAOs.Select(s => s.Id).ToList();
             StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
             {
                 Skip = 0,

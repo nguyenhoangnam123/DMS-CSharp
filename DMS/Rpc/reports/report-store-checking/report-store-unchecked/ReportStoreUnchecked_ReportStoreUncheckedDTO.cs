@@ -8,6 +8,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
     public class ReportStoreUnchecked_ReportStoreUncheckedDTO : DataDTO
     {
         public string OrganizationName { get; set; }
+        public string OrganizationPath { get; set; }
         public List<ReportStoreUnchecked_SaleEmployeeDTO> SaleEmployees { get; set; }
     }
 
