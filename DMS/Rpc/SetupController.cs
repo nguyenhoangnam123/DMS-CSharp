@@ -585,6 +585,7 @@ namespace DMS.Rpc
             InitSexEnum();
             InitSystemConfigurationEnum();
             InitWorkflowEnum();
+            InitColorEnum();
             return Ok();
         }
         private void InitStatusEnum()
@@ -973,6 +974,18 @@ namespace DMS.Rpc
 
             DataContext.WorkflowParameter.BulkMerge(WorkflowParameterDAOs);
         }
+
+        private void InitColorEnum()
+        {
+            List<ColorDAO> ColorDAOs = ColorEnum.ColorEnumList.Select(item => new ColorDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.Color.BulkSynchronize(ColorDAOs);
+        }
+
         #endregion
     }
 }

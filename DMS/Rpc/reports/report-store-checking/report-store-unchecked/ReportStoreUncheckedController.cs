@@ -216,7 +216,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                 .Include(su => su.Store.StoreType)
                 .ToListAsync();
 
-            List<string> OrganizationNames = AppUserDAOs.Select(x => x.Organization.Name).Distinct().ToList();
+            List<string> OrganizationNames = AppUserDAOs.Select(x => x.Organization.Path).Distinct().ToList();
             List<ReportStoreUnchecked_ReportStoreUncheckedDTO> ReportStoreUnchecked_ReportStoreUncheckedDTOs = OrganizationNames.Select(x => new ReportStoreUnchecked_ReportStoreUncheckedDTO
             {
                 OrganizationName = x,

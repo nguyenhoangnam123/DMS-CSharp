@@ -10,6 +10,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public string Username { get; set; }
         public string DisplayName { get; set; }
         public string OrganizationName { get; set; }
+        public string OrganizationPath { get; set; }
         public List<ReportStoreChecked_StoreCheckingGroupByDateDTO> StoreCheckingGroupByDates { get; set; }
     }
 }
