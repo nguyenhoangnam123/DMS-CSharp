@@ -16,7 +16,7 @@ namespace DMS.Entities
         public long StatusId { get; set; }
         public long OrganizationId { get; set; }
         public long PriceListTypeId { get; set; }
-        public long? SalesOrderTypeId { get; set; }
+        public long SalesOrderTypeId { get; set; }
         public Organization Organization { get; set; }
         public PriceListType PriceListType { get; set; }
         public SalesOrderType SalesOrderType { get; set; }
