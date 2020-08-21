@@ -31,7 +31,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
     {
         public DateTime Date { get; set; }
         public string DateString { get; set; }
-        public string dayOfWeek { get; set; }
+        public string DayOfWeek { get; set; }
         public List<ReportStoreChecked_StoreCheckingDTO> StoreCheckings { get; set; }
     }
 }
