@@ -37,7 +37,9 @@ namespace DMS.Services.MPriceList
             ItemNotExisted,
             StoreNotExisted,
             StoreTypeNotExisted,
-            StoreGroupingNotExisted
+            StoreGroupingNotExisted,
+            SalesOrderTypeEmpty,
+            SalesOrderTypeNotExisted
         }
 
         private IUOW UOW;
@@ -156,6 +158,23 @@ namespace DMS.Services.MPriceList
                 if (!PriceListTypeIds.Contains(PriceList.PriceListTypeId))
                 {
                     PriceList.AddError(nameof(PriceListValidator), nameof(PriceList.Organization), ErrorCode.PriceListTypeNotExisted);
+                }
+            }
+            return PriceList.IsValidated;
+        }
+
+        private async Task<bool> ValidateSalesOrderType(PriceList PriceList)
+        {
+            if (PriceList.SalesOrderTypeId == 0)
+            {
+                PriceList.AddError(nameof(PriceListValidator), nameof(PriceList.SalesOrderType), ErrorCode.SalesOrderTypeEmpty);
+            }
+            else
+            {
+                var SalesOrderTypeIds = SalesOrderTypeEnum.SalesOrderTypeEnumList.Select(x => x.Id).ToList();
+                if (!SalesOrderTypeIds.Contains(PriceList.SalesOrderTypeId))
+                {
+                    PriceList.AddError(nameof(PriceListValidator), nameof(PriceList.Organization), ErrorCode.SalesOrderTypeNotExisted);
                 }
             }
             return PriceList.IsValidated;

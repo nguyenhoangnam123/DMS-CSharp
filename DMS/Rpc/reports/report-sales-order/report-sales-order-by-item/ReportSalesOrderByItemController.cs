@@ -184,8 +184,26 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
+            List<long> ProductTypeIds = await FilterProductType(ProductTypeService, CurrentContext);
+            if (ProductTypeId.HasValue)
+            {
+                var listId = new List<long> { ProductTypeId.Value };
+                ProductTypeIds = ProductTypeIds.Intersect(listId).ToList();
+            }
+            List<long> ProductGroupingIds = await FilterProductGrouping(ProductGroupingService, CurrentContext);
+            if (ProductGroupingId.HasValue)
+            {
+                var listId = new List<long> { ProductGroupingId.Value };
+                ProductGroupingIds = ProductGroupingIds.Intersect(listId).ToList();
+            }
             var query = from t in DataContext.IndirectSalesOrderTransaction
-                        where OrganizationIds.Contains(t.OrganizationId)
+                        join i in DataContext.Item on t.ItemId equals i.Id
+                        join p in DataContext.Product on i.ProductId equals p.Id
+                        join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
+                        where OrganizationIds.Contains(t.OrganizationId) &&
+                        (ItemId.HasValue == false || t.ItemId == ItemId) &&
+                        (ProductTypeIds.Contains(p.ProductTypeId)) &&
+                        (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(ppgm.ProductGroupingId))
                         group t by new {t.OrganizationId, t.ItemId } into x
                         select new
                         {
@@ -231,9 +249,27 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+            List<long> ProductTypeIds = await FilterProductType(ProductTypeService, CurrentContext);
+            if (ProductTypeId.HasValue)
+            {
+                var listId = new List<long> { ProductTypeId.Value };
+                ProductTypeIds = ProductTypeIds.Intersect(listId).ToList();
+            }
+            List<long> ProductGroupingIds = await FilterProductGrouping(ProductGroupingService, CurrentContext);
+            if (ProductGroupingId.HasValue)
+            {
+                var listId = new List<long> { ProductGroupingId.Value };
+                ProductGroupingIds = ProductGroupingIds.Intersect(listId).ToList();
+            }
 
             var query = from t in DataContext.IndirectSalesOrderTransaction
-                        where OrganizationIds.Contains(t.OrganizationId)
+                        join i in DataContext.Item on t.ItemId equals i.Id
+                        join p in DataContext.Product on i.ProductId equals p.Id
+                        join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
+                        where OrganizationIds.Contains(t.OrganizationId) &&
+                        (ItemId.HasValue == false || t.ItemId == ItemId) &&
+                        (ProductTypeIds.Contains(p.ProductTypeId)) &&
+                        (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(ppgm.ProductGroupingId))
                         group t by new { t.OrganizationId, t.ItemId } into x
                         select new
                         {
@@ -261,15 +297,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             var ItemIds = keys.Select(x => x.ItemId).Distinct().ToList();
             var queryTransaction = from t in DataContext.IndirectSalesOrderTransaction
                                    join i in DataContext.Item on t.ItemId equals i.Id
-                                   join p in DataContext.Product on i.ProductId equals p.Id
-                                   join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
                                    join ind in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals ind.Id
                                    join u in DataContext.UnitOfMeasure on t.UnitOfMeasureId equals u.Id
                                    join o in DataContext.Organization on t.OrganizationId equals o.Id
                                    where OrgIds.Contains(t.OrganizationId) &&
-                                   ItemIds.Contains(t.ItemId) &&
-                                   (ProductTypeId.HasValue == false || p.ProductTypeId == ProductTypeId) &&
-                                   (ProductGroupingId.HasValue == false || ppgm.ProductGroupingId == ProductGroupingId)
+                                   ItemIds.Contains(t.ItemId)
                                    select new IndirectSalesOrderTransactionDAO
                                    {
                                        Id = t.Id,
@@ -381,13 +413,27 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
-            List<long> AppUserIds = await DataContext.AppUser.Where(au =>
-               au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
-                .Select(x => x.Id)
-                .ToListAsync();
+            List<long> ProductTypeIds = await FilterProductType(ProductTypeService, CurrentContext);
+            if (ProductTypeId.HasValue)
+            {
+                var listId = new List<long> { ProductTypeId.Value };
+                ProductTypeIds = ProductTypeIds.Intersect(listId).ToList();
+            }
+            List<long> ProductGroupingIds = await FilterProductGrouping(ProductGroupingService, CurrentContext);
+            if (ProductGroupingId.HasValue)
+            {
+                var listId = new List<long> { ProductGroupingId.Value };
+                ProductGroupingIds = ProductGroupingIds.Intersect(listId).ToList();
+            }
 
             var query = from t in DataContext.IndirectSalesOrderTransaction
-                        where OrganizationIds.Contains(t.OrganizationId)
+                        join i in DataContext.Item on t.ItemId equals i.Id
+                        join p in DataContext.Product on i.ProductId equals p.Id
+                        join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
+                        where OrganizationIds.Contains(t.OrganizationId) &&
+                        (ItemId.HasValue == false || t.ItemId == ItemId) &&
+                        (ProductTypeIds.Contains(p.ProductTypeId)) &&
+                        (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(ppgm.ProductGroupingId))
                         group t by new { t.OrganizationId, t.ItemId } into x
                         select new
                         {
@@ -402,15 +448,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             var ItemIds = keys.Select(x => x.ItemId).Distinct().ToList();
             var queryTransaction = from t in DataContext.IndirectSalesOrderTransaction
                                    join i in DataContext.Item on t.ItemId equals i.Id
-                                   join p in DataContext.Product on i.ProductId equals p.Id
-                                   join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
                                    join ind in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals ind.Id
                                    join u in DataContext.UnitOfMeasure on t.UnitOfMeasureId equals u.Id
                                    join o in DataContext.Organization on t.OrganizationId equals o.Id
                                    where OrgIds.Contains(t.OrganizationId) &&
-                                   ItemIds.Contains(t.ItemId) &&
-                                   (ProductTypeId.HasValue == false || p.ProductTypeId == ProductTypeId) &&
-                                   (ProductGroupingId.HasValue == false || ppgm.ProductGroupingId == ProductGroupingId)
+                                   ItemIds.Contains(t.ItemId)
                                    select new IndirectSalesOrderTransactionDAO
                                    {
                                        Id = t.Id,

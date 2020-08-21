@@ -15,13 +15,17 @@
     "EndDate": {
       "EndDateInvalid": "Ngày kết thúc không hợp lệ"
     },
-    "OrganizationId": {
+    "Organization": {
       "OrganizationNotExisted": "Đơn vị tổ chức không tồn tại",
       "OrganizationEmpty": "Chưa nhập đơn vị tổ chức"
     },
     "PriceListType": {
       "PriceListTypeEmpty": "Chưa chọn đối tượng áp dụng",
       "PriceListTypeNotExisted": "Đối tượng áp dụng không tồn tại"
+    },
+    "SalesOrderType": {
+      "SalesOrderTypeEmpty": "Chưa chọn loại đơn hàng",
+      "SalesOrderTypeNotExisted": "Loại đơn hàng không tồn tại"
     },
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"

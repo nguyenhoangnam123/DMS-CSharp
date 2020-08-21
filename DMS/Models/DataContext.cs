@@ -1874,6 +1874,7 @@ namespace DMS.Models
                 entity.HasOne(d => d.SalesOrderType)
                     .WithMany(p => p.PriceLists)
                     .HasForeignKey(d => d.SalesOrderTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PriceList_SalesOrderType");
 
                 entity.HasOne(d => d.Status)
