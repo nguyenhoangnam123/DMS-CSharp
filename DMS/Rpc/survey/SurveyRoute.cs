@@ -46,7 +46,7 @@ namespace DMS.Rpc.survey
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Get, AnswerStatistics,
-                FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, } },
+                FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType, FilterListOrganization, } },
             { "Thêm", new List<string> {
                 Parent,
                 Master, Count, List, Get,
