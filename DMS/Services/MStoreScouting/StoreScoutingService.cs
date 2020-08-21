@@ -303,16 +303,16 @@ namespace DMS.Services.MStoreScouting
                 .Select(x => x.Id)
                 .ToList();
 
-            var AppUserIds = (await UOW.AppUserRepository.List(new AppUserFilter
+            var AppUsers = await UOW.AppUserRepository.List(new AppUserFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = AppUserSelect.Id,
+                Selects = AppUserSelect.Id | AppUserSelect.Organization,
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
-            })).Select(x => x.Id).ToList();
+            });
 
-            AppUserIds = AppUserIds.Intersect(Ids).ToList();
+            var AppUserIds = AppUsers.Where(x => OrganizationIds.Contains(x.OrganizationId.Value)).Select(x => x.Id).ToList();
             return AppUserIds;
         }
 
