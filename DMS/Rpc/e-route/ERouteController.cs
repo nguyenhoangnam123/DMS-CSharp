@@ -679,7 +679,7 @@ namespace DMS.Rpc.e_route
             StoreFilter.Code = ERoute_StoreFilterDTO.Code;
             StoreFilter.Name = ERoute_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
+            StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
             StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;
@@ -712,7 +712,7 @@ namespace DMS.Rpc.e_route
             StoreFilter.Code = ERoute_StoreFilterDTO.Code;
             StoreFilter.Name = ERoute_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
+            StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
             StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;

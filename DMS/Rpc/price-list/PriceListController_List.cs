@@ -478,9 +478,12 @@ namespace DMS.Rpc.price_list
             ItemFilter ItemFilter = new ItemFilter();
             ItemFilter.Id = PriceList_ItemFilterDTO.Id;
             ItemFilter.ProductId = PriceList_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = PriceList_ItemFilterDTO.ProductTypeId;
+            ItemFilter.ProductGroupingId = PriceList_ItemFilterDTO.ProductGroupingId;
             ItemFilter.Code = PriceList_ItemFilterDTO.Code;
             ItemFilter.Name = PriceList_ItemFilterDTO.Name;
             ItemFilter.ScanCode = PriceList_ItemFilterDTO.ScanCode;
+            ItemFilter.OtherName = PriceList_ItemFilterDTO.OtherName;
             ItemFilter.SalePrice = PriceList_ItemFilterDTO.SalePrice;
             ItemFilter.RetailPrice = PriceList_ItemFilterDTO.RetailPrice;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
@@ -501,9 +504,12 @@ namespace DMS.Rpc.price_list
             ItemFilter.Selects = ItemSelect.ALL;
             ItemFilter.Id = PriceList_ItemFilterDTO.Id;
             ItemFilter.ProductId = PriceList_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = PriceList_ItemFilterDTO.ProductTypeId;
+            ItemFilter.ProductGroupingId = PriceList_ItemFilterDTO.ProductGroupingId;
             ItemFilter.Code = PriceList_ItemFilterDTO.Code;
             ItemFilter.Name = PriceList_ItemFilterDTO.Name;
             ItemFilter.ScanCode = PriceList_ItemFilterDTO.ScanCode;
+            ItemFilter.OtherName = PriceList_ItemFilterDTO.OtherName;
             ItemFilter.SalePrice = PriceList_ItemFilterDTO.SalePrice;
             ItemFilter.RetailPrice = PriceList_ItemFilterDTO.RetailPrice;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
