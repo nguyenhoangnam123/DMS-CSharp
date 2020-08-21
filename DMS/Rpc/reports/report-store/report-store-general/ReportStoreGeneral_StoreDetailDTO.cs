@@ -20,6 +20,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         public string TotalCheckingTime { get; set; }
         public DateTime FirstChecking { get; set; }
         public DateTime LastChecking { get; set; }
+        public string EmployeeLastChecking { get; set; }
         public long IndirectSalesOrderCounter => IndirectSalesOrderIds?.Count() ?? 0;
         public long SKUCounter => SKUItemIds?.Count() ?? 0;
         public decimal TotalRevenue { get; set; }

@@ -257,6 +257,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 (StoreId == null || x.Id == StoreId.Value) &&
                 (StoreTypeId == null || x.StoreTypeId == StoreTypeId.Value) &&
                 (StoreGroupingId == null || x.StoreGroupingId == StoreGroupingId.Value))
+                .OrderBy(x => x.OrganizationId).ThenBy(x => x.Name)
                 .Skip(ReportStoreGeneral_ReportStoreGeneralFilterDTO.Skip)
                 .Take(ReportStoreGeneral_ReportStoreGeneralFilterDTO.Take)
                 .ToListAsync();
@@ -343,6 +344,9 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                     //lượt viếng thăm gần nhất
                     Store.LastChecking = StoreCheckings.OrderByDescending(x => x.CheckOutAt)
                         .Select(x => x.CheckOutAt.Value.Date)
+                        .FirstOrDefault();
+                    Store.EmployeeLastChecking = StoreCheckings.OrderByDescending(x => x.CheckOutAt)
+                        .Select(x => x.SaleEmployee.DisplayName)
                         .FirstOrDefault();
                     //tổng thời gian viếng thăm
                     var TotalMinuteChecking = StoreCheckings.Sum(x => (x.CheckOutAt.Value.Subtract(x.CheckInAt.Value)).TotalSeconds);

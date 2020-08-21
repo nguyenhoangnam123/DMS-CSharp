@@ -153,7 +153,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
-
+            
             var query = from i in DataContext.IndirectSalesOrder
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
