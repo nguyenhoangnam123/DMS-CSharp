@@ -17,6 +17,7 @@ namespace DMS.Models
         public virtual DbSet<AppUserStoreMappingDAO> AppUserStoreMapping { get; set; }
         public virtual DbSet<BannerDAO> Banner { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
+        public virtual DbSet<ColorDAO> Color { get; set; }
         public virtual DbSet<CounterDAO> Counter { get; set; }
         public virtual DbSet<DirectSalesOrderDAO> DirectSalesOrder { get; set; }
         public virtual DbSet<DirectSalesOrderContentDAO> DirectSalesOrderContent { get; set; }
@@ -475,6 +476,21 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Brand_Status");
+            });
+
+            modelBuilder.Entity<ColorDAO>(entity =>
+            {
+                entity.ToTable("Color", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<CounterDAO>(entity =>
@@ -2950,6 +2966,11 @@ namespace DMS.Models
                     .HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Color)
+                    .WithMany(p => p.StoreTypes)
+                    .HasForeignKey(d => d.ColorId)
+                    .HasConstraintName("FK_StoreType_Color");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.StoreTypes)

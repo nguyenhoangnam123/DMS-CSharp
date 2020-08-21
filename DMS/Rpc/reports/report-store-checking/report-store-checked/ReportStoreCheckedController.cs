@@ -306,9 +306,10 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 Username = au.Username,
                 DisplayName = au.DisplayName,
                 OrganizationName = au.Organization?.Name,
+                OrganizationPath = au.Organization?.Path,
             }).ToList();
 
-            List<string> OrganizationNames = ReportStoreChecked_SaleEmployeeDTOs.Select(se => se.OrganizationName).Distinct().ToList();
+            List<string> OrganizationNames = ReportStoreChecked_SaleEmployeeDTOs.Select(se => se.OrganizationPath).Distinct().ToList();
             OrganizationNames = OrganizationNames.OrderBy(x => x).ToList();
             List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = OrganizationNames.Select(on => new ReportStoreChecked_ReportStoreCheckedDTO
             {
