@@ -208,8 +208,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (StoreIds.Contains(i.BuyerStoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
-                        ((StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId)) ||
-                        (s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value) || s.StoreGroupingId.HasValue == false) &&
+                        (
+                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
+                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                        ) &&
                         OrganizationIds.Contains(s.OrganizationId)
                         select s;
 
@@ -276,8 +278,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (StoreIds.Contains(i.BuyerStoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
-                        ((StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId)) ||
-                        (s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value) || s.StoreGroupingId.HasValue == false) &&
+                        (
+                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
+                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                        ) &&
                         (OrganizationIds.Contains(s.OrganizationId))
                         select new Store
                         {
@@ -292,6 +296,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                                 Code = o.Code,
                                 Name = o.Name,
                             }
+
                         };
 
             List<Store> Stores = await query.Distinct().ToListAsync();
@@ -500,8 +505,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (StoreIds.Contains(i.BuyerStoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
-                        ((StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId)) ||
-                        (s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value) || s.StoreGroupingId.HasValue == false) &&
+                        (
+                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
+                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                        ) &&
                         (OrganizationIds.Contains(s.OrganizationId))
                         select new Store
                         {

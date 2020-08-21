@@ -300,6 +300,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             }
             ReportStoreGeneral_ReportStoreGeneralDTOs = ReportStoreGeneral_ReportStoreGeneralDTOs.Where(x => x.Stores.Any()).ToList();
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
+                .Include(x => x.SaleEmployee)
                 .Where(sc => sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                 StoreIds.Contains(sc.StoreId))
                 .ToListAsync();
