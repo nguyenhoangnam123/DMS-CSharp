@@ -123,7 +123,7 @@ namespace DMS.Services.MStoreChecking
                 StoreChecking.CheckInAt = StaticParams.DateTimeNow;
                 StoreChecking.SaleEmployeeId = CurrentContext.UserId;
 
-                Dictionary<long, long> StorePlannedIds = await ListOnlineStoreIds(null, true);
+                Dictionary<long, long> StorePlannedIds = await ListOnlineStoreIds(null);
                 if (StorePlannedIds.Any(x => x.Key == StoreChecking.StoreId))
                 {
                     StoreChecking.Planned = true;
@@ -312,7 +312,7 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
-                Dictionary<long, long> StoreIds = await ListOnlineStoreIds(ERouteId, true);
+                Dictionary<long, long> StoreIds = await ListOnlineStoreIds(ERouteId);
                 StoreFilter.Id = new IdFilter { In = StoreIds.Select(x => x.Key).ToList() };
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 int count = await UOW.StoreRepository.Count(StoreFilter);
@@ -349,7 +349,7 @@ namespace DMS.Services.MStoreChecking
                 // Lấy danh sách tất cả các cửa hàng trong tuyến ra
                 // Tính khoảng cách
                 // sắp xếp theo thứ tự ưu tiên trước rồi đến khoảng cách
-                Dictionary<long, long> StoreIds = await ListOnlineStoreIds(ERouteId, true);
+                Dictionary<long, long> StoreIds = await ListOnlineStoreIds(ERouteId);
                 StoreFilter.Id = new IdFilter { In = StoreIds.Select(x => x.Key).ToList() };
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 StoreFilter.Skip = 0;
@@ -394,7 +394,7 @@ namespace DMS.Services.MStoreChecking
             try
             {
                 var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                Dictionary<long, long> StoreIds = await ListOfflineStoreIds(ERouteId, false);
+                Dictionary<long, long> StoreIds = await ListOfflineStoreIds(ERouteId);
                 StoreFilter.Id.In = StoreIds.Select(x => x.Key).ToList();
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 int count = await UOW.StoreRepository.Count(StoreFilter);
@@ -432,7 +432,7 @@ namespace DMS.Services.MStoreChecking
                 // sắp xếp theo thứ tự ưu tiên trước rồi đến khoảng cách
                 int skip = StoreFilter.Skip;
                 int take = StoreFilter.Take;
-                Dictionary<long, long> StoreIds = await ListOfflineStoreIds(ERouteId, false);
+                Dictionary<long, long> StoreIds = await ListOfflineStoreIds(ERouteId);
                 StoreFilter.Id.In = StoreIds.Select(x => x.Key).ToList();
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 StoreFilter.Skip = 0;
@@ -511,7 +511,7 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
-                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId); 
+                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 List<Store> Stores;
                 int skip = StoreFilter.Skip;
                 int take = StoreFilter.Take;
@@ -599,7 +599,7 @@ namespace DMS.Services.MStoreChecking
         }
 
         // Lấy danh sách tất cả các đại lý theo kế hoạch
-        private async Task<Dictionary<long, long>> ListOnlineStoreIds(IdFilter ERouteId, bool Planned)
+        private async Task<Dictionary<long, long>> ListOnlineStoreIds(IdFilter ERouteId)
         {
             DateTime Now = StaticParams.DateTimeNow.Date;
             List<long> ERouteIds = (await UOW.ERouteRepository.List(new ERouteFilter
@@ -626,7 +626,7 @@ namespace DMS.Services.MStoreChecking
             foreach (var ERouteContent in ERouteContents)
             {
                 var index = (Now - ERouteContent.ERoute.RealStartDate).Days % 28;
-                if (ERouteContent.ERouteContentDays[index].Planned == Planned)
+                if (ERouteContent.ERouteContentDays[index].Planned == true)
                 {
                     long StoreId = StoreIds.Where(x => x.Key == ERouteContent.StoreId)
                         .Select(x => x.Key)
@@ -649,7 +649,7 @@ namespace DMS.Services.MStoreChecking
             return StoreIds;
         }
 
-        private async Task<Dictionary<long, long>> ListOfflineStoreIds(IdFilter ERouteId, bool Planned)
+        private async Task<Dictionary<long, long>> ListOfflineStoreIds(IdFilter ERouteId)
         {
             DateTime Now = StaticParams.DateTimeNow.Date;
             List<long> ERouteIds = (await UOW.ERouteRepository.List(new ERouteFilter
@@ -676,7 +676,7 @@ namespace DMS.Services.MStoreChecking
             foreach (var ERouteContent in ERouteContents)
             {
                 var index = (Now - ERouteContent.ERoute.RealStartDate).Days % 28;
-                if (ERouteContent.ERouteContentDays[index].Planned != Planned)
+                if (ERouteContent.ERouteContentDays[index].Planned == false)
                 {
                     long StoreId = StoreIds.Where(x => x.Key == ERouteContent.StoreId)
                         .Select(x => x.Key)
