@@ -272,6 +272,8 @@ namespace DMS.Services.MStoreChecking
         /// <returns></returns>
         public async Task<long> CountStore(StoreFilter StoreFilter, IdFilter ERouteId)
         {
+            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
             int count = await UOW.StoreRepository.Count(StoreFilter);
             return count;
         }
@@ -292,6 +294,8 @@ namespace DMS.Services.MStoreChecking
             int take = StoreFilter.Take;
             StoreFilter.Skip = 0;
             StoreFilter.Take = int.MaxValue;
+            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
             Stores = await UOW.StoreRepository.List(StoreFilter);
             if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
             {
