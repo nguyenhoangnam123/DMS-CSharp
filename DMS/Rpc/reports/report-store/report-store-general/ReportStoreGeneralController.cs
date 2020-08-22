@@ -7,12 +7,9 @@ using DMS.Services.MOrganization;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
-using Hangfire.Annotations;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NGS.Templater;
-using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -189,14 +186,38 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
-            var query = from sc in DataContext.StoreChecking
-                        join s in DataContext.Store on sc.StoreId equals s.Id
-                        join o in DataContext.Organization on s.OrganizationId equals o.Id
-                        where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
-                        (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
-                        (StoreTypeId.HasValue == false || s.StoreTypeId == StoreTypeId.Value) &&
-                        (StoreGroupingId.HasValue == false || s.StoreGroupingId == StoreGroupingId.Value) &&
-                        OrganizationIds.Contains(o.Id)
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (StoreId.HasValue)
+            {
+                var listId = new List<long> { StoreId.Value };
+                StoreIds = StoreIds.Intersect(listId).ToList();
+            }
+            List<long> StoreTypeIds = await FilterStoreType(StoreTypeService, CurrentContext);
+            if (StoreTypeId.HasValue)
+            {
+                var listId = new List<long> { StoreTypeId.Value };
+                StoreTypeIds = StoreTypeIds.Intersect(listId).ToList();
+            }
+            List<long> StoreGroupingIds = await FilterStoreGrouping(StoreGroupingService, CurrentContext);
+            if (StoreGroupingId.HasValue)
+            {
+                var listId = new List<long> { StoreGroupingId.Value };
+                StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
+            }
+            var query = from s in DataContext.Store
+                        where (StoreId.HasValue == false || StoreIds.Contains(s.Id)) &&
+                        (StoreTypeId.HasValue == false || StoreTypeIds.Contains(s.StoreTypeId)) &&
+                        (
+                            (
+                                StoreGroupingId.HasValue == false && 
+                                (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
+                            ) ||
+                            (
+                                StoreGroupingId.HasValue && 
+                                StoreGroupingId.Value == s.StoreGroupingId.Value
+                            )
+                        ) &&
+                        OrganizationIds.Contains(s.OrganizationId)
                         select s;
 
             int count = await query.Distinct().CountAsync();
@@ -238,18 +259,42 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (StoreId.HasValue)
+            {
+                var listId = new List<long> { StoreId.Value };
+                StoreIds = StoreIds.Intersect(listId).ToList();
+            }
+            List<long> StoreTypeIds = await FilterStoreType(StoreTypeService, CurrentContext);
+            if (StoreTypeId.HasValue)
+            {
+                var listId = new List<long> { StoreTypeId.Value };
+                StoreTypeIds = StoreTypeIds.Intersect(listId).ToList();
+            }
+            List<long> StoreGroupingIds = await FilterStoreGrouping(StoreGroupingService, CurrentContext);
+            if (StoreGroupingId.HasValue)
+            {
+                var listId = new List<long> { StoreGroupingId.Value };
+                StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
+            }
 
-            var query = from sc in DataContext.StoreChecking
-                        join s in DataContext.Store on sc.StoreId equals s.Id
-                        join o in DataContext.Organization on s.OrganizationId equals o.Id
-                        where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
-                        (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
-                        (StoreTypeId.HasValue == false || s.StoreTypeId == StoreTypeId.Value) &&
-                        (StoreGroupingId.HasValue == false || s.StoreGroupingId == StoreGroupingId.Value) &&
-                        OrganizationIds.Contains(o.Id)
+            var query = from s in DataContext.Store
+                        where (StoreId.HasValue == false || StoreIds.Contains(s.Id)) &&
+                        (StoreTypeId.HasValue == false || StoreTypeIds.Contains(s.StoreTypeId)) &&
+                        (
+                            (
+                                StoreGroupingId.HasValue == false &&
+                                (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
+                            ) ||
+                            (
+                                StoreGroupingId.HasValue &&
+                                StoreGroupingId.Value == s.StoreGroupingId.Value
+                            )
+                        ) &&
+                        OrganizationIds.Contains(s.OrganizationId)
                         select s;
 
-            var StoreIds = await query.Select(x => x.Id).Distinct().ToListAsync();
+            StoreIds = await query.Select(x => x.Id).Distinct().ToListAsync();
 
             List<StoreDAO> StoreDAOs = await DataContext.Store.Include(x => x.Organization)
                 .Where(x => OrganizationIds.Contains(x.OrganizationId) &&

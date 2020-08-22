@@ -240,11 +240,17 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        (StoreIds.Contains(sc.StoreId)) &&
-                        (StoreTypeIds.Contains(s.StoreTypeId)) &&
+                        (StoreId.HasValue == false || StoreIds.Contains(s.Id)) &&
+                        (StoreTypeId.HasValue == false || StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
-                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
-                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                            (
+                                StoreGroupingId.HasValue == false &&
+                                (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
+                            ) ||
+                            (
+                                StoreGroupingId.HasValue &&
+                                StoreGroupingId.Value == s.StoreGroupingId.Value
+                            )
                         ) &&
                         (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
                         select au;
@@ -312,11 +318,17 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        (StoreIds.Contains(sc.StoreId)) &&
-                        (StoreTypeIds.Contains(s.StoreTypeId)) &&
+                        (StoreId.HasValue == false || StoreIds.Contains(s.Id)) &&
+                        (StoreTypeId.HasValue == false || StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
-                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
-                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                            (
+                                StoreGroupingId.HasValue == false &&
+                                (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
+                            ) ||
+                            (
+                                StoreGroupingId.HasValue &&
+                                StoreGroupingId.Value == s.StoreGroupingId.Value
+                            )
                         ) &&
                         (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
                         select au;
@@ -331,9 +343,19 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 .ToListAsync();
 
             List<StoreDAO> StoreDAOs = await DataContext.Store.Where(x => OrganizationIds.Contains(x.OrganizationId) &&
-                (StoreId == null || x.Id == StoreId.Value) &&
-                (StoreTypeId == null || x.StoreTypeId == StoreTypeId.Value) &&
-                (StoreGroupingId == null || x.StoreGroupingId == StoreGroupingId.Value))
+                (StoreId.HasValue == false || StoreIds.Contains(x.Id)) &&
+                        (StoreTypeId.HasValue == false || StoreTypeIds.Contains(x.StoreTypeId)) &&
+                        (
+                            (
+                                StoreGroupingId.HasValue == false &&
+                                (x.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(x.StoreGroupingId.Value))
+                            ) ||
+                            (
+                                StoreGroupingId.HasValue &&
+                                StoreGroupingId.Value == x.StoreGroupingId.Value
+                            )
+                        )
+                )
                 .ToListAsync();
 
             List<ReportStoreChecked_SaleEmployeeDTO> ReportStoreChecked_SaleEmployeeDTOs = AppUserDAOs.Select(au => new ReportStoreChecked_SaleEmployeeDTO
@@ -365,7 +387,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 Take = int.MaxValue,
                 Selects = StoreCheckingSelect.ALL,
                 CheckOutAt = new DateFilter { GreaterEqual = Start, LessEqual = End },
-                SaleEmployeeId = new IdFilter { In = AppUserIds }
+                SaleEmployeeId = new IdFilter { In = AppUserIds },
+                StoreId = new IdFilter { In = StoreIds }
             };
             List<StoreChecking> storeCheckings = await StoreCheckingService.List(StoreCheckingFilter);
             var StoreCheckingIds = storeCheckings.Select(x => x.Id).ToList();

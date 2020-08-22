@@ -209,8 +209,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                         (StoreIds.Contains(i.BuyerStoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
-                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
-                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                            (
+                                StoreGroupingId.HasValue == false &&
+                                (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
+                            ) ||
+                            (
+                                StoreGroupingId.HasValue &&
+                                StoreGroupingId.Value == s.StoreGroupingId.Value
+                            )
                         ) &&
                         OrganizationIds.Contains(s.OrganizationId)
                         select s;
@@ -279,8 +285,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                         (StoreIds.Contains(i.BuyerStoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
-                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
-                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                            (
+                                StoreGroupingId.HasValue == false &&
+                                (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
+                            ) ||
+                            (
+                                StoreGroupingId.HasValue &&
+                                StoreGroupingId.Value == s.StoreGroupingId.Value
+                            )
                         ) &&
                         (OrganizationIds.Contains(s.OrganizationId))
                         select new Store
@@ -502,8 +514,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                         (StoreIds.Contains(i.BuyerStoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
-                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
-                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                            (
+                                StoreGroupingId.HasValue == false &&
+                                (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
+                            ) ||
+                            (
+                                StoreGroupingId.HasValue &&
+                                StoreGroupingId.Value == s.StoreGroupingId.Value
+                            )
                         ) &&
                         (OrganizationIds.Contains(s.OrganizationId))
                         select new Store
