@@ -247,16 +247,23 @@ namespace DMS.Rpc.price_list
                     else if (string.IsNullOrWhiteSpace(ItemCodeValue) && i == worksheet.Dimension.End.Row)
                         break;
 
-                    PriceListItemMapping PriceListItemMapping = new PriceListItemMapping();
+                    
                     var Item = Items.Where(x => x.Code == ItemCodeValue).FirstOrDefault();
                     if(Item == null)
                     {
                         errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Mã sản phẩm không tồn tại");
                         continue;
                     }
-                    PriceListItemMapping.PriceListId = PriceList.Id;
-                    PriceListItemMapping.ItemId = Item.Id;
-                    PriceListItemMapping.Item = Item;
+                    PriceListItemMapping PriceListItemMapping = PriceList.PriceListItemMappings.Where(x => x.ItemId == Item.Id).FirstOrDefault();
+                    if (PriceListItemMapping == null)
+                    {
+                        PriceListItemMapping = new PriceListItemMapping();
+                        PriceListItemMapping.PriceListId = PriceList.Id;
+                        PriceListItemMapping.ItemId = Item.Id;
+                        PriceListItemMapping.Item = Item;
+                        PriceList.PriceListItemMappings.Add(PriceListItemMapping);
+                    }
+                        
                     if (long.TryParse(PriceValue, out long Price))
                     {
                         PriceListItemMapping.Price = Price;
@@ -267,13 +274,10 @@ namespace DMS.Rpc.price_list
                     {
                         errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập giá bán");
                     }
-
-                    PriceList.PriceListItemMappings.Add(PriceListItemMapping);
                 }
                 if (errorContent.Length > 0)
                     return BadRequest(errorContent.ToString());
             }
-            PriceList.PriceListItemMappings = PriceList.PriceListItemMappings.Distinct().ToList();
             List<PriceList_PriceListItemMappingDTO> PriceList_PriceListItemMappingDTOs = PriceList.PriceListItemMappings
                  .Select(c => new PriceList_PriceListItemMappingDTO(c)).ToList();
             return PriceList_PriceListItemMappingDTOs;
@@ -330,22 +334,25 @@ namespace DMS.Rpc.price_list
                     else if (string.IsNullOrWhiteSpace(StoreCodeValue) && i == worksheet.Dimension.End.Row)
                         break;
 
-                    PriceListStoreMapping PriceListStoreMapping = new PriceListStoreMapping();
                     var Store = Stores.Where(x => x.Code == StoreCodeValue).FirstOrDefault();
                     if(Store == null)
                     {
                         errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Mã đại lý không tồn tại");
                         continue;
                     }
-                    PriceListStoreMapping.PriceListId = PriceList.Id;
-                    PriceListStoreMapping.StoreId = Store.Id;
-                    PriceListStoreMapping.Store = Store;
-                    PriceList.PriceListStoreMappings.Add(PriceListStoreMapping);
+                    PriceListStoreMapping PriceListStoreMapping = PriceList.PriceListStoreMappings.Where(x => x.StoreId == Store.Id).FirstOrDefault();
+                    if(PriceListStoreMapping == null)
+                    {
+                        PriceListStoreMapping = new PriceListStoreMapping();
+                        PriceListStoreMapping.PriceListId = PriceList.Id;
+                        PriceListStoreMapping.StoreId = Store.Id;
+                        PriceListStoreMapping.Store = Store;
+                        PriceList.PriceListStoreMappings.Add(PriceListStoreMapping);
+                    }
                 }
                 if (errorContent.Length > 0)
                     return BadRequest(errorContent.ToString());
             }
-            PriceList.PriceListStoreMappings = PriceList.PriceListStoreMappings.Distinct().ToList();
 
             List<PriceList_PriceListStoreMappingDTO> PriceList_PriceListStoreMappingDTOs = PriceList.PriceListStoreMappings
                  .Select(c => new PriceList_PriceListStoreMappingDTO(c)).ToList();
