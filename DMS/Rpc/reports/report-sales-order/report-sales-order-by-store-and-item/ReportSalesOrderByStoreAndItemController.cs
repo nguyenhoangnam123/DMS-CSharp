@@ -208,8 +208,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (StoreIds.Contains(i.BuyerStoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
-                        ((StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId)) ||
-                        (s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value) || s.StoreGroupingId.HasValue == false) &&
+                        (
+                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
+                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                        ) &&
                         OrganizationIds.Contains(s.OrganizationId)
                         select s;
 
@@ -276,8 +278,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (StoreIds.Contains(i.BuyerStoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
-                        ((StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId)) ||
-                        (s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value) || s.StoreGroupingId.HasValue == false) &&
+                        (
+                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
+                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                        ) &&
                         (OrganizationIds.Contains(s.OrganizationId))
                         select new Store
                         {
@@ -292,6 +296,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                                 Code = o.Code,
                                 Name = o.Name,
                             }
+
                         };
 
             List<Store> Stores = await query.Distinct().ToListAsync();
@@ -416,10 +421,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                     }
                 }
             }
-            foreach (var ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO in ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs)
-            {
-                ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO.Stores = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO.Stores.Where(x => x.Items.Any()).ToList();
-            }
 
             //làm tròn số
             foreach (var ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO in ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs)
@@ -500,8 +501,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (StoreIds.Contains(i.BuyerStoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
-                        ((StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId)) ||
-                        (s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value) || s.StoreGroupingId.HasValue == false) &&
+                        (
+                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
+                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                        ) &&
                         (OrganizationIds.Contains(s.OrganizationId))
                         select new Store
                         {
@@ -586,13 +589,21 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                                     Id = item.Id,
                                     Code = item.Code,
                                     Name = item.Name,
+                                    IndirectSalesOrderIds = new HashSet<long>(),
                                 };
                                 Store.Items.Add(ReportSalesOrderByStoreAndItem_ItemDTO);
                             }
+                            ReportSalesOrderByStoreAndItem_ItemDTO.IndirectSalesOrderIds.Add(IndirectSalesOrderContentDAO.IndirectSalesOrderId);
                             ReportSalesOrderByStoreAndItem_ItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
+                            ReportSalesOrderByStoreAndItem_ItemDTO.SalePriceAverage += (IndirectSalesOrderContentDAO.SalePrice * IndirectSalesOrderContentDAO.RequestedQuantity);
                             ReportSalesOrderByStoreAndItem_ItemDTO.Revenue += (IndirectSalesOrderContentDAO.Amount - (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.TaxAmount ?? 0));
-                            ReportSalesOrderByStoreAndItem_ItemDTO.Discount += (IndirectSalesOrderContentDAO.DiscountAmount ?? 0 + IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0);
+                            ReportSalesOrderByStoreAndItem_ItemDTO.Discount += ((IndirectSalesOrderContentDAO.DiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0));
                         }
+                    }
+
+                    foreach (var item in Store.Items)
+                    {
+                        item.SalePriceAverage = item.SalePriceAverage / item.SaleStock;
                     }
 
                     foreach (IndirectSalesOrderPromotionDAO IndirectSalesOrderPromotionDAO in IndirectSalesOrderPromotionDAOs)
@@ -610,9 +621,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                                     Id = item.Id,
                                     Code = item.Code,
                                     Name = item.Name,
+                                    IndirectSalesOrderIds = new HashSet<long>(),
                                 };
                                 Store.Items.Add(ReportSalesOrderByStoreAndItem_ItemDTO);
                             }
+                            ReportSalesOrderByStoreAndItem_ItemDTO.IndirectSalesOrderIds.Add(IndirectSalesOrderPromotionDAO.IndirectSalesOrderId);
                             ReportSalesOrderByStoreAndItem_ItemDTO.PromotionStock += IndirectSalesOrderPromotionDAO.RequestedQuantity;
                         }
                     }

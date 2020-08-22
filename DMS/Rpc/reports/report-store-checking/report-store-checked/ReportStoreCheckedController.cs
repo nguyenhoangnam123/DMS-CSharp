@@ -242,8 +242,10 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreIds.Contains(sc.StoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
-                        ((StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId)) ||
-                        (s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value) || s.StoreGroupingId.HasValue == false) &&
+                        (
+                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
+                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                        ) &&
                         (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
                         select au;
 
@@ -312,8 +314,10 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreIds.Contains(sc.StoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
-                        ((StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId)) ||
-                        (s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value) || s.StoreGroupingId.HasValue == false) &&
+                        (
+                            (StoreGroupingId.HasValue == false && s.StoreGroupingId.HasValue && s.StoreGroupingId.Value == StoreGroupingId) ||
+                            ((s.StoreGroupingId.HasValue && StoreGroupingIds.Contains(s.StoreGroupingId.Value)) || s.StoreGroupingId.HasValue == false)
+                        ) &&
                         (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
                         select au;
 
