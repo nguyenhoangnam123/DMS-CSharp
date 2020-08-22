@@ -476,9 +476,15 @@ namespace DMS.Services.MStoreChecking
             try
             {
                 AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
-                var count = await UOW.StoreRepository.Count(StoreFilter);
-                return count;
+                if (AppUser.AppUserStoreMappings != null && AppUser.AppUserStoreMappings.Count > 0)
+                {
+                    return AppUser.AppUserStoreMappings.Count;
+                }
+                {
+                    StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
+                    var count = await UOW.StoreRepository.Count(StoreFilter);
+                    return count;
+                }
             }
             catch (Exception ex)
             {
@@ -505,16 +511,24 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
-                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
+                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId); 
                 List<Store> Stores;
-                // Lấy danh sách tất cả các cửa hàng trong phạm vi ra
-                // Tính khoảng cách
-                // sắp xếp theo khoảng cách
                 int skip = StoreFilter.Skip;
                 int take = StoreFilter.Take;
-                StoreFilter.Skip = 0;
-                StoreFilter.Take = int.MaxValue;
+                if (AppUser.AppUserStoreMappings != null && AppUser.AppUserStoreMappings.Count > 0)
+                {
+                    StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
+                    // Lấy danh sách tất cả các cửa hàng trong phạm vi ra
+                    // Tính khoảng cách
+                    // sắp xếp theo khoảng cách
+                    StoreFilter.Skip = 0;
+                    StoreFilter.Take = int.MaxValue;
+                }
+                else
+                {
+                    StoreFilter.Id.In = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                }
+
                 Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
                 {
