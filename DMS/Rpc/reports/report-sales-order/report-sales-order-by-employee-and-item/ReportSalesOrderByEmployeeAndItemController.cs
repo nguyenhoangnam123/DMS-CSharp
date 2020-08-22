@@ -206,8 +206,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             };
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
 
-            List<string> OrganizationNames = AppUsers.Select(s => s.Organization.Name).Distinct().ToList();
-            OrganizationNames = OrganizationNames.OrderBy(x => x).ToList();
+            List<string> OrganizationNames = AppUsers.OrderBy(x => x.OrganizationId).Select(s => s.Organization.Name).Distinct().ToList();
             List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO>
                 ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs = OrganizationNames
                 .Select(on => new ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO
