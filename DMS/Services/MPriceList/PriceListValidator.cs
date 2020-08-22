@@ -281,6 +281,7 @@ namespace DMS.Services.MPriceList
             await ValidateOrganization(PriceList);
             await ValidateStatus(PriceList);
             await ValidatePriceListType(PriceList);
+            await ValidateSalesOrderType(PriceList);
             await ValidateMapping(PriceList);
             return PriceList.IsValidated;
         }
@@ -295,6 +296,7 @@ namespace DMS.Services.MPriceList
                 await ValidateOrganization(PriceList);
                 await ValidateStatus(PriceList);
                 await ValidatePriceListType(PriceList);
+                await ValidateSalesOrderType(PriceList);
                 await ValidateMapping(PriceList);
             }
             return PriceList.IsValidated;
