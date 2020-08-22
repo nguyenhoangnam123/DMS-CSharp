@@ -224,7 +224,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                         select i;
 
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await query
-                .OrderBy(x => x.OrganizationId).ThenByDescending(x => x.OrderDate)
+                .OrderBy(x => x.OrganizationId).ThenBy(x => x.OrderDate)
                 .Skip(ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.Skip)
                 .Take(ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.Take)
                 .ToListAsync();
