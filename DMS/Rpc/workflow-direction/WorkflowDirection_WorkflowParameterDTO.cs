@@ -22,10 +22,13 @@ namespace DMS.Rpc.workflow_direction
         }
     }
 
-    public class WorkflowDirection_WorkflowParameterFilterDTO : DataDTO
+    public class WorkflowDirection_WorkflowParameterFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public IdFilter WorkflowTypeId { get; set; }
+        public IdFilter WorkflowParameterTypeId { get; set; }
+        public WorkflowParameterOrder OrderBy { get; set; }
     }
 }

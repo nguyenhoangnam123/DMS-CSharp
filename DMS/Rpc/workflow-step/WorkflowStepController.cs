@@ -42,9 +42,6 @@ namespace DMS.Rpc.workflow_step
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (WorkflowStep_WorkflowStepFilterDTO.WorkflowDefinitionId == null || !WorkflowStep_WorkflowStepFilterDTO.WorkflowDefinitionId.HasValue)
-                return 0;
-
             WorkflowStepFilter WorkflowStepFilter = ConvertFilterDTOToFilterEntity(WorkflowStep_WorkflowStepFilterDTO);
             WorkflowStepFilter = WorkflowStepService.ToFilter(WorkflowStepFilter);
             int count = await WorkflowStepService.Count(WorkflowStepFilter);
@@ -56,9 +53,6 @@ namespace DMS.Rpc.workflow_step
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            if (WorkflowStep_WorkflowStepFilterDTO.WorkflowDefinitionId == null || !WorkflowStep_WorkflowStepFilterDTO.WorkflowDefinitionId.HasValue)
-                return new List<WorkflowStep_WorkflowStepDTO>();
 
             WorkflowStepFilter WorkflowStepFilter = ConvertFilterDTOToFilterEntity(WorkflowStep_WorkflowStepFilterDTO);
             WorkflowStepFilter = WorkflowStepService.ToFilter(WorkflowStepFilter);
