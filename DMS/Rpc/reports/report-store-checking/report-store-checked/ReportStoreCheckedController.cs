@@ -343,9 +343,19 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 .ToListAsync();
 
             List<StoreDAO> StoreDAOs = await DataContext.Store.Where(x => OrganizationIds.Contains(x.OrganizationId) &&
-                (StoreId == null || x.Id == StoreId.Value) &&
-                (StoreTypeId == null || x.StoreTypeId == StoreTypeId.Value) &&
-                (StoreGroupingId == null || x.StoreGroupingId == StoreGroupingId.Value))
+                (StoreId.HasValue == false || StoreIds.Contains(x.Id)) &&
+                        (StoreTypeId.HasValue == false || StoreTypeIds.Contains(x.StoreTypeId)) &&
+                        (
+                            (
+                                StoreGroupingId.HasValue == false &&
+                                (x.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(x.StoreGroupingId.Value))
+                            ) ||
+                            (
+                                StoreGroupingId.HasValue &&
+                                StoreGroupingId.Value == x.StoreGroupingId.Value
+                            )
+                        )
+                )
                 .ToListAsync();
 
             List<ReportStoreChecked_SaleEmployeeDTO> ReportStoreChecked_SaleEmployeeDTOs = AppUserDAOs.Select(au => new ReportStoreChecked_SaleEmployeeDTO

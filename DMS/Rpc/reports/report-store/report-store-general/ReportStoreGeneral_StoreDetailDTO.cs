@@ -18,14 +18,16 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         public long CheckingPlannedCounter => StoreCheckingPlannedIds?.Count() ?? 0;
         public long CheckingUnPlannedCounter => StoreCheckingUnPlannedIds?.Count() ?? 0;
         public string TotalCheckingTime { get; set; }
-        public DateTime FirstChecking { get; set; }
-        public DateTime LastChecking { get; set; }
+        public DateTime? FirstChecking { get; set; }
+        public string eFirstChecking => FirstChecking == DateTime.MinValue || FirstChecking == null ? "" : FirstChecking.Value.ToLongDateString();
+        public DateTime? LastChecking { get; set; }
+        public string eLastChecking => LastChecking == DateTime.MinValue || LastChecking == null ? "" : LastChecking.Value.ToLongDateString();
         public string EmployeeLastChecking { get; set; }
         public long IndirectSalesOrderCounter => IndirectSalesOrderIds?.Count() ?? 0;
         public long SKUCounter => SKUItemIds?.Count() ?? 0;
         public decimal TotalRevenue { get; set; }
-        public DateTime LastOrder { get; set; }
-        public string LastOrderDisplay => LastOrder == DateTime.MinValue ? "" : LastOrder.ToLongDateString();
+        public DateTime? LastOrder { get; set; }
+        public string LastOrderDisplay => LastOrder == DateTime.MinValue || LastOrder == null ? "" : LastOrder.Value.ToLongDateString();
         internal HashSet<long> StoreCheckingPlannedIds { get; set; }
         internal HashSet<long> StoreCheckingUnPlannedIds { get; set; }
         internal HashSet<long> SKUItemIds { get; set; }
