@@ -387,7 +387,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 Take = int.MaxValue,
                 Selects = StoreCheckingSelect.ALL,
                 CheckOutAt = new DateFilter { GreaterEqual = Start, LessEqual = End },
-                SaleEmployeeId = new IdFilter { In = AppUserIds }
+                SaleEmployeeId = new IdFilter { In = AppUserIds },
+                StoreId = new IdFilter { In = StoreIds }
             };
             List<StoreChecking> storeCheckings = await StoreCheckingService.List(StoreCheckingFilter);
             var StoreCheckingIds = storeCheckings.Select(x => x.Id).ToList();

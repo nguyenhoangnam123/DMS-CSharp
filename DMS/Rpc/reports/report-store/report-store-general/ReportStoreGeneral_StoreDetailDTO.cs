@@ -19,15 +19,15 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         public long CheckingUnPlannedCounter => StoreCheckingUnPlannedIds?.Count() ?? 0;
         public string TotalCheckingTime { get; set; }
         public DateTime? FirstChecking { get; set; }
-        public string eFirstChecking => FirstChecking == DateTime.MinValue || FirstChecking == null ? "" : FirstChecking.Value.ToLongDateString();
+        public string eFirstChecking => FirstChecking == DateTime.MinValue || FirstChecking == null ? "" : FirstChecking.Value.ToString("dd-MM-yyyy");
         public DateTime? LastChecking { get; set; }
-        public string eLastChecking => LastChecking == DateTime.MinValue || LastChecking == null ? "" : LastChecking.Value.ToLongDateString();
+        public string eLastChecking => LastChecking == DateTime.MinValue || LastChecking == null ? "" : LastChecking.Value.ToString("dd-MM-yyyy");
         public string EmployeeLastChecking { get; set; }
         public long IndirectSalesOrderCounter => IndirectSalesOrderIds?.Count() ?? 0;
         public long SKUCounter => SKUItemIds?.Count() ?? 0;
         public decimal TotalRevenue { get; set; }
         public DateTime? LastOrder { get; set; }
-        public string LastOrderDisplay => LastOrder == DateTime.MinValue || LastOrder == null ? "" : LastOrder.Value.ToLongDateString();
+        public string LastOrderDisplay => LastOrder == DateTime.MinValue || LastOrder == null ? "" : LastOrder.Value.ToString("dd-MM-yyyy");
         internal HashSet<long> StoreCheckingPlannedIds { get; set; }
         internal HashSet<long> StoreCheckingUnPlannedIds { get; set; }
         internal HashSet<long> SKUItemIds { get; set; }
