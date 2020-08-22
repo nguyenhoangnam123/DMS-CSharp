@@ -3591,8 +3591,6 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
-
                 entity.Property(e => e.SubjectMailForCreator).HasMaxLength(500);
 
                 entity.Property(e => e.SubjectMailForCurrentStep).HasMaxLength(500);

@@ -53,8 +53,6 @@ namespace DMS.Rpc.workflow_direction
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId == null || !WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId.HasValue)
-                return 0;
 
             WorkflowDirectionFilter WorkflowDirectionFilter = ConvertFilterDTOToFilterEntity(WorkflowDirection_WorkflowDirectionFilterDTO);
             WorkflowDirectionFilter = WorkflowDirectionService.ToFilter(WorkflowDirectionFilter);
@@ -67,8 +65,6 @@ namespace DMS.Rpc.workflow_direction
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId == null || !WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId.HasValue)
-                return new List<WorkflowDirection_WorkflowDirectionDTO>();
 
             WorkflowDirectionFilter WorkflowDirectionFilter = ConvertFilterDTOToFilterEntity(WorkflowDirection_WorkflowDirectionFilterDTO);
             WorkflowDirectionFilter = WorkflowDirectionService.ToFilter(WorkflowDirectionFilter);
@@ -536,7 +532,8 @@ namespace DMS.Rpc.workflow_direction
             WorkflowParameterFilter.Id = WorkflowDirection_WorkflowParameterFilterDTO.Id;
             WorkflowParameterFilter.Code = WorkflowDirection_WorkflowParameterFilterDTO.Code;
             WorkflowParameterFilter.Name = WorkflowDirection_WorkflowParameterFilterDTO.Name;
-
+            WorkflowParameterFilter.WorkflowTypeId = WorkflowDirection_WorkflowParameterFilterDTO.WorkflowTypeId;
+            WorkflowParameterFilter.WorkflowParameterTypeId = WorkflowDirection_WorkflowParameterFilterDTO.WorkflowParameterTypeId;
 
             List<WorkflowParameter> WorkflowParameters = await WorkflowParameterService.List(WorkflowParameterFilter);
             List<WorkflowDirection_WorkflowParameterDTO> WorkflowDirection_WorkflowParameterDTOs = WorkflowParameters

@@ -250,6 +250,7 @@ namespace DMS.Repositories
             if (WorkflowDirection == null)
                 return null;
             WorkflowDirection.WorkflowDirectionConditions = await DataContext.WorkflowDirectionCondition
+                .AsNoTracking()
                 .Where(x => x.WorkflowDirectionId == WorkflowDirection.Id)
                 .Select(x => new WorkflowDirectionCondition
                 {
@@ -374,7 +375,7 @@ namespace DMS.Repositories
 
         private async Task SaveReference(WorkflowDirection WorkflowDirection)
         {
-            await DataContext.WorkflowDirectionCondition.Where(x => x.Id == WorkflowDirection.Id).DeleteFromQueryAsync();
+            await DataContext.WorkflowDirectionCondition.Where(x => x.WorkflowDirectionId == WorkflowDirection.Id).DeleteFromQueryAsync();
             List<WorkflowDirectionConditionDAO> WorkflowDirectionConditionDAOs = new List<WorkflowDirectionConditionDAO>();
             foreach (WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirection.WorkflowDirectionConditions)
             {
@@ -387,7 +388,7 @@ namespace DMS.Repositories
                 };
                 WorkflowDirectionConditionDAOs.Add(WorkflowDirectionConditionDAO);
             }
-            await DataContext.WorkflowDirectionCondition.BulkInsertAsync(WorkflowDirectionConditionDAOs);
+            await DataContext.WorkflowDirectionCondition.BulkMergeAsync(WorkflowDirectionConditionDAOs);
         }
 
     }

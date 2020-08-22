@@ -26,6 +26,7 @@ namespace DMS.Services.MWorkflow
             FromStepEmpty,
             ToStepNotExisted,
             ToStepEmpty,
+            ToStepNotSameFromStep,
             SubjectMailForCreatorOverLength,
             SubjectMailForNextStepOverLength,
             WorkflowDefinitionEmpty,
@@ -123,6 +124,10 @@ namespace DMS.Services.MWorkflow
                 int count = await UOW.WorkflowStepRepository.Count(WorkflowStepFilter);
                 if (count == 0)
                     WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepNotExisted);
+                if(WorkflowDirection.ToStepId == WorkflowDirection.FromStepId)
+                {
+                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepNotSameFromStep);
+                }
             }
             return WorkflowDirection.IsValidated;
         }
