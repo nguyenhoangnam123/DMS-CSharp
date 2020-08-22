@@ -17,6 +17,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
     {
         public long STT { get; set; }
         public DateTime Date { get; set; }
+        public string DateDisplay { get { return Date.ToString("dd-MM-yyyy"); } }
         public long AppUserId { get; set; }
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
