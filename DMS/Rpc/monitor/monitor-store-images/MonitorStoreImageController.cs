@@ -281,6 +281,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = OrganizationSelect.Id | OrganizationSelect.Name | OrganizationSelect.Path,
+                OrderBy = OrganizationOrder.Path,
+                OrderType = OrderType.ASC,
                 Id = new IdFilter { In = OrganizationIds }
             });
             //build
