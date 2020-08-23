@@ -32,6 +32,7 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public StringFilter Name { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter StoreId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<AlbumFilter> OrFilter { get; set; }
@@ -56,5 +57,6 @@ namespace DMS.Entities
         Id = E._0,
         Name = E._1,
         Status = E._2,
+        Mapping = E._3,
     }
 }
