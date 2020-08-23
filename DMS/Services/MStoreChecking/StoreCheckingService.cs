@@ -484,6 +484,7 @@ namespace DMS.Services.MStoreChecking
                 {
                     return AppUser.AppUserStoreMappings.Count;
                 }
+                else
                 {
                     StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
                     var count = await UOW.StoreRepository.Count(StoreFilter);
@@ -527,10 +528,11 @@ namespace DMS.Services.MStoreChecking
                     // sắp xếp theo khoảng cách
                     StoreFilter.Skip = 0;
                     StoreFilter.Take = int.MaxValue;
+                    StoreFilter.Id.In = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
                 }
                 else
                 {
-                    StoreFilter.Id.In = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                    StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
                 }
 
                 Stores = await UOW.StoreRepository.List(StoreFilter);
