@@ -12,7 +12,7 @@ namespace DMS.Rpc.mobile
         public long StoreId { get; set; }
         public long SaleEmployeeId { get; set; }
         public DateTime ShootingAt { get; set; }
-        public decimal? Distance { get; set; }
+        public long? Distance { get; set; }
         public Mobile_AlbumDTO Album { get; set; }
         public Mobile_AppUserDTO SaleEmployee { get; set; }
         public Mobile_ImageDTO Image { get; set; }
