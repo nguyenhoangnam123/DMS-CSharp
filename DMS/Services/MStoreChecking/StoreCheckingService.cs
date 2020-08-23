@@ -520,14 +520,14 @@ namespace DMS.Services.MStoreChecking
                 List<Store> Stores;
                 int skip = StoreFilter.Skip;
                 int take = StoreFilter.Take;
+                StoreFilter.Skip = 0;
+                StoreFilter.Take = int.MaxValue;
                 if (AppUser.AppUserStoreMappings != null && AppUser.AppUserStoreMappings.Count > 0)
                 {
                     StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
                     // Lấy danh sách tất cả các cửa hàng trong phạm vi ra
                     // Tính khoảng cách
                     // sắp xếp theo khoảng cách
-                    StoreFilter.Skip = 0;
-                    StoreFilter.Take = int.MaxValue;
                     StoreFilter.Id.In = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
                 }
                 else
