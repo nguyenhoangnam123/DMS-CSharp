@@ -247,7 +247,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
                             (HasOrder.Value == 1 && sc.IndirectSalesOrderCounter > 0)
                         )
                         select au;
-            List<AppUserDAO> SalesEmployees = await query.Distinct().OrderBy(q => q.DisplayName)
+            List<AppUserDAO> SalesEmployees = await query.Distinct()
+                .OrderBy(q => q.Organization.Path).ThenBy(q => q.DisplayName)
                 .Skip(MonitorStoreImage_MonitorStoreImageFilterDTO.Skip)
                 .Take(MonitorStoreImage_MonitorStoreImageFilterDTO.Take).ToListAsync();
 
@@ -291,7 +292,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     DisplayName = SalesEmployee.DisplayName,
                     Username = SalesEmployee.Username,
                     SaleEmployeeId = SalesEmployee.Id,
-                    OrganizationName = SalesEmployee.Organization.Name
+                    OrganizationName = SalesEmployee.Organization.Name,
+                    OrganizationPath = SalesEmployee.Organization.Path
                 };
 
                 MonitorStoreImage_SaleEmployeeDTO.StoreCheckings = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.Id)

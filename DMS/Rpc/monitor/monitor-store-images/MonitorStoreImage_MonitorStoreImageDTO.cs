@@ -19,6 +19,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public string Username { get; set; }
         public string DisplayName { get; set; }
         public string OrganizationName { get; set; }
+        public string OrganizationPath { get; set; }
         public List<MonitorStoreImage_StoreCheckingDTO> StoreCheckings { get; set; }
     }
 
