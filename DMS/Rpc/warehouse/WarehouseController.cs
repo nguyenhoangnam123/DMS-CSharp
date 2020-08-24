@@ -197,7 +197,7 @@ namespace DMS.Rpc.warehouse
             return true;
         }
 
-        [Route(WarehouseRoute.ImportInventory), HttpPost]
+        [Route(WarehouseRoute.Import), HttpPost]
         public async Task<ActionResult<List<Warehouse_InventoryDTO>>> ImportInventory([FromForm] long WarehouseId,[FromForm] IFormFile file)
         {
             if (!ModelState.IsValid)
@@ -300,7 +300,7 @@ namespace DMS.Rpc.warehouse
             return Warehouse_InventoryDTOs;
         }
 
-        [Route(WarehouseRoute.ExportInventory), HttpPost]
+        [Route(WarehouseRoute.Export), HttpPost]
         public async Task<ActionResult> ExportInventory([FromBody] Warehouse_WarehouseDTO Warehouse_WarehouseDTO)
         {
             if (!ModelState.IsValid)

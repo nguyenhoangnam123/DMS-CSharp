@@ -19,8 +19,8 @@ namespace DMS.Rpc.warehouse
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
-        public const string ImportInventory = Default + "/import-inventory";
-        public const string ExportInventory = Default + "/export-inventory";
+        public const string Import = Default + "/import";
+        public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
 
@@ -76,11 +76,11 @@ namespace DMS.Rpc.warehouse
             { "Xuất excel", new List<string> {
                 Parent,
                 Master, Count, List, Get, FilterListOrganization, FilterListStatus,
-                Detail, ExportInventory } },
+                Detail, Export } },
             { "Nhập excel", new List<string> {
                 Parent,
                 Master, Count, List, Get, FilterListOrganization, FilterListStatus,
-                Detail, ExportTemplate, ImportInventory } },
+                Detail, ExportTemplate, Import } },
         };
     }
 }
