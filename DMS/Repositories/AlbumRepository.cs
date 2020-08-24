@@ -44,6 +44,11 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
+            if (filter.StoreId != null)
+            {
+                if (filter.StoreId.Equal.HasValue)
+                    query = query.Where(q => q.AlbumImageMappings.Any(x => x.StoreId == filter.StoreId.Equal.Value));
+            }
             query = OrFilter(query, filter);
             return query;
         }
@@ -108,7 +113,7 @@ namespace DMS.Repositories
         {
             List<Album> Albums = await query.Select(q => new Album()
             {
-                Id = filter.Selects.Contains(AlbumSelect.Id) ? q.Id : default(long),
+                Id = q.Id,
                 Name = filter.Selects.Contains(AlbumSelect.Name) ? q.Name : default(string),
                 StatusId = filter.Selects.Contains(AlbumSelect.Status) ? q.StatusId : default(long),
                 Status = filter.Selects.Contains(AlbumSelect.Status) && q.Status != null ? new Status
@@ -121,6 +126,32 @@ namespace DMS.Repositories
                 UpdatedAt = q.UpdatedAt,
                 Used = q.Used,
             }).ToListAsync();
+            if (filter.Selects.Contains(AlbumSelect.Mapping))
+            {
+                List<long> Ids = Albums.Select(a => a.Id).ToList();
+                List<AlbumImageMappingDAO> AlbumImageMappingDAOs = await DataContext.AlbumImageMapping
+                    .AsNoTracking()
+                    .Include(x => x.Image)
+                    .Where(x => Ids.Contains(x.AlbumId))
+                    .ToListAsync();
+                foreach (Album Album in Albums)
+                {
+                    Album.AlbumImageMappings = AlbumImageMappingDAOs.Where(x => x.AlbumId == Album.Id)
+                        .Select(x => new AlbumImageMapping
+                        {
+                            AlbumId = x.AlbumId,
+                            ImageId = x.ImageId,
+                            StoreId = x.StoreId,
+                            ShootingAt = x.ShootingAt,
+                            Image = x.Image == null ? null : new Image
+                            {
+                                Id = x.Image.Id,
+                                Name = x.Image.Name,
+                                Url = x.Image.Url,
+                            }
+                        }).ToList();
+                }
+            }
             return Albums;
         }
 

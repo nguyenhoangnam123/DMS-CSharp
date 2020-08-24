@@ -1,0 +1,30 @@
+﻿{
+  "WorkflowDirection": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại",
+      "IdInUsed": "Bản ghi đã được sử dụng"
+    },
+    "WorkflowDefinitionId": {
+      "WorkflowDefinitionEmpty": "Bản thiết kế chưa được chọn.",
+      "WorkflowDefinitionNotExisted": "Bản thiết kế không tồn tại."
+    },
+    "FromStepId": {
+      "FromStepEmpty": "Bước bắn đầu chưa được chọn.",
+      "FromStepNotExisted": "Bước bắt đầu không tồn tại."
+    },
+    "ToStepId": {
+      "ToStepEmpty": "Bước kết thúc chưa được chọn.",
+      "ToStepNotExisted": "Bước kết thúc không tồn tại.",
+      "ToStepNotSameFromStep": "Bước bắt đầu và kết thúc không thể trùng nhau."
+    },
+    "SubjectMailForCreator": {
+      "SubjectMailForCreatorOverLength": "Tiêu đề mail dài quá 255 ký tự."
+    },
+    "SubjectMailForCurrentStep": {
+      "SubjectMailForCurrentOverLength": "Tiêu đề mail dài quá 255 ký tự."
+    },
+    "SubjectMailForNextStep": {
+      "SubjectMailForNextStepOverLength": "Tiêu đề mail dài quá 255 ký tự."
+    }
+  }
+}

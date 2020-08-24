@@ -247,7 +247,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
                             (HasOrder.Value == 1 && sc.IndirectSalesOrderCounter > 0)
                         )
                         select au;
-            List<AppUserDAO> SalesEmployees = await query.Distinct().OrderBy(q => q.DisplayName)
+            List<AppUserDAO> SalesEmployees = await query.Distinct()
+                .OrderBy(q => q.Organization.Path).ThenBy(q => q.DisplayName)
                 .Skip(MonitorStoreImage_MonitorStoreImageFilterDTO.Skip)
                 .Take(MonitorStoreImage_MonitorStoreImageFilterDTO.Take).ToListAsync();
 
@@ -279,7 +280,9 @@ namespace DMS.Rpc.monitor.monitor_store_images
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = OrganizationSelect.Id | OrganizationSelect.Name,
+                Selects = OrganizationSelect.Id | OrganizationSelect.Name | OrganizationSelect.Path,
+                OrderBy = OrganizationOrder.Path,
+                OrderType = OrderType.ASC,
                 Id = new IdFilter { In = OrganizationIds }
             });
             //build
@@ -291,7 +294,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     DisplayName = SalesEmployee.DisplayName,
                     Username = SalesEmployee.Username,
                     SaleEmployeeId = SalesEmployee.Id,
-                    OrganizationName = SalesEmployee.Organization.Name
+                    OrganizationName = SalesEmployee.Organization.Name,
+                    OrganizationPath = SalesEmployee.Organization.Path
                 };
 
                 MonitorStoreImage_SaleEmployeeDTO.StoreCheckings = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.Id)
@@ -313,7 +317,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 MonitorStoreImage_MonitorStoreImageDTO MonitorStoreImage_MonitorStoreImageDTO = new MonitorStoreImage_MonitorStoreImageDTO()
                 {
                     OrganizationName = Organization.Name,
-                    SaleEmployees = MonitorStoreImage_SaleEmployeeDTOs.Where(x => x.OrganizationName.Equals(Organization.Name)).ToList()
+                    SaleEmployees = MonitorStoreImage_SaleEmployeeDTOs.Where(x => x.OrganizationPath.Equals(Organization.Path)).ToList()
                 };
                 MonitorStoreImage_MonitorStoreImageDTOs.Add(MonitorStoreImage_MonitorStoreImageDTO);
             }

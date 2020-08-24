@@ -413,7 +413,27 @@ namespace DMS.Rpc.mobile
                 throw new BindException(ModelState);
 
             Store Store = await StoreService.Get(Mobile_StoreDTO.Id);
-            return new Mobile_StoreDTO(Store);
+            Mobile_StoreDTO = new Mobile_StoreDTO(Store);
+            List<Album> Albums = await AlbumService.List(new AlbumFilter
+            {
+                StoreId = new IdFilter { Equal = Mobile_StoreDTO.Id },
+                Selects = AlbumSelect.ALL,
+                Skip = 0,
+                Take = int.MaxValue,
+            });
+            List<Mobile_StoreImageMappingDTO> Mobile_StoreImageMappingDTOs = Albums.SelectMany(x => x.AlbumImageMappings.Select(m => new Mobile_StoreImageMappingDTO
+            {
+                ImageId = m.ImageId,
+                StoreId = m.StoreId,
+                Image = m.Image == null ? null : new Mobile_ImageDTO
+                {
+                    Id = m.Image.Id,
+                    Name = m.Image.Name,
+                    Url = m.Image.Url,
+                },
+            })).ToList();
+            Mobile_StoreDTO.StoreImageMappings.AddRange(Mobile_StoreImageMappingDTOs);
+            return Mobile_StoreDTO;
         }
 
         [Route(MobileRoute.CountStore), HttpPost]

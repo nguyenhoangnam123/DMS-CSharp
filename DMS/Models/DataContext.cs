@@ -2790,8 +2790,6 @@ namespace DMS.Models
                 entity.HasKey(e => new { e.ImageId, e.StoreCheckingId })
                     .HasName("PK_ImageStoreCheckingMapping");
 
-                entity.Property(e => e.Distance).HasColumnType("decimal(8, 4)");
-
                 entity.Property(e => e.ShootingAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Album)
