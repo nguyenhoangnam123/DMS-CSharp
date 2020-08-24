@@ -311,8 +311,8 @@ namespace DMS.Services.MStoreScouting
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
             });
-
             var AppUserIds = AppUsers.Where(x => OrganizationIds.Contains(x.OrganizationId.Value)).Select(x => x.Id).ToList();
+            AppUserIds = AppUserIds.Intersect(Ids).ToList();
             return AppUserIds;
         }
 
