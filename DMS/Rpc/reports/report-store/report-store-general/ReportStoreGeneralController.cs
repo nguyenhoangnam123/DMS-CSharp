@@ -259,6 +259,19 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
             if (StoreId.HasValue)
             {
@@ -347,11 +360,13 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Include(x => x.SaleEmployee)
                 .Where(sc => sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                StoreIds.Contains(sc.StoreId))
+                StoreIds.Contains(sc.StoreId) && 
+                AppUserIds.Contains(sc.SaleEmployeeId))
                 .ToListAsync();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(x => StoreIds.Contains(x.BuyerStoreId) &&
-                x.OrderDate >= Start && x.OrderDate <= End)
+                x.OrderDate >= Start && x.OrderDate <= End &&
+                AppUserIds.Contains(x.SaleEmployeeId))
                 .ToListAsync();
             var IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
             List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
