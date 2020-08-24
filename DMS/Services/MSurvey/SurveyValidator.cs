@@ -143,8 +143,10 @@ namespace DMS.Services.MSurvey
                     foreach (var Row in MandatoryQuestion.TableResult)
                     {
                         if (Row.Value.All(x => x.Value == false))
+                        {
                             MandatoryQuestion.AddError(nameof(SurveyValidator), nameof(MandatoryQuestion.IsMandatory), ErrorCode.QuestionIsMandatory);
-                        break;
+                            break;
+                        }
                     }
                 }
             }
