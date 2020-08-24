@@ -193,7 +193,8 @@ namespace DMS.Rpc.survey
                 Skip = 0,
                 Take = int.MaxValue,
                 OrderBy = SurveyResultOrder.Time,
-                OrderType = OrderType.ASC
+                OrderType = OrderType.ASC,
+                SurveyId = new IdFilter { Equal = Survey_SurveyDTO .Id }
             });
 
             Survey_AnswerStatisticsDTO Survey_AnswerStatisticsDTO = new Survey_AnswerStatisticsDTO();
