@@ -5,6 +5,9 @@
     },
     "ERouteScope": {
       "ERouteScopeNotExisted": "Phạm vi tuyến không tồn tại"
+    },
+    "AppUserStoreMappings": {
+      "AppUserStoreMappingsEmpty": "Chưa thêm đại lý vào phạm vi đi tuyến cho nhân viên"
     }
   }
 }

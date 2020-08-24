@@ -18,7 +18,8 @@ namespace DMS.Services.MAppUser
         public enum ErrorCode
         {
             IdNotExisted,
-            ERouteScopeNotExisted
+            ERouteScopeNotExisted,
+            AppUserStoreMappingsEmpty
         }
 
         private IUOW UOW;
@@ -50,6 +51,10 @@ namespace DMS.Services.MAppUser
         {
             if (await ValidateId(AppUser))
             {
+                if(AppUser.AppUserStoreMappings == null || !AppUser.AppUserStoreMappings.Any())
+                {
+                    AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.AppUserStoreMappings), ErrorCode.AppUserStoreMappingsEmpty);
+                }
             }
             return AppUser.IsValidated;
         }
