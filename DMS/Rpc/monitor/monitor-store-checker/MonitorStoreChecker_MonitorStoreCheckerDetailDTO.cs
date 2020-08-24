@@ -6,8 +6,10 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 {
     public class MonitorStoreChecker_MonitorStoreCheckerDetailDTO : DataDTO
     {
+        public long StoreId { get; set; }
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
+        public long ImageCounter { get; set; }
         public List<MonitorStoreChecker_MonitorStoreCheckerDetailInfoDTO> Infoes { get; set; }
     }
 

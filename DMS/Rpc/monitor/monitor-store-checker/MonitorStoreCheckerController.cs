@@ -371,28 +371,21 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 int Max = 1;
                 Max = SubIndirectSalesOrderDAOs.Count > Max ? IndirectSalesOrderDAOs.Count : Max;
                 Max = Problems.Count > Max ? Problems.Count : Max;
-                Max = SubStoreCheckingImageMappingDAOs.Count > Max ? SubStoreCheckingImageMappingDAOs.Count : Max;
                 StoreDAO storeDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
                 MonitorStoreChecker_MonitorStoreCheckerDetailDTO MonitorStoreChecker_MonitorStoreCheckerDetailDTO = new MonitorStoreChecker_MonitorStoreCheckerDetailDTO
                 {
+                    StoreId = StoreId,
                     StoreCode = storeDAO.Code,
                     StoreName = storeDAO.Name,
+                    ImageCounter = SubStoreCheckingImageMappingDAOs.Count(),
                     Infoes = new List<MonitorStoreChecker_MonitorStoreCheckerDetailInfoDTO>(),
                 };
+
                 MonitorStoreChecker_MonitorStoreCheckerDetailDTOs.Add(MonitorStoreChecker_MonitorStoreCheckerDetailDTO);
                 for (int i = 0; i < Max; i++)
                 {
                     MonitorStoreChecker_MonitorStoreCheckerDetailInfoDTO Info = new MonitorStoreChecker_MonitorStoreCheckerDetailInfoDTO();
                     MonitorStoreChecker_MonitorStoreCheckerDetailDTO.Infoes.Add(Info);
-                    if (i == 0)
-                    {
-                        Info.ImagePath = SubStoreCheckingImageMappingDAOs.Select(i => i.Image.Url).FirstOrDefault();
-                    }
-
-                    if(SubStoreCheckingImageMappingDAOs.Count > i)
-                    {
-                        Info.ImagePath = SubStoreCheckingImageMappingDAOs[i].Image.Url;
-                    }
                     if (SubIndirectSalesOrderDAOs.Count > i)
                     {
                         Info.IndirectSalesOrderCode = SubIndirectSalesOrderDAOs[i].Code;
@@ -406,6 +399,56 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 }
             }
             return MonitorStoreChecker_MonitorStoreCheckerDetailDTOs;
+        }
+
+        [Route(MonitorStoreCheckerRoute.ListImage), HttpPost]
+        public async Task<List<MonitorStoreChecker_StoreCheckingImageMappingDTO>> ListImage([FromBody] MonitorStoreChecker_StoreCheckingDTO MonitorStoreChecker_StoreCheckingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            var query = from scim in DataContext.StoreCheckingImageMapping
+                        join sc in DataContext.StoreChecking on scim.StoreCheckingId equals sc.Id
+                        join s in DataContext.Store on sc.StoreId equals s.Id
+                        join a in DataContext.Album on scim.AlbumId equals a.Id
+                        join i in DataContext.Image on scim.ImageId equals i.Id
+                        join au in DataContext.AppUser on scim.SaleEmployeeId equals au.Id
+                        where scim.StoreId == MonitorStoreChecker_StoreCheckingDTO.StoreId &&
+                        scim.SaleEmployeeId == MonitorStoreChecker_StoreCheckingDTO.SaleEmployeeId &&
+                        sc.CheckOutAt.Value.Date == MonitorStoreChecker_StoreCheckingDTO.Date.Date
+                        select new MonitorStoreChecker_StoreCheckingImageMappingDTO
+                        {
+                            AlbumId = scim.AlbumId,
+                            ImageId = scim.ImageId,
+                            SaleEmployeeId = scim.SaleEmployeeId,
+                            ShootingAt = scim.ShootingAt,
+                            StoreCheckingId = scim.StoreCheckingId,
+                            StoreId = scim.StoreId,
+                            Distance = scim.Distance,
+                            Album = new MonitorStoreChecker_AlbumDTO
+                            {
+                                Id = a.Id,
+                                Name = a.Name
+                            },
+                            Image = new MonitorStoreChecker_ImageDTO
+                            {
+                                Id = i.Id,
+                                Url = i.Url
+                            },
+                            SaleEmployee = new MonitorStoreChecker_AppUserDTO
+                            {
+                                Id = au.Id,
+                                DisplayName = au.DisplayName
+                            },
+                            Store = new MonitorStoreChecker_StoreDTO
+                            {
+                                Id = s.Id,
+                                Address = s.Address,
+                                Name = s.Name
+                            }
+                        };
+
+            return await query.ToListAsync();
         }
 
         [Route(MonitorStoreCheckerRoute.Export), HttpPost]
