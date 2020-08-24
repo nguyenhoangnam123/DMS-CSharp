@@ -472,7 +472,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
-
             return await StoreCheckingService.CountStore(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
         }
 

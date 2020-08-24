@@ -74,7 +74,7 @@ namespace DMS.Rpc.indirect_sales_order
                 Parent,
                 Master, Count, List, Get, 
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Create, Approve, Reject,
+                Detail, Create,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
                 CountItem, ListItem, CountStore, ListStore, } },
@@ -83,7 +83,7 @@ namespace DMS.Rpc.indirect_sales_order
                 Parent,
                 Master, Count, List, Get, 
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Update, Approve, Reject,
+                Detail, Update,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
                 CountItem, ListItem, CountStore, ListStore, } },
@@ -92,7 +92,7 @@ namespace DMS.Rpc.indirect_sales_order
                 Parent,
                 Master, Count, List, Get, 
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Delete, Approve, Reject,
+                Delete,
                 } },
 
             { "Xuất excel", new List<string> {
@@ -100,7 +100,16 @@ namespace DMS.Rpc.indirect_sales_order
                 Master, Count, List, Get, 
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Export } },
-
+            { "Phê duyệt", new List<string>
+            {
+                Parent,
+                Master, Count, List, Get,
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
+                Detail, Approve, Reject,
+                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
+                SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
+                CountItem, ListItem, CountStore, ListStore,
+            } },
         };
     }
 }
