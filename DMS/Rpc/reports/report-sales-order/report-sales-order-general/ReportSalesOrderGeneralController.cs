@@ -132,11 +132,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value;
 
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
             if (End.Subtract(Start).Days > 31)
                 return 0;
 
@@ -181,11 +179,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value;
 
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
             if (End.Subtract(Start).Days > 31)
                 return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
 
@@ -308,11 +304,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value;
 
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
             if (End.Subtract(Start).Days > 31)
                 return new ReportSalesOrderGeneral_TotalDTO();
 

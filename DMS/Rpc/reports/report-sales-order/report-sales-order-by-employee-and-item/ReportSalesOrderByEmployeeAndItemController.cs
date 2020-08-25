@@ -122,11 +122,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                     ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.LessEqual.Value;
 
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
             if (End.Subtract(Start).Days > 31)
                 return 0;
 
@@ -166,11 +164,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                     ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.LessEqual.Value;
 
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
             if (End.Subtract(Start).Days > 31)
                 return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
 
@@ -366,15 +362,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                 return new ReportSalesOrderByEmployeeAndItem_TotalDTO();
 
             DateTime Start = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    StaticParams.DateTimeNow.Date :
                     ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.LessEqual.Value;
 
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
             if (End.Subtract(Start).Days > 31)
                 return new ReportSalesOrderByEmployeeAndItem_TotalDTO();
 

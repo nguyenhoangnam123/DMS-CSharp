@@ -162,11 +162,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                     ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date.LessEqual.Value;
 
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
             if (End.Subtract(Start).Days > 31)
                 return 0;
 
@@ -228,11 +226,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                     ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date.LessEqual.Value;
 
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
             if (End.Subtract(Start).Days > 31)
                 return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
 
@@ -390,15 +386,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                    ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date.LessEqual.Value;
 
             long? ItemId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ItemId?.Equal;
             long? ProductTypeId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ProductTypeId?.Equal;
             long? ProductGroupingId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ProductGroupingId?.Equal;
 
-            Start = new DateTime(Start.Year, Start.Month, Start.Day);
-            End = (new DateTime(End.Year, End.Month, End.Day)).AddDays(1).AddSeconds(-1);
             if (End.Subtract(Start).Days > 31)
                 return new ReportSalesOrderByItem_TotalDTO();
 
