@@ -248,25 +248,6 @@ namespace DMS.Services.MProblem
                         Problem.ProblemHistorys = new List<ProblemHistory>();
                     Problem.ProblemHistorys.Add(ProblemHistory);
 
-                  
-                   
-                    var RecipientIds = await UOW.PermissionRepository.ListAppUser(MonitorStoreProblemRoute.Update);
-                    foreach (var id in RecipientIds)
-                    {
-                        UserNotification UserNotification = new UserNotification
-                        {
-                            TitleWeb = $"Thông báo từ DMS",
-                            ContentWeb = $"Vấn đề {Problem.Code} của đại lý {Problem.Store.Code} - {Problem.Store.Name} đã chuyển trạng thái {status} bởi {CurrentUser.DisplayName}",
-                            LinkWebsite = $"{MonitorStoreProblemRoute.Master}/?id=*".Replace("*", Problem.Id.ToString()),
-                            LinkMobile = $"{MonitorStoreProblemRoute.Mobile}".Replace("*", Problem.Id.ToString()),
-                            Time = Now,
-                            Unread = true,
-                            SenderId = CurrentContext.UserId,
-                            RecipientId = id
-                        };
-                        UserNotifications.Add(UserNotification);
-                    }
-
                     await NotificationService.BulkSend(UserNotifications);
                 }
                 await UOW.Begin();
