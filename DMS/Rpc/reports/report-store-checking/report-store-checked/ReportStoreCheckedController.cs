@@ -240,8 +240,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        (StoreId.HasValue == false || StoreIds.Contains(s.Id)) &&
-                        (StoreTypeId.HasValue == false || StoreTypeIds.Contains(s.StoreTypeId)) &&
+                        StoreIds.Contains(s.Id) &&
+                        StoreTypeIds.Contains(s.StoreTypeId) &&
                         (
                             (
                                 StoreGroupingId.HasValue == false &&
@@ -318,8 +318,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        (StoreId.HasValue == false || StoreIds.Contains(s.Id)) &&
-                        (StoreTypeId.HasValue == false || StoreTypeIds.Contains(s.StoreTypeId)) &&
+                        StoreIds.Contains(s.Id) &&
+                        StoreTypeIds.Contains(s.StoreTypeId) &&
                         (
                             (
                                 StoreGroupingId.HasValue == false &&
@@ -343,8 +343,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 .ToListAsync();
 
             List<StoreDAO> StoreDAOs = await DataContext.Store.Where(x => OrganizationIds.Contains(x.OrganizationId) &&
-                (StoreId.HasValue == false || StoreIds.Contains(x.Id)) &&
-                        (StoreTypeId.HasValue == false || StoreTypeIds.Contains(x.StoreTypeId)) &&
+                        StoreIds.Contains(x.Id) &&
+                        StoreTypeIds.Contains(x.StoreTypeId) &&
                         (
                             (
                                 StoreGroupingId.HasValue == false &&

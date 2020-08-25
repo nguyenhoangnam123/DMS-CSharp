@@ -205,8 +205,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
             }
             var query = from s in DataContext.Store
-                        where (StoreId.HasValue == false || StoreIds.Contains(s.Id)) &&
-                        (StoreTypeId.HasValue == false || StoreTypeIds.Contains(s.StoreTypeId)) &&
+                        where StoreIds.Contains(s.Id) &&
+                        StoreTypeIds.Contains(s.StoreTypeId) &&
                         (
                             (
                                 StoreGroupingId.HasValue == false && 
@@ -292,8 +292,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             }
 
             var query = from s in DataContext.Store
-                        where (StoreId.HasValue == false || StoreIds.Contains(s.Id)) &&
-                        (StoreTypeId.HasValue == false || StoreTypeIds.Contains(s.StoreTypeId)) &&
+                        where StoreIds.Contains(s.Id) &&
+                        StoreTypeIds.Contains(s.StoreTypeId) &&
                         (
                             (
                                 StoreGroupingId.HasValue == false &&
@@ -311,10 +311,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 
             List<StoreDAO> StoreDAOs = await DataContext.Store.Include(x => x.Organization)
                 .Where(x => OrganizationIds.Contains(x.OrganizationId) &&
-                StoreIds.Contains(x.Id) &&
-                (StoreId == null || x.Id == StoreId.Value) &&
-                (StoreTypeId == null || x.StoreTypeId == StoreTypeId.Value) &&
-                (StoreGroupingId == null || x.StoreGroupingId == StoreGroupingId.Value))
+                StoreIds.Contains(x.Id))
                 .OrderBy(x => x.OrganizationId).ThenBy(x => x.Name)
                 .Skip(ReportStoreGeneral_ReportStoreGeneralFilterDTO.Skip)
                 .Take(ReportStoreGeneral_ReportStoreGeneralFilterDTO.Take)
