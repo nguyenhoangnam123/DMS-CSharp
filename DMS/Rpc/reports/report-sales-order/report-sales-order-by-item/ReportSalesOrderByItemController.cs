@@ -195,13 +195,15 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                 ProductGroupingIds = ProductGroupingIds.Intersect(listId).ToList();
             }
             var query = from t in DataContext.IndirectSalesOrderTransaction
+                        join od in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals od.Id
                         join i in DataContext.Item on t.ItemId equals i.Id
                         join p in DataContext.Product on i.ProductId equals p.Id
                         join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
                         where OrganizationIds.Contains(t.OrganizationId) &&
                         (ItemId.HasValue == false || t.ItemId == ItemId) &&
                         (ProductTypeIds.Contains(p.ProductTypeId)) &&
-                        (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(ppgm.ProductGroupingId))
+                        (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(ppgm.ProductGroupingId)) &&
+                        od.OrderDate >= Start && od.OrderDate <= End
                         group t by new {t.OrganizationId, t.ItemId } into x
                         select new
                         {
@@ -259,13 +261,15 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             }
 
             var query = from t in DataContext.IndirectSalesOrderTransaction
+                        join od in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals od.Id
                         join i in DataContext.Item on t.ItemId equals i.Id
                         join p in DataContext.Product on i.ProductId equals p.Id
                         join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
                         where OrganizationIds.Contains(t.OrganizationId) &&
                         (ItemId.HasValue == false || t.ItemId == ItemId) &&
                         (ProductTypeIds.Contains(p.ProductTypeId)) &&
-                        (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(ppgm.ProductGroupingId))
+                        (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(ppgm.ProductGroupingId)) &&
+                        od.OrderDate >= Start && od.OrderDate <= End
                         group t by new { t.OrganizationId, t.ItemId } into x
                         select new
                         {
@@ -292,12 +296,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
 
             var ItemIds = keys.Select(x => x.ItemId).Distinct().ToList();
             var queryTransaction = from t in DataContext.IndirectSalesOrderTransaction
+                                   join od in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals od.Id
                                    join i in DataContext.Item on t.ItemId equals i.Id
                                    join ind in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals ind.Id
                                    join u in DataContext.UnitOfMeasure on t.UnitOfMeasureId equals u.Id
                                    join o in DataContext.Organization on t.OrganizationId equals o.Id
                                    where OrgIds.Contains(t.OrganizationId) &&
-                                   ItemIds.Contains(t.ItemId)
+                                   ItemIds.Contains(t.ItemId) &&
+                                   od.OrderDate >= Start && od.OrderDate <= End
                                    select new IndirectSalesOrderTransactionDAO
                                    {
                                        Id = t.Id,
@@ -421,13 +427,15 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
             }
 
             var query = from t in DataContext.IndirectSalesOrderTransaction
+                        join od in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals od.Id
                         join i in DataContext.Item on t.ItemId equals i.Id
                         join p in DataContext.Product on i.ProductId equals p.Id
                         join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
                         where OrganizationIds.Contains(t.OrganizationId) &&
                         (ItemId.HasValue == false || t.ItemId == ItemId) &&
                         (ProductTypeIds.Contains(p.ProductTypeId)) &&
-                        (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(ppgm.ProductGroupingId))
+                        (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(ppgm.ProductGroupingId)) &&
+                        od.OrderDate >= Start && od.OrderDate <= End
                         group t by new { t.OrganizationId, t.ItemId } into x
                         select new
                         {
@@ -441,12 +449,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
 
             var ItemIds = keys.Select(x => x.ItemId).Distinct().ToList();
             var queryTransaction = from t in DataContext.IndirectSalesOrderTransaction
+                                   join od in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals od.Id
                                    join i in DataContext.Item on t.ItemId equals i.Id
                                    join ind in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals ind.Id
                                    join u in DataContext.UnitOfMeasure on t.UnitOfMeasureId equals u.Id
                                    join o in DataContext.Organization on t.OrganizationId equals o.Id
                                    where OrgIds.Contains(t.OrganizationId) &&
-                                   ItemIds.Contains(t.ItemId)
+                                   ItemIds.Contains(t.ItemId) &&
+                                   od.OrderDate >= Start && od.OrderDate <= End
                                    select new IndirectSalesOrderTransactionDAO
                                    {
                                        Id = t.Id,
