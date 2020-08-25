@@ -24,16 +24,21 @@ namespace DMS.Services.MDirectSalesOrder
         {
             IdNotExisted,
             BuyerStoreNotExisted,
+            SellerStoreNotExisted,
+            BuyerStoreEmpty,
+            SellerStoreEmpty,
             SaleEmployeeNotExisted,
+            SaleEmployeeEmpty,
             OrderDateEmpty,
             EditedPriceStatusNotExisted,
             PriceOutOfRange,
+            UnitOfMeasureEmpty,
             UnitOfMeasureNotExisted,
-            PrimaryUnitOfMeasureNotExisted,
             QuantityEmpty,
-            QuantityInvalid,
             ItemNotExisted,
-            InventoryHasntEnough
+            QuantityInvalid,
+            SellerStoreEqualBuyerStore,
+            ContentEmpty
         }
 
         private IUOW UOW;
@@ -63,33 +68,47 @@ namespace DMS.Services.MDirectSalesOrder
 
         private async Task<bool> ValidateStore(DirectSalesOrder DirectSalesOrder)
         {
-            StoreFilter StoreFilter = new StoreFilter
+            if (DirectSalesOrder.BuyerStoreId == 0)
+                DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.BuyerStore), ErrorCode.BuyerStoreEmpty);
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = DirectSalesOrder.BuyerStoreId },
-                Selects = StoreSelect.Id
-            };
+                StoreFilter StoreFilter = new StoreFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = DirectSalesOrder.BuyerStoreId },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
+                    Selects = StoreSelect.Id
+                };
 
-            int count = await UOW.StoreRepository.Count(StoreFilter);
-            if (count == 0)
-                DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.BuyerStore), ErrorCode.BuyerStoreNotExisted);
+                int count = await UOW.StoreRepository.Count(StoreFilter);
+                if (count == 0)
+                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.BuyerStore), ErrorCode.BuyerStoreNotExisted);
+            }
+
             return DirectSalesOrder.IsValidated;
         }
 
         private async Task<bool> ValidateEmployee(DirectSalesOrder DirectSalesOrder)
         {
-            AppUserFilter AppUserFilter = new AppUserFilter
+            if (DirectSalesOrder.SaleEmployeeId == 0)
+                DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.SaleEmployee), ErrorCode.SaleEmployeeEmpty);
+            else
             {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = DirectSalesOrder.SaleEmployeeId },
-                Selects = AppUserSelect.Id
-            };
+                AppUserFilter AppUserFilter = new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = DirectSalesOrder.SaleEmployeeId },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
+                    Selects = AppUserSelect.Id
+                };
 
-            int count = await UOW.AppUserRepository.Count(AppUserFilter);
-            if (count == 0)
-                DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.SaleEmployee), ErrorCode.SaleEmployeeNotExisted);
+                int count = await UOW.AppUserRepository.Count(AppUserFilter);
+                if (count == 0)
+                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.SaleEmployee), ErrorCode.SaleEmployeeNotExisted);
+            }
+
             return DirectSalesOrder.IsValidated;
         }
 
@@ -100,62 +119,111 @@ namespace DMS.Services.MDirectSalesOrder
             return DirectSalesOrder.IsValidated;
         }
 
-        private async Task<bool> ValidateEditedPrice(DirectSalesOrder DirectSalesOrder)
+        private async Task<bool> ValidateContent(DirectSalesOrder DirectSalesOrder)
         {
-            if (EditedPriceStatusEnum.ACTIVE.Id != DirectSalesOrder.EditedPriceStatusId && EditedPriceStatusEnum.INACTIVE.Id != DirectSalesOrder.EditedPriceStatusId)
-                DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.EditedPriceStatus), ErrorCode.EditedPriceStatusNotExisted);
+            if (DirectSalesOrder.DirectSalesOrderContents != null && DirectSalesOrder.DirectSalesOrderContents.Any())
+            {
+                var ItemIds = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.ItemId).ToList();
+                var ProductIds = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.Item.ProductId).ToList();
+                List<Item> Items = await UOW.ItemRepository.List(new ItemFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter { In = ItemIds },
+                    Selects = ItemSelect.Id | ItemSelect.SalePrice | ItemSelect.ProductId
+                });
 
+                var Products = await UOW.ProductRepository.List(new ProductFilter
+                {
+                    Id = new IdFilter { In = ProductIds },
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = ProductSelect.UnitOfMeasure | ProductSelect.UnitOfMeasureGrouping | ProductSelect.Id | ProductSelect.TaxType
+                });
+
+                var UOMGs = await UOW.UnitOfMeasureGroupingRepository.List(new UnitOfMeasureGroupingFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = UnitOfMeasureGroupingSelect.Id | UnitOfMeasureGroupingSelect.UnitOfMeasure | UnitOfMeasureGroupingSelect.UnitOfMeasureGroupingContents
+                });
+
+                foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
+                {
+                    if (DirectSalesOrderContent.UnitOfMeasureId == 0)
+                        DirectSalesOrderContent.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.UnitOfMeasure), ErrorCode.UnitOfMeasureEmpty);
+                    else
+                    {
+                        var Item = Items.Where(x => x.Id == DirectSalesOrderContent.ItemId).FirstOrDefault();
+                        if (Item == null)
+                        {
+                            DirectSalesOrderContent.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Item), ErrorCode.ItemNotExisted);
+                        }
+                        else
+                        {
+                            var Product = Products.Where(x => Item.ProductId == x.Id).FirstOrDefault();
+                            List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
+                            if (Product.UnitOfMeasureGroupingId.HasValue)
+                            {
+                                var UOMG = UOMGs.Where(x => x.Id == Product.UnitOfMeasureGroupingId).FirstOrDefault();
+                                UnitOfMeasures = UOMG.UnitOfMeasureGroupingContents.Select(x => new UnitOfMeasure
+                                {
+                                    Id = x.UnitOfMeasure.Id,
+                                    Code = x.UnitOfMeasure.Code,
+                                    Name = x.UnitOfMeasure.Name,
+                                    Description = x.UnitOfMeasure.Description,
+                                    StatusId = x.UnitOfMeasure.StatusId,
+                                    Factor = x.Factor
+                                }).ToList();
+                            }
+
+                            UnitOfMeasures.Add(new UnitOfMeasure
+                            {
+                                Id = Product.UnitOfMeasure.Id,
+                                Code = Product.UnitOfMeasure.Code,
+                                Name = Product.UnitOfMeasure.Name,
+                                Description = Product.UnitOfMeasure.Description,
+                                StatusId = Product.UnitOfMeasure.StatusId,
+                                Factor = 1
+                            });
+
+                            var UOM = UnitOfMeasures.Where(x => DirectSalesOrderContent.UnitOfMeasureId == x.Id).FirstOrDefault();
+                            if (UOM == null)
+                                DirectSalesOrderContent.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
+                            //else
+                            //{
+                            //    if(DirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
+                            //    {
+                            //        if(DirectSalesOrderContent.SalePrice < (Item.SalePrice * UOM.Factor.Value) * 0.9m
+                            //            || DirectSalesOrderContent.SalePrice > (Item.SalePrice * UOM.Factor.Value) * 1.1m)
+                            //            DirectSalesOrderContent.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.SalePrice), ErrorCode.PriceOutOfRange);
+                            //    }
+                            //}
+                        }
+
+                        if (DirectSalesOrderContent.Quantity <= 0)
+                            DirectSalesOrderContent.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Quantity), ErrorCode.QuantityEmpty);
+
+                    }
+
+                }
+            }
             else
             {
-                var oldData = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-
-                if (DirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
+                if (DirectSalesOrder.DirectSalesOrderPromotions == null || !DirectSalesOrder.DirectSalesOrderPromotions.Any())
                 {
-                    if (DirectSalesOrder.DirectSalesOrderContents != null)
-                    {
-                        foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
-                        {
-                            var oldDataContent = oldData.DirectSalesOrderContents.Where(x => x.Id == DirectSalesOrderContent.Id).FirstOrDefault();
-                            if (oldDataContent != null)
-                            {
-                                if (DirectSalesOrderContent.Amount > 1.1m * oldDataContent.Amount || DirectSalesOrderContent.Amount < 0.9m * oldDataContent.Amount)
-                                    DirectSalesOrderContent.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Amount), ErrorCode.PriceOutOfRange);
-                            }
-                        }
-                    }
+                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.Id), ErrorCode.ContentEmpty);
                 }
             }
 
             return DirectSalesOrder.IsValidated;
         }
 
-        private async Task<bool> ValidateUOM(DirectSalesOrder DirectSalesOrder)
+        private async Task<bool> ValidatePromotion(DirectSalesOrder DirectSalesOrder)
         {
-            if (DirectSalesOrder.DirectSalesOrderContents != null)
-            {
-                //validate đơn vị tính sản phẩm bán
-                var Ids = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.UnitOfMeasureId).ToList();
-                UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Id = new IdFilter { In = Ids },
-                    Selects = UnitOfMeasureSelect.Id
-                };
-
-                var listIdsInDB = (await UOW.UnitOfMeasureRepository.List(UnitOfMeasureFilter)).Select(x => x.Id);
-                var listIdsNotExisted = Ids.Except(listIdsInDB);
-
-                foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
-                {
-                    if (listIdsNotExisted.Contains(DirectSalesOrderContent.UnitOfMeasureId))
-                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
-                }
-
-            }
-
             if (DirectSalesOrder.DirectSalesOrderPromotions != null)
             {
+                await ValidateItem(DirectSalesOrder);
                 //validate đơn vị tính sản phẩm khuyến mãi
                 var Ids = DirectSalesOrder.DirectSalesOrderPromotions.Select(x => x.UnitOfMeasureId).ToList();
                 var UnitOfMeasureFilter = new UnitOfMeasureFilter
@@ -163,6 +231,7 @@ namespace DMS.Services.MDirectSalesOrder
                     Skip = 0,
                     Take = int.MaxValue,
                     Id = new IdFilter { In = Ids },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = UnitOfMeasureSelect.Id
                 };
 
@@ -172,98 +241,19 @@ namespace DMS.Services.MDirectSalesOrder
                 foreach (var DirectSalesOrderPromotion in DirectSalesOrder.DirectSalesOrderPromotions)
                 {
                     if (listIdsNotExisted.Contains(DirectSalesOrderPromotion.UnitOfMeasureId))
-                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
+                        DirectSalesOrderPromotion.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.UnitOfMeasure), ErrorCode.UnitOfMeasureEmpty);
+                    //validate số lượng
+                    if (DirectSalesOrderPromotion.Quantity <= 0)
+                        DirectSalesOrderPromotion.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.Quantity), ErrorCode.QuantityEmpty);
                 }
 
             }
-
             return DirectSalesOrder.IsValidated;
         }
 
-        private async Task<bool> ValidateQuantity(DirectSalesOrder DirectSalesOrder)
-        {
-            if (DirectSalesOrder.DirectSalesOrderContents != null)
-            {
-                var IdsItem = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.ItemId).ToList();
-
-                InventoryFilter InventoryFilter = new InventoryFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    ItemId = new IdFilter { In = IdsItem },
-                    Selects = InventorySelect.SaleStock | InventorySelect.Item
-                };
-
-                var inventories = await UOW.InventoryRepository.List(InventoryFilter);
-                var SaleStockOfItems = inventories.GroupBy(x => x.ItemId).Select(x => new { ItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
-                foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
-                {
-                    if (DirectSalesOrderContent.Quantity == 0)
-                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Quantity), ErrorCode.QuantityEmpty);
-                    else if (DirectSalesOrderContent.Quantity < 0)
-                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Quantity), ErrorCode.QuantityInvalid);
-                    var saleStockOfItem = SaleStockOfItems.Where(x => x.ItemId == DirectSalesOrderContent.ItemId).Select(x => x.SaleStock).FirstOrDefault();
-                    if (DirectSalesOrderContent.Quantity > saleStockOfItem)
-                    {
-                        DirectSalesOrderContent.Item.HasInventory = false;
-                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Quantity), ErrorCode.InventoryHasntEnough);
-                    }
-                }
-            }
-
-            if (DirectSalesOrder.DirectSalesOrderPromotions != null)
-            {
-                var IdsItem = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.ItemId).ToList();
-
-                InventoryFilter InventoryFilter = new InventoryFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    ItemId = new IdFilter { In = IdsItem },
-                    Selects = InventorySelect.SaleStock | InventorySelect.Item
-                };
-
-                var inventories = await UOW.InventoryRepository.List(InventoryFilter);
-                var SaleStockOfItems = inventories.GroupBy(x => x.ItemId).Select(x => new { ItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
-
-                foreach (var DirectSalesOrderPromotion in DirectSalesOrder.DirectSalesOrderPromotions)
-                {
-                    if (DirectSalesOrderPromotion.Quantity == 0)
-                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.Quantity), ErrorCode.QuantityEmpty);
-                    else if (DirectSalesOrderPromotion.Quantity < 0)
-                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.Quantity), ErrorCode.QuantityInvalid);
-                    var saleStockOfItem = SaleStockOfItems.Where(x => x.ItemId == DirectSalesOrderPromotion.ItemId).Select(x => x.SaleStock).FirstOrDefault();
-                    if (DirectSalesOrderPromotion.Quantity > saleStockOfItem)
-                    {
-                        DirectSalesOrderPromotion.Item.HasInventory = false;
-                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.Quantity), ErrorCode.InventoryHasntEnough);
-                    }
-                }
-            }
-            return DirectSalesOrder.IsValidated;
-        }
 
         private async Task<bool> ValidateItem(DirectSalesOrder DirectSalesOrder)
         {
-            if (DirectSalesOrder.DirectSalesOrderContents != null)
-            {
-                var Ids = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.ItemId).ToList();
-                var ItemFilter = new ItemFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Id = new IdFilter { In = Ids },
-                    Selects = ItemSelect.Id
-                };
-
-                var listIdsInDB = (await UOW.ItemRepository.List(ItemFilter)).Select(x => x.Id);
-                var listIdsNotExisted = Ids.Except(listIdsInDB);
-                foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
-                {
-                    if (listIdsNotExisted.Contains(DirectSalesOrderContent.ItemId))
-                        DirectSalesOrderContent.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderContent.Item), ErrorCode.ItemNotExisted);
-                }
-            }
 
             if (DirectSalesOrder.DirectSalesOrderPromotions != null)
             {
@@ -273,6 +263,7 @@ namespace DMS.Services.MDirectSalesOrder
                     Skip = 0,
                     Take = int.MaxValue,
                     Id = new IdFilter { In = Ids },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = ItemSelect.Id
                 };
 
@@ -281,9 +272,16 @@ namespace DMS.Services.MDirectSalesOrder
                 foreach (var DirectSalesOrderPromotion in DirectSalesOrder.DirectSalesOrderPromotions)
                 {
                     if (listIdsNotExisted.Contains(DirectSalesOrderPromotion.ItemId))
-                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.Item), ErrorCode.ItemNotExisted);
+                        DirectSalesOrderPromotion.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrderPromotion.Item), ErrorCode.ItemNotExisted);
                 }
             }
+            return DirectSalesOrder.IsValidated;
+        }
+
+        private async Task<bool> ValidateEditedPrice(DirectSalesOrder DirectSalesOrder)
+        {
+            if (EditedPriceStatusEnum.ACTIVE.Id != DirectSalesOrder.EditedPriceStatusId && EditedPriceStatusEnum.INACTIVE.Id != DirectSalesOrder.EditedPriceStatusId)
+                DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.EditedPriceStatus), ErrorCode.EditedPriceStatusNotExisted);
             return DirectSalesOrder.IsValidated;
         }
 
@@ -292,9 +290,9 @@ namespace DMS.Services.MDirectSalesOrder
             await ValidateStore(DirectSalesOrder);
             await ValidateEmployee(DirectSalesOrder);
             await ValidateOrderDate(DirectSalesOrder);
-            await ValidateUOM(DirectSalesOrder);
-            await ValidateQuantity(DirectSalesOrder);
-            await ValidateItem(DirectSalesOrder);
+            await ValidateContent(DirectSalesOrder);
+            await ValidatePromotion(DirectSalesOrder);
+            await ValidateEditedPrice(DirectSalesOrder);
             return DirectSalesOrder.IsValidated;
         }
 
@@ -305,10 +303,9 @@ namespace DMS.Services.MDirectSalesOrder
                 await ValidateStore(DirectSalesOrder);
                 await ValidateEmployee(DirectSalesOrder);
                 await ValidateOrderDate(DirectSalesOrder);
+                await ValidateContent(DirectSalesOrder);
+                await ValidatePromotion(DirectSalesOrder);
                 await ValidateEditedPrice(DirectSalesOrder);
-                await ValidateUOM(DirectSalesOrder);
-                await ValidateQuantity(DirectSalesOrder);
-                await ValidateItem(DirectSalesOrder);
             }
             return DirectSalesOrder.IsValidated;
         }

@@ -48,8 +48,10 @@ namespace DMS.Repositories
                 query = query.Where(q => q.PrimaryUnitOfMeasureId, filter.PrimaryUnitOfMeasureId);
             if (filter.RequestedQuantity != null)
                 query = query.Where(q => q.RequestedQuantity, filter.RequestedQuantity);
-            if (filter.Price != null)
-                query = query.Where(q => q.Price, filter.Price);
+            if (filter.PrimaryPrice != null)
+                query = query.Where(q => q.PrimaryPrice, filter.PrimaryPrice);
+            if (filter.SalePrice != null)
+                query = query.Where(q => q.SalePrice, filter.SalePrice);
             if (filter.DiscountPercentage != null)
                 query = query.Where(q => q.DiscountPercentage, filter.DiscountPercentage);
             if (filter.DiscountAmount != null)
@@ -58,12 +60,12 @@ namespace DMS.Repositories
                 query = query.Where(q => q.GeneralDiscountPercentage, filter.GeneralDiscountPercentage);
             if (filter.GeneralDiscountAmount != null)
                 query = query.Where(q => q.GeneralDiscountAmount, filter.GeneralDiscountAmount);
+            if (filter.Amount != null)
+                query = query.Where(q => q.Amount, filter.Amount);
             if (filter.TaxPercentage != null)
                 query = query.Where(q => q.TaxPercentage, filter.TaxPercentage);
             if (filter.TaxAmount != null)
                 query = query.Where(q => q.TaxAmount, filter.TaxAmount);
-            if (filter.Amount != null)
-                query = query.Where(q => q.Amount, filter.Amount);
             query = OrFilter(query, filter);
             return query;
         }
@@ -90,8 +92,10 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.PrimaryUnitOfMeasureId, DirectSalesOrderContentFilter.PrimaryUnitOfMeasureId);
                 if (DirectSalesOrderContentFilter.RequestedQuantity != null)
                     queryable = queryable.Where(q => q.RequestedQuantity, DirectSalesOrderContentFilter.RequestedQuantity);
-                if (DirectSalesOrderContentFilter.Price != null)
-                    queryable = queryable.Where(q => q.Price, DirectSalesOrderContentFilter.Price);
+                if (DirectSalesOrderContentFilter.PrimaryPrice != null)
+                    queryable = queryable.Where(q => q.PrimaryPrice, DirectSalesOrderContentFilter.PrimaryPrice);
+                if (DirectSalesOrderContentFilter.SalePrice != null)
+                    queryable = queryable.Where(q => q.SalePrice, DirectSalesOrderContentFilter.SalePrice);
                 if (DirectSalesOrderContentFilter.DiscountPercentage != null)
                     queryable = queryable.Where(q => q.DiscountPercentage, DirectSalesOrderContentFilter.DiscountPercentage);
                 if (DirectSalesOrderContentFilter.DiscountAmount != null)
@@ -100,12 +104,12 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.GeneralDiscountPercentage, DirectSalesOrderContentFilter.GeneralDiscountPercentage);
                 if (DirectSalesOrderContentFilter.GeneralDiscountAmount != null)
                     queryable = queryable.Where(q => q.GeneralDiscountAmount, DirectSalesOrderContentFilter.GeneralDiscountAmount);
+                if (DirectSalesOrderContentFilter.Amount != null)
+                    queryable = queryable.Where(q => q.Amount, DirectSalesOrderContentFilter.Amount);
                 if (DirectSalesOrderContentFilter.TaxPercentage != null)
                     queryable = queryable.Where(q => q.TaxPercentage, DirectSalesOrderContentFilter.TaxPercentage);
                 if (DirectSalesOrderContentFilter.TaxAmount != null)
                     queryable = queryable.Where(q => q.TaxAmount, DirectSalesOrderContentFilter.TaxAmount);
-                if (DirectSalesOrderContentFilter.Amount != null)
-                    queryable = queryable.Where(q => q.Amount, DirectSalesOrderContentFilter.Amount);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -139,8 +143,11 @@ namespace DMS.Repositories
                         case DirectSalesOrderContentOrder.RequestedQuantity:
                             query = query.OrderBy(q => q.RequestedQuantity);
                             break;
-                        case DirectSalesOrderContentOrder.Price:
-                            query = query.OrderBy(q => q.Price);
+                        case DirectSalesOrderContentOrder.PrimaryPrice:
+                            query = query.OrderBy(q => q.PrimaryPrice);
+                            break;
+                        case DirectSalesOrderContentOrder.SalePrice:
+                            query = query.OrderBy(q => q.SalePrice);
                             break;
                         case DirectSalesOrderContentOrder.DiscountPercentage:
                             query = query.OrderBy(q => q.DiscountPercentage);
@@ -154,14 +161,14 @@ namespace DMS.Repositories
                         case DirectSalesOrderContentOrder.GeneralDiscountAmount:
                             query = query.OrderBy(q => q.GeneralDiscountAmount);
                             break;
+                        case DirectSalesOrderContentOrder.Amount:
+                            query = query.OrderBy(q => q.Amount);
+                            break;
                         case DirectSalesOrderContentOrder.TaxPercentage:
                             query = query.OrderBy(q => q.TaxPercentage);
                             break;
                         case DirectSalesOrderContentOrder.TaxAmount:
                             query = query.OrderBy(q => q.TaxAmount);
-                            break;
-                        case DirectSalesOrderContentOrder.Amount:
-                            query = query.OrderBy(q => q.Amount);
                             break;
                     }
                     break;
@@ -189,8 +196,11 @@ namespace DMS.Repositories
                         case DirectSalesOrderContentOrder.RequestedQuantity:
                             query = query.OrderByDescending(q => q.RequestedQuantity);
                             break;
-                        case DirectSalesOrderContentOrder.Price:
-                            query = query.OrderByDescending(q => q.Price);
+                        case DirectSalesOrderContentOrder.PrimaryPrice:
+                            query = query.OrderByDescending(q => q.PrimaryPrice);
+                            break;
+                        case DirectSalesOrderContentOrder.SalePrice:
+                            query = query.OrderByDescending(q => q.SalePrice);
                             break;
                         case DirectSalesOrderContentOrder.DiscountPercentage:
                             query = query.OrderByDescending(q => q.DiscountPercentage);
@@ -204,14 +214,14 @@ namespace DMS.Repositories
                         case DirectSalesOrderContentOrder.GeneralDiscountAmount:
                             query = query.OrderByDescending(q => q.GeneralDiscountAmount);
                             break;
+                        case DirectSalesOrderContentOrder.Amount:
+                            query = query.OrderByDescending(q => q.Amount);
+                            break;
                         case DirectSalesOrderContentOrder.TaxPercentage:
                             query = query.OrderByDescending(q => q.TaxPercentage);
                             break;
                         case DirectSalesOrderContentOrder.TaxAmount:
                             query = query.OrderByDescending(q => q.TaxAmount);
-                            break;
-                        case DirectSalesOrderContentOrder.Amount:
-                            query = query.OrderByDescending(q => q.Amount);
                             break;
                     }
                     break;
@@ -231,24 +241,24 @@ namespace DMS.Repositories
                 Quantity = filter.Selects.Contains(DirectSalesOrderContentSelect.Quantity) ? q.Quantity : default(long),
                 PrimaryUnitOfMeasureId = filter.Selects.Contains(DirectSalesOrderContentSelect.PrimaryUnitOfMeasure) ? q.PrimaryUnitOfMeasureId : default(long),
                 RequestedQuantity = filter.Selects.Contains(DirectSalesOrderContentSelect.RequestedQuantity) ? q.RequestedQuantity : default(long),
-                Price = filter.Selects.Contains(DirectSalesOrderContentSelect.Price) ? q.Price : default(long),
+                PrimaryPrice = filter.Selects.Contains(DirectSalesOrderContentSelect.PrimaryPrice) ? q.PrimaryPrice : default(long),
+                SalePrice = filter.Selects.Contains(DirectSalesOrderContentSelect.SalePrice) ? q.SalePrice : default(long),
                 DiscountPercentage = filter.Selects.Contains(DirectSalesOrderContentSelect.DiscountPercentage) ? q.DiscountPercentage : default(decimal?),
                 DiscountAmount = filter.Selects.Contains(DirectSalesOrderContentSelect.DiscountAmount) ? q.DiscountAmount : default(long?),
                 GeneralDiscountPercentage = filter.Selects.Contains(DirectSalesOrderContentSelect.GeneralDiscountPercentage) ? q.GeneralDiscountPercentage : default(decimal?),
                 GeneralDiscountAmount = filter.Selects.Contains(DirectSalesOrderContentSelect.GeneralDiscountAmount) ? q.GeneralDiscountAmount : default(long?),
+                Amount = filter.Selects.Contains(DirectSalesOrderContentSelect.Amount) ? q.Amount : default(long),
                 TaxPercentage = filter.Selects.Contains(DirectSalesOrderContentSelect.TaxPercentage) ? q.TaxPercentage : default(decimal?),
                 TaxAmount = filter.Selects.Contains(DirectSalesOrderContentSelect.TaxAmount) ? q.TaxAmount : default(long?),
-                Amount = filter.Selects.Contains(DirectSalesOrderContentSelect.Amount) ? q.Amount : default(long),
-                Factor = filter.Selects.Contains(DirectSalesOrderContentSelect.Factor) ? q.Factor : default(long),
+                Factor = filter.Selects.Contains(DirectSalesOrderContentSelect.Factor) ? q.Factor : default(long?),
                 DirectSalesOrder = filter.Selects.Contains(DirectSalesOrderContentSelect.DirectSalesOrder) && q.DirectSalesOrder != null ? new DirectSalesOrder
                 {
                     Id = q.DirectSalesOrder.Id,
                     Code = q.DirectSalesOrder.Code,
                     BuyerStoreId = q.DirectSalesOrder.BuyerStoreId,
-                    StorePhone = q.DirectSalesOrder.StorePhone,
+                    PhoneNumber = q.DirectSalesOrder.PhoneNumber,
                     StoreAddress = q.DirectSalesOrder.StoreAddress,
-                    StoreDeliveryAddress = q.DirectSalesOrder.StoreDeliveryAddress,
-                    TaxCode = q.DirectSalesOrder.TaxCode,
+                    DeliveryAddress = q.DirectSalesOrder.DeliveryAddress,
                     SaleEmployeeId = q.DirectSalesOrder.SaleEmployeeId,
                     OrderDate = q.DirectSalesOrder.OrderDate,
                     DeliveryDate = q.DirectSalesOrder.DeliveryDate,
@@ -259,18 +269,6 @@ namespace DMS.Repositories
                     GeneralDiscountAmount = q.DirectSalesOrder.GeneralDiscountAmount,
                     TotalTaxAmount = q.DirectSalesOrder.TotalTaxAmount,
                     Total = q.DirectSalesOrder.Total,
-                    RequestStateId = q.DirectSalesOrder.RequestStateId,
-                } : null,
-                Item = filter.Selects.Contains(DirectSalesOrderContentSelect.Item) && q.Item != null ? new Item
-                {
-                    Id = q.Item.Id,
-                    ProductId = q.Item.ProductId,
-                    Code = q.Item.Code,
-                    Name = q.Item.Name,
-                    ScanCode = q.Item.ScanCode,
-                    SalePrice = q.Item.SalePrice,
-                    RetailPrice = q.Item.RetailPrice,
-                    StatusId = q.Item.StatusId,
                 } : null,
                 PrimaryUnitOfMeasure = filter.Selects.Contains(DirectSalesOrderContentSelect.PrimaryUnitOfMeasure) && q.PrimaryUnitOfMeasure != null ? new UnitOfMeasure
                 {
@@ -321,24 +319,24 @@ namespace DMS.Repositories
                 Quantity = x.Quantity,
                 PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
                 RequestedQuantity = x.RequestedQuantity,
-                Price = x.Price,
+                PrimaryPrice = x.PrimaryPrice,
+                SalePrice = x.SalePrice,
                 DiscountPercentage = x.DiscountPercentage,
                 DiscountAmount = x.DiscountAmount,
                 GeneralDiscountPercentage = x.GeneralDiscountPercentage,
                 GeneralDiscountAmount = x.GeneralDiscountAmount,
+                Amount = x.Amount,
                 TaxPercentage = x.TaxPercentage,
                 TaxAmount = x.TaxAmount,
-                Amount = x.Amount,
                 Factor = x.Factor,
                 DirectSalesOrder = x.DirectSalesOrder == null ? null : new DirectSalesOrder
                 {
                     Id = x.DirectSalesOrder.Id,
                     Code = x.DirectSalesOrder.Code,
                     BuyerStoreId = x.DirectSalesOrder.BuyerStoreId,
-                    StorePhone = x.DirectSalesOrder.StorePhone,
+                    PhoneNumber = x.DirectSalesOrder.PhoneNumber,
                     StoreAddress = x.DirectSalesOrder.StoreAddress,
-                    StoreDeliveryAddress = x.DirectSalesOrder.StoreDeliveryAddress,
-                    TaxCode = x.DirectSalesOrder.TaxCode,
+                    DeliveryAddress = x.DirectSalesOrder.DeliveryAddress,
                     SaleEmployeeId = x.DirectSalesOrder.SaleEmployeeId,
                     OrderDate = x.DirectSalesOrder.OrderDate,
                     DeliveryDate = x.DirectSalesOrder.DeliveryDate,
@@ -349,18 +347,6 @@ namespace DMS.Repositories
                     GeneralDiscountAmount = x.DirectSalesOrder.GeneralDiscountAmount,
                     TotalTaxAmount = x.DirectSalesOrder.TotalTaxAmount,
                     Total = x.DirectSalesOrder.Total,
-                    RequestStateId = x.DirectSalesOrder.RequestStateId,
-                },
-                Item = x.Item == null ? null : new Item
-                {
-                    Id = x.Item.Id,
-                    ProductId = x.Item.ProductId,
-                    Code = x.Item.Code,
-                    Name = x.Item.Name,
-                    ScanCode = x.Item.ScanCode,
-                    SalePrice = x.Item.SalePrice,
-                    RetailPrice = x.Item.RetailPrice,
-                    StatusId = x.Item.StatusId,
                 },
                 PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
                 {
@@ -395,14 +381,15 @@ namespace DMS.Repositories
             DirectSalesOrderContentDAO.Quantity = DirectSalesOrderContent.Quantity;
             DirectSalesOrderContentDAO.PrimaryUnitOfMeasureId = DirectSalesOrderContent.PrimaryUnitOfMeasureId;
             DirectSalesOrderContentDAO.RequestedQuantity = DirectSalesOrderContent.RequestedQuantity;
-            DirectSalesOrderContentDAO.Price = DirectSalesOrderContent.Price;
+            DirectSalesOrderContentDAO.PrimaryPrice = DirectSalesOrderContent.PrimaryPrice;
+            DirectSalesOrderContentDAO.SalePrice = DirectSalesOrderContent.SalePrice;
             DirectSalesOrderContentDAO.DiscountPercentage = DirectSalesOrderContent.DiscountPercentage;
             DirectSalesOrderContentDAO.DiscountAmount = DirectSalesOrderContent.DiscountAmount;
             DirectSalesOrderContentDAO.GeneralDiscountPercentage = DirectSalesOrderContent.GeneralDiscountPercentage;
             DirectSalesOrderContentDAO.GeneralDiscountAmount = DirectSalesOrderContent.GeneralDiscountAmount;
+            DirectSalesOrderContentDAO.Amount = DirectSalesOrderContent.Amount;
             DirectSalesOrderContentDAO.TaxPercentage = DirectSalesOrderContent.TaxPercentage;
             DirectSalesOrderContentDAO.TaxAmount = DirectSalesOrderContent.TaxAmount;
-            DirectSalesOrderContentDAO.Amount = DirectSalesOrderContent.Amount;
             DirectSalesOrderContentDAO.Factor = DirectSalesOrderContent.Factor;
             DataContext.DirectSalesOrderContent.Add(DirectSalesOrderContentDAO);
             await DataContext.SaveChangesAsync();
@@ -423,14 +410,15 @@ namespace DMS.Repositories
             DirectSalesOrderContentDAO.Quantity = DirectSalesOrderContent.Quantity;
             DirectSalesOrderContentDAO.PrimaryUnitOfMeasureId = DirectSalesOrderContent.PrimaryUnitOfMeasureId;
             DirectSalesOrderContentDAO.RequestedQuantity = DirectSalesOrderContent.RequestedQuantity;
-            DirectSalesOrderContentDAO.Price = DirectSalesOrderContent.Price;
+            DirectSalesOrderContentDAO.PrimaryPrice = DirectSalesOrderContent.PrimaryPrice;
+            DirectSalesOrderContentDAO.SalePrice = DirectSalesOrderContent.SalePrice;
             DirectSalesOrderContentDAO.DiscountPercentage = DirectSalesOrderContent.DiscountPercentage;
             DirectSalesOrderContentDAO.DiscountAmount = DirectSalesOrderContent.DiscountAmount;
             DirectSalesOrderContentDAO.GeneralDiscountPercentage = DirectSalesOrderContent.GeneralDiscountPercentage;
             DirectSalesOrderContentDAO.GeneralDiscountAmount = DirectSalesOrderContent.GeneralDiscountAmount;
+            DirectSalesOrderContentDAO.Amount = DirectSalesOrderContent.Amount;
             DirectSalesOrderContentDAO.TaxPercentage = DirectSalesOrderContent.TaxPercentage;
             DirectSalesOrderContentDAO.TaxAmount = DirectSalesOrderContent.TaxAmount;
-            DirectSalesOrderContentDAO.Amount = DirectSalesOrderContent.Amount;
             DirectSalesOrderContentDAO.Factor = DirectSalesOrderContent.Factor;
             await DataContext.SaveChangesAsync();
             await SaveReference(DirectSalesOrderContent);
@@ -456,14 +444,15 @@ namespace DMS.Repositories
                 DirectSalesOrderContentDAO.Quantity = DirectSalesOrderContent.Quantity;
                 DirectSalesOrderContentDAO.PrimaryUnitOfMeasureId = DirectSalesOrderContent.PrimaryUnitOfMeasureId;
                 DirectSalesOrderContentDAO.RequestedQuantity = DirectSalesOrderContent.RequestedQuantity;
-                DirectSalesOrderContentDAO.Price = DirectSalesOrderContent.Price;
+                DirectSalesOrderContentDAO.PrimaryPrice = DirectSalesOrderContent.PrimaryPrice;
+                DirectSalesOrderContentDAO.SalePrice = DirectSalesOrderContent.SalePrice;
                 DirectSalesOrderContentDAO.DiscountPercentage = DirectSalesOrderContent.DiscountPercentage;
                 DirectSalesOrderContentDAO.DiscountAmount = DirectSalesOrderContent.DiscountAmount;
                 DirectSalesOrderContentDAO.GeneralDiscountPercentage = DirectSalesOrderContent.GeneralDiscountPercentage;
                 DirectSalesOrderContentDAO.GeneralDiscountAmount = DirectSalesOrderContent.GeneralDiscountAmount;
+                DirectSalesOrderContentDAO.Amount = DirectSalesOrderContent.Amount;
                 DirectSalesOrderContentDAO.TaxPercentage = DirectSalesOrderContent.TaxPercentage;
                 DirectSalesOrderContentDAO.TaxAmount = DirectSalesOrderContent.TaxAmount;
-                DirectSalesOrderContentDAO.Amount = DirectSalesOrderContent.Amount;
                 DirectSalesOrderContentDAO.Factor = DirectSalesOrderContent.Factor;
                 DirectSalesOrderContentDAOs.Add(DirectSalesOrderContentDAO);
             }

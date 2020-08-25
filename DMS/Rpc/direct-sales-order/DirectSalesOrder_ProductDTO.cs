@@ -28,7 +28,9 @@ namespace DMS.Rpc.direct_sales_order
         public string Note { get; set; }
         public DirectSalesOrder_ProductTypeDTO ProductType { get; set; }
         public DirectSalesOrder_SupplierDTO Supplier { get; set; }
+        public DirectSalesOrder_TaxTypeDTO TaxType { get; set; }
         public DirectSalesOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+        public DirectSalesOrder_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping { get; set; }
         public List<DirectSalesOrder_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
         public DirectSalesOrder_ProductDTO() { }
         public DirectSalesOrder_ProductDTO(Product Product)
@@ -54,7 +56,9 @@ namespace DMS.Rpc.direct_sales_order
             this.Note = Product.Note;
             this.ProductType = Product.ProductType == null ? null : new DirectSalesOrder_ProductTypeDTO(Product.ProductType);
             this.Supplier = Product.Supplier == null ? null : new DirectSalesOrder_SupplierDTO(Product.Supplier);
+            this.TaxType = Product.TaxType == null ? null : new DirectSalesOrder_TaxTypeDTO(Product.TaxType);
             this.UnitOfMeasure = Product.UnitOfMeasure == null ? null : new DirectSalesOrder_UnitOfMeasureDTO(Product.UnitOfMeasure);
+            this.UnitOfMeasureGrouping = Product.UnitOfMeasureGrouping == null ? null : new DirectSalesOrder_UnitOfMeasureGroupingDTO(Product.UnitOfMeasureGrouping);
             this.ProductProductGroupingMappings = Product.ProductProductGroupingMappings?.Select(x => new DirectSalesOrder_ProductProductGroupingMappingDTO(x)).ToList();
             this.Errors = Product.Errors;
         }

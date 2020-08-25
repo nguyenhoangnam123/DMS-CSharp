@@ -162,16 +162,15 @@ namespace DMS.Repositories
                 PrimaryUnitOfMeasureId = filter.Selects.Contains(DirectSalesOrderPromotionSelect.PrimaryUnitOfMeasure) ? q.PrimaryUnitOfMeasureId : default(long),
                 RequestedQuantity = filter.Selects.Contains(DirectSalesOrderPromotionSelect.RequestedQuantity) ? q.RequestedQuantity : default(long),
                 Note = filter.Selects.Contains(DirectSalesOrderPromotionSelect.Note) ? q.Note : default(string),
-                Factor = filter.Selects.Contains(DirectSalesOrderPromotionSelect.Factor) ? q.Factor : default(long),
+                Factor = filter.Selects.Contains(DirectSalesOrderPromotionSelect.Factor) ? q.Factor : default(long?),
                 DirectSalesOrder = filter.Selects.Contains(DirectSalesOrderPromotionSelect.DirectSalesOrder) && q.DirectSalesOrder != null ? new DirectSalesOrder
                 {
                     Id = q.DirectSalesOrder.Id,
                     Code = q.DirectSalesOrder.Code,
                     BuyerStoreId = q.DirectSalesOrder.BuyerStoreId,
-                    StorePhone = q.DirectSalesOrder.StorePhone,
+                    PhoneNumber = q.DirectSalesOrder.PhoneNumber,
                     StoreAddress = q.DirectSalesOrder.StoreAddress,
-                    StoreDeliveryAddress = q.DirectSalesOrder.StoreDeliveryAddress,
-                    TaxCode = q.DirectSalesOrder.TaxCode,
+                    DeliveryAddress = q.DirectSalesOrder.DeliveryAddress,
                     SaleEmployeeId = q.DirectSalesOrder.SaleEmployeeId,
                     OrderDate = q.DirectSalesOrder.OrderDate,
                     DeliveryDate = q.DirectSalesOrder.DeliveryDate,
@@ -182,7 +181,6 @@ namespace DMS.Repositories
                     GeneralDiscountAmount = q.DirectSalesOrder.GeneralDiscountAmount,
                     TotalTaxAmount = q.DirectSalesOrder.TotalTaxAmount,
                     Total = q.DirectSalesOrder.Total,
-                    RequestStateId = q.DirectSalesOrder.RequestStateId,
                 } : null,
                 Item = filter.Selects.Contains(DirectSalesOrderPromotionSelect.Item) && q.Item != null ? new Item
                 {
@@ -251,10 +249,9 @@ namespace DMS.Repositories
                     Id = x.DirectSalesOrder.Id,
                     Code = x.DirectSalesOrder.Code,
                     BuyerStoreId = x.DirectSalesOrder.BuyerStoreId,
-                    StorePhone = x.DirectSalesOrder.StorePhone,
+                    PhoneNumber = x.DirectSalesOrder.PhoneNumber,
                     StoreAddress = x.DirectSalesOrder.StoreAddress,
-                    StoreDeliveryAddress = x.DirectSalesOrder.StoreDeliveryAddress,
-                    TaxCode = x.DirectSalesOrder.TaxCode,
+                    DeliveryAddress = x.DirectSalesOrder.DeliveryAddress,
                     SaleEmployeeId = x.DirectSalesOrder.SaleEmployeeId,
                     OrderDate = x.DirectSalesOrder.OrderDate,
                     DeliveryDate = x.DirectSalesOrder.DeliveryDate,
@@ -265,7 +262,6 @@ namespace DMS.Repositories
                     GeneralDiscountAmount = x.DirectSalesOrder.GeneralDiscountAmount,
                     TotalTaxAmount = x.DirectSalesOrder.TotalTaxAmount,
                     Total = x.DirectSalesOrder.Total,
-                    RequestStateId = x.DirectSalesOrder.RequestStateId,
                 },
                 Item = x.Item == null ? null : new Item
                 {

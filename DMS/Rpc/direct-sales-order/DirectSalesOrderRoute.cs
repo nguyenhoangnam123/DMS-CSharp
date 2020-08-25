@@ -9,6 +9,7 @@ namespace DMS.Rpc.direct_sales_order
         public const string Parent = Module + "/sale-order";
         public const string Master = Module + "/sale-order/direct-sales-order/direct-sales-order-master";
         public const string Detail = Module + "/sale-order/direct-sales-order/direct-sales-order-detail/*";
+        public const string Mobile = Module + ".direct-sales-order.*";
         private const string Default = Rpc + Module + "/direct-sales-order";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
@@ -16,16 +17,16 @@ namespace DMS.Rpc.direct_sales_order
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
+        public const string Approve = Default + "/approve";
+        public const string Reject = Default + "/reject";
         public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-tempate";
-        public const string BulkDelete = Default + "/bulk-delete";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
+        public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListItem = Default + "/filter-list-item";
         public const string FilterListStore = Default + "/filter-list-store";
         public const string FilterListUnitOfMeasure = Default + "/filter-list-unit-of-measure";
-        public const string FilterListEditedPriceStatus = Default + "/filter-list-edited-price-status";
+        public const string FilterListEditedPriceStatus = Default + "/filter-list-edit-price-status";
         public const string FilterListRequestState = Default + "/filter-list-request-state";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
@@ -36,8 +37,9 @@ namespace DMS.Rpc.direct_sales_order
         public const string SingleListStore = Default + "/single-list-store";
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
         public const string SingleListStoreType = Default + "/single-list-store-type";
+        public const string SingleListDirectSalesOrderStatus = Default + "/single-list-Direct-sales-order-status";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
-        public const string SingleListEditedPriceStatus = Default + "/single-list-edited-price-status";
+        public const string SingleListEditedPriceStatus = Default + "/single-list-edit-price-status";
         public const string SingleListRequestState = Default + "/single-list-request-state";
 
         public const string CountStore = Default + "/count-store";
@@ -46,18 +48,16 @@ namespace DMS.Rpc.direct_sales_order
         public const string ListItem = Default + "/list-item";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
-            { nameof(DirectSalesOrderFilter.Code), FieldTypeEnum.STRING.Id },
+            { nameof(DirectSalesOrderFilter.OrganizationId), FieldTypeEnum.ID.Id },
             { nameof(DirectSalesOrderFilter.BuyerStoreId), FieldTypeEnum.ID.Id },
-            { nameof(DirectSalesOrderFilter.StorePhone), FieldTypeEnum.STRING.Id },
-            { nameof(DirectSalesOrderFilter.StoreAddress), FieldTypeEnum.STRING.Id },
-            { nameof(DirectSalesOrderFilter.StoreDeliveryAddress), FieldTypeEnum.STRING.Id },
-            { nameof(DirectSalesOrderFilter.TaxCode), FieldTypeEnum.STRING.Id },
-            { nameof(DirectSalesOrderFilter.SaleEmployeeId), FieldTypeEnum.ID.Id },
+            { nameof(DirectSalesOrderFilter.AppUserId), FieldTypeEnum.ID.Id },
             { nameof(DirectSalesOrderFilter.OrderDate), FieldTypeEnum.DATE.Id },
-            { nameof(DirectSalesOrderFilter.DeliveryDate), FieldTypeEnum.DATE.Id },
-            { nameof(DirectSalesOrderFilter.EditedPriceStatusId), FieldTypeEnum.ID.Id },
-            { nameof(DirectSalesOrderFilter.Total), FieldTypeEnum.LONG.Id },
             { nameof(DirectSalesOrderFilter.RequestStateId), FieldTypeEnum.ID.Id },
+            { nameof(DirectSalesOrderFilter.Total), FieldTypeEnum.LONG.Id },
+            { nameof(ItemFilter.ProductGroupingId), FieldTypeEnum.ID.Id },
+            { nameof(ItemFilter.ProductTypeId), FieldTypeEnum.ID.Id },
+            { nameof(ItemFilter.SalePrice), FieldTypeEnum.LONG.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
 
@@ -66,51 +66,49 @@ namespace DMS.Rpc.direct_sales_order
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Get, 
-                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure } },
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
+                CountItem, ListItem,} },
 
             { "Thêm", new List<string> {
                 Parent,
                 Master, Count, List, Get, 
-                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Create,
-                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser, SingleListItem, SingleListProductGrouping, SingleListProductType, 
-                SingleListSupplier, SingleListStoreGrouping, SingleListStoreType, SingleListUnitOfMeasure, SingleListRequestState, 
-                CountStore, ListStore, CountItem, ListItem} },
+                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
+                SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
+                CountItem, ListItem, CountStore, ListStore, } },
 
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get, 
-                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Update,
-                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser, SingleListItem, SingleListProductGrouping, SingleListProductType, 
-                SingleListSupplier, SingleListStoreGrouping, SingleListStoreType, SingleListUnitOfMeasure, SingleListRequestState,
-                CountStore, ListStore, CountItem, ListItem} },
+                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
+                SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
+                CountItem, ListItem, CountStore, ListStore, } },
 
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get, 
-                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,
-                Detail, Delete,
-                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser, SingleListItem, SingleListProductGrouping, SingleListProductType,
-                SingleListSupplier, SingleListStoreGrouping, SingleListStoreType, SingleListUnitOfMeasure, SingleListRequestState, CountStore, ListStore, CountItem, ListItem} },
-
-            { "Xoá nhiều", new List<string> {
-                Parent,
-                Master, Count, List, Get, 
-                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,
-                BulkDelete } },
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
+                Delete,
+                } },
 
             { "Xuất excel", new List<string> {
                 Parent,
                 Master, Count, List, Get, 
-                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Export } },
-
-            { "Nhập excel", new List<string> {
+            { "Phê duyệt", new List<string>
+            {
                 Parent,
-                Master, Count, List, Get, 
-                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure,
-                ExportTemplate, Import } },
+                Master, Count, List, Get,
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
+                Detail, Approve, Reject,
+                SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
+                SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
+                CountItem, ListItem, CountStore, ListStore,
+            } },
         };
     }
 }

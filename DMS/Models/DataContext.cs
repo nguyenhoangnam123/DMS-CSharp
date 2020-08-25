@@ -22,6 +22,7 @@ namespace DMS.Models
         public virtual DbSet<DirectSalesOrderDAO> DirectSalesOrder { get; set; }
         public virtual DbSet<DirectSalesOrderContentDAO> DirectSalesOrderContent { get; set; }
         public virtual DbSet<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotion { get; set; }
+        public virtual DbSet<DirectSalesOrderTransactionDAO> DirectSalesOrderTransaction { get; set; }
         public virtual DbSet<DistrictDAO> District { get; set; }
         public virtual DbSet<ERouteDAO> ERoute { get; set; }
         public virtual DbSet<ERouteChangeRequestDAO> ERouteChangeRequest { get; set; }
@@ -512,33 +513,62 @@ namespace DMS.Models
 
             modelBuilder.Entity<DirectSalesOrderDAO>(entity =>
             {
+                entity.Property(e => e.Id).HasComment("Id");
+
+                entity.Property(e => e.BuyerStoreId).HasComment("Cửa hàng mua");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(50)
+                    .HasComment("Mã đơn hàng");
 
-                entity.Property(e => e.DeliveryDate).HasColumnType("date");
+                entity.Property(e => e.DeliveryAddress)
+                    .HasMaxLength(4000)
+                    .HasComment("Địa chỉ giao hàng");
 
-                entity.Property(e => e.GeneralDiscountAmount).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.DeliveryDate)
+                    .HasColumnType("date")
+                    .HasComment("Ngày giao hàng");
 
-                entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(8, 2)");
+                entity.Property(e => e.EditedPriceStatusId).HasComment("Sửa giá");
 
-                entity.Property(e => e.Note).HasMaxLength(4000);
+                entity.Property(e => e.GeneralDiscountAmount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Số tiền chiết khấu tổng");
 
-                entity.Property(e => e.OrderDate).HasColumnType("date");
+                entity.Property(e => e.GeneralDiscountPercentage)
+                    .HasColumnType("decimal(8, 2)")
+                    .HasComment("% chiết khấu tổng");
 
-                entity.Property(e => e.StoreAddress).HasMaxLength(500);
+                entity.Property(e => e.Note)
+                    .HasMaxLength(4000)
+                    .HasComment("Ghi chú");
 
-                entity.Property(e => e.StoreDeliveryAddress).HasMaxLength(500);
+                entity.Property(e => e.OrderDate)
+                    .HasColumnType("date")
+                    .HasComment("Ngày đặt hàng");
 
-                entity.Property(e => e.StorePhone).HasMaxLength(500);
+                entity.Property(e => e.PhoneNumber)
+                    .HasMaxLength(50)
+                    .HasComment("Số điện thoại");
 
-                entity.Property(e => e.SubTotal).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.RowId).HasComment("Id global cho phê duyệt");
 
-                entity.Property(e => e.TaxCode).HasMaxLength(500);
+                entity.Property(e => e.SaleEmployeeId).HasComment("Nhân viên kinh doanh");
 
-                entity.Property(e => e.Total).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.StoreAddress).HasMaxLength(4000);
 
-                entity.Property(e => e.TotalTaxAmount).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.SubTotal)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Tổng tiền trước thuế");
+
+                entity.Property(e => e.Total)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Tổng tiền sau thuế");
+
+                entity.Property(e => e.TotalTaxAmount)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Tổng thuế");
 
                 entity.HasOne(d => d.BuyerStore)
                     .WithMany(p => p.DirectSalesOrders)
@@ -552,6 +582,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrder_EditedPriceStatus");
 
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.DirectSalesOrders)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrder_Organization");
+
                 entity.HasOne(d => d.RequestState)
                     .WithMany(p => p.DirectSalesOrders)
                     .HasForeignKey(d => d.RequestStateId)
@@ -563,6 +599,11 @@ namespace DMS.Models
                     .HasForeignKey(d => d.SaleEmployeeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrder_AppUser");
+
+                entity.HasOne(d => d.StoreChecking)
+                    .WithMany(p => p.DirectSalesOrders)
+                    .HasForeignKey(d => d.StoreCheckingId)
+                    .HasConstraintName("FK_DirectSalesOrder_StoreChecking");
             });
 
             modelBuilder.Entity<DirectSalesOrderContentDAO>(entity =>
@@ -577,7 +618,13 @@ namespace DMS.Models
 
                 entity.Property(e => e.GeneralDiscountPercentage).HasColumnType("decimal(8, 2)");
 
-                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.PrimaryPrice)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Giá theo đơn vị lưu kho");
+
+                entity.Property(e => e.SalePrice)
+                    .HasColumnType("decimal(18, 4)")
+                    .HasComment("Giá bán theo đơn vị xuất hàng");
 
                 entity.Property(e => e.TaxAmount).HasColumnType("decimal(18, 4)");
 
@@ -637,6 +684,37 @@ namespace DMS.Models
                     .HasForeignKey(d => d.UnitOfMeasureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrderPromotion_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<DirectSalesOrderTransactionDAO>(entity =>
+            {
+                entity.Property(e => e.Discount).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Revenue).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.DirectSalesOrder)
+                    .WithMany(p => p.DirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.DirectSalesOrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderTransaction_DirectSalesOrder");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.DirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderTransaction_Item");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.DirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderTransaction_Organization");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.DirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderTransaction_UnitOfMeasure");
             });
 
             modelBuilder.Entity<DistrictDAO>(entity =>

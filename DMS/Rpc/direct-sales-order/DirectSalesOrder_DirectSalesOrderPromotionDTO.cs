@@ -1,4 +1,4 @@
-﻿using Common;
+using Common;
 using DMS.Entities;
 
 namespace DMS.Rpc.direct_sales_order
@@ -14,10 +14,10 @@ namespace DMS.Rpc.direct_sales_order
         public long RequestedQuantity { get; set; }
         public string Note { get; set; }
         public long? Factor { get; set; }
-        public DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder { get; set; }
         public DirectSalesOrder_ItemDTO Item { get; set; }
         public DirectSalesOrder_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }
         public DirectSalesOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+
         public DirectSalesOrder_DirectSalesOrderPromotionDTO() { }
         public DirectSalesOrder_DirectSalesOrderPromotionDTO(DirectSalesOrderPromotion DirectSalesOrderPromotion)
         {
@@ -30,7 +30,6 @@ namespace DMS.Rpc.direct_sales_order
             this.RequestedQuantity = DirectSalesOrderPromotion.RequestedQuantity;
             this.Note = DirectSalesOrderPromotion.Note;
             this.Factor = DirectSalesOrderPromotion.Factor;
-            this.DirectSalesOrder = DirectSalesOrderPromotion.DirectSalesOrder == null ? null : new DirectSalesOrder_DirectSalesOrderDTO(DirectSalesOrderPromotion.DirectSalesOrder);
             this.Item = DirectSalesOrderPromotion.Item == null ? null : new DirectSalesOrder_ItemDTO(DirectSalesOrderPromotion.Item);
             this.PrimaryUnitOfMeasure = DirectSalesOrderPromotion.PrimaryUnitOfMeasure == null ? null : new DirectSalesOrder_UnitOfMeasureDTO(DirectSalesOrderPromotion.PrimaryUnitOfMeasure);
             this.UnitOfMeasure = DirectSalesOrderPromotion.UnitOfMeasure == null ? null : new DirectSalesOrder_UnitOfMeasureDTO(DirectSalesOrderPromotion.UnitOfMeasure);
@@ -40,14 +39,23 @@ namespace DMS.Rpc.direct_sales_order
 
     public class DirectSalesOrder_DirectSalesOrderPromotionFilterDTO : FilterDTO
     {
+
         public IdFilter Id { get; set; }
+
         public IdFilter DirectSalesOrderId { get; set; }
+
         public IdFilter ItemId { get; set; }
+
         public IdFilter UnitOfMeasureId { get; set; }
+
         public LongFilter Quantity { get; set; }
+
         public IdFilter PrimaryUnitOfMeasureId { get; set; }
+
         public LongFilter RequestedQuantity { get; set; }
+
         public StringFilter Note { get; set; }
+
         public DirectSalesOrderPromotionOrder OrderBy { get; set; }
     }
 }

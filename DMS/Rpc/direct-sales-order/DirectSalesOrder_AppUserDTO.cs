@@ -62,10 +62,6 @@ namespace DMS.Rpc.direct_sales_order
 
             this.SexId = AppUser.SexId;
 
-            this.StatusId = AppUser.StatusId;
-
-            this.Avatar = AppUser.Avatar;
-
             this.Birthday = AppUser.Birthday;
 
             this.ProvinceId = AppUser.ProvinceId;

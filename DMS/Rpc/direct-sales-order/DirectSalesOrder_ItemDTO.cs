@@ -1,5 +1,7 @@
-﻿using Common;
+using Common;
 using DMS.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.direct_sales_order
 {
@@ -11,11 +13,12 @@ namespace DMS.Rpc.direct_sales_order
         public string Code { get; set; }
         public string Name { get; set; }
         public string ScanCode { get; set; }
-        public decimal? SalePrice { get; set; }
+        public decimal SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public long SaleStock { get; set; }
         public long StatusId { get; set; }
         public DirectSalesOrder_ProductDTO Product { get; set; }
+        public List<DirectSalesOrder_ItemImageMappingDTO> ItemImageMappings { get; set; }
         public DirectSalesOrder_ItemDTO() { }
         public DirectSalesOrder_ItemDTO(Item Item)
         {
@@ -29,6 +32,7 @@ namespace DMS.Rpc.direct_sales_order
             this.SaleStock = Item.SaleStock;
             this.StatusId = Item.StatusId;
             this.Product = Item.Product == null ? null : new DirectSalesOrder_ProductDTO(Item.Product);
+            this.ItemImageMappings = Item.ItemImageMappings?.Select(x => new DirectSalesOrder_ItemImageMappingDTO(x)).ToList();
             this.Errors = Item.Errors;
         }
     }

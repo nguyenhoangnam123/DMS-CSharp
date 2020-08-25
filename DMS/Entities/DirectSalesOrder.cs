@@ -10,14 +10,15 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public string Code { get; set; }
+        public long OrganizationId { get; set; }
         public long BuyerStoreId { get; set; }
-        public string StorePhone { get; set; }
+        public string PhoneNumber { get; set; }
         public string StoreAddress { get; set; }
-        public string StoreDeliveryAddress { get; set; }
-        public string TaxCode { get; set; }
+        public string DeliveryAddress { get; set; }
         public long SaleEmployeeId { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
+        public long RequestStateId { get; set; }
         public long EditedPriceStatusId { get; set; }
         public string Note { get; set; }
         public decimal SubTotal { get; set; }
@@ -25,13 +26,16 @@ namespace DMS.Entities
         public decimal? GeneralDiscountAmount { get; set; }
         public decimal TotalTaxAmount { get; set; }
         public decimal Total { get; set; }
-        public long RequestStateId { get; set; }
         public Store BuyerStore { get; set; }
         public EditedPriceStatus EditedPriceStatus { get; set; }
+        public Organization Organization { get; set; }
         public RequestState RequestState { get; set; }
         public AppUser SaleEmployee { get; set; }
+        public Guid RowId { get; set; }
+        public long? StoreCheckingId { get; set; }
         public List<DirectSalesOrderContent> DirectSalesOrderContents { get; set; }
         public List<DirectSalesOrderPromotion> DirectSalesOrderPromotions { get; set; }
+        public List<RequestWorkflowStepMapping> RequestWorkflowStepMappings { get; set; }
         public bool Equals(DirectSalesOrder other)
         {
             return other != null && Id == other.Id;
@@ -45,15 +49,16 @@ namespace DMS.Entities
     public class DirectSalesOrderFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public StringFilter Code { get; set; }
         public IdFilter BuyerStoreId { get; set; }
-        public StringFilter StorePhone { get; set; }
+        public StringFilter PhoneNumber { get; set; }
         public StringFilter StoreAddress { get; set; }
-        public StringFilter StoreDeliveryAddress { get; set; }
-        public StringFilter TaxCode { get; set; }
-        public IdFilter SaleEmployeeId { get; set; }
+        public StringFilter DeliveryAddress { get; set; }
+        public IdFilter AppUserId { get; set; }
         public DateFilter OrderDate { get; set; }
         public DateFilter DeliveryDate { get; set; }
+        public IdFilter RequestStateId { get; set; }
         public IdFilter EditedPriceStatusId { get; set; }
         public StringFilter Note { get; set; }
         public DecimalFilter SubTotal { get; set; }
@@ -61,7 +66,7 @@ namespace DMS.Entities
         public DecimalFilter GeneralDiscountAmount { get; set; }
         public DecimalFilter TotalTaxAmount { get; set; }
         public DecimalFilter Total { get; set; }
-        public IdFilter RequestStateId { get; set; }
+        public IdFilter StoreCheckingId { get; set; }
         public List<DirectSalesOrderFilter> OrFilter { get; set; }
         public DirectSalesOrderOrder OrderBy { get; set; }
         public DirectSalesOrderSelect Selects { get; set; }
@@ -73,21 +78,21 @@ namespace DMS.Entities
         Id = 0,
         Code = 1,
         BuyerStore = 2,
-        StorePhone = 3,
+        PhoneNumber = 3,
         StoreAddress = 4,
-        StoreDeliveryAddress = 5,
-        TaxCode = 6,
+        DeliveryAddress = 5,
         SaleEmployee = 7,
         OrderDate = 8,
         DeliveryDate = 9,
-        EditedPriceStatus = 10,
-        Note = 11,
-        SubTotal = 12,
-        GeneralDiscountPercentage = 13,
-        GeneralDiscountAmount = 14,
-        TotalTaxAmount = 15,
-        Total = 16,
-        RequestState = 17,
+        RequestState = 10,
+        EditedPriceStatus = 11,
+        Note = 12,
+        SubTotal = 13,
+        GeneralDiscountPercentage = 14,
+        GeneralDiscountAmount = 15,
+        TotalTaxAmount = 16,
+        Total = 17,
+        Organization = 18,
     }
 
     [Flags]
@@ -97,20 +102,20 @@ namespace DMS.Entities
         Id = E._0,
         Code = E._1,
         BuyerStore = E._2,
-        StorePhone = E._3,
+        PhoneNumber = E._3,
         StoreAddress = E._4,
-        StoreDeliveryAddress = E._5,
-        TaxCode = E._6,
+        DeliveryAddress = E._5,
         SaleEmployee = E._7,
         OrderDate = E._8,
         DeliveryDate = E._9,
-        EditedPriceStatus = E._10,
-        Note = E._11,
-        SubTotal = E._12,
-        GeneralDiscountPercentage = E._13,
-        GeneralDiscountAmount = E._14,
-        TotalTaxAmount = E._15,
-        Total = E._16,
-        RequestState = E._17,
+        RequestState = E._10,
+        EditedPriceStatus = E._11,
+        Note = E._12,
+        SubTotal = E._13,
+        GeneralDiscountPercentage = E._14,
+        GeneralDiscountAmount = E._15,
+        TotalTaxAmount = E._16,
+        Total = E._17,
+        Organization = E._18,
     }
 }

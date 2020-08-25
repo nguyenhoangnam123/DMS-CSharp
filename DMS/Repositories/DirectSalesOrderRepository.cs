@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -34,20 +35,51 @@ namespace DMS.Repositories
                 return query.Where(q => false);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
+            if (filter.OrganizationId != null)
+            {
+                if (filter.OrganizationId.Equal != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.Equal.Value).FirstOrDefault();
+                    query = query.Where(q => q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.NotEqual != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                    query = query.Where(q => !q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.In != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => Ids.Contains(q.OrganizationId));
+                }
+                if (filter.OrganizationId.NotIn != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => !Ids.Contains(q.OrganizationId));
+                }
+            }
             if (filter.Code != null)
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.BuyerStoreId != null)
                 query = query.Where(q => q.BuyerStoreId, filter.BuyerStoreId);
-            if (filter.StorePhone != null)
-                query = query.Where(q => q.StorePhone, filter.StorePhone);
+            if (filter.PhoneNumber != null)
+                query = query.Where(q => q.PhoneNumber, filter.PhoneNumber);
             if (filter.StoreAddress != null)
                 query = query.Where(q => q.StoreAddress, filter.StoreAddress);
-            if (filter.StoreDeliveryAddress != null)
-                query = query.Where(q => q.StoreDeliveryAddress, filter.StoreDeliveryAddress);
-            if (filter.TaxCode != null)
-                query = query.Where(q => q.TaxCode, filter.TaxCode);
-            if (filter.SaleEmployeeId != null)
-                query = query.Where(q => q.SaleEmployeeId, filter.SaleEmployeeId);
+            if (filter.DeliveryAddress != null)
+                query = query.Where(q => q.DeliveryAddress, filter.DeliveryAddress);
+            if (filter.AppUserId != null)
+                query = query.Where(q => q.SaleEmployeeId, filter.AppUserId);
             if (filter.OrderDate != null)
                 query = query.Where(q => q.OrderDate, filter.OrderDate);
             if (filter.DeliveryDate != null)
@@ -56,6 +88,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.EditedPriceStatusId, filter.EditedPriceStatusId);
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
+            if (filter.RequestStateId != null)
+                query = query.Where(q => q.RequestStateId, filter.RequestStateId);
             if (filter.SubTotal != null)
                 query = query.Where(q => q.SubTotal, filter.SubTotal);
             if (filter.GeneralDiscountPercentage != null)
@@ -66,8 +100,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.TotalTaxAmount, filter.TotalTaxAmount);
             if (filter.Total != null)
                 query = query.Where(q => q.Total, filter.Total);
-            if (filter.RequestStateId != null)
-                query = query.Where(q => q.RequestStateId, filter.RequestStateId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -82,20 +114,51 @@ namespace DMS.Repositories
                 IQueryable<DirectSalesOrderDAO> queryable = query;
                 if (DirectSalesOrderFilter.Id != null)
                     queryable = queryable.Where(q => q.Id, DirectSalesOrderFilter.Id);
+                if (DirectSalesOrderFilter.OrganizationId != null)
+                {
+                    if (DirectSalesOrderFilter.OrganizationId.Equal != null)
+                    {
+                        OrganizationDAO OrganizationDAO = DataContext.Organization
+                            .Where(o => o.Id == DirectSalesOrderFilter.OrganizationId.Equal.Value).FirstOrDefault();
+                        queryable = queryable.Where(q => q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    }
+                    if (DirectSalesOrderFilter.OrganizationId.NotEqual != null)
+                    {
+                        OrganizationDAO OrganizationDAO = DataContext.Organization
+                            .Where(o => o.Id == DirectSalesOrderFilter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                        queryable = queryable.Where(q => !q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    }
+                    if (DirectSalesOrderFilter.OrganizationId.In != null)
+                    {
+                        List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                            .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                        List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => DirectSalesOrderFilter.OrganizationId.In.Contains(o.Id)).ToList();
+                        List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                        List<long> Ids = Branches.Select(o => o.Id).ToList();
+                        queryable = queryable.Where(q => Ids.Contains(q.OrganizationId));
+                    }
+                    if (DirectSalesOrderFilter.OrganizationId.NotIn != null)
+                    {
+                        List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                            .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                        List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => DirectSalesOrderFilter.OrganizationId.NotIn.Contains(o.Id)).ToList();
+                        List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                        List<long> Ids = Branches.Select(o => o.Id).ToList();
+                        queryable = queryable.Where(q => !Ids.Contains(q.OrganizationId));
+                    }
+                }
                 if (DirectSalesOrderFilter.Code != null)
                     queryable = queryable.Where(q => q.Code, DirectSalesOrderFilter.Code);
                 if (DirectSalesOrderFilter.BuyerStoreId != null)
                     queryable = queryable.Where(q => q.BuyerStoreId, DirectSalesOrderFilter.BuyerStoreId);
-                if (DirectSalesOrderFilter.StorePhone != null)
-                    queryable = queryable.Where(q => q.StorePhone, DirectSalesOrderFilter.StorePhone);
+                if (DirectSalesOrderFilter.PhoneNumber != null)
+                    queryable = queryable.Where(q => q.PhoneNumber, DirectSalesOrderFilter.PhoneNumber);
                 if (DirectSalesOrderFilter.StoreAddress != null)
                     queryable = queryable.Where(q => q.StoreAddress, DirectSalesOrderFilter.StoreAddress);
-                if (DirectSalesOrderFilter.StoreDeliveryAddress != null)
-                    queryable = queryable.Where(q => q.StoreDeliveryAddress, DirectSalesOrderFilter.StoreDeliveryAddress);
-                if (DirectSalesOrderFilter.TaxCode != null)
-                    queryable = queryable.Where(q => q.TaxCode, DirectSalesOrderFilter.TaxCode);
-                if (DirectSalesOrderFilter.SaleEmployeeId != null)
-                    queryable = queryable.Where(q => q.SaleEmployeeId, DirectSalesOrderFilter.SaleEmployeeId);
+                if (DirectSalesOrderFilter.DeliveryAddress != null)
+                    queryable = queryable.Where(q => q.DeliveryAddress, DirectSalesOrderFilter.DeliveryAddress);
+                if (DirectSalesOrderFilter.AppUserId != null)
+                    queryable = queryable.Where(q => q.SaleEmployeeId, DirectSalesOrderFilter.AppUserId);
                 if (DirectSalesOrderFilter.OrderDate != null)
                     queryable = queryable.Where(q => q.OrderDate, DirectSalesOrderFilter.OrderDate);
                 if (DirectSalesOrderFilter.DeliveryDate != null)
@@ -104,6 +167,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.EditedPriceStatusId, DirectSalesOrderFilter.EditedPriceStatusId);
                 if (DirectSalesOrderFilter.Note != null)
                     queryable = queryable.Where(q => q.Note, DirectSalesOrderFilter.Note);
+                if (DirectSalesOrderFilter.RequestStateId != null)
+                    queryable = queryable.Where(q => q.RequestStateId, DirectSalesOrderFilter.RequestStateId);
                 if (DirectSalesOrderFilter.SubTotal != null)
                     queryable = queryable.Where(q => q.SubTotal, DirectSalesOrderFilter.SubTotal);
                 if (DirectSalesOrderFilter.GeneralDiscountPercentage != null)
@@ -114,8 +179,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.TotalTaxAmount, DirectSalesOrderFilter.TotalTaxAmount);
                 if (DirectSalesOrderFilter.Total != null)
                     queryable = queryable.Where(q => q.Total, DirectSalesOrderFilter.Total);
-                if (DirectSalesOrderFilter.RequestStateId != null)
-                    queryable = queryable.Where(q => q.RequestStateId, DirectSalesOrderFilter.RequestStateId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -134,20 +197,20 @@ namespace DMS.Repositories
                         case DirectSalesOrderOrder.Code:
                             query = query.OrderBy(q => q.Code);
                             break;
+                        case DirectSalesOrderOrder.Organization:
+                            query = query.OrderBy(q => q.OrganizationId);
+                            break;
                         case DirectSalesOrderOrder.BuyerStore:
                             query = query.OrderBy(q => q.BuyerStoreId);
                             break;
-                        case DirectSalesOrderOrder.StorePhone:
-                            query = query.OrderBy(q => q.StorePhone);
+                        case DirectSalesOrderOrder.PhoneNumber:
+                            query = query.OrderBy(q => q.PhoneNumber);
                             break;
                         case DirectSalesOrderOrder.StoreAddress:
                             query = query.OrderBy(q => q.StoreAddress);
                             break;
-                        case DirectSalesOrderOrder.StoreDeliveryAddress:
-                            query = query.OrderBy(q => q.StoreDeliveryAddress);
-                            break;
-                        case DirectSalesOrderOrder.TaxCode:
-                            query = query.OrderBy(q => q.TaxCode);
+                        case DirectSalesOrderOrder.DeliveryAddress:
+                            query = query.OrderBy(q => q.DeliveryAddress);
                             break;
                         case DirectSalesOrderOrder.SaleEmployee:
                             query = query.OrderBy(q => q.SaleEmployeeId);
@@ -164,6 +227,9 @@ namespace DMS.Repositories
                         case DirectSalesOrderOrder.Note:
                             query = query.OrderBy(q => q.Note);
                             break;
+                        case DirectSalesOrderOrder.RequestState:
+                            query = query.OrderBy(q => q.RequestStateId);
+                            break;
                         case DirectSalesOrderOrder.SubTotal:
                             query = query.OrderBy(q => q.SubTotal);
                             break;
@@ -179,9 +245,6 @@ namespace DMS.Repositories
                         case DirectSalesOrderOrder.Total:
                             query = query.OrderBy(q => q.Total);
                             break;
-                        case DirectSalesOrderOrder.RequestState:
-                            query = query.OrderBy(q => q.RequestStateId);
-                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -193,20 +256,20 @@ namespace DMS.Repositories
                         case DirectSalesOrderOrder.Code:
                             query = query.OrderByDescending(q => q.Code);
                             break;
+                        case DirectSalesOrderOrder.Organization:
+                            query = query.OrderByDescending(q => q.OrganizationId);
+                            break;
                         case DirectSalesOrderOrder.BuyerStore:
                             query = query.OrderByDescending(q => q.BuyerStoreId);
                             break;
-                        case DirectSalesOrderOrder.StorePhone:
-                            query = query.OrderByDescending(q => q.StorePhone);
+                        case DirectSalesOrderOrder.PhoneNumber:
+                            query = query.OrderByDescending(q => q.PhoneNumber);
                             break;
                         case DirectSalesOrderOrder.StoreAddress:
                             query = query.OrderByDescending(q => q.StoreAddress);
                             break;
-                        case DirectSalesOrderOrder.StoreDeliveryAddress:
-                            query = query.OrderByDescending(q => q.StoreDeliveryAddress);
-                            break;
-                        case DirectSalesOrderOrder.TaxCode:
-                            query = query.OrderByDescending(q => q.TaxCode);
+                        case DirectSalesOrderOrder.DeliveryAddress:
+                            query = query.OrderByDescending(q => q.DeliveryAddress);
                             break;
                         case DirectSalesOrderOrder.SaleEmployee:
                             query = query.OrderByDescending(q => q.SaleEmployeeId);
@@ -223,6 +286,9 @@ namespace DMS.Repositories
                         case DirectSalesOrderOrder.Note:
                             query = query.OrderByDescending(q => q.Note);
                             break;
+                        case DirectSalesOrderOrder.RequestState:
+                            query = query.OrderByDescending(q => q.RequestStateId);
+                            break;
                         case DirectSalesOrderOrder.SubTotal:
                             query = query.OrderByDescending(q => q.SubTotal);
                             break;
@@ -238,9 +304,6 @@ namespace DMS.Repositories
                         case DirectSalesOrderOrder.Total:
                             query = query.OrderByDescending(q => q.Total);
                             break;
-                        case DirectSalesOrderOrder.RequestState:
-                            query = query.OrderByDescending(q => q.RequestStateId);
-                            break;
                     }
                     break;
             }
@@ -254,22 +317,22 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(DirectSalesOrderSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(DirectSalesOrderSelect.Code) ? q.Code : default(string),
+                OrganizationId = filter.Selects.Contains(DirectSalesOrderSelect.Organization) ? q.OrganizationId : default(long),
                 BuyerStoreId = filter.Selects.Contains(DirectSalesOrderSelect.BuyerStore) ? q.BuyerStoreId : default(long),
-                StorePhone = filter.Selects.Contains(DirectSalesOrderSelect.StorePhone) ? q.StorePhone : default(string),
+                PhoneNumber = filter.Selects.Contains(DirectSalesOrderSelect.PhoneNumber) ? q.PhoneNumber : default(string),
                 StoreAddress = filter.Selects.Contains(DirectSalesOrderSelect.StoreAddress) ? q.StoreAddress : default(string),
-                StoreDeliveryAddress = filter.Selects.Contains(DirectSalesOrderSelect.StoreDeliveryAddress) ? q.StoreDeliveryAddress : default(string),
-                TaxCode = filter.Selects.Contains(DirectSalesOrderSelect.TaxCode) ? q.TaxCode : default(string),
+                DeliveryAddress = filter.Selects.Contains(DirectSalesOrderSelect.DeliveryAddress) ? q.DeliveryAddress : default(string),
                 SaleEmployeeId = filter.Selects.Contains(DirectSalesOrderSelect.SaleEmployee) ? q.SaleEmployeeId : default(long),
                 OrderDate = filter.Selects.Contains(DirectSalesOrderSelect.OrderDate) ? q.OrderDate : default(DateTime),
                 DeliveryDate = filter.Selects.Contains(DirectSalesOrderSelect.DeliveryDate) ? q.DeliveryDate : default(DateTime?),
                 EditedPriceStatusId = filter.Selects.Contains(DirectSalesOrderSelect.EditedPriceStatus) ? q.EditedPriceStatusId : default(long),
                 Note = filter.Selects.Contains(DirectSalesOrderSelect.Note) ? q.Note : default(string),
+                RequestStateId = filter.Selects.Contains(DirectSalesOrderSelect.RequestState) ? q.RequestStateId : default(long),
                 SubTotal = filter.Selects.Contains(DirectSalesOrderSelect.SubTotal) ? q.SubTotal : default(long),
-                GeneralDiscountPercentage = filter.Selects.Contains(DirectSalesOrderSelect.GeneralDiscountPercentage) ? q.GeneralDiscountPercentage : default(decimal?),
+                GeneralDiscountPercentage = filter.Selects.Contains(DirectSalesOrderSelect.GeneralDiscountPercentage) ? q.GeneralDiscountPercentage : default(long?),
                 GeneralDiscountAmount = filter.Selects.Contains(DirectSalesOrderSelect.GeneralDiscountAmount) ? q.GeneralDiscountAmount : default(long?),
                 TotalTaxAmount = filter.Selects.Contains(DirectSalesOrderSelect.TotalTaxAmount) ? q.TotalTaxAmount : default(long),
                 Total = filter.Selects.Contains(DirectSalesOrderSelect.Total) ? q.Total : default(long),
-                RequestStateId = filter.Selects.Contains(DirectSalesOrderSelect.RequestState) ? q.RequestStateId : default(long),
                 BuyerStore = filter.Selects.Contains(DirectSalesOrderSelect.BuyerStore) && q.BuyerStore != null ? new Store
                 {
                     Id = q.BuyerStore.Id,
@@ -302,6 +365,19 @@ namespace DMS.Repositories
                     Id = q.EditedPriceStatus.Id,
                     Code = q.EditedPriceStatus.Code,
                     Name = q.EditedPriceStatus.Name,
+                } : null,
+                Organization = filter.Selects.Contains(DirectSalesOrderSelect.Organization) && q.Organization != null ? new Organization
+                {
+                    Id = q.Organization.Id,
+                    Code = q.Organization.Code,
+                    Name = q.Organization.Name,
+                    Address = q.Organization.Address,
+                    Phone = q.Organization.Phone,
+                    Path = q.Organization.Path,
+                    ParentId = q.Organization.ParentId,
+                    Email = q.Organization.Email,
+                    StatusId = q.Organization.StatusId,
+                    Level = q.Organization.Level
                 } : null,
                 RequestState = filter.Selects.Contains(DirectSalesOrderSelect.RequestState) && q.RequestState != null ? new RequestState
                 {
@@ -346,22 +422,24 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 Code = x.Code,
+                OrganizationId = x.OrganizationId,
                 BuyerStoreId = x.BuyerStoreId,
-                StorePhone = x.StorePhone,
+                PhoneNumber = x.PhoneNumber,
                 StoreAddress = x.StoreAddress,
-                StoreDeliveryAddress = x.StoreDeliveryAddress,
-                TaxCode = x.TaxCode,
+                DeliveryAddress = x.DeliveryAddress,
                 SaleEmployeeId = x.SaleEmployeeId,
                 OrderDate = x.OrderDate,
                 DeliveryDate = x.DeliveryDate,
                 EditedPriceStatusId = x.EditedPriceStatusId,
                 Note = x.Note,
+                RequestStateId = x.RequestStateId,
                 SubTotal = x.SubTotal,
                 GeneralDiscountPercentage = x.GeneralDiscountPercentage,
                 GeneralDiscountAmount = x.GeneralDiscountAmount,
                 TotalTaxAmount = x.TotalTaxAmount,
                 Total = x.Total,
-                RequestStateId = x.RequestStateId,
+                RowId = x.RowId,
+                StoreCheckingId = x.StoreCheckingId,
                 BuyerStore = x.BuyerStore == null ? null : new Store
                 {
                     Id = x.BuyerStore.Id,
@@ -395,6 +473,19 @@ namespace DMS.Repositories
                     Code = x.EditedPriceStatus.Code,
                     Name = x.EditedPriceStatus.Name,
                 },
+                Organization = x.Organization == null ? null : new Organization
+                {
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    Address = x.Organization.Address,
+                    Phone = x.Organization.Phone,
+                    Path = x.Organization.Path,
+                    ParentId = x.Organization.ParentId,
+                    Email = x.Organization.Email,
+                    StatusId = x.Organization.StatusId,
+                    Level = x.Organization.Level
+                },
                 RequestState = x.RequestState == null ? null : new RequestState
                 {
                     Id = x.RequestState.Id,
@@ -414,9 +505,6 @@ namespace DMS.Repositories
 
             if (DirectSalesOrder == null)
                 return null;
-
-            if (DirectSalesOrder == null)
-                return null;
             DirectSalesOrder.DirectSalesOrderContents = await DataContext.DirectSalesOrderContent.AsNoTracking()
                 .Where(x => x.DirectSalesOrderId == DirectSalesOrder.Id)
                 .Select(x => new DirectSalesOrderContent
@@ -428,7 +516,8 @@ namespace DMS.Repositories
                     Quantity = x.Quantity,
                     PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
                     RequestedQuantity = x.RequestedQuantity,
-                    Price = x.Price,
+                    PrimaryPrice = x.PrimaryPrice,
+                    SalePrice = x.SalePrice,
                     DiscountPercentage = x.DiscountPercentage,
                     DiscountAmount = x.DiscountAmount,
                     GeneralDiscountPercentage = x.GeneralDiscountPercentage,
@@ -574,6 +663,7 @@ namespace DMS.Repositories
                         StatusId = x.UnitOfMeasure.StatusId,
                     },
                 }).ToListAsync();
+
             return DirectSalesOrder;
         }
         public async Task<bool> Create(DirectSalesOrder DirectSalesOrder)
@@ -581,25 +671,28 @@ namespace DMS.Repositories
             DirectSalesOrderDAO DirectSalesOrderDAO = new DirectSalesOrderDAO();
             DirectSalesOrderDAO.Id = DirectSalesOrder.Id;
             DirectSalesOrderDAO.Code = DirectSalesOrder.Code;
+            DirectSalesOrderDAO.OrganizationId = DirectSalesOrder.OrganizationId;
             DirectSalesOrderDAO.BuyerStoreId = DirectSalesOrder.BuyerStoreId;
-            DirectSalesOrderDAO.StorePhone = DirectSalesOrder.StorePhone;
+            DirectSalesOrderDAO.PhoneNumber = DirectSalesOrder.PhoneNumber;
             DirectSalesOrderDAO.StoreAddress = DirectSalesOrder.StoreAddress;
-            DirectSalesOrderDAO.StoreDeliveryAddress = DirectSalesOrder.StoreDeliveryAddress;
-            DirectSalesOrderDAO.TaxCode = DirectSalesOrder.TaxCode;
+            DirectSalesOrderDAO.DeliveryAddress = DirectSalesOrder.DeliveryAddress;
             DirectSalesOrderDAO.SaleEmployeeId = DirectSalesOrder.SaleEmployeeId;
             DirectSalesOrderDAO.OrderDate = DirectSalesOrder.OrderDate;
             DirectSalesOrderDAO.DeliveryDate = DirectSalesOrder.DeliveryDate;
             DirectSalesOrderDAO.EditedPriceStatusId = DirectSalesOrder.EditedPriceStatusId;
             DirectSalesOrderDAO.Note = DirectSalesOrder.Note;
+            DirectSalesOrderDAO.RequestStateId = DirectSalesOrder.RequestStateId;
             DirectSalesOrderDAO.SubTotal = DirectSalesOrder.SubTotal;
             DirectSalesOrderDAO.GeneralDiscountPercentage = DirectSalesOrder.GeneralDiscountPercentage;
             DirectSalesOrderDAO.GeneralDiscountAmount = DirectSalesOrder.GeneralDiscountAmount;
             DirectSalesOrderDAO.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
             DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
-            DirectSalesOrderDAO.RequestStateId = DirectSalesOrder.RequestStateId;
+            DirectSalesOrderDAO.RowId = Guid.NewGuid();
+            DirectSalesOrderDAO.StoreCheckingId = DirectSalesOrder.StoreCheckingId;
             DataContext.DirectSalesOrder.Add(DirectSalesOrderDAO);
             await DataContext.SaveChangesAsync();
             DirectSalesOrder.Id = DirectSalesOrderDAO.Id;
+            DirectSalesOrder.RowId = DirectSalesOrderDAO.RowId;
             await SaveReference(DirectSalesOrder);
             return true;
         }
@@ -611,22 +704,23 @@ namespace DMS.Repositories
                 return false;
             DirectSalesOrderDAO.Id = DirectSalesOrder.Id;
             DirectSalesOrderDAO.Code = DirectSalesOrder.Code;
+            //DirectSalesOrderDAO.OrganizationId = DirectSalesOrder.OrganizationId;
             DirectSalesOrderDAO.BuyerStoreId = DirectSalesOrder.BuyerStoreId;
-            DirectSalesOrderDAO.StorePhone = DirectSalesOrder.StorePhone;
+            DirectSalesOrderDAO.PhoneNumber = DirectSalesOrder.PhoneNumber;
             DirectSalesOrderDAO.StoreAddress = DirectSalesOrder.StoreAddress;
-            DirectSalesOrderDAO.StoreDeliveryAddress = DirectSalesOrder.StoreDeliveryAddress;
-            DirectSalesOrderDAO.TaxCode = DirectSalesOrder.TaxCode;
+            DirectSalesOrderDAO.DeliveryAddress = DirectSalesOrder.DeliveryAddress;
             DirectSalesOrderDAO.SaleEmployeeId = DirectSalesOrder.SaleEmployeeId;
             DirectSalesOrderDAO.OrderDate = DirectSalesOrder.OrderDate;
             DirectSalesOrderDAO.DeliveryDate = DirectSalesOrder.DeliveryDate;
             DirectSalesOrderDAO.EditedPriceStatusId = DirectSalesOrder.EditedPriceStatusId;
             DirectSalesOrderDAO.Note = DirectSalesOrder.Note;
+            DirectSalesOrderDAO.RequestStateId = DirectSalesOrder.RequestStateId;
             DirectSalesOrderDAO.SubTotal = DirectSalesOrder.SubTotal;
             DirectSalesOrderDAO.GeneralDiscountPercentage = DirectSalesOrder.GeneralDiscountPercentage;
             DirectSalesOrderDAO.GeneralDiscountAmount = DirectSalesOrder.GeneralDiscountAmount;
             DirectSalesOrderDAO.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
             DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
-            DirectSalesOrderDAO.RequestStateId = DirectSalesOrder.RequestStateId;
+            DirectSalesOrderDAO.StoreCheckingId = DirectSalesOrder.StoreCheckingId;
             await DataContext.SaveChangesAsync();
             await SaveReference(DirectSalesOrder);
             return true;
@@ -634,6 +728,9 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(DirectSalesOrder DirectSalesOrder)
         {
+            await DataContext.DirectSalesOrderTransaction.Where(x => x.DirectSalesOrderId == DirectSalesOrder.Id).DeleteFromQueryAsync();
+            await DataContext.DirectSalesOrderContent.Where(x => x.DirectSalesOrderId == DirectSalesOrder.Id).DeleteFromQueryAsync();
+            await DataContext.DirectSalesOrderPromotion.Where(x => x.DirectSalesOrderId == DirectSalesOrder.Id).DeleteFromQueryAsync();
             await DataContext.DirectSalesOrder.Where(x => x.Id == DirectSalesOrder.Id).DeleteFromQueryAsync();
             return true;
         }
@@ -646,22 +743,23 @@ namespace DMS.Repositories
                 DirectSalesOrderDAO DirectSalesOrderDAO = new DirectSalesOrderDAO();
                 DirectSalesOrderDAO.Id = DirectSalesOrder.Id;
                 DirectSalesOrderDAO.Code = DirectSalesOrder.Code;
+                DirectSalesOrderDAO.OrganizationId = DirectSalesOrder.OrganizationId;
                 DirectSalesOrderDAO.BuyerStoreId = DirectSalesOrder.BuyerStoreId;
-                DirectSalesOrderDAO.StorePhone = DirectSalesOrder.StorePhone;
+                DirectSalesOrderDAO.PhoneNumber = DirectSalesOrder.PhoneNumber;
                 DirectSalesOrderDAO.StoreAddress = DirectSalesOrder.StoreAddress;
-                DirectSalesOrderDAO.StoreDeliveryAddress = DirectSalesOrder.StoreDeliveryAddress;
-                DirectSalesOrderDAO.TaxCode = DirectSalesOrder.TaxCode;
+                DirectSalesOrderDAO.DeliveryAddress = DirectSalesOrder.DeliveryAddress;
                 DirectSalesOrderDAO.SaleEmployeeId = DirectSalesOrder.SaleEmployeeId;
                 DirectSalesOrderDAO.OrderDate = DirectSalesOrder.OrderDate;
                 DirectSalesOrderDAO.DeliveryDate = DirectSalesOrder.DeliveryDate;
                 DirectSalesOrderDAO.EditedPriceStatusId = DirectSalesOrder.EditedPriceStatusId;
                 DirectSalesOrderDAO.Note = DirectSalesOrder.Note;
+                DirectSalesOrderDAO.RequestStateId = DirectSalesOrder.RequestStateId;
                 DirectSalesOrderDAO.SubTotal = DirectSalesOrder.SubTotal;
                 DirectSalesOrderDAO.GeneralDiscountPercentage = DirectSalesOrder.GeneralDiscountPercentage;
                 DirectSalesOrderDAO.GeneralDiscountAmount = DirectSalesOrder.GeneralDiscountAmount;
                 DirectSalesOrderDAO.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
                 DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
-                DirectSalesOrderDAO.RequestStateId = DirectSalesOrder.RequestStateId;
+                DirectSalesOrderDAO.StoreCheckingId = DirectSalesOrder.StoreCheckingId;
                 DirectSalesOrderDAOs.Add(DirectSalesOrderDAO);
             }
             await DataContext.BulkMergeAsync(DirectSalesOrderDAOs);
@@ -678,7 +776,97 @@ namespace DMS.Repositories
 
         private async Task SaveReference(DirectSalesOrder DirectSalesOrder)
         {
-        }
+            await DataContext.DirectSalesOrderContent
+                .Where(x => x.DirectSalesOrderId == DirectSalesOrder.Id)
+                .DeleteFromQueryAsync();
+            List<DirectSalesOrderContentDAO> DirectSalesOrderContentDAOs = new List<DirectSalesOrderContentDAO>();
+            if (DirectSalesOrder.DirectSalesOrderContents != null)
+            {
+                foreach (DirectSalesOrderContent DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
+                {
+                    DirectSalesOrderContentDAO DirectSalesOrderContentDAO = new DirectSalesOrderContentDAO();
+                    DirectSalesOrderContentDAO.Id = DirectSalesOrderContent.Id;
+                    DirectSalesOrderContentDAO.DirectSalesOrderId = DirectSalesOrder.Id;
+                    DirectSalesOrderContentDAO.ItemId = DirectSalesOrderContent.ItemId;
+                    DirectSalesOrderContentDAO.UnitOfMeasureId = DirectSalesOrderContent.UnitOfMeasureId;
+                    DirectSalesOrderContentDAO.Quantity = DirectSalesOrderContent.Quantity;
+                    DirectSalesOrderContentDAO.PrimaryUnitOfMeasureId = DirectSalesOrderContent.PrimaryUnitOfMeasureId;
+                    DirectSalesOrderContentDAO.RequestedQuantity = DirectSalesOrderContent.RequestedQuantity;
+                    DirectSalesOrderContentDAO.PrimaryPrice = DirectSalesOrderContent.PrimaryPrice;
+                    DirectSalesOrderContentDAO.SalePrice = DirectSalesOrderContent.SalePrice;
+                    DirectSalesOrderContentDAO.DiscountPercentage = DirectSalesOrderContent.DiscountPercentage;
+                    DirectSalesOrderContentDAO.DiscountAmount = DirectSalesOrderContent.DiscountAmount;
+                    DirectSalesOrderContentDAO.GeneralDiscountPercentage = DirectSalesOrderContent.GeneralDiscountPercentage;
+                    DirectSalesOrderContentDAO.GeneralDiscountAmount = DirectSalesOrderContent.GeneralDiscountAmount;
+                    DirectSalesOrderContentDAO.Amount = DirectSalesOrderContent.Amount;
+                    DirectSalesOrderContentDAO.TaxPercentage = DirectSalesOrderContent.TaxPercentage;
+                    DirectSalesOrderContentDAO.TaxAmount = DirectSalesOrderContent.TaxAmount;
+                    DirectSalesOrderContentDAO.Factor = DirectSalesOrderContent.Factor;
+                    DirectSalesOrderContentDAOs.Add(DirectSalesOrderContentDAO);
+                }
+                await DataContext.DirectSalesOrderContent.BulkMergeAsync(DirectSalesOrderContentDAOs);
+            }
+            await DataContext.DirectSalesOrderPromotion
+                .Where(x => x.DirectSalesOrderId == DirectSalesOrder.Id)
+                .DeleteFromQueryAsync();
+            List<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotionDAOs = new List<DirectSalesOrderPromotionDAO>();
+            if (DirectSalesOrder.DirectSalesOrderPromotions != null)
+            {
+                foreach (DirectSalesOrderPromotion DirectSalesOrderPromotion in DirectSalesOrder.DirectSalesOrderPromotions)
+                {
+                    DirectSalesOrderPromotionDAO DirectSalesOrderPromotionDAO = new DirectSalesOrderPromotionDAO();
+                    DirectSalesOrderPromotionDAO.Id = DirectSalesOrderPromotion.Id;
+                    DirectSalesOrderPromotionDAO.DirectSalesOrderId = DirectSalesOrder.Id;
+                    DirectSalesOrderPromotionDAO.ItemId = DirectSalesOrderPromotion.ItemId;
+                    DirectSalesOrderPromotionDAO.UnitOfMeasureId = DirectSalesOrderPromotion.UnitOfMeasureId;
+                    DirectSalesOrderPromotionDAO.Quantity = DirectSalesOrderPromotion.Quantity;
+                    DirectSalesOrderPromotionDAO.PrimaryUnitOfMeasureId = DirectSalesOrderPromotion.PrimaryUnitOfMeasureId;
+                    DirectSalesOrderPromotionDAO.RequestedQuantity = DirectSalesOrderPromotion.RequestedQuantity;
+                    DirectSalesOrderPromotionDAO.Note = DirectSalesOrderPromotion.Note;
+                    DirectSalesOrderPromotionDAO.Factor = DirectSalesOrderPromotion.Factor;
+                    DirectSalesOrderPromotionDAOs.Add(DirectSalesOrderPromotionDAO);
+                }
+                await DataContext.DirectSalesOrderPromotion.BulkMergeAsync(DirectSalesOrderPromotionDAOs);
+            }
 
+            await DataContext.DirectSalesOrderTransaction.Where(x => x.DirectSalesOrderId == DirectSalesOrder.Id).DeleteFromQueryAsync();
+            List<DirectSalesOrderTransactionDAO> DirectSalesOrderTransactionDAOs = new List<DirectSalesOrderTransactionDAO>();
+            if (DirectSalesOrder.DirectSalesOrderContents != null)
+            {
+                foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
+                {
+                    DirectSalesOrderTransactionDAO DirectSalesOrderTransactionDAO = new DirectSalesOrderTransactionDAO
+                    {
+                        DirectSalesOrderId = DirectSalesOrder.Id,
+                        ItemId = DirectSalesOrderContent.ItemId,
+                        OrganizationId = DirectSalesOrder.OrganizationId,
+                        TypeId = DirectSalesOrderTransactionTypeEnum.SALES_CONTENT.Id,
+                        UnitOfMeasureId = DirectSalesOrderContent.PrimaryUnitOfMeasureId,
+                        Quantity = DirectSalesOrderContent.RequestedQuantity,
+                        Revenue = DirectSalesOrderContent.Amount - (DirectSalesOrderContent.GeneralDiscountAmount ?? 0) + (DirectSalesOrderContent.TaxAmount ?? 0),
+                        Discount = (DirectSalesOrderContent.DiscountAmount ?? 0) + (DirectSalesOrderContent.GeneralDiscountAmount ?? 0)
+                    };
+                    DirectSalesOrderTransactionDAOs.Add(DirectSalesOrderTransactionDAO);
+                }
+            }
+
+            if (DirectSalesOrder.DirectSalesOrderPromotions != null)
+            {
+                foreach (var DirectSalesOrderPromotion in DirectSalesOrder.DirectSalesOrderPromotions)
+                {
+                    DirectSalesOrderTransactionDAO DirectSalesOrderTransactionDAO = new DirectSalesOrderTransactionDAO
+                    {
+                        DirectSalesOrderId = DirectSalesOrder.Id,
+                        ItemId = DirectSalesOrderPromotion.ItemId,
+                        OrganizationId = DirectSalesOrder.OrganizationId,
+                        TypeId = DirectSalesOrderTransactionTypeEnum.PROMOTION.Id,
+                        UnitOfMeasureId = DirectSalesOrderPromotion.PrimaryUnitOfMeasureId,
+                        Quantity = DirectSalesOrderPromotion.RequestedQuantity,
+                    };
+                    DirectSalesOrderTransactionDAOs.Add(DirectSalesOrderTransactionDAO);
+                }
+            }
+            await DataContext.DirectSalesOrderTransaction.BulkMergeAsync(DirectSalesOrderTransactionDAOs);
+        }
     }
 }

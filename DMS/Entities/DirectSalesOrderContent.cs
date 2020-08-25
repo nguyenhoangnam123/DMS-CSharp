@@ -15,17 +15,18 @@ namespace DMS.Entities
         public long Quantity { get; set; }
         public long PrimaryUnitOfMeasureId { get; set; }
         public long RequestedQuantity { get; set; }
-        public decimal Price { get; set; }
+        public decimal PrimaryPrice { get; set; }
+        public decimal SalePrice { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountAmount { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
         public decimal? GeneralDiscountAmount { get; set; }
+        public decimal Amount { get; set; }
         public decimal? TaxPercentage { get; set; }
         public decimal? TaxAmount { get; set; }
-        public decimal Amount { get; set; }
         public long? Factor { get; set; }
-        public DirectSalesOrder DirectSalesOrder { get; set; }
         public Item Item { get; set; }
+        public DirectSalesOrder DirectSalesOrder { get; set; }
         public UnitOfMeasure PrimaryUnitOfMeasure { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
 
@@ -49,14 +50,15 @@ namespace DMS.Entities
         public LongFilter Quantity { get; set; }
         public IdFilter PrimaryUnitOfMeasureId { get; set; }
         public LongFilter RequestedQuantity { get; set; }
-        public DecimalFilter Price { get; set; }
+        public DecimalFilter PrimaryPrice { get; set; }
+        public DecimalFilter SalePrice { get; set; }
         public DecimalFilter DiscountPercentage { get; set; }
         public DecimalFilter DiscountAmount { get; set; }
         public DecimalFilter GeneralDiscountPercentage { get; set; }
         public DecimalFilter GeneralDiscountAmount { get; set; }
+        public DecimalFilter Amount { get; set; }
         public DecimalFilter TaxPercentage { get; set; }
         public DecimalFilter TaxAmount { get; set; }
-        public DecimalFilter Amount { get; set; }
         public List<DirectSalesOrderContentFilter> OrFilter { get; set; }
         public DirectSalesOrderContentOrder OrderBy { get; set; }
         public DirectSalesOrderContentSelect Selects { get; set; }
@@ -72,15 +74,15 @@ namespace DMS.Entities
         Quantity = 4,
         PrimaryUnitOfMeasure = 5,
         RequestedQuantity = 6,
-        Price = 7,
-        DiscountPercentage = 8,
-        DiscountAmount = 9,
-        GeneralDiscountPercentage = 10,
-        GeneralDiscountAmount = 11,
-        TaxPercentage = 12,
-        TaxAmount = 13,
-        Amount = 14,
-        Factor = 15,
+        PrimaryPrice = 7,
+        SalePrice = 8,
+        DiscountPercentage = 9,
+        DiscountAmount = 10,
+        GeneralDiscountPercentage = 11,
+        GeneralDiscountAmount = 12,
+        Amount = 13,
+        TaxPercentage = 14,
+        TaxAmount = 15,
     }
 
     [Flags]
@@ -94,14 +96,15 @@ namespace DMS.Entities
         Quantity = E._4,
         PrimaryUnitOfMeasure = E._5,
         RequestedQuantity = E._6,
-        Price = E._7,
-        DiscountPercentage = E._8,
-        DiscountAmount = E._9,
-        GeneralDiscountPercentage = E._10,
-        GeneralDiscountAmount = E._11,
-        TaxPercentage = E._12,
-        TaxAmount = E._13,
-        Amount = E._14,
-        Factor = E._15
+        PrimaryPrice = E._7,
+        SalePrice = E._8,
+        DiscountPercentage = E._9,
+        DiscountAmount = E._10,
+        GeneralDiscountPercentage = E._11,
+        GeneralDiscountAmount = E._12,
+        Amount = E._13,
+        TaxPercentage = E._14,
+        TaxAmount = E._15,
+        Factor = E._16
     }
 }

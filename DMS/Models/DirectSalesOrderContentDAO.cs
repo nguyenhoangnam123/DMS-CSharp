@@ -12,7 +12,14 @@ namespace DMS.Models
         public long Quantity { get; set; }
         public long PrimaryUnitOfMeasureId { get; set; }
         public long RequestedQuantity { get; set; }
-        public decimal Price { get; set; }
+        /// <summary>
+        /// Giá theo đơn vị lưu kho
+        /// </summary>
+        public decimal PrimaryPrice { get; set; }
+        /// <summary>
+        /// Giá bán theo đơn vị xuất hàng
+        /// </summary>
+        public decimal SalePrice { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountAmount { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }

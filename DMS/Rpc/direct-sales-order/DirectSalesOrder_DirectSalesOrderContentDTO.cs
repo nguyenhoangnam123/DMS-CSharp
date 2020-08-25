@@ -1,4 +1,4 @@
-﻿using Common;
+using Common;
 using DMS.Entities;
 
 namespace DMS.Rpc.direct_sales_order
@@ -12,19 +12,20 @@ namespace DMS.Rpc.direct_sales_order
         public long Quantity { get; set; }
         public long PrimaryUnitOfMeasureId { get; set; }
         public long RequestedQuantity { get; set; }
-        public decimal Price { get; set; }
+        public decimal PrimaryPrice { get; set; }
+        public decimal SalePrice { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountAmount { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
         public decimal? GeneralDiscountAmount { get; set; }
+        public decimal Amount { get; set; }
         public decimal? TaxPercentage { get; set; }
         public decimal? TaxAmount { get; set; }
         public long? Factor { get; set; }
-        public decimal Amount { get; set; }
-        public DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder { get; set; }
         public DirectSalesOrder_ItemDTO Item { get; set; }
         public DirectSalesOrder_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }
         public DirectSalesOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+
         public DirectSalesOrder_DirectSalesOrderContentDTO() { }
         public DirectSalesOrder_DirectSalesOrderContentDTO(DirectSalesOrderContent DirectSalesOrderContent)
         {
@@ -35,16 +36,16 @@ namespace DMS.Rpc.direct_sales_order
             this.Quantity = DirectSalesOrderContent.Quantity;
             this.PrimaryUnitOfMeasureId = DirectSalesOrderContent.PrimaryUnitOfMeasureId;
             this.RequestedQuantity = DirectSalesOrderContent.RequestedQuantity;
-            this.Price = DirectSalesOrderContent.Price;
+            this.PrimaryPrice = DirectSalesOrderContent.PrimaryPrice;
+            this.SalePrice = DirectSalesOrderContent.SalePrice;
             this.DiscountPercentage = DirectSalesOrderContent.DiscountPercentage;
             this.DiscountAmount = DirectSalesOrderContent.DiscountAmount;
             this.GeneralDiscountPercentage = DirectSalesOrderContent.GeneralDiscountPercentage;
             this.GeneralDiscountAmount = DirectSalesOrderContent.GeneralDiscountAmount;
+            this.Amount = DirectSalesOrderContent.Amount;
             this.TaxPercentage = DirectSalesOrderContent.TaxPercentage;
             this.TaxAmount = DirectSalesOrderContent.TaxAmount;
-            this.Amount = DirectSalesOrderContent.Amount;
             this.Factor = DirectSalesOrderContent.Factor;
-            this.DirectSalesOrder = DirectSalesOrderContent.DirectSalesOrder == null ? null : new DirectSalesOrder_DirectSalesOrderDTO(DirectSalesOrderContent.DirectSalesOrder);
             this.Item = DirectSalesOrderContent.Item == null ? null : new DirectSalesOrder_ItemDTO(DirectSalesOrderContent.Item);
             this.PrimaryUnitOfMeasure = DirectSalesOrderContent.PrimaryUnitOfMeasure == null ? null : new DirectSalesOrder_UnitOfMeasureDTO(DirectSalesOrderContent.PrimaryUnitOfMeasure);
             this.UnitOfMeasure = DirectSalesOrderContent.UnitOfMeasure == null ? null : new DirectSalesOrder_UnitOfMeasureDTO(DirectSalesOrderContent.UnitOfMeasure);
@@ -54,21 +55,37 @@ namespace DMS.Rpc.direct_sales_order
 
     public class DirectSalesOrder_DirectSalesOrderContentFilterDTO : FilterDTO
     {
+
         public IdFilter Id { get; set; }
+
         public IdFilter DirectSalesOrderId { get; set; }
+
         public IdFilter ItemId { get; set; }
+
         public IdFilter UnitOfMeasureId { get; set; }
+
         public LongFilter Quantity { get; set; }
+
         public IdFilter PrimaryUnitOfMeasureId { get; set; }
+
         public LongFilter RequestedQuantity { get; set; }
-        public LongFilter Price { get; set; }
+        public LongFilter PrimaryPrice { get; set; }
+        public LongFilter SalePrice { get; set; }
+
         public DecimalFilter DiscountPercentage { get; set; }
+
         public LongFilter DiscountAmount { get; set; }
+
         public DecimalFilter GeneralDiscountPercentage { get; set; }
+
         public LongFilter GeneralDiscountAmount { get; set; }
-        public DecimalFilter TaxPercentage { get; set; }
-        public LongFilter TaxAmount { get; set; }
+
         public LongFilter Amount { get; set; }
+
+        public DecimalFilter TaxPercentage { get; set; }
+
+        public LongFilter TaxAmount { get; set; }
+
         public DirectSalesOrderContentOrder OrderBy { get; set; }
     }
 }

@@ -6,18 +6,12 @@ namespace DMS.Rpc.direct_sales_order
 {
     public class DirectSalesOrder_ProductTypeDTO : DataDTO
     {
-
         public long Id { get; set; }
-
         public string Code { get; set; }
-
         public string Name { get; set; }
-
         public string Description { get; set; }
-
         public long StatusId { get; set; }
         public DateTime UpdatedTime { get; set; }
-
         public DirectSalesOrder_ProductTypeDTO() { }
         public DirectSalesOrder_ProductTypeDTO(ProductType ProductType)
         {

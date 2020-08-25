@@ -12,9 +12,10 @@ namespace DMS.Enums
         public static GenericEnum EROUTE = new GenericEnum { Id = 2, Code = "EROUTE", Name = "Tuyến" };
         public static GenericEnum INDIRECT_SALES_ORDER = new GenericEnum { Id = 3, Code = "INDIRECT_SALES_ORDER", Name = "Đơn hàng gián tiếp" };
         public static GenericEnum PRICE_LIST = new GenericEnum { Id = 4, Code = "PRICE_LIST", Name = "Bảng giá" };
+        public static GenericEnum DIRECT_SALES_ORDER = new GenericEnum { Id = 5, Code = "DIRECT_SALES_ORDER", Name = "Đơn hàng trực tiếp" };
         public static List<GenericEnum> WorkflowTypeEnumList = new List<GenericEnum>()
         {
-            STORE, EROUTE, INDIRECT_SALES_ORDER, PRICE_LIST
+            STORE, EROUTE, INDIRECT_SALES_ORDER, PRICE_LIST, DIRECT_SALES_ORDER
         };
     }
 
