@@ -309,8 +309,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
 
             List<Store> Stores = await query.Distinct().ToListAsync();
 
-            Stores = Stores.OrderBy(x => x.Name)
-                .OrderBy(x => x.OrganizationId).ThenBy(x => x.Name)
+            Stores = Stores.OrderBy(x => x.OrganizationId).ThenBy(x => x.Name)
                 .Skip(ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.Skip)
                 .Take(ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.Take)
                 .ToList();
@@ -535,7 +534,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
 
             List<Store> Stores = await query.Distinct().ToListAsync();
 
-            Stores = Stores.OrderBy(x => x.Name).ToList();
+            Stores = Stores.ToList();
 
             List<string> OrganizationNames = Stores.Select(s => s.Organization.Name).Distinct().ToList();
             List<ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO> ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs = OrganizationNames.Select(on => new ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO

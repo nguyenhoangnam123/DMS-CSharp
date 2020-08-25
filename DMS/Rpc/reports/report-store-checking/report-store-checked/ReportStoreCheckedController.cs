@@ -333,7 +333,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id) && OrganizationIds.Contains(au.OrganizationId.Value))
                 .Include(au => au.Organization)
-                .OrderBy(su => su.Organization.Path)
+                .OrderBy(su => su.OrganizationId)
                 .Skip(ReportStoreChecker_ReportStoreCheckedFilterDTO.Skip)
                 .Take(ReportStoreChecker_ReportStoreCheckedFilterDTO.Take)
                 .ToListAsync();
