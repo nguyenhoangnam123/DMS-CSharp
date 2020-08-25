@@ -121,9 +121,7 @@ namespace DMS.Repositories
                 if (ERouteFilter.Name != null)
                     queryable = queryable.Where(q => q.Name, ERouteFilter.Name);
                 if (ERouteFilter.OrganizationId != null)
-                    queryable = queryable
-                        .Where(q => q.SaleEmployee.OrganizationId.HasValue)
-                        .Where(q => q.SaleEmployee.OrganizationId.Value, ERouteFilter.OrganizationId);
+                    queryable = queryable.Where(q => q.OrganizationId, ERouteFilter.OrganizationId);
                 if (ERouteFilter.AppUserId != null)
                     queryable = queryable.Where(q => q.SaleEmployeeId, ERouteFilter.AppUserId);
                 if (ERouteFilter.StartDate != null)
