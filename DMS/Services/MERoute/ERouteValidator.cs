@@ -245,8 +245,11 @@ namespace DMS.Services.MERoute
         {
             var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             var SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
-            if(!SaleEmployee.Organization.Path.StartsWith(CurrentUser.Organization.Path))
-                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Organization), ErrorCode.OrganizationInvalid);
+            if(SaleEmployee != null)
+            {
+                if (!SaleEmployee.Organization.Path.StartsWith(CurrentUser.Organization.Path))
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Organization), ErrorCode.OrganizationInvalid);
+            }
             return ERoute.IsValidated;
         }
 
