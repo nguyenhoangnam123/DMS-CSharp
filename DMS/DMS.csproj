@@ -112,6 +112,12 @@
     <None Update="Templates\Report_Sales_Order_General.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\Report_Statistic_Problem.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Report_Statistic_Store_Scouting.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\Report_Store_Checked.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
