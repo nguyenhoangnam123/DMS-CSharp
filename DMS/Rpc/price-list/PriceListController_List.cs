@@ -44,7 +44,10 @@ namespace DMS.Rpc.price_list
             OrganizationFilter.Email = PriceList_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = PriceList_OrganizationFilterDTO.Address;
 
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+
             List<PriceList_OrganizationDTO> PriceList_OrganizationDTOs = Organizations
                 .Select(x => new PriceList_OrganizationDTO(x)).ToList();
             return PriceList_OrganizationDTOs;
@@ -237,7 +240,10 @@ namespace DMS.Rpc.price_list
             OrganizationFilter.Email = PriceList_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = PriceList_OrganizationFilterDTO.Address;
 
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+
             List<PriceList_OrganizationDTO> PriceList_OrganizationDTOs = Organizations
                 .Select(x => new PriceList_OrganizationDTO(x)).ToList();
             return PriceList_OrganizationDTOs;

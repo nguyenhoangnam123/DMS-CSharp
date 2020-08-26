@@ -70,14 +70,8 @@ namespace DMS.Rpc.price_list
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(PriceListFilter.Id), FieldTypeEnum.ID.Id },
-            { nameof(PriceListFilter.Code), FieldTypeEnum.STRING.Id },
-            { nameof(PriceListFilter.Name), FieldTypeEnum.STRING.Id },
-            { nameof(PriceListFilter.StartDate), FieldTypeEnum.DATE.Id },
-            { nameof(PriceListFilter.EndDate), FieldTypeEnum.DATE.Id },
-            { nameof(PriceListFilter.StatusId), FieldTypeEnum.ID.Id },
             { nameof(PriceListFilter.OrganizationId), FieldTypeEnum.ID.Id },
-            { nameof(PriceListFilter.PriceListTypeId), FieldTypeEnum.ID.Id },
-            { nameof(PriceListFilter.SalesOrderTypeId), FieldTypeEnum.ID.Id },
+            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
