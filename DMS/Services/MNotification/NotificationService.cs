@@ -146,7 +146,7 @@ namespace DMS.Services.MNotification
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = Notification.Content,
-                        LinkWebsite = $"{NotificationRoute.Detail}".Replace("*", Notification.Id.ToString()),
+                        LinkWebsite = $"{NotificationRoute.Master}/?id=*".Replace("*", Notification.Id.ToString()),
                         LinkMobile = $"{NotificationRoute.Mobile}".Replace("*", Notification.Id.ToString()),
                         Time = StaticParams.DateTimeNow,
                         Unread = false,
