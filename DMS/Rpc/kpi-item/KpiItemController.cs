@@ -5,6 +5,7 @@ using DMS.Services.MAppUser;
 using DMS.Services.MKpiCriteriaItem;
 using DMS.Services.MKpiCriteriaTotal;
 using DMS.Services.MKpiItem;
+using DMS.Services.MKpiItemContent;
 using DMS.Services.MKpiPeriod;
 using DMS.Services.MKpiYear;
 using DMS.Services.MOrganization;
@@ -13,13 +14,17 @@ using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
 using DMS.Services.MStatus;
 using DMS.Services.MSupplier;
+using Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NGS.Templater;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.kpi_item
@@ -34,6 +39,7 @@ namespace DMS.Rpc.kpi_item
         private IKpiCriteriaTotalService KpiCriteriaTotalService;
         private IStatusService StatusService;
         private IItemService ItemService;
+        private IKpiItemContentService KpiItemContentService;
         private IKpiItemService KpiItemService;
         private ISupplierService SupplierService;
         private IProductTypeService ProductTypeService;
@@ -48,6 +54,7 @@ namespace DMS.Rpc.kpi_item
             IKpiCriteriaTotalService KpiCriteriaTotalService,
             IStatusService StatusService,
             IItemService ItemService,
+            IKpiItemContentService KpiItemContentService,
             IKpiItemService KpiItemService,
             ISupplierService SupplierService,
             IProductTypeService ProductTypeService,
@@ -63,6 +70,7 @@ namespace DMS.Rpc.kpi_item
             this.KpiCriteriaTotalService = KpiCriteriaTotalService;
             this.StatusService = StatusService;
             this.ItemService = ItemService;
+            this.KpiItemContentService = KpiItemContentService;
             this.KpiItemService = KpiItemService;
             this.SupplierService = SupplierService;
             this.ProductTypeService = ProductTypeService;
@@ -83,7 +91,7 @@ namespace DMS.Rpc.kpi_item
         }
 
         [Route(KpiItemRoute.List), HttpPost]
-        public async Task<ActionResult<List<KpiItem_KpiItemDTO>>> List([FromBody] KpiItem_KpiItemFilterDTO KpiItem_KpiItemFilterDTO)
+        public async Task<List<KpiItem_KpiItemDTO>> List([FromBody] KpiItem_KpiItemFilterDTO KpiItem_KpiItemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -215,578 +223,336 @@ namespace DMS.Rpc.kpi_item
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            AppUserFilter CreatorFilter = new AppUserFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = AppUserSelect.ALL
-            };
-            List<AppUser> Creators = await AppUserService.List(CreatorFilter);
+
+            var AppUser = await AppUserService.Get(CurrentContext.UserId);
+
             AppUserFilter EmployeeFilter = new AppUserFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = AppUserSelect.ALL
+                Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName,
+                OrganizationId = new IdFilter { Equal = AppUser.OrganizationId }
             };
             List<AppUser> Employees = await AppUserService.List(EmployeeFilter);
-            KpiPeriodFilter KpiPeriodFilter = new KpiPeriodFilter
+
+            List<Item> Items = await ItemService.List(new ItemFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = KpiPeriodSelect.ALL
-            };
-            List<KpiPeriod> KpiPeriods = await KpiPeriodService.List(KpiPeriodFilter);
-            StatusFilter StatusFilter = new StatusFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StatusSelect.ALL
-            };
-            List<Status> Statuses = await StatusService.List(StatusFilter);
+                Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name,
+                OrderBy = ItemOrder.Id,
+                OrderType = OrderType.ASC
+            });
+
             List<KpiItem> KpiItems = new List<KpiItem>();
+            StringBuilder errorContent = new StringBuilder();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
                 if (worksheet == null)
                     return Ok(KpiItems);
                 int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int OrganizationIdColumn = 1 + StartColumn;
-                int KpiPeriodIdColumn = 2 + StartColumn;
-                int StatusIdColumn = 3 + StartColumn;
-                int EmployeeIdColumn = 4 + StartColumn;
-                int CreatorIdColumn = 5 + StartColumn;
+                int StartRow = 5;
+                int UsernameColumn = 0 + StartColumn;
+                int DisplayNameColumn = 1 + StartColumn;
+                int ItemCodeColumn = 2 + StartColumn;
+                int QuantityColumn = 3 + StartColumn;
+                int RevenueColumn = 4 + StartColumn;
+                int SaleOrderColumn = 5 + StartColumn;
+                int StoreColumn = 6 + StartColumn;
+
+                string KpiPeriodValue = worksheet.Cells[2, 4].Value?.ToString();
+                GenericEnum KpiPeriod;
+                if (long.TryParse(KpiPeriodValue, out long KpiPeriodId))
+                    KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiPeriodId).FirstOrDefault();
+                else
+                    return BadRequest("Kỳ Kpi không hợp lệ");
+
+                string KpiYearValue = worksheet.Cells[2, 6].Value?.ToString();
+                GenericEnum KpiYear;
+                if (long.TryParse(KpiYearValue, out long KpiYearId))
+                    KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();
+                else
+                    return BadRequest("Năm Kpi không hợp lệ");
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, StartColumn].Value?.ToString()))
+                    string UsernameValue = worksheet.Cells[i + StartRow, UsernameColumn].Value?.ToString();
+                    string ItemCodeValue = worksheet.Cells[i + StartRow, ItemCodeColumn].Value?.ToString();
+                    if (UsernameValue != null && UsernameValue.ToLower() == "END".ToLower())
                         break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string OrganizationIdValue = worksheet.Cells[i + StartRow, OrganizationIdColumn].Value?.ToString();
-                    string KpiPeriodIdValue = worksheet.Cells[i + StartRow, KpiPeriodIdColumn].Value?.ToString();
-                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    string EmployeeIdValue = worksheet.Cells[i + StartRow, EmployeeIdColumn].Value?.ToString();
-                    string CreatorIdValue = worksheet.Cells[i + StartRow, CreatorIdColumn].Value?.ToString();
-
-                    KpiItem KpiItem = new KpiItem();
-                    AppUser Creator = Creators.Where(x => x.Id.ToString() == CreatorIdValue).FirstOrDefault();
-                    KpiItem.CreatorId = Creator == null ? 0 : Creator.Id;
-                    KpiItem.Creator = Creator;
-                    AppUser Employee = Employees.Where(x => x.Id.ToString() == EmployeeIdValue).FirstOrDefault();
-                    KpiItem.EmployeeId = Employee == null ? 0 : Employee.Id;
-                    KpiItem.Employee = Employee;
-                    KpiPeriod KpiPeriod = KpiPeriods.Where(x => x.Id.ToString() == KpiPeriodIdValue).FirstOrDefault();
-                    KpiItem.KpiPeriodId = KpiPeriod == null ? 0 : KpiPeriod.Id;
-                    KpiItem.KpiPeriod = KpiPeriod;
-                    Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
-                    KpiItem.StatusId = Status == null ? 0 : Status.Id;
-                    KpiItem.Status = Status;
-
-                    KpiItems.Add(KpiItem);
-                }
-            }
-            KpiItems = await KpiItemService.Import(KpiItems);
-            if (KpiItems.All(x => x.IsValidated))
-                return Ok(true);
-            else
-            {
-                List<string> Errors = new List<string>();
-                for (int i = 0; i < KpiItems.Count; i++)
-                {
-                    KpiItem KpiItem = KpiItems[i];
-                    if (!KpiItem.IsValidated)
+                    else if (!string.IsNullOrWhiteSpace(UsernameValue) && string.IsNullOrWhiteSpace(ItemCodeValue))
                     {
-                        string Error = $"Dòng {i + 2} có lỗi:";
-                        if (KpiItem.Errors.ContainsKey(nameof(KpiItem.Id)))
-                            Error += KpiItem.Errors[nameof(KpiItem.Id)];
-                        if (KpiItem.Errors.ContainsKey(nameof(KpiItem.OrganizationId)))
-                            Error += KpiItem.Errors[nameof(KpiItem.OrganizationId)];
-                        if (KpiItem.Errors.ContainsKey(nameof(KpiItem.KpiPeriodId)))
-                            Error += KpiItem.Errors[nameof(KpiItem.KpiPeriodId)];
-                        if (KpiItem.Errors.ContainsKey(nameof(KpiItem.StatusId)))
-                            Error += KpiItem.Errors[nameof(KpiItem.StatusId)];
-                        if (KpiItem.Errors.ContainsKey(nameof(KpiItem.EmployeeId)))
-                            Error += KpiItem.Errors[nameof(KpiItem.EmployeeId)];
-                        if (KpiItem.Errors.ContainsKey(nameof(KpiItem.CreatorId)))
-                            Error += KpiItem.Errors[nameof(KpiItem.CreatorId)];
-                        Errors.Add(Error);
+                        continue;
                     }
+
+                    if (string.IsNullOrWhiteSpace(UsernameValue) && i != worksheet.Dimension.End.Row)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã nhân viên");
+                        continue;
+                    }
+                    else if (string.IsNullOrWhiteSpace(UsernameValue) && i == worksheet.Dimension.End.Row)
+                        break;
+
+                    Item Item;
+                    if (!string.IsNullOrWhiteSpace(ItemCodeValue))
+                    {
+                        Item = Items.Where(x => x.Code == ItemCodeValue.Trim()).FirstOrDefault();
+                        if (Item == null)
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Sản phẩm không tồn tại");
+                            continue;
+                        }
+                    }
+
+                    string QuantityValue = worksheet.Cells[i + StartRow, QuantityColumn].Value?.ToString();
+                    string RevenueValue = worksheet.Cells[i + StartRow, RevenueColumn].Value?.ToString();
+                    string SalesOrderValue = worksheet.Cells[i + StartRow, SaleOrderColumn].Value?.ToString();
+                    string StoreValue = worksheet.Cells[i + StartRow, StoreColumn].Value?.ToString();
+
+                    AppUser Employee = Employees.Where(x => x.Username == UsernameValue).FirstOrDefault();
+                    if (Employee == null)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhân viên không tồn tại hoặc không thuộc {AppUser.Organization?.Name}");
+                        continue;
+                    }
+                    KpiItem KpiItem = KpiItems.Where(x => x.EmployeeId == Employee.Id).FirstOrDefault();
+                    if(KpiItem == null)
+                    {
+                        KpiItem = new KpiItem();
+                        KpiItem.KpiItemContents = new List<KpiItemContent>();
+                        KpiItem.CreatorId = AppUser == null ? 0 : AppUser.Id;
+                        KpiItem.Creator = AppUser;
+                        KpiItem.OrganizationId = AppUser.OrganizationId.Value;
+                        KpiItem.EmployeeId = Employee == null ? 0 : Employee.Id;
+                        KpiItem.Employee = Employee;
+                        KpiItem.KpiYearId = KpiYear == null ? 0 : KpiYear.Id;
+                        KpiItem.KpiPeriodId = KpiPeriod == null ? 0 : KpiPeriod.Id;
+                        KpiItem.StatusId = StatusEnum.ACTIVE.Id;
+                        KpiItems.Add(KpiItem);
+                    }
+                    Item = Items.Where(x => x.Code == ItemCodeValue.Trim()).FirstOrDefault();
+                    KpiItemContent KpiItemContent = KpiItem.KpiItemContents.Where(x => x.ItemId == Item.Id).FirstOrDefault();
+                    if (KpiItemContent == null)
+                    {
+                        KpiItemContent = new KpiItemContent();
+                        KpiItemContent.ItemId = Item.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings = new List<KpiItemContentKpiCriteriaItemMapping>();
+                        KpiItem.KpiItemContents.Add(KpiItemContent);
+                    }
+
+                    #region Sản lượng theo đơn hàng gián tiếp
+                    KpiItemContentKpiCriteriaItemMapping
+                            QuantityCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
+                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id)
+                            .FirstOrDefault();
+                    if (QuantityCriterial == null)
+                    {
+                        QuantityCriterial = new KpiItemContentKpiCriteriaItemMapping();
+                        QuantityCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(QuantityCriterial);
+                    }
+                    if (long.TryParse(QuantityValue, out long Quantity))
+                        QuantityCriterial.Value = Quantity;
+                    else
+                        QuantityCriterial.Value = null;
+                    #endregion
+
+                    #region Doanh thu theo đơn hàng gián tiếp
+                    KpiItemContentKpiCriteriaItemMapping
+                            RevenueCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
+                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
+                            .FirstOrDefault();
+                    if (RevenueCriterial == null)
+                    {
+                        RevenueCriterial = new KpiItemContentKpiCriteriaItemMapping();
+                        RevenueCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_REVENUE.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(RevenueCriterial);
+                    }
+                    if (long.TryParse(RevenueValue, out long Revenue))
+                        RevenueCriterial.Value = Revenue;
+                    else
+                        RevenueCriterial.Value = null;
+                    #endregion
+
+                    #region Số đơn hàng gián tiếp
+                    KpiItemContentKpiCriteriaItemMapping
+                            SalesOrderCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
+                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id)
+                            .FirstOrDefault();
+                    if (SalesOrderCriterial == null)
+                    {
+                        SalesOrderCriterial = new KpiItemContentKpiCriteriaItemMapping();
+                        SalesOrderCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(SalesOrderCriterial);
+                    }
+                    if (long.TryParse(RevenueValue, out long SalesOrder))
+                        SalesOrderCriterial.Value = SalesOrder;
+                    else
+                        SalesOrderCriterial.Value = null;
+                    #endregion
+
+                    #region Số đại lý theo đơn gián tiếp
+                    KpiItemContentKpiCriteriaItemMapping
+                            StoreCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
+                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
+                            .FirstOrDefault();
+                    if (StoreCriterial == null)
+                    {
+                        StoreCriterial = new KpiItemContentKpiCriteriaItemMapping();
+                        StoreCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_STORE.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(StoreCriterial);
+                    }
+                    if (long.TryParse(RevenueValue, out long Store))
+                        StoreCriterial.Value = Store;
+                    else
+                        StoreCriterial.Value = null;
+                    #endregion
                 }
-                return BadRequest(Errors);
+                if (errorContent.Length > 0)
+                    return BadRequest(errorContent.ToString());
             }
+
+            KpiItems = await KpiItemService.Import(KpiItems);
+            List<KpiItem_KpiItemDTO> KpiItem_KpiItemDTOs = KpiItems
+                .Select(c => new KpiItem_KpiItemDTO(c)).ToList();
+            for (int i = 0; i < KpiItems.Count; i++)
+            {
+                if (!KpiItems[i].IsValidated)
+                {
+                    errorContent.Append($"Lỗi dòng thứ {i + 2}:");
+                    foreach (var Error in KpiItems[i].Errors)
+                    {
+                        errorContent.Append($" {Error.Value},");
+                    }
+                    errorContent.AppendLine("");
+                }
+            }
+            if (KpiItems.Any(s => !s.IsValidated))
+                return BadRequest(errorContent.ToString());
+            return Ok(KpiItem_KpiItemDTOs);
         }
 
         [Route(KpiItemRoute.Export), HttpPost]
-        public async Task<FileResult> Export([FromBody] KpiItem_KpiItemFilterDTO KpiItem_KpiItemFilterDTO)
+        public async Task<ActionResult> Export([FromBody] KpiItem_KpiItemFilterDTO KpiItem_KpiItemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            if (KpiItem_KpiItemFilterDTO.KpiYearId.Equal.HasValue == false)
+                return BadRequest("Chưa chọn năm Kpi");
+
+            if (KpiItem_KpiItemFilterDTO.KpiPeriodId.Equal.HasValue == false)
+                return BadRequest("Chưa chọn kỳ Kpi");
+
+            long KpiYearId = KpiItem_KpiItemFilterDTO.KpiYearId.Equal.Value;
+            var KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();
+
+            long KpiPeriodId = KpiItem_KpiItemFilterDTO.KpiPeriodId.Equal.Value;
+            var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiPeriodId).FirstOrDefault();
+
+
+            KpiItem_KpiItemFilterDTO.Skip = 0;
+            KpiItem_KpiItemFilterDTO.Take = int.MaxValue;
+            KpiItem_KpiItemFilterDTO.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            List<KpiItem_KpiItemDTO> KpiItem_KpiItemDTOs = await List(KpiItem_KpiItemFilterDTO);
+            var KpiItemIds = KpiItem_KpiItemDTOs.Select(x => x.Id).ToList();
+
+            KpiItemContentFilter KpiItemContentFilter = new KpiItemContentFilter
             {
-                #region KpiItem
-                var KpiItemFilter = ConvertFilterDTOToFilterEntity(KpiItem_KpiItemFilterDTO);
-                KpiItemFilter.Skip = 0;
-                KpiItemFilter.Take = int.MaxValue;
-                KpiItemFilter = await KpiItemService.ToFilter(KpiItemFilter);
-                List<KpiItem> KpiItems = await KpiItemService.List(KpiItemFilter);
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiItemContentSelect.ALL,
+                KpiItemId = new IdFilter { In = KpiItemIds }
+            };
+            List<KpiItemContent> KpiItemContents = await KpiItemContentService.List(KpiItemContentFilter);
 
-                var KpiItemHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "OrganizationId",
-                        "KpiPeriodId",
-                        "StatusId",
-                        "EmployeeId",
-                        "CreatorId",
-                    }
-                };
-                List<object[]> KpiItemData = new List<object[]>();
-                for (int i = 0; i < KpiItems.Count; i++)
-                {
-                    var KpiItem = KpiItems[i];
-                    KpiItemData.Add(new Object[]
-                    {
-                        KpiItem.Id,
-                        KpiItem.OrganizationId,
-                        KpiItem.KpiPeriodId,
-                        KpiItem.StatusId,
-                        KpiItem.EmployeeId,
-                        KpiItem.CreatorId,
-                    });
-                }
-                excel.GenerateWorksheet("KpiItem", KpiItemHeaders, KpiItemData);
-                #endregion
+            List<KpiItem_ExportDTO> KpiItem_ExportDTOs = new List<KpiItem_ExportDTO>();
+            foreach (var KpiItem in KpiItem_KpiItemDTOs)
+            {
+                KpiItem_ExportDTO KpiItem_ExportDTO = new KpiItem_ExportDTO();
+                KpiItem_ExportDTO.Username = KpiItem.Employee.Username;
+                KpiItem_ExportDTO.DisplayName = KpiItem.Employee.DisplayName;
 
-                #region AppUser
-                var AppUserFilter = new AppUserFilter();
-                AppUserFilter.Selects = AppUserSelect.ALL;
-                AppUserFilter.OrderBy = AppUserOrder.Id;
-                AppUserFilter.OrderType = OrderType.ASC;
-                AppUserFilter.Skip = 0;
-                AppUserFilter.Take = int.MaxValue;
-                List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-
-                var AppUserHeaders = new List<string[]>()
+                KpiItem_ExportDTO.Contents = KpiItemContents.Where(x => x.KpiItemId == KpiItem.Id).Select(x => new KpiItem_ExportContentDTO
                 {
-                    new string[] {
-                        "Id",
-                        "Username",
-                        "DisplayName",
-                        "Address",
-                        "Email",
-                        "Phone",
-                        "PositionId",
-                        "Department",
-                        "OrganizationId",
-                        "StatusId",
-                        "Avatar",
-                        "ProvinceId",
-                        "SexId",
-                        "Birthday",
-                    }
-                };
-                List<object[]> AppUserData = new List<object[]>();
-                for (int i = 0; i < AppUsers.Count; i++)
-                {
-                    var AppUser = AppUsers[i];
-                    AppUserData.Add(new Object[]
-                    {
-                        AppUser.Id,
-                        AppUser.Username,
-                        AppUser.DisplayName,
-                        AppUser.Address,
-                        AppUser.Email,
-                        AppUser.Phone,
-                        AppUser.PositionId,
-                        AppUser.Department,
-                        AppUser.OrganizationId,
-                        AppUser.StatusId,
-                        AppUser.Avatar,
-                        AppUser.ProvinceId,
-                        AppUser.SexId,
-                        AppUser.Birthday,
-                    });
-                }
-                excel.GenerateWorksheet("AppUser", AppUserHeaders, AppUserData);
-                #endregion
-                #region KpiPeriod
-                var KpiPeriodFilter = new KpiPeriodFilter();
-                KpiPeriodFilter.Selects = KpiPeriodSelect.ALL;
-                KpiPeriodFilter.OrderBy = KpiPeriodOrder.Id;
-                KpiPeriodFilter.OrderType = OrderType.ASC;
-                KpiPeriodFilter.Skip = 0;
-                KpiPeriodFilter.Take = int.MaxValue;
-                List<KpiPeriod> KpiPeriods = await KpiPeriodService.List(KpiPeriodFilter);
-
-                var KpiPeriodHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> KpiPeriodData = new List<object[]>();
-                for (int i = 0; i < KpiPeriods.Count; i++)
-                {
-                    var KpiPeriod = KpiPeriods[i];
-                    KpiPeriodData.Add(new Object[]
-                    {
-                        KpiPeriod.Id,
-                        KpiPeriod.Code,
-                        KpiPeriod.Name,
-                    });
-                }
-                excel.GenerateWorksheet("KpiPeriod", KpiPeriodHeaders, KpiPeriodData);
-                #endregion
-                #region Organization
-                var OrganizationFilter = new OrganizationFilter();
-                OrganizationFilter.Selects = OrganizationSelect.ALL;
-                OrganizationFilter.OrderBy = OrganizationOrder.Id;
-                OrganizationFilter.OrderType = OrderType.ASC;
-                OrganizationFilter.Skip = 0;
-                OrganizationFilter.Take = int.MaxValue;
-                List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-
-                var OrganizationHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                        "ParentId",
-                        "Path",
-                        "Level",
-                        "StatusId",
-                        "Phone",
-                        "Email",
-                        "Address",
-                    }
-                };
-                List<object[]> OrganizationData = new List<object[]>();
-                for (int i = 0; i < Organizations.Count; i++)
-                {
-                    var Organization = Organizations[i];
-                    OrganizationData.Add(new Object[]
-                    {
-                        Organization.Id,
-                        Organization.Code,
-                        Organization.Name,
-                        Organization.ParentId,
-                        Organization.Path,
-                        Organization.Level,
-                        Organization.StatusId,
-                        Organization.Phone,
-                        Organization.Email,
-                        Organization.Address,
-                    });
-                }
-                excel.GenerateWorksheet("Organization", OrganizationHeaders, OrganizationData);
-                #endregion
-                #region Status
-                var StatusFilter = new StatusFilter();
-                StatusFilter.Selects = StatusSelect.ALL;
-                StatusFilter.OrderBy = StatusOrder.Id;
-                StatusFilter.OrderType = OrderType.ASC;
-                StatusFilter.Skip = 0;
-                StatusFilter.Take = int.MaxValue;
-                List<Status> Statuses = await StatusService.List(StatusFilter);
-
-                var StatusHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> StatusData = new List<object[]>();
-                for (int i = 0; i < Statuses.Count; i++)
-                {
-                    var Status = Statuses[i];
-                    StatusData.Add(new Object[]
-                    {
-                        Status.Id,
-                        Status.Code,
-                        Status.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
-                #endregion
-
-                #region Item
-                var ItemFilter = new ItemFilter();
-                ItemFilter.Selects = ItemSelect.ALL;
-                ItemFilter.OrderBy = ItemOrder.Id;
-                ItemFilter.OrderType = OrderType.ASC;
-                ItemFilter.Skip = 0;
-                ItemFilter.Take = int.MaxValue;
-                List<Item> Items = await ItemService.List(ItemFilter);
-
-                var ItemHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "ProductId",
-                        "Code",
-                        "Name",
-                        "ScanCode",
-                        "SalePrice",
-                        "RetailPrice",
-                        "StatusId",
-                    }
-                };
-                List<object[]> ItemData = new List<object[]>();
-                for (int i = 0; i < Items.Count; i++)
-                {
-                    var Item = Items[i];
-                    ItemData.Add(new Object[]
-                    {
-                        Item.Id,
-                        Item.ProductId,
-                        Item.Code,
-                        Item.Name,
-                        Item.ScanCode,
-                        Item.SalePrice,
-                        Item.RetailPrice,
-                        Item.StatusId,
-                    });
-                }
-                excel.GenerateWorksheet("Item", ItemHeaders, ItemData);
-                #endregion
-                excel.Save();
+                    ItemCode = x.Item.Code,
+                    ItemName = x.Item.Name,
+                    Quantity = x.KpiItemContentKpiCriteriaItemMappings
+                    .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id)
+                    .Where(x => x.Value.HasValue)
+                    .Select(x => x.Value.Value)
+                    .Sum(),
+                    Revenue = x.KpiItemContentKpiCriteriaItemMappings
+                    .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
+                    .Where(x => x.Value.HasValue)
+                    .Select(x => x.Value.Value)
+                    .Sum(),
+                    SalesAmount = x.KpiItemContentKpiCriteriaItemMappings
+                    .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id)
+                    .Where(x => x.Value.HasValue)
+                    .Select(x => x.Value.Value)
+                    .Sum(),
+                    StoreAmount = x.KpiItemContentKpiCriteriaItemMappings
+                    .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
+                    .Where(x => x.Value.HasValue)
+                    .Select(x => x.Value.Value)
+                    .Sum(),
+                }).ToList();
+                KpiItem_ExportDTOs.Add(KpiItem_ExportDTO);
             }
-            return File(memoryStream.ToArray(), "application/octet-stream", "KpiItem.xlsx");
+
+            string path = "Templates/Kpi_Item_Export.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.KpiYear = KpiYear.Name;
+            Data.KpiPeriod = KpiPeriod.Name;
+            Data.KpiItems = KpiItem_ExportDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "KpiItems.xlsx");
         }
 
         [Route(KpiItemRoute.ExportTemplate), HttpPost]
-        public async Task<FileResult> ExportTemplate([FromBody] KpiItem_KpiItemFilterDTO KpiItem_KpiItemFilterDTO)
+        public async Task<FileResult> ExportTemplate()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            List<Item> Items = await ItemService.List(new ItemFilter
             {
-                #region KpiItem
-                var KpiItemHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "OrganizationId",
-                        "KpiPeriodId",
-                        "StatusId",
-                        "EmployeeId",
-                        "CreatorId",
-                    }
-                };
-                List<object[]> KpiItemData = new List<object[]>();
-                excel.GenerateWorksheet("KpiItem", KpiItemHeaders, KpiItemData);
-                #endregion
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ItemSelect.Code | ItemSelect.Name,
+                OrderBy = ItemOrder.Id,
+                OrderType = OrderType.ASC
+            });
 
-                #region AppUser
-                var AppUserFilter = new AppUserFilter();
-                AppUserFilter.Selects = AppUserSelect.ALL;
-                AppUserFilter.OrderBy = AppUserOrder.Id;
-                AppUserFilter.OrderType = OrderType.ASC;
-                AppUserFilter.Skip = 0;
-                AppUserFilter.Take = int.MaxValue;
-                List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-
-                var AppUserHeaders = new List<string[]>()
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            MemoryStream MemoryStream = new MemoryStream();
+            string tempPath = "Templates/Kpi_Item.xlsx";
+            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            {
+                #region sheet Item 
+                var worksheet = xlPackage.Workbook.Worksheets["San Pham"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow = 2;
+                int numberCell = 1;
+                for (var i = 0; i < Items.Count; i++)
                 {
-                    new string[] {
-                        "Id",
-                        "Username",
-                        "DisplayName",
-                        "Address",
-                        "Email",
-                        "Phone",
-                        "PositionId",
-                        "Department",
-                        "OrganizationId",
-                        "StatusId",
-                        "Avatar",
-                        "ProvinceId",
-                        "SexId",
-                        "Birthday",
-                    }
-                };
-                List<object[]> AppUserData = new List<object[]>();
-                for (int i = 0; i < AppUsers.Count; i++)
-                {
-                    var AppUser = AppUsers[i];
-                    AppUserData.Add(new Object[]
-                    {
-                        AppUser.Id,
-                        AppUser.Username,
-                        AppUser.DisplayName,
-                        AppUser.Address,
-                        AppUser.Email,
-                        AppUser.Phone,
-                        AppUser.PositionId,
-                        AppUser.Department,
-                        AppUser.OrganizationId,
-                        AppUser.StatusId,
-                        AppUser.Avatar,
-                        AppUser.ProvinceId,
-                        AppUser.SexId,
-                        AppUser.Birthday,
-                    });
+                    Item Item = Items[i];
+                    worksheet.Cells[startRow + i, numberCell].Value = Item.Code;
+                    worksheet.Cells[startRow + i, numberCell + 1].Value = Item.Name;
                 }
-                excel.GenerateWorksheet("AppUser", AppUserHeaders, AppUserData);
                 #endregion
-                #region KpiPeriod
-                var KpiPeriodFilter = new KpiPeriodFilter();
-                KpiPeriodFilter.Selects = KpiPeriodSelect.ALL;
-                KpiPeriodFilter.OrderBy = KpiPeriodOrder.Id;
-                KpiPeriodFilter.OrderType = OrderType.ASC;
-                KpiPeriodFilter.Skip = 0;
-                KpiPeriodFilter.Take = int.MaxValue;
-                List<KpiPeriod> KpiPeriods = await KpiPeriodService.List(KpiPeriodFilter);
-
-                var KpiPeriodHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> KpiPeriodData = new List<object[]>();
-                for (int i = 0; i < KpiPeriods.Count; i++)
-                {
-                    var KpiPeriod = KpiPeriods[i];
-                    KpiPeriodData.Add(new Object[]
-                    {
-                        KpiPeriod.Id,
-                        KpiPeriod.Code,
-                        KpiPeriod.Name,
-                    });
-                }
-                excel.GenerateWorksheet("KpiPeriod", KpiPeriodHeaders, KpiPeriodData);
-                #endregion
-                #region Organization
-                var OrganizationFilter = new OrganizationFilter();
-                OrganizationFilter.Selects = OrganizationSelect.ALL;
-                OrganizationFilter.OrderBy = OrganizationOrder.Id;
-                OrganizationFilter.OrderType = OrderType.ASC;
-                OrganizationFilter.Skip = 0;
-                OrganizationFilter.Take = int.MaxValue;
-                List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-
-                var OrganizationHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                        "ParentId",
-                        "Path",
-                        "Level",
-                        "StatusId",
-                        "Phone",
-                        "Email",
-                        "Address",
-                    }
-                };
-                List<object[]> OrganizationData = new List<object[]>();
-                for (int i = 0; i < Organizations.Count; i++)
-                {
-                    var Organization = Organizations[i];
-                    OrganizationData.Add(new Object[]
-                    {
-                        Organization.Id,
-                        Organization.Code,
-                        Organization.Name,
-                        Organization.ParentId,
-                        Organization.Path,
-                        Organization.Level,
-                        Organization.StatusId,
-                        Organization.Phone,
-                        Organization.Email,
-                        Organization.Address,
-                    });
-                }
-                excel.GenerateWorksheet("Organization", OrganizationHeaders, OrganizationData);
-                #endregion
-                #region Status
-                var StatusFilter = new StatusFilter();
-                StatusFilter.Selects = StatusSelect.ALL;
-                StatusFilter.OrderBy = StatusOrder.Id;
-                StatusFilter.OrderType = OrderType.ASC;
-                StatusFilter.Skip = 0;
-                StatusFilter.Take = int.MaxValue;
-                List<Status> Statuses = await StatusService.List(StatusFilter);
-
-                var StatusHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> StatusData = new List<object[]>();
-                for (int i = 0; i < Statuses.Count; i++)
-                {
-                    var Status = Statuses[i];
-                    StatusData.Add(new Object[]
-                    {
-                        Status.Id,
-                        Status.Code,
-                        Status.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
-                #endregion
-                #region Item
-                var ItemFilter = new ItemFilter();
-                ItemFilter.Selects = ItemSelect.ALL;
-                ItemFilter.OrderBy = ItemOrder.Id;
-                ItemFilter.OrderType = OrderType.ASC;
-                ItemFilter.Skip = 0;
-                ItemFilter.Take = int.MaxValue;
-                List<Item> Items = await ItemService.List(ItemFilter);
-
-                var ItemHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "ProductId",
-                        "Code",
-                        "Name",
-                        "ScanCode",
-                        "SalePrice",
-                        "RetailPrice",
-                        "StatusId",
-                    }
-                };
-                List<object[]> ItemData = new List<object[]>();
-                for (int i = 0; i < Items.Count; i++)
-                {
-                    var Item = Items[i];
-                    ItemData.Add(new Object[]
-                    {
-                        Item.Id,
-                        Item.ProductId,
-                        Item.Code,
-                        Item.Name,
-                        Item.ScanCode,
-                        Item.SalePrice,
-                        Item.RetailPrice,
-                        Item.StatusId,
-                    });
-                }
-                excel.GenerateWorksheet("Item", ItemHeaders, ItemData);
-                #endregion
-                excel.Save();
+                xlPackage.SaveAs(MemoryStream);
             }
-            return File(memoryStream.ToArray(), "application/octet-stream", "KpiItem.xlsx");
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Template_Kpi_Item.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)
