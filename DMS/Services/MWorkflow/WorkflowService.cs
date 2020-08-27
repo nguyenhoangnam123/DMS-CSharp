@@ -212,7 +212,6 @@ namespace DMS.Services.MWorkflow
                                     bool result = await ApplyCondition(RequestId, WorkflowDirection);
                                     if (result)
                                     {
-                                        List<WorkflowDirectionCondition> WorkflowDirectionConditions = WorkflowDirection.WorkflowDirectionConditions;
                                         ToSteps.Add(WorkflowDirection.ToStep);
                                     }
                                 }
@@ -273,6 +272,15 @@ namespace DMS.Services.MWorkflow
                         RowId = Guid.NewGuid(),
                     };
 
+
+                    Mail MailForCurrentStep = new Mail
+                    {
+                        Recipients = recipients,
+                        Subject = CreateMailContent(WorkflowDirection.SubjectMailForCurrentStep, Parameters),
+                        Body = CreateMailContent(WorkflowDirection.BodyMailForCurrentStep, Parameters),
+                        RowId = Guid.NewGuid(),
+                    };
+
                     Mail MailForNextStep = new Mail
                     {
                         Recipients = recipients,
@@ -281,6 +289,7 @@ namespace DMS.Services.MWorkflow
                         RowId = Guid.NewGuid(),
                     };
                     Mails.Add(MailForCreator);
+                    Mails.Add(MailForCurrentStep);
                     Mails.Add(MailForNextStep);
                 }
                 Mails = Mails.Distinct().ToList();
@@ -416,31 +425,191 @@ namespace DMS.Services.MWorkflow
             {
                 List<WorkflowDirectionCondition> WorkflowDirectionConditions = WorkflowDirection.WorkflowDirectionConditions
                     .Where(x => x.WorkflowParameterId == RequestWorkflowParameterMapping.WorkflowParameterId).ToList();
-                if (RequestWorkflowParameterMapping.WorkflowParameterTypeId == WorkflowParameterTypeEnum.ID.Id)
+                if (RequestWorkflowParameterMapping.WorkflowParameterTypeId == WorkflowParameterTypeEnum.ID.Id && RequestWorkflowParameterMapping.IdValue.HasValue)
                 {
                     List<long> In = new List<long>();
                     List<long> NotIn = new List<long>();
                     List<WorkflowDirectionCondition> EqualConditions = WorkflowDirectionConditions.Where(x => x.WorkflowOperatorId == WorkflowOperatorEnum.ID_EQ.Id).ToList();
                     if (EqualConditions.Count > 0)
                     {
-
+                        if (EqualConditions.Count == 1)
+                        {
+                            long value = EqualConditions.Select(x => long.Parse(x.Value)).FirstOrDefault();
+                            In.Add(value);
+                        }
+                        else
+                        {
+                            result = result && false;
+                        }
                     }
                     else
                     {
+                        List<WorkflowDirectionCondition> InConditions = WorkflowDirectionConditions.Where(x => x.WorkflowOperatorId == WorkflowOperatorEnum.ID_IN.Id).ToList();
+                        List<long> value = InConditions.Select(x => long.Parse(x.Value)).ToList();
+                        In.AddRange(value);
+                    }
 
+                    List<WorkflowDirectionCondition> NotEqualConditions = WorkflowDirectionConditions.Where(x => x.WorkflowOperatorId == WorkflowOperatorEnum.ID_NE.Id).ToList();
+                    if (NotEqualConditions.Count > 0)
+                    {
+                        if (NotEqualConditions.Count == 1)
+                        {
+                            long value = NotEqualConditions.Select(x => long.Parse(x.Value)).FirstOrDefault();
+                            NotIn.Add(value);
+                        }
+                        else
+                        {
+                            result = result && false;
+                        }
+                    }
+                    else
+                    {
+                        List<WorkflowDirectionCondition> NotInConditions = WorkflowDirectionConditions.Where(x => x.WorkflowOperatorId == WorkflowOperatorEnum.ID_NI.Id).ToList();
+                        List<long> value = NotInConditions.Select(x => long.Parse(x.Value)).ToList();
+                        NotIn.AddRange(value);
+                    }
+
+                    if (In.Count > 0 && !In.Any(x => x == RequestWorkflowParameterMapping.LongValue.Value))
+                        result = result && false;
+
+                    if (NotIn.Count > 0 && NotIn.Any(x => x == RequestWorkflowParameterMapping.LongValue.Value))
+                        result = result && false;
+                }
+
+                if (RequestWorkflowParameterMapping.WorkflowParameterTypeId == WorkflowParameterTypeEnum.LONG.Id && RequestWorkflowParameterMapping.LongValue.HasValue)
+                {
+                    foreach (WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirectionConditions)
+                    {
+                        if (WorkflowDirectionCondition.Value != null)
+                        {
+                            long value = long.Parse(WorkflowDirectionCondition.Value);
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.LONG_EQ.Id &&
+                                !(RequestWorkflowParameterMapping.LongValue.Value == value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.LONG_GE.Id &&
+                                !(RequestWorkflowParameterMapping.LongValue.Value >= value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.LONG_GT.Id &&
+                               !(RequestWorkflowParameterMapping.LongValue.Value > value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.LONG_LE.Id &&
+                               !(RequestWorkflowParameterMapping.LongValue.Value <= value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.LONG_LT.Id &&
+                               !(RequestWorkflowParameterMapping.LongValue.Value < value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.LONG_NE.Id &&
+                               !(RequestWorkflowParameterMapping.LongValue.Value != value))
+                                result = result && false;
+                        }
                     }
                 }
-            }
 
-            foreach (WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirection.WorkflowDirectionConditions)
-            {
-                RequestWorkflowParameterMapping RequestWorkflowParameterMapping = RequestWorkflowParameterMappings
-                    .Where(x => x.WorkflowParameterId == WorkflowDirectionCondition.WorkflowParameterId).FirstOrDefault();
-                if (WorkflowDirectionCondition.WorkflowParameter.WorkflowParameterTypeId == WorkflowParameterTypeEnum.ID.Id)
+                if (RequestWorkflowParameterMapping.WorkflowParameterTypeId == WorkflowParameterTypeEnum.DECIMAL.Id && RequestWorkflowParameterMapping.DecimalValue.HasValue)
                 {
-                    if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.ID_EQ.Id)
+                    foreach (WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirectionConditions)
                     {
+                        if (WorkflowDirectionCondition.Value != null)
+                        {
+                            decimal value = decimal.Parse(WorkflowDirectionCondition.Value);
 
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.DECIMAL_EQ.Id &&
+                                !(RequestWorkflowParameterMapping.DecimalValue.Value == value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.DECIMAL_GE.Id &&
+                                !(RequestWorkflowParameterMapping.DecimalValue.Value >= value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.DECIMAL_GT.Id &&
+                               !(RequestWorkflowParameterMapping.DecimalValue.Value > value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.DECIMAL_LE.Id &&
+                               !(RequestWorkflowParameterMapping.DecimalValue.Value <= value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.DECIMAL_LT.Id &&
+                               !(RequestWorkflowParameterMapping.DecimalValue.Value < value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.DECIMAL_NE.Id &&
+                               !(RequestWorkflowParameterMapping.DecimalValue.Value != value))
+                                result = result && false;
+                        }
+                    }
+                }
+
+                if (RequestWorkflowParameterMapping.WorkflowParameterTypeId == WorkflowParameterTypeEnum.DATE.Id && RequestWorkflowParameterMapping.DateValue.HasValue)
+                {
+                    foreach (WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirectionConditions)
+                    {
+                        if (WorkflowDirectionCondition.Value != null)
+                        {
+                            DateTime value = DateTime.Parse(WorkflowDirectionCondition.Value);
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.DATE_EQ.Id &&
+                                !(RequestWorkflowParameterMapping.DateValue.Value == value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.DATE_GE.Id &&
+                                !(RequestWorkflowParameterMapping.DateValue.Value >= value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.DATE_GT.Id &&
+                               !(RequestWorkflowParameterMapping.DateValue.Value > value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.DATE_LE.Id &&
+                               !(RequestWorkflowParameterMapping.DateValue.Value <= value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.DATE_LT.Id &&
+                               !(RequestWorkflowParameterMapping.DateValue.Value < value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.DATE_NE.Id &&
+                               !(RequestWorkflowParameterMapping.DateValue.Value != value))
+                                result = result && false;
+                        }
+                    }
+                }
+
+                if (RequestWorkflowParameterMapping.WorkflowParameterTypeId == WorkflowParameterTypeEnum.STRING.Id && RequestWorkflowParameterMapping.StringValue != null)
+                {
+                    foreach (WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirectionConditions)
+                    {
+                        if (WorkflowDirectionCondition.Value != null)
+                        {
+                            string value = WorkflowDirectionCondition.Value;
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.STRING_CT.Id &&
+                                !RequestWorkflowParameterMapping.StringValue.Contains(value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.STRING_EQ.Id &&
+                                !RequestWorkflowParameterMapping.StringValue.Equals(value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.STRING_EW.Id &&
+                               !RequestWorkflowParameterMapping.StringValue.EndsWith(value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.STRING_NC.Id &&
+                               RequestWorkflowParameterMapping.StringValue.Contains(value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.STRING_NE.Id &&
+                               RequestWorkflowParameterMapping.StringValue.Equals(value))
+                                result = result && false;
+
+                            if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.STRING_NEW.Id &&
+                               RequestWorkflowParameterMapping.StringValue.EndsWith(value))
+                                result = result && false;
+                        }
                     }
                 }
             }
