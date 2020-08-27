@@ -15,6 +15,8 @@ namespace DMS.RpcPublic
         public const string SingleListSupplier = Default + "/single-list-supplier";
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
 
+        public const string CountBanner = Default + "/count-banner";
+        public const string ListBanner = Default + "/list-banner";
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
         public const string GetItem = Default + "/get-item";

@@ -70,6 +70,9 @@
     <None Update="Templates\Kpi_Item.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\Kpi_Item_Export.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\Kpi_Item_Report.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
