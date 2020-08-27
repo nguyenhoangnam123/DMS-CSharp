@@ -27,7 +27,7 @@ namespace DMS.Rpc.mobile
             this.Code = Banner.Code;
             this.Title = Banner.Title;
             this.Priority = Banner.Priority;
-            this.Content = Banner.Content == null ? null : converter.Convert(Banner.Content);
+            this.Content = Banner.Content;
             this.CreatorId = Banner.CreatorId;
             this.ImageId = Banner.ImageId;
             this.StatusId = Banner.StatusId;
