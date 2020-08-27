@@ -528,11 +528,7 @@ namespace DMS.Services.MStore
         private Dictionary<string, string> MapParameters(Store Store)
         {
             Dictionary<string, string> Parameters = new Dictionary<string, string>();
-            Parameters.Add(nameof(Store.Id), Store.Id.ToString());
-            Parameters.Add(nameof(Store.Code), Store.Code);
-            Parameters.Add(nameof(Store.Name), Store.Name);
-            Parameters.Add(nameof(Store.OwnerName), Store.OwnerName);
-            Parameters.Add("Username", CurrentContext.UserName);
+            Parameters.Add(WorkflowParameterEnum.STORE_ORGANIZATION.Code, Store.OrganizationId.ToString());
             return Parameters;
         }
 

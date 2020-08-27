@@ -13,6 +13,17 @@ namespace DMS.Entities
         public Guid RequestId { get; set; }
         public string Value { get; set; }
         public long WorkflowParameterTypeId { get; set; }
+        public long? IdValue
+        {
+            get
+            {
+                if (Value == null)
+                    return null;
+                if (WorkflowParameterTypeId == WorkflowParameterTypeEnum.ID.Id)
+                    return long.Parse(Value);
+                return null;
+            }
+        }
         public long? LongValue
         {
             get
@@ -24,6 +35,40 @@ namespace DMS.Entities
                 return null;
             }
         }
+        public decimal? DecimalValue
+        {
+            get
+            {
+                if (Value == null)
+                    return null;
+                if (WorkflowParameterTypeId == WorkflowParameterTypeEnum.DECIMAL.Id)
+                    return decimal.Parse(Value);
+                return null;
+            }
+        }
+        public string StringValue
+        {
+            get
+            {
+                if (Value == null)
+                    return null;
+                if (WorkflowParameterTypeId == WorkflowParameterTypeEnum.STRING.Id)
+                    return Value;
+                return null;
+            }
+        }
+        public DateTime? DateValue
+        {
+            get
+            {
+                if (Value == null)
+                    return null;
+                if (WorkflowParameterTypeId == WorkflowParameterTypeEnum.DATE.Id)
+                    return DateTime.Parse(Value);
+                return null;
+            }
+        }
+
         public WorkflowParameter WorkflowParameter { get; set; }
 
         public bool Equals(RequestWorkflowParameterMapping other)

@@ -2470,8 +2470,6 @@ namespace DMS.Models
 
                 entity.ToTable("RequestWorkflowParameterMapping", "WF");
 
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
                 entity.Property(e => e.Value).HasMaxLength(500);
 
                 entity.HasOne(d => d.WorkflowParameter)

@@ -352,7 +352,23 @@ namespace DMS.Repositories
                             Name = x.ToStep.Role.Name,
                         }
                     },
+                }).ToListAsync();
 
+            List<WorkflowDirectionCondition> WorkflowDirectionConditions = await DataContext.WorkflowDirectionCondition
+                .Where(x => x.WorkflowDirection.WorkflowDefinitionId == Id)
+                .Select(x => new WorkflowDirectionCondition
+                {
+                    Id = x.Id,
+                    Value = x.Value,
+                    WorkflowDirectionId = x.WorkflowDirectionId,
+                    WorkflowOperatorId = x.WorkflowOperatorId,
+                    WorkflowParameterId = x.WorkflowParameterId,
+                    WorkflowParameter = x.WorkflowParameter == null ? null : new WorkflowParameter
+                    {
+                        Id = x.WorkflowParameter.Id,
+                        WorkflowParameterTypeId = x.WorkflowParameter.WorkflowParameterTypeId,
+                        WorkflowTypeId = x.WorkflowParameter.WorkflowTypeId,
+                    }
                 }).ToListAsync();
 
             WorkflowDefinition.WorkflowParameters = await DataContext.WorkflowParameter

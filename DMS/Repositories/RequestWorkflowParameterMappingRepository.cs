@@ -37,27 +37,17 @@ namespace DMS.Repositories
         }
         public async Task<bool> BulkMerge(Guid RequestId, List<RequestWorkflowParameterMapping> RequestWorkflowParameterMappings)
         {
-            List<RequestWorkflowParameterMappingDAO> RequestWorkflowParameterMappingDAOs = DataContext.RequestWorkflowParameterMapping
-                .Where(r => r.RequestId == RequestId).ToList();
-            RequestWorkflowParameterMappingDAOs.ForEach(r => r.DeletedAt = StaticParams.DateTimeNow);
-
-            foreach (RequestWorkflowParameterMapping RequestWorkflowParameterMapping in RequestWorkflowParameterMappings)
-            {
-                RequestWorkflowParameterMappingDAO RequestWorkflowParameterMappingDAO = RequestWorkflowParameterMappingDAOs
-                    .Where(r => r.WorkflowParameterId == RequestWorkflowParameterMapping.WorkflowParameterId).FirstOrDefault();
-                if (RequestWorkflowParameterMappingDAO == null)
+            await DataContext.RequestWorkflowParameterMapping
+                .Where(r => r.RequestId == RequestId)
+                .DeleteFromQueryAsync();
+            List<RequestWorkflowParameterMappingDAO> RequestWorkflowParameterMappingDAOs = RequestWorkflowParameterMappings
+                .Select(x => new RequestWorkflowParameterMappingDAO
                 {
-                    RequestWorkflowParameterMappingDAO = new RequestWorkflowParameterMappingDAO();
-                    RequestWorkflowParameterMappingDAO.RequestId = RequestId;
-                    RequestWorkflowParameterMappingDAO.WorkflowParameterId = RequestWorkflowParameterMapping.WorkflowParameterId;
-                    DataContext.RequestWorkflowParameterMapping.Add(RequestWorkflowParameterMappingDAO);
-                }
-                RequestWorkflowParameterMappingDAO.Value = RequestWorkflowParameterMapping.Value;
-                RequestWorkflowParameterMappingDAO.DeletedAt = null;
-            }
-            var Deleted = RequestWorkflowParameterMappingDAOs.Where(r => r.DeletedAt.HasValue).ToList();
-            DataContext.RequestWorkflowParameterMapping.RemoveRange(Deleted);
-            await DataContext.SaveChangesAsync();
+                    RequestId = RequestId,
+                    WorkflowParameterId = x.WorkflowParameterId,
+                    Value = x.Value,
+                }).ToList();
+            await DataContext.RequestWorkflowParameterMapping.BulkInsertAsync(RequestWorkflowParameterMappingDAOs);
             return true;
         }
     }
