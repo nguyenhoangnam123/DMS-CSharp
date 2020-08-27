@@ -214,7 +214,7 @@ namespace DMS.Services.MWorkflow
                                     {
                                         List<WorkflowDirectionCondition> WorkflowDirectionConditions = WorkflowDirection.WorkflowDirectionConditions;
                                         ToSteps.Add(WorkflowDirection.ToStep);
-                                    }  
+                                    }
                                 }
                             }
                         }
@@ -412,15 +412,25 @@ namespace DMS.Services.MWorkflow
         {
             List<RequestWorkflowParameterMapping> RequestWorkflowParameterMappings = await UOW.RequestWorkflowParameterMappingRepository.List(RequestId);
             bool result = true;
-            foreach(RequestWorkflowParameterMapping RequestWorkflowParameterMapping in RequestWorkflowParameterMappings)
+            foreach (RequestWorkflowParameterMapping RequestWorkflowParameterMapping in RequestWorkflowParameterMappings)
             {
                 List<WorkflowDirectionCondition> WorkflowDirectionConditions = WorkflowDirection.WorkflowDirectionConditions
                     .Where(x => x.WorkflowParameterId == RequestWorkflowParameterMapping.WorkflowParameterId).ToList();
                 if (RequestWorkflowParameterMapping.WorkflowParameterTypeId == WorkflowParameterTypeEnum.ID.Id)
                 {
+                    List<long> In = new List<long>();
+                    List<long> NotIn = new List<long>();
+                    List<WorkflowDirectionCondition> EqualConditions = WorkflowDirectionConditions.Where(x => x.WorkflowOperatorId == WorkflowOperatorEnum.ID_EQ.Id).ToList();
+                    if (EqualConditions.Count > 0)
+                    {
 
-                }    
-            }    
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
 
             foreach (WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirection.WorkflowDirectionConditions)
             {
@@ -431,8 +441,8 @@ namespace DMS.Services.MWorkflow
                     if (WorkflowDirectionCondition.WorkflowOperatorId == WorkflowOperatorEnum.ID_EQ.Id)
                     {
 
-                    }    
-                }    
+                    }
+                }
             }
             return result;
         }
