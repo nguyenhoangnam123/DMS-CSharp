@@ -208,7 +208,7 @@ namespace DMS
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapMetrics("rpc/dms/metrics");
+                endpoints.MapMetrics("metrics");
             });
             app.UseSwagger(c =>
             {
