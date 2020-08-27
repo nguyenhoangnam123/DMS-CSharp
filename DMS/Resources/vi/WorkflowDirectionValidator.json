@@ -4,15 +4,15 @@
       "IdNotExisted": "Id không tồn tại",
       "IdInUsed": "Bản ghi đã được sử dụng"
     },
-    "WorkflowDefinitionId": {
+    "WorkflowDefinition": {
       "WorkflowDefinitionEmpty": "Bản thiết kế chưa được chọn.",
       "WorkflowDefinitionNotExisted": "Bản thiết kế không tồn tại."
     },
-    "FromStepId": {
+    "FromStep": {
       "FromStepEmpty": "Bước bắn đầu chưa được chọn.",
       "FromStepNotExisted": "Bước bắt đầu không tồn tại."
     },
-    "ToStepId": {
+    "ToStep": {
       "ToStepEmpty": "Bước kết thúc chưa được chọn.",
       "ToStepNotExisted": "Bước kết thúc không tồn tại.",
       "ToStepNotSameFromStep": "Bước bắt đầu và kết thúc không thể trùng nhau."

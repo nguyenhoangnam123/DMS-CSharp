@@ -316,13 +316,14 @@ namespace DMS.Rpc.survey
                             surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_SINGLE_CHOICE.Id)
                             {
                                 List<SurveyResultSingle> SurveyResultSingles = SurveyResult.SurveyResultSingles.Where(sr => sr.SurveyQuestionId == surveyQuestion.Id).ToList();
+                                List<string> results = new List<string>();
                                 foreach (SurveyResultSingle SurveyResultSingle in SurveyResultSingles)
                                 {
                                     SurveyOption SurveyOption = surveyQuestion.SurveyOptions.Where(so => so.Id == SurveyResultSingle.SurveyOptionId).FirstOrDefault();
                                     if (SurveyOption != null)
-                                        optionResults.Add(SurveyOption.Content);
+                                        results.Add(SurveyOption.Content);
                                 }
-
+                                optionResults.Add(string.Join(';',results));
                             }
                             if (surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id ||
                                 surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
@@ -330,13 +331,15 @@ namespace DMS.Rpc.survey
                                 List<SurveyOption> RowOptions = surveyQuestion.SurveyOptions.Where(so => so.SurveyOptionTypeId == SurveyOptionTypeEnum.ROW.Id).ToList();
                                 foreach (SurveyOption RowOption in RowOptions)
                                 {
+                                    List<string> results = new List<string>();
                                     List<SurveyResultCell> SurveyResultCells = SurveyResult.SurveyResultCells.Where(sr => sr.SurveyQuestionId == surveyQuestion.Id && sr.RowOptionId == RowOption.Id).ToList();
                                     foreach (SurveyResultCell SurveyResultCell in SurveyResultCells)
                                     {
                                         SurveyOption ColumnOption = surveyQuestion.SurveyOptions.Where(so => so.Id == SurveyResultCell.ColumnOptionId).FirstOrDefault();
                                         if (ColumnOption != null)
-                                            optionResults.Add(ColumnOption.Content);
+                                            results.Add(ColumnOption.Content);
                                     }
+                                    optionResults.Add(string.Join(';', results));
                                 }
                             }
                             if (surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_TEXT.Id)

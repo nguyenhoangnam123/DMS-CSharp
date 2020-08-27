@@ -403,12 +403,9 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 for (DateTime i = Start; i < End; i = i.AddDays(1))
                 {
                     ReportStoreChecked_StoreCheckingGroupByDateDTO ReportStoreChecked_StoreCheckingGroupByDateDTO = new ReportStoreChecked_StoreCheckingGroupByDateDTO();
-                    ReportStoreChecked_StoreCheckingGroupByDateDTO.Date = i;
-                    ReportStoreChecked_StoreCheckingGroupByDateDTO.DateString = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-                    var dayOfWeek = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).DayOfWeek.ToString();
-                    ReportStoreChecked_StoreCheckingGroupByDateDTO.DayOfWeek = DayOfWeekEnum.DayOfWeekEnumList.Where(x => x.Code == dayOfWeek).Select(x => x.Name).FirstOrDefault();
+
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings = storeCheckings.Where(x => x.SaleEmployeeId == ReportStoreChecked_SaleEmployeeDTO.SaleEmployeeId)
-                        .Where(x => x.CheckOutAt.Value.Date == i)
+                        .Where(x => x.CheckOutAt.Value.Date == i.Date)
                         .Select(x => new ReportStoreChecked_StoreCheckingDTO
                         {
                             Id = x.Id,
@@ -424,6 +421,15 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             CheckInDistance = $"{x.CheckInDistance} m",
                             CheckOutDistance = $"{x.CheckOutDistance} m",
                         }).ToList();
+
+                    if (!ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings.Any())
+                        continue;
+
+                    ReportStoreChecked_StoreCheckingGroupByDateDTO.Date = i;
+                    ReportStoreChecked_StoreCheckingGroupByDateDTO.DateString = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                    var dayOfWeek = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).DayOfWeek.ToString();
+                    ReportStoreChecked_StoreCheckingGroupByDateDTO.DayOfWeek = DayOfWeekEnum.DayOfWeekEnumList.Where(x => x.Code == dayOfWeek).Select(x => x.Name).FirstOrDefault();
+                    
                     foreach (var StoreChecking in ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings)
                     {
                         StoreChecking.eCheckIn = StoreChecking.CheckIn.AddHours(CurrentContext.TimeZone).ToString("HH:mm:ss");
@@ -442,15 +448,15 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 }
             }
 
-            foreach (var ReportStoreChecked_ReportStoreCheckerDTO in ReportStoreChecked_ReportStoreCheckedDTOs)
-            {
-                foreach (var SaleEmployee in ReportStoreChecked_ReportStoreCheckerDTO.SaleEmployees)
-                {
-                    SaleEmployee.StoreCheckingGroupByDates = SaleEmployee.StoreCheckingGroupByDates.Where(x => x.StoreCheckings.Any()).ToList();
-                }
-                ReportStoreChecked_ReportStoreCheckerDTO.SaleEmployees = ReportStoreChecked_ReportStoreCheckerDTO.SaleEmployees.Where(x => x.StoreCheckingGroupByDates.Any()).ToList();
-            }
-            ReportStoreChecked_ReportStoreCheckedDTOs = ReportStoreChecked_ReportStoreCheckedDTOs.Where(x => x.SaleEmployees.Any()).ToList();
+            //foreach (var ReportStoreChecked_ReportStoreCheckerDTO in ReportStoreChecked_ReportStoreCheckedDTOs)
+            //{
+            //    foreach (var SaleEmployee in ReportStoreChecked_ReportStoreCheckerDTO.SaleEmployees)
+            //    {
+            //        SaleEmployee.StoreCheckingGroupByDates = SaleEmployee.StoreCheckingGroupByDates.Where(x => x.StoreCheckings.Any()).ToList();
+            //    }
+            //    ReportStoreChecked_ReportStoreCheckerDTO.SaleEmployees = ReportStoreChecked_ReportStoreCheckerDTO.SaleEmployees.Where(x => x.StoreCheckingGroupByDates.Any()).ToList();
+            //}
+            //ReportStoreChecked_ReportStoreCheckedDTOs = ReportStoreChecked_ReportStoreCheckedDTOs.Where(x => x.SaleEmployees.Any()).ToList();
             return ReportStoreChecked_ReportStoreCheckedDTOs;
         }
 

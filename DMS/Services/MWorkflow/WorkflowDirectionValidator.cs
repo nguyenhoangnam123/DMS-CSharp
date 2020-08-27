@@ -67,7 +67,7 @@ namespace DMS.Services.MWorkflow
         private async Task<bool> ValidateWorkflowDirection(WorkflowDirection WorkflowDirection)
         {
             if(WorkflowDirection.WorkflowDefinitionId == 0)
-                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.WorkflowDefinitionId), ErrorCode.WorkflowDefinitionEmpty);
+                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.WorkflowDefinition), ErrorCode.WorkflowDefinitionEmpty);
             else 
             {
                 WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
@@ -77,7 +77,7 @@ namespace DMS.Services.MWorkflow
 
                 int count = await UOW.WorkflowDefinitionRepository.Count(WorkflowDefinitionFilter);
                 if(count == 0)
-                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.WorkflowDefinitionId), ErrorCode.WorkflowDefinitionNotExisted);
+                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.WorkflowDefinition), ErrorCode.WorkflowDefinitionNotExisted);
             }
             return WorkflowDirection.IsValidated;
         }
@@ -85,7 +85,7 @@ namespace DMS.Services.MWorkflow
         private async Task<bool> ValidateStep(WorkflowDirection WorkflowDirection)
         {
             if (WorkflowDirection.FromStepId == 0)
-                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.FromStepId), ErrorCode.FromStepEmpty);
+                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.FromStep), ErrorCode.FromStepEmpty);
             else
             {
                 WorkflowStepFilter WorkflowStepFilter = new WorkflowStepFilter
@@ -98,10 +98,10 @@ namespace DMS.Services.MWorkflow
                 };
                 int count = await UOW.WorkflowStepRepository.Count(WorkflowStepFilter);
                 if (count == 0)
-                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.FromStepId), ErrorCode.FromStepNotExisted);
+                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.FromStep), ErrorCode.FromStepNotExisted);
             }
             if (WorkflowDirection.ToStepId == 0)
-                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStepId), ErrorCode.ToStepEmpty);
+                WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepEmpty);
             else
             {
                 WorkflowStepFilter WorkflowStepFilter = new WorkflowStepFilter
@@ -114,10 +114,10 @@ namespace DMS.Services.MWorkflow
                 };
                 int count = await UOW.WorkflowStepRepository.Count(WorkflowStepFilter);
                 if (count == 0)
-                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStepId), ErrorCode.ToStepNotExisted);
+                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepNotExisted);
                 if(WorkflowDirection.ToStepId == WorkflowDirection.FromStepId)
                 {
-                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStepId), ErrorCode.ToStepNotSameFromStep);
+                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepNotSameFromStep);
                 }
             }
             return WorkflowDirection.IsValidated;
