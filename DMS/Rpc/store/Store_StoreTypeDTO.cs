@@ -12,8 +12,9 @@ namespace DMS.Rpc.store
 
         public string Name { get; set; }
 
+        public long? ColorId { get; set; }
         public long StatusId { get; set; }
-
+        public Store_ColorDTO Color { get; set; }
 
         public Store_StoreTypeDTO() { }
         public Store_StoreTypeDTO(StoreType StoreType)
@@ -25,7 +26,9 @@ namespace DMS.Rpc.store
 
             this.Name = StoreType.Name;
 
+            this.ColorId = StoreType.ColorId;
             this.StatusId = StoreType.StatusId;
+            this.Color = StoreType.Color == null ? null : new Store_ColorDTO(StoreType.Color);
 
         }
     }

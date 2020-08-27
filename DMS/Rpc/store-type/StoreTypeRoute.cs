@@ -17,6 +17,7 @@ namespace DMS.Rpc.store_type
         public const string Delete = Default + "/delete";
         public const string BulkDelete = Default + "/bulk-delete";
 
+        public const string SingleListColor = Default + "/single-list-color";
         public const string SingleListStatus = Default + "/single-list-status";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -31,17 +32,17 @@ namespace DMS.Rpc.store_type
                 Parent,
                 Master, Count, List, Get,
                 Detail, Create,
-                SingleListStatus, } },
+                SingleListColor, SingleListStatus, } },
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get,
                 Detail, Update,
-                SingleListStatus, } },
+                SingleListColor, SingleListStatus, } },
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get,
                 Detail, Delete,
-                SingleListStatus, } },
+                SingleListColor, SingleListStatus, } },
             { "Xoá nhiều", new List<string> {
                 Parent,
                 Master, Count, List, Get,

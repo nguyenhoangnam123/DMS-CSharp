@@ -33,6 +33,7 @@ using DMS.Services.MProductGrouping;
 using System.Text;
 using DMS.Services.MNotification;
 using DMS.Services.MProblemType;
+using DMS.Services.MColor;
 
 namespace DMS.Rpc.mobile
 {
@@ -42,6 +43,7 @@ namespace DMS.Rpc.mobile
         private IBrandService BrandService;
         private IBannerService BannerService;
         private IAppUserService AppUserService;
+        private IColorService ColorService;
         private IERouteService ERouteService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
         private IItemService ItemService;
@@ -67,6 +69,7 @@ namespace DMS.Rpc.mobile
             IBannerService BannerService,
             IBrandService BrandService,
             IAppUserService AppUserService,
+            IColorService ColorService,
             IERouteService ERouteService,
             IIndirectSalesOrderService IndirectSalesOrderService,
             IItemService ItemService,
@@ -93,6 +96,7 @@ namespace DMS.Rpc.mobile
             this.BannerService = BannerService;
             this.BrandService = BrandService;
             this.AppUserService = AppUserService;
+            this.ColorService = ColorService;
             this.ERouteService = ERouteService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
             this.ItemService = ItemService;

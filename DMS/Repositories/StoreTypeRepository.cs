@@ -42,6 +42,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
+            if (filter.ColorId != null)
+                query = query.Where(q => q.ColorId, filter.ColorId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -62,6 +64,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Name, StoreTypeFilter.Name);
                 if (StoreTypeFilter.StatusId != null)
                     queryable = queryable.Where(q => q.StatusId, StoreTypeFilter.StatusId);
+                if (StoreTypeFilter.ColorId != null)
+                    queryable = queryable.Where(q => q.ColorId, StoreTypeFilter.ColorId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -86,6 +90,9 @@ namespace DMS.Repositories
                         case StoreTypeOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
                             break;
+                        case StoreTypeOrder.Color:
+                            query = query.OrderBy(q => q.ColorId);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -103,6 +110,9 @@ namespace DMS.Repositories
                         case StoreTypeOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
                             break;
+                        case StoreTypeOrder.Color:
+                            query = query.OrderByDescending(q => q.ColorId);
+                            break;
                     }
                     break;
             }
@@ -118,6 +128,13 @@ namespace DMS.Repositories
                 Code = filter.Selects.Contains(StoreTypeSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(StoreTypeSelect.Name) ? q.Name : default(string),
                 StatusId = filter.Selects.Contains(StoreTypeSelect.Status) ? q.StatusId : default(long),
+                ColorId = filter.Selects.Contains(StoreTypeSelect.Color) ? q.ColorId : default(long?),
+                Color = filter.Selects.Contains(StoreTypeSelect.Color) && q.Color != null ? new Color
+                {
+                    Id = q.Color.Id,
+                    Code = q.Color.Code,
+                    Name = q.Color.Name,
+                } : null,
                 Status = filter.Selects.Contains(StoreTypeSelect.Status) && q.Status != null ? new Status
                 {
                     Id = q.Status.Id,
@@ -154,8 +171,15 @@ namespace DMS.Repositories
                     Id = x.Id,
                     Code = x.Code,
                     Name = x.Name,
+                    ColorId = x.ColorId,
                     StatusId = x.StatusId,
                     Used = x.Used,
+                    Color = x.Color == null ? null : new Color
+                    {
+                        Id = x.Color.Id,
+                        Code = x.Color.Code,
+                        Name = x.Color.Name,
+                    },
                     Status = x.Status == null ? null : new Status
                     {
                         Id = x.Status.Id,
@@ -176,6 +200,7 @@ namespace DMS.Repositories
             StoreTypeDAO.Code = StoreType.Code;
             StoreTypeDAO.Name = StoreType.Name;
             StoreTypeDAO.StatusId = StoreType.StatusId;
+            StoreTypeDAO.ColorId = StoreType.ColorId;
             StoreTypeDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
             StoreTypeDAO.Used = false;
@@ -194,6 +219,7 @@ namespace DMS.Repositories
             StoreTypeDAO.Code = StoreType.Code;
             StoreTypeDAO.Name = StoreType.Name;
             StoreTypeDAO.StatusId = StoreType.StatusId;
+            StoreTypeDAO.ColorId = StoreType.ColorId;
             StoreTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             return true;
@@ -214,6 +240,7 @@ namespace DMS.Repositories
                 StoreTypeDAO.Id = StoreType.Id;
                 StoreTypeDAO.Code = StoreType.Code;
                 StoreTypeDAO.Name = StoreType.Name;
+                StoreTypeDAO.ColorId = StoreType.ColorId;
                 StoreTypeDAO.StatusId = StoreType.StatusId;
                 StoreTypeDAO.CreatedAt = StaticParams.DateTimeNow;
                 StoreTypeDAO.UpdatedAt = StaticParams.DateTimeNow;

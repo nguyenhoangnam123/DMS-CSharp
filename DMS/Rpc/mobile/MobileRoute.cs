@@ -40,6 +40,7 @@ namespace DMS.Rpc.mobile
         public const string SingleListWard = Default + "/single-list-ward";
 
         public const string SingleListBrand = Default + "/single-list-brand";
+        public const string SingleListColor = Default + "/single-list-color";
         public const string SingleListSupplier = Default + "/single-list-supplier";
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
         public const string SingleListStoreCheckingStatus = Default + "/single-list-store-checking-status";

@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Services.MColor;
 using DMS.Services.MStatus;
 using DMS.Services.MStoreType;
 using Microsoft.AspNetCore.Mvc;
@@ -11,15 +12,18 @@ namespace DMS.Rpc.store_type
 {
     public class StoreTypeController : RpcController
     {
+        private IColorService ColorService;
         private IStatusService StatusService;
         private IStoreTypeService StoreTypeService;
         private ICurrentContext CurrentContext;
         public StoreTypeController(
+            IColorService ColorService,
             IStatusService StatusService,
             IStoreTypeService StoreTypeService,
             ICurrentContext CurrentContext
         )
         {
+            this.ColorService = ColorService;
             this.StatusService = StatusService;
             this.StoreTypeService = StoreTypeService;
             this.CurrentContext = CurrentContext;
@@ -183,6 +187,22 @@ namespace DMS.Rpc.store_type
             StoreTypeFilter.Name = StoreType_StoreTypeFilterDTO.Name;
             StoreTypeFilter.StatusId = StoreType_StoreTypeFilterDTO.StatusId;
             return StoreTypeFilter;
+        }
+
+        [Route(StoreTypeRoute.SingleListColor), HttpPost]
+        public async Task<List<StoreType_ColorDTO>> SingleListColor([FromBody] StoreType_ColorFilterDTO StoreType_ColorFilterDTO)
+        {
+            ColorFilter ColorFilter = new ColorFilter();
+            ColorFilter.Skip = 0;
+            ColorFilter.Take = 20;
+            ColorFilter.OrderBy = ColorOrder.Id;
+            ColorFilter.OrderType = OrderType.ASC;
+            ColorFilter.Selects = ColorSelect.ALL;
+
+            List<Color> Colores = await ColorService.List(ColorFilter);
+            List<StoreType_ColorDTO> StoreType_ColorDTOs = Colores
+                .Select(x => new StoreType_ColorDTO(x)).ToList();
+            return StoreType_ColorDTOs;
         }
 
         [Route(StoreTypeRoute.SingleListStatus), HttpPost]

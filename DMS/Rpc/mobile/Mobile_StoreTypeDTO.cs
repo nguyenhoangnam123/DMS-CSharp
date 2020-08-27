@@ -12,8 +12,9 @@ namespace DMS.Rpc.mobile
 
         public string Name { get; set; }
 
+        public long? ColorId { get; set; }
         public long StatusId { get; set; }
-
+        public Mobile_ColorDTO Color { get; set; }
 
         public Mobile_StoreTypeDTO() { }
         public Mobile_StoreTypeDTO(StoreType StoreType)
@@ -25,8 +26,9 @@ namespace DMS.Rpc.mobile
 
             this.Name = StoreType.Name;
 
+            this.ColorId = StoreType.ColorId;
             this.StatusId = StoreType.StatusId;
-
+            this.Color = StoreType.Color == null ? null : new Mobile_ColorDTO(StoreType.Color);
         }
     }
 
@@ -39,6 +41,7 @@ namespace DMS.Rpc.mobile
 
         public StringFilter Name { get; set; }
 
+        public IdFilter ColorId { get; set; }
         public IdFilter StatusId { get; set; }
 
         public StoreTypeOrder OrderBy { get; set; }

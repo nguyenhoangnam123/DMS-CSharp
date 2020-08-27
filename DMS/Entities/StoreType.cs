@@ -11,8 +11,10 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public long? ColorId { get; set; }
         public long StatusId { get; set; }
         public bool Used { get; set; }
+        public Color Color { get; set; }
         public Status Status { get; set; }
 
         public bool Equals(StoreType other)
@@ -30,6 +32,7 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public IdFilter ColorId { get; set; }
         public IdFilter StatusId { get; set; }
         public List<StoreTypeFilter> OrFilter { get; set; }
         public StoreTypeOrder OrderBy { get; set; }
@@ -43,6 +46,7 @@ namespace DMS.Entities
         Code = 1,
         Name = 2,
         Status = 3,
+        Color = 4,
     }
 
     [Flags]
@@ -53,5 +57,6 @@ namespace DMS.Entities
         Code = E._1,
         Name = E._2,
         Status = E._3,
+        Color = E._4,
     }
 }

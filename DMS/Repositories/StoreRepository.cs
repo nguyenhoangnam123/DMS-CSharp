@@ -501,6 +501,7 @@ namespace DMS.Repositories
                     Code = q.StoreType.Code,
                     Name = q.StoreType.Name,
                     StatusId = q.StoreType.StatusId,
+                    ColorId = q.StoreType.ColorId,
                 } : null,
                 Ward = filter.Selects.Contains(StoreSelect.Ward) && q.Ward != null ? new Ward
                 {
@@ -672,7 +673,14 @@ namespace DMS.Repositories
                         Id = x.StoreType.Id,
                         Code = x.StoreType.Code,
                         Name = x.StoreType.Name,
+                        ColorId = x.StoreType.ColorId,
                         StatusId = x.StoreType.StatusId,
+                        Color = x.StoreType.Color == null ? null : new Color
+                        {
+                            Id = x.StoreType.Color.Id,
+                            Code = x.StoreType.Color.Code,
+                            Name = x.StoreType.Color.Name,
+                        }
                     },
                     Ward = x.Ward == null ? null : new Ward
                     {

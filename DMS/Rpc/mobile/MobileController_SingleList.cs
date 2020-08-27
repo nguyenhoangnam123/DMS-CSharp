@@ -257,6 +257,22 @@ namespace DMS.Rpc.mobile
             return Mobile_BrandDTOs;
         }
 
+        [Route(MobileRoute.SingleListColor), HttpPost]
+        public async Task<List<Mobile_ColorDTO>> SingleListColor([FromBody] Mobile_ColorFilterDTO Mobile_ColorFilterDTO)
+        {
+            ColorFilter ColorFilter = new ColorFilter();
+            ColorFilter.Skip = 0;
+            ColorFilter.Take = 20;
+            ColorFilter.OrderBy = ColorOrder.Id;
+            ColorFilter.OrderType = OrderType.ASC;
+            ColorFilter.Selects = ColorSelect.ALL;
+
+            List<Color> Colores = await ColorService.List(ColorFilter);
+            List<Mobile_ColorDTO> Mobile_ColorDTOs = Colores
+                .Select(x => new Mobile_ColorDTO(x)).ToList();
+            return Mobile_ColorDTOs;
+        }
+
         [Route(MobileRoute.SingleListSupplier), HttpPost]
         public async Task<List<Mobile_SupplierDTO>> SingleListSupplier([FromBody] Mobile_SupplierFilterDTO Mobile_SupplierFilterDTO)
         {
