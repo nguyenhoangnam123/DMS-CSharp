@@ -40,6 +40,7 @@ namespace DMS.Rpc.workflow_direction
             this.BodyMailForCurrentStep = WorkflowDirection.BodyMailForCurrentStep;
             this.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
             this.UpdatedAt = WorkflowDirection.UpdatedAt;
+            this.StatusId = WorkflowDirection.StatusId;
             this.Status = WorkflowDirection.Status == null ? null : new WorkflowDirection_StatusDTO(WorkflowDirection.Status);
             this.FromStep = WorkflowDirection.FromStep == null ? null : new WorkflowDirection_WorkflowStepDTO(WorkflowDirection.FromStep);
             this.ToStep = WorkflowDirection.ToStep == null ? null : new WorkflowDirection_WorkflowStepDTO(WorkflowDirection.ToStep);
@@ -56,6 +57,7 @@ namespace DMS.Rpc.workflow_direction
         public IdFilter WorkflowDefinitionId { get; set; }
         public IdFilter FromStepId { get; set; }
         public IdFilter ToStepId { get; set; }
+        public IdFilter StatusId { get; set; }
         public StringFilter SubjectMailForCreator { get; set; }
         public StringFilter SubjectMailForNextStep { get; set; }
         public StringFilter BodyMailForCreator { get; set; }

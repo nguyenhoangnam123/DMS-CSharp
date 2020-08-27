@@ -41,6 +41,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.FromStepId, filter.FromStepId);
             if (filter.ToStepId != null)
                 query = query.Where(q => q.ToStepId, filter.ToStepId);
+            if (filter.StatusId != null)
+                query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.UpdatedAt != null)
                 query = query.Where(q => q.UpdatedAt, filter.UpdatedAt);
             query = OrFilter(query, filter);
@@ -63,6 +65,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.FromStepId, WorkflowDirectionFilter.FromStepId);
                 if (WorkflowDirectionFilter.ToStepId != null)
                     queryable = queryable.Where(q => q.ToStepId, WorkflowDirectionFilter.ToStepId);
+                if (WorkflowDirectionFilter.StatusId != null)
+                    queryable = queryable.Where(q => q.StatusId, WorkflowDirectionFilter.StatusId);
                 if (WorkflowDirectionFilter.UpdatedAt != null)
                     queryable = queryable.Where(q => q.UpdatedAt, WorkflowDirectionFilter.UpdatedAt);
                 initQuery = initQuery.Union(queryable);
@@ -89,6 +93,9 @@ namespace DMS.Repositories
                         case WorkflowDirectionOrder.ToStep:
                             query = query.OrderBy(q => q.ToStepId);
                             break;
+                        case WorkflowDirectionOrder.Status:
+                            query = query.OrderBy(q => q.StatusId);
+                            break;
                         case WorkflowDirectionOrder.UpdatedAt:
                             query = query.OrderBy(q => q.UpdatedAt);
                             break;
@@ -109,6 +116,9 @@ namespace DMS.Repositories
                         case WorkflowDirectionOrder.ToStep:
                             query = query.OrderByDescending(q => q.ToStepId);
                             break;
+                        case WorkflowDirectionOrder.Status:
+                            query = query.OrderByDescending(q => q.StatusId);
+                            break;
                         case WorkflowDirectionOrder.UpdatedAt:
                             query = query.OrderBy(q => q.UpdatedAt);
                             break;
@@ -127,6 +137,7 @@ namespace DMS.Repositories
                 WorkflowDefinitionId = filter.Selects.Contains(WorkflowDirectionSelect.WorkflowDefinition) ? q.WorkflowDefinitionId : default(long),
                 FromStepId = filter.Selects.Contains(WorkflowDirectionSelect.FromStep) ? q.FromStepId : default(long),
                 ToStepId = filter.Selects.Contains(WorkflowDirectionSelect.ToStep) ? q.ToStepId : default(long),
+                StatusId = filter.Selects.Contains(WorkflowDirectionSelect.Status) ? q.StatusId : default(long),
                 UpdatedAt = filter.Selects.Contains(WorkflowDirectionSelect.UpdatedAt) ? q.UpdatedAt : default(DateTime),
                 FromStep = filter.Selects.Contains(WorkflowDirectionSelect.FromStep) && q.FromStep != null ? new WorkflowStep
                 {
@@ -147,6 +158,12 @@ namespace DMS.Repositories
                     RoleId = q.ToStep.RoleId,
                     SubjectMailForReject = q.ToStep.SubjectMailForReject,
                     BodyMailForReject = q.ToStep.BodyMailForReject,
+                } : null,
+                Status = filter.Selects.Contains(WorkflowDirectionSelect.Status) && q.Status != null ? new Status
+                {
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
                 } : null,
                 WorkflowDefinition = filter.Selects.Contains(WorkflowDirectionSelect.WorkflowDefinition) && q.WorkflowDefinition != null ? new WorkflowDefinition
                 {

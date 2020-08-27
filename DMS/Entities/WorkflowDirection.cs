@@ -44,6 +44,7 @@ namespace DMS.Entities
         public IdFilter WorkflowDefinitionId { get; set; }
         public IdFilter FromStepId { get; set; }
         public IdFilter ToStepId { get; set; }
+        public IdFilter StatusId { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<WorkflowDirectionFilter> OrFilter { get; set; }
         public WorkflowDirectionOrder OrderBy { get; set; }
@@ -58,6 +59,7 @@ namespace DMS.Entities
         FromStep = 2,
         ToStep = 3,
         UpdatedAt = 4,
+        Status = 5
     }
 
     [Flags]
@@ -69,5 +71,6 @@ namespace DMS.Entities
         FromStep = E._2,
         ToStep = E._3,
         UpdatedAt = E._4,
+        Status = E._5,
     }
 }

@@ -332,6 +332,7 @@ namespace DMS.Rpc.workflow_direction
             WorkflowDirectionFilter.WorkflowDefinitionId = WorkflowDirection_WorkflowDirectionFilterDTO.WorkflowDefinitionId;
             WorkflowDirectionFilter.FromStepId = WorkflowDirection_WorkflowDirectionFilterDTO.FromStepId;
             WorkflowDirectionFilter.ToStepId = WorkflowDirection_WorkflowDirectionFilterDTO.ToStepId;
+            WorkflowDirectionFilter.StatusId = WorkflowDirection_WorkflowDirectionFilterDTO.StatusId;
             WorkflowDirectionFilter.UpdatedAt = WorkflowDirection_WorkflowDirectionFilterDTO.UpdatedAt;
             return WorkflowDirectionFilter;
         }
