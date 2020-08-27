@@ -287,7 +287,7 @@ namespace DMS.Rpc.kpi_general
                 if (worksheet == null)
                     return Ok(KpiGenerals);
                 int StartColumn = 1;
-                int StartRow = 5;
+                int StartRow = 6;
                 int UsernameColumn = 0 + StartColumn;
                 int DisplayNameColumn = 1 + StartColumn;
                 int CriterialColumn = 2 + StartColumn;
@@ -980,7 +980,7 @@ namespace DMS.Rpc.kpi_general
             dynamic Data = new ExpandoObject();
             Data.KpiYear = KpiYear.Name;
             Data.KpiGenerals = KpiGeneral_ExportDTOs;
-            using (var document = Configuration.Factory.Open(input, output, "xlsx"))
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
             };

@@ -375,7 +375,7 @@ namespace DMS.Rpc.mobile
         }
 
         [Route(MobileRoute.CountBanner), HttpPost]
-        public async Task<ActionResult<int>> Count([FromBody] Mobile_BannerFilterDTO Mobile_BannerFilterDTO)
+        public async Task<ActionResult<int>> CountBanner([FromBody] Mobile_BannerFilterDTO Mobile_BannerFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -393,7 +393,7 @@ namespace DMS.Rpc.mobile
         }
 
         [Route(MobileRoute.ListBanner), HttpPost]
-        public async Task<ActionResult<List<Mobile_BannerDTO>>> List([FromBody] Mobile_BannerFilterDTO Mobile_BannerFilterDTO)
+        public async Task<ActionResult<List<Mobile_BannerDTO>>> ListBanner([FromBody] Mobile_BannerFilterDTO Mobile_BannerFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);

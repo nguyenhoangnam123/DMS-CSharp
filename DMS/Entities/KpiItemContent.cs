@@ -25,30 +25,30 @@ namespace DMS.Entities
         }
     }
 
-    public class ItemSpecificKpiContentFilter : FilterEntity
+    public class KpiItemContentFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
-        public IdFilter ItemSpecificKpiId { get; set; }
+        public IdFilter KpiItemId { get; set; }
         public IdFilter ItemId { get; set; }
-        public List<ItemSpecificKpiContentFilter> OrFilter { get; set; }
-        public ItemSpecificKpiContentOrder OrderBy { get; set; }
-        public ItemSpecificKpiContentSelect Selects { get; set; }
+        public List<KpiItemContentFilter> OrFilter { get; set; }
+        public KpiItemContentOrder OrderBy { get; set; }
+        public KpiItemContentSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum ItemSpecificKpiContentOrder
+    public enum KpiItemContentOrder
     {
         Id = 0,
-        ItemSpecificKpi = 1,
+        KpiItem = 1,
         Item = 2,
     }
 
     [Flags]
-    public enum ItemSpecificKpiContentSelect : long
+    public enum KpiItemContentSelect : long
     {
         ALL = E.ALL,
         Id = E._0,
-        ItemSpecificKpi = E._1,
+        KpiItem = E._1,
         Item = E._2,
     }
 }

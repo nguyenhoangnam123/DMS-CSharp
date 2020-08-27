@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Services.MBanner;
 using DMS.Services.MIndirectSalesOrder;
 using DMS.Services.MProduct;
 using Microsoft.AspNetCore.Authorization;
@@ -15,15 +16,56 @@ namespace DMS.RpcPublic
     [AllowAnonymous]
     public class PublicController : ControllerBase
     {
+        private IBannerService BannerService;
         private IItemService ItemService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
         public PublicController(
+            IBannerService BannerService,
             IItemService ItemService,
             IIndirectSalesOrderService IndirectSalesOrderService
             )
         {
+            this.BannerService = BannerService;
             this.ItemService = ItemService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
+        }
+
+        [Route(PublicRoute.CountBanner), HttpPost]
+        public async Task<ActionResult<int>> CountBanner([FromBody] Public_BannerFilterDTO Public_BannerFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            BannerFilter BannerFilter = new BannerFilter();
+            BannerFilter.Selects = BannerSelect.ALL;
+            BannerFilter.Skip = Public_BannerFilterDTO.Skip;
+            BannerFilter.Take = Public_BannerFilterDTO.Take;
+            BannerFilter.OrderBy = Public_BannerFilterDTO.OrderBy;
+            BannerFilter.OrderType = Public_BannerFilterDTO.OrderType;
+            BannerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            int count = await BannerService.Count(BannerFilter);
+            return count;
+        }
+
+        [Route(PublicRoute.ListBanner), HttpPost]
+        public async Task<ActionResult<List<Public_BannerDTO>>> ListBanner([FromBody] Public_BannerFilterDTO Public_BannerFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            BannerFilter BannerFilter = new BannerFilter();
+            BannerFilter.Selects = BannerSelect.ALL;
+            BannerFilter.Skip = Public_BannerFilterDTO.Skip;
+            BannerFilter.Take = Public_BannerFilterDTO.Take;
+            BannerFilter.OrderBy = BannerOrder.Priority;
+            BannerFilter.OrderType = OrderType.ASC;
+            BannerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Banner> Banners = await BannerService.List(BannerFilter);
+            List<Public_BannerDTO> Public_BannerDTOs = Banners
+                .Select(c => new Public_BannerDTO(c)).ToList();
+            return Public_BannerDTOs;
         }
 
         [Route(PublicRoute.CountItem), HttpPost]
