@@ -32,6 +32,7 @@ namespace DMS.Rpc.store_scouting
         public StoreScouting_WardDTO Ward { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public List<StoreScouting_StoreScoutingImageMappingDTO> StoreScoutingImageMappings { get; set; }
         public StoreScouting_StoreScoutingDTO() {}
         public StoreScouting_StoreScoutingDTO(StoreScouting StoreScouting)
         {
@@ -58,6 +59,7 @@ namespace DMS.Rpc.store_scouting
             this.Ward = StoreScouting.Ward == null ? null : new StoreScouting_WardDTO(StoreScouting.Ward);
             this.CreatedAt = StoreScouting.CreatedAt;
             this.UpdatedAt = StoreScouting.UpdatedAt;
+            this.StoreScoutingImageMappings = StoreScouting.StoreScoutingImageMappings?.Select(x => new StoreScouting_StoreScoutingImageMappingDTO(x)).ToList();
             this.Errors = StoreScouting.Errors;
         }
     }

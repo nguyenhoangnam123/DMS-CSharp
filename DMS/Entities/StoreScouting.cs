@@ -31,7 +31,7 @@ namespace DMS.Entities
         public Store Store { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
+        public List<StoreScoutingImageMapping> StoreScoutingImageMappings { get; set; }
         public bool Equals(StoreScouting other)
         {
             return other != null && Id == other.Id;

@@ -1266,6 +1266,17 @@ namespace DMS.Rpc.mobile
                 DistrictId = Mobile_StoreScoutingDTO.Ward.DistrictId,
                 StatusId = Mobile_StoreScoutingDTO.Ward.StatusId,
             };
+            StoreScouting.StoreScoutingImageMappings = Mobile_StoreScoutingDTO.StoreScoutingImageMappings?.Select(x => new StoreScoutingImageMapping
+            {
+                StoreScoutingId = x.StoreScoutingId,
+                ImageId = x.ImageId,
+                Image = new Image
+                {
+                    Id = x.Image.Id,
+                    Name = x.Image.Name,
+                    Url = x.Image.Url,
+                }
+            }).ToList();
             StoreScouting.BaseLanguage = CurrentContext.Language;
             return StoreScouting;
         }

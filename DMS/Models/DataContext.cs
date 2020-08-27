@@ -111,6 +111,7 @@ namespace DMS.Models
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
         public virtual DbSet<StoreScoutingDAO> StoreScouting { get; set; }
+        public virtual DbSet<StoreScoutingImageMappingDAO> StoreScoutingImageMapping { get; set; }
         public virtual DbSet<StoreScoutingStatusDAO> StoreScoutingStatus { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<StoreUncheckingDAO> StoreUnchecking { get; set; }
@@ -3006,6 +3007,23 @@ namespace DMS.Models
                     .WithMany(p => p.StoreScoutings)
                     .HasForeignKey(d => d.WardId)
                     .HasConstraintName("FK_StoreScouting_Ward");
+            });
+
+            modelBuilder.Entity<StoreScoutingImageMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.StoreScoutingId, e.ImageId });
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.StoreScoutingImageMappings)
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreScoutingImageMapping_Image");
+
+                entity.HasOne(d => d.StoreScouting)
+                    .WithMany(p => p.StoreScoutingImageMappings)
+                    .HasForeignKey(d => d.StoreScoutingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreScoutingImageMapping_StoreScouting");
             });
 
             modelBuilder.Entity<StoreScoutingStatusDAO>(entity =>

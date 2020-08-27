@@ -30,6 +30,7 @@ namespace DMS.Rpc.mobile
         public Mobile_WardDTO Ward { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public List<Mobile_StoreScoutingImageMappingDTO> StoreScoutingImageMappings { get; set; }
         public Mobile_StoreScoutingDTO() { }
         public Mobile_StoreScoutingDTO(StoreScouting StoreScouting)
         {
@@ -50,6 +51,7 @@ namespace DMS.Rpc.mobile
             this.Province = StoreScouting.Province == null ? null : new Mobile_ProvinceDTO(StoreScouting.Province);
             this.StoreScoutingStatus = StoreScouting.StoreScoutingStatus == null ? null : new Mobile_StoreScoutingStatusDTO(StoreScouting.StoreScoutingStatus);
             this.Ward = StoreScouting.Ward == null ? null : new Mobile_WardDTO(StoreScouting.Ward);
+            this.StoreScoutingImageMappings = StoreScouting.StoreScoutingImageMappings?.Select(x => new Mobile_StoreScoutingImageMappingDTO(x)).ToList();
             this.CreatedAt = StoreScouting.CreatedAt;
             this.UpdatedAt = StoreScouting.UpdatedAt;
             this.Errors = StoreScouting.Errors;
