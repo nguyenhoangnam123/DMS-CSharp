@@ -1013,6 +1013,10 @@ namespace DMS.Models
                     .HasMaxLength(4000)
                     .HasComment("Tên");
 
+                entity.Property(e => e.ThumbnailUrl)
+                    .HasMaxLength(4000)
+                    .HasComment("Đường dẫn Url");
+
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("datetime")
                     .HasComment("Ngày cập nhật");

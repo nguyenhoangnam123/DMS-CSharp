@@ -460,7 +460,8 @@ namespace DMS.Repositories
                         {
                             Id = ProductImageMappingDAO.Image.Id,
                             Name = ProductImageMappingDAO.Image.Name,
-                            Url = ProductImageMappingDAO.Image.Url
+                            Url = ProductImageMappingDAO.Image.Url,
+                            ThumbnailUrl = ProductImageMappingDAO.Image.ThumbnailUrl,
                         }
                     };
                     Product.ProductImageMappings.Add(ProductImageMapping);
@@ -647,6 +648,7 @@ namespace DMS.Repositories
                         Id = x.Image.Id,
                         Name = x.Image.Name,
                         Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
                     },
                 }).ToListAsync();
             Product.ProductProductGroupingMappings = await DataContext.ProductProductGroupingMapping.AsNoTracking()
@@ -693,6 +695,7 @@ namespace DMS.Repositories
                     Id = x.Image.Id,
                     Url = x.Image.Url,
                     Name = x.Image.Name,
+                    ThumbnailUrl = x.Image.ThumbnailUrl,
                 }
             }).ToListAsync();
 

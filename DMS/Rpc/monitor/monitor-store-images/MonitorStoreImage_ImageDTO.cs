@@ -11,6 +11,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public string Name { get; set; }
 
         public string Url { get; set; }
+        public string ThumbnailUrl { get; set; }
 
 
         public MonitorStoreImage_ImageDTO() { }
@@ -22,6 +23,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
             this.Name = Image.Name;
 
             this.Url = Image.Url;
+            this.ThumbnailUrl = Image.ThumbnailUrl;
 
             this.Errors = Image.Errors;
         }
@@ -35,6 +37,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public StringFilter Name { get; set; }
 
         public StringFilter Url { get; set; }
+        public StringFilter ThumbnailUrl { get; set; }
 
         public ImageOrder OrderBy { get; set; }
     }

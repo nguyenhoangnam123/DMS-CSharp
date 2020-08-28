@@ -511,7 +511,8 @@ namespace DMS.Services.MStore
         {
             FileInfo fileInfo = new FileInfo(Image.Name);
             string path = $"/store/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
-            Image = await ImageService.Create(Image, path);
+            string thumbnailPath = $"/store/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            Image = await ImageService.Create(Image, path, thumbnailPath, 128, 128);
             return Image;
         }
 

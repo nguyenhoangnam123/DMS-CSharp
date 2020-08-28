@@ -1307,6 +1307,7 @@ namespace DMS.Rpc.product
                 Id = Image.Id,
                 Name = Image.Name,
                 Url = Image.Url,
+                ThumbnailUrl = Image.ThumbnailUrl,
             };
             return Ok(product_ImageDTO);
         }
@@ -1331,6 +1332,7 @@ namespace DMS.Rpc.product
                 Id = Image.Id,
                 Name = Image.Name,
                 Url = Image.Url,
+                ThumbnailUrl = Image.ThumbnailUrl,
             };
             return Ok(product_ImageDTO);
         }
@@ -1461,6 +1463,7 @@ namespace DMS.Rpc.product
                         Id = x.Image.Id,
                         Name = x.Image.Name,
                         Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
                     },
                 }).ToList();
             Product.ProductProductGroupingMappings = Product_ProductDTO.ProductProductGroupingMappings?

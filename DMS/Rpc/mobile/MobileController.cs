@@ -1002,6 +1002,7 @@ namespace DMS.Rpc.mobile
                 Id = Image.Id,
                 Name = Image.Name,
                 Url = Image.Url,
+                ThumbnailUrl = Image.ThumbnailUrl,
             };
             return Ok(Mobile_ImageDTO);
         }
@@ -1026,6 +1027,7 @@ namespace DMS.Rpc.mobile
                 Id = Image.Id,
                 Name = Image.Name,
                 Url = Image.Url,
+                ThumbnailUrl = Image.ThumbnailUrl,
             };
             return Ok(Mobile_ImageDTO);
         }
@@ -1076,6 +1078,7 @@ namespace DMS.Rpc.mobile
                         Id = x.Image.Id,
                         Name = x.Image.Name,
                         Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
                     }
                 }).ToList();
             Store.BaseLanguage = CurrentContext.Language;
@@ -1171,6 +1174,7 @@ namespace DMS.Rpc.mobile
                         Id = x.Image.Id,
                         Name = x.Image.Name,
                         Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
                     },
                     Store = x.Store == null ? null : new Store
                     {
@@ -1275,6 +1279,7 @@ namespace DMS.Rpc.mobile
                     Id = x.Image.Id,
                     Name = x.Image.Name,
                     Url = x.Image.Url,
+                    ThumbnailUrl = x.Image.ThumbnailUrl,
                 }
             }).ToList();
             StoreScouting.BaseLanguage = CurrentContext.Language;

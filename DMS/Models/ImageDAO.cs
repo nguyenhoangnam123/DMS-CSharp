@@ -30,6 +30,10 @@ namespace DMS.Models
         /// </summary>
         public string Url { get; set; }
         /// <summary>
+        /// Đường dẫn Url
+        /// </summary>
+        public string ThumbnailUrl { get; set; }
+        /// <summary>
         /// Ngày tạo
         /// </summary>
         public DateTime CreatedAt { get; set; }

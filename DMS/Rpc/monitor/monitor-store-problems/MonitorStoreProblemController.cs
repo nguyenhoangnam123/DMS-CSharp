@@ -292,6 +292,7 @@ namespace DMS.Rpc.monitor_store_problems
                         Id = x.Image.Id,
                         Name = x.Image.Name,
                         Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
                     },
                 }).ToList();
             Problem.ProblemHistorys = MonitorStoreProblem_ProblemDTO.ProblemHistorys?
