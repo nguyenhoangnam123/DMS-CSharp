@@ -19,7 +19,7 @@ namespace DMS.Rpc.kpi_item
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-tempate";
+        public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
