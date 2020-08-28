@@ -827,20 +827,10 @@ namespace DMS.Rpc.mobile
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = Mobile_ItemFilterDTO.SupplierId;
 
-            if (Mobile_ItemFilterDTO.StoreId != null && Mobile_ItemFilterDTO.StoreId.Equal.HasValue)
-            {
-                List<Item> Items = await IndirectSalesOrderService.ListItem(ItemFilter, Mobile_ItemFilterDTO.StoreId.Equal.Value);
-                List<Mobile_ItemDTO> Mobile_ItemDTOs = Items
-                    .Select(x => new Mobile_ItemDTO(x)).ToList();
-                return Mobile_ItemDTOs;
-            }
-            else
-            {
-                List<Item> Items = await ItemService.List(ItemFilter);
-                List<Mobile_ItemDTO> Mobile_ItemDTOs = Items
-                    .Select(x => new Mobile_ItemDTO(x)).ToList();
-                return Mobile_ItemDTOs;
-            }
+            List<Item> Items = await IndirectSalesOrderService.ListItem(ItemFilter, Mobile_ItemFilterDTO.StoreId.Equal);
+            List<Mobile_ItemDTO> Mobile_ItemDTOs = Items
+                .Select(x => new Mobile_ItemDTO(x)).ToList();
+            return Mobile_ItemDTOs;
         }
 
         [Route(MobileRoute.GetItem), HttpPost]
