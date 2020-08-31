@@ -38,7 +38,8 @@ namespace DMS.Services.MIndirectSalesOrder
             ItemNotExisted,
             QuantityInvalid,
             SellerStoreEqualBuyerStore,
-            ContentEmpty
+            ContentEmpty,
+            DeliveryDateInvalid
         }
 
         private IUOW UOW;
@@ -136,6 +137,18 @@ namespace DMS.Services.MIndirectSalesOrder
         {
             if (IndirectSalesOrder.OrderDate == default(DateTime))
                 IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.OrderDate), ErrorCode.OrderDateEmpty);
+            return IndirectSalesOrder.IsValidated;
+        }
+
+        private async Task<bool> ValidateDeliveryDate (IndirectSalesOrder IndirectSalesOrder)
+        {
+            if (IndirectSalesOrder.DeliveryDate.HasValue)
+            {
+                if(IndirectSalesOrder.DeliveryDate.Value < IndirectSalesOrder.OrderDate)
+                {
+                    IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.DeliveryDate), ErrorCode.DeliveryDateInvalid);
+                }
+            }
             return IndirectSalesOrder.IsValidated;
         }
 
@@ -310,6 +323,7 @@ namespace DMS.Services.MIndirectSalesOrder
             await ValidateStore(IndirectSalesOrder);
             await ValidateEmployee(IndirectSalesOrder);
             await ValidateOrderDate(IndirectSalesOrder);
+            await ValidateDeliveryDate(IndirectSalesOrder);
             await ValidateContent(IndirectSalesOrder);
             await ValidatePromotion(IndirectSalesOrder);
             await ValidateEditedPrice(IndirectSalesOrder);
@@ -323,6 +337,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 await ValidateStore(IndirectSalesOrder);
                 await ValidateEmployee(IndirectSalesOrder);
                 await ValidateOrderDate(IndirectSalesOrder);
+                await ValidateDeliveryDate(IndirectSalesOrder);
                 await ValidateContent(IndirectSalesOrder);
                 await ValidatePromotion(IndirectSalesOrder);
                 await ValidateEditedPrice(IndirectSalesOrder);

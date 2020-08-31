@@ -12,6 +12,9 @@
     "OrderDate": {
       "OrderDateEmpty": "Chưa chọn ngày đặt hàng"
     },
+    "DeliveryDate": {
+      "DeliveryDateInvalid": "Ngày giao hàng không hợp lệ"
+    },
     "EditedPriceStatus": {
       "EditedPriceStatusNotExisted": "Trạng thái sửa giá không hợp lệ"
     },
