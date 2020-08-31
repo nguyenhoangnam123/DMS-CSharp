@@ -193,6 +193,9 @@ namespace DMS.Repositories
                         case ProblemOrder.ProblemStatus:
                             query = query.OrderBy(q => q.ProblemStatusId);
                             break;
+                        case ProblemOrder.Organization:
+                            query = query.OrderBy(q => q.Creator.OrganizationId);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -225,8 +228,8 @@ namespace DMS.Repositories
                         case ProblemOrder.Content:
                             query = query.OrderByDescending(q => q.Content);
                             break;
-                        case ProblemOrder.ProblemStatus:
-                            query = query.OrderByDescending(q => q.ProblemStatusId);
+                        case ProblemOrder.Organization:
+                            query = query.OrderByDescending(q => q.Creator.OrganizationId);
                             break;
                     }
                     break;
