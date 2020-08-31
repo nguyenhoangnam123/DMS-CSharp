@@ -311,6 +311,7 @@ namespace DMS.Rpc.workflow_direction
             {
                 Id = x.Id,
                 Value = x.Value,
+                ValueString = x.ValueString,
                 WorkflowDirectionId = x.WorkflowDirectionId,
                 WorkflowOperatorId = x.WorkflowOperatorId,
                 WorkflowParameterId = x.WorkflowParameterId,
