@@ -142,6 +142,7 @@ namespace DMS.Services.MImage
                 await UOW.Begin();
                 await UOW.ImageRepository.Create(Image);
                 await UOW.Commit();
+                return Image;
             }
             catch
             {
@@ -209,7 +210,7 @@ namespace DMS.Services.MImage
             await UOW.Begin();
             await UOW.ImageRepository.Create(Image);
             await UOW.Commit();
-            return null;
+            return Image;
         }
 
         public class File
