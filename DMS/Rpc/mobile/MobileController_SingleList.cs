@@ -827,6 +827,8 @@ namespace DMS.Rpc.mobile
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = Mobile_ItemFilterDTO.SupplierId;
 
+            if (Mobile_ItemFilterDTO.StoreId == null)
+                Mobile_ItemFilterDTO.StoreId = new IdFilter();
             List<Item> Items = await IndirectSalesOrderService.ListItem(ItemFilter, Mobile_ItemFilterDTO.StoreId.Equal);
             List<Mobile_ItemDTO> Mobile_ItemDTOs = Items
                 .Select(x => new Mobile_ItemDTO(x)).ToList();
