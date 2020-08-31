@@ -11,6 +11,7 @@ using Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MProblem
@@ -142,7 +143,7 @@ namespace DMS.Services.MProblem
                 NotifyUsed(Problem);
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var RecipientIds = await UOW.PermissionRepository.ListAppUser(MonitorStoreProblemRoute.Update);
+                var RecipientIds = await ListReceipientId(CurrentUser, MonitorStoreProblemRoute.Update);
 
                 DateTime Now = StaticParams.DateTimeNow;
                 List<UserNotification> UserNotifications = new List<UserNotification>();
@@ -415,6 +416,36 @@ namespace DMS.Services.MProblem
             string path = $"/problem/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
             Image = await ImageService.Create(Image, path);
             return Image;
+        }
+
+        private async Task<List<long>> ListReceipientId(AppUser CurrentUser, string Path)
+        {
+            var Ids = await UOW.PermissionRepository.ListAppUser(Path);
+            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+
+            var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
+            var OrganizationIds = Organizations
+                .Where(x => x.Path.StartsWith(CurrentUser.Organization.Path) || CurrentUser.Organization.Path.StartsWith(x.Path))
+                .Select(x => x.Id)
+                .ToList();
+
+            var AppUsers = await UOW.AppUserRepository.List(new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.Organization,
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            });
+            var AppUserIds = AppUsers.Where(x => OrganizationIds.Contains(x.OrganizationId.Value)).Select(x => x.Id).ToList();
+            AppUserIds = AppUserIds.Intersect(Ids).ToList();
+            return AppUserIds;
         }
 
         private void NotifyUsed(Problem Problem)
