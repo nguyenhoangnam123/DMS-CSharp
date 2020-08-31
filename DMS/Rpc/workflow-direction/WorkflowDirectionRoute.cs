@@ -44,13 +44,13 @@ namespace DMS.Rpc.workflow_direction
                 Master, Count, List, Get,
                 FilterListWorkflowStep, FilterListWorkflowDefinition, FilterListStatus,
                 Detail, Create,
-                SingleListWorkflowStep, SingleListWorkflowDefinition, SingleListAppUser, SingleListWorkflowParameter, SingleListWorkflowOperator, SingleListStatus,} },
+                SingleListWorkflowStep, SingleListWorkflowDefinition, SingleListAppUser, SingleListWorkflowParameter, SingleListWorkflowOperator, SingleListStatus, SingleListOrganization} },
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get,
                 FilterListWorkflowStep, FilterListWorkflowDefinition, FilterListStatus,
                 Detail, Update,
-                SingleListWorkflowStep, SingleListWorkflowDefinition, SingleListAppUser, SingleListWorkflowParameter, SingleListWorkflowOperator, SingleListStatus,} },
+                SingleListWorkflowStep, SingleListWorkflowDefinition, SingleListAppUser, SingleListWorkflowParameter, SingleListWorkflowOperator, SingleListStatus, SingleListOrganization} },
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get,
