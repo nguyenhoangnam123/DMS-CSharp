@@ -7,7 +7,7 @@ namespace DMS.Rpc.notification
     public class NotificationRoute : Root
     {
         public const string Parent = Module + "/alert";
-        public const string Master = Module + "/alert/notification/notification-master";
+        public const string Master = Module + "/alert/notification/notification-master/*";
         public const string Detail = Module + "/alert/notification/notification-detail/*";
         public const string Mobile = Module + ".notification.*";
 
