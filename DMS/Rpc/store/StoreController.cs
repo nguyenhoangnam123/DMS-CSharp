@@ -961,7 +961,6 @@ namespace DMS.Rpc.store
             {
                 Name = file.FileName,
                 Content = memoryStream.ToArray(),
-                Stream = file.OpenReadStream(),
             };
             Image = await StoreService.SaveImage(Image);
             if (Image == null)

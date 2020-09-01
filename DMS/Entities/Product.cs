@@ -9,6 +9,7 @@ namespace DMS.Entities
     public class Product : DataEntity, IEquatable<Product>
     {
         public long Id { get; set; }
+        public Guid RowId { get; set; }
         public string Code { get; set; }
         public string SupplierCode { get; set; }
         public string Name { get; set; }
@@ -32,6 +33,9 @@ namespace DMS.Entities
         public long VariationCounter { get; set; }
         public bool CanDelete { get; set; }
         public bool Used { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime DeletedAt { get; set; }
         public Brand Brand { get; set; }
         public ProductType ProductType { get; set; }
         public Status Status { get; set; }
