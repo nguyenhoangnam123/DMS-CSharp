@@ -153,15 +153,7 @@ namespace DMS.Services.MImage
 
         public async Task<DMS.Entities.Image> Create(DMS.Entities.Image Image, string path, string thumbnailPath, int width, int height)
         {
-            MemoryStream output = new MemoryStream();
-            using (SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(Image.Stream, out SixLabors.ImageSharp.Formats.IImageFormat format))
-            {
-                image.Mutate(x => x
-                     .Resize(width, height));
-                image.Save(output, format); // Automatic encoder selected based on extension.
-            }
-
-
+            // save original image
             RestClient restClient = new RestClient(InternalServices.UTILS);
             RestRequest restRequest = new RestRequest("/rpc/utils/file/upload");
             restRequest.RequestFormat = DataFormat.Json;
@@ -183,6 +175,16 @@ namespace DMS.Services.MImage
             catch
             {
                 return null;
+            }
+
+            // save thumbnail image
+            MemoryStream output = new MemoryStream();
+            MemoryStream input = new MemoryStream(Image.Content);
+            using (SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(input, out SixLabors.ImageSharp.Formats.IImageFormat format))
+            {
+                image.Mutate(x => x
+                     .Resize(width, height));
+                image.Save(output, format); // Automatic encoder selected based on extension.
             }
 
             restClient = new RestClient(InternalServices.UTILS);

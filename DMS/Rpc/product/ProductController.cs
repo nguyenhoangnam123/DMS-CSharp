@@ -1297,7 +1297,7 @@ namespace DMS.Rpc.product
             Image Image = new Image
             {
                 Name = file.FileName,
-                Content = memoryStream.ToArray()
+                Content = memoryStream.ToArray(),
             };
             Image = await ProductService.SaveImage(Image);
             if (Image == null)
