@@ -9,6 +9,7 @@ namespace DMS.Entities
     public class Item : DataEntity, IEquatable<Item>
     {
         public long Id { get; set; }
+        public Guid RowId { get; set; }
         public long ProductId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }

@@ -211,9 +211,10 @@ namespace DMS.Services.MProduct
                 await UOW.Begin();
                 await UOW.ProductRepository.Create(Product);
                 await UOW.Commit();
-
+                Product = await UOW.ProductRepository.Get(Product.Id);
+                RabbitManager.PublishSingle(new EventMessage<Product>(Product, Product.RowId), RoutingKeyEnum.ProductSync);
                 await Logging.CreateAuditLog(Product, new { }, nameof(ProductService));
-                return await UOW.ProductRepository.Get(Product.Id);
+                return Product;
             }
             catch (Exception ex)
             {
@@ -395,9 +396,10 @@ namespace DMS.Services.MProduct
                 await UOW.ProductRepository.Update(Product);
                 await UOW.Commit();
 
-                var newData = await UOW.ProductRepository.Get(Product.Id);
-                await Logging.CreateAuditLog(newData, oldData, nameof(ProductService));
-                return newData;
+                Product = await UOW.ProductRepository.Get(Product.Id);
+                RabbitManager.PublishSingle(new EventMessage<Product>(Product, Product.RowId), RoutingKeyEnum.ProductSync);
+                await Logging.CreateAuditLog(Product, oldData, nameof(ProductService));
+                return Product;
             }
             catch (Exception ex)
             {
@@ -426,6 +428,7 @@ namespace DMS.Services.MProduct
                 await UOW.ProductRepository.Delete(Product);
                 await UOW.Commit();
                 await Logging.CreateAuditLog(new { }, Product, nameof(ProductService));
+                RabbitManager.PublishSingle(new EventMessage<Product>(Product, Product.RowId), RoutingKeyEnum.ProductSync);
                 return Product;
             }
             catch (Exception ex)
@@ -455,6 +458,8 @@ namespace DMS.Services.MProduct
                 await UOW.ProductRepository.BulkDelete(Products);
                 await UOW.Commit();
                 await Logging.CreateAuditLog(new { }, Products, nameof(ProductService));
+                List<EventMessage<Product>> eventMessages = Products.Select(x => new EventMessage<Product>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(eventMessages, RoutingKeyEnum.ProductSync);
                 return Products;
             }
             catch (Exception ex)

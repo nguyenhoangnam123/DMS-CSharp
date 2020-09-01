@@ -945,18 +945,28 @@ namespace DMS.Repositories
 
         public async Task<bool> BulkDelete(List<Product> Products)
         {
+            DateTime Now = StaticParams.DateTimeNow;
+            
             List<long> Ids = Products.Select(x => x.Id).ToList();
-            List<long> ItemIds = DataContext.Item.Where(x => Ids.Contains(x.ProductId)).Select(x => x.Id).ToList();
+            List<Product> RowIds = await DataContext.Product.Where(x => Ids.Contains(x.Id)).Select(x => new Product { Id = x.Id, RowId = x.RowId }).ToListAsync();
+            foreach(Product Product in Products)
+            {
+                Product.UpdatedAt = Now;
+                Product.DeletedAt = Now;
+                Product.RowId = RowIds.Where(x => x.Id == Product.Id).Select(x => x.RowId).FirstOrDefault();
+            }    
+
+            List<long> ItemIds = await DataContext.Item.Where(x => Ids.Contains(x.ProductId)).Select(x => x.Id).ToListAsync();
 
             await DataContext.ItemHistory.Where(x => ItemIds.Contains(x.ItemId)).DeleteFromQueryAsync();
             await DataContext.Item.Where(x => Ids.Contains(x.ProductId))
-                .UpdateFromQueryAsync(x => new ItemDAO { DeletedAt = StaticParams.DateTimeNow });
+                .UpdateFromQueryAsync(x => new ItemDAO { DeletedAt = Now });
             await DataContext.ProductProductGroupingMapping
                 .Where(x => Ids.Contains(x.ProductId))
                 .DeleteFromQueryAsync();
             await DataContext.Product
                 .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new ProductDAO { DeletedAt = StaticParams.DateTimeNow });
+                .UpdateFromQueryAsync(x => new ProductDAO { DeletedAt = Now });
             return true;
         }
 
