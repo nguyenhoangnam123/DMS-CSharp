@@ -13,6 +13,7 @@ namespace DMS.RpcPublic
         public string Name { get; set; }
 
         public string Url { get; set; }
+        public string ThumbnailUrl { get; set; }
 
         public Public_ImageDTO() { }
         public Public_ImageDTO(Image Image)
@@ -20,6 +21,7 @@ namespace DMS.RpcPublic
             this.Id = Image.Id;
             this.Name = Image.Name;
             this.Url = Image.Url;
+            this.ThumbnailUrl = Image.ThumbnailUrl;
             this.Errors = Image.Errors;
         }
     }
@@ -32,6 +34,7 @@ namespace DMS.RpcPublic
         public StringFilter Name { get; set; }
 
         public StringFilter Url { get; set; }
+        public StringFilter ThumbnailUrl { get; set; }
 
         public IdFilter StoreCheckingId { get; set; }
         public IdFilter AlbumId { get; set; }

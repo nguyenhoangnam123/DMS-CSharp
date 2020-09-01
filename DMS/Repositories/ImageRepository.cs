@@ -37,6 +37,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.Url != null)
                 query = query.Where(q => q.Url, filter.Url);
+            if (filter.ThumbnailUrl != null)
+                query = query.Where(q => q.ThumbnailUrl, filter.ThumbnailUrl);
             if (filter.AlbumId != null)
             {
                 if (filter.AlbumId.Equal.HasValue)
@@ -75,6 +77,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Name, ImageFilter.Name);
                 if (ImageFilter.Url != null)
                     queryable = queryable.Where(q => q.Url, ImageFilter.Url);
+                if (ImageFilter.ThumbnailUrl != null)
+                    queryable = queryable.Where(q => q.ThumbnailUrl, ImageFilter.ThumbnailUrl);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -96,6 +100,9 @@ namespace DMS.Repositories
                         case ImageOrder.Url:
                             query = query.OrderBy(q => q.Url);
                             break;
+                        case ImageOrder.ThumbnailUrl:
+                            query = query.OrderBy(q => q.ThumbnailUrl);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -109,6 +116,9 @@ namespace DMS.Repositories
                             break;
                         case ImageOrder.Url:
                             query = query.OrderByDescending(q => q.Url);
+                            break;
+                        case ImageOrder.ThumbnailUrl:
+                            query = query.OrderByDescending(q => q.ThumbnailUrl);
                             break;
                     }
                     break;
@@ -124,6 +134,7 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(ImageSelect.Id) ? q.Id : default(long),
                 Name = filter.Selects.Contains(ImageSelect.Name) ? q.Name : default(string),
                 Url = filter.Selects.Contains(ImageSelect.Url) ? q.Url : default(string),
+                ThumbnailUrl = filter.Selects.Contains(ImageSelect.ThumbnailUrl) ? q.ThumbnailUrl : default(string),
             }).ToListAsync();
             return Images;
         }
@@ -153,6 +164,7 @@ namespace DMS.Repositories
                     Id = x.Id,
                     Name = x.Name,
                     Url = x.Url,
+                    ThumbnailUrl = x.ThumbnailUrl,
                 }).FirstOrDefaultAsync();
 
             if (Image == null)
@@ -166,6 +178,7 @@ namespace DMS.Repositories
             ImageDAO.Id = Image.Id;
             ImageDAO.Name = Image.Name;
             ImageDAO.Url = Image.Url;
+            ImageDAO.ThumbnailUrl = Image.ThumbnailUrl;
             ImageDAO.CreatedAt = StaticParams.DateTimeNow;
             ImageDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.BulkMergeAsync<ImageDAO>(new List<ImageDAO> { ImageDAO });

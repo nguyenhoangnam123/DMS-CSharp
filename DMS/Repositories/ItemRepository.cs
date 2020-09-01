@@ -368,7 +368,8 @@ namespace DMS.Repositories
                         {
                             Id = ItemImageMappingDAO.Image.Id,
                             Name = ItemImageMappingDAO.Image.Name,
-                            Url = ItemImageMappingDAO.Image.Url
+                            Url = ItemImageMappingDAO.Image.Url,
+                            ThumbnailUrl = ItemImageMappingDAO.Image.ThumbnailUrl
                         }
                     };
                     Item.ItemImageMappings.Add(ItemImageMapping);
@@ -386,7 +387,8 @@ namespace DMS.Repositories
                             {
                                 Id = ProductImageMappingDAO.Image.Id,
                                 Name = ProductImageMappingDAO.Image.Name,
-                                Url = ProductImageMappingDAO.Image.Url
+                                Url = ProductImageMappingDAO.Image.Url,
+                                ThumbnailUrl = ProductImageMappingDAO.Image.ThumbnailUrl
                             }
                         };
                         Item.ItemImageMappings.Add(ItemImageMapping);
@@ -504,6 +506,7 @@ namespace DMS.Repositories
                         Id = x.Image.Id,
                         Name = x.Image.Name,
                         Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
                     },
                 }).ToListAsync();
             if (Item.ItemImageMappings.Count == 0)
@@ -519,7 +522,8 @@ namespace DMS.Repositories
                         {
                             Id = ProductImageMappingDAO.Image.Id,
                             Name = ProductImageMappingDAO.Image.Name,
-                            Url = ProductImageMappingDAO.Image.Url
+                            Url = ProductImageMappingDAO.Image.Url,
+                            ThumbnailUrl = ProductImageMappingDAO.Image.ThumbnailUrl,
                         }
                     };
                     Item.ItemImageMappings.Add(ItemImageMapping);

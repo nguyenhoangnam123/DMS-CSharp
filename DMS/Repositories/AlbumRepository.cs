@@ -148,6 +148,7 @@ namespace DMS.Repositories
                                 Id = x.Image.Id,
                                 Name = x.Image.Name,
                                 Url = x.Image.Url,
+                                ThumbnailUrl = x.Image.ThumbnailUrl,
                             }
                         }).ToList();
                 }
@@ -200,6 +201,13 @@ namespace DMS.Repositories
                     ImageId = x.ImageId,
                     ShootingAt = x.ShootingAt,
                     StoreId = x.StoreId,
+                    Image = x.Image == null ? null : new Image
+                    {
+                        Id = x.Image.Id,
+                        Name = x.Image.Name,
+                        Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
+                    }
                 }).ToListAsync();
             return Album;
         }

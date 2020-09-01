@@ -960,7 +960,8 @@ namespace DMS.Rpc.store
             Image Image = new Image
             {
                 Name = file.FileName,
-                Content = memoryStream.ToArray()
+                Content = memoryStream.ToArray(),
+                Stream = file.OpenReadStream(),
             };
             Image = await StoreService.SaveImage(Image);
             if (Image == null)
@@ -970,6 +971,7 @@ namespace DMS.Rpc.store
                 Id = Image.Id,
                 Name = Image.Name,
                 Url = Image.Url,
+                ThumbnailUrl = Image.ThumbnailUrl,
             };
             return Ok(Store_ImageDTO);
         }
@@ -1128,6 +1130,7 @@ namespace DMS.Rpc.store
                         Id = x.Image.Id,
                         Name = x.Image.Name,
                         Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
                     }
                 }).ToList();
             Store.BaseLanguage = CurrentContext.Language;

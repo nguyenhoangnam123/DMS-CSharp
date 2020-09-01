@@ -38,7 +38,8 @@ namespace DMS.Services.MDirectSalesOrder
             ItemNotExisted,
             QuantityInvalid,
             SellerStoreEqualBuyerStore,
-            ContentEmpty
+            ContentEmpty,
+            DeliveryDateInvalid
         }
 
         private IUOW UOW;
@@ -116,6 +117,18 @@ namespace DMS.Services.MDirectSalesOrder
         {
             if (DirectSalesOrder.OrderDate == default(DateTime))
                 DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.OrderDate), ErrorCode.OrderDateEmpty);
+            return DirectSalesOrder.IsValidated;
+        }
+
+        private async Task<bool> ValidateDeliveryDate(DirectSalesOrder DirectSalesOrder)
+        {
+            if (DirectSalesOrder.DeliveryDate.HasValue)
+            {
+                if (DirectSalesOrder.DeliveryDate.Value < DirectSalesOrder.OrderDate)
+                {
+                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.DeliveryDate), ErrorCode.DeliveryDateInvalid);
+                }
+            }
             return DirectSalesOrder.IsValidated;
         }
 
@@ -290,6 +303,7 @@ namespace DMS.Services.MDirectSalesOrder
             await ValidateStore(DirectSalesOrder);
             await ValidateEmployee(DirectSalesOrder);
             await ValidateOrderDate(DirectSalesOrder);
+            await ValidateDeliveryDate(DirectSalesOrder);
             await ValidateContent(DirectSalesOrder);
             await ValidatePromotion(DirectSalesOrder);
             await ValidateEditedPrice(DirectSalesOrder);
@@ -303,6 +317,7 @@ namespace DMS.Services.MDirectSalesOrder
                 await ValidateStore(DirectSalesOrder);
                 await ValidateEmployee(DirectSalesOrder);
                 await ValidateOrderDate(DirectSalesOrder);
+                await ValidateDeliveryDate(DirectSalesOrder);
                 await ValidateContent(DirectSalesOrder);
                 await ValidatePromotion(DirectSalesOrder);
                 await ValidateEditedPrice(DirectSalesOrder);

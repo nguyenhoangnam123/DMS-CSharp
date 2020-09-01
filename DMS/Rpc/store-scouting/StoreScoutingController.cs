@@ -233,6 +233,19 @@ namespace DMS.Rpc.store_scouting
                 DistrictId = StoreScouting_StoreScoutingDTO.Ward.DistrictId,
                 StatusId = StoreScouting_StoreScoutingDTO.Ward.StatusId,
             };
+            StoreScouting.StoreScoutingImageMappings = StoreScouting_StoreScoutingDTO.StoreScoutingImageMappings?
+                .Select(x => new StoreScoutingImageMapping
+                {
+                    StoreScoutingId = x.StoreScoutingId,
+                    ImageId = x.ImageId,
+                    Image = new Image
+                    {
+                        Id = x.Image.Id,
+                        Name = x.Image.Name,
+                        Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
+                    }
+                }).ToList();
             StoreScouting.BaseLanguage = CurrentContext.Language;
             return StoreScouting;
         }

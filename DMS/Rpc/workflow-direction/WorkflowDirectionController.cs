@@ -311,9 +311,24 @@ namespace DMS.Rpc.workflow_direction
             {
                 Id = x.Id,
                 Value = x.Value,
+                ValueString = x.ValueString,
                 WorkflowDirectionId = x.WorkflowDirectionId,
                 WorkflowOperatorId = x.WorkflowOperatorId,
                 WorkflowParameterId = x.WorkflowParameterId,
+                WorkflowOperator = x.WorkflowOperator == null ? null : new WorkflowOperator
+                {
+                    Id = x.WorkflowOperator.Id,
+                    Code = x.WorkflowOperator.Code,
+                    Name = x.WorkflowOperator.Name,
+                },
+                WorkflowParameter = x.WorkflowParameter == null ? null : new WorkflowParameter
+                {
+                    Id = x.WorkflowParameter.Id,
+                    Code = x.WorkflowParameter.Code,
+                    Name = x.WorkflowParameter.Name,
+                    WorkflowParameterTypeId = x.WorkflowParameter.WorkflowParameterTypeId,
+                    WorkflowTypeId = x.WorkflowParameter.WorkflowTypeId,
+                }
             }).ToList();
             WorkflowDirection.BaseLanguage = CurrentContext.Language;
             return WorkflowDirection;

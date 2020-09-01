@@ -256,6 +256,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                                                      {
                                                          Id = scim.Image.Id,
                                                          Url = scim.Image.Url,
+                                                         ThumbnailUrl = scim.Image.ThumbnailUrl,
                                                          Name = scim.Image.Name,
                                                      }
                                                  };
@@ -309,6 +310,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                     Id = Image.Id,
                     Name = Image.Name,
                     Url = Image.Url,
+                    ThumbnailUrl = Image.ThumbnailUrl,
                 },
                 StoreChecking = new MonitorStoreAlbum_StoreCheckingDTO
                 {

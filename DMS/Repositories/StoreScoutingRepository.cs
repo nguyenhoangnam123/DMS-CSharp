@@ -462,6 +462,20 @@ namespace DMS.Repositories
             {
                 StoreScouting.StoreId = StoreScouting.Store.Id;
             }
+
+            StoreScouting.StoreScoutingImageMappings = await DataContext.StoreScoutingImageMapping
+                .Where(x => x.StoreScoutingId == Id).Select(x => new StoreScoutingImageMapping
+                {
+                    StoreScoutingId = x.StoreScoutingId,
+                    ImageId = x.ImageId,
+                    Image = new Image
+                    {
+                        Id = x.Image.Id,
+                        Name = x.Image.Name,
+                        Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
+                    }
+                }).ToListAsync();
             return StoreScouting;
         }
         public async Task<bool> Create(StoreScouting StoreScouting)
@@ -555,6 +569,19 @@ namespace DMS.Repositories
 
         private async Task SaveReference(StoreScouting StoreScouting)
         {
+            await DataContext.StoreScoutingImageMapping.Where(x => x.StoreScoutingId == StoreScouting.Id).DeleteFromQueryAsync();
+            List<StoreScoutingImageMappingDAO> StoreScoutingImageMappingDAOs = new List<StoreScoutingImageMappingDAO>();
+            if (StoreScouting.StoreScoutingImageMappings != null)
+            {
+                foreach (StoreScoutingImageMapping StoreScoutingImageMapping in StoreScouting.StoreScoutingImageMappings)
+                {
+                    StoreScoutingImageMappingDAO StoreScoutingImageMappingDAO = new StoreScoutingImageMappingDAO();
+                    StoreScoutingImageMappingDAO.StoreScoutingId = StoreScouting.Id;
+                    StoreScoutingImageMappingDAO.ImageId = StoreScoutingImageMapping.ImageId;
+                    StoreScoutingImageMappingDAOs.Add(StoreScoutingImageMappingDAO);
+                }
+                await DataContext.StoreScoutingImageMapping.BulkMergeAsync(StoreScoutingImageMappingDAOs);
+            }
         }
         
     }

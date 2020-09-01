@@ -4,18 +4,21 @@ using DMS.Helpers;
 using DMS.Repositories;
 using Helpers;
 using RestSharp;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-
+using SixLabors.ImageSharp;
 namespace DMS.Services.MImage
 {
     public interface IImageService : IServiceScoped
     {
-        Task<List<Image>> List(ImageFilter ImageFilter);
-        Task<Image> Get(long Id);
-        Task<Image> Create(Image Image, string path);
-        Task<Image> Delete(Image Image);
+        Task<List<DMS.Entities.Image>> List(ImageFilter ImageFilter);
+        Task<DMS.Entities.Image> Get(long Id);
+        Task<DMS.Entities.Image> Create(DMS.Entities.Image Image, string path);
+        Task<DMS.Entities.Image> Create(DMS.Entities.Image Image, string path, string thumbnailPath, int width, int height);
+        Task<DMS.Entities.Image> Delete(DMS.Entities.Image Image);
     }
 
     public class ImageService : BaseService, IImageService
@@ -59,11 +62,11 @@ namespace DMS.Services.MImage
             }
         }
 
-        public async Task<List<Image>> List(ImageFilter ImageFilter)
+        public async Task<List<DMS.Entities.Image>> List(ImageFilter ImageFilter)
         {
             try
             {
-                List<Image> Images = await UOW.ImageRepository.List(ImageFilter);
+                List<DMS.Entities.Image> Images = await UOW.ImageRepository.List(ImageFilter);
                 return Images;
             }
             catch (Exception ex)
@@ -80,15 +83,15 @@ namespace DMS.Services.MImage
                 }
             }
         }
-        public async Task<Image> Get(long Id)
+        public async Task<DMS.Entities.Image> Get(long Id)
         {
-            Image Image = await UOW.ImageRepository.Get(Id);
+            DMS.Entities.Image Image = await UOW.ImageRepository.Get(Id);
             if (Image == null)
                 return null;
             return Image;
         }
 
-        public async Task<Image> Delete(Image Image)
+        public async Task<DMS.Entities.Image> Delete(DMS.Entities.Image Image)
         {
             if (!await ImageValidator.Delete(Image))
                 return Image;
@@ -117,8 +120,7 @@ namespace DMS.Services.MImage
             }
         }
 
-
-        public async Task<Image> Create(Image Image, string path)
+        public async Task<DMS.Entities.Image> Create(DMS.Entities.Image Image, string path)
         {
             RestClient restClient = new RestClient(InternalServices.UTILS);
             RestRequest restRequest = new RestRequest("/rpc/utils/file/upload");
@@ -136,17 +138,79 @@ namespace DMS.Services.MImage
                 {
                     Image.Id = response.Data.Id;
                     Image.Url = "/rpc/utils/file/download" + response.Data.Path;
-                    await UOW.Begin();
-                    await UOW.ImageRepository.Create(Image);
-                    await UOW.Commit();
-                    return Image;
                 }
+                await UOW.Begin();
+                await UOW.ImageRepository.Create(Image);
+                await UOW.Commit();
+                return Image;
             }
             catch
             {
                 return null;
             }
             return null;
+        }
+
+        public async Task<DMS.Entities.Image> Create(DMS.Entities.Image Image, string path, string thumbnailPath, int width, int height)
+        {
+            MemoryStream output = new MemoryStream();
+            using (SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(Image.Stream, out SixLabors.ImageSharp.Formats.IImageFormat format))
+            {
+                image.Mutate(x => x
+                     .Resize(width, height));
+                image.Save(output, format); // Automatic encoder selected based on extension.
+            }
+
+
+            RestClient restClient = new RestClient(InternalServices.UTILS);
+            RestRequest restRequest = new RestRequest("/rpc/utils/file/upload");
+            restRequest.RequestFormat = DataFormat.Json;
+            restRequest.Method = Method.POST;
+            restRequest.AddCookie("Token", CurrentContext.Token);
+            restRequest.AddCookie("X-Language", CurrentContext.Language);
+            restRequest.AddHeader("Content-Type", "multipart/form-data");
+            restRequest.AddFile("file", Image.Content, Image.Name);
+            restRequest.AddParameter("path", path);
+            try
+            {
+                var response = restClient.Execute<File>(restRequest);
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    Image.Id = response.Data.Id;
+                    Image.Url = "/rpc/utils/file/download" + response.Data.Path;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+
+            restClient = new RestClient(InternalServices.UTILS);
+            restRequest = new RestRequest("/rpc/utils/file/upload");
+            restRequest.RequestFormat = DataFormat.Json;
+            restRequest.Method = Method.POST;
+            restRequest.AddCookie("Token", CurrentContext.Token);
+            restRequest.AddCookie("X-Language", CurrentContext.Language);
+            restRequest.AddHeader("Content-Type", "multipart/form-data");
+            restRequest.AddFile("file", output.ToArray(), $"thumbs_{Image.Name}");
+            restRequest.AddParameter("path", thumbnailPath);
+            try
+            {
+                var response = restClient.Execute<File>(restRequest);
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    Image.ThumbnailUrl = "/rpc/utils/file/download" + response.Data.Path;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+
+            await UOW.Begin();
+            await UOW.ImageRepository.Create(Image);
+            await UOW.Commit();
+            return Image;
         }
 
         public class File

@@ -67,6 +67,7 @@ namespace DMS.Entities
         Content = 7,
         ProblemStatus = 8,
         Code = 9,
+        Organization = 10
     }
 
     [Flags]

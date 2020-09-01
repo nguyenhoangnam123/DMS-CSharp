@@ -264,6 +264,7 @@ namespace DMS.Rpc.product
                         Id = x.Image.Id,
                         Name = x.Image.Name,
                         Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
                     },
                 }).ToList();
             Product.ProductProductGroupingMappings = Product_ProductDTO.ProductProductGroupingMappings?

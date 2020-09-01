@@ -303,8 +303,8 @@ namespace DMS.Rpc.survey
 
                     string AppUserName = appUsers.Where(a => a.Id == AppUserId).Select(a => a.DisplayName).FirstOrDefault();
                     string Time = SurveyResult.Time.ToString("dd/MM/yyyy");
-                    string StoreCode = SurveyResult.Store.Code;
-                    string StoreName = SurveyResult.Store.Name;
+                    string StoreCode = SurveyResult.Store?.Code;
+                    string StoreName = SurveyResult.Store?.Name;
                     optionResults.Add(Time);
                     optionResults.Add(StoreName);
                     optionResults.Add(StoreCode);

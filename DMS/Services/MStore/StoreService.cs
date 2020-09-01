@@ -184,6 +184,19 @@ namespace DMS.Services.MStore
                         Unread = false
                     };
                     UserNotifications.Add(UserNotification);
+
+                    Store.StoreImageMappings = StoreScouting.StoreScoutingImageMappings?.Select(x => new StoreImageMapping
+                    {
+                        StoreId = Store.Id,
+                        ImageId = x.ImageId,
+                        Image = new Image
+                        {
+                            Id = x.Image.Id,
+                            Name = x.Image.Name,
+                            Url = x.Image.Url,
+                        }
+                    }).ToList();
+                    await UOW.StoreRepository.Update(Store);
                 }
                 await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(Store));
                 await UOW.Commit();
@@ -498,7 +511,8 @@ namespace DMS.Services.MStore
         {
             FileInfo fileInfo = new FileInfo(Image.Name);
             string path = $"/store/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
-            Image = await ImageService.Create(Image, path);
+            string thumbnailPath = $"/store/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            Image = await ImageService.Create(Image, path, thumbnailPath, 128, 128);
             return Image;
         }
 

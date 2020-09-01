@@ -11,6 +11,7 @@ namespace DMS.Rpc.direct_sales_order
         public string Name { get; set; }
 
         public string Url { get; set; }
+        public string ThumbnailUrl { get; set; }
 
 
         public DirectSalesOrder_ImageDTO() { }
@@ -22,6 +23,7 @@ namespace DMS.Rpc.direct_sales_order
             this.Name = Image.Name;
 
             this.Url = Image.Url;
+            this.ThumbnailUrl = Image.ThumbnailUrl;
 
         }
     }
@@ -34,6 +36,7 @@ namespace DMS.Rpc.direct_sales_order
         public StringFilter Name { get; set; }
 
         public StringFilter Url { get; set; }
+        public StringFilter ThumbnailUrl { get; set; }
 
         public ImageOrder OrderBy { get; set; }
     }

@@ -520,7 +520,8 @@ namespace DMS.Repositories
                     {
                         Id = x.Image.Id,
                         Name = x.Image.Name,
-                        Url = x.Image.Url
+                        Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
                     }
                 }).ToList() : null,
                 Used = q.Used,
@@ -704,7 +705,8 @@ namespace DMS.Repositories
                     {
                         Id = x.Image.Id,
                         Name = x.Image.Name,
-                        Url = x.Image.Url
+                        Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
                     }
                 }).ToListAsync();
             return Store;

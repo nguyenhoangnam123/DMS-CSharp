@@ -171,9 +171,11 @@ namespace DMS.Services.MERoute
             try
             {
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                var SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
                 var oldData = await UOW.ERouteRepository.Get(ERoute.Id);
                 int diff = (7 + (ERoute.StartDate.DayOfWeek - DayOfWeek.Monday)) % 7;
                 ERoute.RealStartDate = ERoute.StartDate.AddDays(-1 * diff);
+                ERoute.OrganizationId = SaleEmployee.OrganizationId.Value;
                 await UOW.Begin();
                 await UOW.ERouteRepository.Update(ERoute);
                 await UOW.Commit();

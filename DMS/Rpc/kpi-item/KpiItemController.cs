@@ -223,6 +223,9 @@ namespace DMS.Rpc.kpi_item
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            if (!FileInfo.Extension.Equals(".xlsx"))
+                return BadRequest("Định dạng file không hợp lệ");
 
             var AppUser = await AppUserService.Get(CurrentContext.UserId);
 
@@ -248,9 +251,10 @@ namespace DMS.Rpc.kpi_item
             StringBuilder errorContent = new StringBuilder();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["KPI san pham"];
                 if (worksheet == null)
-                    return Ok(KpiItems);
+                    return BadRequest("File không đúng biểu mẫu import");
+
                 int StartColumn = 1;
                 int StartRow = 5;
                 int UsernameColumn = 0 + StartColumn;

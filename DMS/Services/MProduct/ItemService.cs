@@ -322,7 +322,8 @@ namespace DMS.Services.MProduct
         {
             FileInfo fileInfo = new FileInfo(Image.Name);
             string path = $"/item/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
-            Image = await ImageService.Create(Image, path);
+            string thumbnailPath = $"/item/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            Image = await ImageService.Create(Image, path, thumbnailPath, 128, 128);
             return Image;
         }
     }
