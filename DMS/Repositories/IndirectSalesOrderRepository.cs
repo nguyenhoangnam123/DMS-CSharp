@@ -735,7 +735,6 @@ namespace DMS.Repositories
         public async Task<bool> Create(IndirectSalesOrder IndirectSalesOrder)
         {
             IndirectSalesOrderDAO IndirectSalesOrderDAO = new IndirectSalesOrderDAO();
-            IndirectSalesOrderDAO.Id = IndirectSalesOrder.Id;
             IndirectSalesOrderDAO.Code = IndirectSalesOrder.Code;
             IndirectSalesOrderDAO.OrganizationId = IndirectSalesOrder.OrganizationId;
             IndirectSalesOrderDAO.BuyerStoreId = IndirectSalesOrder.BuyerStoreId;

@@ -561,7 +561,8 @@ namespace DMS.Rpc
                 }
             }
             ActionPageMappingDAOs = ActionPageMappingDAOs.Distinct().ToList();
-            DataContext.BulkMerge(ActionPageMappingDAOs);
+            DataContext.ActionPageMapping.DeleteFromQuery();
+            DataContext.BulkInsert(ActionPageMappingDAOs);
         }
         #endregion
 
@@ -961,6 +962,16 @@ namespace DMS.Rpc
                 WorkflowTypeId = WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id,
             }).ToList();
             WorkflowParameterDAOs.AddRange(INDIRECT_SALES_ORDER_PARAMETER);
+
+            List<WorkflowParameterDAO> DIRECT_SALES_ORDER_PARAMETER = WorkflowParameterEnum.DirectSalesOrderEnumList.Select(item => new WorkflowParameterDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+                WorkflowParameterTypeId = long.Parse(item.Value),
+                WorkflowTypeId = WorkflowTypeEnum.DIRECT_SALES_ORDER.Id,
+            }).ToList();
+            WorkflowParameterDAOs.AddRange(DIRECT_SALES_ORDER_PARAMETER);
 
             List<WorkflowParameterDAO> PRICE_LIST_PARAMETER = WorkflowParameterEnum.PriceListEnumList.Select(item => new WorkflowParameterDAO
             {
