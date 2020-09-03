@@ -17,6 +17,7 @@ namespace DMS.Entities
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public AppUser Creator { get; set; }
