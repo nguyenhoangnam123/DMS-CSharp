@@ -260,6 +260,7 @@ namespace DMS.Repositories
                 StatusId = x.StatusId,
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
+                Used = x.Used,
                 Creator = x.Creator == null ? null : new AppUser
                 {
                     Id = x.Creator.Id,

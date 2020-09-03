@@ -130,9 +130,19 @@ namespace DMS.Services.MWorkflow
             try
             {
                 var oldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
-                WorkflowDefinition.ModifierId = CurrentContext.UserId;
                 await UOW.Begin();
-                await UOW.WorkflowDefinitionRepository.Update(WorkflowDefinition);
+                if (oldData.Used)
+                {
+                    WorkflowDefinition = Helpers.Utils.Clone(oldData);
+                    WorkflowDefinition.Id = 0;
+                    WorkflowDefinition.CreatorId = CurrentContext.UserId;
+                    await UOW.WorkflowDefinitionRepository.Create(WorkflowDefinition);
+                }
+                else
+                {
+                    WorkflowDefinition.ModifierId = CurrentContext.UserId;
+                    await UOW.WorkflowDefinitionRepository.Update(WorkflowDefinition);
+                }
                 await UOW.Commit();
 
                 var newData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
