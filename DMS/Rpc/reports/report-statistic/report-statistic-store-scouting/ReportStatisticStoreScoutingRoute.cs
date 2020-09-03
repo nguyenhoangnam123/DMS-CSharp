@@ -8,8 +8,8 @@ namespace DMS.Rpc.reports.report_statistic.report_statistic_store_scouting
 {
     public class ReportStatisticStoreScoutingRoute : Root
     {
-        public const string Parent = Module + "/report-statistic-store-scouting";
-        public const string Master = Module + "/report-statistic-store-scouting/statistic-store-scouting-report-master";
+        public const string Parent = Module + "/store-report";
+        public const string Master = Module + "/store-report/statistic-store-scouting-report-master";
 
         private const string Default = Rpc + Module + "/statistic-store-scouting-report";
         public const string Count = Default + "/count";
