@@ -1,0 +1,35 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM truesight.asia:8443/aspnet:3.1-buster-slim AS base
+WORKDIR /app
+RUN apt-get update && apt-get install -y net-tools curl iputils-ping telnetd nano vim libc6-dev libgdiplus
+
+FROM truesight.asia:8443/dotnet-sdk:3.1-buster AS build
+WORKDIR /src
+COPY ["StoreApp.csproj", "./"]
+RUN dotnet restore "StoreApp.csproj"
+COPY . .
+WORKDIR "/src"
+RUN dotnet build "StoreApp.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "StoreApp.csproj" -c Release -o /app/publish
+
+FROM base AS final
+
+WORKDIR /app
+
+COPY --from=truesight.asia:8443/consul:stable /bin/consul /usr/local/bin/consul
+COPY --from=truesight.asia:8443/envoy:stable /usr/local/bin/envoy /usr/local/bin/envoy
+
+COPY /consul /consul/config 
+
+COPY --from=publish /app/publish .
+
+COPY ["docker-entrypoint.sh", "."]
+
+RUN chmod a+x docker-entrypoint.sh
+
+CMD ["./docker-entrypoint.sh"]
+
+EXPOSE 80
