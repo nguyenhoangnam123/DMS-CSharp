@@ -163,7 +163,8 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.IndirectSalesOrderRepository.Create(IndirectSalesOrder);
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);
-                await WorkflowService.Initialize(IndirectSalesOrder.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(IndirectSalesOrder));
+                Dictionary<string, string> Paramters = await MapParameters(IndirectSalesOrder);
+                await WorkflowService.Initialize(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Paramters);
                 await UOW.Commit();
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
 
@@ -622,7 +623,7 @@ namespace DMS.Services.MIndirectSalesOrder
             };
             var OrganizationIds = (await UOW.OrganizationRepository.List(OrganizationFilter)).Select(x => x.Id).ToList();
 
-            
+
             var ItemIds = Items.Select(x => x.Id).ToList();
             Dictionary<long, decimal> result = new Dictionary<long, decimal>();
             PriceListItemMappingFilter PriceListItemMappingFilter = new PriceListItemMappingFilter
@@ -697,7 +698,7 @@ namespace DMS.Services.MIndirectSalesOrder
 
             //Áp giá theo cấu hình
             //Ưu tiên lấy giá thấp hơn
-            if(SystemConfiguration.PRIORITY_USE_PRICE_LIST == 0)
+            if (SystemConfiguration.PRIORITY_USE_PRICE_LIST == 0)
             {
                 foreach (var ItemId in ItemIds)
                 {
@@ -752,7 +753,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     }
                 }
             }
-            
+
             return Items;
         }
 
@@ -762,7 +763,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 IndirectSalesOrder = await Create(IndirectSalesOrder);
             else
                 IndirectSalesOrder = await Update(IndirectSalesOrder);
-            Dictionary<string, string> Parameters = MapParameters(IndirectSalesOrder);
+            Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
             bool Approved = await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
             if (Approved == false)
                 return null;
@@ -772,18 +773,29 @@ namespace DMS.Services.MIndirectSalesOrder
         public async Task<IndirectSalesOrder> Reject(IndirectSalesOrder IndirectSalesOrder)
         {
             IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
-            Dictionary<string, string> Parameters = MapParameters(IndirectSalesOrder);
+            Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
             bool Rejected = await WorkflowService.Reject(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
             if (Rejected == false)
                 return null;
             return await Get(IndirectSalesOrder.Id);
         }
 
-        private Dictionary<string, string> MapParameters(IndirectSalesOrder IndirectSalesOrder)
+        private async Task<Dictionary<string, string>> MapParameters(IndirectSalesOrder IndirectSalesOrder)
         {
             Dictionary<string, string> Parameters = new Dictionary<string, string>();
             Parameters.Add(nameof(IndirectSalesOrder.Id), IndirectSalesOrder.Id.ToString());
             Parameters.Add(nameof(IndirectSalesOrder.Code), IndirectSalesOrder.Code);
+            Parameters.Add(nameof(IndirectSalesOrder.SaleEmployeeId), IndirectSalesOrder.SaleEmployeeId.ToString());
+            Parameters.Add(nameof(IndirectSalesOrder.BuyerStoreId), IndirectSalesOrder.BuyerStoreId.ToString());
+            Parameters.Add(nameof(IndirectSalesOrder.Total), IndirectSalesOrder.Total.ToString());
+            Parameters.Add(nameof(IndirectSalesOrder.TotalDiscountAmount), IndirectSalesOrder.TotalDiscountAmount.ToString());
+            Parameters.Add(nameof(IndirectSalesOrder.TotalQuantity), IndirectSalesOrder.TotalQuantity.ToString());
+            Parameters.Add(nameof(IndirectSalesOrder.OrganizationId), IndirectSalesOrder.OrganizationId.ToString());
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(IndirectSalesOrder.RowId);
+            if (RequestWorkflowDefinitionMapping == null)
+                Parameters.Add(nameof(RequestState), RequestStateEnum.NEW.Id.ToString());
+            else
+                Parameters.Add(nameof(RequestState), RequestWorkflowDefinitionMapping.RequestStateId.ToString());
             Parameters.Add("Username", CurrentContext.UserName);
             return Parameters;
         }

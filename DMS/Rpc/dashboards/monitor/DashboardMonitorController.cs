@@ -272,6 +272,7 @@ namespace DMS.Rpc.dashboards.monitor
         {
             var appUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from i in DataContext.IndirectSalesOrder
+                        join r in DataContext.RequestWorkflowDefinitionMapping on i.RowId equals r.RequestId
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where appUser.OrganizationId.HasValue && o.Path.StartsWith(appUser.Organization.Path)
@@ -281,7 +282,7 @@ namespace DMS.Rpc.dashboards.monitor
                             Id = i.Id,
                             Code = i.Code,
                             OrderDate = i.OrderDate,
-                            RequestStateId = i.RequestStateId,
+                            RequestStateId = r.RequestStateId,
                             SaleEmployeeId = i.SaleEmployeeId,
                             Total = i.Total,
                             SaleEmployee = i.SaleEmployee == null ? null : new DashboardMonitor_AppUserDTO
@@ -290,11 +291,11 @@ namespace DMS.Rpc.dashboards.monitor
                                 DisplayName = i.SaleEmployee.DisplayName,
                                 Username = i.SaleEmployee.Username,
                             },
-                            RequestState = i.RequestState == null ? null : new DashboardMonitor_RequestStateDTO
+                            RequestState = r.RequestState == null ? null : new DashboardMonitor_RequestStateDTO
                             {
-                                Id = i.RequestState.Id,
-                                Code = i.RequestState.Code,
-                                Name = i.RequestState.Name,
+                                Id = r.RequestState.Id,
+                                Code = r.RequestState.Code,
+                                Name = r.RequestState.Name,
                             }
                         };
 

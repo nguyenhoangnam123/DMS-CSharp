@@ -50,7 +50,6 @@ namespace DMS.Models
         /// Ngày giao hàng
         /// </summary>
         public DateTime? DeliveryDate { get; set; }
-        public long RequestStateId { get; set; }
         /// <summary>
         /// Sửa giá
         /// </summary>
@@ -88,7 +87,6 @@ namespace DMS.Models
         public virtual StoreDAO BuyerStore { get; set; }
         public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
-        public virtual RequestStateDAO RequestState { get; set; }
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StoreDAO SellerStore { get; set; }
         public virtual ICollection<IndirectSalesOrderContentDAO> IndirectSalesOrderContents { get; set; }

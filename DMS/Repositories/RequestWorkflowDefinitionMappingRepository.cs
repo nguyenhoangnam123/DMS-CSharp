@@ -64,6 +64,7 @@ namespace DMS.Repositories
                     RequestId = RequestWorkflowDefinitionMapping.RequestId,
                     RequestStateId = RequestWorkflowDefinitionMapping.RequestStateId,
                     WorkflowDefinitionId = RequestWorkflowDefinitionMapping.WorkflowDefinitionId,
+                    CreatorId = RequestWorkflowDefinitionMapping.CreatorId,
                 };
                 DataContext.RequestWorkflowDefinitionMapping.Add(RequestWorkflowDefinitionMappingDAO);
             }

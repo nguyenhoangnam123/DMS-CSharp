@@ -91,7 +91,14 @@ namespace DMS.Repositories
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
             if (filter.RequestStateId != null)
-                query = query.Where(q => q.RequestStateId, filter.RequestStateId);
+            {
+                query = from q in query
+                        join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
+                        where
+                        (filter.RequestStateId.Equal.HasValue && r.RequestStateId == filter.RequestStateId.Equal.Value) ||
+                        (filter.RequestStateId.NotEqual.HasValue && r.RequestStateId != filter.RequestStateId.NotEqual.Value)
+                        select q;
+            }
             if (filter.SubTotal != null)
                 query = query.Where(q => q.SubTotal, filter.SubTotal);
             if (filter.GeneralDiscountPercentage != null)
@@ -171,8 +178,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.EditedPriceStatusId, IndirectSalesOrderFilter.EditedPriceStatusId);
                 if (IndirectSalesOrderFilter.Note != null)
                     queryable = queryable.Where(q => q.Note, IndirectSalesOrderFilter.Note);
-                if (IndirectSalesOrderFilter.RequestStateId != null)
-                    queryable = queryable.Where(q => q.RequestStateId, IndirectSalesOrderFilter.RequestStateId);
                 if (IndirectSalesOrderFilter.SubTotal != null)
                     queryable = queryable.Where(q => q.SubTotal, IndirectSalesOrderFilter.SubTotal);
                 if (IndirectSalesOrderFilter.GeneralDiscountPercentage != null)
@@ -234,9 +239,6 @@ namespace DMS.Repositories
                         case IndirectSalesOrderOrder.Note:
                             query = query.OrderBy(q => q.Note);
                             break;
-                        case IndirectSalesOrderOrder.RequestState:
-                            query = query.OrderBy(q => q.RequestStateId);
-                            break;
                         case IndirectSalesOrderOrder.SubTotal:
                             query = query.OrderBy(q => q.SubTotal);
                             break;
@@ -296,9 +298,6 @@ namespace DMS.Repositories
                         case IndirectSalesOrderOrder.Note:
                             query = query.OrderByDescending(q => q.Note);
                             break;
-                        case IndirectSalesOrderOrder.RequestState:
-                            query = query.OrderByDescending(q => q.RequestStateId);
-                            break;
                         case IndirectSalesOrderOrder.SubTotal:
                             query = query.OrderByDescending(q => q.SubTotal);
                             break;
@@ -338,7 +337,6 @@ namespace DMS.Repositories
                 DeliveryDate = filter.Selects.Contains(IndirectSalesOrderSelect.DeliveryDate) ? q.DeliveryDate : default(DateTime?),
                 EditedPriceStatusId = filter.Selects.Contains(IndirectSalesOrderSelect.EditedPriceStatus) ? q.EditedPriceStatusId : default(long),
                 Note = filter.Selects.Contains(IndirectSalesOrderSelect.Note) ? q.Note : default(string),
-                RequestStateId = filter.Selects.Contains(IndirectSalesOrderSelect.RequestState) ? q.RequestStateId : default(long),
                 SubTotal = filter.Selects.Contains(IndirectSalesOrderSelect.SubTotal) ? q.SubTotal : default(long),
                 GeneralDiscountPercentage = filter.Selects.Contains(IndirectSalesOrderSelect.GeneralDiscountPercentage) ? q.GeneralDiscountPercentage : default(long?),
                 GeneralDiscountAmount = filter.Selects.Contains(IndirectSalesOrderSelect.GeneralDiscountAmount) ? q.GeneralDiscountAmount : default(long?),
@@ -390,12 +388,6 @@ namespace DMS.Repositories
                     StatusId = q.Organization.StatusId,
                     Level = q.Organization.Level
                 } : null,
-                RequestState = filter.Selects.Contains(IndirectSalesOrderSelect.RequestState) && q.RequestState != null ? new RequestState
-                {
-                    Id = q.RequestState.Id,
-                    Code = q.RequestState.Code,
-                    Name = q.RequestState.Name,
-                } : null,
                 SaleEmployee = filter.Selects.Contains(IndirectSalesOrderSelect.SaleEmployee) && q.SaleEmployee != null ? new AppUser
                 {
                     Id = q.SaleEmployee.Id,
@@ -433,6 +425,28 @@ namespace DMS.Repositories
                     StatusId = q.SellerStore.StatusId,
                 } : null,
             }).ToListAsync();
+
+            List<Guid> RowIds = IndirectSalesOrders.Select(x => x.RowId).ToList();
+            List<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMappingDAOs = await DataContext.RequestWorkflowDefinitionMapping
+                .Where(x => RowIds.Contains(x.RequestId))
+                .Include(x => x.RequestState)
+                .ToListAsync();
+
+
+            foreach (IndirectSalesOrder IndirectSalesOrder in IndirectSalesOrders)
+            {
+                RequestWorkflowDefinitionMappingDAO RequestWorkflowDefinitionMappingDAO = RequestWorkflowDefinitionMappingDAOs
+                    .Where(x => x.RequestId == IndirectSalesOrder.RowId)
+                    .FirstOrDefault();
+                IndirectSalesOrder.RequestStateId = RequestWorkflowDefinitionMappingDAO.RequestStateId;
+                IndirectSalesOrder.RequestState = new RequestState
+                {
+                    Id = RequestWorkflowDefinitionMappingDAO.RequestState.Id,
+                    Code = RequestWorkflowDefinitionMappingDAO.RequestState.Code,
+                    Name = RequestWorkflowDefinitionMappingDAO.RequestState.Name,
+                };
+            }
+
             return IndirectSalesOrders;
         }
 
@@ -471,7 +485,6 @@ namespace DMS.Repositories
                 DeliveryDate = x.DeliveryDate,
                 EditedPriceStatusId = x.EditedPriceStatusId,
                 Note = x.Note,
-                RequestStateId = x.RequestStateId,
                 SubTotal = x.SubTotal,
                 GeneralDiscountPercentage = x.GeneralDiscountPercentage,
                 GeneralDiscountAmount = x.GeneralDiscountAmount,
@@ -525,12 +538,6 @@ namespace DMS.Repositories
                     StatusId = x.Organization.StatusId,
                     Level = x.Organization.Level
                 },
-                RequestState = x.RequestState == null ? null : new RequestState
-                {
-                    Id = x.RequestState.Id,
-                    Code = x.RequestState.Code,
-                    Name = x.RequestState.Name,
-                },
                 SaleEmployee = x.SaleEmployee == null ? null : new AppUser
                 {
                     Id = x.SaleEmployee.Id,
@@ -571,6 +578,28 @@ namespace DMS.Repositories
 
             if (IndirectSalesOrder == null)
                 return null;
+            RequestWorkflowDefinitionMappingDAO RequestWorkflowDefinitionMappingDAO = await DataContext.RequestWorkflowDefinitionMapping
+               .Where(x => IndirectSalesOrder.RowId == x.RequestId)
+               .Include(x => x.RequestState)
+               .FirstOrDefaultAsync();
+            IndirectSalesOrder.RequestStateId = RequestWorkflowDefinitionMappingDAO.RequestStateId;
+            IndirectSalesOrder.RequestState = new RequestState
+            {
+                Id = RequestWorkflowDefinitionMappingDAO.RequestState.Id,
+                Code = RequestWorkflowDefinitionMappingDAO.RequestState.Code,
+                Name = RequestWorkflowDefinitionMappingDAO.RequestState.Name,
+            };
+
+            decimal GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount.HasValue ? IndirectSalesOrder.GeneralDiscountAmount.Value : 0;
+            decimal DiscountAmount = IndirectSalesOrder.IndirectSalesOrderContents
+                .Select(x => x.DiscountAmount.GetValueOrDefault(0))
+                .DefaultIfEmpty(0)
+                .Sum();
+            IndirectSalesOrder.TotalDiscountAmount = GeneralDiscountAmount + DiscountAmount;
+            IndirectSalesOrder.TotalQuantity = IndirectSalesOrder.IndirectSalesOrderContents
+                .Select(x => x.Quantity)
+                .Sum();
+
             IndirectSalesOrder.IndirectSalesOrderContents = await DataContext.IndirectSalesOrderContent.AsNoTracking()
                 .Where(x => x.IndirectSalesOrderId == IndirectSalesOrder.Id)
                 .Select(x => new IndirectSalesOrderContent
@@ -747,7 +776,6 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.DeliveryDate = IndirectSalesOrder.DeliveryDate;
             IndirectSalesOrderDAO.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
             IndirectSalesOrderDAO.Note = IndirectSalesOrder.Note;
-            IndirectSalesOrderDAO.RequestStateId = IndirectSalesOrder.RequestStateId;
             IndirectSalesOrderDAO.SubTotal = IndirectSalesOrder.SubTotal;
             IndirectSalesOrderDAO.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
             IndirectSalesOrderDAO.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
@@ -781,7 +809,6 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.DeliveryDate = IndirectSalesOrder.DeliveryDate;
             IndirectSalesOrderDAO.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
             IndirectSalesOrderDAO.Note = IndirectSalesOrder.Note;
-            IndirectSalesOrderDAO.RequestStateId = IndirectSalesOrder.RequestStateId;
             IndirectSalesOrderDAO.SubTotal = IndirectSalesOrder.SubTotal;
             IndirectSalesOrderDAO.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
             IndirectSalesOrderDAO.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
@@ -821,7 +848,6 @@ namespace DMS.Repositories
                 IndirectSalesOrderDAO.DeliveryDate = IndirectSalesOrder.DeliveryDate;
                 IndirectSalesOrderDAO.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
                 IndirectSalesOrderDAO.Note = IndirectSalesOrder.Note;
-                IndirectSalesOrderDAO.RequestStateId = IndirectSalesOrder.RequestStateId;
                 IndirectSalesOrderDAO.SubTotal = IndirectSalesOrder.SubTotal;
                 IndirectSalesOrderDAO.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
                 IndirectSalesOrderDAO.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
@@ -899,7 +925,7 @@ namespace DMS.Repositories
 
             await DataContext.IndirectSalesOrderTransaction.Where(x => x.IndirectSalesOrderId == IndirectSalesOrder.Id).DeleteFromQueryAsync();
             List<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactionDAOs = new List<IndirectSalesOrderTransactionDAO>();
-            if(IndirectSalesOrder.IndirectSalesOrderContents != null)
+            if (IndirectSalesOrder.IndirectSalesOrderContents != null)
             {
                 foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                 {
