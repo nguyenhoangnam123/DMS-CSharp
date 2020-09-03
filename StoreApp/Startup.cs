@@ -21,6 +21,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using Prometheus;
 using StoreApp.Models;
 using StoreApp.Rpc;
 using Winton.Extensions.Configuration.Consul;
@@ -153,19 +154,27 @@ namespace StoreApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
             app.UseRouting();
-
+            app.UseHttpMetrics();
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+            app.UseGleamTech();
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapMetrics("metrics");
             });
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = "rpc/store-app/swagger/{documentname}/swagger.json";
+            });
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/rpc/store-app/swagger/v1/swagger.json", "store-app API");
+                c.RoutePrefix = "rpc/store-app/swagger";
+            });
+            app.UseDeveloperExceptionPage();
         }
     }
 }
