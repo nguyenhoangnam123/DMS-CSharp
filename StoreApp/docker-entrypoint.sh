@@ -7,7 +7,7 @@ sed -i "s/{RB_USER}/${RB_USER}/g" appsettings.json
 sed -i "s/{RB_PASS}/${RB_PASS}/g" appsettings.json
 
 if [ -z ${NODE} ]; then
-	    NODE="dms-backend_${HOSTNAME}"
+	    NODE="store-app-backend_${HOSTNAME}"
 fi
 
 # setting up SIGTERM handler for consul agent
@@ -22,7 +22,7 @@ term_handler () {
 }
 trap term_handler TERM
 
-PROJECT_NAME="DMS"
+PROJECT_NAME="StoreApp"
 
 getStatus () {
     netstat -ant | awk '/LISTEN/ { print $4 }' | rev | cut -f1 -d: | rev | grep -w $1 && return 0

@@ -8,3 +8,4 @@ DMS.Tests/bin/
 DMS.Tests/obj/
 StoreApp/bin/
 StoreApp/obj/
+StoreApp/appsettings.Development.json

@@ -1,9 +1,9 @@
 {
   "service": {
-    "name": "dms-backend",
+    "name": "store-app-backend",
     "port": 80,
     "tags": [
-      "dms-backend"
+      "store-app-backend"
     ],
     "connect": {
       "sidecar_service": {
@@ -30,8 +30,8 @@
       }
     },
     "check": {
-      "id": "dms-backend",
-      "name": "dms-backend TCP on port 80",
+      "id": "store-app-backend",
+      "name": "store-app-backend TCP on port 80",
       "tcp": "localhost:80",
       "interval": "5s",
       "timeout": "1s"
