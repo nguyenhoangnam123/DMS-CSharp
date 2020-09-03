@@ -163,11 +163,18 @@ namespace DMS.Rpc.store_type
             StoreType.Code = StoreType_StoreTypeDTO.Code;
             StoreType.Name = StoreType_StoreTypeDTO.Name;
             StoreType.StatusId = StoreType_StoreTypeDTO.StatusId;
+            StoreType.ColorId = StoreType_StoreTypeDTO.ColorId;
             StoreType.Status = StoreType_StoreTypeDTO.Status == null ? null : new Status
             {
                 Id = StoreType_StoreTypeDTO.Status.Id,
                 Code = StoreType_StoreTypeDTO.Status.Code,
                 Name = StoreType_StoreTypeDTO.Status.Name,
+            };
+            StoreType.Color = StoreType_StoreTypeDTO.Color == null ? null : new Color
+            {
+                Id = StoreType_StoreTypeDTO.Color.Id,
+                Code = StoreType_StoreTypeDTO.Color.Code,
+                Name = StoreType_StoreTypeDTO.Color.Name,
             };
             StoreType.BaseLanguage = CurrentContext.Language;
             return StoreType;
