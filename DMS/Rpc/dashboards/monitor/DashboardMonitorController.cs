@@ -375,7 +375,7 @@ namespace DMS.Rpc.dashboards.monitor
                     .Select(x => x.DisplayName).FirstOrDefault();
             }
 
-            return DashboardMonitor_TopSaleEmployeeStoreCheckingDTOs.OrderByDescending(x => x.Counter).ToList();
+            return DashboardMonitor_TopSaleEmployeeStoreCheckingDTOs.OrderByDescending(x => x.Counter).Skip(0).Take(5).ToList();
         }
     }
 }
