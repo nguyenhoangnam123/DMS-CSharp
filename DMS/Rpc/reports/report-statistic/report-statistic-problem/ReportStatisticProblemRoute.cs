@@ -8,8 +8,8 @@ namespace DMS.Rpc.reports.report_statistic.report_statistic_problem
 {
     public class ReportStatisticProblemRoute : Root
     {
-        public const string Parent = Module + "/report-statistic-problem";
-        public const string Master = Module + "/report-statistic-problem/statistic-problem-report-master";
+        public const string Parent = Module + "/store-report";
+        public const string Master = Module + "/store-report/statistic-problem-report-master";
 
         private const string Default = Rpc + Module + "/statistic-problem-report";
         public const string Count = Default + "/count";
