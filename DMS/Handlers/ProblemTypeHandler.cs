@@ -36,7 +36,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                await SystemLog(ex, nameof(ProblemTypeHandler));
+                await Log(ex, nameof(ProblemTypeHandler));
             }
         }
     }
