@@ -438,13 +438,20 @@ namespace DMS.Repositories
                 RequestWorkflowDefinitionMappingDAO RequestWorkflowDefinitionMappingDAO = RequestWorkflowDefinitionMappingDAOs
                     .Where(x => x.RequestId == IndirectSalesOrder.RowId)
                     .FirstOrDefault();
-                IndirectSalesOrder.RequestStateId = RequestWorkflowDefinitionMappingDAO.RequestStateId;
-                IndirectSalesOrder.RequestState = new RequestState
+                if (RequestWorkflowDefinitionMappingDAO == null)
                 {
-                    Id = RequestWorkflowDefinitionMappingDAO.RequestState.Id,
-                    Code = RequestWorkflowDefinitionMappingDAO.RequestState.Code,
-                    Name = RequestWorkflowDefinitionMappingDAO.RequestState.Name,
-                };
+
+                }
+                else
+                {
+                    IndirectSalesOrder.RequestStateId = RequestWorkflowDefinitionMappingDAO.RequestStateId;
+                    IndirectSalesOrder.RequestState = new RequestState
+                    {
+                        Id = RequestWorkflowDefinitionMappingDAO.RequestState.Id,
+                        Code = RequestWorkflowDefinitionMappingDAO.RequestState.Code,
+                        Name = RequestWorkflowDefinitionMappingDAO.RequestState.Name,
+                    };
+                }
             }
 
             return IndirectSalesOrders;

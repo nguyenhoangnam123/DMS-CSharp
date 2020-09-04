@@ -13,6 +13,7 @@ using DMS.Services.MStoreChecking;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MTaxType;
+using Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -430,10 +431,13 @@ namespace DMS.Rpc.mobile
 
             Store Store = await StoreService.Get(Mobile_StoreDTO.Id);
             Mobile_StoreDTO = new Mobile_StoreDTO(Store);
+            DateTime Start = StaticParams.DateTimeNow.Date.AddHours(0 - CurrentContext.TimeZone);
+            DateTime End = Start.AddDays(1).AddSeconds(-1);
             List<Album> Albums = await AlbumService.List(new AlbumFilter
             {
                 StoreId = new IdFilter { Equal = Mobile_StoreDTO.Id },
                 Selects = AlbumSelect.ALL,
+                ShootingAt = new DateFilter { GreaterEqual = Start, LessEqual = End},
                 Skip = 0,
                 Take = int.MaxValue,
             });

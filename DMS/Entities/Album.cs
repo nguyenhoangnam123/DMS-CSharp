@@ -35,6 +35,7 @@ namespace DMS.Entities
         public IdFilter StoreId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
+        public DateFilter ShootingAt { get; set; }
         public List<AlbumFilter> OrFilter { get; set; }
         public AlbumOrder OrderBy { get; set; }
         public AlbumSelect Selects { get; set; }

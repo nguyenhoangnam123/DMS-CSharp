@@ -12,7 +12,7 @@ namespace DMS.Rpc.dashboards.monitor
         public long Id { get; set; }
         public string Code { get; set; }
         public DateTime OrderDate { get; set; }
-        public long RequestStateId { get; set; }
+        public long? RequestStateId { get; set; }
         public long SaleEmployeeId { get; set; }
         public decimal Total { get; set; }
         public DashboardMonitor_AppUserDTO SaleEmployee { get; set; }
