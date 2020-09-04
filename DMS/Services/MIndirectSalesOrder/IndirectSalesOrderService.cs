@@ -163,8 +163,10 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.IndirectSalesOrderRepository.Create(IndirectSalesOrder);
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);
-                Dictionary<string, string> Paramters = await MapParameters(IndirectSalesOrder);
-                await WorkflowService.Initialize(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Paramters);
+
+                //Dictionary<string, string> Paramters = await MapParameters(IndirectSalesOrder);
+                //await WorkflowService.Initialize(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Paramters);
+
                 await UOW.Commit();
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
 
