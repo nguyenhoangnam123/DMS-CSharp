@@ -129,12 +129,17 @@ namespace DMS.Repositories
             if (filter.Selects.Contains(AlbumSelect.Mapping))
             {
                 List<long> Ids = Albums.Select(a => a.Id).ToList();
-                
-                List<AlbumImageMappingDAO> AlbumImageMappingDAOs = await DataContext.AlbumImageMapping
+
+                IQueryable<AlbumImageMappingDAO> AlbumImageMappingQuery = DataContext.AlbumImageMapping
                     .AsNoTracking()
-                    .Include(x => x.Image)
+                    .Include(x => x.Image);
+
+                if (filter.ShootingAt != null)
+                    AlbumImageMappingQuery = AlbumImageMappingQuery.Where(x => x.ShootingAt, filter.ShootingAt);
+                List<AlbumImageMappingDAO> AlbumImageMappingDAOs = await AlbumImageMappingQuery
                     .Where(x => Ids.Contains(x.AlbumId))
                     .ToListAsync();
+
                 foreach (Album Album in Albums)
                 {
                     Album.AlbumImageMappings = AlbumImageMappingDAOs.Where(x => x.AlbumId == Album.Id)

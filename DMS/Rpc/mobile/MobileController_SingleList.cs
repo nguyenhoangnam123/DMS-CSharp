@@ -437,6 +437,7 @@ namespace DMS.Rpc.mobile
             {
                 StoreId = new IdFilter { Equal = Mobile_StoreDTO.Id },
                 Selects = AlbumSelect.ALL,
+                ShootingAt = new DateFilter { GreaterEqual = Start, LessEqual = End},
                 Skip = 0,
                 Take = int.MaxValue,
             });
