@@ -20,6 +20,7 @@ namespace DMS.Handlers
         private IModel _channel;
         private IConfiguration Configuration;
         private readonly DefaultObjectPool<IModel> _objectPool;
+        private readonly RabbitManager RabbitManager;
         internal List<IHandler> Handlers = new List<IHandler>();
         public ConsumeRabbitMQHostedService(IPooledObjectPolicy<IModel> objectPolicy, IConfiguration Configuration)
         {
@@ -27,7 +28,8 @@ namespace DMS.Handlers
             {
                 this.Configuration = Configuration;
                 string exchangeName = "exchange";
-                _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 1);
+                _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 4);
+                RabbitManager = new RabbitManager(objectPolicy);
                 _channel = _objectPool.Get();
                 _channel.ExchangeDeclare(exchangeName, ExchangeType.Topic, true, false);
                 _channel.QueueDeclare(StaticParams.ModuleName, true, false, false, null);
@@ -58,11 +60,11 @@ namespace DMS.Handlers
                 var consumer = new EventingBasicConsumer(_channel);
                 consumer.Received += (ch, ea) =>
                 {
-                // received message  
-                var content = System.Text.Encoding.UTF8.GetString(ea.Body.ToArray());
+                    // received message  
+                    var content = System.Text.Encoding.UTF8.GetString(ea.Body.ToArray());
                     var routingKey = ea.RoutingKey;
-                // handle the received message  
-                try
+                    // handle the received message  
+                    try
                     {
                         _ = HandleMessage(routingKey, content);
                         _channel.BasicAck(ea.DeliveryTag, false);
@@ -94,7 +96,10 @@ namespace DMS.Handlers
             foreach (IHandler handler in Handlers)
             {
                 if (path[0] == handler.Name)
+                {
+                    handler.RabbitManager = RabbitManager;
                     await handler.Handle(context, routingKey, content);
+                }
             }
         }
 

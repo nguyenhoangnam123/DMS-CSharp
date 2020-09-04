@@ -21,15 +21,23 @@ namespace DMS.Handlers
         }
         public override async Task Handle(DataContext context, string routingKey, string content)
         {
+
             if (routingKey == UsedKey)
                 await Used(context, content);
         }
 
         private async Task Used(DataContext context, string json)
         {
-            List<EventMessage<ProblemType>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<ProblemType>>>(json);
-            List<long> ProblemTypeIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
-            await context.ProblemType.Where(a => ProblemTypeIds.Contains(a.Id)).UpdateFromQueryAsync(a => new ProblemTypeDAO { Used = true });
+            try
+            {
+                List<EventMessage<ProblemType>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<ProblemType>>>(json);
+                List<long> ProblemTypeIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
+                await context.ProblemType.Where(a => ProblemTypeIds.Contains(a.Id)).UpdateFromQueryAsync(a => new ProblemTypeDAO { Used = true });
+            }
+            catch (Exception ex)
+            {
+                await Log(ex, nameof(ProblemTypeHandler));
+            }
         }
     }
 }
