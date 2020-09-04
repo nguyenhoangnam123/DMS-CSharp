@@ -487,6 +487,23 @@ namespace DMS.Repositories
                 }
                 await DataContext.AppUserStoreMapping.BulkMergeAsync(AppUserStoreMappingDAOs);
             }
+
+            await DataContext.AppUserRoleMapping.Where(x => x.AppUserId == AppUser.Id).DeleteFromQueryAsync();
+            if (AppUser.AppUserRoleMappings != null)
+            {
+                List<AppUserRoleMappingDAO> AppUserRoleMappingDAOs = new List<AppUserRoleMappingDAO>();
+                foreach (var AppUserRoleMapping in AppUser.AppUserRoleMappings)
+                {
+                    AppUserRoleMappingDAO AppUserRoleMappingDAO = new AppUserRoleMappingDAO
+                    {
+                        AppUserId = AppUser.Id,
+                        RoleId = AppUserRoleMapping.RoleId
+                    };
+                    AppUserRoleMappingDAOs.Add(AppUserRoleMappingDAO);
+                }
+                await DataContext.AppUserRoleMapping.BulkMergeAsync(AppUserRoleMappingDAOs);
+            }
+
             AppUserDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             return true;
