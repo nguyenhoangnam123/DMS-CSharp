@@ -427,6 +427,7 @@ namespace DMS.Repositories
                     Role = new Role
                     {
                         Id = x.Role.Id,
+                        Code = x.Role.Code,
                         Name = x.Role.Name,
                     },
                 }).ToListAsync();
