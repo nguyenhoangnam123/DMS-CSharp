@@ -129,6 +129,7 @@ namespace DMS.Repositories
             if (filter.Selects.Contains(AlbumSelect.Mapping))
             {
                 List<long> Ids = Albums.Select(a => a.Id).ToList();
+                
                 List<AlbumImageMappingDAO> AlbumImageMappingDAOs = await DataContext.AlbumImageMapping
                     .AsNoTracking()
                     .Include(x => x.Image)

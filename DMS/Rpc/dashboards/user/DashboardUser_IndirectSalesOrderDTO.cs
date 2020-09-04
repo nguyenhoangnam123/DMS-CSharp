@@ -14,7 +14,7 @@ namespace DMS.Rpc.dashboards.user
         public DateTime OrderDate { get; set; }
         public long BuyerStoreId { get; set; }
         public long SellerStoreId { get; set; }
-        public long RequestStateId { get; set; }
+        public long? RequestStateId { get; set; }
         public long SaleEmployeeId { get; set; }
         public decimal Total { get; set; }
         public DashboardUser_AppUserDTO SaleEmployee { get; set; }
