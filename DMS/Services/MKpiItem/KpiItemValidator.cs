@@ -63,7 +63,7 @@ namespace DMS.Services.MKpiItem
 
         private async Task<bool> ValidateOrganization(KpiItem KpiItem)
         {
-            if(KpiItem.OrganizationId == 0)
+            if (KpiItem.OrganizationId == 0)
             {
                 KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.Organization), ErrorCode.OrganizationEmpty);
             }
@@ -78,7 +78,7 @@ namespace DMS.Services.MKpiItem
                 if (count == 0)
                     KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.Organization), ErrorCode.OrganizationIdNotExisted);
             }
-            
+
             return KpiItem.IsValidated;
         }
 
@@ -217,13 +217,14 @@ namespace DMS.Services.MKpiItem
         private async Task<bool> ValidateValue(KpiItem KpiItem)
         {
             bool flag = false;
-            foreach (var KpiItemContent in KpiItem.KpiItemContents)
-            {
-                foreach (var item in KpiItemContent.KpiItemContentKpiCriteriaItemMappings)
+            if (KpiItem.KpiItemContents != null)
+                foreach (var KpiItemContent in KpiItem.KpiItemContents)
                 {
-                    if (item.Value != null) flag = true;
+                    foreach (var item in KpiItemContent.KpiItemContentKpiCriteriaItemMappings)
+                    {
+                        if (item.Value != null) flag = true;
+                    }
                 }
-            }
             if (!flag) KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.Id), ErrorCode.ValueCannotBeNull);
             return KpiItem.IsValidated;
         }

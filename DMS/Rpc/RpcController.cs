@@ -535,9 +535,9 @@ namespace DMS.Rpc
             CurrentContext.UserId = UserId;
             CurrentContext.TimeZone = int.TryParse(TimeZone, out int t) ? t : 0;
             CurrentContext.Language = Language ?? "vi";
-            if (decimal.TryParse(Latitude, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal lat))
+            if (decimal.TryParse(Latitude, NumberStyles.Any, new CultureInfo("en-US"), out decimal lat))
                 CurrentContext.Latitude = lat;
-            if (decimal.TryParse(Longitude,NumberStyles.Any, CultureInfo.InvariantCulture, out decimal lon))
+            if (decimal.TryParse(Longitude, NumberStyles.Any, new CultureInfo("en-US"), out decimal lon))
                 CurrentContext.Longitude = lon;
             context.Succeed(requirement);
         }
