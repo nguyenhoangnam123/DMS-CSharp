@@ -347,70 +347,138 @@ namespace DMS.Rpc.kpi_item
 
                     #region Sản lượng theo đơn hàng gián tiếp
                     KpiItemContentKpiCriteriaItemMapping
-                            QuantityCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
+                            IndirectQuantityCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
                             .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id)
                             .FirstOrDefault();
-                    if (QuantityCriterial == null)
+                    if (IndirectQuantityCriterial == null)
                     {
-                        QuantityCriterial = new KpiItemContentKpiCriteriaItemMapping();
-                        QuantityCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(QuantityCriterial);
+                        IndirectQuantityCriterial = new KpiItemContentKpiCriteriaItemMapping();
+                        IndirectQuantityCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(IndirectQuantityCriterial);
                     }
                     if (long.TryParse(QuantityValue, out long Quantity))
-                        QuantityCriterial.Value = Quantity;
+                        IndirectQuantityCriterial.Value = Quantity;
                     else
-                        QuantityCriterial.Value = null;
+                        IndirectQuantityCriterial.Value = null;
                     #endregion
 
                     #region Doanh thu theo đơn hàng gián tiếp
                     KpiItemContentKpiCriteriaItemMapping
-                            RevenueCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
+                            IndirectRevenueCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
                             .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
                             .FirstOrDefault();
-                    if (RevenueCriterial == null)
+                    if (IndirectRevenueCriterial == null)
                     {
-                        RevenueCriterial = new KpiItemContentKpiCriteriaItemMapping();
-                        RevenueCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_REVENUE.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(RevenueCriterial);
+                        IndirectRevenueCriterial = new KpiItemContentKpiCriteriaItemMapping();
+                        IndirectRevenueCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_REVENUE.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(IndirectRevenueCriterial);
                     }
                     if (long.TryParse(RevenueValue, out long Revenue))
-                        RevenueCriterial.Value = Revenue;
+                        IndirectRevenueCriterial.Value = Revenue;
                     else
-                        RevenueCriterial.Value = null;
+                        IndirectRevenueCriterial.Value = null;
                     #endregion
 
                     #region Số đơn hàng gián tiếp
                     KpiItemContentKpiCriteriaItemMapping
-                            SalesOrderCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
+                            IndirectCounterCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
                             .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id)
                             .FirstOrDefault();
-                    if (SalesOrderCriterial == null)
+                    if (IndirectCounterCriterial == null)
                     {
-                        SalesOrderCriterial = new KpiItemContentKpiCriteriaItemMapping();
-                        SalesOrderCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(SalesOrderCriterial);
+                        IndirectCounterCriterial = new KpiItemContentKpiCriteriaItemMapping();
+                        IndirectCounterCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(IndirectCounterCriterial);
                     }
                     if (long.TryParse(RevenueValue, out long SalesOrder))
-                        SalesOrderCriterial.Value = SalesOrder;
+                        IndirectCounterCriterial.Value = SalesOrder;
                     else
-                        SalesOrderCriterial.Value = null;
+                        IndirectCounterCriterial.Value = null;
                     #endregion
 
                     #region Số đại lý theo đơn gián tiếp
                     KpiItemContentKpiCriteriaItemMapping
-                            StoreCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
+                            IndirectStoreCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
                             .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
                             .FirstOrDefault();
-                    if (StoreCriterial == null)
+                    if (IndirectStoreCriterial == null)
                     {
-                        StoreCriterial = new KpiItemContentKpiCriteriaItemMapping();
-                        StoreCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_STORE.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(StoreCriterial);
+                        IndirectStoreCriterial = new KpiItemContentKpiCriteriaItemMapping();
+                        IndirectStoreCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_STORE.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(IndirectStoreCriterial);
                     }
                     if (long.TryParse(RevenueValue, out long Store))
-                        StoreCriterial.Value = Store;
+                        IndirectStoreCriterial.Value = Store;
                     else
-                        StoreCriterial.Value = null;
+                        IndirectStoreCriterial.Value = null;
+                    #endregion
+
+                    #region Sản lượng theo đơn hàng trực tiếp
+                    KpiItemContentKpiCriteriaItemMapping
+                            DirectQuantityCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
+                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_QUANTITY.Id)
+                            .FirstOrDefault();
+                    if (DirectQuantityCriterial == null)
+                    {
+                        DirectQuantityCriterial = new KpiItemContentKpiCriteriaItemMapping();
+                        DirectQuantityCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.DIRECT_QUANTITY.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(DirectQuantityCriterial);
+                    }
+                    if (long.TryParse(QuantityValue, out long DirectQuantity))
+                        DirectQuantityCriterial.Value = DirectQuantity;
+                    else
+                        DirectQuantityCriterial.Value = null;
+                    #endregion
+
+                    #region Doanh thu theo đơn hàng trực tiếp
+                    KpiItemContentKpiCriteriaItemMapping
+                            DirectRevenueCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
+                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_REVENUE.Id)
+                            .FirstOrDefault();
+                    if (DirectRevenueCriterial == null)
+                    {
+                        DirectRevenueCriterial = new KpiItemContentKpiCriteriaItemMapping();
+                        DirectRevenueCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.DIRECT_REVENUE.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(DirectRevenueCriterial);
+                    }
+                    if (long.TryParse(RevenueValue, out long DirectRevenue))
+                        DirectRevenueCriterial.Value = DirectRevenue;
+                    else
+                        DirectRevenueCriterial.Value = null;
+                    #endregion
+
+                    #region Số đơn hàng trực tiếp
+                    KpiItemContentKpiCriteriaItemMapping
+                            DirectCounterCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
+                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_AMOUNT.Id)
+                            .FirstOrDefault();
+                    if (DirectCounterCriterial == null)
+                    {
+                        DirectCounterCriterial = new KpiItemContentKpiCriteriaItemMapping();
+                        DirectCounterCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.DIRECT_AMOUNT.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(DirectCounterCriterial);
+                    }
+                    if (long.TryParse(RevenueValue, out long DirectCounter))
+                        DirectCounterCriterial.Value = DirectCounter;
+                    else
+                        DirectCounterCriterial.Value = null;
+                    #endregion
+
+                    #region Số đại lý theo đơn trực tiếp
+                    KpiItemContentKpiCriteriaItemMapping
+                            DirectStoreCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
+                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_STORE.Id)
+                            .FirstOrDefault();
+                    if (DirectStoreCriterial == null)
+                    {
+                        DirectStoreCriterial = new KpiItemContentKpiCriteriaItemMapping();
+                        DirectStoreCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.DIRECT_STORE.Id;
+                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(DirectStoreCriterial);
+                    }
+                    if (long.TryParse(RevenueValue, out long DirectStore))
+                        DirectStoreCriterial.Value = DirectStore;
+                    else
+                        DirectStoreCriterial.Value = null;
                     #endregion
                 }
                 if (errorContent.Length > 0)
@@ -482,23 +550,43 @@ namespace DMS.Rpc.kpi_item
                 {
                     ItemCode = x.Item.Code,
                     ItemName = x.Item.Name,
-                    Quantity = x.KpiItemContentKpiCriteriaItemMappings
+                    IndirectQuantity = x.KpiItemContentKpiCriteriaItemMappings
                     .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id)
                     .Where(x => x.Value.HasValue)
                     .Select(x => x.Value.Value)
                     .Sum(),
-                    Revenue = x.KpiItemContentKpiCriteriaItemMappings
+                    IndirectRevenue = x.KpiItemContentKpiCriteriaItemMappings
                     .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
                     .Where(x => x.Value.HasValue)
                     .Select(x => x.Value.Value)
                     .Sum(),
-                    SalesAmount = x.KpiItemContentKpiCriteriaItemMappings
+                    IndirectCounter = x.KpiItemContentKpiCriteriaItemMappings
                     .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id)
                     .Where(x => x.Value.HasValue)
                     .Select(x => x.Value.Value)
                     .Sum(),
-                    StoreAmount = x.KpiItemContentKpiCriteriaItemMappings
+                    IndirectStoreCounter = x.KpiItemContentKpiCriteriaItemMappings
                     .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
+                    .Where(x => x.Value.HasValue)
+                    .Select(x => x.Value.Value)
+                    .Sum(),
+                    DirectQuantity = x.KpiItemContentKpiCriteriaItemMappings
+                    .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_QUANTITY.Id)
+                    .Where(x => x.Value.HasValue)
+                    .Select(x => x.Value.Value)
+                    .Sum(),
+                    DirectRevenue = x.KpiItemContentKpiCriteriaItemMappings
+                    .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_REVENUE.Id)
+                    .Where(x => x.Value.HasValue)
+                    .Select(x => x.Value.Value)
+                    .Sum(),
+                    DirectCounter = x.KpiItemContentKpiCriteriaItemMappings
+                    .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_AMOUNT.Id)
+                    .Where(x => x.Value.HasValue)
+                    .Select(x => x.Value.Value)
+                    .Sum(),
+                    DirectStoreCounter = x.KpiItemContentKpiCriteriaItemMappings
+                    .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_STORE.Id)
                     .Where(x => x.Value.HasValue)
                     .Select(x => x.Value.Value)
                     .Sum(),

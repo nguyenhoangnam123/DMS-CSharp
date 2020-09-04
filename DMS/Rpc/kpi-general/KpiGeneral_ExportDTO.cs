@@ -17,6 +17,10 @@ namespace DMS.Rpc.kpi_general
         public KpiGeneral_ExportCriterialDTO StoresVisited { get; set; }
         public KpiGeneral_ExportCriterialDTO NewStoresCreated { get; set; }
         public KpiGeneral_ExportCriterialDTO NumberOfStoreVisits { get; set; }
+        public KpiGeneral_ExportCriterialDTO TotalDirectOrders { get; set; }
+        public KpiGeneral_ExportCriterialDTO TotalDirectQuantity { get; set; }
+        public KpiGeneral_ExportCriterialDTO TotalDirectSalesAmount { get; set; }
+        public KpiGeneral_ExportCriterialDTO SKUDirectOrder { get; set; }
     }
 
     public class KpiGeneral_ExportCriterialDTO : DataDTO
