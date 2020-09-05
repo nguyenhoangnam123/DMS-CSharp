@@ -482,6 +482,7 @@ namespace DMS.Services.MStoreChecking
                 AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 if (AppUser.AppUserStoreMappings != null && AppUser.AppUserStoreMappings.Count > 0)
                 {
+                    StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
                     StoreFilter.Id.In = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
                 }
                 else

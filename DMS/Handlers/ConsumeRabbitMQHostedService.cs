@@ -28,7 +28,7 @@ namespace DMS.Handlers
             {
                 this.Configuration = Configuration;
                 string exchangeName = "exchange";
-                _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 4);
+                _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount);
                 RabbitManager = new RabbitManager(objectPolicy);
                 _channel = _objectPool.Get();
                 _channel.ExchangeDeclare(exchangeName, ExchangeType.Topic, true, false);

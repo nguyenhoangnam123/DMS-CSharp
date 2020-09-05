@@ -20,7 +20,7 @@ namespace DMS.Handlers
 
         public RabbitManager(IPooledObjectPolicy<IModel> objectPolicy)
         {
-            _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 16);
+            _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount);
         }
 
         public void PublishList<T>(List<EventMessage<T>> message, GenericEnum routeKey) where T : DataEntity
