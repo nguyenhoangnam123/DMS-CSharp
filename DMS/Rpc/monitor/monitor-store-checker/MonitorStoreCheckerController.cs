@@ -202,13 +202,14 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             AppUserIds.AddRange(ProblemDAOs.Select(e => e.CreatorId).ToList());
 
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(sc => OrganizationIds.Contains(sc.SaleEmployee.OrganizationId.Value) && 
-                sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
+                .Where(sc =>
+                    OrganizationIds.Contains(sc.SaleEmployee.OrganizationId.Value) &&
+                    sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
             AppUserIds.AddRange(StoreCheckingDAOs.Select(e => e.SaleEmployeeId).ToList());
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
-                .Where(o => 
-                    Start <= o.OrderDate && o.OrderDate <= End && 
+                .Where(o =>
+                    Start <= o.OrderDate && o.OrderDate <= End &&
                     (!SaleEmployeeId.HasValue || SaleEmployeeId.Value == o.SaleEmployeeId) &&
                     OrganizationIds.Contains(o.OrganizationId)).ToListAsync();
 
@@ -282,10 +283,10 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     MonitorStoreChecker_StoreCheckingDTO MonitorStoreChecker_StoreCheckingDTO = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings
                         .Where(s => s.Date == i).FirstOrDefault();
                     MonitorStoreChecker_StoreCheckingDTO.SalesOrderCounter = IndirectSalesOrderDAOs
-                        .Where(o => o.OrderDate.Date == i && o.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
+                        .Where(o => i <= o.OrderDate && o.OrderDate < i.AddDays(1) && o.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
                         .Count();
                     MonitorStoreChecker_StoreCheckingDTO.RevenueCounter = IndirectSalesOrderDAOs
-                        .Where(o => o.OrderDate.Date == i && o.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
+                        .Where(o => i <= o.OrderDate && o.OrderDate < i.AddDays(1) && o.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
                         .Select(o => o.Total).DefaultIfEmpty(0).Sum();
 
                     MonitorStoreChecker_StoreCheckingDTO.PlanCounter = CountPlan(i, MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId, ERouteContentDAOs);
@@ -293,7 +294,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
                            .Where(s =>
                                s.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId &&
-                               s.CheckOutAt.Value.Date == i
+                               i <= s.CheckOutAt.Value && s.CheckOutAt.Value < i.AddDays(1)
                            ).ToList();
                     foreach (StoreCheckingDAO Checked in ListChecked)
                     {
@@ -331,7 +332,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                         MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings.Where(sc => sc.SalesOrderCounter > 0).ToList();
                 }
             }
-            
+
             return MonitorStoreChecker_MonitorStoreCheckerDTOs;
         }
 
@@ -423,7 +424,8 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                         join au in DataContext.AppUser on scim.SaleEmployeeId equals au.Id
                         where scim.StoreId == MonitorStoreChecker_StoreCheckingDTO.StoreId &&
                         scim.SaleEmployeeId == MonitorStoreChecker_StoreCheckingDTO.SaleEmployeeId &&
-                        Start <= sc.CheckOutAt && sc.CheckOutAt < End
+                        sc.CheckOutAt.HasValue &&
+                        Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value < End
                         select new MonitorStoreChecker_StoreCheckingImageMappingDTO
                         {
                             AlbumId = scim.AlbumId,
