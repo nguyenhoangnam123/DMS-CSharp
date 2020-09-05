@@ -704,8 +704,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();
             dynamic Data = new ExpandoObject();
-            Data.Start = Start.ToString("dd-MM-yyyy");
-            Data.End = End.ToString("dd-MM-yyyy");
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             Data.ReportSalesOrderByStoreAndItems = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs;
             Data.Total = ReportSalesOrderByStoreAndItem_TotalDTO;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))

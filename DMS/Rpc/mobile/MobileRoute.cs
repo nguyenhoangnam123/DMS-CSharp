@@ -30,7 +30,6 @@ namespace DMS.Rpc.mobile
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListEroute = Default + "/single-list-e-route";
         public const string SingleListStore = Default + "/single-list-store";
-        public const string SingleListBuyerStore = Default + "/single-list-buyer-store";
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
         public const string SingleListStoreType = Default + "/single-list-store-type";
         public const string SingleListTaxType = Default + "/single-list-tax-type";
@@ -54,6 +53,8 @@ namespace DMS.Rpc.mobile
         public const string GetItem = Default + "/get-item";
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
+        public const string CountBuyerStore = Default + "/count-buyer-store";
+        public const string ListBuyerStore = Default + "/list-buyer-store";
         public const string GetStore = Default + "/get-store";
         public const string UpdateStore = Default + "/update-store";
         public const string CountStorePlanned = Default + "/count-store-planned";

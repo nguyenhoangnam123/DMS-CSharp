@@ -589,23 +589,27 @@ namespace DMS.Repositories
                .Where(x => IndirectSalesOrder.RowId == x.RequestId)
                .Include(x => x.RequestState)
                .FirstOrDefaultAsync();
-            IndirectSalesOrder.RequestStateId = RequestWorkflowDefinitionMappingDAO.RequestStateId;
-            IndirectSalesOrder.RequestState = new RequestState
+            if(RequestWorkflowDefinitionMappingDAO != null)
             {
-                Id = RequestWorkflowDefinitionMappingDAO.RequestState.Id,
-                Code = RequestWorkflowDefinitionMappingDAO.RequestState.Code,
-                Name = RequestWorkflowDefinitionMappingDAO.RequestState.Name,
-            };
+                IndirectSalesOrder.RequestStateId = RequestWorkflowDefinitionMappingDAO.RequestStateId;
+                IndirectSalesOrder.RequestState = new RequestState
+                {
+                    Id = RequestWorkflowDefinitionMappingDAO.RequestState.Id,
+                    Code = RequestWorkflowDefinitionMappingDAO.RequestState.Code,
+                    Name = RequestWorkflowDefinitionMappingDAO.RequestState.Name,
+                };
+            }
 
             decimal GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount.HasValue ? IndirectSalesOrder.GeneralDiscountAmount.Value : 0;
-            decimal DiscountAmount = IndirectSalesOrder.IndirectSalesOrderContents
+            decimal DiscountAmount = IndirectSalesOrder.IndirectSalesOrderContents != null ?
+                IndirectSalesOrder.IndirectSalesOrderContents
                 .Select(x => x.DiscountAmount.GetValueOrDefault(0))
-                .DefaultIfEmpty(0)
-                .Sum();
+                .Sum() : 0;
             IndirectSalesOrder.TotalDiscountAmount = GeneralDiscountAmount + DiscountAmount;
-            IndirectSalesOrder.TotalQuantity = IndirectSalesOrder.IndirectSalesOrderContents
+            IndirectSalesOrder.TotalQuantity = IndirectSalesOrder.IndirectSalesOrderContents != null ?
+                IndirectSalesOrder.IndirectSalesOrderContents
                 .Select(x => x.Quantity)
-                .Sum();
+                .Sum() : 0;
 
             IndirectSalesOrder.IndirectSalesOrderContents = await DataContext.IndirectSalesOrderContent.AsNoTracking()
                 .Where(x => x.IndirectSalesOrderId == IndirectSalesOrder.Id)
@@ -628,7 +632,7 @@ namespace DMS.Repositories
                     TaxPercentage = x.TaxPercentage,
                     TaxAmount = x.TaxAmount,
                     Factor = x.Factor,
-                    Item = new Item
+                    Item = x.Item == null ? null : new Item
                     {
                         Id = x.Item.Id,
                         Code = x.Item.Code,
@@ -638,7 +642,7 @@ namespace DMS.Repositories
                         SalePrice = x.Item.SalePrice,
                         ScanCode = x.Item.ScanCode,
                         StatusId = x.Item.StatusId,
-                        Product = new Product
+                        Product = x.Item.Product == null ? null : new Product
                         {
                             Id = x.Item.Product.Id,
                             Code = x.Item.Product.Code,
@@ -646,7 +650,7 @@ namespace DMS.Repositories
                             TaxTypeId = x.Item.Product.TaxTypeId,
                             UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
                             UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
-                            TaxType = new TaxType
+                            TaxType = x.Item.Product.TaxType == null ? null : new TaxType
                             {
                                 Id = x.Item.Product.TaxType.Id,
                                 Code = x.Item.Product.TaxType.Code,
@@ -654,7 +658,7 @@ namespace DMS.Repositories
                                 StatusId = x.Item.Product.TaxType.StatusId,
                                 Percentage = x.Item.Product.TaxType.Percentage,
                             },
-                            UnitOfMeasure = new UnitOfMeasure
+                            UnitOfMeasure = x.Item.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
                             {
                                 Id = x.Item.Product.UnitOfMeasure.Id,
                                 Code = x.Item.Product.UnitOfMeasure.Code,
@@ -662,7 +666,7 @@ namespace DMS.Repositories
                                 Description = x.Item.Product.UnitOfMeasure.Description,
                                 StatusId = x.Item.Product.UnitOfMeasure.StatusId,
                             },
-                            UnitOfMeasureGrouping = new UnitOfMeasureGrouping
+                            UnitOfMeasureGrouping = x.Item.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
                             {
                                 Id = x.Item.Product.UnitOfMeasureGrouping.Id,
                                 Code = x.Item.Product.UnitOfMeasureGrouping.Code,
@@ -673,7 +677,7 @@ namespace DMS.Repositories
                             }
                         }
                     },
-                    PrimaryUnitOfMeasure = new UnitOfMeasure
+                    PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
                     {
                         Id = x.PrimaryUnitOfMeasure.Id,
                         Code = x.PrimaryUnitOfMeasure.Code,
@@ -681,7 +685,7 @@ namespace DMS.Repositories
                         Description = x.PrimaryUnitOfMeasure.Description,
                         StatusId = x.PrimaryUnitOfMeasure.StatusId,
                     },
-                    UnitOfMeasure = new UnitOfMeasure
+                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
                     {
                         Id = x.UnitOfMeasure.Id,
                         Code = x.UnitOfMeasure.Code,
@@ -703,7 +707,7 @@ namespace DMS.Repositories
                     RequestedQuantity = x.RequestedQuantity,
                     Note = x.Note,
                     Factor = x.Factor,
-                    Item = new Item
+                    Item = x.Item == null ? null : new Item
                     {
                         Id = x.Item.Id,
                         Code = x.Item.Code,
@@ -713,7 +717,7 @@ namespace DMS.Repositories
                         SalePrice = x.Item.SalePrice,
                         ScanCode = x.Item.ScanCode,
                         StatusId = x.Item.StatusId,
-                        Product = new Product
+                        Product = x.Item.Product == null ? null : new Product
                         {
                             Id = x.Item.Product.Id,
                             Code = x.Item.Product.Code,
@@ -721,7 +725,7 @@ namespace DMS.Repositories
                             TaxTypeId = x.Item.Product.TaxTypeId,
                             UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
                             UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
-                            TaxType = new TaxType
+                            TaxType = x.Item.Product.TaxType == null ? null : new TaxType
                             {
                                 Id = x.Item.Product.TaxType.Id,
                                 Code = x.Item.Product.TaxType.Code,
@@ -729,7 +733,7 @@ namespace DMS.Repositories
                                 StatusId = x.Item.Product.TaxType.StatusId,
                                 Percentage = x.Item.Product.TaxType.Percentage,
                             },
-                            UnitOfMeasure = new UnitOfMeasure
+                            UnitOfMeasure = x.Item.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
                             {
                                 Id = x.Item.Product.UnitOfMeasure.Id,
                                 Code = x.Item.Product.UnitOfMeasure.Code,
@@ -737,7 +741,7 @@ namespace DMS.Repositories
                                 Description = x.Item.Product.UnitOfMeasure.Description,
                                 StatusId = x.Item.Product.UnitOfMeasure.StatusId,
                             },
-                            UnitOfMeasureGrouping = new UnitOfMeasureGrouping
+                            UnitOfMeasureGrouping = x.Item.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
                             {
                                 Id = x.Item.Product.UnitOfMeasureGrouping.Id,
                                 Code = x.Item.Product.UnitOfMeasureGrouping.Code,
@@ -748,7 +752,7 @@ namespace DMS.Repositories
                             }
                         }
                     },
-                    PrimaryUnitOfMeasure = new UnitOfMeasure
+                    PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
                     {
                         Id = x.PrimaryUnitOfMeasure.Id,
                         Code = x.PrimaryUnitOfMeasure.Code,
@@ -756,7 +760,7 @@ namespace DMS.Repositories
                         Description = x.PrimaryUnitOfMeasure.Description,
                         StatusId = x.PrimaryUnitOfMeasure.StatusId,
                     },
-                    UnitOfMeasure = new UnitOfMeasure
+                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
                     {
                         Id = x.UnitOfMeasure.Id,
                         Code = x.UnitOfMeasure.Code,

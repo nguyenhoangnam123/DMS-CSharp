@@ -175,8 +175,8 @@ namespace DMS.Rpc.monitor_store_problems
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();
             dynamic Data = new ExpandoObject();
-            Data.Start = Start.ToString("dd-MM-yyyy");
-            Data.End = End.ToString("dd-MM-yyyy");
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             Data.MonitorStoreProblems = MonitorStoreProblem_ProblemDTOs;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
