@@ -323,10 +323,6 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.SalesOrder.Equal.Value == 1)
                         MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings.Where(sc => sc.SalesOrderCounter > 0).ToList();
                 }
-                foreach(var StoreChecking in MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings)
-                {
-                    StoreChecking.Date = StoreChecking.Date.AddHours(CurrentContext.TimeZone);
-                }    
             }
             
             return MonitorStoreChecker_MonitorStoreCheckerDTOs;
@@ -410,7 +406,8 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            DateTime Start = MonitorStoreChecker_StoreCheckingDTO.Date;
+            DateTime End = Start.AddDays(1);
             var query = from scim in DataContext.StoreCheckingImageMapping
                         join sc in DataContext.StoreChecking on scim.StoreCheckingId equals sc.Id
                         join s in DataContext.Store on sc.StoreId equals s.Id
@@ -419,7 +416,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                         join au in DataContext.AppUser on scim.SaleEmployeeId equals au.Id
                         where scim.StoreId == MonitorStoreChecker_StoreCheckingDTO.StoreId &&
                         scim.SaleEmployeeId == MonitorStoreChecker_StoreCheckingDTO.SaleEmployeeId &&
-                        sc.CheckOutAt.Value.Date == MonitorStoreChecker_StoreCheckingDTO.Date.Date
+                        Start <= sc.CheckOutAt && sc.CheckOutAt < End
                         select new MonitorStoreChecker_StoreCheckingImageMappingDTO
                         {
                             AlbumId = scim.AlbumId,
@@ -472,6 +469,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     {
                         storeChecking.STT = stt;
                         stt++;
+                        storeChecking.Date = storeChecking.Date.AddHours(CurrentContext.TimeZone);
                     }
                 }
             }
@@ -482,7 +480,8 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
             DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value;
+
             string path = "Templates/Monitor_Store_Checker_Report.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
