@@ -149,6 +149,11 @@ namespace DMS.Services.MSurvey
                         }
                     }
                 }
+                if (MandatoryQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.QUESTION_TEXT.Id)
+                {
+                    if (string.IsNullOrWhiteSpace(MandatoryQuestion.TextResult))
+                        MandatoryQuestion.AddError(nameof(SurveyValidator), nameof(MandatoryQuestion.IsMandatory), ErrorCode.QuestionIsMandatory);
+                }
             }
             return Survey.IsValidated;
         }
