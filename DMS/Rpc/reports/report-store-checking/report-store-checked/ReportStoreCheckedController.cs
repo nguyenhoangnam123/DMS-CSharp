@@ -519,8 +519,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();
             dynamic Data = new ExpandoObject();
-            Data.Start = Start.ToString("dd-MM-yyyy");
-            Data.End = End.ToString("dd-MM-yyyy");
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             Data.ReportStoreCheckeds = ReportStoreChecked_ExportDTOs;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
