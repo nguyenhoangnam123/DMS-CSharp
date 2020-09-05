@@ -405,7 +405,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     ReportStoreChecked_StoreCheckingGroupByDateDTO ReportStoreChecked_StoreCheckingGroupByDateDTO = new ReportStoreChecked_StoreCheckingGroupByDateDTO();
 
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings = storeCheckings.Where(x => x.SaleEmployeeId == ReportStoreChecked_SaleEmployeeDTO.SaleEmployeeId)
-                        .Where(x => x.CheckOutAt.Value.Date == i.Date)
+                        .Where(x => x.CheckOutAt.Value.Date >= i && x.CheckOutAt.Value.Date < i.AddDays(1))
                         .Select(x => new ReportStoreChecked_StoreCheckingDTO
                         {
                             Id = x.Id,
@@ -447,16 +447,6 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     ReportStoreChecked_SaleEmployeeDTO.StoreCheckingGroupByDates.Add(ReportStoreChecked_StoreCheckingGroupByDateDTO);
                 }
             }
-
-            //foreach (var ReportStoreChecked_ReportStoreCheckerDTO in ReportStoreChecked_ReportStoreCheckedDTOs)
-            //{
-            //    foreach (var SaleEmployee in ReportStoreChecked_ReportStoreCheckerDTO.SaleEmployees)
-            //    {
-            //        SaleEmployee.StoreCheckingGroupByDates = SaleEmployee.StoreCheckingGroupByDates.Where(x => x.StoreCheckings.Any()).ToList();
-            //    }
-            //    ReportStoreChecked_ReportStoreCheckerDTO.SaleEmployees = ReportStoreChecked_ReportStoreCheckerDTO.SaleEmployees.Where(x => x.StoreCheckingGroupByDates.Any()).ToList();
-            //}
-            //ReportStoreChecked_ReportStoreCheckedDTOs = ReportStoreChecked_ReportStoreCheckedDTOs.Where(x => x.SaleEmployees.Any()).ToList();
             return ReportStoreChecked_ReportStoreCheckedDTOs;
         }
 
