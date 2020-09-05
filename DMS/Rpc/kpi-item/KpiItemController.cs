@@ -611,10 +611,28 @@ namespace DMS.Rpc.kpi_item
         }
 
         [Route(KpiItemRoute.ExportTemplate), HttpPost]
-        public async Task<FileResult> ExportTemplate()
+        public async Task<ActionResult> ExportTemplate()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            var appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = int.MaxValue;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.Username | AppUserSelect.DisplayName;
+            AppUserFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            {
+                if (AppUserFilter.Id.In == null) AppUserFilter.Id.In = new List<long>();
+                AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
+            }
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
 
             List<Item> Items = await ItemService.List(new ItemFilter
             {
@@ -625,26 +643,28 @@ namespace DMS.Rpc.kpi_item
                 OrderType = OrderType.ASC
             });
 
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            MemoryStream MemoryStream = new MemoryStream();
-            string tempPath = "Templates/Kpi_Item.xlsx";
-            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            List<KpiItem_ExportDTO> KpiItem_ExportDTOs = new List<KpiItem_ExportDTO>();
+            foreach (var AppUser in AppUsers)
             {
-                #region sheet Item 
-                var worksheet = xlPackage.Workbook.Worksheets["San Pham"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow = 2;
-                int numberCell = 1;
-                for (var i = 0; i < Items.Count; i++)
-                {
-                    Item Item = Items[i];
-                    worksheet.Cells[startRow + i, numberCell].Value = Item.Code;
-                    worksheet.Cells[startRow + i, numberCell + 1].Value = Item.Name;
-                }
-                #endregion
-                xlPackage.SaveAs(MemoryStream);
+                KpiItem_ExportDTO KpiItem_ExportDTO = new KpiItem_ExportDTO();
+                KpiItem_ExportDTO.Username = AppUser.Username;
+                KpiItem_ExportDTO.DisplayName = AppUser.DisplayName;
+                KpiItem_ExportDTOs.Add(KpiItem_ExportDTO);
             }
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Template_Kpi_Item.xlsx");
+
+            string path = "Templates/Kpi_Item.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.KpiItems = KpiItem_ExportDTOs;
+            Data.Items = Items;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+        
+            return File(output.ToArray(), "application/octet-stream", "Template_Kpi_Item.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)

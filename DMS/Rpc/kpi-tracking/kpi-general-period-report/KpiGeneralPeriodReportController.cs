@@ -210,7 +210,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                         };
             List<KpiGeneralPeriodReport_SaleEmployeeDTO> KpiGeneralPeriodReport_SaleEmployeeDTOs = (await query
                 .Distinct()
-                .OrderBy(x => x.OrganizationName).ThenBy(x => x.DisplayName)
+                .OrderBy(x => x.OrganizationId).ThenBy(x => x.DisplayName)
                 .Skip(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Skip)
                 .Take(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Take)
                 .ToListAsync())

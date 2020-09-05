@@ -212,6 +212,9 @@ namespace DMS.Repositories
                         case StoreScoutingOrder.StoreScoutingStatus:
                             query = query.OrderBy(q => q.StoreScoutingStatusId);
                             break;
+                        case StoreScoutingOrder.CreatedAt:
+                            query = query.OrderBy(q => q.CreatedAt);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -252,6 +255,9 @@ namespace DMS.Repositories
                             break;
                         case StoreScoutingOrder.StoreScoutingStatus:
                             query = query.OrderByDescending(q => q.StoreScoutingStatusId);
+                            break;
+                        case StoreScoutingOrder.CreatedAt:
+                            query = query.OrderByDescending(q => q.CreatedAt);
                             break;
                     }
                     break;
