@@ -502,6 +502,12 @@ namespace DMS.Repositories
                     Name = q.StoreType.Name,
                     StatusId = q.StoreType.StatusId,
                     ColorId = q.StoreType.ColorId,
+                    Color = q.StoreType.Color == null ? null : new Color
+                    {
+                        Id = q.StoreType.Color.Id,
+                        Code = q.StoreType.Color.Code,
+                        Name = q.StoreType.Color.Name,
+                    },
                 } : null,
                 Ward = filter.Selects.Contains(StoreSelect.Ward) && q.Ward != null ? new Ward
                 {
