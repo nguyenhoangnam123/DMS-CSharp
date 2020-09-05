@@ -100,6 +100,7 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(SurveyResultSelect.Id) ? q.Id : default(long),
                 AppUserId = filter.Selects.Contains(SurveyResultSelect.AppUser) ? q.AppUserId : default(long),
                 StoreId = filter.Selects.Contains(SurveyResultSelect.Store) ? q.StoreId : default(long),
+                StoreScoutingId = filter.Selects.Contains(SurveyResultSelect.StoreScouting) ? q.StoreScoutingId : default(long),
                 SurveyId = filter.Selects.Contains(SurveyResultSelect.Survey) ? q.SurveyId : default(long),
                 Time = filter.Selects.Contains(SurveyResultSelect.Time) ? q.Time : default(DateTime),
                 AppUser = filter.Selects.Contains(SurveyResultSelect.AppUser) && q.AppUser != null ? new AppUser
