@@ -24,6 +24,7 @@ using System.Dynamic;
 using NGS.Templater;
 using DMS.Services.MKpiGeneralContent;
 using System.Text;
+using DMS.Repositories;
 
 namespace DMS.Rpc.kpi_general
 {
@@ -1131,6 +1132,24 @@ namespace DMS.Rpc.kpi_general
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            var appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = int.MaxValue;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.Username | AppUserSelect.DisplayName;
+            AppUserFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            {
+                if (AppUserFilter.Id.In == null) AppUserFilter.Id.In = new List<long>();
+                AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
+            }
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+
             List<KpiCriteriaGeneral> KpiCriteriaGenerals = await KpiCriteriaGeneralService.List(new KpiCriteriaGeneralFilter
             {
                 Skip = 0,
@@ -1140,25 +1159,114 @@ namespace DMS.Rpc.kpi_general
                 OrderType = OrderType.ASC
             });
 
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            MemoryStream MemoryStream = new MemoryStream();
-            string tempPath = "Templates/Kpi_General.xlsx";
-            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            List<KpiGeneral_ExportDTO> KpiGeneral_ExportDTOs = new List<KpiGeneral_ExportDTO>();
+            foreach (var AppUser in AppUsers)
             {
-                #region sheet KpiCriteriaGeneral 
-                var worksheet_KpiCriteriaGeneral = xlPackage.Workbook.Worksheets["Chi tieu"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_KpiCriteriaGeneral = 2;
-                int numberCell_KpiCriteriaGenerals = 1;
-                for (var i = 0; i < KpiCriteriaGenerals.Count; i++)
+                KpiGeneral_ExportDTO KpiGeneral_ExportDTO = new KpiGeneral_ExportDTO();
+                KpiGeneral_ExportDTO.Username = AppUser.Username;
+                KpiGeneral_ExportDTO.DisplayName = AppUser.DisplayName;
+
+                #region Số lần viếng thăm đại lý
+                KpiGeneral_ExportDTO.NumberOfStoreVisits = new KpiGeneral_ExportCriterialDTO
                 {
-                    KpiCriteriaGeneral KpiCriteriaGeneral = KpiCriteriaGenerals[i];
-                    worksheet_KpiCriteriaGeneral.Cells[startRow_KpiCriteriaGeneral + i, numberCell_KpiCriteriaGenerals].Value = KpiCriteriaGeneral.Name;
-                }
+                    Id = KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id,
+                    Name = KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Name
+                };
                 #endregion
-                xlPackage.SaveAs(MemoryStream);
+
+                #region Số đại lý tạo mới
+                KpiGeneral_ExportDTO.NewStoresCreated = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id,
+                    Name = KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Name
+                };
+                #endregion
+
+                #region Số đại lý viếng thăm
+                KpiGeneral_ExportDTO.StoresVisited = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.STORE_VISITED.Id,
+                    Name = KpiCriteriaGeneralEnum.STORE_VISITED.Name
+                };
+                #endregion
+
+                #region SKU/ Đơn hàng gián tiếp
+                KpiGeneral_ExportDTO.SKUIndirectOrder = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id,
+                    Name = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Name
+                };
+                #endregion
+
+                #region Doanh thu đơn hàng gián tiếp
+                KpiGeneral_ExportDTO.TotalIndirectSalesAmount = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id,
+                    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Name
+                };
+                #endregion
+
+                #region Tổng sản lượng đơn hàng gián tiếp
+                KpiGeneral_ExportDTO.TotalIndirectQuantity = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id,
+                    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Name
+                };
+                #endregion
+
+                #region Số đơn hàng gián tiếp
+                KpiGeneral_ExportDTO.TotalIndirectOrders = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id,
+                    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Name
+                };
+                #endregion
+
+                #region SKU/ Đơn hàng trực tiếp
+                KpiGeneral_ExportDTO.SKUDirectOrder = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id,
+                    Name = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Name
+                };
+                #endregion
+
+                #region Doanh thu đơn hàng trực tiếp
+                KpiGeneral_ExportDTO.TotalDirectSalesAmount = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id,
+                    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Name
+                };
+                #endregion
+
+                #region Tổng sản lượng đơn hàng trực tiếp
+                KpiGeneral_ExportDTO.TotalDirectQuantity = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id,
+                    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Name
+                };
+                #endregion
+
+                #region Số đơn hàng trực tiếp
+                KpiGeneral_ExportDTO.TotalDirectOrders = new KpiGeneral_ExportCriterialDTO
+                {
+                    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id,
+                    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Name
+                };
+                #endregion
+                KpiGeneral_ExportDTOs.Add(KpiGeneral_ExportDTO);
             }
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Template_Kpi_General.xlsx");
+
+            string path = "Templates/Kpi_General.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.KpiGenerals = KpiGeneral_ExportDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+            return File(output.ToArray(), "application/octet-stream", "Template_Kpi_General.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)

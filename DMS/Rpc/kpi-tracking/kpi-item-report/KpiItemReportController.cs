@@ -237,13 +237,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                             SaleEmployeeId = au.Id,
                             Username = au.Username,
                             DisplayName = au.DisplayName,
+                            OrganizationId = au.OrganizationId,
                             ItemId = i.Id,
                             ItemCode = i.Code,
                             ItemName = i.Name,
                         };
 
             var ItemContents = await query.Distinct()
-                .OrderBy(q => q.DisplayName)
+                .OrderBy(q => q.OrganizationId).ThenBy(x => x.DisplayName)
                 .Skip(KpiItemReport_KpiItemReportFilterDTO.Skip)
                 .Take(KpiItemReport_KpiItemReportFilterDTO.Take)
                 .ToListAsync();
