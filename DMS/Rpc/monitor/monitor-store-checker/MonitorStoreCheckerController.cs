@@ -202,11 +202,18 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             AppUserIds.AddRange(ProblemDAOs.Select(e => e.CreatorId).ToList());
 
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(sc => OrganizationIds.Contains(sc.SaleEmployee.OrganizationId.Value) && sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
+                .Where(sc => OrganizationIds.Contains(sc.SaleEmployee.OrganizationId.Value) && 
+                sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .ToListAsync();
             AppUserIds.AddRange(StoreCheckingDAOs.Select(e => e.SaleEmployeeId).ToList());
-            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.Where(o => Start <= o.OrderDate && o.OrderDate <= End && OrganizationIds.Contains(o.SaleEmployee.OrganizationId.Value)).ToListAsync();
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
+                .Where(o => 
+                    Start <= o.OrderDate && o.OrderDate <= End && 
+                    (!SaleEmployeeId.HasValue || SaleEmployeeId.Value == o.SaleEmployeeId) &&
+                    OrganizationIds.Contains(o.OrganizationId)).ToListAsync();
+
             AppUserIds.AddRange(IndirectSalesOrderDAOs.Select(e => e.SaleEmployeeId).ToList());
+
             AppUserIds = FilterAppUserIds.Intersect(AppUserIds).ToList();
             if (SaleEmployeeId.HasValue)
                 AppUserIds = AppUserIds.Where(x => x == SaleEmployeeId.Value).ToList();
