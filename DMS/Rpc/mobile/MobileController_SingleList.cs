@@ -131,6 +131,45 @@ namespace DMS.Rpc.mobile
             return Mobile_StoreDTOs;
         }
 
+        [Route(MobileRoute.SingleListBuyerStore), HttpPost]
+        public async Task<List<Mobile_StoreDTO>> SingleListBuyerStore([FromBody] Mobile_StoreFilterDTO Mobile_StoreFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = 0;
+            StoreFilter.Take = 20;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = Mobile_StoreFilterDTO.Id;
+            StoreFilter.Code = Mobile_StoreFilterDTO.Code;
+            StoreFilter.Name = Mobile_StoreFilterDTO.Name;
+            StoreFilter.DeliveryAddress = Mobile_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = Mobile_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = Mobile_StoreFilterDTO.Longitude;
+            StoreFilter.DeliveryLatitude = Mobile_StoreFilterDTO.DeliveryLatitude;
+            StoreFilter.DeliveryLongitude = Mobile_StoreFilterDTO.DeliveryLongitude;
+            StoreFilter.OwnerName = Mobile_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = Mobile_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = Mobile_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
+            var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+            if (StoreIds.Any())
+            {
+                StoreFilter.Id = new IdFilter { In = StoreIds };
+
+            }
+            StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<Mobile_StoreDTO> Mobile_StoreDTOs = Stores
+                .Select(x => new Mobile_StoreDTO(x)).ToList();
+            return Mobile_StoreDTOs;
+        }
+
         [Route(MobileRoute.SingleListStoreGrouping), HttpPost]
         public async Task<List<Mobile_StoreGroupingDTO>> SingleListStoreGrouping([FromBody] Mobile_StoreGroupingFilterDTO Mobile_StoreGroupingFilterDTO)
         {
