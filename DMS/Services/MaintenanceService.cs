@@ -47,11 +47,12 @@ namespace DMS.Services
 
         public async Task CompleteStoreCheckout()
         {
+            DateTime Now = StaticParams.DateTimeNow;
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc => sc.CheckOutAt.HasValue == false && sc.CheckInAt.HasValue).ToListAsync();
             foreach(StoreCheckingDAO StoreCheckingDAO in StoreCheckingDAOs)
             {
-                StoreCheckingDAO.CheckOutAt = StoreCheckingDAO.CheckInAt.Value.Date.AddDays(1).AddSeconds(-1);
+                StoreCheckingDAO.CheckOutAt = Now;
             }
             await DataContext.SaveChangesAsync();
         }

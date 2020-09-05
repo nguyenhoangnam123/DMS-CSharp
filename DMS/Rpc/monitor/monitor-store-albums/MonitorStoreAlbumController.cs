@@ -161,11 +161,13 @@ namespace DMS.Rpc.monitor.monitor_store_albums
 
             DateTime Start = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.GreaterEqual == null ?
                      StaticParams.DateTimeNow.Date :
-                     MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.GreaterEqual.Value.Date;
+                     MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.GreaterEqual.Value
+                     .AddHours(CurrentContext.TimeZone);
 
             DateTime End = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value
+                    .AddHours(CurrentContext.TimeZone).AddDays(1).AddSeconds(-1);
 
             List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
@@ -212,11 +214,13 @@ namespace DMS.Rpc.monitor.monitor_store_albums
 
             DateTime Start = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.GreaterEqual == null ?
             StaticParams.DateTimeNow.Date :
-            MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.GreaterEqual.Value.Date;
+            MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.GreaterEqual.Value
+            .AddHours(CurrentContext.TimeZone);
 
             DateTime End = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value
+                    .AddHours(CurrentContext.TimeZone).AddDays(1).AddSeconds(-1);
 
             List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 

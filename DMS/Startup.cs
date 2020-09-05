@@ -186,6 +186,7 @@ namespace DMS
                         RecurringJob.RemoveIfExists(recurringJob.Id);
                     }
                 }
+
                 string daily = "59 16 * * *";
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), daily);
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), daily);

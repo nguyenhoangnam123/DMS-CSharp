@@ -179,11 +179,13 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
                     StaticParams.DateTimeNow.Date :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value.Date;
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value
+                    .AddHours(CurrentContext.TimeZone);
 
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value
+                    .AddHours(CurrentContext.TimeZone).AddDays(1).AddSeconds(-1);
 
             List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             var query = from sc in DataContext.StoreChecking
@@ -221,11 +223,13 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
                     StaticParams.DateTimeNow.Date :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value.Date;
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value
+                    .AddHours(CurrentContext.TimeZone);
 
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value
+                    .AddHours(CurrentContext.TimeZone).AddDays(1).AddSeconds(-1);
 
             List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             var query = from au in DataContext.AppUser
