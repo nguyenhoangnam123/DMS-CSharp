@@ -38,7 +38,7 @@ namespace DMS.Rpc.survey
 
     public class Survey_OtherStatisticsDTO : DataDTO
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
         public string DisplayName { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
