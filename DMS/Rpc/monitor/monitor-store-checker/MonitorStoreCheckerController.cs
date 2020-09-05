@@ -122,13 +122,12 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.AppUserId?.Equal;
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
               StaticParams.DateTimeNow.Date :
-              MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value
-              .AddHours(CurrentContext.TimeZone);
+              MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value
-                    .AddHours(CurrentContext.TimeZone).AddDays(1).AddSeconds(-1);
+                    .AddDays(1).AddSeconds(-1);
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -180,13 +179,12 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
                 StaticParams.DateTimeNow.Date :
-                MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value
-                .AddHours(CurrentContext.TimeZone);
+                MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value
-                    .AddHours(CurrentContext.TimeZone).AddDays(1).AddSeconds(-1);
+                    .AddDays(1).AddSeconds(-1);
 
             long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.AppUserId?.Equal;
 
@@ -327,6 +325,10 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.SalesOrder.Equal.Value == 1)
                         MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings.Where(sc => sc.SalesOrderCounter > 0).ToList();
                 }
+                foreach(var StoreChecking in MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings)
+                {
+                    StoreChecking.Date = StoreChecking.Date.AddHours(CurrentContext.TimeZone);
+                }    
             }
             
             return MonitorStoreChecker_MonitorStoreCheckerDTOs;
@@ -338,7 +340,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
             long SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.SaleEmployeeId;
-            DateTime Start = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.Date.AddHours(CurrentContext.TimeZone);
+            DateTime Start = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.Date;
             DateTime End = Start.AddDays(1).AddSeconds(-1);
             List<long> StoreIds = new List<long>();
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
@@ -478,11 +480,11 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
                StaticParams.DateTimeNow.Date :
-               MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value.Date;
+               MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+                    MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
             string path = "Templates/Monitor_Store_Checker_Report.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
