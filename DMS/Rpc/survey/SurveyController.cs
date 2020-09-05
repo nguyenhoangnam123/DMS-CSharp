@@ -222,11 +222,11 @@ namespace DMS.Rpc.survey
 
             Survey_AnswerStatisticsDTO.OtherResults = SurveyResults.Where(s => !s.StoreId.HasValue && !s.StoreScoutingId.HasValue).Select(x => new Survey_OtherStatisticsDTO
             {
-                Id = x.AppUserId,
-                DisplayName = x.AppUser.DisplayName,
-                Address = x.AppUser.Address,
-                Phone = x.AppUser.Phone,
-                Email = x.AppUser.Email,
+                Id = x.RowId,
+                DisplayName = x.RespondentName,
+                Address = x.RespondentAddress,
+                Phone = x.RespondentPhone,
+                Email = x.RespondentEmail,
             }).ToList();
 
             return Survey_AnswerStatisticsDTO;
