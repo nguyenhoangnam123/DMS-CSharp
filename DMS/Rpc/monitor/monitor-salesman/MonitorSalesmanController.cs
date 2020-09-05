@@ -129,11 +129,14 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
             DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
                    StaticParams.DateTimeNow.Date :
-                   MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value.Date;
+                   MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value
+                        .AddHours(CurrentContext.TimeZone);
 
             DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value
+                        .AddHours(CurrentContext.TimeZone)
+                        .AddDays(1).AddSeconds(-1);
 
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
@@ -200,10 +203,11 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 .ToListAsync();
 
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
-               .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && AppUserIds.Contains(ec.ERoute.SaleEmployeeId))
-               .Include(ec => ec.ERouteContentDays)
-               .Include(ec => ec.ERoute)
-               .ToListAsync();
+                .Where(x => x.ERoute.DeletedAt == null && x.ERoute.StatusId == StatusEnum.ACTIVE.Id)
+                .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && AppUserIds.Contains(ec.ERoute.SaleEmployeeId))
+                .Include(ec => ec.ERouteContentDays)
+                .Include(ec => ec.ERoute)
+                .ToListAsync();
 
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(o => Start <= o.OrderDate && o.OrderDate <= End && AppUserIds.Contains(o.SaleEmployeeId))
@@ -291,7 +295,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
                 };
             }
-           
+
             return MonitorSalesman_MonitorSalesmanDTOs;
         }
 
@@ -359,7 +363,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                         Info.ImagePath = SubStoreCheckingImageMappingDAOs.Select(i => i.Image.Url).FirstOrDefault();
                     }
 
-                    if(SubStoreCheckingImageMappingDAOs.Count > i)
+                    if (SubStoreCheckingImageMappingDAOs.Count > i)
                     {
                         Info.ImagePath = SubStoreCheckingImageMappingDAOs[i].Image.Url;
                     }
