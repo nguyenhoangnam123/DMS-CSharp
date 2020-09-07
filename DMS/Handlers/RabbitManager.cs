@@ -21,26 +21,13 @@ namespace DMS.Handlers
         private readonly IModel _channel;
 
         private readonly IConnection _connection;
-        public RabbitManager(IConfiguration Configuration)
-        {
-            if (StaticParams.EnableExternalService)
-            {
-                var factory = new ConnectionFactory
-                {
-                    HostName = Configuration["RabbitConfig:Hostname"],
-                    UserName = Configuration["RabbitConfig:Username"],
-                    Password = Configuration["RabbitConfig:Password"],
-                    VirtualHost = Configuration["RabbitConfig:VirtualHost"],
-                    Port = int.Parse(Configuration["RabbitConfig:Port"]),
-                };
+        private readonly DefaultObjectPool<IModel> _objectPool;
 
-                // create connection  
-                _connection = factory.CreateConnection();
-                _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
-                _channel = _connection.CreateModel();
-            }
-            
+        public RabbitManager(IPooledObjectPolicy<IModel> objectPolicy)
+        {
+            _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 16);
         }
+
 
         private void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e) { }
 

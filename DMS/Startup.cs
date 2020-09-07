@@ -23,6 +23,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using Portal.Handlers;
 using Prometheus;
 using RabbitMQ.Client;
 using System;
@@ -83,6 +84,8 @@ namespace DMS
                 });
 
             services.AddGleamTech();
+            services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
+            services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
             services.AddSingleton<IRabbitManager, RabbitManager>();
             services.AddHostedService<ConsumeRabbitMQHostedService>();
 
