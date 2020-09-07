@@ -323,8 +323,24 @@ namespace DMS.Rpc.dashboards.director
                             Latitude = s.Latitude,
                             Longitude = s.Longitude,
                             Telephone = s.Telephone,
+                            IsScouting = false
                         };
             List<DashboardDirector_StoreDTO> DashboardMonitor_StoreDTOs = await query.Distinct().ToListAsync();
+
+            var query_Scouting = from ss in DataContext.StoreScouting
+                                 join au in DataContext.AppUser on ss.CreatorId equals au.Id
+                                 where (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
+                                 select new DashboardDirector_StoreDTO
+                                 {
+                                     Id = ss.Id,
+                                     Name = ss.Name,
+                                     Latitude = ss.Latitude,
+                                     Longitude = ss.Longitude,
+                                     Telephone = ss.OwnerPhone,
+                                     IsScouting = true
+                                 };
+            List<DashboardDirector_StoreDTO> DashboardMonitor_StoreScotingDTOs = await query_Scouting.Distinct().ToListAsync();
+            DashboardMonitor_StoreDTOs.AddRange(DashboardMonitor_StoreScotingDTOs);
             return DashboardMonitor_StoreDTOs;
         }
 

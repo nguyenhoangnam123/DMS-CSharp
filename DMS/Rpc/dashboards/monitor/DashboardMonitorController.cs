@@ -139,7 +139,7 @@ namespace DMS.Rpc.dashboards.monitor
                 var x = DashboardMonitor_StoreCheckingDTO.StoreCheckingHours.Where(x => x.Hour == NumberCheckingHour.Hour).FirstOrDefault();
                 x.Counter = NumberCheckingHour.Counter;
             }
-            
+
             return DashboardMonitor_StoreCheckingDTO;
         }
 
@@ -291,10 +291,27 @@ namespace DMS.Rpc.dashboards.monitor
                             Latitude = s.Latitude,
                             Longitude = s.Longitude,
                             Telephone = s.Telephone,
+                            IsScouting = false
                         };
             List<DashboardMonitor_StoreDTO> DashboardMonitor_StoreDTOs = await query.Distinct().ToListAsync();
+
+            var query_Scouting = from ss in DataContext.StoreScouting
+                                 join au in DataContext.AppUser on ss.CreatorId equals au.Id
+                                 where (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
+                                 select new DashboardMonitor_StoreDTO
+                                 {
+                                     Id = ss.Id,
+                                     Name = ss.Name,
+                                     Latitude = ss.Latitude,
+                                     Longitude = ss.Longitude,
+                                     Telephone = ss.OwnerPhone,
+                                     IsScouting = true
+                                 };
+            List<DashboardMonitor_StoreDTO> DashboardMonitor_StoreScotingDTOs = await query_Scouting.Distinct().ToListAsync();
+            DashboardMonitor_StoreDTOs.AddRange(DashboardMonitor_StoreScotingDTOs);
             return DashboardMonitor_StoreDTOs;
         }
+
 
         [Route(DashboardMonitorRoute.SaleEmployeeLocation), HttpPost]
         public async Task<List<DashboardMonitor_AppUserDTO>> SaleEmployeeLocation([FromBody] DashboardMonitor_AppUserFilterDTO DashboardMonitor_AppUserFilterDTO)

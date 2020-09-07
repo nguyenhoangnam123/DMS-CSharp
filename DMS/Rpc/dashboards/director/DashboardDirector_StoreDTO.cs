@@ -14,6 +14,7 @@ namespace DMS.Rpc.dashboards.director
         public decimal? Latitude { get; set; }
         public string Name { get; set; }
         public string Telephone { get; set; }
+        public bool IsScouting { get; set; }
         public DashboardDirector_StoreDTO() { }
         public DashboardDirector_StoreDTO(Store Store)
         {
