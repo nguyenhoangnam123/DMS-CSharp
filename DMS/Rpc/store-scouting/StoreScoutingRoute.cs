@@ -33,6 +33,7 @@ namespace DMS.Rpc.store_scouting
         public const string Get = Default + "/get";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
+        public const string Delete = Default + "/delete";
         public const string Reject = Default + "/reject";
         
         public const string FilterListAppUser = Default + "/filter-list-app-user";
@@ -83,6 +84,14 @@ namespace DMS.Rpc.store_scouting
                 FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
                 Detail, Update, 
                 SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
+
+            { "Xoá", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard,
+                Detail, Delete,
+                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
+
 
             { "Từ chối", new List<string> {
                 Parent,

@@ -149,6 +149,20 @@ namespace DMS.Rpc.store_scouting
                 return BadRequest(StoreScouting_StoreScoutingDTO);
         }
 
+        [Route(StoreScoutingRoute.Delete), HttpPost]
+        public async Task<ActionResult<StoreScouting_StoreScoutingDTO>> DeleteStoreScouting([FromBody] StoreScouting_StoreScoutingDTO StoreScouting_StoreScoutingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreScouting StoreScouting = ConvertDTOToEntity(StoreScouting_StoreScoutingDTO);
+            StoreScouting = await StoreScoutingService.Delete(StoreScouting);
+            StoreScouting_StoreScoutingDTO = new StoreScouting_StoreScoutingDTO(StoreScouting);
+            if (StoreScouting.IsValidated)
+                return StoreScouting_StoreScoutingDTO;
+            else
+                return BadRequest(StoreScouting_StoreScoutingDTO);
+        }
         private async Task<bool> HasPermission(long Id)
         {
             StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter();
