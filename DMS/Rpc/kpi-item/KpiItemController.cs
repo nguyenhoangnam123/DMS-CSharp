@@ -317,7 +317,7 @@ namespace DMS.Rpc.kpi_item
                     AppUser Employee = Employees.Where(x => x.Username == UsernameValue).FirstOrDefault();
                     if (Employee == null)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhân viên không tồn tại hoặc không thuộc {AppUser.Organization?.Name}");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhân viên không tồn tại");
                         continue;
                     }
                     KpiItem KpiItem = KpiItems.Where(x => x.EmployeeId == Employee.Id).FirstOrDefault();

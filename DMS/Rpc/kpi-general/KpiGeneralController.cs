@@ -373,7 +373,7 @@ namespace DMS.Rpc.kpi_general
                     AppUser Employee = Employees.Where(x => x.Username == UsernameValue).FirstOrDefault();
                     if(Employee == null)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhân viên không tồn tại hoặc không thuộc {AppUser.Organization?.Name}");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhân viên không tồn tại");
                         continue;
                     }
                     KpiGeneral KpiGeneral = KpiGenerals.Where(x => x.EmployeeId == Employee.Id).FirstOrDefault();
