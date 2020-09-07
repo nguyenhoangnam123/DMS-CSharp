@@ -21,10 +21,12 @@ namespace DMS.Rpc.dashboards.monitor
         public const string TopSaleEmployeeStoreChecking = Default + "/top-sale-employee-store-checking";
 
         public const string FilterListTime = Default + "/filter-list-time";
+        public const string FilterListOrganization = Default + "/filter-list-organization";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
+            { nameof(DashboardMonitor_StoreFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
         };
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
@@ -33,7 +35,7 @@ namespace DMS.Rpc.dashboards.monitor
                 Parent,
                 Master,
                 StoreChecking, SaleEmployeeOnline, StatisticIndirectSalesOrder, ImageStoreCheking, StoreCoverage, SaleEmployeeLocation,
-                ListIndirectSalesOrder, TopSaleEmployeeStoreChecking, FilterListTime
+                ListIndirectSalesOrder, TopSaleEmployeeStoreChecking, FilterListTime, FilterListOrganization
             } },
         };
     }

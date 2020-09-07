@@ -70,6 +70,48 @@ namespace DMS.Rpc.dashboards.director
             return Dashborad_EnumLists;
         }
 
+        [Route(DashboardDirectorRoute.FilterListOrganization), HttpPost]
+        public async Task<List<DashboardDirector_OrganizationDTO>> FilterListOrganization([FromBody] DashboardDirector_OrganizationFilterDTO DashboardDirector_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = 99999;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.Id = DashboardDirector_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = DashboardDirector_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = DashboardDirector_OrganizationFilterDTO.Name;
+            OrganizationFilter.ParentId = DashboardDirector_OrganizationFilterDTO.ParentId;
+            OrganizationFilter.Path = DashboardDirector_OrganizationFilterDTO.Path;
+            OrganizationFilter.Level = DashboardDirector_OrganizationFilterDTO.Level;
+            OrganizationFilter.StatusId = DashboardDirector_OrganizationFilterDTO.StatusId;
+            OrganizationFilter.Phone = DashboardDirector_OrganizationFilterDTO.Phone;
+            OrganizationFilter.Address = DashboardDirector_OrganizationFilterDTO.Address;
+            OrganizationFilter.Email = DashboardDirector_OrganizationFilterDTO.Email;
+
+            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
+            if (CurrentContext.Filters != null)
+            {
+                foreach (var currentFilter in CurrentContext.Filters)
+                {
+                    OrganizationFilter subFilter = new OrganizationFilter();
+                    OrganizationFilter.OrFilter.Add(subFilter);
+                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                    {
+                        if (FilterPermissionDefinition.Name == nameof(AppUserFilter.OrganizationId))
+                            subFilter.Id = FilterPermissionDefinition.IdFilter;
+                    }
+                }
+            }
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<DashboardDirector_OrganizationDTO> DashboardDirector_OrganizationDTOs = Organizations
+                .Select(x => new DashboardDirector_OrganizationDTO(x)).ToList();
+            return DashboardDirector_OrganizationDTOs;
+        }
+
         [Route(DashboardDirectorRoute.CountStore), HttpPost]
         public async Task<long> CountStore()
         {
@@ -260,12 +302,20 @@ namespace DMS.Rpc.dashboards.director
         }
 
         [Route(DashboardDirectorRoute.StoreCoverage), HttpPost]
-        public async Task<List<DashboardDirector_StoreDTO>> StoreCoverage()
+        public async Task<List<DashboardDirector_StoreDTO>> StoreCoverage([FromBody] DashboardDirector_StoreFilterDTO DashboardDirector_StoreFilterDTO)
         {
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_StoreFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_StoreFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
             var query = from s in DataContext.Store
-                        join o in DataContext.Organization on s.OrganizationId equals o.Id
-                        where o.Path.StartsWith(CurrentUser.Organization.Path)
+                        where OrganizationIds.Contains(s.OrganizationId)
                         select new DashboardDirector_StoreDTO
                         {
                             Id = s.Id,
@@ -279,13 +329,21 @@ namespace DMS.Rpc.dashboards.director
         }
 
         [Route(DashboardDirectorRoute.SaleEmployeeLocation), HttpPost]
-        public async Task<List<DashboardDirector_AppUserDTO>> SaleEmployeeLocation()
+        public async Task<List<DashboardDirector_AppUserDTO>> SaleEmployeeLocation([FromBody] DashboardDirector_AppUserFilterDTO DashboardDirector_AppUserFilterDTO)
         {
-            var AppUser = await AppUserService.Get(CurrentContext.UserId);
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_AppUserFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_AppUserFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
             var query = from au in DataContext.AppUser
-                        join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where au.DeletedAt.HasValue == false && au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
-                        au.OrganizationId.HasValue && o.Path.StartsWith(AppUser.Organization.Path)
+                        (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
                         select new DashboardDirector_AppUserDTO
                         {
                             Id = au.Id,

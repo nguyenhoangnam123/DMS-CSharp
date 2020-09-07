@@ -24,4 +24,9 @@ namespace DMS.Rpc.dashboards.director
             this.Telephone = Store.Telephone;
         }
     }
+
+    public class DashboardDirector_StoreFilterDTO : FilterDTO
+    {
+        public IdFilter OrganizationId { get; set; }
+    }
 }

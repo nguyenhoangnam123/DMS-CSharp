@@ -24,4 +24,9 @@ namespace DMS.Rpc.dashboards.monitor
             this.Telephone = Store.Telephone;
         }
     }
+
+    public class DashboardMonitor_StoreFilterDTO : FilterDTO
+    {
+        public IdFilter OrganizationId { get; set; }
+    }
 }
