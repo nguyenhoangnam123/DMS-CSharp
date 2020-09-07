@@ -16,6 +16,9 @@ namespace DMS.Rpc.kpi_item
         public long EmployeeId { get; set; }
         public long CreatorId { get; set; }
         public bool ReadOnly { get; set; }
+        public GenericEnum CurrentMonth { get; set; }
+        public GenericEnum CurrentQuarter { get; set; }
+        public GenericEnum CurrentYear { get; set; }
         public KpiItem_AppUserDTO Creator { get; set; }
         public KpiItem_AppUserDTO Employee { get; set; }
         public KpiItem_KpiYearDTO KpiYear { get; set; }
