@@ -103,6 +103,89 @@ namespace DMS.Rpc.indirect_sales_order
             return IndirectSalesOrder_IndirectSalesOrderDTOs;
         }
 
+
+        [Route(IndirectSalesOrderRoute.CountNew), HttpPost]
+        public async Task<ActionResult<int>> CountNew([FromBody] IndirectSalesOrder_IndirectSalesOrderFilterDTO IndirectSalesOrder_IndirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
+            IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
+            int count = await IndirectSalesOrderService.Count(IndirectSalesOrderFilter);
+            return count;
+        }
+
+        [Route(IndirectSalesOrderRoute.ListNew), HttpPost]
+        public async Task<ActionResult<List<IndirectSalesOrder_IndirectSalesOrderDTO>>> ListNew([FromBody] IndirectSalesOrder_IndirectSalesOrderFilterDTO IndirectSalesOrder_IndirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
+            IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+            List<IndirectSalesOrder_IndirectSalesOrderDTO> IndirectSalesOrder_IndirectSalesOrderDTOs = IndirectSalesOrders
+                .Select(c => new IndirectSalesOrder_IndirectSalesOrderDTO(c)).ToList();
+            return IndirectSalesOrder_IndirectSalesOrderDTOs;
+        }
+
+
+        [Route(IndirectSalesOrderRoute.CountPending), HttpPost]
+        public async Task<ActionResult<int>> CountPending([FromBody] IndirectSalesOrder_IndirectSalesOrderFilterDTO IndirectSalesOrder_IndirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
+            IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
+            int count = await IndirectSalesOrderService.Count(IndirectSalesOrderFilter);
+            return count;
+        }
+
+        [Route(IndirectSalesOrderRoute.ListPending), HttpPost]
+        public async Task<ActionResult<List<IndirectSalesOrder_IndirectSalesOrderDTO>>> ListPending([FromBody] IndirectSalesOrder_IndirectSalesOrderFilterDTO IndirectSalesOrder_IndirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
+            IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+            List<IndirectSalesOrder_IndirectSalesOrderDTO> IndirectSalesOrder_IndirectSalesOrderDTOs = IndirectSalesOrders
+                .Select(c => new IndirectSalesOrder_IndirectSalesOrderDTO(c)).ToList();
+            return IndirectSalesOrder_IndirectSalesOrderDTOs;
+        }
+
+
+        [Route(IndirectSalesOrderRoute.CountCompleted), HttpPost]
+        public async Task<ActionResult<int>> CountCompleted([FromBody] IndirectSalesOrder_IndirectSalesOrderFilterDTO IndirectSalesOrder_IndirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
+            IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
+            int count = await IndirectSalesOrderService.Count(IndirectSalesOrderFilter);
+            return count;
+        }
+
+        [Route(IndirectSalesOrderRoute.ListCompleted), HttpPost]
+        public async Task<ActionResult<List<IndirectSalesOrder_IndirectSalesOrderDTO>>> ListCompleted([FromBody] IndirectSalesOrder_IndirectSalesOrderFilterDTO IndirectSalesOrder_IndirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
+            IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+            List<IndirectSalesOrder_IndirectSalesOrderDTO> IndirectSalesOrder_IndirectSalesOrderDTOs = IndirectSalesOrders
+                .Select(c => new IndirectSalesOrder_IndirectSalesOrderDTO(c)).ToList();
+            return IndirectSalesOrder_IndirectSalesOrderDTOs;
+        }
+
+
+
         [Route(IndirectSalesOrderRoute.Get), HttpPost]
         public async Task<ActionResult<IndirectSalesOrder_IndirectSalesOrderDTO>> Get([FromBody]IndirectSalesOrder_IndirectSalesOrderDTO IndirectSalesOrder_IndirectSalesOrderDTO)
         {
@@ -151,6 +234,25 @@ namespace DMS.Rpc.indirect_sales_order
             else
                 return BadRequest(IndirectSalesOrder_IndirectSalesOrderDTO);
         }
+
+        [Route(IndirectSalesOrderRoute.Send), HttpPost]
+        public async Task<ActionResult<IndirectSalesOrder_IndirectSalesOrderDTO>> Send([FromBody] IndirectSalesOrder_IndirectSalesOrderDTO IndirectSalesOrder_IndirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(IndirectSalesOrder_IndirectSalesOrderDTO.Id))
+                return Forbid();
+
+            IndirectSalesOrder IndirectSalesOrder = ConvertDTOToEntity(IndirectSalesOrder_IndirectSalesOrderDTO);
+            IndirectSalesOrder = await IndirectSalesOrderService.Approve(IndirectSalesOrder);
+            IndirectSalesOrder_IndirectSalesOrderDTO = new IndirectSalesOrder_IndirectSalesOrderDTO(IndirectSalesOrder);
+            if (IndirectSalesOrder.IsValidated)
+                return IndirectSalesOrder_IndirectSalesOrderDTO;
+            else
+                return BadRequest(IndirectSalesOrder_IndirectSalesOrderDTO);
+        }
+
 
         [Route(IndirectSalesOrderRoute.Approve), HttpPost]
         public async Task<ActionResult<IndirectSalesOrder_IndirectSalesOrderDTO>> Approve([FromBody] IndirectSalesOrder_IndirectSalesOrderDTO IndirectSalesOrder_IndirectSalesOrderDTO)
