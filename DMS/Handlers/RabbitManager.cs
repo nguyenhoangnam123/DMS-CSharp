@@ -52,6 +52,10 @@ namespace DMS.Handlers
             {
                 throw ex;
             }
+            finally
+            {
+                _objectPool.Return(channel);
+            }
         }
 
         public void PublishSingle<T>(EventMessage<T> message, GenericEnum routeKey) where T : DataEntity
