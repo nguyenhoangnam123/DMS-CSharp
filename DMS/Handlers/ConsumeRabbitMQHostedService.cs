@@ -19,18 +19,16 @@ namespace DMS.Handlers
     {
         private IModel _channel;
         private IConfiguration Configuration;
-        private readonly DefaultObjectPool<IModel> _objectPool;
-        private readonly RabbitManager RabbitManager;
+        private IRabbitManager RabbitManager;
         internal List<IHandler> Handlers = new List<IHandler>();
-        public ConsumeRabbitMQHostedService(IPooledObjectPolicy<IModel> objectPolicy, IConfiguration Configuration)
+        public ConsumeRabbitMQHostedService(IConfiguration Configuration, IRabbitManager RabbitManager)
         {
             if (StaticParams.EnableExternalService)
             {
                 this.Configuration = Configuration;
+                this.RabbitManager = RabbitManager;
                 string exchangeName = "exchange";
-                _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount);
-                RabbitManager = new RabbitManager(objectPolicy);
-                _channel = _objectPool.Get();
+                _channel = RabbitManager.Get();
                 _channel.ExchangeDeclare(exchangeName, ExchangeType.Topic, true, false);
                 _channel.QueueDeclare(StaticParams.ModuleName, true, false, false, null);
 
