@@ -46,6 +46,7 @@ namespace DMS.Rpc.mobile
         public Mobile_StatusDTO Status { get; set; }
         public Mobile_StoreScoutingDTO StoreScouting { get; set; }
         public List<Mobile_StoreImageMappingDTO> StoreImageMappings { get; set; }
+        public List<Mobile_AlbumImageMappingDTO> AlbumImageMappings { get; set; }
         public List<Mobile_StoreCheckingDTO> StoreCheckings { get; set; }
         public double Distance { get; set; }
         public Mobile_StoreDTO() { }

@@ -47,7 +47,11 @@ namespace DMS.Repositories
             if (filter.StoreId != null)
             {
                 if (filter.StoreId.Equal.HasValue)
-                    query = query.Where(q => q.AlbumImageMappings.Any(x => x.StoreId == filter.StoreId.Equal.Value));
+                {
+                    var AlbumIds = DataContext.AlbumImageMapping.Where(x => x.StoreId == filter.StoreId.Equal.Value).Select(x => x.AlbumId).ToList();
+                    query = query.Where(q => AlbumIds.Contains(q.Id));
+                }
+                   
             }
             query = OrFilter(query, filter);
             return query;
