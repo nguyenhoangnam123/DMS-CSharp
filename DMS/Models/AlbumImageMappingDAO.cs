@@ -9,6 +9,8 @@ namespace DMS.Models
         public long AlbumId { get; set; }
         public long StoreId { get; set; }
         public DateTime ShootingAt { get; set; }
+        public long? SaleEmployeeId { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         public virtual AlbumDAO Album { get; set; }
         public virtual ImageDAO Image { get; set; }

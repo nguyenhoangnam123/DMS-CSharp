@@ -51,7 +51,7 @@ namespace DMS.Repositories
                     var AlbumIds = DataContext.AlbumImageMapping.Where(x => x.StoreId == filter.StoreId.Equal.Value).Select(x => x.AlbumId).ToList();
                     query = query.Where(q => AlbumIds.Contains(q.Id));
                 }
-                   
+
             }
             query = OrFilter(query, filter);
             return query;
@@ -285,15 +285,30 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Album Album)
         {
-            List<AlbumImageMappingDAO> AlbumImageMappingDAOs = new List<AlbumImageMappingDAO>();
-            foreach (var AlbumImageMapping in Album.AlbumImageMappings)
+            List<AlbumImageMappingDAO> AlbumImageMappingDAOs = await DataContext.AlbumImageMapping.Where(x => x.AlbumId == Album.Id).ToListAsync();
+            AlbumImageMappingDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
+            if(Album.AlbumImageMappings != null)
             {
-                AlbumImageMappingDAO AlbumImageMappingDAO = new AlbumImageMappingDAO();
-                AlbumImageMappingDAO.AlbumId = AlbumImageMapping.AlbumId;
-                AlbumImageMappingDAO.ImageId = AlbumImageMapping.ImageId;
-                AlbumImageMappingDAO.StoreId = AlbumImageMapping.StoreId;
-                AlbumImageMappingDAO.ShootingAt = AlbumImageMapping.ShootingAt;
-                AlbumImageMappingDAOs.Add(AlbumImageMappingDAO);
+                foreach (var AlbumImageMapping in Album.AlbumImageMappings)
+                {
+                    AlbumImageMappingDAO AlbumImageMappingDAO = AlbumImageMappingDAOs.Where(x => x.ImageId == AlbumImageMapping.ImageId).FirstOrDefault();
+                    if(AlbumImageMappingDAO == null)
+                    {
+                        AlbumImageMappingDAO = new AlbumImageMappingDAO();
+                        AlbumImageMappingDAO.AlbumId = Album.Id;
+                        AlbumImageMappingDAO.ImageId = AlbumImageMapping.ImageId;
+                        AlbumImageMappingDAO.StoreId = AlbumImageMapping.StoreId;
+                        AlbumImageMappingDAO.SaleEmployeeId = AlbumImageMapping.SaleEmployeeId;
+                        AlbumImageMappingDAO.ShootingAt = AlbumImageMapping.ShootingAt;
+                        AlbumImageMappingDAO.DeletedAt = null;
+                        AlbumImageMappingDAOs.Add(AlbumImageMappingDAO);
+                    }
+                    else
+                    {
+                        AlbumImageMappingDAO.AlbumId = Album.Id;
+                        AlbumImageMappingDAO.DeletedAt = null;
+                    }
+                }
             }
             await DataContext.AlbumImageMapping.BulkMergeAsync(AlbumImageMappingDAOs);
         }

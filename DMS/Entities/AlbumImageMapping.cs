@@ -14,10 +14,13 @@ namespace DMS.Entities
         public long StoreId { get; set; }
         public long ImageId { get; set; }
         public DateTime ShootingAt { get; set; }
+        public long? SaleEmployeeId { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public Album Album { get; set; }
+        public AppUser SaleEmployee { get; set; }
         public Image Image { get; set; }
         public Store Store { get; set; }
-
+        
         public bool Equals(AlbumImageMapping other)
         {
             return true;
@@ -33,6 +36,7 @@ namespace DMS.Entities
         public IdFilter AlbumId { get; set; }
         public IdFilter StoreId { get; set; }
         public IdFilter ImageId { get; set; }
+        public IdFilter SaleEmployeeId { get; set; }
         public List<AlbumImageMappingFilter> OrFilter { get; set; }
         public AlbumImageMappingOrder OrderBy { get; set; }
         public AlbumImageMappingSelect Selects { get; set; }
@@ -44,6 +48,7 @@ namespace DMS.Entities
         Album = 0,
         Store = 1,
         Image = 2,
+        SaleEmployee = 3,
     }
 
     [Flags]
@@ -53,5 +58,6 @@ namespace DMS.Entities
         Album = E._0,
         Store = E._1,
         Image = E._2,
+        SaleEmployee = E._3,
     }
 }

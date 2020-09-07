@@ -49,6 +49,7 @@ namespace DMS.Entities
         public Ward Ward { get; set; }
         public StoreScouting StoreScouting { get; set; }
         public RequestState RequestState { get; set; }
+        public List<AlbumImageMapping> AlbumImageMappings { get; set; }
         public List<StoreImageMapping> StoreImageMappings { get; set; }
         public List<RequestWorkflowStepMapping> StoreWorkflows { get; set; }
         public List<RequestWorkflowStepMapping> RequestWorkflowStepMappings { get; set; }
