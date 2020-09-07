@@ -17,7 +17,7 @@ namespace DMS.Handlers
     public interface IHandler
     {
         string Name { get; }
-        RabbitManager RabbitManager { get; set; }
+        IRabbitManager RabbitManager { get; set; }
         void QueueBind(IModel channel, string queue, string exchange);
         Task Handle(DataContext context, string routingKey, string content);
     }
@@ -25,7 +25,7 @@ namespace DMS.Handlers
     public abstract class Handler : IHandler
     {
         public abstract string Name { get; }
-        public RabbitManager RabbitManager { get; set; }
+        public IRabbitManager RabbitManager { get; set; }
         public abstract Task Handle(DataContext context, string routingKey, string content);
 
         public abstract void QueueBind(IModel channel, string queue, string exchange);

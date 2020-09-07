@@ -83,8 +83,6 @@ namespace DMS
                 });
 
             services.AddGleamTech();
-            services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
-            services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
             services.AddSingleton<IRabbitManager, RabbitManager>();
             services.AddHostedService<ConsumeRabbitMQHostedService>();
 

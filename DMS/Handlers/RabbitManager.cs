@@ -1,5 +1,6 @@
 ﻿using Common;
 using Helpers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -11,16 +12,41 @@ namespace DMS.Handlers
 {
     public interface IRabbitManager
     {
+        IModel Get();
         void PublishList<T>(List<EventMessage<T>> message, GenericEnum routeKey) where T : DataEntity;
         void PublishSingle<T>(EventMessage<T> message, GenericEnum routeKey) where T : DataEntity;
     }
     public class RabbitManager : IRabbitManager
     {
-        private readonly DefaultObjectPool<IModel> _objectPool;
+        private readonly IModel _channel;
 
-        public RabbitManager(IPooledObjectPolicy<IModel> objectPolicy)
+        private readonly IConnection _connection;
+        public RabbitManager(IConfiguration Configuration)
         {
-            _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount);
+            if (StaticParams.EnableExternalService)
+            {
+                var factory = new ConnectionFactory
+                {
+                    HostName = Configuration["RabbitConfig:Hostname"],
+                    UserName = Configuration["RabbitConfig:Username"],
+                    Password = Configuration["RabbitConfig:Password"],
+                    VirtualHost = Configuration["RabbitConfig:VirtualHost"],
+                    Port = int.Parse(Configuration["RabbitConfig:Port"]),
+                };
+
+                // create connection  
+                _connection = factory.CreateConnection();
+                _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
+                _channel = _connection.CreateModel();
+            }
+            
+        }
+
+        private void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e) { }
+
+        public IModel Get()
+        {
+            return _channel;
         }
 
         public void PublishList<T>(List<EventMessage<T>> message, GenericEnum routeKey) where T : DataEntity
@@ -30,7 +56,7 @@ namespace DMS.Handlers
             if (message == null)
                 return;
 
-            var channel = _objectPool.Get();
+            var channel = _channel;
 
             try
             {
@@ -46,10 +72,6 @@ namespace DMS.Handlers
             catch (Exception ex)
             {
                 throw ex;
-            }
-            finally
-            {
-                _objectPool.Return(channel);
             }
         }
 
