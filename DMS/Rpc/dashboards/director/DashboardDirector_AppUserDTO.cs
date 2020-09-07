@@ -26,4 +26,9 @@ namespace DMS.Rpc.dashboards.director
             this.Errors = AppUser.Errors;
         }
     }
+
+    public class DashboardDirector_AppUserFilterDTO : FilterDTO
+    {
+        public IdFilter OrganizationId { get; set; }
+    }
 }

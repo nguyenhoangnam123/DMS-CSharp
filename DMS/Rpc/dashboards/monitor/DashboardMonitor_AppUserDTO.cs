@@ -30,6 +30,7 @@ namespace DMS.Rpc.dashboards.monitor
     public class DashboardMonitor_AppUserFilterDTO : FilterDTO
     {
         public IdFilter Id { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public StringFilter Username { get; set; }
         public StringFilter DisplayName { get; set; }
         public AppUserOrder OrderBy { get; set; }

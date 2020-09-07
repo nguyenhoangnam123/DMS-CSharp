@@ -20,10 +20,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public string DisplayName { get; set; }
         public string OrganizationName { get; set; }
         public string OrganizationPath { get; set; }
-        public List<MonitorStoreImage_StoreCheckingDTO> StoreCheckings { get; set; }
+        public List<MonitorStoreImage_DetailDTO> StoreCheckings { get; set; }
     }
 
-    public class MonitorStoreImage_StoreCheckingDTO : DataDTO
+    public class MonitorStoreImage_DetailDTO : DataDTO
     {
         public long STT { get; set; }
         public long Id { get; set; }

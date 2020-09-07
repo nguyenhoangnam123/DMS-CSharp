@@ -14,6 +14,7 @@ namespace DMS.Rpc.dashboards.monitor
         public decimal? Latitude { get; set; }
         public string Name { get; set; }
         public string Telephone { get; set; }
+        public bool IsScouting { get; set; }
         public DashboardMonitor_StoreDTO() { }
         public DashboardMonitor_StoreDTO(Store Store)
         {
@@ -23,5 +24,10 @@ namespace DMS.Rpc.dashboards.monitor
             this.Name = Store.Name;
             this.Telephone = Store.Telephone;
         }
+    }
+
+    public class DashboardMonitor_StoreFilterDTO : FilterDTO
+    {
+        public IdFilter OrganizationId { get; set; }
     }
 }

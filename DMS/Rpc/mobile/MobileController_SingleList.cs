@@ -431,7 +431,7 @@ namespace DMS.Rpc.mobile
 
             Store Store = await StoreService.Get(Mobile_StoreDTO.Id);
             Mobile_StoreDTO = new Mobile_StoreDTO(Store);
-            DateTime Start = StaticParams.DateTimeNow.Date.AddHours(0 - CurrentContext.TimeZone);
+            DateTime Start = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date;
             DateTime End = Start.AddDays(1).AddSeconds(-1);
             List<Album> Albums = await AlbumService.List(new AlbumFilter
             {
@@ -441,10 +441,16 @@ namespace DMS.Rpc.mobile
                 Skip = 0,
                 Take = int.MaxValue,
             });
-            List<Mobile_StoreImageMappingDTO> Mobile_StoreImageMappingDTOs = Albums.SelectMany(x => x.AlbumImageMappings.Select(m => new Mobile_StoreImageMappingDTO
+            Mobile_StoreDTO.AlbumImageMappings = Albums.SelectMany(x => x.AlbumImageMappings.Where(x => x.StoreId == Mobile_StoreDTO.Id).Select(m => new Mobile_AlbumImageMappingDTO
             {
+                AlbumId = m.AlbumId,
                 ImageId = m.ImageId,
                 StoreId = m.StoreId,
+                Album = m.Album == null ? null : new Mobile_AlbumDTO
+                {
+                    Id = m.Album.Id,
+                    Name = m.Album.Name,
+                },
                 Image = m.Image == null ? null : new Mobile_ImageDTO
                 {
                     Id = m.Image.Id,
@@ -452,7 +458,6 @@ namespace DMS.Rpc.mobile
                     Url = m.Image.Url,
                 },
             })).ToList();
-            Mobile_StoreDTO.StoreImageMappings.AddRange(Mobile_StoreImageMappingDTOs);
             return Mobile_StoreDTO;
         }
 

@@ -20,7 +20,7 @@ namespace DMS.Handlers
         private IModel _channel;
         private IConfiguration Configuration;
         private readonly DefaultObjectPool<IModel> _objectPool;
-        private readonly RabbitManager RabbitManager;
+        private IRabbitManager RabbitManager;
         internal List<IHandler> Handlers = new List<IHandler>();
         public ConsumeRabbitMQHostedService(IPooledObjectPolicy<IModel> objectPolicy, IConfiguration Configuration)
         {
@@ -28,7 +28,7 @@ namespace DMS.Handlers
             {
                 this.Configuration = Configuration;
                 string exchangeName = "exchange";
-                _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount);
+                _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 1);
                 RabbitManager = new RabbitManager(objectPolicy);
                 _channel = _objectPool.Get();
                 _channel.ExchangeDeclare(exchangeName, ExchangeType.Topic, true, false);

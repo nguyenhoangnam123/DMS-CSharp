@@ -23,6 +23,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using Portal.Handlers;
 using Prometheus;
 using RabbitMQ.Client;
 using System;

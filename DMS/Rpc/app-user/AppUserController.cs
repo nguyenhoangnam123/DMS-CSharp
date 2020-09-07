@@ -113,6 +113,24 @@ namespace DMS.Rpc.app_user
                 return BadRequest(AppUser_AppUserDTO);
         }
 
+        [Route(AppUserRoute.UpdateRole), HttpPost]
+        public async Task<ActionResult<AppUser_AppUserDTO>> UpdateRole([FromBody] AppUser_AppUserDTO AppUser_AppUserDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(AppUser_AppUserDTO.Id))
+                return Forbid();
+
+            AppUser AppUser = ConvertDTOToEntity(AppUser_AppUserDTO);
+            AppUser = await AppUserService.UpdateRole(AppUser);
+            AppUser_AppUserDTO = new AppUser_AppUserDTO(AppUser);
+            if (AppUser.IsValidated)
+                return AppUser_AppUserDTO;
+            else
+                return BadRequest(AppUser_AppUserDTO);
+        }
+
         [Route(AppUserRoute.Export), HttpPost]
         public async Task<FileResult> Export([FromBody] AppUser_AppUserFilterDTO AppUser_AppUserFilterDTO)
         {

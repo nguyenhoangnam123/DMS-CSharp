@@ -13,10 +13,19 @@ namespace DMS.Rpc.indirect_sales_order
         private const string Default = Rpc + Module + "/indirect-sales-order";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
+
+        public const string CountNew = Default + "/count-new";
+        public const string ListNew = Default + "/list-new";
+        public const string CountPending = Default + "/count-pending";
+        public const string ListPending = Default + "/list-pending";
+        public const string CountCompleted = Default + "/count-completed";
+        public const string ListCompleted = Default + "/list-completed";
+
         public const string Get = Default + "/get";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
+        public const string Send = Default + "/send";
         public const string Approve = Default + "/approve";
         public const string Reject = Default + "/reject";
         public const string Export = Default + "/export";
@@ -66,13 +75,15 @@ namespace DMS.Rpc.indirect_sales_order
         {
             { "Tìm kiếm", new List<string> {
                 Parent,
-                Master, Count, List, Get, 
+                Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 CountItem, ListItem,} },
 
             { "Thêm", new List<string> {
                 Parent,
-                Master, Count, List, Get, 
+                Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Create,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
@@ -81,7 +92,8 @@ namespace DMS.Rpc.indirect_sales_order
 
             { "Sửa", new List<string> {
                 Parent,
-                Master, Count, List, Get, 
+                Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Update,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
@@ -90,22 +102,25 @@ namespace DMS.Rpc.indirect_sales_order
 
             { "Xoá", new List<string> {
                 Parent,
-                Master, Count, List, Get, 
+                Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Delete,
                 } },
 
             { "Xuất excel", new List<string> {
                 Parent,
-                Master, Count, List, Get, 
+                Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Export } },
             { "Phê duyệt", new List<string>
             {
                 Parent,
                 Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Approve, Reject,
+                Detail, Approve, Reject, Send,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
                 CountItem, ListItem, CountStore, ListStore,

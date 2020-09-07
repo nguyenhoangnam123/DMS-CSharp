@@ -236,6 +236,8 @@ namespace DMS.Models
             {
                 entity.HasKey(e => new { e.ImageId, e.AlbumId });
 
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.ShootingAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Album)

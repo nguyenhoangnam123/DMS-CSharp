@@ -1,5 +1,6 @@
 ﻿using Common;
 using Helpers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -20,8 +21,12 @@ namespace DMS.Handlers
 
         public RabbitManager(IPooledObjectPolicy<IModel> objectPolicy)
         {
-            _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount);
+            _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 4);
         }
+
+
+        private void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e) { }
+
 
         public void PublishList<T>(List<EventMessage<T>> message, GenericEnum routeKey) where T : DataEntity
         {
@@ -46,10 +51,6 @@ namespace DMS.Handlers
             catch (Exception ex)
             {
                 throw ex;
-            }
-            finally
-            {
-                _objectPool.Return(channel);
             }
         }
 

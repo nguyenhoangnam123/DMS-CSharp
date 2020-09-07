@@ -1,10 +1,13 @@
-﻿using Helpers;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.ObjectPool;
 using RabbitMQ.Client;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace DMS.Handlers
+namespace Portal.Handlers
 {
     public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>
     {
@@ -12,21 +15,18 @@ namespace DMS.Handlers
 
         public RabbitModelPooledObjectPolicy(IConfiguration Configuration)
         {
-            if (StaticParams.EnableExternalService)
+            var factory = new ConnectionFactory
             {
-                var factory = new ConnectionFactory
-                {
-                    HostName = Configuration["RabbitConfig:Hostname"],
-                    UserName = Configuration["RabbitConfig:Username"],
-                    Password = Configuration["RabbitConfig:Password"],
-                    VirtualHost = Configuration["RabbitConfig:VirtualHost"],
-                    Port = int.Parse(Configuration["RabbitConfig:Port"]),
-                };
+                HostName = Configuration["RabbitConfig:Hostname"],
+                UserName = Configuration["RabbitConfig:Username"],
+                Password = Configuration["RabbitConfig:Password"],
+                VirtualHost = Configuration["RabbitConfig:VirtualHost"],
+                Port = int.Parse(Configuration["RabbitConfig:Port"]),
+            };
 
-                // create connection  
-                _connection = factory.CreateConnection();
-                _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
-            }
+            // create connection  
+            _connection = factory.CreateConnection();
+            _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
         }
 
         public IModel Create()
