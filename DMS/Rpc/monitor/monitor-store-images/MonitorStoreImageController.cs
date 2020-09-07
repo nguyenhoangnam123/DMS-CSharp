@@ -368,7 +368,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     OrganizationPath = SalesEmployee.Organization.Path
                 };
 
-                MonitorStoreImage_SaleEmployeeDTO.Details = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.Id)
+                MonitorStoreImage_SaleEmployeeDTO.StoreCheckings = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.Id)
                     .GroupBy(x => new { x.CheckOutAt.Value.Date, x.StoreId, x.Store.Name })
                     .Select(y => new MonitorStoreImage_DetailDTO
                     {
@@ -385,7 +385,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     var dates = AlbumImageMappings.Select(x => x.ShootingAt.Date).Distinct().ToList();
                     foreach (var date in dates)
                     {
-                        var row = MonitorStoreImage_SaleEmployeeDTO.Details.Where(x => x.StoreId == storeId && x.Date == date).FirstOrDefault();
+                        var row = MonitorStoreImage_SaleEmployeeDTO.StoreCheckings.Where(x => x.StoreId == storeId && x.Date == date).FirstOrDefault();
                         if(row == null)
                         {
                             row = new MonitorStoreImage_DetailDTO();
@@ -394,7 +394,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                             row.SaleEmployeeId = SalesEmployee.Id;
                             row.StoreId = storeId;
                             row.StoreName = AlbumImageMappings.Where(x => x.StoreId == storeId).Select(x => x.Store.Name).FirstOrDefault();
-                            MonitorStoreImage_SaleEmployeeDTO.Details.Add(row);
+                            MonitorStoreImage_SaleEmployeeDTO.StoreCheckings.Add(row);
                         }
                         else
                         {
@@ -544,9 +544,9 @@ namespace DMS.Rpc.monitor.monitor_store_images
             {
                 foreach (var SaleEmployee in MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees)
                 {
-                    foreach (var Detail in SaleEmployee.Details)
+                    foreach (var StoreChecking in SaleEmployee.StoreCheckings)
                     {
-                        Detail.STT = stt;
+                        StoreChecking.STT = stt;
                         stt++;
                     }
                 }
