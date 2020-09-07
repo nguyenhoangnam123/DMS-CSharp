@@ -27,12 +27,12 @@ namespace DMS.Enums
         public static GenericEnum ItemUsed = new GenericEnum { Id = 103, Code = "Item.Used", Name = "Item Used" };
         public static GenericEnum ProductUsed = new GenericEnum { Id = 104, Code = "Product.Used", Name = "Product Used" };
         public static GenericEnum ProductTypeUsed = new GenericEnum { Id = 105, Code = "ProductType.Used", Name = "ProductType Used" };
-        public static GenericEnum ProblemTypeUsed = new GenericEnum { Id = 105, Code = "ProblemType.Used", Name = "ProblemType Used" };
-        public static GenericEnum StoreUsed = new GenericEnum { Id = 106, Code = "Store.Used", Name = "Store Used" };
-        public static GenericEnum StoreTypeUsed = new GenericEnum { Id = 107, Code = "StoreType.Used", Name = "StoreType Used" };
-        public static GenericEnum SupplierUsed = new GenericEnum { Id = 108, Code = "Supplier.Used", Name = "Supplier Used" };
-        public static GenericEnum SurveyUsed = new GenericEnum { Id = 109, Code = "Survey.Used", Name = "Survey Used" };
-        public static GenericEnum TaxTypeUsed = new GenericEnum { Id = 110, Code = "TaxType.Used", Name = "TaxType Used" };
-        public static GenericEnum UnitOfMeasureUsed = new GenericEnum { Id = 111, Code = "UnitOfMeasure.Used", Name = "UnitOfMeasure Used" };
+        public static GenericEnum ProblemTypeUsed = new GenericEnum { Id = 106, Code = "ProblemType.Used", Name = "ProblemType Used" };
+        public static GenericEnum StoreUsed = new GenericEnum { Id = 107, Code = "Store.Used", Name = "Store Used" };
+        public static GenericEnum StoreTypeUsed = new GenericEnum { Id = 108, Code = "StoreType.Used", Name = "StoreType Used" };
+        public static GenericEnum SupplierUsed = new GenericEnum { Id = 109, Code = "Supplier.Used", Name = "Supplier Used" };
+        public static GenericEnum SurveyUsed = new GenericEnum { Id = 110, Code = "Survey.Used", Name = "Survey Used" };
+        public static GenericEnum TaxTypeUsed = new GenericEnum { Id = 111, Code = "TaxType.Used", Name = "TaxType Used" };
+        public static GenericEnum UnitOfMeasureUsed = new GenericEnum { Id = 112, Code = "UnitOfMeasure.Used", Name = "UnitOfMeasure Used" };
     }
 }
