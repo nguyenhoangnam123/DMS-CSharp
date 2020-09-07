@@ -17,6 +17,7 @@ namespace DMS.Services.MAppUser
         Task<List<AppUser>> List(AppUserFilter AppUserFilter);
         Task<AppUser> Get(long Id);
         Task<AppUser> Update(AppUser AppUser);
+        Task<AppUser> UpdateRole(AppUser AppUser);
         Task<AppUser> UpdateGPS(AppUser AppUser);
         AppUserFilter ToFilter(AppUserFilter AppUserFilter);
     }
@@ -107,6 +108,36 @@ namespace DMS.Services.MAppUser
 
                 await UOW.Begin();
                 await UOW.AppUserRepository.Update(AppUser);
+                await UOW.Commit();
+
+                var newData = await UOW.AppUserRepository.Get(AppUser.Id);
+                await Logging.CreateAuditLog(newData, oldData, nameof(AppUserService));
+                return newData;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(AppUserService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(AppUserService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<AppUser> UpdateRole(AppUser AppUser)
+        {
+            try
+            {
+                var oldData = await UOW.AppUserRepository.Get(AppUser.Id);
+                oldData.AppUserRoleMappings = AppUser.AppUserRoleMappings;
+                await UOW.Begin();
+                await UOW.AppUserRepository.Update(oldData);
                 await UOW.Commit();
 
                 var newData = await UOW.AppUserRepository.Get(AppUser.Id);
