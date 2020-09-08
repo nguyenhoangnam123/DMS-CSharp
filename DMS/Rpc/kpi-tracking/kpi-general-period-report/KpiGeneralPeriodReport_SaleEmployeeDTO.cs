@@ -27,11 +27,32 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         public decimal? TotalIndirectSalesAmount { get; set; }
         public decimal? TotalIndirectSalesAmountRatio { get; set; }
 
-        //SKU
+        //SKU gián tiếp
         public decimal? SkuIndirectOrderPlanned { get; set; }
-        internal HashSet<long> SKUItems { get; set; }
+        internal HashSet<long> SKUIndirectItems { get; set; }
         public decimal? SkuIndirectOrder { get; set; }
         public decimal? SkuIndirectOrderRatio { get; set; }
+
+        //Số đơn hàng trực tiếp
+        public decimal? TotalDirectOrdersPLanned { get; set; }
+        public decimal? TotalDirectOrders { get; set; }
+        public decimal? TotalDirectOrdersRatio { get; set; }
+
+        //Tổng sản lượng theo đơn hàng trực tiếp
+        public decimal? TotalDirectQuantityPlanned { get; set; }
+        public decimal? TotalDirectQuantity { get; set; }
+        public decimal? TotalDirectQuantityRatio { get; set; }
+
+        //Doanh thu theo đơn hàng trực tiếp
+        public decimal? TotalDirectSalesAmountPlanned { get; set; }
+        public decimal? TotalDirectSalesAmount { get; set; }
+        public decimal? TotalDirectSalesAmountRatio { get; set; }
+
+        //SKU trực tiếp
+        public decimal? SkuDirectOrderPlanned { get; set; }
+        internal HashSet<long> SKUDirectItems { get; set; }
+        public decimal? SkuDirectOrder { get; set; }
+        public decimal? SkuDirectOrderRatio { get; set; }
 
         //Số cửa hàng viếng thăm
         public decimal? StoresVisitedPLanned { get; set; }
