@@ -530,7 +530,7 @@ namespace DMS.Models
                     .HasComment("Địa chỉ giao hàng");
 
                 entity.Property(e => e.DeliveryDate)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasComment("Ngày giao hàng");
 
                 entity.Property(e => e.EditedPriceStatusId).HasComment("Sửa giá");
@@ -548,7 +548,7 @@ namespace DMS.Models
                     .HasComment("Ghi chú");
 
                 entity.Property(e => e.OrderDate)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasComment("Ngày đặt hàng");
 
                 entity.Property(e => e.PhoneNumber)
@@ -1043,7 +1043,7 @@ namespace DMS.Models
                     .HasComment("Địa chỉ giao hàng");
 
                 entity.Property(e => e.DeliveryDate)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasComment("Ngày giao hàng");
 
                 entity.Property(e => e.EditedPriceStatusId).HasComment("Sửa giá");
@@ -1061,7 +1061,7 @@ namespace DMS.Models
                     .HasComment("Ghi chú");
 
                 entity.Property(e => e.OrderDate)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasComment("Ngày đặt hàng");
 
                 entity.Property(e => e.PhoneNumber)
