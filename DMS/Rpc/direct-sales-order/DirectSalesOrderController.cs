@@ -15,6 +15,7 @@ using DMS.Services.MSupplier;
 using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MUnitOfMeasureGrouping;
 using DMS.Services.MWorkflow;
+using DMS.Services.MTaxType;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,7 @@ namespace DMS.Rpc.direct_sales_order
         private ISupplierService SupplierService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
+        private ITaxTypeService TaxTypeService;
         private ICurrentContext CurrentContext;
         public DirectSalesOrderController(
             IOrganizationService OrganizationService,
@@ -56,6 +58,7 @@ namespace DMS.Rpc.direct_sales_order
             ISupplierService SupplierService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
+            TaxTypeService TaxTypeService,
             ICurrentContext CurrentContext
         )
         {
@@ -74,6 +77,7 @@ namespace DMS.Rpc.direct_sales_order
             this.SupplierService = SupplierService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
+            this.TaxTypeService = TaxTypeService;
             this.CurrentContext = CurrentContext;
         }
 
