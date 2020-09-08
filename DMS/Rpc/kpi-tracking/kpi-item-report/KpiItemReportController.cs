@@ -206,8 +206,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal.HasValue == false) return BadRequest("Chưa chọn kì KPI");
-            if (KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.HasValue == false) return BadRequest("Chưa chọn năm KPI");
+            if (KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal.HasValue == false) 
+                return BadRequest(new { message = "Chưa chọn kì KPI" });
+            if (KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.HasValue == false) 
+                return BadRequest(new { message = "Chưa chọn năm KPI" });
 
             DateTime StartDate, EndDate;
             long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.AppUserId?.Equal;
@@ -444,8 +446,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal.HasValue == false) return BadRequest("Chưa chọn kì KPI");
-            if (KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.HasValue == false) return BadRequest("Chưa chọn năm KPI");
+            if (KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal.HasValue == false) 
+                return BadRequest(new { message = "Chưa chọn kì KPI" });
+            if (KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.HasValue == false) 
+                return BadRequest(new { message = "Chưa chọn năm KPI" });
 
             var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId.Equal.Value).FirstOrDefault();
             var KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiItemReport_KpiItemReportFilterDTO.KpiYearId.Equal.Value).FirstOrDefault();

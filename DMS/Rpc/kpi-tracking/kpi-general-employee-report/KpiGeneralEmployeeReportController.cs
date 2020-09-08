@@ -185,7 +185,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
             if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId == null)
-                return BadRequest("Chưa chọn nhân viên");
+                return BadRequest(new { message = "Chưa chọn nhân viên" });
 
             DateTime StartDate, EndDate;
             long? SaleEmployeeId = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId.Equal.Value;
@@ -459,7 +459,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
             if (KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.AppUserId == null)
-                return BadRequest("Chưa chọn nhân viên");
+                return BadRequest(new { message = "Chưa chọn nhân viên" });
 
             KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.Skip = 0;
             KpiGeneralEmployeeReport_KpiGeneralEmployeeReportFilterDTO.Take = int.MaxValue;

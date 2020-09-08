@@ -173,8 +173,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId == null) return BadRequest("Chưa chọn kì KPI");
-            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId == null) return BadRequest("Chưa chọn năm KPI");
+            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId == null) 
+                return BadRequest(new { message = "Chưa chọn kì KPI" });
+            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId == null) 
+                return BadRequest(new { message = "Chưa chọn năm KPI" });
 
             DateTime StartDate, EndDate;
             long? SaleEmployeeId = KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.AppUserId?.Equal;
@@ -480,8 +482,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId == null) return BadRequest("Chưa chọn kì KPI");
-            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId == null) return BadRequest("Chưa chọn năm KPI");
+            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId == null) 
+                return BadRequest(new { message = "Chưa chọn kì KPI" });
+            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId == null) 
+                return BadRequest(new { message = "Chưa chọn năm KPI" });
 
             var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId.Equal.Value).FirstOrDefault();
             var KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId.Equal.Value).FirstOrDefault();
