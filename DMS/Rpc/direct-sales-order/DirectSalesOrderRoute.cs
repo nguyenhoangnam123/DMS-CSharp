@@ -41,6 +41,7 @@ namespace DMS.Rpc.direct_sales_order
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public const string SingleListEditedPriceStatus = Default + "/single-list-edit-price-status";
         public const string SingleListRequestState = Default + "/single-list-request-state";
+        public const string SingleListTaxType = Default + "/single-list-tax-type";
 
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
@@ -75,7 +76,7 @@ namespace DMS.Rpc.direct_sales_order
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Create,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
-                SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
+                SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, } },
 
             { "Sửa", new List<string> {
@@ -84,7 +85,7 @@ namespace DMS.Rpc.direct_sales_order
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Update,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
-                SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
+                SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, } },
 
             { "Xoá", new List<string> {
@@ -106,7 +107,7 @@ namespace DMS.Rpc.direct_sales_order
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Approve, Reject,
                 SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
-                SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType,
+                SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore,
             } },
         };

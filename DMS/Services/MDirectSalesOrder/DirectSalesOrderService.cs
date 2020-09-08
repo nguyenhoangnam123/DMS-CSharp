@@ -541,7 +541,7 @@ namespace DMS.Services.MDirectSalesOrder
                         Factor = 1
                     });
                     var UOM = UnitOfMeasures.Where(x => DirectSalesOrderContent.UnitOfMeasureId == x.Id).FirstOrDefault();
-                    DirectSalesOrderContent.TaxPercentage = Product.TaxType.Percentage;
+                    //DirectSalesOrderContent.TaxPercentage = Product.TaxType.Percentage;
                     DirectSalesOrderContent.RequestedQuantity = DirectSalesOrderContent.Quantity * UOM.Factor.Value;
 
                     //Trường hợp không sửa giá, giá bán = giá bán cơ sở của sản phẩm * hệ số quy đổi của đơn vị tính

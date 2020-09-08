@@ -500,6 +500,30 @@ namespace DMS.Rpc.indirect_sales_order
                 .Select(x => new IndirectSalesOrder_RequestStateDTO(x)).ToList();
             return IndirectSalesOrder_RequestStateDTOs;
         }
+
+        [Route(IndirectSalesOrderRoute.SingleListTaxType), HttpPost]
+        public async Task<List<IndirectSalesOrder_TaxTypeDTO>> SingleListTaxType([FromBody] IndirectSalesOrder_TaxTypeFilterDTO IndirectSalesOrder_TaxTypeFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            TaxTypeFilter TaxTypeFilter = new TaxTypeFilter();
+            TaxTypeFilter.Skip = 0;
+            TaxTypeFilter.Take = 20;
+            TaxTypeFilter.OrderBy = TaxTypeOrder.Id;
+            TaxTypeFilter.OrderType = OrderType.ASC;
+            TaxTypeFilter.Selects = TaxTypeSelect.ALL;
+            TaxTypeFilter.Id = IndirectSalesOrder_TaxTypeFilterDTO.Id;
+            TaxTypeFilter.Code = IndirectSalesOrder_TaxTypeFilterDTO.Code;
+            TaxTypeFilter.Name = IndirectSalesOrder_TaxTypeFilterDTO.Name;
+            TaxTypeFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            List<TaxType> TaxTypes = await TaxTypeService.List(TaxTypeFilter);
+            List<IndirectSalesOrder_TaxTypeDTO> IndirectSalesOrder_TaxTypeDTOs = TaxTypes
+                .Select(x => new IndirectSalesOrder_TaxTypeDTO(x)).ToList();
+            return IndirectSalesOrder_TaxTypeDTOs;
+        }
+
         [Route(IndirectSalesOrderRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] IndirectSalesOrder_StoreFilterDTO IndirectSalesOrder_StoreFilterDTO)
         {
