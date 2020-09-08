@@ -121,7 +121,7 @@ namespace DMS.Rpc.kpi_item
         public async Task<ActionResult<KpiItem_KpiItemDTO>> GetDraft()
         {
             long KpiYearId = StaticParams.DateTimeNow.Year;
-            long KpiPeriodId = StaticParams.DateTimeNow.Month;
+            long KpiPeriodId = StaticParams.DateTimeNow.Month + 100;
             List<KpiCriteriaTotal> KpiCriteriaTotals = await KpiCriteriaTotalService.List(new KpiCriteriaTotalFilter
             {
                 Skip = 0,
