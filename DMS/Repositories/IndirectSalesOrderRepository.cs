@@ -429,6 +429,7 @@ namespace DMS.Repositories
                     LegalEntity = q.SellerStore.LegalEntity,
                     StatusId = q.SellerStore.StatusId,
                 } : null,
+                RowId = q.RowId,
             }).ToListAsync();
 
             List<Guid> RowIds = IndirectSalesOrders.Select(x => x.RowId).ToList();
