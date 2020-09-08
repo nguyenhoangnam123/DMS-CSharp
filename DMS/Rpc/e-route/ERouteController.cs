@@ -694,6 +694,16 @@ namespace DMS.Rpc.e_route
             StoreFilter.OwnerPhone = ERoute_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
+
+            if (ERoute_StoreFilterDTO.SaleEmployeeId.HasValue && ERoute_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
+            {
+                AppUser AppUser = await AppUserService.Get(ERoute_StoreFilterDTO.SaleEmployeeId.Equal.Value);
+                var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
+            }
             StoreFilter = StoreService.ToFilter(StoreFilter);
             return await StoreService.Count(StoreFilter);
         }
@@ -727,6 +737,17 @@ namespace DMS.Rpc.e_route
             StoreFilter.OwnerPhone = ERoute_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
+
+            if (ERoute_StoreFilterDTO.SaleEmployeeId.HasValue && ERoute_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
+            {
+                AppUser AppUser = await AppUserService.Get(ERoute_StoreFilterDTO.SaleEmployeeId.Equal.Value);
+                var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
+            }
+
             StoreFilter = StoreService.ToFilter(StoreFilter);
             List<Store> Stores = await ERouteService.ListStore(StoreFilter);
             List<ERoute_StoreDTO> ERoute_StoreDTOs = Stores

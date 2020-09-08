@@ -524,6 +524,96 @@ namespace DMS.Rpc.indirect_sales_order
             return IndirectSalesOrder_TaxTypeDTOs;
         }
 
+        [Route(IndirectSalesOrderRoute.CountBuyerStore), HttpPost]
+        public async Task<long> CountBuyerStore([FromBody] IndirectSalesOrder_StoreFilterDTO IndirectSalesOrder_StoreFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Id = IndirectSalesOrder_StoreFilterDTO.Id;
+            StoreFilter.Code = IndirectSalesOrder_StoreFilterDTO.Code;
+            StoreFilter.Name = IndirectSalesOrder_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = IndirectSalesOrder_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = IndirectSalesOrder_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = IndirectSalesOrder_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.ResellerId = IndirectSalesOrder_StoreFilterDTO.ResellerId;
+            StoreFilter.Telephone = IndirectSalesOrder_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = IndirectSalesOrder_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = IndirectSalesOrder_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = IndirectSalesOrder_StoreFilterDTO.WardId;
+            StoreFilter.Address = IndirectSalesOrder_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = IndirectSalesOrder_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = IndirectSalesOrder_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = IndirectSalesOrder_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
+
+            if (IndirectSalesOrder_StoreFilterDTO.SaleEmployeeId.HasValue && IndirectSalesOrder_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
+            {
+                AppUser AppUser = await AppUserService.Get(IndirectSalesOrder_StoreFilterDTO.SaleEmployeeId.Equal.Value);
+                var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
+            }
+
+            return await StoreService.Count(StoreFilter);
+        }
+
+        [Route(IndirectSalesOrderRoute.ListBuyerStore), HttpPost]
+        public async Task<List<IndirectSalesOrder_StoreDTO>> ListBuyerStore([FromBody] IndirectSalesOrder_StoreFilterDTO IndirectSalesOrder_StoreFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = IndirectSalesOrder_StoreFilterDTO.Skip;
+            StoreFilter.Take = IndirectSalesOrder_StoreFilterDTO.Take;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = IndirectSalesOrder_StoreFilterDTO.Id;
+            StoreFilter.Code = IndirectSalesOrder_StoreFilterDTO.Code;
+            StoreFilter.Name = IndirectSalesOrder_StoreFilterDTO.Name;
+            StoreFilter.ParentStoreId = IndirectSalesOrder_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = IndirectSalesOrder_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = IndirectSalesOrder_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.ResellerId = IndirectSalesOrder_StoreFilterDTO.ResellerId;
+            StoreFilter.Telephone = IndirectSalesOrder_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = IndirectSalesOrder_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = IndirectSalesOrder_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = IndirectSalesOrder_StoreFilterDTO.WardId;
+            StoreFilter.Address = IndirectSalesOrder_StoreFilterDTO.Address;
+            StoreFilter.DeliveryAddress = IndirectSalesOrder_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = IndirectSalesOrder_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = IndirectSalesOrder_StoreFilterDTO.Longitude;
+            StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
+
+            if (IndirectSalesOrder_StoreFilterDTO.SaleEmployeeId.HasValue && IndirectSalesOrder_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
+            {
+                AppUser AppUser = await AppUserService.Get(IndirectSalesOrder_StoreFilterDTO.SaleEmployeeId.Equal.Value);
+                var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
+            }
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<IndirectSalesOrder_StoreDTO> IndirectSalesOrder_StoreDTOs = Stores
+                .Select(x => new IndirectSalesOrder_StoreDTO(x)).ToList();
+            return IndirectSalesOrder_StoreDTOs;
+        }
+
         [Route(IndirectSalesOrderRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] IndirectSalesOrder_StoreFilterDTO IndirectSalesOrder_StoreFilterDTO)
         {
