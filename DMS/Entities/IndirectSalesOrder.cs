@@ -75,6 +75,8 @@ namespace DMS.Entities
         public List<IndirectSalesOrderFilter> OrFilter { get; set; }
         public IndirectSalesOrderOrder OrderBy { get; set; }
         public IndirectSalesOrderSelect Selects { get; set; }
+
+        public long? UserId { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]

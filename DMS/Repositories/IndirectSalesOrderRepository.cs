@@ -90,14 +90,19 @@ namespace DMS.Repositories
                 query = query.Where(q => q.EditedPriceStatusId, filter.EditedPriceStatusId);
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
-            if (filter.RequestStateId != null)
+            if (filter.RequestStateId != null && filter.UserId.HasValue)
             {
-                query = from q in query
-                        join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
-                        where
-                        (filter.RequestStateId.Equal.HasValue && r.RequestStateId == filter.RequestStateId.Equal.Value) ||
-                        (filter.RequestStateId.NotEqual.HasValue && r.RequestStateId != filter.RequestStateId.NotEqual.Value)
-                        select q;
+                if (filter.RequestStateId.Equal.HasValue)
+                {
+                    query = from q in query
+                            join def in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals def.RequestId
+                            join step_mapping in DataContext.RequestWorkflowStepMapping on q.RowId equals step_mapping.RequestId
+                            join step in DataContext.WorkflowStep on step_mapping.WorkflowStepId equals step.Id
+                            join appuser_role in DataContext.AppUserRoleMapping on step.RoleId equals appuser_role.RoleId
+                            where appuser_role.AppUserId == filter.UserId.Value
+                            select q;
+                }    
+               
             }
             if (filter.SubTotal != null)
                 query = query.Where(q => q.SubTotal, filter.SubTotal);
@@ -440,7 +445,13 @@ namespace DMS.Repositories
                     .FirstOrDefault();
                 if (RequestWorkflowDefinitionMappingDAO == null)
                 {
-
+                    IndirectSalesOrder.RequestStateId = RequestStateEnum.NEW.Id;
+                    IndirectSalesOrder.RequestState = new RequestState
+                    {
+                        Id = RequestStateEnum.NEW.Id,
+                        Code = RequestStateEnum.NEW.Code,
+                        Name = RequestStateEnum.NEW.Name,
+                    };
                 }
                 else
                 {
