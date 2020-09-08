@@ -702,7 +702,10 @@ namespace DMS.Rpc.e_route
             {
                 AppUser AppUser = await AppUserService.Get(ERoute_StoreFilterDTO.SaleEmployeeId.Equal.Value);
                 var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-                StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
+                if (StoreIds.Any())
+                {
+                    StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
+                }
             }
             StoreFilter = StoreService.ToFilter(StoreFilter);
             return await ERouteService.CountStore(StoreFilter, StoreFilter.SalesEmployeeId.Equal);
@@ -745,7 +748,10 @@ namespace DMS.Rpc.e_route
             {
                 AppUser AppUser = await AppUserService.Get(ERoute_StoreFilterDTO.SaleEmployeeId.Equal.Value);
                 var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-                StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
+                if (StoreIds.Any())
+                {
+                    StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
+                }
             }
 
             StoreFilter = StoreService.ToFilter(StoreFilter);
