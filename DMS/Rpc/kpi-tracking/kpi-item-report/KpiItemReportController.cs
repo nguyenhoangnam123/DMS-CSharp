@@ -329,6 +329,28 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                 })
                 .ToListAsync();
 
+            var DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
+                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) &&
+                x.OrderDate >= StartDate && x.OrderDate <= EndDate)
+                .Select(x => new DirectSalesOrderDAO
+                {
+                    Id = x.Id,
+                    Total = x.Total,
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    OrderDate = x.OrderDate,
+                    BuyerStoreId = x.BuyerStoreId,
+                    DirectSalesOrderContents = x.DirectSalesOrderContents.Select(c => new DirectSalesOrderContentDAO
+                    {
+                        DirectSalesOrderId = x.Id,
+                        RequestedQuantity = c.RequestedQuantity,
+                        ItemId = c.ItemId,
+                        Amount = c.Amount,
+                        GeneralDiscountAmount = c.GeneralDiscountAmount,
+                        TaxAmount = c.TaxAmount
+                    }).ToList(),
+                })
+                .ToListAsync();
+
             foreach (var Employee in KpiItemReport_KpiItemReportDTOs)
             {
                 foreach (var ItemContent in Employee.ItemContents)
@@ -337,6 +359,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                     var IndirectSalesOrders = IndirectSalesOrderDAOs
                             .Where(x => x.SaleEmployeeId == Employee.SaleEmployeeId)
                             .ToList();
+
+                    var DirectSalesOrders = DirectSalesOrderDAOs
+                           .Where(x => x.SaleEmployeeId == Employee.SaleEmployeeId)
+                           .ToList();
 
                     #region Sản lượng theo đơn hàng gián tiếp
                     //kế hoạch
@@ -421,19 +447,117 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                             x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
                             .Select(x => x.Value).FirstOrDefault();
                     //thực hiện
-                    ItemContent.StoreIds = new HashSet<long>();
+                    ItemContent.StoreIndirectIds = new HashSet<long>();
                     foreach (var IndirectSalesOrder in IndirectSalesOrders)
                     {
                         foreach (var content in IndirectSalesOrder.IndirectSalesOrderContents)
                         {
                             if (content.ItemId == ItemContent.ItemId)
-                                ItemContent.StoreIds.Add(IndirectSalesOrder.BuyerStoreId);
+                                ItemContent.StoreIndirectIds.Add(IndirectSalesOrder.BuyerStoreId);
                         }
                     }
                     //tỉ lệ
                     ItemContent.IndirectStoreRatio = ItemContent.IndirectStorePlanned == null || ItemContent.IndirectStorePlanned == 0 ?
                         null : (decimal?)
                         Math.Round((ItemContent.IndirectStore.Value / ItemContent.IndirectStorePlanned.Value) * 100, 2);
+                    #endregion
+
+                    #region Sản lượng theo đơn hàng trực tiếp
+                    //kế hoạch
+                    ItemContent.DirectQuantityPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
+                            .Where(x => x.SaleEmployeeId == ItemContent.SaleEmployeeId &&
+                            x.ItemId == ItemContent.ItemId &&
+                            x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_QUANTITY.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+                    //thực hiện
+                    foreach (var DirectSalesOrder in DirectSalesOrders)
+                    {
+                        foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
+                        {
+                            if (content.ItemId == ItemContent.ItemId)
+                            {
+                                ItemContent.DirectQuantity += content.RequestedQuantity;
+                            }
+                        }
+                    }
+                    //tỉ lệ
+                    ItemContent.DirectQuantityRatio = ItemContent.DirectQuantityPlanned == 0 || ItemContent.DirectQuantityPlanned == null ?
+                        null : (decimal?)
+                        Math.Round((ItemContent.DirectQuantity / ItemContent.DirectQuantityPlanned.Value) * 100, 2);
+                    #endregion
+
+                    #region Doanh thu theo đơn hàng trực tiếp
+                    //kế hoạch
+                    ItemContent.DirectRevenuePlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
+                            .Where(x => x.SaleEmployeeId == ItemContent.SaleEmployeeId &&
+                            x.ItemId == ItemContent.ItemId &&
+                            x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_REVENUE.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+
+                    //thực hiện
+                    foreach (var DirectSalesOrder in DirectSalesOrders)
+                    {
+                        foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
+                        {
+                            if (content.ItemId == ItemContent.ItemId)
+                            {
+                                ItemContent.DirectRevenue += content.Amount;
+                                ItemContent.DirectRevenue += content.TaxAmount ?? 0;
+                                ItemContent.DirectRevenue -= content.GeneralDiscountAmount ?? 0;
+                            }
+                        }
+                    }
+                    ItemContent.DirectRevenue = Math.Round(ItemContent.DirectRevenue, 0);
+                    //tỉ lệ
+                    ItemContent.DirectRevenueRatio = ItemContent.DirectRevenuePlanned == 0 || ItemContent.DirectRevenuePlanned == null ?
+                        null : (decimal?)
+                        Math.Round((ItemContent.DirectRevenue / ItemContent.DirectRevenuePlanned.Value) * 100, 2);
+                    #endregion
+
+                    #region Số đơn hàng trực tiếp
+                    //kế hoạch
+                    ItemContent.DirectAmountPlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
+                            .Where(x => x.SaleEmployeeId == ItemContent.SaleEmployeeId &&
+                            x.ItemId == ItemContent.ItemId &&
+                            x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_AMOUNT.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+                    //thực hiện
+                    ItemContent.DirectSalesOrderIds = new HashSet<long>();
+                    foreach (var DirectSalesOrder in DirectSalesOrders)
+                    {
+                        foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
+                        {
+                            if (content.ItemId == ItemContent.ItemId)
+                                ItemContent.DirectSalesOrderIds.Add(content.DirectSalesOrderId);
+                        }
+                    }
+                    //tỉ lệ
+                    ItemContent.DirectAmountRatio = ItemContent.DirectAmountPlanned == null || ItemContent.DirectAmountPlanned == 0 ?
+                        null : (decimal?)
+                        Math.Round((ItemContent.DirectAmount.Value / ItemContent.DirectAmountPlanned.Value) * 100, 2);
+                    #endregion
+
+                    #region Đại lý theo đơn hàng trực tiếp
+                    //kế hoạch
+                    ItemContent.DirectStorePlanned = KpiItemReport_KpiItemContentKpiCriteriaItemMappingDTOs
+                            .Where(x => x.SaleEmployeeId == ItemContent.SaleEmployeeId &&
+                            x.ItemId == ItemContent.ItemId &&
+                            x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_STORE.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+                    //thực hiện
+                    ItemContent.StoreDirectIds = new HashSet<long>();
+                    foreach (var DirectSalesOrder in DirectSalesOrders)
+                    {
+                        foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
+                        {
+                            if (content.ItemId == ItemContent.ItemId)
+                                ItemContent.StoreDirectIds.Add(DirectSalesOrder.BuyerStoreId);
+                        }
+                    }
+                    //tỉ lệ
+                    ItemContent.DirectStoreRatio = ItemContent.DirectStorePlanned == null || ItemContent.DirectStorePlanned == 0 ?
+                        null : (decimal?)
+                        Math.Round((ItemContent.DirectStore.Value / ItemContent.DirectStorePlanned.Value) * 100, 2);
                     #endregion
                 }
             };
