@@ -34,6 +34,7 @@ using System.Text;
 using DMS.Services.MNotification;
 using DMS.Services.MProblemType;
 using DMS.Services.MColor;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile
 {
@@ -64,6 +65,7 @@ namespace DMS.Rpc.mobile
         private IProductGroupingService ProductGroupingService;
         private INotificationService NotificationService;
         private ICurrentContext CurrentContext;
+        private DataContext DataContext;
         public MobileController(
             IAlbumService AlbumService,
             IBannerService BannerService,
@@ -89,7 +91,8 @@ namespace DMS.Rpc.mobile
             ISupplierService SupplierService,
             IProductGroupingService ProductGroupingService,
             INotificationService NotificationService,
-            ICurrentContext CurrentContext
+            ICurrentContext CurrentContext,
+            DataContext DataContext
         )
         {
             this.AlbumService = AlbumService;
@@ -117,6 +120,7 @@ namespace DMS.Rpc.mobile
             this.ProductGroupingService = ProductGroupingService;
             this.NotificationService = NotificationService;
             this.CurrentContext = CurrentContext;
+            this.DataContext = DataContext;
         }
 
         [Route(MobileRoute.CountStoreChecking), HttpPost]
