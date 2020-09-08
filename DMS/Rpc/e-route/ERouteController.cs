@@ -698,7 +698,7 @@ namespace DMS.Rpc.e_route
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
 
-            if (ERoute_StoreFilterDTO.SaleEmployeeId.HasValue && ERoute_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
+            if (ERoute_StoreFilterDTO.SaleEmployeeId != null && ERoute_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
             {
                 AppUser AppUser = await AppUserService.Get(ERoute_StoreFilterDTO.SaleEmployeeId.Equal.Value);
                 var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
@@ -741,7 +741,7 @@ namespace DMS.Rpc.e_route
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
 
-            if (ERoute_StoreFilterDTO.SaleEmployeeId.HasValue && ERoute_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
+            if (ERoute_StoreFilterDTO.SaleEmployeeId != null && ERoute_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
             {
                 AppUser AppUser = await AppUserService.Get(ERoute_StoreFilterDTO.SaleEmployeeId.Equal.Value);
                 var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
