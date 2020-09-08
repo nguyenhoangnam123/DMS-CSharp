@@ -705,7 +705,7 @@ namespace DMS.Rpc.e_route
                 StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
             }
             StoreFilter = StoreService.ToFilter(StoreFilter);
-            return await StoreService.Count(StoreFilter);
+            return await ERouteService.CountStore(StoreFilter);
         }
 
         [Route(ERouteRoute.ListStore), HttpPost]

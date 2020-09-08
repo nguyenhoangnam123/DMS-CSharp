@@ -202,7 +202,7 @@ namespace DMS.Services.MERoute
                     Id = new IdFilter { In = IdsStore }
                 };
 
-                var IdsInDB = (await UOW.StoreRepository.List(StoreFilter)).Select(x => x.Id).ToList();
+                var IdsInDB = (await UOW.StoreRepository.ListInScoped(StoreFilter, ERoute.SaleEmployeeId)).Select(x => x.Id).ToList();
                 var listIdsNotExisted = IdsStore.Except(IdsInDB);
                 foreach (var ERouteContent in ERoute.ERouteContents)
                 {
@@ -215,8 +215,7 @@ namespace DMS.Services.MERoute
                             AppUser SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
                             if (SaleEmployee != null)
                             {
-                                var StoreIds = SaleEmployee.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-                                if (!StoreIds.Contains(ERouteContent.StoreId))
+                                if (!IdsInDB.Contains(ERouteContent.StoreId))
                                 {
                                     ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreNotInERouteScope);
                                 }
