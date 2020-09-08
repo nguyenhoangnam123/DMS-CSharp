@@ -19,6 +19,7 @@ namespace DMS.Models
             Notifications = new HashSet<NotificationDAO>();
             PriceLists = new HashSet<PriceListDAO>();
             Resellers = new HashSet<ResellerDAO>();
+            StoreScoutings = new HashSet<StoreScoutingDAO>();
             Stores = new HashSet<StoreDAO>();
             Warehouses = new HashSet<WarehouseDAO>();
         }
@@ -52,6 +53,7 @@ namespace DMS.Models
         public virtual ICollection<NotificationDAO> Notifications { get; set; }
         public virtual ICollection<PriceListDAO> PriceLists { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
+        public virtual ICollection<StoreScoutingDAO> StoreScoutings { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
         public virtual ICollection<WarehouseDAO> Warehouses { get; set; }
     }

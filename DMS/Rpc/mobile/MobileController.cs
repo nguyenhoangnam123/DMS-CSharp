@@ -1244,6 +1244,19 @@ namespace DMS.Rpc.mobile
                 SexId = Mobile_StoreScoutingDTO.Creator.SexId,
                 Birthday = Mobile_StoreScoutingDTO.Creator.Birthday,
             };
+            StoreScouting.Organization = Mobile_StoreScoutingDTO.Organization == null ? null : new Organization
+            {
+                Id = Mobile_StoreScoutingDTO.Organization.Id,
+                Code = Mobile_StoreScoutingDTO.Organization.Code,
+                Name = Mobile_StoreScoutingDTO.Organization.Name,
+                ParentId = Mobile_StoreScoutingDTO.Organization.ParentId,
+                Path = Mobile_StoreScoutingDTO.Organization.Path,
+                Level = Mobile_StoreScoutingDTO.Organization.Level,
+                StatusId = Mobile_StoreScoutingDTO.Organization.StatusId,
+                Phone = Mobile_StoreScoutingDTO.Organization.Phone,
+                Address = Mobile_StoreScoutingDTO.Organization.Address,
+                Email = Mobile_StoreScoutingDTO.Organization.Email,
+            };
             StoreScouting.District = Mobile_StoreScoutingDTO.District == null ? null : new District
             {
                 Id = Mobile_StoreScoutingDTO.District.Id,

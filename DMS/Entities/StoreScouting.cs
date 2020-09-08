@@ -19,11 +19,13 @@ namespace DMS.Entities
         public decimal Latitude { get; set; }
         public decimal Longitude { get; set; }
         public long CreatorId { get; set; }
+        public long OrganizationId { get; set; }
         public long StoreScoutingStatusId { get; set; }
         public string Link { get; set; }
         public long? StoreId { get; set; }
         public Guid RowId { get; set; }
         public AppUser Creator { get; set; }
+        public Organization Organization { get; set; }
         public District District { get; set; }
         public Province Province { get; set; }
         public StoreScoutingStatus StoreScoutingStatus { get; set; }
@@ -80,6 +82,7 @@ namespace DMS.Entities
         Store = 11,
         Creator = 12,
         StoreScoutingStatus = 13,
+        Organization = 14,
         CreatedAt = 50,
         UpdatedAt = 51,
     }
@@ -101,5 +104,6 @@ namespace DMS.Entities
         Store = E._11,
         Creator = E._12,
         StoreScoutingStatus = E._13,
+        Organization = E._14,
     }
 }

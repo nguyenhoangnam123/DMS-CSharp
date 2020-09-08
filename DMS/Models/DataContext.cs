@@ -2992,6 +2992,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.DistrictId)
                     .HasConstraintName("FK_StoreScouting_District");
 
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreScouting_Organization");
+
                 entity.HasOne(d => d.Province)
                     .WithMany(p => p.StoreScoutings)
                     .HasForeignKey(d => d.ProvinceId)
