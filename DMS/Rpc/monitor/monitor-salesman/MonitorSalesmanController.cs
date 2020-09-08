@@ -129,8 +129,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
             DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
                    StaticParams.DateTimeNow.Date :
-                   MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value
-                        .AddHours(CurrentContext.TimeZone);
+                   MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :

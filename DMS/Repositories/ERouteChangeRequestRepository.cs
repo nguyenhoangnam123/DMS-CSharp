@@ -163,7 +163,6 @@ namespace DMS.Repositories
                     StartDate = q.ERoute.StartDate,
                     EndDate = q.ERoute.EndDate,
                     ERouteTypeId = q.ERoute.ERouteTypeId,
-                    RequestStateId = q.ERoute.RequestStateId,
                     StatusId = q.ERoute.StatusId,
                     CreatorId = q.ERoute.CreatorId,
                     Creator = q.ERoute.Creator == null ? null : new AppUser
@@ -179,12 +178,7 @@ namespace DMS.Repositories
                         Code = q.ERoute.ERouteType.Code,
                         Name = q.ERoute.ERouteType.Name,
                     },
-                    RequestState = q.ERoute.RequestState == null ? null : new RequestState
-                    {
-                        Id = q.ERoute.RequestState.Id,
-                        Code = q.ERoute.RequestState.Code,
-                        Name = q.ERoute.RequestState.Name,
-                    },
+                   
                     SaleEmployee = q.ERoute.SaleEmployee == null ? null : new AppUser
                     {
                         Id = q.ERoute.SaleEmployee.Id,
@@ -256,7 +250,6 @@ namespace DMS.Repositories
                     StartDate = x.ERoute.StartDate,
                     EndDate = x.ERoute.EndDate,
                     ERouteTypeId = x.ERoute.ERouteTypeId,
-                    RequestStateId = x.ERoute.RequestStateId,
                     StatusId = x.ERoute.StatusId,
                     CreatorId = x.ERoute.CreatorId,
                     Creator = x.ERoute.Creator == null ? null : new AppUser
@@ -271,12 +264,6 @@ namespace DMS.Repositories
                         Id = x.ERoute.ERouteType.Id,
                         Code = x.ERoute.ERouteType.Code,
                         Name = x.ERoute.ERouteType.Name,
-                    },
-                    RequestState = x.ERoute.RequestState == null ? null : new RequestState
-                    {
-                        Id = x.ERoute.RequestState.Id,
-                        Code = x.ERoute.RequestState.Code,
-                        Name = x.ERoute.RequestState.Name,
                     },
                     SaleEmployee = x.ERoute.SaleEmployee == null ? null : new AppUser
                     {
