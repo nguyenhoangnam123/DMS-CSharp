@@ -6,6 +6,7 @@ using Common;
 using DMS.Entities;
 using DMS;
 using DMS.Repositories;
+using DMS.Enums;
 
 namespace DMS.Services.MStoreScouting
 {
@@ -194,6 +195,9 @@ namespace DMS.Services.MStoreScouting
         {
             if (await ValidateId(StoreScouting))
             {
+                StoreScouting = await UOW.StoreScoutingRepository.Get(StoreScouting.Id);
+                if (StoreScouting.StoreScoutingStatusId == StoreScoutingStatusEnum.OPENED.Id)
+                    StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.StoreScoutingStatus), ErrorCode.StoreScoutingHasOpened);
             }
             return StoreScouting.IsValidated;
         }

@@ -15,6 +15,7 @@ namespace DMS.Rpc.app_user
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
         public const string Update = Default + "/update";
+        public const string UpdateRole = Default + "/update-role";
         public const string Export = Default + "/export";
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
@@ -51,7 +52,7 @@ namespace DMS.Rpc.app_user
                 Parent,
                 Master, Count, List, Get,
                 FilterListPosition,
-                Detail, Get, Update, 
+                Detail, Get, Update, UpdateRole,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, SingleListStore, SingleListStoreGrouping, SingleListStoreType,
                 CountRole, ListRole, CountStore, ListStore}},
         };

@@ -19,6 +19,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public MonitorStoreImage_AppUserDTO SaleEmployee { get; set; }
         public MonitorStoreImage_ImageDTO Image { get; set; }
         public MonitorStoreImage_StoreDTO Store { get; set; }
-        public MonitorStoreImage_StoreCheckingDTO StoreChecking { get; set; }
+        public MonitorStoreImage_DetailDTO StoreChecking { get; set; }
     }
 }

@@ -1068,11 +1068,13 @@ namespace DMS.Rpc.mobile
             Store Store = await StoreService.Get(Mobile_StoreDTO.Id);
             if (Store == null)
                 return NotFound();
-            Store.StoreImageMappings = Mobile_StoreDTO.StoreImageMappings?
-                .Select(x => new StoreImageMapping
+            Store.AlbumImageMappings = Mobile_StoreDTO.AlbumImageMappings?
+                .Select(x => new AlbumImageMapping
                 {
+                    AlbumId = x.AlbumId,
                     StoreId = x.StoreId,
                     ImageId = x.ImageId,
+                    SaleEmployeeId = CurrentContext.UserId,
                     Image = new Image
                     {
                         Id = x.Image.Id,

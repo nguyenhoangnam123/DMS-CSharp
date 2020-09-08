@@ -852,6 +852,33 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Store Store)
         {
+            List<AlbumImageMappingDAO> AlbumImageMappingDAOs = await DataContext.AlbumImageMapping.Where(x => x.StoreId == Store.Id).ToListAsync();
+            AlbumImageMappingDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
+            if (Store.AlbumImageMappings != null)
+            {
+                foreach (var AlbumImageMapping in Store.AlbumImageMappings)
+                {
+                    AlbumImageMappingDAO AlbumImageMappingDAO = AlbumImageMappingDAOs.Where(x => x.AlbumId == AlbumImageMapping.AlbumId && x.ImageId == AlbumImageMapping.ImageId).FirstOrDefault();
+                    if (AlbumImageMappingDAO == null)
+                    {
+                        AlbumImageMappingDAO = new AlbumImageMappingDAO();
+                        AlbumImageMappingDAO.AlbumId = AlbumImageMapping.AlbumId;
+                        AlbumImageMappingDAO.ImageId = AlbumImageMapping.ImageId;
+                        AlbumImageMappingDAO.StoreId = Store.Id;
+                        AlbumImageMappingDAO.SaleEmployeeId = AlbumImageMapping.SaleEmployeeId;
+                        AlbumImageMappingDAO.ShootingAt = AlbumImageMapping.ShootingAt;
+                        AlbumImageMappingDAO.DeletedAt = null;
+                        AlbumImageMappingDAOs.Add(AlbumImageMappingDAO);
+                    }
+                    else
+                    {
+                        AlbumImageMappingDAO.AlbumId = AlbumImageMapping.AlbumId;
+                        AlbumImageMappingDAO.DeletedAt = null;
+                    }
+                }
+            }
+            await DataContext.AlbumImageMapping.BulkMergeAsync(AlbumImageMappingDAOs);
+
             await DataContext.StoreImageMapping.Where(x => x.StoreId == Store.Id).DeleteFromQueryAsync();
             List<StoreImageMappingDAO> StoreImageMappingDAOs = new List<StoreImageMappingDAO>();
             if (Store.StoreImageMappings != null)
