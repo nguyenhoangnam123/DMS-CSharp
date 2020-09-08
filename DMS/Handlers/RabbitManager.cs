@@ -21,7 +21,7 @@ namespace DMS.Handlers
 
         public RabbitManager(IPooledObjectPolicy<IModel> objectPolicy)
         {
-            _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 4);
+            _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount);
         }
 
 
