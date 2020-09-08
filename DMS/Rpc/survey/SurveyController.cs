@@ -189,7 +189,9 @@ namespace DMS.Rpc.survey
 
             List<SurveyResult> SurveyResults = await SurveyResultService.List(new SurveyResultFilter
             {
-                Selects = SurveyResultSelect.Id | SurveyResultSelect.Store | SurveyResultSelect.AppUser | SurveyResultSelect.StoreScouting,
+                Selects = SurveyResultSelect.Id | SurveyResultSelect.Store | SurveyResultSelect.AppUser | SurveyResultSelect.StoreScouting
+                | SurveyResultSelect.RespondentAddress | SurveyResultSelect.RespondentEmail | SurveyResultSelect.RespondentName | SurveyResultSelect.RespondentPhone
+                | SurveyResultSelect.SurveyRespondentType,
                 Skip = 0,
                 Take = int.MaxValue,
                 OrderBy = SurveyResultOrder.Time,
