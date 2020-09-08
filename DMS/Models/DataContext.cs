@@ -660,8 +660,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<DirectSalesOrderPromotionDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Note).HasMaxLength(4000);
 
                 entity.HasOne(d => d.DirectSalesOrder)
