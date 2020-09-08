@@ -620,7 +620,10 @@ namespace DMS.Rpc.mobile
 
             AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
             var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-            StoreFilter.Id = new IdFilter { In = StoreIds };
+            if (StoreIds.Any())
+            {
+                StoreFilter.Id = new IdFilter { In = StoreIds };
+            }
 
             return await StoreCheckingService.CountStore(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
         }
@@ -663,7 +666,10 @@ namespace DMS.Rpc.mobile
 
             AppUser AppUser = await AppUserService.Get(CurrentContext.UserId);
             var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-            StoreFilter.Id = new IdFilter { In = StoreIds };
+            if (StoreIds.Any())
+            {
+                StoreFilter.Id = new IdFilter { In = StoreIds };
+            }
             List<Store> Stores = await StoreCheckingService.ListStore(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
             List<Mobile_StoreDTO> Mobile_StoreDTOs = Stores
                 .Select(x => new Mobile_StoreDTO(x)).ToList();

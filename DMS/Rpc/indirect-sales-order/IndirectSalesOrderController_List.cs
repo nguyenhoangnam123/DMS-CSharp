@@ -559,7 +559,10 @@ namespace DMS.Rpc.indirect_sales_order
             {
                 AppUser AppUser = await AppUserService.Get(IndirectSalesOrder_StoreFilterDTO.SaleEmployeeId.Equal.Value);
                 var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-                StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
+                if (StoreIds.Any())
+                {
+                    StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
+                }
             }
 
             return await StoreService.Count(StoreFilter);
@@ -605,7 +608,10 @@ namespace DMS.Rpc.indirect_sales_order
             {
                 AppUser AppUser = await AppUserService.Get(IndirectSalesOrder_StoreFilterDTO.SaleEmployeeId.Equal.Value);
                 var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-                StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
+                if (StoreIds.Any())
+                {
+                    StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
+                }
             }
 
             List<Store> Stores = await StoreService.List(StoreFilter);
