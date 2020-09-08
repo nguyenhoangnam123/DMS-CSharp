@@ -162,6 +162,7 @@ namespace DMS.Rpc.e_route
         public IdFilter WorkflowDefinitionId { get; set; }
 
         public IdFilter RequestStateId { get; set; }
+        public IdFilter SaleEmployeeId { get; set; }
 
         public StoreOrder OrderBy { get; set; }
     }

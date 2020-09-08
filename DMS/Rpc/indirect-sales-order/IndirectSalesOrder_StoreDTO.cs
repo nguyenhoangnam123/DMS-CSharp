@@ -161,6 +161,7 @@ namespace DMS.Rpc.indirect_sales_order
         public IdFilter StoreStatusId { get; set; }
 
         public IdFilter StatusId { get; set; }
+        public IdFilter SaleEmployeeId { get; set; }
 
         public StoreOrder OrderBy { get; set; }
     }

@@ -47,7 +47,7 @@ namespace DMS.Rpc.monitor_store_problems
                 Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
-                CountProblemHistory, ListProblemHistory, Export } },
+                CountProblemHistory, ListProblemHistory } },
 
             { "Sửa", new List<string> {
                 Parent,
@@ -70,6 +70,11 @@ namespace DMS.Rpc.monitor_store_problems
                 CountProblemHistory, ListProblemHistory,
                 BulkDelete } },
 
+            { "Xuất Excel", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                FilterListAppUser, FilterListOrganization, FilterListProblemStatus, FilterListProblemType, FilterListStore,
+                CountProblemHistory, ListProblemHistory, Export } },
         };
     }
 }

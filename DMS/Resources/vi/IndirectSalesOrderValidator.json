@@ -6,7 +6,8 @@
     },
     "BuyerStore": {
       "BuyerStoreNotExisted": "Đại lý mua không tồn tại",
-      "BuyerStoreEmpty": "Chưa chọn đại lý mua"
+      "BuyerStoreEmpty": "Chưa chọn đại lý mua",
+      "BuyerStoreNotInERouteScope": "Đại lý mua không thuộc phạm vi đi tuyến của nhân viên kinh doanh"
     },
     "SellerStore": {
       "SellerStoreNotExisted": "Đại lý bán không tồn tại",
