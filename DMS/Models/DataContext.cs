@@ -660,8 +660,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<DirectSalesOrderPromotionDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Note).HasMaxLength(4000);
 
                 entity.HasOne(d => d.DirectSalesOrder)
@@ -2991,6 +2989,12 @@ namespace DMS.Models
                     .WithMany(p => p.StoreScoutings)
                     .HasForeignKey(d => d.DistrictId)
                     .HasConstraintName("FK_StoreScouting_District");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreScouting_Organization");
 
                 entity.HasOne(d => d.Province)
                     .WithMany(p => p.StoreScoutings)

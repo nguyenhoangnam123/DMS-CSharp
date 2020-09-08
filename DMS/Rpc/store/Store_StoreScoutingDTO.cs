@@ -16,7 +16,7 @@ namespace DMS.Rpc.store
         public long? ProvinceId { get; set; }
         public long? DistrictId { get; set; }
         public long? WardId { get; set; }
-        public long? OrganizationId { get; set; }
+        public long OrganizationId { get; set; }
         public string Address { get; set; }
         public decimal Latitude { get; set; }
         public decimal Longitude { get; set; }
@@ -44,8 +44,10 @@ namespace DMS.Rpc.store
             this.Latitude = StoreScouting.Latitude;
             this.Longitude = StoreScouting.Longitude;
             this.CreatorId = StoreScouting.CreatorId;
+            this.OrganizationId = StoreScouting.OrganizationId;
             this.StoreScoutingStatusId = StoreScouting.StoreScoutingStatusId;
             this.Creator = StoreScouting.Creator == null ? null : new Store_AppUserDTO(StoreScouting.Creator);
+            this.Organization = StoreScouting.Organization == null ? null : new Store_OrganizationDTO(StoreScouting.Organization);
             this.District = StoreScouting.District == null ? null : new Store_DistrictDTO(StoreScouting.District);
             this.Province = StoreScouting.Province == null ? null : new Store_ProvinceDTO(StoreScouting.Province);
             this.StoreScoutingStatus = StoreScouting.StoreScoutingStatus == null ? null : new Store_StoreScoutingStatusDTO(StoreScouting.StoreScoutingStatus);

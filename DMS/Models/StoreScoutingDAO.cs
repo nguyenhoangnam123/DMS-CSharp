@@ -23,6 +23,7 @@ namespace DMS.Models
         public decimal Latitude { get; set; }
         public decimal Longitude { get; set; }
         public long CreatorId { get; set; }
+        public long OrganizationId { get; set; }
         public long StoreScoutingStatusId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -31,6 +32,7 @@ namespace DMS.Models
 
         public virtual AppUserDAO Creator { get; set; }
         public virtual DistrictDAO District { get; set; }
+        public virtual OrganizationDAO Organization { get; set; }
         public virtual ProvinceDAO Province { get; set; }
         public virtual StoreScoutingStatusDAO StoreScoutingStatus { get; set; }
         public virtual WardDAO Ward { get; set; }

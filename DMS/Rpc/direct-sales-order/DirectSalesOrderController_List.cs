@@ -513,6 +513,7 @@ namespace DMS.Rpc.direct_sales_order
             StoreFilter.ParentStoreId = DirectSalesOrder_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = DirectSalesOrder_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = DirectSalesOrder_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = DirectSalesOrder_StoreFilterDTO.StoreGroupingId;
             StoreFilter.ResellerId = DirectSalesOrder_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = DirectSalesOrder_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = DirectSalesOrder_StoreFilterDTO.ProvinceId;
