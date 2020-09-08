@@ -320,6 +320,7 @@ namespace DMS.Rpc.monitor_store_problems
             ProblemFilter.Id = MonitorStoreProblem_ProblemFilterDTO.Id;
             ProblemFilter.Code = MonitorStoreProblem_ProblemFilterDTO.Code;
             ProblemFilter.StoreCheckingId = MonitorStoreProblem_ProblemFilterDTO.StoreCheckingId;
+            ProblemFilter.OrganizationId = MonitorStoreProblem_ProblemFilterDTO.OrganizationId;
             ProblemFilter.StoreId = MonitorStoreProblem_ProblemFilterDTO.StoreId;
             ProblemFilter.AppUserId = MonitorStoreProblem_ProblemFilterDTO.AppUserId;
             ProblemFilter.ProblemTypeId = MonitorStoreProblem_ProblemFilterDTO.ProblemTypeId;
