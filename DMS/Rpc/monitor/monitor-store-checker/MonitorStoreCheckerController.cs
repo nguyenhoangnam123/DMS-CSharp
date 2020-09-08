@@ -394,6 +394,10 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 {
                     MonitorStoreChecker_MonitorStoreCheckerDetailInfoDTO Info = new MonitorStoreChecker_MonitorStoreCheckerDetailInfoDTO();
                     MonitorStoreChecker_MonitorStoreCheckerDetailDTO.Infoes.Add(Info);
+                    if (SubStoreCheckingImageMappingDAOs.Count > i)
+                    {
+                        Info.ImagePath = SubStoreCheckingImageMappingDAOs[i].Image.Url;
+                    }    
                     if (SubIndirectSalesOrderDAOs.Count > i)
                     {
                         Info.IndirectSalesOrderCode = SubIndirectSalesOrderDAOs[i].Code;
