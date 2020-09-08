@@ -15,6 +15,8 @@ namespace DMS.Repositories
     {
         Task<int> Count(StoreFilter StoreFilter);
         Task<List<Store>> List(StoreFilter StoreFilter);
+        Task<int> CountInScoped(StoreFilter filter, long AppUserId);
+        Task<List<Store>> ListInScoped(StoreFilter filter, long AppUserId);
         Task<Store> Get(long Id);
         Task<bool> Create(Store Store);
         Task<bool> Update(Store Store);
@@ -545,6 +547,53 @@ namespace DMS.Repositories
         public async Task<List<Store>> List(StoreFilter filter)
         {
             if (filter == null) return new List<Store>();
+            IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
+            StoreDAOs = DynamicFilter(StoreDAOs, filter);
+            StoreDAOs = DynamicOrder(StoreDAOs, filter);
+            List<Store> Stores = await DynamicSelect(StoreDAOs, filter);
+            return Stores;
+        }
+
+        public async Task<int> CountInScoped(StoreFilter filter, long AppUserId)
+        {
+            AppUserDAO AppUserDAO = await DataContext.AppUser.Where(x => x.Id == AppUserId).FirstOrDefaultAsync();
+            List<long> StoreIds = await DataContext.AppUserStoreMapping
+                .Where(au => au.AppUserId == AppUserId)
+                .Select(au => au.StoreId)
+                .ToListAsync();
+            if (StoreIds.Count > 0)
+                filter.Id = new IdFilter { In = StoreIds };
+            else
+            {
+                long? OrganizationId = filter.OrganizationId.Equal;
+                filter.OrganizationId = new IdFilter { In = new List<long>() };
+                if (OrganizationId.HasValue)
+                    filter.OrganizationId.In.Add(OrganizationId.Value);
+                filter.OrganizationId.In.Add(AppUserDAO.OrganizationId.Value);
+            }
+            IQueryable<StoreDAO> Stores = DataContext.Store;
+            Stores = DynamicFilter(Stores, filter);
+            return await Stores.CountAsync();
+        }
+
+        public async Task<List<Store>> ListInScoped(StoreFilter filter, long AppUserId)
+        {
+            if (filter == null) return new List<Store>();
+            AppUserDAO AppUserDAO = await DataContext.AppUser.Where(x => x.Id == AppUserId).FirstOrDefaultAsync();
+            List<long> StoreIds = await DataContext.AppUserStoreMapping
+                .Where(au => au.AppUserId == AppUserId)
+                .Select(au => au.StoreId)
+                .ToListAsync();
+            if (StoreIds.Count > 0)
+                filter.Id = new IdFilter { In = StoreIds };
+            else
+            {
+                long? OrganizationId = filter.OrganizationId.Equal;
+                filter.OrganizationId = new IdFilter { In = new List<long>() };
+                if (OrganizationId.HasValue)
+                    filter.OrganizationId.In.Add(OrganizationId.Value);
+                filter.OrganizationId.In.Add(AppUserDAO.OrganizationId.Value);
+            }
             IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
             StoreDAOs = DynamicFilter(StoreDAOs, filter);
             StoreDAOs = DynamicOrder(StoreDAOs, filter);

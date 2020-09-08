@@ -26,7 +26,7 @@ namespace DMS.Services.MERoute
         Task<List<ERoute>> BulkDelete(List<ERoute> ERoutes);
         Task<List<ERoute>> Import(List<ERoute> ERoutes);
         Task<ERouteFilter> ToFilter(ERouteFilter ERouteFilter);
-
+        Task<int> CountStore(StoreFilter StoreFilter);
         Task<List<Store>> ListStore(StoreFilter StoreFilter);
     }
 
@@ -373,9 +373,14 @@ namespace DMS.Services.MERoute
             return filter;
         }
 
+        public async Task<int> CountStore(StoreFilter StoreFilter)
+        {
+            int count = await UOW.StoreRepository.CountInScoped(StoreFilter, CurrentContext.UserId);
+            return count;
+        }
         public async Task<List<Store>> ListStore(StoreFilter StoreFilter)
         {
-            List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+            List<Store> Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, CurrentContext.UserId);
             List<long> StoreIds = Stores.Select(s => s.Id).ToList();
             ERouteContentFilter ERouteContentFilter = new ERouteContentFilter
             {
