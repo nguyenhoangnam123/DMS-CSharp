@@ -103,6 +103,11 @@ namespace DMS.Repositories
                 StoreScoutingId = filter.Selects.Contains(SurveyResultSelect.StoreScouting) ? q.StoreScoutingId : default(long),
                 SurveyId = filter.Selects.Contains(SurveyResultSelect.Survey) ? q.SurveyId : default(long),
                 Time = filter.Selects.Contains(SurveyResultSelect.Time) ? q.Time : default(DateTime),
+                RespondentAddress = filter.Selects.Contains(SurveyResultSelect.RespondentAddress) ? q.RespondentAddress : default(string),
+                RespondentEmail = filter.Selects.Contains(SurveyResultSelect.RespondentEmail) ? q.RespondentEmail : default(string),
+                RespondentName = filter.Selects.Contains(SurveyResultSelect.RespondentName) ? q.RespondentName : default(string),
+                RespondentPhone = filter.Selects.Contains(SurveyResultSelect.RespondentPhone) ? q.RespondentPhone : default(string),
+                SurveyRespondentTypeId = filter.Selects.Contains(SurveyResultSelect.SurveyRespondentType) ? q.SurveyRespondentTypeId : default(long),
                 AppUser = filter.Selects.Contains(SurveyResultSelect.AppUser) && q.AppUser != null ? new AppUser
                 {
                     Id = q.AppUser.Id,
@@ -123,13 +128,31 @@ namespace DMS.Repositories
                     Id = q.Store.Id,
                     Code = q.Store.Code,
                     Name = q.Store.Name,
+                    Organization = q.Store.Organization == null ? null : new Organization
+                    {
+                        Id = q.Store.Organization.Id,
+                        Code = q.Store.Organization.Code,
+                        Name = q.Store.Organization.Name,
+                    },
                 } : null,
                 StoreScouting = filter.Selects.Contains(SurveyResultSelect.StoreScouting) && q.StoreScouting != null ? new StoreScouting
                 {
                     Id = q.StoreScouting.Id,
                     Code = q.StoreScouting.Code,
                     Name = q.StoreScouting.Name,
+                    Organization = q.StoreScouting.Organization == null ? null : new Organization
+                    {
+                        Id = q.StoreScouting.Organization.Id,
+                        Code = q.StoreScouting.Organization.Code,
+                        Name = q.StoreScouting.Organization.Name,
+                    },
                 } : null,
+                SurveyRespondentType = filter.Selects.Contains(SurveyResultSelect.SurveyRespondentType) && q.SurveyRespondentType == null ? null : new SurveyRespondentType
+                {
+                    Id = q.SurveyRespondentType.Id,
+                    Code = q.SurveyRespondentType.Code,
+                    Name = q.SurveyRespondentType.Name,
+                },
             }).ToListAsync();
 
             if (filter.Selects.Contains(SurveyResultSelect.Content))

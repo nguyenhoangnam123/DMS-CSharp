@@ -74,5 +74,10 @@ namespace DMS.Entities
         Time = E._4,
         Content = E._5,
         StoreScouting = E._6,
+        RespondentName = E._7,
+        RespondentPhone = E._8,
+        RespondentEmail = E._9,
+        RespondentAddress = E._10,
+        SurveyRespondentType = E._11,
     }
 }
