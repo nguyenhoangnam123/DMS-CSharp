@@ -58,7 +58,7 @@ namespace DMS.Rpc.direct_sales_order
             ISupplierService SupplierService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
-            TaxTypeService TaxTypeService,
+            ITaxTypeService TaxTypeService,
             ICurrentContext CurrentContext
         )
         {
