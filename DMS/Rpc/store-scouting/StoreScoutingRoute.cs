@@ -35,6 +35,7 @@ namespace DMS.Rpc.store_scouting
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
         public const string Reject = Default + "/reject";
+        public const string Export = Default + "/export";
         
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListDistrict = Default + "/filter-list-district";
@@ -100,6 +101,11 @@ namespace DMS.Rpc.store_scouting
                 Detail, Reject, 
                 SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
 
+            { "Xuất Excel", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard,
+                Export} },
         };
     }
 }

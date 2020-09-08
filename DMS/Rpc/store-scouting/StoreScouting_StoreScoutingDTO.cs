@@ -8,6 +8,7 @@ namespace DMS.Rpc.store_scouting
 {
     public class StoreScouting_StoreScoutingDTO : DataDTO
     {
+        public long STT { get; set; }
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
@@ -32,6 +33,7 @@ namespace DMS.Rpc.store_scouting
         public StoreScouting_StoreDTO Store { get; set; }
         public StoreScouting_WardDTO Ward { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string CreatedAtDisplay => CreatedAt.ToString("dd-MM-yyyy");
         public DateTime UpdatedAt { get; set; }
         public List<StoreScouting_StoreScoutingImageMappingDTO> StoreScoutingImageMappings { get; set; }
         public StoreScouting_StoreScoutingDTO() {}
