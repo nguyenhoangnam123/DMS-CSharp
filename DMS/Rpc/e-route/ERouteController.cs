@@ -705,7 +705,7 @@ namespace DMS.Rpc.e_route
                 StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
             }
             StoreFilter = StoreService.ToFilter(StoreFilter);
-            return await ERouteService.CountStore(StoreFilter);
+            return await ERouteService.CountStore(StoreFilter, StoreFilter.SalesEmployeeId.Equal);
         }
 
         [Route(ERouteRoute.ListStore), HttpPost]
@@ -749,7 +749,7 @@ namespace DMS.Rpc.e_route
             }
 
             StoreFilter = StoreService.ToFilter(StoreFilter);
-            List<Store> Stores = await ERouteService.ListStore(StoreFilter);
+            List<Store> Stores = await ERouteService.ListStore(StoreFilter, StoreFilter.SalesEmployeeId.Equal);
             List<ERoute_StoreDTO> ERoute_StoreDTOs = Stores
                 .Select(x => new ERoute_StoreDTO(x)).ToList();
             return ERoute_StoreDTOs;

@@ -26,8 +26,8 @@ namespace DMS.Services.MERoute
         Task<List<ERoute>> BulkDelete(List<ERoute> ERoutes);
         Task<List<ERoute>> Import(List<ERoute> ERoutes);
         Task<ERouteFilter> ToFilter(ERouteFilter ERouteFilter);
-        Task<int> CountStore(StoreFilter StoreFilter);
-        Task<List<Store>> ListStore(StoreFilter StoreFilter);
+        Task<int> CountStore(StoreFilter StoreFilter, long? AppUserId);
+        Task<List<Store>> ListStore(StoreFilter StoreFilter, long? AppUserId);
     }
 
     public class ERouteService : BaseService, IERouteService
@@ -373,14 +373,23 @@ namespace DMS.Services.MERoute
             return filter;
         }
 
-        public async Task<int> CountStore(StoreFilter StoreFilter)
+        public async Task<int> CountStore(StoreFilter StoreFilter, long? AppUserId)
         {
-            int count = await UOW.StoreRepository.CountInScoped(StoreFilter, CurrentContext.UserId);
+            int count = 0;
+            if (AppUserId.HasValue)
+                await UOW.StoreRepository.CountInScoped(StoreFilter, AppUserId.Value);
+            else
+                await UOW.StoreRepository.CountInScoped(StoreFilter, CurrentContext.UserId);
             return count;
         }
-        public async Task<List<Store>> ListStore(StoreFilter StoreFilter)
+        public async Task<List<Store>> ListStore(StoreFilter StoreFilter, long? AppUserId)
         {
-            List<Store> Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, CurrentContext.UserId);
+            List<Store> Stores;
+            if (AppUserId.HasValue)
+                Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, AppUserId.Value);
+            else
+                Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, CurrentContext.UserId);
+
             List<long> StoreIds = Stores.Select(s => s.Id).ToList();
             ERouteContentFilter ERouteContentFilter = new ERouteContentFilter
             {
@@ -411,7 +420,7 @@ namespace DMS.Services.MERoute
                 ERoute.EndDate = ERoute.EndDate.Value.AddHours(CurrentContext.TimeZone).Date.AddDays(1).AddSeconds(-1);
                 ERoute.EndDate = ERoute.EndDate.Value.AddDays(0 - CurrentContext.TimeZone);
             }
-            
+
             return ERoute;
         }
     }
