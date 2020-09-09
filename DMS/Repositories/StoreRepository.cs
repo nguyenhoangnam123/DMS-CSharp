@@ -407,6 +407,7 @@ namespace DMS.Repositories
                 TaxCode = filter.Selects.Contains(StoreSelect.TaxCode) ? q.TaxCode : default(string),
                 LegalEntity = filter.Selects.Contains(StoreSelect.LegalEntity) ? q.LegalEntity : default(string),
                 StatusId = filter.Selects.Contains(StoreSelect.Status) ? q.StatusId : default(long),
+                StoreScoutingId = filter.Selects.Contains(StoreSelect.StoreScouting) ? q.StoreScoutingId : default(long?),
                 District = filter.Selects.Contains(StoreSelect.District) && q.District != null ? new District
                 {
                     Id = q.District.Id,
