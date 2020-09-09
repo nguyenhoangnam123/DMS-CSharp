@@ -28,7 +28,7 @@ namespace DMS.Entities
         public decimal TotalTaxAmount { get; set; }
         public decimal Total { get; set; }
         public decimal TotalDiscountAmount { get; set; }
-        public long TotalQuantity { get; set; }
+        public long TotalRequestedQuantity { get; set; }
         public Store BuyerStore { get; set; }
         public EditedPriceStatus EditedPriceStatus { get; set; }
         public Organization Organization { get; set; }

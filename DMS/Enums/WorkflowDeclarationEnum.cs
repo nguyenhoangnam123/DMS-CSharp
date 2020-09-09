@@ -35,8 +35,8 @@ namespace DMS.Enums
         };
 
         public static GenericEnum INDIRECT_SALES_ORDER_ORGANIZATION = new GenericEnum { Id = WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id * 100 + 1, Code = "OrganizationId", Name = "Đơn vị tổ chức", Value = WorkflowParameterTypeEnum.ID.Id.ToString() };
-        public static GenericEnum INDIRECT_SALES_ORDER_TOTAL = new GenericEnum { Id = WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id * 100 + 2, Code = "Total", Name = "Thành tiền", Value = WorkflowParameterTypeEnum.LONG.Id.ToString() };
-        public static GenericEnum INDIRECT_SALES_ORDER_TOTAL_DISCOUNT = new GenericEnum { Id = WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id * 100 + 3, Code = "TotalDiscount", Name = "Tổng chiết khấu", Value = WorkflowParameterTypeEnum.LONG.Id.ToString() };
+        public static GenericEnum INDIRECT_SALES_ORDER_TOTAL = new GenericEnum { Id = WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id * 100 + 2, Code = "Total", Name = "Thành tiền", Value = WorkflowParameterTypeEnum.DECIMAL.Id.ToString() };
+        public static GenericEnum INDIRECT_SALES_ORDER_TOTAL_DISCOUNT = new GenericEnum { Id = WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id * 100 + 3, Code = "TotalDiscount", Name = "Tổng chiết khấu", Value = WorkflowParameterTypeEnum.DECIMAL.Id.ToString() };
         public static GenericEnum INDIRECT_SALES_ORDER_TOTAL_REQUESTED_QUANTITY = new GenericEnum { Id = WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id * 100 + 4, Code = "TotalRequestedQuantity", Name = "Tổng sản phẩm", Value = WorkflowParameterTypeEnum.LONG.Id.ToString() };
         public static List<GenericEnum> IndirectSalesOrderEnumList = new List<GenericEnum>()
         {

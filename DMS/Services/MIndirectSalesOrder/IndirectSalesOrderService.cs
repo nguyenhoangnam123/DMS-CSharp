@@ -768,9 +768,9 @@ namespace DMS.Services.MIndirectSalesOrder
             if (IndirectSalesOrder.IsValidated == false)
                 return IndirectSalesOrder;
             Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
-            //bool Approved = await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
-            //if (Approved == false)
-            //    return null;
+            GenericEnum Action = await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
+            if (Action != WorkflowActionEnum.OK)
+                return null;
             return await Get(IndirectSalesOrder.Id);
         }
 
@@ -778,8 +778,8 @@ namespace DMS.Services.MIndirectSalesOrder
         {
             IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
             Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
-            bool Rejected = await WorkflowService.Reject(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
-            if (Rejected == false)
+            GenericEnum Action = await WorkflowService.Reject(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
+            if (Action != WorkflowActionEnum.OK)
                 return null;
             return await Get(IndirectSalesOrder.Id);
         }
@@ -791,10 +791,12 @@ namespace DMS.Services.MIndirectSalesOrder
             Parameters.Add(nameof(IndirectSalesOrder.Code), IndirectSalesOrder.Code);
             Parameters.Add(nameof(IndirectSalesOrder.SaleEmployeeId), IndirectSalesOrder.SaleEmployeeId.ToString());
             Parameters.Add(nameof(IndirectSalesOrder.BuyerStoreId), IndirectSalesOrder.BuyerStoreId.ToString());
+
             Parameters.Add(nameof(IndirectSalesOrder.Total), IndirectSalesOrder.Total.ToString());
             Parameters.Add(nameof(IndirectSalesOrder.TotalDiscountAmount), IndirectSalesOrder.TotalDiscountAmount.ToString());
-            Parameters.Add(nameof(IndirectSalesOrder.TotalQuantity), IndirectSalesOrder.TotalQuantity.ToString());
+            Parameters.Add(nameof(IndirectSalesOrder.TotalRequestedQuantity), IndirectSalesOrder.TotalRequestedQuantity.ToString());
             Parameters.Add(nameof(IndirectSalesOrder.OrganizationId), IndirectSalesOrder.OrganizationId.ToString());
+
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(IndirectSalesOrder.RowId);
             if (RequestWorkflowDefinitionMapping == null)
                 Parameters.Add(nameof(RequestState), RequestStateEnum.NEW.Id.ToString());

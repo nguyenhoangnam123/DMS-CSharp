@@ -281,6 +281,7 @@ namespace DMS.Repositories
                         Id = x.WorkflowOperator.Id,
                         Code = x.WorkflowOperator.Code,
                         Name = x.WorkflowOperator.Name,
+                        WorkflowParameterTypeId = x.WorkflowOperator.WorkflowParameterTypeId,
                     },
                     WorkflowParameter = new WorkflowParameter
                     {

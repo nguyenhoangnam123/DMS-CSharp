@@ -16,9 +16,9 @@ namespace DMS.Services.MWorkflow
     {
         Task<RequestState> GetRequestState(Guid RequestId);
         Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowState(Guid RequestId);
-        Task<bool> Initialize(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
-        Task<bool> Approve(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
-        Task<bool> Reject(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
+        Task<GenericEnum> Initialize(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
+        Task<GenericEnum> Approve(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
+        Task<GenericEnum> Reject(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
     }
     public class WorkflowService : IWorkflowService
     {
@@ -49,16 +49,16 @@ namespace DMS.Services.MWorkflow
             return RequestWorkflowStepMappings;
         }
 
-        private async Task<bool> IsInitializedStep(Guid RequestId)
+        private async Task<GenericEnum> IsInitializedStep(Guid RequestId)
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             if (RequestWorkflowDefinitionMapping == null)
-                return false;
+                return WorkflowActionEnum.NO_WORKFLOW;
             else
             {
                 if (RequestWorkflowDefinitionMapping.RequestStateId == RequestStateEnum.REJECTED.Id)
-                    return false;
-                return true;
+                    return WorkflowActionEnum.NO_NEXTSTEP;
+                return WorkflowActionEnum.OK;
             }
         }
         private async Task<bool> IsStartedStep(Guid RequestId)
@@ -72,7 +72,7 @@ namespace DMS.Services.MWorkflow
                 return false;
             return false;
         }
-        public async Task<bool> Initialize(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
+        public async Task<GenericEnum> Initialize(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
         {
             // Tìm kiếm workflow definition đang active mà phù hợp với request hiện tại
             // Mỗi thời điểm chỉ có 1 workflow definition đang active cho 1 đối tượng
@@ -88,7 +88,7 @@ namespace DMS.Services.MWorkflow
             WorkflowDefinition WorkflowDefinition = WorkflowDefinitions.FirstOrDefault();
 
             if (WorkflowDefinition == null)
-                return false;
+                return WorkflowActionEnum.NO_WORKFLOW;
             WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
 
             // Kiểm tra trong workflow definition chọn được có workflow step nào thoả mãn việc step NGUỒN là 1 trong các role của user đang đăng nhập không
@@ -105,7 +105,7 @@ namespace DMS.Services.MWorkflow
                     }
                 }
                 if (ShouldInit == false)
-                    return false;
+                    return WorkflowActionEnum.NO_BEGIN_STEP;
             }
 
             // Xoá tất cả thông tin cũ của workflow
@@ -137,7 +137,7 @@ namespace DMS.Services.MWorkflow
 
             // Update các parameter chính từ request vào workflow để chạy điều kiện theo giá trị của request
             await UpdateParameters(RequestId, WorkflowDefinition, Parameters);
-            return true;
+            return WorkflowActionEnum.OK;
         }
 
         private async Task<bool> StartStep(Guid RequestId, Dictionary<string, string> Parameters)
@@ -167,7 +167,7 @@ namespace DMS.Services.MWorkflow
                 foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
                 {
                     if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId) &&
-                        !WorkflowDefinition.WorkflowDirections.Any(d => d.FromStepId == WorkflowStep.Id))
+                        !WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id))
                     {
                         RequestWorkflowStepMapping RequestWorkflowStepMapping = RequestWorkflowStepMappings.Where(r => r.WorkflowStepId == WorkflowStep.Id).FirstOrDefault();
                         RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
@@ -409,7 +409,7 @@ namespace DMS.Services.MWorkflow
                 RequestWorkflowParameterMapping.Value = null;
                 foreach (var pair in Parameters)
                 {
-                    if (WorkflowParameter.Name == pair.Key)
+                    if (WorkflowParameter.Code == pair.Key)
                     {
                         RequestWorkflowParameterMapping.Value = pair.Value;
                     }
@@ -469,10 +469,10 @@ namespace DMS.Services.MWorkflow
                         NotIn.AddRange(value);
                     }
 
-                    if (In.Count > 0 && !In.Any(x => x == RequestWorkflowParameterMapping.LongValue.Value))
+                    if (In.Count > 0 && !In.Any(x => x == RequestWorkflowParameterMapping.IdValue.Value))
                         result = result && false;
 
-                    if (NotIn.Count > 0 && NotIn.Any(x => x == RequestWorkflowParameterMapping.LongValue.Value))
+                    if (NotIn.Count > 0 && NotIn.Any(x => x == RequestWorkflowParameterMapping.IdValue.Value))
                         result = result && false;
                 }
 
@@ -615,15 +615,15 @@ namespace DMS.Services.MWorkflow
             }
             return result;
         }
-        public async Task<bool> Approve(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
+        public async Task<GenericEnum> Approve(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
         {
-            bool Initialized = await IsInitializedStep(RequestId);
+            GenericEnum Initialized = await IsInitializedStep(RequestId);
 
-            if (Initialized == false)
+            if (Initialized != WorkflowActionEnum.OK)
             {
-                Initialized = await Initialize(RequestId, WorkflowTypeId, Parameters);
-                if (Initialized == false)
-                    return false;
+                GenericEnum Action = await Initialize(RequestId, WorkflowTypeId, Parameters);
+                if (Action != WorkflowActionEnum.OK)
+                    return Action;
             }
 
             bool Started = await IsStartedStep(RequestId);
@@ -637,14 +637,14 @@ namespace DMS.Services.MWorkflow
                 await ApproveStep(RequestId, Parameters);
             }
             await EndStep(RequestId, Parameters);
-            return true;
+            return WorkflowActionEnum.OK;
         }
 
-        public async Task<bool> Reject(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
+        public async Task<GenericEnum> Reject(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
         {
-            bool Initialized = await IsInitializedStep(RequestId);
-            if (Initialized == false)
-                return false;
+            GenericEnum Action = await IsInitializedStep(RequestId);
+            if (Action != WorkflowActionEnum.OK)
+                return Action;
             bool Started = await IsStartedStep(RequestId);
             if (Started)
             {
@@ -656,7 +656,7 @@ namespace DMS.Services.MWorkflow
                 await RejectStep(RequestId, Parameters);
             }
             await EndStep(RequestId, Parameters);
-            return true;
+            return WorkflowActionEnum.OK;
         }
 
     }

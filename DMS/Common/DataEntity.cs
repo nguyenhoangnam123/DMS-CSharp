@@ -1,6 +1,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -150,11 +151,18 @@ namespace Common
         }
     }
 
-    public class GenericEnum
+    public class GenericEnum : IEquatable<GenericEnum>
     {
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
+
+        public bool Equals([AllowNull] GenericEnum other)
+        {
+            if (other == null)
+                return false;
+            return Id == other.Id;
+        }
     }
 }

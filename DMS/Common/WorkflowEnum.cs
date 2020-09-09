@@ -11,6 +11,16 @@ namespace Common
         public string Name;
         public long TypeId;
     }
+
+    public class WorkflowActionEnum
+    {
+        public static GenericEnum NO_WORKFLOW = new GenericEnum { Id = 1, Code = "NO_WORKFLOW", Name = "NO_WORKFLOW" };
+        public static GenericEnum NO_BEGIN_STEP = new GenericEnum { Id = 2, Code = "NO_BEGINSTEP", Name = "NO_BEGINSTEP" };
+        public static GenericEnum NO_NEXTSTEP = new GenericEnum { Id = 3, Code = "NO_NEXTSTEP", Name = "NO_NEXTSTEP" };
+
+        public static GenericEnum OK = new GenericEnum { Id = 100, Code = "OK", Name = "OK" };
+        
+    }
     public class RequestStateEnum
     {
         public static GenericEnum NEW = new GenericEnum { Id = 1, Code = "NEW", Name = "Mới tạo" };
