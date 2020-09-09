@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -384,6 +385,7 @@ namespace DMS.Rpc.store
                     if(Store == null)
                     {
                         Store = new Store();
+                        Stores.Add(Store);
                     }
                     Store.Code = CodeValue;
                     Store.Name = NameValue;
@@ -393,10 +395,10 @@ namespace DMS.Rpc.store
                     Store.Address = AddressValue;
                     Store.DeliveryAddress = DeliveryAddressValue;
                     //set mặc định vĩ độ kinh độ tại HN
-                    Store.Longitude = decimal.TryParse(LongitudeValue, out decimal Longitude) ? Longitude : 106;
-                    Store.Latitude = decimal.TryParse(LatitudeValue, out decimal Latitude) ? Latitude : 21;
-                    Store.DeliveryLongitude = decimal.TryParse(DeliveryLongitudeValue, out decimal DeliveryLongitude) ? DeliveryLongitude : 106;
-                    Store.DeliveryLatitude = decimal.TryParse(DeliveryLatitudeValue, out decimal DeliveryLatitude) ? DeliveryLatitude : 21;
+                    Store.Longitude = decimal.TryParse(LongitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal Longitude) ? Longitude : 106;
+                    Store.Latitude = decimal.TryParse(LatitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal Latitude) ? Latitude : 21;
+                    Store.DeliveryLongitude = decimal.TryParse(DeliveryLongitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal DeliveryLongitude) ? DeliveryLongitude : 106;
+                    Store.DeliveryLatitude = decimal.TryParse(DeliveryLatitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal DeliveryLatitude) ? DeliveryLatitude : 21;
                     Store.OwnerName = OwnerNameValue;
                     Store.OwnerPhone = OwnerPhoneValue;
                     Store.OwnerEmail = OwnerEmailValue;
@@ -465,7 +467,6 @@ namespace DMS.Rpc.store
                     {
                         Store.StatusId = Statuses.Where(x => x.Name.ToLower().Equals(StatusNameValue == null ? string.Empty : StatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
                     }
-                    Stores.Add(Store);
                 }
                 var listCode = Stores.Select(x => x.Code).ToList();
                 var listCodeInDB = All.Select(x => x.Code).ToList();
