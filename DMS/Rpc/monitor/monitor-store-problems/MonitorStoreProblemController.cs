@@ -157,12 +157,36 @@ namespace DMS.Rpc.monitor_store_problems
             MonitorStoreProblem_ProblemFilterDTO.Skip = 0;
             MonitorStoreProblem_ProblemFilterDTO.Take = int.MaxValue;
             List<MonitorStoreProblem_ProblemDTO> MonitorStoreProblem_ProblemDTOs = await List(MonitorStoreProblem_ProblemFilterDTO);
-            int stt = 1;
-            foreach(MonitorStoreProblem_ProblemDTO MonitorStoreProblem_ProblemDTO in MonitorStoreProblem_ProblemDTOs)
+            MonitorStoreProblem_ProblemDTOs = MonitorStoreProblem_ProblemDTOs
+                .OrderBy(x => x.Creator.Username).ThenByDescending(x => x.NoteAt)
+                .ToList();
+
+            var OrganizationNames = MonitorStoreProblem_ProblemDTOs
+                .OrderBy(x => x.OrganizationId)
+                .Select(x => x.Organization?.Name)
+                .Distinct()
+                .ToList();
+
+            List<MonitorStoreProblem_ExportDTO> MonitorStoreProblem_ExportDTOs = new List<MonitorStoreProblem_ExportDTO>();
+            foreach (var OrganizationName in OrganizationNames)
             {
-                MonitorStoreProblem_ProblemDTO.STT = stt;
-                stt++;
-            }    
+                MonitorStoreProblem_ExportDTO MonitorStoreProblem_ExportDTO = new MonitorStoreProblem_ExportDTO
+                {
+                    OrganizationName = OrganizationName
+                };
+                MonitorStoreProblem_ExportDTOs.Add(MonitorStoreProblem_ExportDTO);
+                MonitorStoreProblem_ExportDTO.MonitorStoreProblems = MonitorStoreProblem_ProblemDTOs.Where(x => x.Organization.Name == OrganizationName).ToList();
+            }
+
+            int stt = 1;
+            foreach (var MonitorStoreProblem_ExportDTO in MonitorStoreProblem_ExportDTOs)
+            {
+                foreach (MonitorStoreProblem_ProblemDTO MonitorStoreProblem_ProblemDTO in MonitorStoreProblem_ExportDTO.MonitorStoreProblems)
+                {
+                    MonitorStoreProblem_ProblemDTO.STT = stt;
+                    stt++;
+                }
+            }
             DateTime Start = MonitorStoreProblem_ProblemFilterDTO.NoteAt?.GreaterEqual == null ?
                StaticParams.DateTimeNow.Date :
                MonitorStoreProblem_ProblemFilterDTO.NoteAt.GreaterEqual.Value.Date;
@@ -177,7 +201,7 @@ namespace DMS.Rpc.monitor_store_problems
             dynamic Data = new ExpandoObject();
             Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.MonitorStoreProblems = MonitorStoreProblem_ProblemDTOs;
+            Data.Exports = MonitorStoreProblem_ExportDTOs;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
