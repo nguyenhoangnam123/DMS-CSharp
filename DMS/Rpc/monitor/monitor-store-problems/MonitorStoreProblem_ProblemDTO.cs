@@ -14,6 +14,7 @@ namespace DMS.Rpc.monitor_store_problems
         public long? StoreCheckingId { get; set; }
         public long StoreId { get; set; }
         public long CreatorId { get; set; }
+        public long? OrganizationId { get; set; }
         public long ProblemTypeId { get; set; }
         public DateTime NoteAt { get; set; }
         public string NoteAtDisplay => NoteAt.ToString("dd-MM-yyyy");
@@ -37,6 +38,7 @@ namespace DMS.Rpc.monitor_store_problems
             this.StoreCheckingId = Problem.StoreCheckingId;
             this.StoreId = Problem.StoreId;
             this.CreatorId = Problem.CreatorId;
+            this.OrganizationId = Problem.Creator.OrganizationId;
             this.ProblemTypeId = Problem.ProblemTypeId;
             this.NoteAt = Problem.NoteAt;
             this.CompletedAt = Problem.CompletedAt;

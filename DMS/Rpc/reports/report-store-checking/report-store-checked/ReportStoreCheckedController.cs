@@ -198,8 +198,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value;
 
-            if (End.Subtract(Start).Days > 31)
-                return 0;
+            //if (End.Subtract(Start).Days > 31)
+            //    return 0;
 
             long? SaleEmployeeId = ReportStoreChecked_ReportStoreCheckedFilterDTO.AppUserId?.Equal;
             long? StoreId = ReportStoreChecked_ReportStoreCheckedFilterDTO.StoreId?.Equal;
@@ -274,8 +274,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportStoreChecker_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value;
 
-            if (End.Subtract(Start).Days > 31)
-                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+            //if (End.Subtract(Start).Days > 31)
+            //    return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
             long? SaleEmployeeId = ReportStoreChecker_ReportStoreCheckedFilterDTO.AppUserId?.Equal;
             long? StoreId = ReportStoreChecker_ReportStoreCheckedFilterDTO.StoreId?.Equal;
@@ -462,8 +462,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             DateTime End = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.LessEqual == null ?
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
-            if (End.Subtract(Start).Days > 31)
-                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+            //if (End.Subtract(Start).Days > 31)
+            //    return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
             ReportStoreChecked_ReportStoreCheckedFilterDTO.Skip = 0;
             ReportStoreChecked_ReportStoreCheckedFilterDTO.Take = int.MaxValue;

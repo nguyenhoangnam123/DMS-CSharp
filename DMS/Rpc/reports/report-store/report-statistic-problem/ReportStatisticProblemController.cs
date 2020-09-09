@@ -342,7 +342,6 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                 .ToListAsync();
             List<ProblemTypeDAO> ProblemTypeDAOs = await DataContext.ProblemType
                 .Where(x => x.DeletedAt == null)
-                .Where(x => x.StatusId == StatusEnum.ACTIVE.Id)
                 .ToListAsync();
             // khởi tạo khung dữ liệu
             foreach (ReportStatisticProblem_ReportStatisticProblemDTO ReportStatisticProblem_ReportStatisticProblemDTO in ReportStatisticProblem_ReportStatisticProblemDTOs)
@@ -499,7 +498,6 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                 .ToListAsync();
             List<ProblemTypeDAO> ProblemTypeDAOs = await DataContext.ProblemType
                 .Where(x => x.DeletedAt == null)
-                .Where(x => x.StatusId == StatusEnum.ACTIVE.Id)
                 .ToListAsync();
 
             // khởi tạo khung dữ liệu

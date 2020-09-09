@@ -174,12 +174,37 @@ namespace DMS.Rpc.store_scouting
             StoreScouting_StoreScoutingFilterDTO.Skip = 0;
             StoreScouting_StoreScoutingFilterDTO.Take = int.MaxValue;
             List<StoreScouting_StoreScoutingDTO> StoreScouting_StoreScoutingDTOs = await List(StoreScouting_StoreScoutingFilterDTO);
-            int stt = 1;
-            foreach (StoreScouting_StoreScoutingDTO StoreScouting_StoreScoutingDTO in StoreScouting_StoreScoutingDTOs)
+            StoreScouting_StoreScoutingDTOs = StoreScouting_StoreScoutingDTOs
+                .OrderBy(x => x.Creator.Username).ThenByDescending(x => x.CreatedAt)
+                .ToList();
+
+            var OrganizationNames = StoreScouting_StoreScoutingDTOs
+                .OrderBy(x => x.OrganizationId)
+                .Select(x => x.Organization?.Name)
+                .Distinct()
+                .ToList();
+
+            List<StoreScouting_ExportDTO> StoreScouting_ExportDTOs = new List<StoreScouting_ExportDTO>();
+            foreach (var OrganizationName in OrganizationNames)
             {
-                StoreScouting_StoreScoutingDTO.STT = stt;
-                stt++;
+                StoreScouting_ExportDTO StoreScouting_ExportDTO = new StoreScouting_ExportDTO
+                {
+                    OrganizationName = OrganizationName
+                };
+                StoreScouting_ExportDTOs.Add(StoreScouting_ExportDTO);
+                StoreScouting_ExportDTO.StoreScoutings = StoreScouting_StoreScoutingDTOs.Where(x => x.Organization.Name == OrganizationName).ToList();
             }
+
+            int stt = 1;
+            foreach (var StoreScouting_ExportDTO in StoreScouting_ExportDTOs)
+            {
+                foreach (StoreScouting_StoreScoutingDTO StoreScouting_StoreScoutingDTO in StoreScouting_ExportDTO.StoreScoutings)
+                {
+                    StoreScouting_StoreScoutingDTO.STT = stt;
+                    stt++;
+                }
+            }
+
             DateTime Start = StoreScouting_StoreScoutingFilterDTO.CreatedAt?.GreaterEqual == null ?
                StaticParams.DateTimeNow.Date :
                StoreScouting_StoreScoutingFilterDTO.CreatedAt.GreaterEqual.Value.Date;
@@ -194,7 +219,7 @@ namespace DMS.Rpc.store_scouting
             dynamic Data = new ExpandoObject();
             Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.StoreScoutings = StoreScouting_StoreScoutingDTOs;
+            Data.Exports = StoreScouting_ExportDTOs;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);

@@ -143,22 +143,11 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
-            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
-
-            var StoreDAOs = await DataContext.Store
-                .Where(x => StoreIds.Contains(x.Id))
-                .Where(x => OrganizationIds.Contains(x.OrganizationId))
-                .Where(x => ProvinceId.HasValue == false || (x.ProvinceId.HasValue && x.ProvinceId.Value == ProvinceId.Value))
-                .Where(x => DistrictId.HasValue == false || (x.DistrictId.HasValue && x.DistrictId.Value == DistrictId.Value))
-                .Where(x => WardId.HasValue == false || (x.WardId.HasValue && x.WardId.Value == WardId.Value))
-                .Where(x => x.StatusId == StatusEnum.ACTIVE.Id)
-                .Where(x => x.DeletedAt == null)
-                .ToListAsync();
-
-            int count = 0;
             if(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.HasValue == false)
             {
-                count = StoreDAOs.Where(x => x.ProvinceId.HasValue).Select(x => x.ProvinceId.Value).Distinct().Count();
+                return await DataContext.Province
+                    .Where(x => x.DeletedAt == null)
+                    .CountAsync();
             }
             else
             {
@@ -166,19 +155,28 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId.HasValue == false &&
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.HasValue == false)
                 {
-                    count = StoreDAOs.Where(x => x.DistrictId.HasValue).Select(x => x.DistrictId.Value).Distinct().Count();
+                    return await DataContext.District
+                        .Where(x => x.ProvinceId == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.ProvinceId.Equal.Value)
+                        .Where(x => x.DeletedAt == null)
+                        .CountAsync();
                 }
                 else if(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId.HasValue &&
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.HasValue == false)
                 {
-                    count = StoreDAOs.Where(x => x.WardId.HasValue).Select(x => x.WardId.Value).Distinct().Count();
+                    return await DataContext.Ward
+                        .Where(x => x.DistrictId == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId.Equal.Value)
+                        .Where(x => x.DeletedAt == null)
+                        .CountAsync();
                 }
                 else if (ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.HasValue)
                 {
-                    count = StoreDAOs.Where(x => x.WardId.HasValue).Where(x => x.WardId.Value == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.Equal.Value).Distinct().Count();
+                    return await DataContext.Ward
+                        .Where(x => x.Id == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.Equal.Value)
+                        .Where(x => x.DeletedAt == null)
+                        .CountAsync();
                 }
             }
-            return count;
+            return 0;
         }
 
         [Route(ReportStatisticStoreScoutingRoute.List), HttpPost]
@@ -188,7 +186,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 throw new BindException(ModelState);
 
             DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
-                    StaticParams.DateTimeMin :
+                    StaticParams.DateTimeNow :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
@@ -217,7 +215,6 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 .Where(x => ProvinceId.HasValue == false || (x.ProvinceId.HasValue && x.ProvinceId.Value == ProvinceId.Value))
                 .Where(x => DistrictId.HasValue == false || (x.DistrictId.HasValue && x.DistrictId.Value == DistrictId.Value))
                 .Where(x => WardId.HasValue == false || (x.WardId.HasValue && x.WardId.Value == WardId.Value))
-                .Where(x => x.StatusId == StatusEnum.ACTIVE.Id)
                 .Where(x => x.DeletedAt == null)
                 .ToListAsync();
             StoreIds = StoreDAOs.Select(x => x.Id).ToList();
@@ -228,23 +225,6 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 .Where(x => x.CreatedAt >= Start && x.CreatedAt <= End)
                 .ToListAsync();
             var StoreScoutingIds = StoreScoutingDAOs.Select(x => x.Id).ToList();
-
-            var ProvinceIds = StoreDAOs.Where(x => x.ProvinceId != null).Select(x => x.ProvinceId).Distinct().ToList();
-            var DistrictIds = StoreDAOs.Where(x => x.DistrictId != null).Select(x => x.DistrictId).Distinct().ToList();
-            var WardIds = StoreDAOs.Where(x => x.WardId != null).Select(x => x.WardId).Distinct().ToList();
-
-            List<ProvinceDAO> ProvinceDAOs = await DataContext.Province.Where(x => ProvinceIds.Contains(x.Id))
-                .Where(x => x.DeletedAt == null)
-                .Where(x => x.StatusId == StatusEnum.ACTIVE.Id).
-                ToListAsync();
-            List<DistrictDAO> DistrictDAOs = await DataContext.District.Where(x => DistrictIds.Contains(x.Id))
-                .Where(x => x.DeletedAt == null)
-                .Where(x => x.StatusId == StatusEnum.ACTIVE.Id).
-                ToListAsync();
-            List<WardDAO> WardDAOs = await DataContext.Ward.Where(x => WardIds.Contains(x.Id))
-                .Where(x => x.DeletedAt == null)
-                .Where(x => x.StatusId == StatusEnum.ACTIVE.Id).
-                ToListAsync();
 
             List<Store> Stores = await StoreService.List(new StoreFilter
             {
@@ -264,6 +244,10 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = new List<ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO>();
             if (ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.HasValue == false)
             {
+                List<ProvinceDAO> ProvinceDAOs = await DataContext.Province
+                .Where(x => x.DeletedAt == null)
+                .ToListAsync();
+
                 ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = ProvinceDAOs
                     .Skip(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Skip)
                     .Take(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Take)
@@ -286,6 +270,10 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId.HasValue == false &&
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.HasValue == false)
                 {
+                    List<DistrictDAO> DistrictDAOs = await DataContext.District.Where(x => x.ProvinceId == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.ProvinceId.Equal.Value)
+                        .Where(x => x.DeletedAt == null)
+                        .ToListAsync();
+
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = DistrictDAOs
                     .Skip(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Skip)
                     .Take(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Take)
@@ -305,6 +293,10 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 else if (ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId.HasValue &&
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.HasValue == false)
                 {
+                    List<WardDAO> WardDAOs = await DataContext.Ward.Where(x => x.DistrictId == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId.Equal.Value)
+                    .Where(x => x.DeletedAt == null)
+                    .ToListAsync();
+
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = WardDAOs
                     .Skip(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Skip)
                     .Take(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Take)
@@ -323,6 +315,10 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 }
                 else if (ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.HasValue)
                 {
+                    List<WardDAO> WardDAOs = await DataContext.Ward.Where(x => x.Id == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.Equal.Value)
+                    .Where(x => x.DeletedAt == null)
+                    .ToListAsync();
+
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = WardDAOs
                     .Where(x => x.Id == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.Equal.Value)
                     .Select(x => new ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO
@@ -340,7 +336,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 }
             }
 
-            return ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs;
+            return ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs.OrderByDescending(x => x.StoreCoutingRate).ToList();
         }
 
         [Route(ReportStatisticStoreScoutingRoute.Total), HttpPost]
@@ -350,7 +346,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 throw new BindException(ModelState);
 
             DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
-                    StaticParams.DateTimeMin :
+                    StaticParams.DateTimeNow :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
@@ -379,7 +375,6 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                  .Where(x => ProvinceId.HasValue == false || (x.ProvinceId.HasValue && x.ProvinceId.Value == ProvinceId.Value))
                  .Where(x => DistrictId.HasValue == false || (x.DistrictId.HasValue && x.DistrictId.Value == DistrictId.Value))
                  .Where(x => WardId.HasValue == false || (x.WardId.HasValue && x.WardId.Value == WardId.Value))
-                 .Where(x => x.StatusId == StatusEnum.ACTIVE.Id)
                  .Where(x => x.DeletedAt == null)
                  .ToListAsync();
             StoreIds = StoreDAOs.Select(x => x.Id).ToList();
@@ -390,23 +385,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 .Where(x => x.CreatedAt >= Start && x.CreatedAt <= End)
                 .ToListAsync();
             var StoreScoutingIds = StoreScoutingDAOs.Select(x => x.Id).ToList();
-            var ProvinceIds = StoreDAOs.Where(x => x.ProvinceId != null).Select(x => x.ProvinceId).Distinct().ToList();
-            var DistrictIds = StoreDAOs.Where(x => x.DistrictId != null).Select(x => x.DistrictId).Distinct().ToList();
-            var WardIds = StoreDAOs.Where(x => x.WardId != null).Select(x => x.WardId).Distinct().ToList();
-
-            List<ProvinceDAO> ProvinceDAOs = await DataContext.Province.Where(x => ProvinceIds.Contains(x.Id))
-                .Where(x => x.DeletedAt == null)
-                .Where(x => x.StatusId == StatusEnum.ACTIVE.Id).
-                ToListAsync();
-            List<DistrictDAO> DistrictDAOs = await DataContext.District.Where(x => DistrictIds.Contains(x.Id))
-                .Where(x => x.DeletedAt == null)
-                .Where(x => x.StatusId == StatusEnum.ACTIVE.Id).
-                ToListAsync();
-            List<WardDAO> WardDAOs = await DataContext.Ward.Where(x => WardIds.Contains(x.Id))
-                .Where(x => x.DeletedAt == null)
-                .Where(x => x.StatusId == StatusEnum.ACTIVE.Id).
-                ToListAsync();
-
+            
             List<Store> Stores = await StoreService.List(new StoreFilter
             {
                 Skip = 0,
@@ -426,6 +405,10 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
             ReportStatisticStoreScouting_TotalDTO ReportStatisticStoreScouting_TotalDTO = new ReportStatisticStoreScouting_TotalDTO();
             if (ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.HasValue == false)
             {
+                List<ProvinceDAO> ProvinceDAOs = await DataContext.Province
+                .Where(x => x.DeletedAt == null)
+                .ToListAsync();
+
                 ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = ProvinceDAOs
                     .Select(x => new ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO
                     {
@@ -447,6 +430,10 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId.HasValue == false &&
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.HasValue == false)
                 {
+                    List<DistrictDAO> DistrictDAOs = await DataContext.District.Where(x => x.ProvinceId == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.ProvinceId.Equal.Value)
+                        .Where(x => x.DeletedAt == null)
+                        .ToListAsync();
+
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = DistrictDAOs
                     .Select(x => new ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO
                     {
@@ -460,14 +447,18 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                         item.StoreOpennedIds = Stores.Where(x => x.StoreScoutingId.HasValue && item.StoreScoutingIds.Contains(x.StoreScoutingId.Value)).Select(x => x.Id).ToList();
                         item.StoreIds = Stores.Where(x => x.DistrictId == item.DistrictId).Select(x => x.Id).ToList();
                     }
-                    ReportStatisticStoreScouting_TotalDTO.OfficalName = ProvinceDAOs
+                    ReportStatisticStoreScouting_TotalDTO.OfficalName = await DataContext.Province
                         .Where(x => x.Id == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.ProvinceId.Equal.Value)
                         .Select(x => x.Name)
-                        .FirstOrDefault();
+                        .FirstOrDefaultAsync();
                 }
                 else if (ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId.HasValue &&
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.HasValue == false)
                 {
+                    List<WardDAO> WardDAOs = await DataContext.Ward.Where(x => x.DistrictId == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId.Equal.Value)
+                    .Where(x => x.DeletedAt == null)
+                    .ToListAsync();
+
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = WardDAOs
                     .Select(x => new ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO
                     {
@@ -481,13 +472,17 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                         item.StoreOpennedIds = Stores.Where(x => x.StoreScoutingId.HasValue && item.StoreScoutingIds.Contains(x.StoreScoutingId.Value)).Select(x => x.Id).ToList();
                         item.StoreIds = Stores.Where(x => x.WardId == item.WardId).Select(x => x.Id).ToList();
                     }
-                    ReportStatisticStoreScouting_TotalDTO.OfficalName = DistrictDAOs
+                    ReportStatisticStoreScouting_TotalDTO.OfficalName = await DataContext.District
                         .Where(x => x.Id == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId.Equal.Value)
                         .Select(x => x.Name)
-                        .FirstOrDefault();
+                        .FirstOrDefaultAsync();
                 }
                 else if (ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.HasValue)
                 {
+                    List<WardDAO> WardDAOs = await DataContext.Ward.Where(x => x.Id == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.Equal.Value)
+                    .Where(x => x.DeletedAt == null)
+                    .ToListAsync();
+
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = WardDAOs
                     .Where(x => x.Id == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.Equal.Value)
                     .Select(x => new ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO
@@ -522,7 +517,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 throw new BindException(ModelState);
 
             DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
-                    StaticParams.DateTimeMin :
+                    StaticParams.DateTimeNow :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?

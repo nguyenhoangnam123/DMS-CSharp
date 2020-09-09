@@ -1293,7 +1293,7 @@ namespace DMS.Rpc.mobile
             {
                 StoreScoutingId = x.StoreScoutingId,
                 ImageId = x.ImageId,
-                Image = new Image
+                Image = x.Image == null ? null : new Image
                 {
                     Id = x.Image.Id,
                     Name = x.Image.Name,
