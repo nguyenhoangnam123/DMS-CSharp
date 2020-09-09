@@ -121,11 +121,11 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
             long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.AppUserId?.Equal;
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
-              StaticParams.DateTimeNow.Date :
+              StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone) :
               MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    Start.AddDays(1).AddSeconds(-1) :
                     MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
@@ -177,7 +177,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 throw new BindException(ModelState);
 
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
-                StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date :
+                StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone) :
                 MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
@@ -331,6 +331,10 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
             foreach (MonitorStoreChecker_SaleEmployeeDTO MonitorStoreChecker_SaleEmployeeDTO in MonitorStoreChecker_SaleEmployeeDTOs)
             {
+                foreach (var StoreChecking in MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings)
+                {
+                    StoreChecking.Date = StoreChecking.Date.AddHours(CurrentContext.TimeZone);
+                }
                 if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Checking?.Equal != null)
                 {
                     if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Checking.Equal.Value == 0)

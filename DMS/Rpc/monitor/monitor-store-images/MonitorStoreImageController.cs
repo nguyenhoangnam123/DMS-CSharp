@@ -178,11 +178,11 @@ namespace DMS.Rpc.monitor.monitor_store_images
             long? HasOrder = MonitorStoreImage_MonitorStoreImageFilterDTO.HasOrder?.Equal;
 
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow.Date :
+                    StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone) :
                     MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    Start.AddDays(1).AddSeconds(-1) :
                     MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value
                     .AddDays(1).AddSeconds(-1);
 
@@ -244,11 +244,11 @@ namespace DMS.Rpc.monitor.monitor_store_images
             long? HasOrder = MonitorStoreImage_MonitorStoreImageFilterDTO.HasOrder?.Equal;
 
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow.Date :
+                    StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone) :
                     MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    Start.AddDays(1).AddSeconds(-1) :
                     MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value
                     .AddDays(1).AddSeconds(-1);
 
