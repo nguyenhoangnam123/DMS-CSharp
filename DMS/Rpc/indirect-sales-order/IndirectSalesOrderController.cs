@@ -200,7 +200,19 @@ namespace DMS.Rpc.indirect_sales_order
                 return Forbid();
 
             IndirectSalesOrder IndirectSalesOrder = await IndirectSalesOrderService.Get(IndirectSalesOrder_IndirectSalesOrderDTO.Id);
-            return new IndirectSalesOrder_IndirectSalesOrderDTO(IndirectSalesOrder);
+            List<TaxType> TaxTypes = await TaxTypeService.List(new TaxTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = TaxTypeSelect.ALL
+            });
+            IndirectSalesOrder_IndirectSalesOrderDTO = new IndirectSalesOrder_IndirectSalesOrderDTO(IndirectSalesOrder);
+            foreach (var IndirectSalesOrderContent in IndirectSalesOrder_IndirectSalesOrderDTO.IndirectSalesOrderContents)
+            {
+                TaxType TaxType = TaxTypes.Where(x => x.Percentage == IndirectSalesOrderContent.TaxPercentage).FirstOrDefault();
+                IndirectSalesOrderContent.TaxType = new IndirectSalesOrder_TaxTypeDTO(TaxType);
+            }
+            return IndirectSalesOrder_IndirectSalesOrderDTO;
         }
 
         [Route(IndirectSalesOrderRoute.Create), HttpPost]

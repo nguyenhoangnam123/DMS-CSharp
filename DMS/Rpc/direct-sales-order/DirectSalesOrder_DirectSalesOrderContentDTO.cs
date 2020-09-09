@@ -24,6 +24,7 @@ namespace DMS.Rpc.direct_sales_order
         public long? Factor { get; set; }
         public DirectSalesOrder_ItemDTO Item { get; set; }
         public DirectSalesOrder_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }
+        public DirectSalesOrder_TaxTypeDTO TaxType { get; set; }
         public DirectSalesOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }
 
         public DirectSalesOrder_DirectSalesOrderContentDTO() { }
