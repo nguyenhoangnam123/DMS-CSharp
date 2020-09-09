@@ -155,6 +155,7 @@ namespace DMS.Repositories
                 Id = x.Id,
                 Code = x.Code,
                 Name = x.Name,
+                Used = x.Used,
                 StatusId = x.StatusId,
             }).FirstOrDefaultAsync();
 
