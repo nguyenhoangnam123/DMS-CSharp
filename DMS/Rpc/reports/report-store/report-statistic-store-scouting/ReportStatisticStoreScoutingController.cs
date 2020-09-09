@@ -158,7 +158,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
             int count = 0;
             if(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.HasValue == false)
             {
-                count = StoreDAOs.Select(x => x.ProvinceId.Value).Distinct().Count();
+                count = StoreDAOs.Where(x => x.ProvinceId.HasValue).Select(x => x.ProvinceId.Value).Distinct().Count();
             }
             else
             {
@@ -166,16 +166,16 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId.HasValue == false &&
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.HasValue == false)
                 {
-                    count = StoreDAOs.Select(x => x.DistrictId.Value).Distinct().Count();
+                    count = StoreDAOs.Where(x => x.DistrictId.HasValue).Select(x => x.DistrictId.Value).Distinct().Count();
                 }
                 else if(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId.HasValue &&
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.HasValue == false)
                 {
-                    count = StoreDAOs.Select(x => x.WardId.Value).Distinct().Count();
+                    count = StoreDAOs.Where(x => x.WardId.HasValue).Select(x => x.WardId.Value).Distinct().Count();
                 }
                 else if (ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.HasValue)
                 {
-                    count = StoreDAOs.Where(x => x.WardId.Value == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.Equal.Value).Distinct().Count();
+                    count = StoreDAOs.Where(x => x.WardId.HasValue).Where(x => x.WardId.Value == ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId.Equal.Value).Distinct().Count();
                 }
             }
             return count;
