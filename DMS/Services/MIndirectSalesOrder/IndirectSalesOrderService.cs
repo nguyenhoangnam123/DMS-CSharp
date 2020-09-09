@@ -765,10 +765,12 @@ namespace DMS.Services.MIndirectSalesOrder
                 IndirectSalesOrder = await Create(IndirectSalesOrder);
             else
                 IndirectSalesOrder = await Update(IndirectSalesOrder);
+            if (IndirectSalesOrder.IsValidated == false)
+                return IndirectSalesOrder;
             Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
-            bool Approved = await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
-            if (Approved == false)
-                return null;
+            //bool Approved = await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
+            //if (Approved == false)
+            //    return null;
             return await Get(IndirectSalesOrder.Id);
         }
 
