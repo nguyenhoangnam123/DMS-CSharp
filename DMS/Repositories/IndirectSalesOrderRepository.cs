@@ -618,9 +618,9 @@ namespace DMS.Repositories
                 .Select(x => x.DiscountAmount.GetValueOrDefault(0))
                 .Sum() : 0;
             IndirectSalesOrder.TotalDiscountAmount = GeneralDiscountAmount + DiscountAmount;
-            IndirectSalesOrder.TotalQuantity = IndirectSalesOrder.IndirectSalesOrderContents != null ?
+            IndirectSalesOrder.TotalRequestedQuantity = IndirectSalesOrder.IndirectSalesOrderContents != null ?
                 IndirectSalesOrder.IndirectSalesOrderContents
-                .Select(x => x.Quantity)
+                .Select(x => x.RequestedQuantity)
                 .Sum() : 0;
 
             IndirectSalesOrder.IndirectSalesOrderContents = await DataContext.IndirectSalesOrderContent.AsNoTracking()

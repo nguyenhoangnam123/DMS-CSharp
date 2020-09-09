@@ -355,6 +355,7 @@ namespace DMS.Repositories
                     },
                 }).ToListAsync();
 
+
             List<WorkflowDirectionCondition> WorkflowDirectionConditions = await DataContext.WorkflowDirectionCondition
                 .Where(x => x.WorkflowDirection.WorkflowDefinitionId == Id)
                 .Select(x => new WorkflowDirectionCondition
@@ -371,6 +372,11 @@ namespace DMS.Repositories
                         WorkflowTypeId = x.WorkflowParameter.WorkflowTypeId,
                     }
                 }).ToListAsync();
+
+            foreach (WorkflowDirection WorkflowDirection in WorkflowDefinition.WorkflowDirections)
+            {
+                WorkflowDirection.WorkflowDirectionConditions = WorkflowDirectionConditions.Where(x => x.WorkflowDirectionId == WorkflowDirection.Id).ToList();
+            }
 
             WorkflowDefinition.WorkflowParameters = await DataContext.WorkflowParameter
                 .Where(x => x.WorkflowTypeId == WorkflowDefinition.WorkflowTypeId)
