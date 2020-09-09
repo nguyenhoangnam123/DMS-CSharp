@@ -151,7 +151,6 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 .Where(x => ProvinceId.HasValue == false || (x.ProvinceId.HasValue && x.ProvinceId.Value == ProvinceId.Value))
                 .Where(x => DistrictId.HasValue == false || (x.DistrictId.HasValue && x.DistrictId.Value == DistrictId.Value))
                 .Where(x => WardId.HasValue == false || (x.WardId.HasValue && x.WardId.Value == WardId.Value))
-                .Where(x => x.StatusId == StatusEnum.ACTIVE.Id)
                 .Where(x => x.DeletedAt == null)
                 .ToListAsync();
 
@@ -217,7 +216,6 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 .Where(x => ProvinceId.HasValue == false || (x.ProvinceId.HasValue && x.ProvinceId.Value == ProvinceId.Value))
                 .Where(x => DistrictId.HasValue == false || (x.DistrictId.HasValue && x.DistrictId.Value == DistrictId.Value))
                 .Where(x => WardId.HasValue == false || (x.WardId.HasValue && x.WardId.Value == WardId.Value))
-                .Where(x => x.StatusId == StatusEnum.ACTIVE.Id)
                 .Where(x => x.DeletedAt == null)
                 .ToListAsync();
             StoreIds = StoreDAOs.Select(x => x.Id).ToList();
@@ -379,7 +377,6 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                  .Where(x => ProvinceId.HasValue == false || (x.ProvinceId.HasValue && x.ProvinceId.Value == ProvinceId.Value))
                  .Where(x => DistrictId.HasValue == false || (x.DistrictId.HasValue && x.DistrictId.Value == DistrictId.Value))
                  .Where(x => WardId.HasValue == false || (x.WardId.HasValue && x.WardId.Value == WardId.Value))
-                 .Where(x => x.StatusId == StatusEnum.ACTIVE.Id)
                  .Where(x => x.DeletedAt == null)
                  .ToListAsync();
             StoreIds = StoreDAOs.Select(x => x.Id).ToList();
