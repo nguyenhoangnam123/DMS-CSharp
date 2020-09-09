@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.reports.report_statistic.report_statistic_store_scouting
+namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
 {
     public class ReportStatisticStoreScoutingRoute : Root
     {

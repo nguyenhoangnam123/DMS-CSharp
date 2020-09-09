@@ -19,7 +19,7 @@ using System.Dynamic;
 using NGS.Templater;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 
-namespace DMS.Rpc.reports.report_statistic.report_statistic_problem
+namespace DMS.Rpc.reports.report_store.report_statistic_problem
 {
     public class ReportStatisticProblemController : RpcController
     {
