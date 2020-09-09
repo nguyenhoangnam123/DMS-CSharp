@@ -565,7 +565,7 @@ namespace DMS.Repositories
                 filter.Id = new IdFilter { In = StoreIds };
             else
             {
-                long? OrganizationId = filter.OrganizationId.Equal;
+                long? OrganizationId = filter.OrganizationId?.Equal;
                 filter.OrganizationId = new IdFilter { In = new List<long>() };
                 if (OrganizationId.HasValue)
                     filter.OrganizationId.In.Add(OrganizationId.Value);
@@ -588,7 +588,7 @@ namespace DMS.Repositories
                 filter.Id = new IdFilter { In = StoreIds };
             else
             {
-                long? OrganizationId = filter.OrganizationId.Equal;
+                long? OrganizationId = filter.OrganizationId?.Equal;
                 filter.OrganizationId = new IdFilter { In = new List<long>() };
                 if (OrganizationId.HasValue)
                     filter.OrganizationId.In.Add(OrganizationId.Value);
