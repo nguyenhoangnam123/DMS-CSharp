@@ -188,7 +188,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 throw new BindException(ModelState);
 
             DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
-                    StaticParams.DateTimeMin :
+                    StaticParams.DateTimeNow :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
@@ -350,7 +350,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 throw new BindException(ModelState);
 
             DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
-                    StaticParams.DateTimeMin :
+                    StaticParams.DateTimeNow :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
@@ -522,7 +522,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 throw new BindException(ModelState);
 
             DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
-                    StaticParams.DateTimeMin :
+                    StaticParams.DateTimeNow :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
