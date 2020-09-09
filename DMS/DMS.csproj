@@ -130,6 +130,9 @@
     <None Update="Templates\Report_Store_Unchecked.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\StoreScouting_Export.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\Store_Export.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -142,5 +145,9 @@
     <Content Update="Resources\vi\StoreScoutingValidator.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Rpc\reports\report-statistic\" />
   </ItemGroup>
 </Project>

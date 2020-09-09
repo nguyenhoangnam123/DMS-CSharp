@@ -19,6 +19,7 @@ using DMS.Services.MStore;
 using DMS.Services.MStoreScoutingStatus;
 using DMS.Services.MWard;
 using DMS.Enums;
+using System.Dynamic;
 
 namespace DMS.Rpc.store_scouting
 {
@@ -69,7 +70,7 @@ namespace DMS.Rpc.store_scouting
         }
 
         [Route(StoreScoutingRoute.List), HttpPost]
-        public async Task<ActionResult<List<StoreScouting_StoreScoutingDTO>>> List([FromBody] StoreScouting_StoreScoutingFilterDTO StoreScouting_StoreScoutingFilterDTO)
+        public async Task<List<StoreScouting_StoreScoutingDTO>> List([FromBody] StoreScouting_StoreScoutingFilterDTO StoreScouting_StoreScoutingFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -163,6 +164,45 @@ namespace DMS.Rpc.store_scouting
             else
                 return BadRequest(StoreScouting_StoreScoutingDTO);
         }
+
+        [Route(StoreScoutingRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] StoreScouting_StoreScoutingFilterDTO StoreScouting_StoreScoutingFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreScouting_StoreScoutingFilterDTO.Skip = 0;
+            StoreScouting_StoreScoutingFilterDTO.Take = int.MaxValue;
+            List<StoreScouting_StoreScoutingDTO> StoreScouting_StoreScoutingDTOs = await List(StoreScouting_StoreScoutingFilterDTO);
+            int stt = 1;
+            foreach (StoreScouting_StoreScoutingDTO StoreScouting_StoreScoutingDTO in StoreScouting_StoreScoutingDTOs)
+            {
+                StoreScouting_StoreScoutingDTO.STT = stt;
+                stt++;
+            }
+            DateTime Start = StoreScouting_StoreScoutingFilterDTO.CreatedAt?.GreaterEqual == null ?
+               StaticParams.DateTimeNow.Date :
+               StoreScouting_StoreScoutingFilterDTO.CreatedAt.GreaterEqual.Value.Date;
+
+            DateTime End = StoreScouting_StoreScoutingFilterDTO.CreatedAt?.LessEqual == null ?
+                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    StoreScouting_StoreScoutingFilterDTO.CreatedAt.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+            string path = "Templates/StoreScouting_Export.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.StoreScoutings = StoreScouting_StoreScoutingDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "StoreScouting_Export.xlsx");
+        }
+
         private async Task<bool> HasPermission(long Id)
         {
             StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter();
@@ -195,6 +235,7 @@ namespace DMS.Rpc.store_scouting
             StoreScouting.Latitude = StoreScouting_StoreScoutingDTO.Latitude;
             StoreScouting.Longitude = StoreScouting_StoreScoutingDTO.Longitude;
             StoreScouting.CreatorId = StoreScouting_StoreScoutingDTO.CreatorId;
+            StoreScouting.OrganizationId = StoreScouting_StoreScoutingDTO.OrganizationId;
             StoreScouting.StoreScoutingStatusId = StoreScouting_StoreScoutingDTO.StoreScoutingStatusId;
             StoreScouting.Link = StoreScouting_StoreScoutingDTO.Link;
             StoreScouting.RowId = StoreScouting_StoreScoutingDTO.RowId;
@@ -214,6 +255,19 @@ namespace DMS.Rpc.store_scouting
                 ProvinceId = StoreScouting_StoreScoutingDTO.Creator.ProvinceId,
                 SexId = StoreScouting_StoreScoutingDTO.Creator.SexId,
                 Birthday = StoreScouting_StoreScoutingDTO.Creator.Birthday,
+            };
+            StoreScouting.Organization = StoreScouting_StoreScoutingDTO.Organization == null ? null : new Organization
+            {
+                Id = StoreScouting_StoreScoutingDTO.Organization.Id,
+                Code = StoreScouting_StoreScoutingDTO.Organization.Code,
+                Name = StoreScouting_StoreScoutingDTO.Organization.Name,
+                ParentId = StoreScouting_StoreScoutingDTO.Organization.ParentId,
+                Path = StoreScouting_StoreScoutingDTO.Organization.Path,
+                Level = StoreScouting_StoreScoutingDTO.Organization.Level,
+                StatusId = StoreScouting_StoreScoutingDTO.Organization.StatusId,
+                Phone = StoreScouting_StoreScoutingDTO.Organization.Phone,
+                Address = StoreScouting_StoreScoutingDTO.Organization.Address,
+                Email = StoreScouting_StoreScoutingDTO.Organization.Email,
             };
             StoreScouting.District = StoreScouting_StoreScoutingDTO.District == null ? null : new District
             {

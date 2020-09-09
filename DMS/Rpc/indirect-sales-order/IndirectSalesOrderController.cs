@@ -12,6 +12,7 @@ using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MSupplier;
+using DMS.Services.MTaxType;
 using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MUnitOfMeasureGrouping;
 using DMS.Services.MWorkflow;
@@ -39,6 +40,7 @@ namespace DMS.Rpc.indirect_sales_order
         private ISupplierService SupplierService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
+        private ITaxTypeService TaxTypeService;
         private ICurrentContext CurrentContext;
         public IndirectSalesOrderController(
             IOrganizationService OrganizationService,
@@ -56,6 +58,7 @@ namespace DMS.Rpc.indirect_sales_order
             ISupplierService SupplierService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
+            ITaxTypeService TaxTypeService,
             ICurrentContext CurrentContext
         )
         {
@@ -74,6 +77,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.SupplierService = SupplierService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
+            this.TaxTypeService = TaxTypeService;
             this.CurrentContext = CurrentContext;
         }
 

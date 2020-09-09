@@ -1,7 +1,7 @@
 using Common;
 using DMS.Entities;
 
-namespace DMS.Rpc.reports.report_statistic.report_statistic_store_scouting
+namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
 {
     public class ReportStatisticStoreScouting_DistrictDTO : DataDTO
     {

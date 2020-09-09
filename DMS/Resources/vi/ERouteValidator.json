@@ -39,7 +39,8 @@
     },
     "ERouteContent": {
       "Store": {
-        "StoreEmpty": "Chưa chọn đại lý"
+        "StoreEmpty": "Chưa chọn đại lý",
+        "StoreNotInERouteScope": "Đại lý không thuộc phạm vi đi tuyến của nhân viên"
       },
       "Id": {
         "PlannedEmpty": "Chưa lập lịch đi tuyến cho cửa hàng"

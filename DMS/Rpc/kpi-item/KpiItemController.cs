@@ -121,7 +121,7 @@ namespace DMS.Rpc.kpi_item
         public async Task<ActionResult<KpiItem_KpiItemDTO>> GetDraft()
         {
             long KpiYearId = StaticParams.DateTimeNow.Year;
-            long KpiPeriodId = StaticParams.DateTimeNow.Month;
+            long KpiPeriodId = StaticParams.DateTimeNow.Month + 100;
             List<KpiCriteriaTotal> KpiCriteriaTotals = await KpiCriteriaTotalService.List(new KpiCriteriaTotalFilter
             {
                 Skip = 0,
@@ -246,7 +246,7 @@ namespace DMS.Rpc.kpi_item
                 throw new BindException(ModelState);
             FileInfo FileInfo = new FileInfo(file.FileName);
             if (!FileInfo.Extension.Equals(".xlsx"))
-                return BadRequest("Định dạng file không hợp lệ");
+                return BadRequest(new { message = "Định dạng file không hợp lệ" });
 
             var AppUser = await AppUserService.Get(CurrentContext.UserId);
 
@@ -274,7 +274,7 @@ namespace DMS.Rpc.kpi_item
             {
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["KPI san pham"];
                 if (worksheet == null)
-                    return BadRequest("File không đúng biểu mẫu import");
+                    return BadRequest(new { message = "File không đúng biểu mẫu import" });
 
                 int StartColumn = 1;
                 int StartRow = 5;
@@ -291,14 +291,14 @@ namespace DMS.Rpc.kpi_item
                 if (long.TryParse(KpiPeriodValue, out long KpiPeriodId))
                     KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiPeriodId).FirstOrDefault();
                 else
-                    return BadRequest("Kỳ Kpi không hợp lệ");
+                    return BadRequest(new { message = "Kỳ Kpi không hợp lệ" });
 
                 string KpiYearValue = worksheet.Cells[2, 6].Value?.ToString();
                 GenericEnum KpiYear;
                 if (long.TryParse(KpiYearValue, out long KpiYearId))
                     KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();
                 else
-                    return BadRequest("Năm Kpi không hợp lệ");
+                    return BadRequest(new { message = "Năm Kpi không hợp lệ" });
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
@@ -533,10 +533,10 @@ namespace DMS.Rpc.kpi_item
                 throw new BindException(ModelState);
 
             if (KpiItem_KpiItemFilterDTO.KpiYearId.Equal.HasValue == false)
-                return BadRequest("Chưa chọn năm Kpi");
+                return BadRequest(new { message = "Chưa chọn năm Kpi" });
 
             if (KpiItem_KpiItemFilterDTO.KpiPeriodId.Equal.HasValue == false)
-                return BadRequest("Chưa chọn kỳ Kpi");
+                return BadRequest(new { message = "Chưa chọn kỳ Kpi" });
 
             long KpiYearId = KpiItem_KpiItemFilterDTO.KpiYearId.Equal.Value;
             var KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();

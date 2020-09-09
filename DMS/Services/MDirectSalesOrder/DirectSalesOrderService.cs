@@ -109,7 +109,38 @@ namespace DMS.Services.MDirectSalesOrder
         {
             try
             {
+                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
+                var Ids = Items.Select(x => x.Id).ToList();
+
+                List<Warehouse> Warehouses = await UOW.WarehouseRepository.List(new WarehouseFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = WarehouseSelect.Id,
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    OrganizationId = new IdFilter { Equal = AppUser.OrganizationId }
+                });
+                var WarehouseIds = Warehouses.Select(x => x.Id).ToList();
+
+                InventoryFilter InventoryFilter = new InventoryFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    ItemId = new IdFilter { In = Ids },
+                    WarehouseId = new IdFilter { In = WarehouseIds },
+                    Selects = InventorySelect.SaleStock | InventorySelect.Item
+                };
+
+                var inventories = await UOW.InventoryRepository.List(InventoryFilter);
+                var list = inventories.GroupBy(x => x.ItemId).Select(x => new { ItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
+
+                foreach (var item in Items)
+                {
+                    item.SaleStock = list.Where(i => i.ItemId == item.Id).Select(i => i.SaleStock).FirstOrDefault();
+                    item.HasInventory = item.SaleStock > 0;
+                }
+
                 await ApplyPrice(Items, StoreId);
                 return Items;
             }
@@ -510,7 +541,7 @@ namespace DMS.Services.MDirectSalesOrder
                         Factor = 1
                     });
                     var UOM = UnitOfMeasures.Where(x => DirectSalesOrderContent.UnitOfMeasureId == x.Id).FirstOrDefault();
-                    DirectSalesOrderContent.TaxPercentage = Product.TaxType.Percentage;
+                    //DirectSalesOrderContent.TaxPercentage = Product.TaxType.Percentage;
                     DirectSalesOrderContent.RequestedQuantity = DirectSalesOrderContent.Quantity * UOM.Factor.Value;
 
                     //Trường hợp không sửa giá, giá bán = giá bán cơ sở của sản phẩm * hệ số quy đổi của đơn vị tính

@@ -1,6 +1,7 @@
 using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Models;
 using DMS.Repositories;
 using DMS.Services.MAlbum;
 using DMS.Services.MAppUser;
@@ -16,6 +17,7 @@ using DMS.Services.MTaxType;
 using Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -441,23 +443,61 @@ namespace DMS.Rpc.mobile
                 Skip = 0,
                 Take = int.MaxValue,
             });
-            Mobile_StoreDTO.AlbumImageMappings = Albums.SelectMany(x => x.AlbumImageMappings.Where(x => x.StoreId == Mobile_StoreDTO.Id).Select(m => new Mobile_AlbumImageMappingDTO
+            Mobile_StoreDTO.AlbumImageMappings = Albums
+                .SelectMany(x => x.AlbumImageMappings
+                .Where(x => x.StoreId == Mobile_StoreDTO.Id)
+                .Where(x => x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date)
+                .Select(m => new Mobile_AlbumImageMappingDTO
+                {
+                    AlbumId = m.AlbumId,
+                    ImageId = m.ImageId,
+                    StoreId = m.StoreId,
+                    Album = m.Album == null ? null : new Mobile_AlbumDTO
+                    {
+                        Id = m.Album.Id,
+                        Name = m.Album.Name,
+                    },
+                    Image = m.Image == null ? null : new Mobile_ImageDTO
+                    {
+                        Id = m.Image.Id,
+                        Name = m.Image.Name,
+                        Url = m.Image.Url,
+                    },
+                })).ToList();
+
+            List<StoreChecking> StoreCheckings = await StoreCheckingService.List(new StoreCheckingFilter
             {
-                AlbumId = m.AlbumId,
-                ImageId = m.ImageId,
-                StoreId = m.StoreId,
-                Album = m.Album == null ? null : new Mobile_AlbumDTO
-                {
-                    Id = m.Album.Id,
-                    Name = m.Album.Name,
-                },
-                Image = m.Image == null ? null : new Mobile_ImageDTO
-                {
-                    Id = m.Image.Id,
-                    Name = m.Image.Name,
-                    Url = m.Image.Url,
-                },
-            })).ToList();
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreCheckingSelect.Id,
+                CheckOutAt = new DateFilter { GreaterEqual = Start, LessEqual = End },
+                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                StoreId = new IdFilter { Equal = Mobile_StoreDTO.Id }
+            });
+            var StoreCheckingIds = StoreCheckings.Select(x => x.Id).ToList();
+            var query = from scim in DataContext.StoreCheckingImageMapping
+                        join a in DataContext.Album on scim.AlbumId equals a.Id
+                        join i in DataContext.Image on scim.ImageId equals i.Id
+                        where StoreCheckingIds.Contains(scim.StoreCheckingId)
+                        select new Mobile_AlbumImageMappingDTO
+                        {
+                            AlbumId = scim.AlbumId,
+                            ImageId = scim.ImageId,
+                            StoreId = scim.StoreId,
+                            Album = new Mobile_AlbumDTO
+                            {
+                                Id = a.Id,
+                                Name = a.Name,
+                            },
+                            Image = new Mobile_ImageDTO
+                            {
+                                Id = i.Id,
+                                Name = i.Name,
+                                Url = i.Url,
+                            },
+                        };
+            var StoreCheckingImageMappings = await query.ToListAsync();
+            Mobile_StoreDTO.AlbumImageMappings.AddRange(StoreCheckingImageMappings);
             return Mobile_StoreDTO;
         }
 
@@ -583,7 +623,6 @@ namespace DMS.Rpc.mobile
             if (StoreIds.Any())
             {
                 StoreFilter.Id = new IdFilter { In = StoreIds };
-
             }
 
             return await StoreCheckingService.CountStore(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
@@ -630,7 +669,6 @@ namespace DMS.Rpc.mobile
             if (StoreIds.Any())
             {
                 StoreFilter.Id = new IdFilter { In = StoreIds };
-
             }
             List<Store> Stores = await StoreCheckingService.ListStore(StoreFilter, Mobile_StoreFilterDTO.ERouteId);
             List<Mobile_StoreDTO> Mobile_StoreDTOs = Stores

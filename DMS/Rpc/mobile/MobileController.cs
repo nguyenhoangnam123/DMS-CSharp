@@ -34,6 +34,7 @@ using System.Text;
 using DMS.Services.MNotification;
 using DMS.Services.MProblemType;
 using DMS.Services.MColor;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile
 {
@@ -64,6 +65,7 @@ namespace DMS.Rpc.mobile
         private IProductGroupingService ProductGroupingService;
         private INotificationService NotificationService;
         private ICurrentContext CurrentContext;
+        private DataContext DataContext;
         public MobileController(
             IAlbumService AlbumService,
             IBannerService BannerService,
@@ -89,7 +91,8 @@ namespace DMS.Rpc.mobile
             ISupplierService SupplierService,
             IProductGroupingService ProductGroupingService,
             INotificationService NotificationService,
-            ICurrentContext CurrentContext
+            ICurrentContext CurrentContext,
+            DataContext DataContext
         )
         {
             this.AlbumService = AlbumService;
@@ -117,6 +120,7 @@ namespace DMS.Rpc.mobile
             this.ProductGroupingService = ProductGroupingService;
             this.NotificationService = NotificationService;
             this.CurrentContext = CurrentContext;
+            this.DataContext = DataContext;
         }
 
         [Route(MobileRoute.CountStoreChecking), HttpPost]
@@ -1239,6 +1243,19 @@ namespace DMS.Rpc.mobile
                 ProvinceId = Mobile_StoreScoutingDTO.Creator.ProvinceId,
                 SexId = Mobile_StoreScoutingDTO.Creator.SexId,
                 Birthday = Mobile_StoreScoutingDTO.Creator.Birthday,
+            };
+            StoreScouting.Organization = Mobile_StoreScoutingDTO.Organization == null ? null : new Organization
+            {
+                Id = Mobile_StoreScoutingDTO.Organization.Id,
+                Code = Mobile_StoreScoutingDTO.Organization.Code,
+                Name = Mobile_StoreScoutingDTO.Organization.Name,
+                ParentId = Mobile_StoreScoutingDTO.Organization.ParentId,
+                Path = Mobile_StoreScoutingDTO.Organization.Path,
+                Level = Mobile_StoreScoutingDTO.Organization.Level,
+                StatusId = Mobile_StoreScoutingDTO.Organization.StatusId,
+                Phone = Mobile_StoreScoutingDTO.Organization.Phone,
+                Address = Mobile_StoreScoutingDTO.Organization.Address,
+                Email = Mobile_StoreScoutingDTO.Organization.Email,
             };
             StoreScouting.District = Mobile_StoreScoutingDTO.District == null ? null : new District
             {

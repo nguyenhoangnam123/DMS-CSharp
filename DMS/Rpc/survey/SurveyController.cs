@@ -189,7 +189,9 @@ namespace DMS.Rpc.survey
 
             List<SurveyResult> SurveyResults = await SurveyResultService.List(new SurveyResultFilter
             {
-                Selects = SurveyResultSelect.Id | SurveyResultSelect.Store | SurveyResultSelect.AppUser | SurveyResultSelect.StoreScouting,
+                Selects = SurveyResultSelect.Id | SurveyResultSelect.Store | SurveyResultSelect.AppUser | SurveyResultSelect.StoreScouting
+                | SurveyResultSelect.RespondentAddress | SurveyResultSelect.RespondentEmail | SurveyResultSelect.RespondentName | SurveyResultSelect.RespondentPhone
+                | SurveyResultSelect.SurveyRespondentType,
                 Skip = 0,
                 Take = int.MaxValue,
                 OrderBy = SurveyResultOrder.Time,
@@ -256,9 +258,13 @@ namespace DMS.Rpc.survey
                 List<string> header = new List<string>
                 {
                     "Thời gian",
-                    "Đại lý",
-                    "Mã đại lý",
-                    "Nhân viên",
+                    "Đối tượng khảo sát",
+                    "Mã đại lý/Email",
+                    "Tên đại lý/Họ và tên",
+                    "Điện thoại",
+                    "Địa chỉ",
+                    "Đơn vị quản lý",
+                    "Nhân viên khảo sát",
                 };
 
                 if (Survey.SurveyQuestions != null)
@@ -301,13 +307,66 @@ namespace DMS.Rpc.survey
                     if (SurveyResult == null)
                         continue;
 
-                    string AppUserName = appUsers.Where(a => a.Id == AppUserId).Select(a => a.DisplayName).FirstOrDefault();
+                    //thời gian
                     string Time = SurveyResult.Time.ToString("dd/MM/yyyy");
-                    string StoreCode = SurveyResult.Store?.Code;
-                    string StoreName = SurveyResult.Store?.Name;
+                    //đối tượng khảo sát
+                    string SurveyRespondentType = SurveyResult.SurveyRespondentType?.Name;
+                    //mã đại lý/email
+                    string StoreCodeOrEmail = "";
+                    if (SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE.Id)
+                    {
+                        StoreCodeOrEmail = SurveyResult.Store?.Code;
+                    }
+                    else if(SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE_SCOUTING.Id)
+                    {
+                        StoreCodeOrEmail = SurveyResult.StoreScouting?.Code;
+                    }
+                    else
+                    {
+                        StoreCodeOrEmail = SurveyResult.RespondentEmail;
+                    }
+                    //tên đại lý/họ và tên
+                    string StoreNameOrDisplayName = "";
+                    if (SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE.Id)
+                    {
+                        StoreNameOrDisplayName = SurveyResult.Store?.Name;
+                    }
+                    else if (SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE_SCOUTING.Id)
+                    {
+                        StoreNameOrDisplayName = SurveyResult.StoreScouting?.Name;
+                    }
+                    else
+                    {
+                        StoreNameOrDisplayName = SurveyResult.RespondentName;
+                    }
+                    //điện thoại
+                    string Phone = SurveyResult.RespondentPhone;
+                    //địa chỉ
+                    string Address = SurveyResult.RespondentAddress;
+                    //đơn vị quản lý
+                    string OrganizationName = "";
+                    if (SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE.Id)
+                    {
+                        OrganizationName = SurveyResult.Store?.Organization?.Name;
+                    }
+                    else if (SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE_SCOUTING.Id)
+                    {
+                        OrganizationName = SurveyResult.StoreScouting?.Organization?.Name;
+                    }
+                    else
+                    {
+                        OrganizationName = SurveyResult.AppUser?.Organization?.Name;
+                    }
+                    //nhân viên
+                    string AppUserName = appUsers.Where(a => a.Id == AppUserId).Select(a => a.DisplayName).FirstOrDefault();
+
                     optionResults.Add(Time);
-                    optionResults.Add(StoreName);
-                    optionResults.Add(StoreCode);
+                    optionResults.Add(SurveyRespondentType);
+                    optionResults.Add(StoreCodeOrEmail);
+                    optionResults.Add(StoreNameOrDisplayName);
+                    optionResults.Add(Phone);
+                    optionResults.Add(Address);
+                    optionResults.Add(OrganizationName);
                     optionResults.Add(AppUserName);
                     if (Survey.SurveyQuestions != null)
                         foreach (SurveyQuestion surveyQuestion in Survey.SurveyQuestions)

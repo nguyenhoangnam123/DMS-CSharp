@@ -20,7 +20,6 @@ namespace DMS.Models
         public DateTime RealStartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long ERouteTypeId { get; set; }
-        public long RequestStateId { get; set; }
         public long StatusId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -30,7 +29,6 @@ namespace DMS.Models
         public virtual AppUserDAO Creator { get; set; }
         public virtual ERouteTypeDAO ERouteType { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
-        public virtual RequestStateDAO RequestState { get; set; }
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }

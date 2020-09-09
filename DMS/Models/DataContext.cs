@@ -530,7 +530,7 @@ namespace DMS.Models
                     .HasComment("Địa chỉ giao hàng");
 
                 entity.Property(e => e.DeliveryDate)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasComment("Ngày giao hàng");
 
                 entity.Property(e => e.EditedPriceStatusId).HasComment("Sửa giá");
@@ -548,7 +548,7 @@ namespace DMS.Models
                     .HasComment("Ghi chú");
 
                 entity.Property(e => e.OrderDate)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasComment("Ngày đặt hàng");
 
                 entity.Property(e => e.PhoneNumber)
@@ -660,8 +660,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<DirectSalesOrderPromotionDAO>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Note).HasMaxLength(4000);
 
                 entity.HasOne(d => d.DirectSalesOrder)
@@ -780,13 +778,13 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.EndDate).HasColumnType("date");
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(500);
 
-                entity.Property(e => e.RealStartDate).HasColumnType("date");
+                entity.Property(e => e.RealStartDate).HasColumnType("datetime");
 
-                entity.Property(e => e.StartDate).HasColumnType("date");
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -794,7 +792,7 @@ namespace DMS.Models
                     .WithMany(p => p.ERouteCreators)
                     .HasForeignKey(d => d.CreatorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ERoute_AppUser1");
+                    .HasConstraintName("FK_ERoute_AppUser");
 
                 entity.HasOne(d => d.ERouteType)
                     .WithMany(p => p.ERoutes)
@@ -808,17 +806,11 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ERoute_Organization");
 
-                entity.HasOne(d => d.RequestState)
-                    .WithMany(p => p.ERoutes)
-                    .HasForeignKey(d => d.RequestStateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ERoute_RequestState");
-
                 entity.HasOne(d => d.SaleEmployee)
                     .WithMany(p => p.ERouteSaleEmployees)
                     .HasForeignKey(d => d.SaleEmployeeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ERoute_AppUser");
+                    .HasConstraintName("FK_ERoute_AppUser1");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.ERoutes)
@@ -1045,7 +1037,7 @@ namespace DMS.Models
                     .HasComment("Địa chỉ giao hàng");
 
                 entity.Property(e => e.DeliveryDate)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasComment("Ngày giao hàng");
 
                 entity.Property(e => e.EditedPriceStatusId).HasComment("Sửa giá");
@@ -1063,7 +1055,7 @@ namespace DMS.Models
                     .HasComment("Ghi chú");
 
                 entity.Property(e => e.OrderDate)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasComment("Ngày đặt hàng");
 
                 entity.Property(e => e.PhoneNumber)
@@ -2991,6 +2983,12 @@ namespace DMS.Models
                     .WithMany(p => p.StoreScoutings)
                     .HasForeignKey(d => d.DistrictId)
                     .HasConstraintName("FK_StoreScouting_District");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreScouting_Organization");
 
                 entity.HasOne(d => d.Province)
                     .WithMany(p => p.StoreScoutings)

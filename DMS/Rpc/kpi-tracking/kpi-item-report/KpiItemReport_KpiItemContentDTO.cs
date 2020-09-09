@@ -32,19 +32,55 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                 return IndirectSalesOrderIds.Count;
             }
         }
-    public decimal? IndirectAmountRatio { get; set; }
+        public decimal? IndirectAmountRatio { get; set; }
 
         //Số đại lý theo đơn gián tiếp
         public decimal? IndirectStorePlanned { get; set; }
-        internal HashSet<long> StoreIds { get; set; }
+        internal HashSet<long> StoreIndirectIds { get; set; }
         public decimal? IndirectStore
         {
             get
             {
-                if (StoreIds == null) return null;
-                return StoreIds.Count;
+                if (StoreIndirectIds == null) return null;
+                return StoreIndirectIds.Count;
             }
         }
         public decimal? IndirectStoreRatio { get; set; }
+
+        //Sản lượng theo đơn hàng trực tiếp
+        public decimal? DirectQuantityPlanned { get; set; }
+        public decimal DirectQuantity { get; set; }
+        public decimal? DirectQuantityRatio { get; set; }
+
+        //Doanh số theo đơn hàng trực tiếp
+        public decimal? DirectRevenuePlanned { get; set; }
+        public decimal DirectRevenue { get; set; }
+        public decimal? DirectRevenueRatio { get; set; }
+
+        //Số đơn hàng trực tiếp
+        public decimal? DirectAmountPlanned { get; set; }
+        internal HashSet<long> DirectSalesOrderIds { get; set; }
+        public decimal? DirectAmount
+        {
+            get
+            {
+                if (DirectSalesOrderIds == null) return null;
+                return DirectSalesOrderIds.Count;
+            }
+        }
+        public decimal? DirectAmountRatio { get; set; }
+
+        //Số đại lý theo đơn trực tiếp
+        public decimal? DirectStorePlanned { get; set; }
+        internal HashSet<long> StoreDirectIds { get; set; }
+        public decimal? DirectStore
+        {
+            get
+            {
+                if (StoreDirectIds == null) return null;
+                return StoreDirectIds.Count;
+            }
+        }
+        public decimal? DirectStoreRatio { get; set; }
     }
 }

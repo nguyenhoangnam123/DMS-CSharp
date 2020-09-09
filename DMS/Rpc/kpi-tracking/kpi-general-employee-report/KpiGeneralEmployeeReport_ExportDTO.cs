@@ -27,10 +27,30 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
         public string TotalIndirectSalesAmount { get; set; }
         public string TotalIndirectSalesAmountRatio { get; set; }
 
-        //SKU
+        //SKU gián tiếp
         public string SkuIndirectOrderPlanned { get; set; }
         public string SkuIndirectOrder { get; set; }
         public string SkuIndirectOrderRatio { get; set; }
+
+        //Số đơn hàng trực tiếp
+        public string TotalDirectOrdersPLanned { get; set; }
+        public string TotalDirectOrders { get; set; }
+        public string TotalDirectOrdersRatio { get; set; }
+
+        //Tổng sản lượng theo đơn hàng trực tiếp
+        public string TotalDirectQuantityPlanned { get; set; }
+        public string TotalDirectQuantity { get; set; }
+        public string TotalDirectQuantityRatio { get; set; }
+
+        //Doanh thu theo đơn hàng trực tiếp
+        public string TotalDirectSalesAmountPlanned { get; set; }
+        public string TotalDirectSalesAmount { get; set; }
+        public string TotalDirectSalesAmountRatio { get; set; }
+
+        //SKU trực tiếp
+        public string SkuDirectOrderPlanned { get; set; }
+        public string SkuDirectOrder { get; set; }
+        public string SkuDirectOrderRatio { get; set; }
 
         //Số cửa hàng viếng thăm
         public string StoresVisitedPLanned { get; set; }

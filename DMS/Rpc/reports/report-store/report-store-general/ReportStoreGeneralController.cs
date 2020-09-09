@@ -240,7 +240,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                     ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
-                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
+                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
             long? StoreId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreTypeId?.Equal;
@@ -450,7 +450,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                     StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
                     ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
             if (End.Subtract(Start).Days > 31)
-                return BadRequest("Chỉ được phép xem tối đa trong vòng 31 ngày");
+                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
             ReportStoreGeneral_ReportStoreGeneralFilterDTO.Skip = 0;
             ReportStoreGeneral_ReportStoreGeneralFilterDTO.Take = int.MaxValue;

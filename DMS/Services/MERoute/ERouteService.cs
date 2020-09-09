@@ -26,8 +26,8 @@ namespace DMS.Services.MERoute
         Task<List<ERoute>> BulkDelete(List<ERoute> ERoutes);
         Task<List<ERoute>> Import(List<ERoute> ERoutes);
         Task<ERouteFilter> ToFilter(ERouteFilter ERouteFilter);
-
-        Task<List<Store>> ListStore(StoreFilter StoreFilter);
+        Task<int> CountStore(StoreFilter StoreFilter, long? AppUserId);
+        Task<List<Store>> ListStore(StoreFilter StoreFilter, long? AppUserId);
     }
 
     public class ERouteService : BaseService, IERouteService
@@ -121,8 +121,7 @@ namespace DMS.Services.MERoute
             {
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 var SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
-                int diff = (7 + (ERoute.StartDate.DayOfWeek - DayOfWeek.Monday)) % 7;
-                ERoute.RealStartDate = ERoute.StartDate.AddDays(-1 * diff);
+                ERoute = await CalculateTime(ERoute);
                 ERoute.CreatorId = CurrentContext.UserId;
                 ERoute.OrganizationId = SaleEmployee.OrganizationId.Value;
                 ERoute.RequestStateId = RequestStateEnum.NEW.Id;
@@ -173,8 +172,7 @@ namespace DMS.Services.MERoute
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 var SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
                 var oldData = await UOW.ERouteRepository.Get(ERoute.Id);
-                int diff = (7 + (ERoute.StartDate.DayOfWeek - DayOfWeek.Monday)) % 7;
-                ERoute.RealStartDate = ERoute.StartDate.AddDays(-1 * diff);
+                ERoute = await CalculateTime(ERoute);
                 ERoute.OrganizationId = SaleEmployee.OrganizationId.Value;
                 await UOW.Begin();
                 await UOW.ERouteRepository.Update(ERoute);
@@ -375,9 +373,23 @@ namespace DMS.Services.MERoute
             return filter;
         }
 
-        public async Task<List<Store>> ListStore(StoreFilter StoreFilter)
+        public async Task<int> CountStore(StoreFilter StoreFilter, long? AppUserId)
         {
-            List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+            int count = 0;
+            if (AppUserId.HasValue)
+                await UOW.StoreRepository.CountInScoped(StoreFilter, AppUserId.Value);
+            else
+                await UOW.StoreRepository.CountInScoped(StoreFilter, CurrentContext.UserId);
+            return count;
+        }
+        public async Task<List<Store>> ListStore(StoreFilter StoreFilter, long? AppUserId)
+        {
+            List<Store> Stores;
+            if (AppUserId.HasValue)
+                Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, AppUserId.Value);
+            else
+                Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, CurrentContext.UserId);
+
             List<long> StoreIds = Stores.Select(s => s.Id).ToList();
             ERouteContentFilter ERouteContentFilter = new ERouteContentFilter
             {
@@ -393,6 +405,23 @@ namespace DMS.Services.MERoute
                 Store.HasEroute = ERouteContents.Where(e => e.StoreId == Store.Id).Count() > 0;
             }
             return Stores;
+        }
+
+        private async Task<ERoute> CalculateTime(ERoute ERoute)
+        {
+            ERoute.StartDate = ERoute.StartDate.AddHours(CurrentContext.TimeZone).Date;
+            ERoute.StartDate = ERoute.StartDate.AddDays(0 - CurrentContext.TimeZone);
+
+            int diff = (7 + (ERoute.StartDate.DayOfWeek - DayOfWeek.Monday)) % 7;
+            ERoute.RealStartDate = ERoute.StartDate.AddDays(-1 * diff);
+
+            if (ERoute.EndDate.HasValue)
+            {
+                ERoute.EndDate = ERoute.EndDate.Value.AddHours(CurrentContext.TimeZone).Date.AddDays(1).AddSeconds(-1);
+                ERoute.EndDate = ERoute.EndDate.Value.AddDays(0 - CurrentContext.TimeZone);
+            }
+
+            return ERoute;
         }
     }
 }

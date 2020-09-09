@@ -118,6 +118,7 @@ namespace DMS.Services.MStoreScouting
             {
                 var User = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 StoreScouting.CreatorId = User.Id;
+                StoreScouting.OrganizationId = User.OrganizationId.Value;
                 StoreScouting.Code = Guid.NewGuid().ToString();
                 StoreScouting.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.NOTOPEN.Id;
                 await UOW.Begin();

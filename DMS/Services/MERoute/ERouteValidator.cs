@@ -41,7 +41,8 @@ namespace DMS.Services.MERoute
             StoreEmpty,
             ERouteInUsed,
             ERouteContentsEmpty,
-            PlannedEmpty
+            PlannedEmpty,
+            StoreNotInERouteScope
         }
 
         private IUOW UOW;
@@ -201,7 +202,7 @@ namespace DMS.Services.MERoute
                     Id = new IdFilter { In = IdsStore }
                 };
 
-                var IdsInDB = (await UOW.StoreRepository.List(StoreFilter)).Select(x => x.Id).ToList();
+                var IdsInDB = (await UOW.StoreRepository.ListInScoped(StoreFilter, ERoute.SaleEmployeeId)).Select(x => x.Id).ToList();
                 var listIdsNotExisted = IdsStore.Except(IdsInDB);
                 foreach (var ERouteContent in ERoute.ERouteContents)
                 {
@@ -209,7 +210,20 @@ namespace DMS.Services.MERoute
                         ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreEmpty);
                     else
                     {
-                        var days = new List<bool>
+                        if (ERoute.SaleEmployeeId != 0)
+                        {
+                            AppUser SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
+                            if (SaleEmployee != null)
+                            {
+                                if (!IdsInDB.Contains(ERouteContent.StoreId))
+                                {
+                                    ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreNotInERouteScope);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var days = new List<bool>
                         {
                             ERouteContent.Monday,
                             ERouteContent.Tuesday,
@@ -219,7 +233,7 @@ namespace DMS.Services.MERoute
                             ERouteContent.Saturday,
                             ERouteContent.Sunday,
                         };
-                        var week = new List<bool>
+                            var week = new List<bool>
                         {
                             ERouteContent.Week1,
                             ERouteContent.Week2,
@@ -227,9 +241,10 @@ namespace DMS.Services.MERoute
                             ERouteContent.Week4,
                         };
 
-                        if(!days.Any(x => x == true) || !week.Any(x => x == true))
-                        {
-                            ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Id), ErrorCode.PlannedEmpty);
+                            if (!days.Any(x => x == true) || !week.Any(x => x == true))
+                            {
+                                ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Id), ErrorCode.PlannedEmpty);
+                            }
                         }
                     }
                 }
