@@ -384,6 +384,8 @@ namespace DMS.Services.MWorkflow
 
         private string CreateMailContent(string templateContent, Dictionary<string, string> Parameters)
         {
+            if (string.IsNullOrWhiteSpace(templateContent))
+                return "";
             var template = Handlebars.Compile(templateContent);
             var result = template(Parameters);
             return result;
