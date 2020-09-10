@@ -160,11 +160,11 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 return 0;
 
             DateTime Start = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalStartDay(CurrentContext) :
                     ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
@@ -232,11 +232,11 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 return new List<ReportStoreGeneral_ReportStoreGeneralDTO>();
 
             DateTime Start = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalStartDay(CurrentContext) :
                     ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
@@ -442,15 +442,14 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
             DateTime Start = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.GreaterEqual == null ?
-               StaticParams.DateTimeNow.Date :
-               ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.GreaterEqual.Value.Date;
+                    LocalStartDay(CurrentContext) :
+                    ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
-            if (End.Subtract(Start).Days > 31)
-                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+                    LocalEndDay(CurrentContext) :
+                    ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.LessEqual.Value;
 
             ReportStoreGeneral_ReportStoreGeneralFilterDTO.Skip = 0;
             ReportStoreGeneral_ReportStoreGeneralFilterDTO.Take = int.MaxValue;

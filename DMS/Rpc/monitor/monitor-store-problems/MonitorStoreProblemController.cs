@@ -188,12 +188,13 @@ namespace DMS.Rpc.monitor_store_problems
                 }
             }
             DateTime Start = MonitorStoreProblem_ProblemFilterDTO.NoteAt?.GreaterEqual == null ?
-               StaticParams.DateTimeNow.Date :
-               MonitorStoreProblem_ProblemFilterDTO.NoteAt.GreaterEqual.Value.Date;
+               LocalStartDay(CurrentContext) :
+               MonitorStoreProblem_ProblemFilterDTO.NoteAt.GreaterEqual.Value;
 
             DateTime End = MonitorStoreProblem_ProblemFilterDTO.NoteAt?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    MonitorStoreProblem_ProblemFilterDTO.NoteAt.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+                    LocalEndDay(CurrentContext) :
+                    MonitorStoreProblem_ProblemFilterDTO.NoteAt.LessEqual.Value.AddDays(1).AddSeconds(-1);
+
             string path = "Templates/Monitor_Store_Problem_Report.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);

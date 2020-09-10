@@ -18,6 +18,8 @@ using DMS.Services.MStoreType;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
 using System.Globalization;
+using Helpers;
+using System;
 
 namespace DMS.Rpc
 {
@@ -420,6 +422,18 @@ namespace DMS.Rpc
             List<long> AppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             return (AppUserIds, OrganizationIds);
         }
+
+        protected DateTime LocalStartDay(ICurrentContext CurrentContext)
+        {
+            DateTime Start = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
+            return Start;
+        }
+
+        protected DateTime LocalEndDay(ICurrentContext CurrentContext)
+        {
+            DateTime End = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone).AddDays(1).AddSeconds(-1);
+            return End;
+        }
     }
 
     [Authorize]
@@ -537,7 +551,7 @@ namespace DMS.Rpc
             CurrentContext.Language = Language ?? "vi";
             if (decimal.TryParse(Latitude, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal lat))
                 CurrentContext.Latitude = lat;
-            if (decimal.TryParse(Longitude,NumberStyles.Any, CultureInfo.InvariantCulture, out decimal lon))
+            if (decimal.TryParse(Longitude, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal lon))
                 CurrentContext.Longitude = lon;
             context.Succeed(requirement);
         }

@@ -120,12 +120,13 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 throw new BindException(ModelState);
 
             long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.AppUserId?.Equal;
+
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
-              StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone) :
+              LocalStartDay(CurrentContext) :
               MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
-                    Start.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
@@ -177,11 +178,11 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 throw new BindException(ModelState);
 
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
-                StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone) :
-                MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
+             LocalStartDay(CurrentContext) :
+             MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
-                    Start.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value;
 
             long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.AppUserId?.Equal;
@@ -367,8 +368,10 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
             long SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.SaleEmployeeId;
-            DateTime Start = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.Date;
+
+            DateTime Start = MonitorStoreChecker_MonitorStoreCheckerDetailFilterDTO.Date.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
+
             List<long> StoreIds = new List<long>();
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc =>
@@ -395,7 +398,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 .ToListAsync();
             List<AlbumImageMappingDAO> AlbumImageMappingDAOs = await DataContext.AlbumImageMapping
                 .Where(x => x.SaleEmployeeId == SaleEmployeeId)
-                .Where(x => x.ShootingAt >= Start && x.ShootingAt<= End)
+                .Where(x => x.ShootingAt >= Start && x.ShootingAt <= End)
                 .ToListAsync();
 
             List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO> MonitorStoreChecker_MonitorStoreCheckerDetailDTOs = new List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO>();
@@ -427,7 +430,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     if (SubStoreCheckingImageMappingDAOs.Count > i)
                     {
                         Info.ImagePath = SubStoreCheckingImageMappingDAOs[i].Image.Url;
-                    }    
+                    }
                     if (SubIndirectSalesOrderDAOs.Count > i)
                     {
                         Info.IndirectSalesOrderCode = SubIndirectSalesOrderDAOs[i].Code;
@@ -448,7 +451,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            DateTime Start = MonitorStoreChecker_StoreCheckingDTO.Date;
+            DateTime Start = MonitorStoreChecker_StoreCheckingDTO.Date.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddDays(1);
             var query = from scim in DataContext.StoreCheckingImageMapping
                         join sc in DataContext.StoreChecking on scim.StoreCheckingId equals sc.Id
@@ -560,11 +563,11 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             }
 
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
-               StaticParams.DateTimeNow.Date :
+               LocalStartDay(CurrentContext) :
                MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value;
 
             string path = "Templates/Monitor_Store_Checker_Report.xlsx";

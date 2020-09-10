@@ -178,13 +178,12 @@ namespace DMS.Rpc.monitor.monitor_store_images
             long? HasOrder = MonitorStoreImage_MonitorStoreImageFilterDTO.HasOrder?.Equal;
 
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone) :
+                    LocalStartDay(CurrentContext) :
                     MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
-                    Start.AddDays(1).AddSeconds(-1) :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value
-                    .AddDays(1).AddSeconds(-1);
+                    LocalEndDay(CurrentContext) :
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -244,13 +243,12 @@ namespace DMS.Rpc.monitor.monitor_store_images
             long? HasOrder = MonitorStoreImage_MonitorStoreImageFilterDTO.HasOrder?.Equal;
 
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone) :
+                    LocalStartDay(CurrentContext) :
                     MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
-                    Start.AddDays(1).AddSeconds(-1) :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value
-                    .AddDays(1).AddSeconds(-1);
+                    LocalEndDay(CurrentContext) :
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -553,12 +551,13 @@ namespace DMS.Rpc.monitor.monitor_store_images
             }
 
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
-               StaticParams.DateTimeNow.Date :
-               MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value.Date;
+                    LocalStartDay(CurrentContext) :
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+                    LocalEndDay(CurrentContext) :
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+
             string path = "Templates/Monitor_Store_Image.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);

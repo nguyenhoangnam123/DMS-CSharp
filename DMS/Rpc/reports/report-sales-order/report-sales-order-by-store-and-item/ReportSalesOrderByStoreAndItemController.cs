@@ -158,11 +158,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                 return 0;
 
             DateTime Start = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalStartDay(CurrentContext) :
                     ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
@@ -233,11 +233,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                 return new List<ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO>();
 
             DateTime Start = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalStartDay(CurrentContext) :
                     ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
@@ -457,11 +457,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                 return new ReportSalesOrderByStoreAndItem_TotalDTO();
 
             DateTime Start = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
-                   StaticParams.DateTimeNow :
-                   ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate.GreaterEqual.Value;
+                    LocalStartDay(CurrentContext) :
+                    ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
@@ -674,15 +674,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
             DateTime Start = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
-               StaticParams.DateTimeNow.Date :
-               ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate.GreaterEqual.Value.Date;
+                    LocalStartDay(CurrentContext) :
+                    ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
-            if (End.Subtract(Start).Days > 31)
-                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+                    LocalEndDay(CurrentContext) :
+                    ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.OrderDate.LessEqual.Value;
 
             ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.Skip = 0;
             ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.Take = int.MaxValue;

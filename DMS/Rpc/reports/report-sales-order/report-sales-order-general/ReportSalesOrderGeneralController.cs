@@ -128,11 +128,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                 return 0;
 
             DateTime Start = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalStartDay(CurrentContext) :
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
@@ -175,11 +175,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                 return new List<ReportSalesOrderGeneral_ReportSalesOrderGeneralDTO>();
 
             DateTime Start = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalStartDay(CurrentContext) :
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
@@ -300,11 +300,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
                 return new ReportSalesOrderGeneral_TotalDTO();
 
             DateTime Start = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalStartDay(CurrentContext) :
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
@@ -364,15 +364,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_general
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
             DateTime Start = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
-               StaticParams.DateTimeNow.Date :
-               ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value.Date;
+                    LocalStartDay(CurrentContext) :
+                    ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
-            if (End.Subtract(Start).Days > 31)
-                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+                    LocalEndDay(CurrentContext) :
+                    ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value;
 
             ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.Skip = 0;
             ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.Take = int.MaxValue;

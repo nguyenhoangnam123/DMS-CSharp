@@ -91,12 +91,12 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 throw new BindException(ModelState);
 
             DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
-                             StaticParams.DateTimeNow.Date :
-                             MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value.Date;
+                             LocalStartDay(CurrentContext) :
+                             MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+                    LocalEndDay(CurrentContext) :
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
 
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
@@ -128,14 +128,12 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 throw new BindException(ModelState);
 
             DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
-                   StaticParams.DateTimeNow.Date :
-                   MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value;
+                             LocalStartDay(CurrentContext) :
+                             MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value
-                        .AddHours(CurrentContext.TimeZone)
-                        .AddDays(1).AddSeconds(-1);
+                    LocalEndDay(CurrentContext) :
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
 
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
@@ -304,7 +302,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
             long SaleEmployeeId = MonitorSalesman_MonitorSalesmanDetailFilterDTO.SaleEmployeeId;
-            DateTime Start = MonitorSalesman_MonitorSalesmanDetailFilterDTO.Date;
+            DateTime Start = MonitorSalesman_MonitorSalesmanDetailFilterDTO.Date.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
             List<long> StoreIds = new List<long>();
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
@@ -401,12 +399,13 @@ namespace DMS.Rpc.monitor.monitor_salesman
             }
 
             DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
-               StaticParams.DateTimeNow.Date :
-               MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value.Date;
+                             LocalStartDay(CurrentContext) :
+                             MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
+                    LocalEndDay(CurrentContext) :
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+
             string path = "Templates/Monitor_Salesman_Report.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
