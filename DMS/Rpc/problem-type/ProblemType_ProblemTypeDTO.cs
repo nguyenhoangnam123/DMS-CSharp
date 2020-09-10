@@ -12,6 +12,7 @@ namespace DMS.Rpc.problem_type
         public string Code { get; set; }
         public string Name { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public ProblemType_ProblemTypeDTO() {}
@@ -23,6 +24,7 @@ namespace DMS.Rpc.problem_type
             this.StatusId = ProblemType.StatusId;
             this.CreatedAt = ProblemType.CreatedAt;
             this.UpdatedAt = ProblemType.UpdatedAt;
+            this.Used = ProblemType.Used;
             this.Errors = ProblemType.Errors;
         }
     }
