@@ -242,12 +242,12 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
             var StoreCheckingImageMappingDAOs = await DataContext.StoreCheckingImageMapping
                 .Where(x => AppUserIds.Contains(x.SaleEmployeeId))
-                .Where(x => x.ShootingAt <= Start && x.ShootingAt >= End)
+                .Where(x => Start <= x.ShootingAt && x.ShootingAt <= End)
                 .ToListAsync();
             var AlbumImageMappingDAOs = await DataContext.AlbumImageMapping
                 .Where(x => x.SaleEmployeeId.HasValue)
                 .Where(x => AppUserIds.Contains(x.SaleEmployeeId.Value))
-                .Where(x => x.ShootingAt <= Start && x.ShootingAt >= End)
+                .Where(x => Start <= x.ShootingAt && x.ShootingAt <= End)
                 .ToListAsync();
 
             List<MonitorStoreChecker_SaleEmployeeDTO> MonitorStoreChecker_SaleEmployeeDTOs = AppUserDAOs.Select(au => new MonitorStoreChecker_SaleEmployeeDTO
@@ -274,7 +274,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             foreach (MonitorStoreChecker_SaleEmployeeDTO MonitorStoreChecker_SaleEmployeeDTO in MonitorStoreChecker_SaleEmployeeDTOs)
             {
                 MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings = new List<MonitorStoreChecker_StoreCheckingDTO>();
-                for (DateTime i = Start; i < End; i = i.AddDays(1))
+                for (DateTime i = Start.AddHours(CurrentContext.TimeZone); i < End.AddHours(CurrentContext.TimeZone); i = i.AddDays(1))
                 {
                     MonitorStoreChecker_StoreCheckingDTO StoreCheckerMonitor_StoreCheckingDTO = new MonitorStoreChecker_StoreCheckingDTO();
                     StoreCheckerMonitor_StoreCheckingDTO.SaleEmployeeId = MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId;
@@ -289,15 +289,17 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             // khởi tạo kế hoạch
             foreach (MonitorStoreChecker_SaleEmployeeDTO MonitorStoreChecker_SaleEmployeeDTO in MonitorStoreChecker_SaleEmployeeDTOs)
             {
-                for (DateTime i = Start; i <= End; i = i.AddDays(1))
+                for (DateTime i = Start.AddHours(CurrentContext.TimeZone); i <= End.AddHours(CurrentContext.TimeZone); i = i.AddDays(1))
                 {
                     MonitorStoreChecker_StoreCheckingDTO MonitorStoreChecker_StoreCheckingDTO = MonitorStoreChecker_SaleEmployeeDTO.StoreCheckings
                         .Where(s => s.Date == i).FirstOrDefault();
                     MonitorStoreChecker_StoreCheckingDTO.SalesOrderCounter = IndirectSalesOrderDAOs
-                        .Where(o => i <= o.OrderDate && o.OrderDate < i.AddDays(1) && o.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
+                        .Where(o => i <= o.OrderDate.AddHours(CurrentContext.TimeZone) && o.OrderDate.AddHours(CurrentContext.TimeZone) < i.AddDays(1) && 
+                        o.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
                         .Count();
                     MonitorStoreChecker_StoreCheckingDTO.RevenueCounter = IndirectSalesOrderDAOs
-                        .Where(o => i <= o.OrderDate && o.OrderDate < i.AddDays(1) && o.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
+                        .Where(o => i <= o.OrderDate.AddHours(CurrentContext.TimeZone) && o.OrderDate.AddHours(CurrentContext.TimeZone) < i.AddDays(1) && 
+                        o.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
                         .Select(o => o.Total).DefaultIfEmpty(0).Sum();
 
                     MonitorStoreChecker_StoreCheckingDTO.PlanCounter = CountPlan(i, MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId, ERouteContentDAOs);
@@ -305,7 +307,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
                            .Where(s =>
                                s.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId &&
-                               i <= s.CheckOutAt.Value && s.CheckOutAt.Value < i.AddDays(1)
+                               i <= s.CheckOutAt.Value.AddHours(CurrentContext.TimeZone) && s.CheckOutAt.Value.AddHours(CurrentContext.TimeZone) < i.AddDays(1)
                            ).ToList();
                     foreach (StoreCheckingDAO Checked in ListChecked)
                     {
@@ -317,12 +319,12 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
                     var StoreCheckingImageMappingIds = StoreCheckingImageMappingDAOs
                         .Where(x => x.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
-                        .Where(x => x.ShootingAt.Date == i.Date)
+                        .Where(x => x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == i.Date)
                         .Select(x => x.ImageId)
                         .ToList();
                     var AlbumImageMappingIds = AlbumImageMappingDAOs
                         .Where(x => x.SaleEmployeeId == MonitorStoreChecker_SaleEmployeeDTO.SaleEmployeeId)
-                        .Where(x => x.ShootingAt.Date == i.Date)
+                        .Where(x => x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == i.Date)
                         .Select(x => x.ImageId)
                         .ToList();
                     StoreCheckingImageMappingIds.ForEach(x => MonitorStoreChecker_StoreCheckingDTO.Image.Add(x));
