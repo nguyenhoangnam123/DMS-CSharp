@@ -253,6 +253,8 @@ namespace DMS.Rpc.survey
                     Skip = 0,
                     Take = int.MaxValue,
                     Selects = SurveyResultSelect.ALL,
+                    OrderBy = SurveyResultOrder.Time,
+                    OrderType = OrderType.DESC
                 });
 
                 List<string> header = new List<string>
@@ -290,7 +292,7 @@ namespace DMS.Rpc.survey
                         }
                     }
 
-                List<long> AppUserIds = SurveyResults.Select(sr => sr.AppUserId).ToList();
+                List<long> AppUserIds = SurveyResults.Select(sr => sr.AppUserId).Distinct().ToList();
                 List<AppUser> appUsers = await AppUserService.List(new AppUserFilter
                 {
                     Id = new IdFilter { In = AppUserIds },
@@ -299,16 +301,14 @@ namespace DMS.Rpc.survey
                     Selects = AppUserSelect.Id | AppUserSelect.DisplayName,
                 });
                 List<List<string>> result = new List<List<string>>();
-                foreach (long AppUserId in AppUserIds)
+
+                foreach (var SurveyResult in SurveyResults)
                 {
                     List<string> optionResults = new List<string>();
                     result.Add(optionResults);
-                    SurveyResult SurveyResult = SurveyResults.Where(sr => sr.AppUserId == AppUserId && sr.SurveyId == SurveyId).FirstOrDefault();
-                    if (SurveyResult == null)
-                        continue;
 
                     //thời gian
-                    string Time = SurveyResult.Time.ToString("dd/MM/yyyy");
+                    string Time = SurveyResult.Time.AddHours(CurrentContext.TimeZone).ToString("dd/MM/yyyy");
                     //đối tượng khảo sát
                     string SurveyRespondentType = SurveyResult.SurveyRespondentType?.Name;
                     //mã đại lý/email
@@ -317,7 +317,7 @@ namespace DMS.Rpc.survey
                     {
                         StoreCodeOrEmail = SurveyResult.Store?.Code;
                     }
-                    else if(SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE_SCOUTING.Id)
+                    else if (SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE_SCOUTING.Id)
                     {
                         StoreCodeOrEmail = SurveyResult.StoreScouting?.Code;
                     }
@@ -358,7 +358,7 @@ namespace DMS.Rpc.survey
                         OrganizationName = SurveyResult.AppUser?.Organization?.Name;
                     }
                     //nhân viên
-                    string AppUserName = appUsers.Where(a => a.Id == AppUserId).Select(a => a.DisplayName).FirstOrDefault();
+                    string AppUserName = appUsers.Where(a => a.Id == SurveyResult.AppUserId).Select(a => a.DisplayName).FirstOrDefault();
 
                     optionResults.Add(Time);
                     optionResults.Add(SurveyRespondentType);
@@ -382,7 +382,7 @@ namespace DMS.Rpc.survey
                                     if (SurveyOption != null)
                                         results.Add(SurveyOption.Content);
                                 }
-                                optionResults.Add(string.Join(';',results));
+                                optionResults.Add(string.Join(';', results));
                             }
                             if (surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_MULTIPLE_CHOICE.Id ||
                                 surveyQuestion.SurveyQuestionTypeId == SurveyQuestionTypeEnum.TABLE_SINGLE_CHOICE.Id)
