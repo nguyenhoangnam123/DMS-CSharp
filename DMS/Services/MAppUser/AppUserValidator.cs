@@ -51,10 +51,10 @@ namespace DMS.Services.MAppUser
         {
             if (await ValidateId(AppUser))
             {
-                if(AppUser.AppUserStoreMappings == null || !AppUser.AppUserStoreMappings.Any())
-                {
-                    AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.AppUserStoreMappings), ErrorCode.AppUserStoreMappingsEmpty);
-                }
+                //if(AppUser.AppUserStoreMappings == null || !AppUser.AppUserStoreMappings.Any())
+                //{
+                //    AppUser.AddError(nameof(AppUserValidator), nameof(AppUser.AppUserStoreMappings), ErrorCode.AppUserStoreMappingsEmpty);
+                //}
             }
             return AppUser.IsValidated;
         }
