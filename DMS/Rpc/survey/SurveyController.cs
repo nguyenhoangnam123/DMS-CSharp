@@ -311,50 +311,34 @@ namespace DMS.Rpc.survey
                     string Time = SurveyResult.Time.AddHours(CurrentContext.TimeZone).ToString("dd/MM/yyyy");
                     //đối tượng khảo sát
                     string SurveyRespondentType = SurveyResult.SurveyRespondentType?.Name;
-                    //mã đại lý/email
+
                     string StoreCodeOrEmail = "";
-                    if (SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE.Id)
-                    {
-                        StoreCodeOrEmail = SurveyResult.Store?.Code;
-                    }
-                    else if (SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE_SCOUTING.Id)
-                    {
-                        StoreCodeOrEmail = SurveyResult.StoreScouting?.Code;
-                    }
-                    else
-                    {
-                        StoreCodeOrEmail = SurveyResult.RespondentEmail;
-                    }
-                    //tên đại lý/họ và tên
                     string StoreNameOrDisplayName = "";
-                    if (SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE.Id)
-                    {
-                        StoreNameOrDisplayName = SurveyResult.Store?.Name;
-                    }
-                    else if (SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE_SCOUTING.Id)
-                    {
-                        StoreNameOrDisplayName = SurveyResult.StoreScouting?.Name;
-                    }
-                    else
-                    {
-                        StoreNameOrDisplayName = SurveyResult.RespondentName;
-                    }
-                    //điện thoại
-                    string Phone = SurveyResult.RespondentPhone;
-                    //địa chỉ
-                    string Address = SurveyResult.RespondentAddress;
-                    //đơn vị quản lý
+                    string Phone = "";
+                    string Address = "";
                     string OrganizationName = "";
                     if (SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE.Id)
                     {
+                        StoreCodeOrEmail = SurveyResult.Store?.Code;
+                        StoreNameOrDisplayName = SurveyResult.Store?.Name;
+                        Phone = SurveyResult.Store?.Telephone;
+                        Address = SurveyResult.Store?.Address;
                         OrganizationName = SurveyResult.Store?.Organization?.Name;
                     }
                     else if (SurveyResult.SurveyRespondentTypeId == SurveyRespondentTypeEnum.STORE_SCOUTING.Id)
                     {
+                        StoreCodeOrEmail = SurveyResult.StoreScouting?.Code;
+                        StoreNameOrDisplayName = SurveyResult.StoreScouting?.Name;
+                        Phone = SurveyResult.StoreScouting?.OwnerPhone;
+                        Address = SurveyResult.StoreScouting?.Address;
                         OrganizationName = SurveyResult.StoreScouting?.Organization?.Name;
                     }
                     else
                     {
+                        StoreCodeOrEmail = SurveyResult.RespondentEmail;
+                        StoreNameOrDisplayName = SurveyResult.RespondentName;
+                        Phone = SurveyResult.RespondentPhone;
+                        Address = SurveyResult.RespondentAddress;
                         OrganizationName = SurveyResult.AppUser?.Organization?.Name;
                     }
                     //nhân viên
