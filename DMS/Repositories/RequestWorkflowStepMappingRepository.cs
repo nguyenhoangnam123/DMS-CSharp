@@ -60,6 +60,12 @@ namespace DMS.Repositories
                         {
                             Name = r.WorkflowStep.Role.Name,
                         },
+                    },
+                    WorkflowState = new WorkflowState
+                    {
+                        Id = r.WorkflowState.Id,
+                        Code = r.WorkflowState.Code,
+                        Name = r.WorkflowState.Name,
                     }
                 }).ToListAsync();
             return RequestWorkflowStepMappings;
