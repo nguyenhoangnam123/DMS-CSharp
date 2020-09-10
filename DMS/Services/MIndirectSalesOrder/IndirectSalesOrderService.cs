@@ -141,7 +141,7 @@ namespace DMS.Services.MIndirectSalesOrder
             else
             {
                 IndirectSalesOrder.RequestStateId = IndirectSalesOrder.RequestState.Id;
-                IndirectSalesOrder.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowState(IndirectSalesOrder.RowId);
+                IndirectSalesOrder.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowStepMapping(IndirectSalesOrder.RowId);
             }
             return IndirectSalesOrder;
         }

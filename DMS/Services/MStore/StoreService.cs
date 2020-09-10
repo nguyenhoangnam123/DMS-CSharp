@@ -147,7 +147,7 @@ namespace DMS.Services.MStore
             else
             {
                 Store.RequestStateId = Store.RequestState.Id;
-                Store.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowState(Store.RowId);
+                Store.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowStepMapping(Store.RowId);
             }
             return Store;
         }

@@ -15,7 +15,7 @@ namespace DMS.Services.MWorkflow
     public interface IWorkflowService : IServiceScoped
     {
         Task<RequestState> GetRequestState(Guid RequestId);
-        Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowState(Guid RequestId);
+        Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowStepMapping(Guid RequestId);
         Task<GenericEnum> Initialize(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
         Task<GenericEnum> Approve(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
         Task<GenericEnum> Reject(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
@@ -43,9 +43,24 @@ namespace DMS.Services.MWorkflow
             return RequestWorkflowDefinitionMapping.RequestState;
         }
 
-        public async Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowState(Guid RequestId)
+        public async Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowStepMapping(Guid RequestId)
         {
             List<RequestWorkflowStepMapping> RequestWorkflowStepMappings = await UOW.RequestWorkflowStepMappingRepository.List(RequestId);
+            foreach (RequestWorkflowStepMapping RequestWorkflowStepMapping in RequestWorkflowStepMappings)
+            {
+                if (RequestWorkflowStepMapping.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
+                {
+                    List<AppUser> NextApprovers = await UOW.AppUserRepository.List(new AppUserFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName,
+                        RoleId = new IdFilter { Equal = RequestWorkflowStepMapping.WorkflowStep.RoleId },
+                        StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    });
+                    RequestWorkflowStepMapping.NextApprovers = NextApprovers;
+                }
+            }
             return RequestWorkflowStepMappings;
         }
 
