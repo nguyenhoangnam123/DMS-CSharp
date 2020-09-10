@@ -367,7 +367,11 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 };
 
                 MonitorStoreImage_SaleEmployeeDTO.StoreCheckings = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.Id)
-                    .GroupBy(x => new { x.CheckOutAt.Value.Date, x.StoreId, x.Store.Name })
+                    .GroupBy(x => new { 
+                        x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Date, 
+                        x.StoreId, 
+                        x.Store.Name 
+                    })
                     .Select(y => new MonitorStoreImage_DetailDTO
                     {
                         StoreId = y.Key.StoreId,
@@ -383,12 +387,12 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     var dates = AlbumImageMappings.Select(x => x.ShootingAt.Date).Distinct().ToList();
                     foreach (var date in dates)
                     {
-                        var row = MonitorStoreImage_SaleEmployeeDTO.StoreCheckings.Where(x => x.StoreId == storeId && x.Date == date).FirstOrDefault();
+                        var row = MonitorStoreImage_SaleEmployeeDTO.StoreCheckings.Where(x => x.StoreId == storeId && x.Date == date.AddHours(CurrentContext.TimeZone).Date).FirstOrDefault();
                         if(row == null)
                         {
                             row = new MonitorStoreImage_DetailDTO();
-                            row.Date = date;
-                            row.ImageCounter = AlbumImageMappings.Where(x => x.StoreId == storeId && x.ShootingAt.Date == date).Count();
+                            row.Date = date.AddHours(CurrentContext.TimeZone).Date;
+                            row.ImageCounter = AlbumImageMappings.Where(x => x.StoreId == storeId && x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == date.AddHours(CurrentContext.TimeZone).Date).Count();
                             row.SaleEmployeeId = SalesEmployee.Id;
                             row.StoreId = storeId;
                             row.StoreName = AlbumImageMappings.Where(x => x.StoreId == storeId).Select(x => x.Store.Name).FirstOrDefault();
@@ -396,7 +400,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                         }
                         else
                         {
-                            row.ImageCounter += AlbumImageMappings.Where(x => x.StoreId == storeId && x.ShootingAt.Date == date).Count();
+                            row.ImageCounter += AlbumImageMappings.Where(x => x.StoreId == storeId && x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == date.AddHours(CurrentContext.TimeZone).Date).Count();
                         }
                     }
                 }
@@ -425,7 +429,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            DateTime Start = MonitorStoreImage_StoreCheckingDTO.Date.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
+            DateTime End = Start.AddDays(1).AddSeconds(-1);
             var query = from scim in DataContext.StoreCheckingImageMapping
                         join sc in DataContext.StoreChecking on scim.StoreCheckingId equals sc.Id
                         join s in DataContext.Store on sc.StoreId equals s.Id
@@ -434,7 +439,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                         join au in DataContext.AppUser on scim.SaleEmployeeId equals au.Id
                         where scim.StoreId == MonitorStoreImage_StoreCheckingDTO.StoreId &&
                         scim.SaleEmployeeId == MonitorStoreImage_StoreCheckingDTO.SaleEmployeeId &&
-                        sc.CheckOutAt.Value.Date == MonitorStoreImage_StoreCheckingDTO.Date.Date
+                        Start <= scim.ShootingAt && scim.ShootingAt <= End
                         select new MonitorStoreImage_StoreCheckingImageMappingDTO
                         {
                             AlbumId = scim.AlbumId,
@@ -474,8 +479,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
                         join au in DataContext.AppUser on aim.SaleEmployeeId equals au.Id
                         where aim.StoreId == MonitorStoreImage_StoreCheckingDTO.StoreId &&
                         (aim.SaleEmployeeId.HasValue && aim.SaleEmployeeId == MonitorStoreImage_StoreCheckingDTO.SaleEmployeeId) &&
-                        aim.ShootingAt.Date == MonitorStoreImage_StoreCheckingDTO.Date.Date
-                        select new MonitorStoreImage_StoreCheckingImageMappingDTO
+                        Start <= aim.ShootingAt && aim.ShootingAt <= End
+                         select new MonitorStoreImage_StoreCheckingImageMappingDTO
                         {
                             AlbumId = aim.AlbumId,
                             ImageId = aim.ImageId,

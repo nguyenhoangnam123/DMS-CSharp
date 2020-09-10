@@ -124,6 +124,7 @@ namespace DMS.Repositories
                 StatusId = filter.Selects.Contains(ProblemTypeSelect.Status) ? q.StatusId : default(long),
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
+                Used = q.Used,
             }).ToListAsync();
             return ProblemTypes;
         }

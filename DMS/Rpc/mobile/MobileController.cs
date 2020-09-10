@@ -1079,7 +1079,7 @@ namespace DMS.Rpc.mobile
                     StoreId = x.StoreId,
                     ImageId = x.ImageId,
                     SaleEmployeeId = CurrentContext.UserId,
-                    Image = new Image
+                    Image = x.Image == null ? null : new Image
                     {
                         Id = x.Image.Id,
                         Name = x.Image.Name,
