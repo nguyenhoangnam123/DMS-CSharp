@@ -46,7 +46,7 @@ namespace DMS.Repositories
             if (filter.StartAt != null)
                 query = query.Where(q => q.StartAt, filter.StartAt);
             if (filter.EndAt != null)
-                query = query.Where(q => q.EndAt, filter.EndAt);
+                query = query.Where(q => q.EndAt.HasValue == false).Union(query.Where(q => q.EndAt.HasValue).Where(q => q.EndAt.Value, filter.EndAt));
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.CreatorId != null)

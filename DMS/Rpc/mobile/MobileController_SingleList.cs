@@ -1054,7 +1054,7 @@ namespace DMS.Rpc.mobile
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            DateTime Now = StaticParams.DateTimeNow;
             AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
 
             SurveyFilter SurveyFilter = new SurveyFilter();
@@ -1067,8 +1067,8 @@ namespace DMS.Rpc.mobile
             SurveyFilter.Id = Mobile_SurveyFilterDTO.Id;
             SurveyFilter.Title = Mobile_SurveyFilterDTO.Title;
             SurveyFilter.Description = Mobile_SurveyFilterDTO.Description;
-            SurveyFilter.StartAt = Mobile_SurveyFilterDTO.StartAt;
-            SurveyFilter.EndAt = Mobile_SurveyFilterDTO.EndAt;
+            SurveyFilter.StartAt = new DateFilter { LessEqual = Now };
+            SurveyFilter.EndAt = new DateFilter { GreaterEqual = Now };
             SurveyFilter.CreatorId = Mobile_SurveyFilterDTO.CreatorId;
             SurveyFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
