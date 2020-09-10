@@ -4,7 +4,6 @@
       "IdNotExisted": "Id không tồn tại"
     },
     "OwnerPhone": {
-      "OwnerPhoneEmpty": "Số điện thoại chưa điền",
       "OwnerPhoneOverLength": "Số điện thoại quá 255 ký tự",
       "OwnerPhoneInUsed": "Số điện thoại đã được sử dụng"
     },

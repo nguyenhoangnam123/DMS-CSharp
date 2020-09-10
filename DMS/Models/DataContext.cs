@@ -2967,9 +2967,7 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(255);
 
-                entity.Property(e => e.OwnerPhone)
-                    .IsRequired()
-                    .HasMaxLength(500);
+                entity.Property(e => e.OwnerPhone).HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
