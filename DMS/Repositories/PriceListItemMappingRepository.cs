@@ -27,6 +27,7 @@ namespace DMS.Repositories
         {
             if (filter == null)
                 return query.Where(q => false);
+            query = query.Where(q => q.PriceList.DeletedAt == null);
             if (filter.PriceListId != null)
                 query = query.Where(q => q.PriceListId, filter.PriceListId);
             if (filter.ItemId != null)

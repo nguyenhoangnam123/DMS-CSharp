@@ -706,12 +706,12 @@ namespace DMS.Services.MIndirectSalesOrder
                 {
                     foreach (var OrganizationId in OrganizationIds)
                     {
-                        long targetPrice = long.MaxValue;
+                        decimal targetPrice = decimal.MaxValue;
                         targetPrice = PriceListItemMappings.Where(x => x.ItemId == ItemId && x.PriceList.OrganizationId == OrganizationId)
-                            .Select(x => x.Price)
-                            .DefaultIfEmpty(long.MaxValue)
+                            .Select(x => (decimal)x.Price)
+                            .DefaultIfEmpty(decimal.MaxValue)
                             .Min();
-                        if (targetPrice < long.MaxValue)
+                        if (targetPrice < decimal.MaxValue)
                         {
                             result[ItemId] = targetPrice;
                             break;
@@ -734,12 +734,12 @@ namespace DMS.Services.MIndirectSalesOrder
                 {
                     foreach (var OrganizationId in OrganizationIds)
                     {
-                        long targetPrice = long.MinValue;
+                        decimal targetPrice = decimal.MinValue;
                         targetPrice = PriceListItemMappings.Where(x => x.ItemId == ItemId && x.PriceList.OrganizationId == OrganizationId)
-                            .Select(x => x.Price)
-                            .DefaultIfEmpty(long.MinValue)
+                            .Select(x => (decimal)x.Price)
+                            .DefaultIfEmpty(decimal.MinValue)
                             .Max();
-                        if (targetPrice > long.MinValue)
+                        if (targetPrice > decimal.MinValue)
                         {
                             result[ItemId] = targetPrice;
                             break;
@@ -754,6 +754,11 @@ namespace DMS.Services.MIndirectSalesOrder
                         result[ItemId] = Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice).FirstOrDefault();
                     }
                 }
+            }
+
+            foreach (var item in Items)
+            {
+                item.SalePrice = result[item.Id];
             }
 
             return Items;
