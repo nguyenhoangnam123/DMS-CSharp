@@ -158,12 +158,12 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                 return 0;
 
             DateTime Start = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
-                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.GreaterEqual.Value;
+               LocalStartDay(CurrentContext) :
+               ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value;
+                    LocalEndDay(CurrentContext) :
+                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value.AddDays(1).AddSeconds(-1);
 
             if (End.Subtract(Start).Days > 31)
                 return 0;
@@ -233,12 +233,12 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                 return new List<ReportStatisticProblem_ReportStatisticProblemDTO>();
 
             DateTime Start = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
-                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.GreaterEqual.Value;
+               LocalStartDay(CurrentContext) :
+               ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value;
+                    LocalEndDay(CurrentContext) :
+                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value.AddDays(1).AddSeconds(-1);
 
             if (End.Subtract(Start).Days > 31)
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
@@ -392,12 +392,12 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                 return new ReportStatisticProblem_TotalDTO();
 
             DateTime Start = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.GreaterEqual == null ?
-                   StaticParams.DateTimeNow :
-                   ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.GreaterEqual.Value;
+               LocalStartDay(CurrentContext) :
+               ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value;
+                    LocalEndDay(CurrentContext) :
+                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value.AddDays(1).AddSeconds(-1);
 
             if (End.Subtract(Start).Days > 31)
                 return new ReportStatisticProblem_TotalDTO();
@@ -550,15 +550,14 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
             DateTime Start = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.GreaterEqual == null ?
-               StaticParams.DateTimeNow.Date :
-               ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.GreaterEqual.Value.Date;
+               LocalStartDay(CurrentContext) :
+               ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
-            if (End.Subtract(Start).Days > 31)
-                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+                    LocalEndDay(CurrentContext) :
+                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value.AddDays(1).AddSeconds(-1);
 
             ReportStatisticProblem_ReportStatisticProblemFilterDTO.Skip = 0;
             ReportStatisticProblem_ReportStatisticProblemFilterDTO.Take = int.MaxValue;

@@ -122,11 +122,11 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 throw new BindException(ModelState);
 
             DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
-                    StaticParams.DateTimeMin :
+                    LocalStartDay(CurrentContext) :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalEndDay(CurrentContext) :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.LessEqual.Value;
 
             long? ProvinceId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.ProvinceId?.Equal;
@@ -186,11 +186,11 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 throw new BindException(ModelState);
 
             DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalStartDay(CurrentContext) :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalEndDay(CurrentContext) :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.LessEqual.Value;
 
             long? ProvinceId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.ProvinceId?.Equal;
@@ -346,11 +346,11 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 throw new BindException(ModelState);
 
             DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalStartDay(CurrentContext) :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalEndDay(CurrentContext) :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.LessEqual.Value;
 
             long? ProvinceId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.ProvinceId?.Equal;
@@ -517,11 +517,11 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 throw new BindException(ModelState);
 
             DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalStartDay(CurrentContext) :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalEndDay(CurrentContext) :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.LessEqual.Value;
 
             ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Skip = 0;

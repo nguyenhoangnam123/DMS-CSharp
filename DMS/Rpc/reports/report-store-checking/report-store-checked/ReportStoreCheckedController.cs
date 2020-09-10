@@ -191,11 +191,11 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 return 0;
 
             DateTime Start = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalStartDay(CurrentContext) :
                     ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value;
 
             //if (End.Subtract(Start).Days > 31)
@@ -267,11 +267,11 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 return new List<ReportStoreChecked_ReportStoreCheckedDTO>();
 
             DateTime Start = ReportStoreChecker_ReportStoreCheckedFilterDTO.CheckIn?.GreaterEqual == null ?
-                    StaticParams.DateTimeNow :
+                    LocalStartDay(CurrentContext) :
                     ReportStoreChecker_ReportStoreCheckedFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = ReportStoreChecker_ReportStoreCheckedFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     ReportStoreChecker_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value;
 
             //if (End.Subtract(Start).Days > 31)
@@ -429,7 +429,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.DateString = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
                     var dayOfWeek = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).DayOfWeek.ToString();
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.DayOfWeek = DayOfWeekEnum.DayOfWeekEnumList.Where(x => x.Code == dayOfWeek).Select(x => x.Name).FirstOrDefault();
-                    
+
                     foreach (var StoreChecking in ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings)
                     {
                         StoreChecking.eCheckIn = StoreChecking.CheckIn.AddHours(CurrentContext.TimeZone).ToString("HH:mm:ss");
@@ -437,7 +437,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 
                         var TotalMinuteChecking = StoreChecking.CheckOut.Subtract(StoreChecking.CheckIn).TotalSeconds;
                         TimeSpan timeSpan = TimeSpan.FromSeconds(TotalMinuteChecking);
-                        StoreChecking.Duaration = $"{timeSpan.Hours.ToString().PadLeft(2,'0')} : {timeSpan.Minutes.ToString().PadLeft(2, '0')} : {timeSpan.Seconds.ToString().PadLeft(2, '0')}";
+                        StoreChecking.Duaration = $"{timeSpan.Hours.ToString().PadLeft(2, '0')} : {timeSpan.Minutes.ToString().PadLeft(2, '0')} : {timeSpan.Seconds.ToString().PadLeft(2, '0')}";
                         var HasSalesOrder = SalesOrders.Where(x => x.StoreCheckingId == StoreChecking.Id).FirstOrDefault();
                         if (HasSalesOrder == null)
                             StoreChecking.SalesOrder = false;
@@ -455,15 +455,14 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
             DateTime Start = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.GreaterEqual == null ?
-               StaticParams.DateTimeNow.Date :
-               ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.GreaterEqual.Value.Date;
+                LocalStartDay(CurrentContext) :
+                ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
-                    ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value.Date.AddDays(1).AddSeconds(-1);
-            //if (End.Subtract(Start).Days > 31)
-            //    return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+                LocalEndDay(CurrentContext) :
+                ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
 
             ReportStoreChecked_ReportStoreCheckedFilterDTO.Skip = 0;
             ReportStoreChecked_ReportStoreCheckedFilterDTO.Take = int.MaxValue;
@@ -474,9 +473,9 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             {
                 foreach (var SaleEmployee in ReportStoreChecked_ReportStoreCheckedDTO.SaleEmployees)
                 {
-                    foreach(var StoreCheckingGroupByDate in SaleEmployee.StoreCheckingGroupByDates)
+                    foreach (var StoreCheckingGroupByDate in SaleEmployee.StoreCheckingGroupByDates)
                     {
-                        foreach(var StoreChecking in StoreCheckingGroupByDate.StoreCheckings)
+                        foreach (var StoreChecking in StoreCheckingGroupByDate.StoreCheckings)
                         {
                             ReportStoreChecked_ExportDTO ReportStoreChecked_ExportDTO = new ReportStoreChecked_ExportDTO
                             {
@@ -495,7 +494,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                                 CheckOutDistance = StoreChecking.CheckOutDistance,
                                 Duration = StoreChecking.Duaration,
                                 Image = StoreChecking.ImageCounter > 0 ? "X" : "",
-                                Planned = StoreChecking.Planned  ? "X" : "",
+                                Planned = StoreChecking.Planned ? "X" : "",
                                 Order = StoreChecking.SalesOrder ? "X" : "",
                             };
                             ReportStoreChecked_ExportDTOs.Add(ReportStoreChecked_ExportDTO);
