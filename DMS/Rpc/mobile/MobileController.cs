@@ -1052,7 +1052,7 @@ namespace DMS.Rpc.mobile
                     AlbumId = x.AlbumId,
                     ImageId = x.ImageId,
                     StoreId = x.StoreId,
-                    SaleEmployeeId = CurrentContext.UserId
+                    SaleEmployeeId = CurrentContext.UserId,
                     ShootingAt = x.ShootingAt,
                 }).ToList()
             };
