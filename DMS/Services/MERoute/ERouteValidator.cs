@@ -221,30 +221,28 @@ namespace DMS.Services.MERoute
                                 }
                             }
                         }
-                        else
-                        {
-                            var days = new List<bool>
-                        {
-                            ERouteContent.Monday,
-                            ERouteContent.Tuesday,
-                            ERouteContent.Wednesday,
-                            ERouteContent.Thursday,
-                            ERouteContent.Friday,
-                            ERouteContent.Saturday,
-                            ERouteContent.Sunday,
-                        };
-                            var week = new List<bool>
-                        {
-                            ERouteContent.Week1,
-                            ERouteContent.Week2,
-                            ERouteContent.Week3,
-                            ERouteContent.Week4,
-                        };
 
-                            if (!days.Any(x => x == true) || !week.Any(x => x == true))
+                        var days = new List<bool>
                             {
-                                ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Id), ErrorCode.PlannedEmpty);
-                            }
+                                ERouteContent.Monday,
+                                ERouteContent.Tuesday,
+                                ERouteContent.Wednesday,
+                                ERouteContent.Thursday,
+                                ERouteContent.Friday,
+                                ERouteContent.Saturday,
+                                ERouteContent.Sunday,
+                            };
+                        var week = new List<bool>
+                            {
+                                ERouteContent.Week1,
+                                ERouteContent.Week2,
+                                ERouteContent.Week3,
+                                ERouteContent.Week4,
+                            };
+
+                        if (!days.Any(x => x == true) || !week.Any(x => x == true))
+                        {
+                            ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Id), ErrorCode.PlannedEmpty);
                         }
                     }
                 }
@@ -260,7 +258,7 @@ namespace DMS.Services.MERoute
         {
             var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             var SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
-            if(SaleEmployee != null)
+            if (SaleEmployee != null)
             {
                 if (!SaleEmployee.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                     ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Organization), ErrorCode.OrganizationInvalid);
