@@ -253,6 +253,8 @@ namespace DMS.Rpc.survey
                     Skip = 0,
                     Take = int.MaxValue,
                     Selects = SurveyResultSelect.ALL,
+                    OrderBy = SurveyResultOrder.Time,
+                    OrderType = OrderType.DESC
                 });
 
                 List<string> header = new List<string>
@@ -290,7 +292,7 @@ namespace DMS.Rpc.survey
                         }
                     }
 
-                List<long> AppUserIds = SurveyResults.Select(sr => sr.AppUserId).ToList();
+                List<long> AppUserIds = SurveyResults.Select(sr => sr.AppUserId).Distinct().ToList();
                 List<AppUser> appUsers = await AppUserService.List(new AppUserFilter
                 {
                     Id = new IdFilter { In = AppUserIds },
