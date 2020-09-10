@@ -83,24 +83,9 @@ namespace DMS.Services.MDirectSalesOrder
                     Selects = StoreSelect.Id
                 };
 
-                int count = await UOW.StoreRepository.Count(StoreFilter);
+                int count = await UOW.StoreRepository.CountInScoped(StoreFilter, DirectSalesOrder.SaleEmployeeId);
                 if (count == 0)
-                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.BuyerStore), ErrorCode.BuyerStoreNotExisted);
-                else
-                {
-                    if(DirectSalesOrder.SaleEmployeeId != 0)
-                    {
-                        AppUser SaleEmployee = await UOW.AppUserRepository.Get(DirectSalesOrder.SaleEmployeeId);
-                        if(SaleEmployee != null)
-                        {
-                            var StoreIds = SaleEmployee.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-                            if (!StoreIds.Contains(DirectSalesOrder.BuyerStoreId))
-                            {
-                                DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.BuyerStore), ErrorCode.BuyerStoreNotInERouteScope);
-                            }
-                        }
-                    }
-                }
+                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.BuyerStore), ErrorCode.BuyerStoreNotInERouteScope);
             }
 
             return DirectSalesOrder.IsValidated;
