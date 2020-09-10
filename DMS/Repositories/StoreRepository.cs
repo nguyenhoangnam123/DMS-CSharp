@@ -916,13 +916,14 @@ namespace DMS.Repositories
                         AlbumImageMappingDAO.ImageId = AlbumImageMapping.ImageId;
                         AlbumImageMappingDAO.StoreId = Store.Id;
                         AlbumImageMappingDAO.SaleEmployeeId = AlbumImageMapping.SaleEmployeeId;
-                        AlbumImageMappingDAO.ShootingAt = AlbumImageMapping.ShootingAt;
+                        AlbumImageMappingDAO.ShootingAt = StaticParams.DateTimeNow;
                         AlbumImageMappingDAO.DeletedAt = null;
                         AlbumImageMappingDAOs.Add(AlbumImageMappingDAO);
                     }
                     else
                     {
                         AlbumImageMappingDAO.AlbumId = AlbumImageMapping.AlbumId;
+                        AlbumImageMappingDAO.ShootingAt = AlbumImageMapping.ShootingAt;
                         AlbumImageMappingDAO.DeletedAt = null;
                     }
                 }
