@@ -301,8 +301,6 @@ namespace DMS.Services.MERoute
         {
             if (await ValidateId(ERoute))
             {
-                if (ERoute.RequestStateId != RequestStateEnum.NEW.Id)
-                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.Id), ErrorCode.ERouteInUsed);
             }
             return ERoute.IsValidated;
         }
