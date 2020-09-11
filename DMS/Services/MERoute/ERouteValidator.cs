@@ -190,39 +190,41 @@ namespace DMS.Services.MERoute
 
         private async Task<bool> ValidateStore(ERoute ERoute)
         {
-            if (ERoute.ERouteContents != null && ERoute.ERouteContents.Any())
+            if (ERoute.SaleEmployeeId != 0)
             {
-                var IdsStore = ERoute.ERouteContents.Select(x => x.StoreId).ToList();
-
-                StoreFilter StoreFilter = new StoreFilter
+                if (ERoute.ERouteContents != null && ERoute.ERouteContents.Any())
                 {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Selects = StoreSelect.Id,
-                    Id = new IdFilter { In = IdsStore }
-                };
+                    var IdsStore = ERoute.ERouteContents.Select(x => x.StoreId).ToList();
 
-                var IdsInDB = (await UOW.StoreRepository.ListInScoped(StoreFilter, ERoute.SaleEmployeeId)).Select(x => x.Id).ToList();
-                var listIdsNotExisted = IdsStore.Except(IdsInDB);
-                foreach (var ERouteContent in ERoute.ERouteContents)
-                {
-                    if (listIdsNotExisted.Contains(ERouteContent.StoreId))
-                        ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreEmpty);
-                    else
+                    StoreFilter StoreFilter = new StoreFilter
                     {
-                        if (ERoute.SaleEmployeeId != 0)
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = StoreSelect.Id,
+                        Id = new IdFilter { In = IdsStore }
+                    };
+
+                    var IdsInDB = (await UOW.StoreRepository.ListInScoped(StoreFilter, ERoute.SaleEmployeeId)).Select(x => x.Id).ToList();
+                    var listIdsNotExisted = IdsStore.Except(IdsInDB);
+                    foreach (var ERouteContent in ERoute.ERouteContents)
+                    {
+                        if (listIdsNotExisted.Contains(ERouteContent.StoreId))
+                            ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreEmpty);
+                        else
                         {
-                            AppUser SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
-                            if (SaleEmployee != null)
+                            if (ERoute.SaleEmployeeId != 0)
                             {
-                                if (!IdsInDB.Contains(ERouteContent.StoreId))
+                                AppUser SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
+                                if (SaleEmployee != null)
                                 {
-                                    ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreNotInERouteScope);
+                                    if (!IdsInDB.Contains(ERouteContent.StoreId))
+                                    {
+                                        ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreNotInERouteScope);
+                                    }
                                 }
                             }
-                        }
 
-                        var days = new List<bool>
+                            var days = new List<bool>
                             {
                                 ERouteContent.Monday,
                                 ERouteContent.Tuesday,
@@ -232,7 +234,7 @@ namespace DMS.Services.MERoute
                                 ERouteContent.Saturday,
                                 ERouteContent.Sunday,
                             };
-                        var week = new List<bool>
+                            var week = new List<bool>
                             {
                                 ERouteContent.Week1,
                                 ERouteContent.Week2,
@@ -240,16 +242,17 @@ namespace DMS.Services.MERoute
                                 ERouteContent.Week4,
                             };
 
-                        if (!days.Any(x => x == true) || !week.Any(x => x == true))
-                        {
-                            ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Id), ErrorCode.PlannedEmpty);
+                            if (!days.Any(x => x == true) || !week.Any(x => x == true))
+                            {
+                                ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Id), ErrorCode.PlannedEmpty);
+                            }
                         }
                     }
                 }
-            }
-            else
-            {
-                ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.ERouteContents), ErrorCode.ERouteContentsEmpty);
+                else
+                {
+                    ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.ERouteContents), ErrorCode.ERouteContentsEmpty);
+                }
             }
             return ERoute.IsValidated;
         }
