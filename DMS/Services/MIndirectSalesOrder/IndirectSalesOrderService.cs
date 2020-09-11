@@ -6,6 +6,7 @@ using DMS.Repositories;
 using DMS.Rpc.indirect_sales_order;
 using DMS.Services.MNotification;
 using DMS.Services.MOrganization;
+using DMS.Services.MProduct;
 using DMS.Services.MWorkflow;
 using Helpers;
 using System;
@@ -41,6 +42,7 @@ namespace DMS.Services.MIndirectSalesOrder
         private IRabbitManager RabbitManager;
         private IOrganizationService OrganizationService;
         private IWorkflowService WorkflowService;
+        private IItemService ItemService;
 
         public IndirectSalesOrderService(
             IUOW UOW,
@@ -50,6 +52,7 @@ namespace DMS.Services.MIndirectSalesOrder
             IRabbitManager RabbitManager,
             IIndirectSalesOrderValidator IndirectSalesOrderValidator,
             IOrganizationService OrganizationService,
+            IItemService ItemService,
             IWorkflowService WorkflowService
         )
         {
@@ -109,7 +112,7 @@ namespace DMS.Services.MIndirectSalesOrder
         {
             try
             {
-                List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
+                List<Item> Items = await ItemService.List(ItemFilter);
                 await ApplyPrice(Items, StoreId);
                 return Items;
             }

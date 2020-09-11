@@ -393,7 +393,7 @@ namespace DMS.Repositories
                         };
                         Item.ItemImageMappings.Add(ItemImageMapping);
                     }
-                }    
+                }
             }
             return Items;
         }
@@ -495,6 +495,25 @@ namespace DMS.Repositories
 
             if (Item == null)
                 return null;
+            if (Item.Product.UnitOfMeasureGroupingId.HasValue)
+            {
+                List<UnitOfMeasureGroupingContent> UnitOfMeasureGroupingContents = await DataContext.UnitOfMeasureGroupingContent
+                    .Where(x => x.UnitOfMeasureGroupingId == Item.Product.UnitOfMeasureGroupingId.Value)
+                    .Select(x => new UnitOfMeasureGroupingContent
+                    {
+                        Id = x.Id,
+                        Factor = x.Factor,
+                        UnitOfMeasureId = x.UnitOfMeasureId,
+                        UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
+                        {
+                            Id = x.UnitOfMeasure.Id,
+                            Code = x.UnitOfMeasure.Code,
+                            Name = x.UnitOfMeasure.Name,
+                        },
+                    }).ToListAsync();
+                Item.Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents = UnitOfMeasureGroupingContents;
+            }
+
             Item.ItemImageMappings = await DataContext.ItemImageMapping
                 .Where(x => x.ItemId == Item.Id)
                 .Select(x => new ItemImageMapping
@@ -511,8 +530,8 @@ namespace DMS.Repositories
                 }).ToListAsync();
             if (Item.ItemImageMappings.Count == 0)
             {
-                var ProductImageMappingDAO = await DataContext.ProductImageMapping.Include(x => x.Image).Where(x => x.ProductId == Item.ProductId).FirstOrDefaultAsync();
-                if (ProductImageMappingDAO != null)
+                var ProductImageMappingDAOs = await DataContext.ProductImageMapping.Include(x => x.Image).Where(x => x.ProductId == Item.ProductId).ToListAsync();
+                foreach(ProductImageMappingDAO ProductImageMappingDAO in ProductImageMappingDAOs)
                 {
                     ItemImageMapping ItemImageMapping = new ItemImageMapping
                     {
