@@ -128,6 +128,8 @@ namespace DMS.Repositories
                     Id = q.Store.Id,
                     Code = q.Store.Code,
                     Name = q.Store.Name,
+                    Address = q.Store.Address,
+                    Telephone = q.Store.Telephone,
                     Organization = q.Store.Organization == null ? null : new Organization
                     {
                         Id = q.Store.Organization.Id,
@@ -140,6 +142,8 @@ namespace DMS.Repositories
                     Id = q.StoreScouting.Id,
                     Code = q.StoreScouting.Code,
                     Name = q.StoreScouting.Name,
+                    Address = q.StoreScouting.Address,
+                    OwnerPhone = q.StoreScouting.OwnerPhone,
                     Organization = q.StoreScouting.Organization == null ? null : new Organization
                     {
                         Id = q.StoreScouting.Organization.Id,
