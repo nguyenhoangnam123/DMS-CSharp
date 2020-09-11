@@ -66,7 +66,9 @@ namespace DMS.Rpc.indirect_sales_order
             this.SellerStore = IndirectSalesOrder.SellerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.SellerStore);
             this.IndirectSalesOrderContents = IndirectSalesOrder.IndirectSalesOrderContents?.Select(x => new IndirectSalesOrder_IndirectSalesOrderContentDTO(x)).ToList();
             this.IndirectSalesOrderPromotions = IndirectSalesOrder.IndirectSalesOrderPromotions?.Select(x => new IndirectSalesOrder_IndirectSalesOrderPromotionDTO(x)).ToList();
-            this.RequestWorkflowStepMappings = IndirectSalesOrder.RequestWorkflowStepMappings?.Select(x => new IndirectSalesOrder_RequestWorkflowStepMappingDTO(x)).ToList();
+            this.RequestWorkflowStepMappings = IndirectSalesOrder.RequestWorkflowStepMappings?
+                .Where(x => x.WorkflowStateId != WorkflowStateEnum.NEW.Id)
+                .Select(x => new IndirectSalesOrder_RequestWorkflowStepMappingDTO(x)).ToList();
             this.Errors = IndirectSalesOrder.Errors;
         }
     }
