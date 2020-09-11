@@ -400,12 +400,12 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             foreach (ReportStoreChecked_SaleEmployeeDTO ReportStoreChecked_SaleEmployeeDTO in ReportStoreChecked_SaleEmployeeDTOs)
             {
                 ReportStoreChecked_SaleEmployeeDTO.StoreCheckingGroupByDates = new List<ReportStoreChecked_StoreCheckingGroupByDateDTO>();
-                for (DateTime i = Start; i < End; i = i.AddDays(1))
+                for (DateTime i = Start; i <= End; i = i.AddDays(1))
                 {
                     ReportStoreChecked_StoreCheckingGroupByDateDTO ReportStoreChecked_StoreCheckingGroupByDateDTO = new ReportStoreChecked_StoreCheckingGroupByDateDTO();
 
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings = storeCheckings.Where(x => x.SaleEmployeeId == ReportStoreChecked_SaleEmployeeDTO.SaleEmployeeId)
-                        .Where(x => x.CheckOutAt.Value.Date >= i && x.CheckOutAt.Value.Date < i.AddDays(1))
+                        .Where(x => i <= x.CheckOutAt.Value && x.CheckOutAt.Value < i.AddDays(1))
                         .Select(x => new ReportStoreChecked_StoreCheckingDTO
                         {
                             Id = x.Id,
@@ -426,7 +426,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         continue;
 
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.Date = i;
-                    ReportStoreChecked_StoreCheckingGroupByDateDTO.DateString = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                    ReportStoreChecked_StoreCheckingGroupByDateDTO.DateString = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.ToString("dd-MM-yyyy");
                     var dayOfWeek = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).DayOfWeek.ToString();
                     ReportStoreChecked_StoreCheckingGroupByDateDTO.DayOfWeek = DayOfWeekEnum.DayOfWeekEnumList.Where(x => x.Code == dayOfWeek).Select(x => x.Name).FirstOrDefault();
 

@@ -3095,7 +3095,7 @@ namespace DMS.Models
 
             modelBuilder.Entity<StoreUncheckingDAO>(entity =>
             {
-                entity.Property(e => e.Date).HasColumnType("date");
+                entity.Property(e => e.Date).HasColumnType("datetime");
 
                 entity.HasOne(d => d.AppUser)
                     .WithMany(p => p.StoreUncheckings)
