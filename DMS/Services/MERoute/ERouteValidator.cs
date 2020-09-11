@@ -161,15 +161,15 @@ namespace DMS.Services.MERoute
         {
             if (ERoute.ERouteTypeId == ERouteTypeEnum.PERMANENT.Id)
             {
-                if (ERoute.StartDate == default(DateTime))
+                if (ERoute.StartDate < new DateTime(2000,1,1))
                     ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.StartDate), ErrorCode.StartDateEmpty);
             }
 
             if (ERoute.ERouteTypeId == ERouteTypeEnum.INCURRED.Id)
             {
-                if (ERoute.StartDate == default(DateTime))
+                if (ERoute.StartDate < new DateTime(2000, 1, 1))
                     ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.StartDate), ErrorCode.StartDateEmpty);
-                if (ERoute.EndDate == null || ERoute.EndDate == default(DateTime))
+                if (ERoute.EndDate == null || ERoute.EndDate < new DateTime(2000, 1, 1))
                     ERoute.AddError(nameof(ERouteValidator), nameof(ERoute.EndDate), ErrorCode.EndDateEmpty);
             }
 
