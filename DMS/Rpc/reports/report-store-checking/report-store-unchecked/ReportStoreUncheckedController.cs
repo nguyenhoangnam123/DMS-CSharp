@@ -170,7 +170,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             AppUserIds = await (from su in DataContext.StoreUnchecking
                                 join a in DataContext.AppUser on su.AppUserId equals a.Id
                                 where AppUserIds.Contains(a.Id) &&
-                                (a.OrganizationId.HasValue && OrganizationIds.Contains(a.OrganizationId.Value))
+                                (a.OrganizationId.HasValue && OrganizationIds.Contains(a.OrganizationId.Value)) &&
+                                Start <= su.Date && su.Date <= End
                                 orderby a.Organization.Name, a.DisplayName
                                 select su.AppUserId)
                                 .Distinct()
@@ -257,9 +258,9 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                     Stores = new List<ReportStoreUnchecked_StoreDTO>()
                 };
 
-                for (DateTime index = Start; index < End; index = index.AddDays(1))
+                for (DateTime index = Start; index <= End; index = index.AddDays(1))
                 {
-                    var ReportStoreUnchecked_StoreDTOs = StoreUncheckingDAOs.Where(e => e.AppUserId == AppUserDAO.Id && e.Date == index)
+                    var ReportStoreUnchecked_StoreDTOs = StoreUncheckingDAOs.Where(e => e.AppUserId == AppUserDAO.Id && index <= e.Date && e.Date < index.AddDays(1))
                         .Select(x => new ReportStoreUnchecked_StoreDTO
                         {
                             Date = x.Date,

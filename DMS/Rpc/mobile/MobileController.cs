@@ -35,6 +35,7 @@ using DMS.Services.MNotification;
 using DMS.Services.MProblemType;
 using DMS.Services.MColor;
 using DMS.Models;
+using GeoCoordinatePortable;
 
 namespace DMS.Rpc.mobile
 {
@@ -1056,6 +1057,25 @@ namespace DMS.Rpc.mobile
                     ShootingAt = x.ShootingAt,
                 }).ToList()
             };
+
+            var StoreIds = Album.AlbumImageMappings.Select(x => x.StoreId).Distinct().ToList();
+            var Stores = await StoreService.List(new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.Id | StoreSelect.Longitude | StoreSelect.Latitude,
+                Id = new IdFilter { In = StoreIds }
+            });
+            GeoCoordinate sCoord = new GeoCoordinate((double)CurrentContext.Latitude, (double)CurrentContext.Longitude);
+            foreach (AlbumImageMapping AlbumImageMapping in Album.AlbumImageMappings)
+            {
+                Store Store = Stores.Where(x => x.Id == AlbumImageMapping.StoreId).FirstOrDefault();
+                if(Store != null)
+                {
+                    GeoCoordinate eCoord = new GeoCoordinate((double)Store.Latitude, (double)Store.Longitude);
+                    AlbumImageMapping.Distance = (long?)sCoord.GetDistanceTo(eCoord);
+                }
+            }
 
             Album = await AlbumService.UpdateMobile(Album);
             Mobile_AlbumDTO = new Mobile_AlbumDTO(Album);

@@ -12,6 +12,7 @@ namespace DMS.Rpc.mobile
         public long AlbumId { get; set; }
         public long StoreId { get; set; }
         public long ImageId { get; set; }
+        public long? Distance { get; set; }
         public long? SaleEmployeeId { get; set; }
         public Mobile_AlbumDTO Album { get; set; }
         public Mobile_AppUserDTO SaleEmployee { get; set; }
@@ -24,6 +25,7 @@ namespace DMS.Rpc.mobile
             this.StoreId = AlbumImageMapping.StoreId;
             this.ImageId = AlbumImageMapping.ImageId;
             this.ShootingAt = AlbumImageMapping.ShootingAt;
+            this.Distance = AlbumImageMapping.Distance;
             this.SaleEmployeeId = AlbumImageMapping.SaleEmployeeId;
             this.Album = AlbumImageMapping.Album == null ? null : new Mobile_AlbumDTO(AlbumImageMapping.Album);
             this.SaleEmployee = AlbumImageMapping.SaleEmployee == null ? null : new Mobile_AppUserDTO(AlbumImageMapping.SaleEmployee);
