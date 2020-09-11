@@ -25,8 +25,13 @@ namespace DMS.Services.MStoreScouting
         public enum ErrorCode
         {
             IdNotExisted,
+            CodeEmpty,
+            CodeOverLength,
+            NameEmpty,
+            NameOverLength,
             OwnerPhoneOverLength,
             OwnerPhoneInUsed,
+            OwnerPhoneEmpty,
             AddressEmpty,
             AddressOverLength,
             ProvinceNotExisted,
@@ -63,9 +68,13 @@ namespace DMS.Services.MStoreScouting
 
         private async Task<bool> ValidateOwnerPhone(StoreScouting StoreScouting)
         {
-            if (!string.IsNullOrWhiteSpace(StoreScouting.OwnerPhone))
+            if (string.IsNullOrWhiteSpace(StoreScouting.OwnerPhone))
             {
-                if(StoreScouting.OwnerPhone.Length > 255)
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneEmpty);
+            }
+            else
+            {
+                if (StoreScouting.OwnerPhone.Length > 255)
                     StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneOverLength);
                 else
                 {
@@ -92,6 +101,32 @@ namespace DMS.Services.MStoreScouting
             else if (StoreScouting.Address.Length > 3000)
             {
                 StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Address), ErrorCode.AddressOverLength);
+            }
+            return StoreScouting.IsValidated;
+        }
+
+        private async Task<bool> ValidateCode(StoreScouting StoreScouting)
+        {
+            if (string.IsNullOrWhiteSpace(StoreScouting.Code))
+            {
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Code), ErrorCode.CodeEmpty);
+            }
+            else if (StoreScouting.Code.Length > 500)
+            {
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Code), ErrorCode.CodeOverLength);
+            }
+            return StoreScouting.IsValidated;
+        }
+
+        private async Task<bool> ValidateName(StoreScouting StoreScouting)
+        {
+            if (string.IsNullOrWhiteSpace(StoreScouting.Name))
+            {
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Name), ErrorCode.NameEmpty);
+            }
+            else if (StoreScouting.Name.Length > 500)
+            {
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Name), ErrorCode.NameOverLength);
             }
             return StoreScouting.IsValidated;
         }
@@ -156,16 +191,18 @@ namespace DMS.Services.MStoreScouting
 
         private async Task<bool> ValidateStatus(StoreScouting StoreScouting)
         {
-            if(StoreScouting.StoreScoutingStatusId == Enums.StoreScoutingStatusEnum.OPENED.Id)
+            if (StoreScouting.StoreScoutingStatusId == Enums.StoreScoutingStatusEnum.OPENED.Id)
                 StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.StoreScoutingStatus), ErrorCode.StoreScoutingHasOpened);
             else if (StoreScouting.StoreScoutingStatusId == Enums.StoreScoutingStatusEnum.REJECTED.Id)
                 StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.StoreScoutingStatus), ErrorCode.StoreScoutingHasRejected);
             return StoreScouting.IsValidated;
         }
 
-        public async Task<bool>Create(StoreScouting StoreScouting)
+        public async Task<bool> Create(StoreScouting StoreScouting)
         {
             await ValidateOwnerPhone(StoreScouting);
+            await ValidateCode(StoreScouting);
+            await ValidateName(StoreScouting);
             await ValidateAddress(StoreScouting);
             await ValidateProvinceId(StoreScouting);
             await ValidateDistrictId(StoreScouting);
@@ -178,6 +215,8 @@ namespace DMS.Services.MStoreScouting
             if (await ValidateId(StoreScouting))
             {
                 await ValidateOwnerPhone(StoreScouting);
+                await ValidateCode(StoreScouting);
+                await ValidateName(StoreScouting);
                 await ValidateAddress(StoreScouting);
                 await ValidateProvinceId(StoreScouting);
                 await ValidateDistrictId(StoreScouting);
@@ -206,12 +245,12 @@ namespace DMS.Services.MStoreScouting
             }
             return StoreScouting.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<StoreScouting> StoreScoutings)
         {
             return true;
         }
-        
+
         public async Task<bool> Import(List<StoreScouting> StoreScoutings)
         {
             return true;
