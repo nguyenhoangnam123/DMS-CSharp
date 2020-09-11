@@ -63,6 +63,7 @@ namespace DMS.Services.MIndirectSalesOrder
             this.RabbitManager = RabbitManager;
             this.IndirectSalesOrderValidator = IndirectSalesOrderValidator;
             this.OrganizationService = OrganizationService;
+            this.ItemService = ItemService;
             this.WorkflowService = WorkflowService;
         }
         public async Task<int> Count(IndirectSalesOrderFilter IndirectSalesOrderFilter)
