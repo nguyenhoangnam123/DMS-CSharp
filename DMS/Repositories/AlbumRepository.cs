@@ -153,6 +153,7 @@ namespace DMS.Repositories
                             ImageId = x.ImageId,
                             StoreId = x.StoreId,
                             ShootingAt = x.ShootingAt,
+                            Distance = x.Distance,
                             Image = x.Image == null ? null : new Image
                             {
                                 Id = x.Image.Id,
@@ -210,6 +211,8 @@ namespace DMS.Repositories
                     AlbumId = x.AlbumId,
                     ImageId = x.ImageId,
                     ShootingAt = x.ShootingAt,
+                    Distance = x.Distance,
+                    SaleEmployeeId = x.SaleEmployeeId,
                     StoreId = x.StoreId,
                     Image = x.Image == null ? null : new Image
                     {
@@ -298,6 +301,7 @@ namespace DMS.Repositories
                         AlbumImageMappingDAO.AlbumId = Album.Id;
                         AlbumImageMappingDAO.ImageId = AlbumImageMapping.ImageId;
                         AlbumImageMappingDAO.StoreId = AlbumImageMapping.StoreId;
+                        AlbumImageMappingDAO.Distance = AlbumImageMapping.Distance;
                         AlbumImageMappingDAO.SaleEmployeeId = AlbumImageMapping.SaleEmployeeId;
                         AlbumImageMappingDAO.ShootingAt = StaticParams.DateTimeNow;
                         AlbumImageMappingDAO.DeletedAt = null;
@@ -307,6 +311,7 @@ namespace DMS.Repositories
                     {
                         AlbumImageMappingDAO.AlbumId = Album.Id;
                         AlbumImageMappingDAO.ShootingAt = AlbumImageMapping.ShootingAt;
+                        AlbumImageMappingDAO.Distance = AlbumImageMapping.Distance;
                         AlbumImageMappingDAO.DeletedAt = null;
                     }
                 }

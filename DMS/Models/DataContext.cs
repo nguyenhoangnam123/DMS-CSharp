@@ -109,6 +109,7 @@ namespace DMS.Models
         public virtual DbSet<StoreCheckingDAO> StoreChecking { get; set; }
         public virtual DbSet<StoreCheckingImageMappingDAO> StoreCheckingImageMapping { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
+        public virtual DbSet<StoreImageDAO> StoreImage { get; set; }
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
         public virtual DbSet<StoreScoutingDAO> StoreScouting { get; set; }
         public virtual DbSet<StoreScoutingImageMappingDAO> StoreScoutingImageMapping { get; set; }
@@ -2924,6 +2925,31 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreGrouping_Status");
+            });
+
+            modelBuilder.Entity<StoreImageDAO>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("StoreImage");
+
+                entity.Property(e => e.AlbumName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.DisplayName).HasMaxLength(500);
+
+                entity.Property(e => e.ShootingAt).HasColumnType("datetime");
+
+                entity.Property(e => e.StoreAddress).HasMaxLength(3000);
+
+                entity.Property(e => e.StoreName).HasMaxLength(500);
+
+                entity.Property(e => e.ThumbnailUrl).HasMaxLength(4000);
+
+                entity.Property(e => e.Url)
+                    .IsRequired()
+                    .HasMaxLength(4000);
             });
 
             modelBuilder.Entity<StoreImageMappingDAO>(entity =>

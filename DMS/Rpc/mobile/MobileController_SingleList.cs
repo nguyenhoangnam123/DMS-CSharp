@@ -452,6 +452,7 @@ namespace DMS.Rpc.mobile
                     AlbumId = m.AlbumId,
                     ImageId = m.ImageId,
                     StoreId = m.StoreId,
+                    Distance = m.Distance,
                     Album = m.Album == null ? null : new Mobile_AlbumDTO
                     {
                         Id = m.Album.Id,
