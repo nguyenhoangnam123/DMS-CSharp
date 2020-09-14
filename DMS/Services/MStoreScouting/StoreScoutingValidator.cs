@@ -105,19 +105,6 @@ namespace DMS.Services.MStoreScouting
             return StoreScouting.IsValidated;
         }
 
-        private async Task<bool> ValidateCode(StoreScouting StoreScouting)
-        {
-            if (string.IsNullOrWhiteSpace(StoreScouting.Code))
-            {
-                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Code), ErrorCode.CodeEmpty);
-            }
-            else if (StoreScouting.Code.Length > 500)
-            {
-                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Code), ErrorCode.CodeOverLength);
-            }
-            return StoreScouting.IsValidated;
-        }
-
         private async Task<bool> ValidateName(StoreScouting StoreScouting)
         {
             if (string.IsNullOrWhiteSpace(StoreScouting.Name))
@@ -201,7 +188,6 @@ namespace DMS.Services.MStoreScouting
         public async Task<bool> Create(StoreScouting StoreScouting)
         {
             await ValidateOwnerPhone(StoreScouting);
-            await ValidateCode(StoreScouting);
             await ValidateName(StoreScouting);
             await ValidateAddress(StoreScouting);
             await ValidateProvinceId(StoreScouting);
@@ -215,7 +201,6 @@ namespace DMS.Services.MStoreScouting
             if (await ValidateId(StoreScouting))
             {
                 await ValidateOwnerPhone(StoreScouting);
-                await ValidateCode(StoreScouting);
                 await ValidateName(StoreScouting);
                 await ValidateAddress(StoreScouting);
                 await ValidateProvinceId(StoreScouting);
