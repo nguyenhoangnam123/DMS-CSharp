@@ -410,7 +410,7 @@ namespace DMS.Services.MERoute
         private async Task<ERoute> CalculateTime(ERoute ERoute)
         {
             ERoute.StartDate = ERoute.StartDate.AddHours(CurrentContext.TimeZone).Date;
-            ERoute.StartDate = ERoute.StartDate.AddDays(0 - CurrentContext.TimeZone);
+            ERoute.StartDate = ERoute.StartDate.AddHours(0 - CurrentContext.TimeZone);
 
             int diff = (7 + (ERoute.StartDate.DayOfWeek - DayOfWeek.Monday)) % 7;
             ERoute.RealStartDate = ERoute.StartDate.AddDays(-1 * diff);
@@ -418,7 +418,7 @@ namespace DMS.Services.MERoute
             if (ERoute.EndDate.HasValue)
             {
                 ERoute.EndDate = ERoute.EndDate.Value.AddHours(CurrentContext.TimeZone).Date.AddDays(1).AddSeconds(-1);
-                ERoute.EndDate = ERoute.EndDate.Value.AddDays(0 - CurrentContext.TimeZone);
+                ERoute.EndDate = ERoute.EndDate.Value.AddHours(0 - CurrentContext.TimeZone);
             }
 
             return ERoute;
