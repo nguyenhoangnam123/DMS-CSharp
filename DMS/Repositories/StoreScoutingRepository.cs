@@ -522,7 +522,7 @@ namespace DMS.Repositories
         {
             StoreScoutingDAO StoreScoutingDAO = new StoreScoutingDAO();
             StoreScoutingDAO.Id = StoreScouting.Id;
-            StoreScoutingDAO.Code = StoreScouting.Code;
+            StoreScoutingDAO.Code = "";
             StoreScoutingDAO.Name = StoreScouting.Name;
             StoreScoutingDAO.OwnerPhone = StoreScouting.OwnerPhone;
             StoreScoutingDAO.ProvinceId = StoreScouting.ProvinceId;
@@ -540,7 +540,8 @@ namespace DMS.Repositories
             DataContext.StoreScouting.Add(StoreScoutingDAO);
             await DataContext.SaveChangesAsync();
             StoreScouting.Id = StoreScoutingDAO.Id;
-            await SaveReference(StoreScouting);
+            StoreScoutingDAO.Code = StoreScoutingDAO.Id.ToString();
+           await SaveReference(StoreScouting);
             return true;
         }
 
@@ -550,7 +551,6 @@ namespace DMS.Repositories
             if (StoreScoutingDAO == null)
                 return false;
             StoreScoutingDAO.Id = StoreScouting.Id;
-            StoreScoutingDAO.Code = StoreScouting.Code;
             StoreScoutingDAO.Name = StoreScouting.Name;
             StoreScoutingDAO.OwnerPhone = StoreScouting.OwnerPhone;
             StoreScoutingDAO.ProvinceId = StoreScouting.ProvinceId;
