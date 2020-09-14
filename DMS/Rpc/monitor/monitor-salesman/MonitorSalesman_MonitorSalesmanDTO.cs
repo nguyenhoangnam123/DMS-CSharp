@@ -24,6 +24,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
         public long ImageCounter { get; set; }
         public long SalesOrderCounter { get; set; }
         public decimal Revenue { get; set; }
+        internal long OrganizationId { get; set; }
         internal HashSet<long> Internal { get; set; }
         internal HashSet<long> External { get; set; }
         public List<MonitorSalesman_StoreCheckingDTO> StoreCheckings { get; set; }

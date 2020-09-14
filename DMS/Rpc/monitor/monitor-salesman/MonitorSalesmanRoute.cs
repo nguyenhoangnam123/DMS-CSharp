@@ -11,6 +11,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
         private const string Default = Rpc + Module + "/monitor-salesman";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
+        public const string ListImage = Default + "/list-image";
         public const string Get = Default + "/get";
         public const string Export = Default + "/export";
 
@@ -28,7 +29,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
         {
             { "Tìm kiếm", new List<string> {
                 Parent,
-                Master, Count, List, Get, Export, 
+                Master, Count, List, ListImage, Get, Export, 
                 FilterListOrganization, FilterListAppUser, } },
         };
     }
