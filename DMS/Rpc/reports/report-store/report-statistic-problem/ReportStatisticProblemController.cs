@@ -163,7 +163,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
 
             DateTime End = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
                 return 0;
@@ -238,7 +238,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
 
             DateTime End = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
@@ -397,7 +397,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
 
             DateTime End = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
                 return new ReportStatisticProblem_TotalDTO();
@@ -557,7 +557,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
 
             DateTime End = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value;
 
             ReportStatisticProblem_ReportStatisticProblemFilterDTO.Skip = 0;
             ReportStatisticProblem_ReportStatisticProblemFilterDTO.Take = int.MaxValue;

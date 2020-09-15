@@ -18,6 +18,7 @@ using DMS.Repositories;
 using System.IO;
 using System.Dynamic;
 using NGS.Templater;
+using DMS.Rpc.direct_sales_order;
 
 namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
 {
@@ -198,11 +199,15 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                         join od in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals od.Id
                         join i in DataContext.Item on t.ItemId equals i.Id
                         join p in DataContext.Product on i.ProductId equals p.Id
-                        join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
+                        join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId into PPGM
+                        from sppgm in PPGM.DefaultIfEmpty()
                         where OrganizationIds.Contains(t.OrganizationId) &&
                         (ItemId.HasValue == false || t.ItemId == ItemId) &&
                         (ProductTypeIds.Contains(p.ProductTypeId)) &&
-                        (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(ppgm.ProductGroupingId)) &&
+                        (
+                            sppgm == null ||
+                            (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(sppgm.ProductGroupingId))
+                        ) &&
                         od.OrderDate >= Start && od.OrderDate <= End
                         group t by new {t.OrganizationId, t.ItemId } into x
                         select new
@@ -264,11 +269,15 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                         join od in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals od.Id
                         join i in DataContext.Item on t.ItemId equals i.Id
                         join p in DataContext.Product on i.ProductId equals p.Id
-                        join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
+                        join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId into PPGM
+                        from sppgm in PPGM.DefaultIfEmpty()
                         where OrganizationIds.Contains(t.OrganizationId) &&
                         (ItemId.HasValue == false || t.ItemId == ItemId) &&
                         (ProductTypeIds.Contains(p.ProductTypeId)) &&
-                        (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(ppgm.ProductGroupingId)) &&
+                        (
+                            sppgm == null ||
+                            (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(sppgm.ProductGroupingId))
+                        ) &&
                         od.OrderDate >= Start && od.OrderDate <= End
                         group t by new { t.OrganizationId, t.ItemId } into x
                         select new
@@ -321,6 +330,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                                        },
                                        Item = new ItemDAO
                                        {
+                                           Id = i.Id,
                                            Code = i.Code,
                                            Name = i.Name,
                                        },
@@ -344,6 +354,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                     if(ItemDetail == null)
                     {
                         ItemDetail = new ReportSalesOrderByItem_ItemDetailDTO();
+                        ItemDetail.ItemId = Transaction.Item.Id;
                         ItemDetail.ItemCode = Transaction.Item.Code;
                         ItemDetail.ItemName = Transaction.Item.Name;
                         ItemDetail.UnitOfMeasureName = Transaction.UnitOfMeasure.Name;
@@ -388,11 +399,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                 return new ReportSalesOrderByItem_TotalDTO();
 
             DateTime Start = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date?.GreaterEqual == null ?
-                   StaticParams.DateTimeNow :
+                   LocalStartDay(CurrentContext) :
                    ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date.GreaterEqual.Value;
 
             DateTime End = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date?.LessEqual == null ?
-                    StaticParams.DateTimeNow.Date.AddDays(1).AddSeconds(-1) :
+                    LocalEndDay(CurrentContext) :
                     ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.Date.LessEqual.Value;
 
             long? ItemId = ReportSalesOrderByItem_ReportSalesOrderByItemFilterDTO.ItemId?.Equal;
@@ -430,11 +441,15 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                         join od in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals od.Id
                         join i in DataContext.Item on t.ItemId equals i.Id
                         join p in DataContext.Product on i.ProductId equals p.Id
-                        join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId
+                        join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId into PPGM
+                        from sppgm in PPGM.DefaultIfEmpty()
                         where OrganizationIds.Contains(t.OrganizationId) &&
                         (ItemId.HasValue == false || t.ItemId == ItemId) &&
                         (ProductTypeIds.Contains(p.ProductTypeId)) &&
-                        (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(ppgm.ProductGroupingId)) &&
+                        (
+                            sppgm == null ||
+                            (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(sppgm.ProductGroupingId))
+                        ) &&
                         od.OrderDate >= Start && od.OrderDate <= End
                         group t by new { t.OrganizationId, t.ItemId } into x
                         select new
@@ -474,6 +489,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_item
                                        },
                                        Item = new ItemDAO
                                        {
+                                           Id = i.Id,
                                            Code = i.Code,
                                            Name = i.Name,
                                        },

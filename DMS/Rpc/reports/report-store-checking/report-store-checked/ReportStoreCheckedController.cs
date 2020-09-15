@@ -462,7 +462,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 
             DateTime End = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.LessEqual == null ?
                 LocalEndDay(CurrentContext) :
-                ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value;
 
             ReportStoreChecked_ReportStoreCheckedFilterDTO.Skip = 0;
             ReportStoreChecked_ReportStoreCheckedFilterDTO.Take = int.MaxValue;

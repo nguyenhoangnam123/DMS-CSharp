@@ -144,7 +144,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
             DateTime End = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value;
 
             if (End.Subtract(Start).TotalDays > 7)
                 return 0;
@@ -195,7 +195,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
             DateTime End = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value;
 
             long? AppUserId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId?.Equal;
             long? ERouteId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId?.Equal;
@@ -299,7 +299,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
             DateTime End = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value;
 
             ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip = 0;
             ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take = int.MaxValue;

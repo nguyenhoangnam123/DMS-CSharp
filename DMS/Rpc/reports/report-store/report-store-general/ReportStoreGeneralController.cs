@@ -412,7 +412,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                     //ngày đặt hàng gần nhất
                     Store.LastOrder = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id)
                         .OrderByDescending(x => x.OrderDate)
-                        .Select(x => x.OrderDate.Date)
+                        .Select(x => x.OrderDate.AddHours(CurrentContext.TimeZone).Date)
                         .FirstOrDefault();
                 }
 
