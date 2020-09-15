@@ -7,6 +7,8 @@ namespace DMS.Models
     {
         public ItemDAO()
         {
+            ComboInItemMappings = new HashSet<ComboInItemMappingDAO>();
+            ComboOutItemMappings = new HashSet<ComboOutItemMappingDAO>();
             DirectSalesOrderContents = new HashSet<DirectSalesOrderContentDAO>();
             DirectSalesOrderPromotions = new HashSet<DirectSalesOrderPromotionDAO>();
             DirectSalesOrderTransactions = new HashSet<DirectSalesOrderTransactionDAO>();
@@ -19,6 +21,10 @@ namespace DMS.Models
             KpiItemContents = new HashSet<KpiItemContentDAO>();
             PriceListItemHistories = new HashSet<PriceListItemHistoryDAO>();
             PriceListItemMappings = new HashSet<PriceListItemMappingDAO>();
+            PromotionDirectSalesOrderItemMappings = new HashSet<PromotionDirectSalesOrderItemMappingDAO>();
+            PromotionSamePriceItemMappings = new HashSet<PromotionSamePriceItemMappingDAO>();
+            PromotionStoreGroupingItemMappings = new HashSet<PromotionStoreGroupingItemMappingDAO>();
+            PromotionStoreTypeItemMappings = new HashSet<PromotionStoreTypeItemMappingDAO>();
         }
 
         public long Id { get; set; }
@@ -37,6 +43,8 @@ namespace DMS.Models
 
         public virtual ProductDAO Product { get; set; }
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<ComboInItemMappingDAO> ComboInItemMappings { get; set; }
+        public virtual ICollection<ComboOutItemMappingDAO> ComboOutItemMappings { get; set; }
         public virtual ICollection<DirectSalesOrderContentDAO> DirectSalesOrderContents { get; set; }
         public virtual ICollection<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotions { get; set; }
         public virtual ICollection<DirectSalesOrderTransactionDAO> DirectSalesOrderTransactions { get; set; }
@@ -49,5 +57,9 @@ namespace DMS.Models
         public virtual ICollection<KpiItemContentDAO> KpiItemContents { get; set; }
         public virtual ICollection<PriceListItemHistoryDAO> PriceListItemHistories { get; set; }
         public virtual ICollection<PriceListItemMappingDAO> PriceListItemMappings { get; set; }
+        public virtual ICollection<PromotionDirectSalesOrderItemMappingDAO> PromotionDirectSalesOrderItemMappings { get; set; }
+        public virtual ICollection<PromotionSamePriceItemMappingDAO> PromotionSamePriceItemMappings { get; set; }
+        public virtual ICollection<PromotionStoreGroupingItemMappingDAO> PromotionStoreGroupingItemMappings { get; set; }
+        public virtual ICollection<PromotionStoreTypeItemMappingDAO> PromotionStoreTypeItemMappings { get; set; }
     }
 }

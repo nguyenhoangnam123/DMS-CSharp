@@ -73,7 +73,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q => q.Creator.OrganizationId.HasValue && Ids.Contains(q.Creator.OrganizationId.Value));
+                    query = query.Where(q => Ids.Contains(q.Creator.OrganizationId));
                 }
                 if (filter.OrganizationId.NotIn != null)
                 {
@@ -82,7 +82,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q => q.Creator.OrganizationId.HasValue && !Ids.Contains(q.Creator.OrganizationId.Value));
+                    query = query.Where(q => !Ids.Contains(q.Creator.OrganizationId));
                 }
             }
             if (filter.Address != null)
@@ -142,7 +142,7 @@ namespace DMS.Repositories
                         List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => StoreScoutingFilter.OrganizationId.In.Contains(o.Id)).ToList();
                         List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> Ids = Branches.Select(o => o.Id).ToList();
-                        queryable = queryable.Where(q => Ids.Contains(q.Creator.OrganizationId.Value));
+                        queryable = queryable.Where(q => Ids.Contains(q.Creator.OrganizationId));
                     }
                     if (StoreScoutingFilter.OrganizationId.NotIn != null)
                     {
@@ -151,7 +151,7 @@ namespace DMS.Repositories
                         List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => StoreScoutingFilter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                         List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> Ids = Branches.Select(o => o.Id).ToList();
-                        queryable = queryable.Where(q => !Ids.Contains(q.Creator.OrganizationId.Value));
+                        queryable = queryable.Where(q => !Ids.Contains(q.Creator.OrganizationId));
                     }
                 }
                 if (StoreScoutingFilter.Address != null)

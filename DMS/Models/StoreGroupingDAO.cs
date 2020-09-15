@@ -9,6 +9,7 @@ namespace DMS.Models
         {
             InverseParent = new HashSet<StoreGroupingDAO>();
             PriceListStoreGroupingMappings = new HashSet<PriceListStoreGroupingMappingDAO>();
+            PromotionStoreGroupingMappings = new HashSet<PromotionStoreGroupingMappingDAO>();
             Stores = new HashSet<StoreDAO>();
         }
 
@@ -27,6 +28,7 @@ namespace DMS.Models
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<StoreGroupingDAO> InverseParent { get; set; }
         public virtual ICollection<PriceListStoreGroupingMappingDAO> PriceListStoreGroupingMappings { get; set; }
+        public virtual ICollection<PromotionStoreGroupingMappingDAO> PromotionStoreGroupingMappings { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
     }
 }

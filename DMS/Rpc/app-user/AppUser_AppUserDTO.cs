@@ -20,7 +20,7 @@ namespace DMS.Rpc.app_user
         public string Phone { get; set; }
         public long? PositionId { get; set; }
         public string Department { get; set; }
-        public long? OrganizationId { get; set; }
+        public long OrganizationId { get; set; }
         public long? ERouteScopeId { get; set; }
         public long? ProvinceId { get; set; }
         public long? SexId { get; set; }

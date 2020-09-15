@@ -8,6 +8,7 @@ namespace DMS.Models
         public StoreTypeDAO()
         {
             PriceListStoreTypeMappings = new HashSet<PriceListStoreTypeMappingDAO>();
+            PromotionStoreTypeMappings = new HashSet<PromotionStoreTypeMappingDAO>();
             Stores = new HashSet<StoreDAO>();
         }
 
@@ -24,6 +25,7 @@ namespace DMS.Models
         public virtual ColorDAO Color { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<PriceListStoreTypeMappingDAO> PriceListStoreTypeMappings { get; set; }
+        public virtual ICollection<PromotionStoreTypeMappingDAO> PromotionStoreTypeMappings { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
     }
 }

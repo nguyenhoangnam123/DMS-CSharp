@@ -123,7 +123,7 @@ namespace DMS.Services.MERoute
                 var SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
                 ERoute = await CalculateTime(ERoute);
                 ERoute.CreatorId = CurrentContext.UserId;
-                ERoute.OrganizationId = SaleEmployee.OrganizationId.Value;
+                ERoute.OrganizationId = SaleEmployee.OrganizationId;
                 ERoute.RequestStateId = RequestStateEnum.NEW.Id;
                 await UOW.Begin();
                 await UOW.ERouteRepository.Create(ERoute);
@@ -173,7 +173,7 @@ namespace DMS.Services.MERoute
                 var SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
                 var oldData = await UOW.ERouteRepository.Get(ERoute.Id);
                 ERoute = await CalculateTime(ERoute);
-                ERoute.OrganizationId = SaleEmployee.OrganizationId.Value;
+                ERoute.OrganizationId = SaleEmployee.OrganizationId;
                 await UOW.Begin();
                 await UOW.ERouteRepository.Update(ERoute);
                 await UOW.Commit();

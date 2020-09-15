@@ -18,6 +18,9 @@ namespace DMS.Models
         public virtual DbSet<BannerDAO> Banner { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
         public virtual DbSet<ColorDAO> Color { get; set; }
+        public virtual DbSet<ComboDAO> Combo { get; set; }
+        public virtual DbSet<ComboInItemMappingDAO> ComboInItemMapping { get; set; }
+        public virtual DbSet<ComboOutItemMappingDAO> ComboOutItemMapping { get; set; }
         public virtual DbSet<CounterDAO> Counter { get; set; }
         public virtual DbSet<DirectSalesOrderDAO> DirectSalesOrder { get; set; }
         public virtual DbSet<DirectSalesOrderContentDAO> DirectSalesOrderContent { get; set; }
@@ -89,6 +92,22 @@ namespace DMS.Models
         public virtual DbSet<ProductProductGroupingMappingDAO> ProductProductGroupingMapping { get; set; }
         public virtual DbSet<ProductTypeDAO> ProductType { get; set; }
         public virtual DbSet<PromotionDAO> Promotion { get; set; }
+        public virtual DbSet<PromotionComboDAO> PromotionCombo { get; set; }
+        public virtual DbSet<PromotionDirectSalesOrderDAO> PromotionDirectSalesOrder { get; set; }
+        public virtual DbSet<PromotionDirectSalesOrderItemMappingDAO> PromotionDirectSalesOrderItemMapping { get; set; }
+        public virtual DbSet<PromotionDiscountTypeDAO> PromotionDiscountType { get; set; }
+        public virtual DbSet<PromotionPolicyDAO> PromotionPolicy { get; set; }
+        public virtual DbSet<PromotionPromotionPolicyMappingDAO> PromotionPromotionPolicyMapping { get; set; }
+        public virtual DbSet<PromotionSamePriceDAO> PromotionSamePrice { get; set; }
+        public virtual DbSet<PromotionSamePriceItemMappingDAO> PromotionSamePriceItemMapping { get; set; }
+        public virtual DbSet<PromotionStoreGroupingDAO> PromotionStoreGrouping { get; set; }
+        public virtual DbSet<PromotionStoreGroupingItemMappingDAO> PromotionStoreGroupingItemMapping { get; set; }
+        public virtual DbSet<PromotionStoreGroupingMappingDAO> PromotionStoreGroupingMapping { get; set; }
+        public virtual DbSet<PromotionStoreMappingDAO> PromotionStoreMapping { get; set; }
+        public virtual DbSet<PromotionStoreTypeDAO> PromotionStoreType { get; set; }
+        public virtual DbSet<PromotionStoreTypeItemMappingDAO> PromotionStoreTypeItemMapping { get; set; }
+        public virtual DbSet<PromotionStoreTypeMappingDAO> PromotionStoreTypeMapping { get; set; }
+        public virtual DbSet<PromotionTypeDAO> PromotionType { get; set; }
         public virtual DbSet<ProvinceDAO> Province { get; set; }
         public virtual DbSet<RequestStateDAO> RequestState { get; set; }
         public virtual DbSet<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMapping { get; set; }
@@ -330,6 +349,7 @@ namespace DMS.Models
                 entity.HasOne(d => d.Organization)
                     .WithMany(p => p.AppUsers)
                     .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AppUser_Organization");
 
                 entity.HasOne(d => d.Position)
@@ -496,6 +516,75 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<ComboDAO>(entity =>
+            {
+                entity.ToTable("Combo", "PRO");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
+
+                entity.Property(e => e.DiscountValue).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.PromotionCombo)
+                    .WithMany(p => p.Combos)
+                    .HasForeignKey(d => d.PromotionComboId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Combo_PromotionCombo");
+
+                entity.HasOne(d => d.PromotionDiscountType)
+                    .WithMany(p => p.Combos)
+                    .HasForeignKey(d => d.PromotionDiscountTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Combo_PromotionDiscountType");
+            });
+
+            modelBuilder.Entity<ComboInItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ComboId, e.ItemId });
+
+                entity.ToTable("ComboInItemMapping", "PRO");
+
+                entity.HasOne(d => d.Combo)
+                    .WithMany(p => p.ComboInItemMappings)
+                    .HasForeignKey(d => d.ComboId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ComboInItemMapping_Combo");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.ComboInItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ComboInItemMapping_Item");
+            });
+
+            modelBuilder.Entity<ComboOutItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ComboId, e.ItemId });
+
+                entity.ToTable("ComboOutItemMapping", "PRO");
+
+                entity.HasOne(d => d.Combo)
+                    .WithMany(p => p.ComboOutItemMappings)
+                    .HasForeignKey(d => d.ComboId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ComboOutItemMapping_Combo");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.ComboOutItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ComboOutItemMapping_Item");
             });
 
             modelBuilder.Entity<CounterDAO>(entity =>
@@ -2374,6 +2463,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<PromotionDAO>(entity =>
             {
+                entity.ToTable("Promotion", "PRO");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -2388,11 +2479,364 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.Scope).HasMaxLength(500);
+                entity.Property(e => e.Note).HasMaxLength(2000);
 
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.Promotions)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Promotion_Organization");
+
+                entity.HasOne(d => d.PromotionType)
+                    .WithMany(p => p.Promotions)
+                    .HasForeignKey(d => d.PromotionTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Promotion_PromotionType");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Promotions)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Promotion_Status");
+            });
+
+            modelBuilder.Entity<PromotionComboDAO>(entity =>
+            {
+                entity.ToTable("PromotionCombo", "PRO");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.HasOne(d => d.Promotion)
+                    .WithMany(p => p.PromotionCombos)
+                    .HasForeignKey(d => d.PromotionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionCombo_Promotion");
+            });
+
+            modelBuilder.Entity<PromotionDirectSalesOrderDAO>(entity =>
+            {
+                entity.ToTable("PromotionDirectSalesOrder", "PRO");
+
+                entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
+
+                entity.Property(e => e.DiscountValue).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.FromValue).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.ToValue).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.PromotionDiscountType)
+                    .WithMany(p => p.PromotionDirectSalesOrders)
+                    .HasForeignKey(d => d.PromotionDiscountTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionDirectSalesOrder_PromotionDiscountType");
+
+                entity.HasOne(d => d.Promotion)
+                    .WithMany(p => p.PromotionDirectSalesOrders)
+                    .HasForeignKey(d => d.PromotionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionDirectSalesOrder_Promotion");
+            });
+
+            modelBuilder.Entity<PromotionDirectSalesOrderItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PromotionDirectSalesOrderId, e.ItemId });
+
+                entity.ToTable("PromotionDirectSalesOrderItemMapping", "PRO");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.PromotionDirectSalesOrderItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionDirectSalesOrderItemMapping_Item");
+
+                entity.HasOne(d => d.PromotionDirectSalesOrder)
+                    .WithMany(p => p.PromotionDirectSalesOrderItemMappings)
+                    .HasForeignKey(d => d.PromotionDirectSalesOrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionDirectSalesOrderItemMapping_PromotionDirectSalesOrder");
+            });
+
+            modelBuilder.Entity<PromotionDiscountTypeDAO>(entity =>
+            {
+                entity.ToTable("PromotionDiscountType", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<PromotionPolicyDAO>(entity =>
+            {
+                entity.ToTable("PromotionPolicy", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<PromotionPromotionPolicyMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PromotionId, e.PromotionPolicyId });
+
+                entity.ToTable("PromotionPromotionPolicyMapping", "PRO");
+
+                entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.HasOne(d => d.Promotion)
+                    .WithMany(p => p.PromotionPromotionPolicyMappings)
+                    .HasForeignKey(d => d.PromotionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionPromotionPolicyMapping_Promotion");
+
+                entity.HasOne(d => d.PromotionPolicy)
+                    .WithMany(p => p.PromotionPromotionPolicyMappings)
+                    .HasForeignKey(d => d.PromotionPolicyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionPromotionPolicyMapping_PromotionPolicy");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.PromotionPromotionPolicyMappings)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionPromotionPolicyMapping_Status");
+            });
+
+            modelBuilder.Entity<PromotionSamePriceDAO>(entity =>
+            {
+                entity.ToTable("PromotionSamePrice", "PRO");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.Promotion)
+                    .WithMany(p => p.PromotionSamePrices)
+                    .HasForeignKey(d => d.PromotionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionSamePrice_Promotion");
+            });
+
+            modelBuilder.Entity<PromotionSamePriceItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PromotionSamePriceId, e.ItemId });
+
+                entity.ToTable("PromotionSamePriceItemMapping", "PRO");
+
+                entity.Property(e => e.Quantity)
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.PromotionSamePriceItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionSamePriceItemMapping_Item");
+
+                entity.HasOne(d => d.PromotionSamePrice)
+                    .WithMany(p => p.PromotionSamePriceItemMappings)
+                    .HasForeignKey(d => d.PromotionSamePriceId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionSamePriceItemMapping_PromotionSamePrice");
+            });
+
+            modelBuilder.Entity<PromotionStoreGroupingDAO>(entity =>
+            {
+                entity.ToTable("PromotionStoreGrouping", "PRO");
+
+                entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
+
+                entity.Property(e => e.DiscountValue).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.FromValue).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.ToValue).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.PromotionDiscountType)
+                    .WithMany(p => p.PromotionStoreGroupings)
+                    .HasForeignKey(d => d.PromotionDiscountTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreGrouping_PromotionDiscountType");
+
+                entity.HasOne(d => d.Promotion)
+                    .WithMany(p => p.PromotionStoreGroupings)
+                    .HasForeignKey(d => d.PromotionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreGrouping_Promotion");
+            });
+
+            modelBuilder.Entity<PromotionStoreGroupingItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PromotionStoreGroupingId, e.itemId });
+
+                entity.ToTable("PromotionStoreGroupingItemMapping", "PRO");
+
+                entity.Property(e => e.Quantity)
+                    .HasMaxLength(10)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.PromotionStoreGrouping)
+                    .WithMany(p => p.PromotionStoreGroupingItemMappings)
+                    .HasForeignKey(d => d.PromotionStoreGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreGroupingItemMapping_PromotionStoreGrouping");
+
+                entity.HasOne(d => d.item)
+                    .WithMany(p => p.PromotionStoreGroupingItemMappings)
+                    .HasForeignKey(d => d.itemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreGroupingItemMapping_Item");
+            });
+
+            modelBuilder.Entity<PromotionStoreGroupingMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PromotionId, e.StoreGroupingId });
+
+                entity.ToTable("PromotionStoreGroupingMapping", "PRO");
+
+                entity.HasOne(d => d.Promotion)
+                    .WithMany(p => p.PromotionStoreGroupingMappings)
+                    .HasForeignKey(d => d.PromotionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreGroupingMapping_Promotion");
+
+                entity.HasOne(d => d.StoreGrouping)
+                    .WithMany(p => p.PromotionStoreGroupingMappings)
+                    .HasForeignKey(d => d.StoreGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreGroupingMapping_StoreGrouping");
+            });
+
+            modelBuilder.Entity<PromotionStoreMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PromotionId, e.StoreId });
+
+                entity.ToTable("PromotionStoreMapping", "PRO");
+
+                entity.HasOne(d => d.Promotion)
+                    .WithMany(p => p.PromotionStoreMappings)
+                    .HasForeignKey(d => d.PromotionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreMapping_Promotion");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.PromotionStoreMappings)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreMapping_Store");
+            });
+
+            modelBuilder.Entity<PromotionStoreTypeDAO>(entity =>
+            {
+                entity.ToTable("PromotionStoreType", "PRO");
+
+                entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
+
+                entity.Property(e => e.DiscountValue).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.FromValue).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.ToValue).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.PromotionDiscountType)
+                    .WithMany(p => p.PromotionStoreTypes)
+                    .HasForeignKey(d => d.PromotionDiscountTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreType_PromotionDiscountType");
+
+                entity.HasOne(d => d.Promotion)
+                    .WithMany(p => p.PromotionStoreTypes)
+                    .HasForeignKey(d => d.PromotionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreType_Promotion");
+            });
+
+            modelBuilder.Entity<PromotionStoreTypeItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PromotionStoreTypeId, e.ItemId });
+
+                entity.ToTable("PromotionStoreTypeItemMapping", "PRO");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.PromotionStoreTypeItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreTypeItemMapping_Item");
+
+                entity.HasOne(d => d.PromotionStoreType)
+                    .WithMany(p => p.PromotionStoreTypeItemMappings)
+                    .HasForeignKey(d => d.PromotionStoreTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreTypeItemMapping_PromotionStoreType");
+            });
+
+            modelBuilder.Entity<PromotionStoreTypeMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PromotionId, e.StoreTypeId });
+
+                entity.ToTable("PromotionStoreTypeMapping", "PRO");
+
+                entity.HasOne(d => d.Promotion)
+                    .WithMany(p => p.PromotionStoreTypeMappings)
+                    .HasForeignKey(d => d.PromotionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreTypeMapping_Promotion");
+
+                entity.HasOne(d => d.StoreType)
+                    .WithMany(p => p.PromotionStoreTypeMappings)
+                    .HasForeignKey(d => d.StoreTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreTypeMapping_StoreType");
+            });
+
+            modelBuilder.Entity<PromotionTypeDAO>(entity =>
+            {
+                entity.ToTable("PromotionType", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(200);
             });
 
             modelBuilder.Entity<ProvinceDAO>(entity =>

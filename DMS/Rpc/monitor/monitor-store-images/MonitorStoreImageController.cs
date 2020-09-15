@@ -200,7 +200,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                         FilterAppUserIds.Contains(sc.SaleEmployeeId) &&
-                        (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value)) &&
+                        OrganizationIds.Contains(au.OrganizationId) &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                         (
@@ -266,7 +266,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                         FilterAppUserIds.Contains(au.Id) &&
-                        (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value)) &&
+                        OrganizationIds.Contains(au.OrganizationId) &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                         (
@@ -305,7 +305,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                      join s in DataContext.Store on sc.StoreId equals s.Id
                                      join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                                     (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value)) &&
+                                     OrganizationIds.Contains(au.OrganizationId) &&
                                      (SaleEmployeeIds.Contains(sc.SaleEmployeeId)) &&
                                      (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                                      (
@@ -326,7 +326,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                   join s in DataContext.Store on aim.StoreId equals s.Id
                                   join au in DataContext.AppUser on aim.SaleEmployeeId equals au.Id
                                   where Start <= aim.ShootingAt && aim.ShootingAt <= End &&
-                                  (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value)) &&
+                                  OrganizationIds.Contains(au.OrganizationId) &&
                                   (aim.SaleEmployeeId.HasValue && SaleEmployeeIds.Contains(aim.SaleEmployeeId.Value))
                                   select new AlbumImageMapping 
                                   {
@@ -343,7 +343,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
             var AlbumImageMappingDAOs = await AlbumImageQuery.ToListAsync();
 
-            OrganizationIds = SalesEmployees.Where(x => x.OrganizationId.HasValue).Select(x => x.OrganizationId.Value).ToList();
+            OrganizationIds = SalesEmployees.Select(x => x.OrganizationId).ToList();
             List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
             {
                 Skip = 0,

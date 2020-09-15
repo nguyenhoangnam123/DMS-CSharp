@@ -61,7 +61,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q => q.Employee.OrganizationId.HasValue && Ids.Contains(q.Employee.OrganizationId.Value));
+                    query = query.Where(q => Ids.Contains(q.Employee.OrganizationId));
                 }
                 if (filter.OrganizationId.NotIn != null)
                 {
@@ -70,7 +70,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q => q.Employee.OrganizationId.HasValue && !Ids.Contains(q.Employee.OrganizationId.Value));
+                    query = query.Where(q => !Ids.Contains(q.Employee.OrganizationId));
                 }
             }
             if (filter.AppUserId != null)
@@ -116,7 +116,7 @@ namespace DMS.Repositories
                         List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => KpiGeneralFilter.OrganizationId.In.Contains(o.Id)).ToList();
                         List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> Ids = Branches.Select(o => o.Id).ToList();
-                        queryable = queryable.Where(q => Ids.Contains(q.Employee.OrganizationId.Value));
+                        queryable = queryable.Where(q => Ids.Contains(q.Employee.OrganizationId));
                     }
                     if (KpiGeneralFilter.OrganizationId.NotIn != null)
                     {
@@ -125,7 +125,7 @@ namespace DMS.Repositories
                         List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => KpiGeneralFilter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                         List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> Ids = Branches.Select(o => o.Id).ToList();
-                        queryable = queryable.Where(q => !Ids.Contains(q.Employee.OrganizationId.Value));
+                        queryable = queryable.Where(q => !Ids.Contains(q.Employee.OrganizationId));
                     }
                 }
                 if (KpiGeneralFilter.AppUserId != null)

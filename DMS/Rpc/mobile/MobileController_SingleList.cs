@@ -1126,7 +1126,7 @@ namespace DMS.Rpc.mobile
             StoreScoutingFilter.CreatedAt = Mobile_StoreScoutingFilterDTO.CreatedAt;
             StoreScoutingFilter.AppUserId = new IdFilter { Equal = appUser.Id };
             StoreScoutingFilter.DistrictId = Mobile_StoreScoutingFilterDTO.DistrictId;
-            StoreScoutingFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId.Value };
+            StoreScoutingFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreScoutingFilter.ProvinceId = Mobile_StoreScoutingFilterDTO.ProvinceId;
             StoreScoutingFilter.WardId = Mobile_StoreScoutingFilterDTO.WardId;
             StoreScoutingFilter.StoreScoutingStatusId = Mobile_StoreScoutingFilterDTO.StoreScoutingStatusId;
@@ -1156,7 +1156,7 @@ namespace DMS.Rpc.mobile
             StoreScoutingFilter.CreatedAt = Mobile_StoreScoutingFilterDTO.CreatedAt;
             StoreScoutingFilter.AppUserId = new IdFilter { Equal = appUser.Id };
             StoreScoutingFilter.DistrictId = Mobile_StoreScoutingFilterDTO.DistrictId;
-            StoreScoutingFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId.Value };
+            StoreScoutingFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreScoutingFilter.ProvinceId = Mobile_StoreScoutingFilterDTO.ProvinceId;
             StoreScoutingFilter.WardId = Mobile_StoreScoutingFilterDTO.WardId;
             StoreScoutingFilter.StoreScoutingStatusId = Mobile_StoreScoutingFilterDTO.StoreScoutingStatusId;

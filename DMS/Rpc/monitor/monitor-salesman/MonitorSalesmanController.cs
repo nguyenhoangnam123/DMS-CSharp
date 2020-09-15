@@ -114,7 +114,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
             int count = await DataContext.AppUser.Where(au =>
                 AppUserIds.Contains(au.Id) &&
-                au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value) &&
+                OrganizationIds.Contains(au.OrganizationId) &&
                 (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value)
             ).CountAsync();
             return count;
@@ -151,7 +151,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             var query = DataContext.AppUser
                 .Where(au =>
                     FilterAppUserIds.Contains(au.Id) &&
-                    au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value) &&
+                    OrganizationIds.Contains(au.OrganizationId) &&
                     (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value))
                 .OrderBy(q => q.Organization.Path).ThenBy(q => q.DisplayName)
                 .Distinct()
@@ -160,7 +160,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     SaleEmployeeId = ap.Id,
                     Username = ap.Username,
                     DisplayName = ap.DisplayName,
-                    OrganizationId = ap.OrganizationId.Value,
+                    OrganizationId = ap.OrganizationId,
                     OrganizationName = ap.Organization == null ? null : ap.Organization.Name,
                 });
 

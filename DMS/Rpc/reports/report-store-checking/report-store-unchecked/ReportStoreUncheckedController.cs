@@ -170,7 +170,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             AppUserIds = await (from su in DataContext.StoreUnchecking
                                 join a in DataContext.AppUser on su.AppUserId equals a.Id
                                 where AppUserIds.Contains(a.Id) &&
-                                (a.OrganizationId.HasValue && OrganizationIds.Contains(a.OrganizationId.Value)) &&
+                                OrganizationIds.Contains(a.OrganizationId) &&
                                 Start <= su.Date && su.Date <= End
                                 orderby a.Organization.Name, a.DisplayName
                                 select su.AppUserId)
@@ -226,7 +226,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                 .ToList();
 
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id))
-                .Where(x => x.OrganizationId.HasValue && OrganizationIds.Contains(x.OrganizationId.Value))
+                .Where(x => OrganizationIds.Contains(x.OrganizationId))
                 .Include(au => au.Organization)
                 .OrderBy(su => su.Organization.Path)
                 .ToListAsync();

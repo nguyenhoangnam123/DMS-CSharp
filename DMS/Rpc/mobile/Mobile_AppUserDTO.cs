@@ -25,7 +25,7 @@ namespace DMS.Rpc.mobile
 
         public string Department { get; set; }
 
-        public long? OrganizationId { get; set; }
+        public long OrganizationId { get; set; }
 
         public long? SexId { get; set; }
 

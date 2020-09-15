@@ -118,7 +118,7 @@ namespace DMS.Services.MStoreScouting
             {
                 var User = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 StoreScouting.CreatorId = User.Id;
-                StoreScouting.OrganizationId = User.OrganizationId.Value;
+                StoreScouting.OrganizationId = User.OrganizationId;
                 StoreScouting.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.NOTOPEN.Id;
                 await UOW.Begin();
                 await UOW.StoreScoutingRepository.Create(StoreScouting);
@@ -310,7 +310,7 @@ namespace DMS.Services.MStoreScouting
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
             });
-            var AppUserIds = AppUsers.Where(x => OrganizationIds.Contains(x.OrganizationId.Value)).Select(x => x.Id).ToList();
+            var AppUserIds = AppUsers.Where(x => OrganizationIds.Contains(x.OrganizationId)).Select(x => x.Id).ToList();
             AppUserIds = AppUserIds.Intersect(Ids).ToList();
             return AppUserIds;
         }
