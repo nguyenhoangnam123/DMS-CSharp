@@ -169,7 +169,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
 
             DateTime End = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -192,10 +192,9 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             var query = from si in DataContext.StoreImage
                                                  where Start <= si.ShootingAt && si.ShootingAt <= End &&
                                                  si.AlbumId == AlbumId.Value &&
-                                                 si.AlbumId == AlbumId.Value &&
                                                  (
                                                      (
-                                                         si.SaleEmployeeId.HasValue == false &&
+                                                         SaleEmployeeId.HasValue == false &&
                                                          (si.SaleEmployeeId.HasValue == false || FilterAppUserIds.Contains(si.SaleEmployeeId.Value))
                                                      ) ||
                                                      (
@@ -229,7 +228,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
 
             DateTime End = MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.CheckIn.LessEqual.Value;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -252,10 +251,9 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             var query = from si in DataContext.StoreImage
                         where Start <= si.ShootingAt && si.ShootingAt <= End &&
                         si.AlbumId == AlbumId.Value &&
-                        si.AlbumId == AlbumId.Value &&
                         (
                             (
-                                si.SaleEmployeeId.HasValue == false &&
+                                SaleEmployeeId.HasValue == false &&
                                 (si.SaleEmployeeId.HasValue == false || FilterAppUserIds.Contains(si.SaleEmployeeId.Value))
                             ) ||
                             (
