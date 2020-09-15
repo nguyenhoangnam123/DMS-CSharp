@@ -81,7 +81,7 @@ namespace DMS.Models
         /// <summary>
         /// Đơn vị công tác
         /// </summary>
-        public long? OrganizationId { get; set; }
+        public long OrganizationId { get; set; }
         /// <summary>
         /// Tỉnh thành
         /// </summary>

@@ -25,7 +25,7 @@ namespace DMS.Rpc.kpi_general
         
         public string Department { get; set; }
         
-        public long? OrganizationId { get; set; }
+        public long OrganizationId { get; set; }
         
         public long StatusId { get; set; }
         

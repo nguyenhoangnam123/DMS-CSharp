@@ -73,7 +73,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q => q.OrganizationId.HasValue && Ids.Contains(q.OrganizationId.Value));
+                    query = query.Where(q => Ids.Contains(q.OrganizationId));
                 }
                 if (filter.OrganizationId.NotIn != null)
                 {
@@ -82,7 +82,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q => q.OrganizationId.HasValue && !Ids.Contains(q.OrganizationId.Value));
+                    query = query.Where(q => !Ids.Contains(q.OrganizationId));
                 }
             }
             if (filter.ProvinceId != null)
@@ -152,7 +152,7 @@ namespace DMS.Repositories
                         List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => AppUserFilter.OrganizationId.In.Contains(o.Id)).ToList();
                         List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> Ids = Branches.Select(o => o.Id).ToList();
-                        queryable = queryable.Where(q => q.OrganizationId.HasValue && Ids.Contains(q.OrganizationId.Value));
+                        queryable = queryable.Where(q => Ids.Contains(q.OrganizationId));
                     }
                     if (AppUserFilter.OrganizationId.NotIn != null)
                     {
@@ -161,7 +161,7 @@ namespace DMS.Repositories
                         List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => AppUserFilter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                         List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> Ids = Branches.Select(o => o.Id).ToList();
-                        queryable = queryable.Where(q => q.OrganizationId.HasValue && !Ids.Contains(q.OrganizationId.Value));
+                        queryable = queryable.Where(q => !Ids.Contains(q.OrganizationId));
                     }
                 }
                 if (AppUserFilter.ProvinceId != null)
@@ -284,7 +284,7 @@ namespace DMS.Repositories
                 Birthday = filter.Selects.Contains(AppUserSelect.Birthday) ? q.Birthday : default(DateTime?),
                 PositionId = filter.Selects.Contains(AppUserSelect.Position) ? q.PositionId : default(long),
                 Department = filter.Selects.Contains(AppUserSelect.Department) ? q.Department : default(string),
-                OrganizationId = filter.Selects.Contains(AppUserSelect.Organization) ? q.OrganizationId : default(long?),
+                OrganizationId = filter.Selects.Contains(AppUserSelect.Organization) ? q.OrganizationId : default(long),
                 ProvinceId = filter.Selects.Contains(AppUserSelect.Province) ? q.ProvinceId : default(long),
                 Latitude = filter.Selects.Contains(AppUserSelect.Latitude) ? q.Latitude : default(decimal?),
                 Longitude = filter.Selects.Contains(AppUserSelect.Longitude) ? q.Longitude : default(decimal?),
@@ -473,7 +473,7 @@ namespace DMS.Repositories
             if (AppUserDAO == null)
                 return false;
             await DataContext.AppUserStoreMapping.Where(x => x.AppUserId == AppUser.Id).DeleteFromQueryAsync();
-            if(AppUser.AppUserStoreMappings != null)
+            if (AppUser.AppUserStoreMappings != null)
             {
                 List<AppUserStoreMappingDAO> AppUserStoreMappingDAOs = new List<AppUserStoreMappingDAO>();
                 foreach (var AppUserStoreMapping in AppUser.AppUserStoreMappings)

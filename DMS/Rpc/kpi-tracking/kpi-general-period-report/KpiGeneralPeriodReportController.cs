@@ -208,7 +208,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                             Username = au.Username,
                             DisplayName = au.DisplayName,
                             OrganizationName = au.Organization == null ? null : au.Organization.Name,
-                            OrganizationId = au.OrganizationId.Value
+                            OrganizationId = au.OrganizationId
                         };
             List<KpiGeneralPeriodReport_SaleEmployeeDTO> KpiGeneralPeriodReport_SaleEmployeeDTOs = (await query
                 .Distinct()

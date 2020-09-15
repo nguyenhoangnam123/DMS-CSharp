@@ -74,7 +74,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q => q.Creator.OrganizationId.HasValue && Ids.Contains(q.Creator.OrganizationId.Value));
+                    query = query.Where(q => Ids.Contains(q.Creator.OrganizationId));
                 }
                 if (filter.OrganizationId.NotIn != null)
                 {
@@ -83,7 +83,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q => q.Creator.OrganizationId.HasValue && !Ids.Contains(q.Creator.OrganizationId.Value));
+                    query = query.Where(q => !Ids.Contains(q.Creator.OrganizationId));
                 }
             }
             query = OrFilter(query, filter);
@@ -139,7 +139,7 @@ namespace DMS.Repositories
                         List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => ProblemFilter.OrganizationId.In.Contains(o.Id)).ToList();
                         List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> Ids = Branches.Select(o => o.Id).ToList();
-                        queryable = queryable.Where(q => Ids.Contains(q.Creator.OrganizationId.Value));
+                        queryable = queryable.Where(q => Ids.Contains(q.Creator.OrganizationId));
                     }
                     if (ProblemFilter.OrganizationId.NotIn != null)
                     {
@@ -148,7 +148,7 @@ namespace DMS.Repositories
                         List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => ProblemFilter.OrganizationId.NotIn.Contains(o.Id)).ToList();
                         List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                         List<long> Ids = Branches.Select(o => o.Id).ToList();
-                        queryable = queryable.Where(q => !Ids.Contains(q.Creator.OrganizationId.Value));
+                        queryable = queryable.Where(q => !Ids.Contains(q.Creator.OrganizationId));
                     }
                 }
                 initQuery = initQuery.Union(queryable);
@@ -593,7 +593,7 @@ namespace DMS.Repositories
             await DataContext.ProblemHistory.Where(x => x.ProblemId == Problem.Id).DeleteFromQueryAsync();
 
             List<ProblemHistoryDAO> ProblemHistoryDAOs = new List<ProblemHistoryDAO>();
-            if(Problem.ProblemHistorys != null)
+            if (Problem.ProblemHistorys != null)
             {
                 foreach (ProblemHistory ProblemHistory in Problem.ProblemHistorys)
                 {

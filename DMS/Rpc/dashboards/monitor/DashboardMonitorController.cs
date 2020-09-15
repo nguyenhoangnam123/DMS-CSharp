@@ -107,7 +107,7 @@ namespace DMS.Rpc.dashboards.monitor
 
             var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var AppUserIds = await DataContext.AppUser
-                .Where(x => x.OrganizationId.HasValue && x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
+                .Where(x => x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                 .Select(x => x.Id)
                 .ToListAsync();
 
@@ -190,7 +190,7 @@ namespace DMS.Rpc.dashboards.monitor
 
             var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var AppUserIds = await DataContext.AppUser
-                .Where(x => x.OrganizationId.HasValue && x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
+                .Where(x => x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                 .Select(x => x.Id)
                 .ToListAsync();
 
@@ -235,7 +235,7 @@ namespace DMS.Rpc.dashboards.monitor
 
             var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var AppUserIds = await DataContext.AppUser
-                .Where(x => x.OrganizationId.HasValue && x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
+                .Where(x => x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                 .Select(x => x.Id)
                 .ToListAsync();
 
@@ -297,7 +297,7 @@ namespace DMS.Rpc.dashboards.monitor
 
             var query_Scouting = from ss in DataContext.StoreScouting
                                  join au in DataContext.AppUser on ss.CreatorId equals au.Id
-                                 where (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
+                                 where (OrganizationIds.Contains(au.OrganizationId))
                                  select new DashboardMonitor_StoreDTO
                                  {
                                      Id = ss.Id,
@@ -328,7 +328,7 @@ namespace DMS.Rpc.dashboards.monitor
 
             var query = from au in DataContext.AppUser
                         where au.DeletedAt.HasValue == false && au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
-                        (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
+                        OrganizationIds.Contains(au.OrganizationId)
                         select new DashboardMonitor_AppUserDTO
                         {
                             Id = au.Id,
@@ -350,7 +350,7 @@ namespace DMS.Rpc.dashboards.monitor
                         join r in DataContext.RequestWorkflowDefinitionMapping on i.RowId equals r.RequestId
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
-                        where appUser.OrganizationId.HasValue && o.Path.StartsWith(appUser.Organization.Path)
+                        where o.Path.StartsWith(appUser.Organization.Path)
                         orderby i.OrderDate descending
                         select new DashboardMonitor_IndirectSalesOrderDTO
                         {
@@ -414,7 +414,7 @@ namespace DMS.Rpc.dashboards.monitor
 
             var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var AppUserIds = await DataContext.AppUser
-                .Where(x => x.OrganizationId.HasValue && x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
+                .Where(x => x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                 .Select(x => x.Id)
                 .ToListAsync();
 

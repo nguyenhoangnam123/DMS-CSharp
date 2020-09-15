@@ -383,7 +383,7 @@ namespace DMS.Rpc.kpi_general
                         KpiGeneral.KpiGeneralContents = new List<KpiGeneralContent>();
                         KpiGeneral.CreatorId = AppUser == null ? 0 : AppUser.Id;
                         KpiGeneral.Creator = AppUser;
-                        KpiGeneral.OrganizationId = AppUser.OrganizationId.Value;
+                        KpiGeneral.OrganizationId = AppUser.OrganizationId;
                         KpiGeneral.EmployeeId = Employee == null ? 0 : Employee.Id;
                         KpiGeneral.Employee = Employee;
                         KpiGeneral.KpiYearId = KpiYear == null ? 0 : KpiYear.Id;

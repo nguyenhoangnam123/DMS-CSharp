@@ -348,7 +348,7 @@ namespace DMS.Rpc.kpi_item
                         KpiItem.KpiItemContents = new List<KpiItemContent>();
                         KpiItem.CreatorId = AppUser == null ? 0 : AppUser.Id;
                         KpiItem.Creator = AppUser;
-                        KpiItem.OrganizationId = AppUser.OrganizationId.Value;
+                        KpiItem.OrganizationId = AppUser.OrganizationId;
                         KpiItem.EmployeeId = Employee == null ? 0 : Employee.Id;
                         KpiItem.Employee = Employee;
                         KpiItem.KpiYearId = KpiYear == null ? 0 : KpiYear.Id;

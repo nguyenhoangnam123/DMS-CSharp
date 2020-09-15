@@ -163,7 +163,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.Begin();
                 IndirectSalesOrder.RequestStateId = RequestStateEnum.NEW.Id;
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
-                IndirectSalesOrder.OrganizationId = SaleEmployee.OrganizationId.Value;
+                IndirectSalesOrder.OrganizationId = SaleEmployee.OrganizationId;
                 await UOW.IndirectSalesOrderRepository.Create(IndirectSalesOrder);
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);
@@ -840,7 +840,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
             });
-            var AppUserIds = AppUsers.Where(x => OrganizationIds.Contains(x.OrganizationId.Value)).Select(x => x.Id).ToList();
+            var AppUserIds = AppUsers.Where(x => OrganizationIds.Contains(x.OrganizationId)).Select(x => x.Id).ToList();
             AppUserIds = AppUserIds.Intersect(Ids).ToList();
             return AppUserIds;
         }

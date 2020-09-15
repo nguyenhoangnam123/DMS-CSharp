@@ -250,7 +250,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
-                        (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
+                        OrganizationIds.Contains(au.OrganizationId)
                         select au;
 
             int count = await query.Distinct().CountAsync();
@@ -326,12 +326,12 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
-                        (au.OrganizationId.HasValue && OrganizationIds.Contains(au.OrganizationId.Value))
+                        OrganizationIds.Contains(au.OrganizationId)
                         select au;
 
             var AppUserIds = await query.Select(x => x.Id).Distinct().ToListAsync();
 
-            List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id) && OrganizationIds.Contains(au.OrganizationId.Value))
+            List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id) && OrganizationIds.Contains(au.OrganizationId))
                 .Include(au => au.Organization)
                 .OrderBy(su => su.OrganizationId)
                 .Skip(ReportStoreChecker_ReportStoreCheckedFilterDTO.Skip)
