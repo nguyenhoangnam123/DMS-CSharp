@@ -341,10 +341,42 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                 .ToListAsync();
             List<long> IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
             List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
-                .Where(x => IndirectSalesOrderIds.Contains(x.IndirectSalesOrderId))
+                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
+                .Select(x => new IndirectSalesOrderContentDAO
+                {
+                    Id = x.Id,
+                    Amount = x.Amount,
+                    DiscountAmount = x.DiscountAmount,
+                    GeneralDiscountAmount = x.GeneralDiscountAmount,
+                    PrimaryPrice = x.PrimaryPrice,
+                    RequestedQuantity = x.RequestedQuantity,
+                    SalePrice = x.SalePrice,
+                    TaxAmount = x.TaxAmount,
+                    IndirectSalesOrderId = x.IndirectSalesOrderId,
+                    ItemId = x.ItemId,
+                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    IndirectSalesOrder = x.IndirectSalesOrder == null ? null : new IndirectSalesOrderDAO
+                    {
+                        BuyerStoreId = x.IndirectSalesOrder.BuyerStoreId,
+                    }
+                })
                 .ToListAsync();
             List<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotionDAOs = await DataContext.IndirectSalesOrderPromotion
-                .Where(x => IndirectSalesOrderIds.Contains(x.IndirectSalesOrderId))
+                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
+                .Select(x => new IndirectSalesOrderPromotionDAO
+                {
+                    Id = x.Id,
+                    RequestedQuantity = x.RequestedQuantity,
+                    IndirectSalesOrderId = x.IndirectSalesOrderId,
+                    ItemId = x.ItemId,
+                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    IndirectSalesOrder = x.IndirectSalesOrder == null ? null : new IndirectSalesOrderDAO
+                    {
+                        BuyerStoreId = x.IndirectSalesOrder.BuyerStoreId,
+                    }
+                })
                 .ToListAsync();
             List<long> ItemIds = new List<long>();
             ItemIds.AddRange(IndirectSalesOrderContentDAOs.Select(x => x.ItemId));
@@ -560,10 +592,30 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
                 .ToListAsync();
             List<long> IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
             List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
-                .Where(x => IndirectSalesOrderIds.Contains(x.IndirectSalesOrderId))
+                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
+                .Select(x => new IndirectSalesOrderContentDAO
+                {
+                    Id = x.Id,
+                    Amount = x.Amount,
+                    DiscountAmount = x.DiscountAmount,
+                    GeneralDiscountAmount = x.GeneralDiscountAmount,
+                    PrimaryPrice = x.PrimaryPrice,
+                    RequestedQuantity = x.RequestedQuantity,
+                    SalePrice = x.SalePrice,
+                    TaxAmount = x.TaxAmount,
+                    IndirectSalesOrderId = x.IndirectSalesOrderId,
+                    ItemId = x.ItemId,
+                })
                 .ToListAsync();
             List<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotionDAOs = await DataContext.IndirectSalesOrderPromotion
-                .Where(x => IndirectSalesOrderIds.Contains(x.IndirectSalesOrderId))
+                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
+                .Select(x => new IndirectSalesOrderPromotionDAO
+                {
+                    Id = x.Id,
+                    RequestedQuantity = x.RequestedQuantity,
+                    IndirectSalesOrderId = x.IndirectSalesOrderId,
+                    ItemId = x.ItemId,
+                })
                 .ToListAsync();
             List<long> ItemIds = new List<long>();
             ItemIds.AddRange(IndirectSalesOrderContentDAOs.Select(x => x.ItemId));
