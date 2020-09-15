@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -349,6 +350,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                         Phone = x.Phone,
                     }).ToList();
             }
+
             ReportStoreGeneral_ReportStoreGeneralDTOs = ReportStoreGeneral_ReportStoreGeneralDTOs.Where(x => x.Stores.Any()).ToList();
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Include(x => x.SaleEmployee)
@@ -361,7 +363,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 x.OrderDate >= Start && x.OrderDate <= End &&
                 AppUserIds.Contains(x.SaleEmployeeId))
                 .ToListAsync();
-            var IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
+
             List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
                 .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) &&
                 x.IndirectSalesOrder.OrderDate >= Start && x.IndirectSalesOrder.OrderDate <= End &&
@@ -369,9 +371,15 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 .Select(x => new IndirectSalesOrderContentDAO
                 {
                     Id = x.Id,
-                    ItemId = x.ItemId
+                    ItemId = x.ItemId,
+                    IndirectSalesOrderId = x.IndirectSalesOrderId,
+                    IndirectSalesOrder = x.IndirectSalesOrder == null ? null : new IndirectSalesOrderDAO
+                    {
+                        BuyerStoreId = x.IndirectSalesOrder.BuyerStoreId
+                    }
                 })
                 .ToListAsync();
+
             // khởi tạo khung dữ liệu
             foreach (ReportStoreGeneral_ReportStoreGeneralDTO ReportStoreGeneral_ReportStoreGeneralDTO in ReportStoreGeneral_ReportStoreGeneralDTOs)
             {
@@ -423,16 +431,17 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                         .FirstOrDefault();
                 }
 
-                foreach (var IndirectSalesOrderDAO in IndirectSalesOrderDAOs)
+                foreach (var Store in ReportStoreGeneral_ReportStoreGeneralDTO.Stores)
                 {
-                    var Store = ReportStoreGeneral_ReportStoreGeneralDTO.Stores.Where(x => x.Id == IndirectSalesOrderDAO.BuyerStoreId).FirstOrDefault();
-                    if (Store == null)
-                        continue;
-                    if (Store.IndirectSalesOrderIds == null)
-                        Store.IndirectSalesOrderIds = new HashSet<long>();
-                    Store.IndirectSalesOrderIds.Add(IndirectSalesOrderDAO.Id);
+                    var IndirectSalesOrderIds = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Select(x => x.Id).ToList();
+                    foreach (var Id in IndirectSalesOrderIds)
+                    {
+                        if (Store.IndirectSalesOrderIds == null)
+                            Store.IndirectSalesOrderIds = new HashSet<long>();
+                        Store.IndirectSalesOrderIds.Add(Id);
+                    }
 
-                    var IndirectSalesOrderContents = IndirectSalesOrderContentDAOs.Where(x => x.IndirectSalesOrderId == IndirectSalesOrderDAO.Id).ToList();
+                    var IndirectSalesOrderContents = IndirectSalesOrderContentDAOs.Where(x => x.IndirectSalesOrder.BuyerStoreId == Store.Id).ToList();
                     foreach (var IndirectSalesOrderContent in IndirectSalesOrderContents)
                     {
                         if (Store.SKUItemIds == null)
