@@ -363,7 +363,14 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 .ToListAsync();
             var IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
             List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
-                .Where(x => IndirectSalesOrderIds.Contains(x.IndirectSalesOrderId))
+                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) &&
+                x.IndirectSalesOrder.OrderDate >= Start && x.IndirectSalesOrder.OrderDate <= End &&
+                AppUserIds.Contains(x.IndirectSalesOrder.SaleEmployeeId))
+                .Select(x => new IndirectSalesOrderContentDAO
+                {
+                    Id = x.Id,
+                    ItemId = x.ItemId
+                })
                 .ToListAsync();
             // khởi tạo khung dữ liệu
             foreach (ReportStoreGeneral_ReportStoreGeneralDTO ReportStoreGeneral_ReportStoreGeneralDTO in ReportStoreGeneral_ReportStoreGeneralDTOs)

@@ -587,137 +587,21 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_store_and_ite
             }
 
             StoreIds = Stores.Select(s => s.Id).ToList();
-            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
-                .Where(x => StoreIds.Contains(x.BuyerStoreId) && Start <= x.OrderDate && x.OrderDate <= End)
-                .ToListAsync();
-            List<long> IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
-            List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
-                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
-                .Select(x => new IndirectSalesOrderContentDAO
-                {
-                    Id = x.Id,
-                    Amount = x.Amount,
-                    DiscountAmount = x.DiscountAmount,
-                    GeneralDiscountAmount = x.GeneralDiscountAmount,
-                    PrimaryPrice = x.PrimaryPrice,
-                    RequestedQuantity = x.RequestedQuantity,
-                    SalePrice = x.SalePrice,
-                    TaxAmount = x.TaxAmount,
-                    IndirectSalesOrderId = x.IndirectSalesOrderId,
-                    ItemId = x.ItemId,
-                })
-                .ToListAsync();
-            List<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotionDAOs = await DataContext.IndirectSalesOrderPromotion
-                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
-                .Select(x => new IndirectSalesOrderPromotionDAO
-                {
-                    Id = x.Id,
-                    RequestedQuantity = x.RequestedQuantity,
-                    IndirectSalesOrderId = x.IndirectSalesOrderId,
-                    ItemId = x.ItemId,
-                })
-                .ToListAsync();
-            List<long> ItemIds = new List<long>();
-            ItemIds.AddRange(IndirectSalesOrderContentDAOs.Select(x => x.ItemId));
-            ItemIds.AddRange(IndirectSalesOrderPromotionDAOs.Select(x => x.ItemId));
-            ItemIds = ItemIds.Distinct().ToList();
+            var IndirectSalesOrderContentQuery = DataContext.IndirectSalesOrderContent
+                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End);
+            var IndirectSalesOrderPromotionQuery = DataContext.IndirectSalesOrderPromotion
+                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End);
 
-            List<Item> Items = await ItemService.List(new ItemFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Id = new IdFilter { In = ItemIds },
-                Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name | ItemSelect.SalePrice
-            });
+            ReportSalesOrderByStoreAndItem_TotalDTO.TotalSalesStock = IndirectSalesOrderContentQuery.Select(x => x.RequestedQuantity).Sum();
 
-            // khởi tạo khung dữ liệu
-            foreach (ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO in ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs)
-            {
-                foreach (var Store in ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO.Stores)
-                {
-                    var SalesOrderIds = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Select(x => x.Id).ToList();
-                    Store.Items = new List<ReportSalesOrderByStoreAndItem_ItemDTO>();
-                    foreach (IndirectSalesOrderContentDAO IndirectSalesOrderContentDAO in IndirectSalesOrderContentDAOs)
-                    {
-                        if (SalesOrderIds.Contains(IndirectSalesOrderContentDAO.IndirectSalesOrderId))
-                        {
-                            ReportSalesOrderByStoreAndItem_ItemDTO ReportSalesOrderByStoreAndItem_ItemDTO = Store.Items.Where(i => i.Id == IndirectSalesOrderContentDAO.ItemId).FirstOrDefault();
-                            if (ReportSalesOrderByStoreAndItem_ItemDTO == null)
-                            {
-                                var item = Items.Where(x => x.Id == IndirectSalesOrderContentDAO.ItemId).FirstOrDefault();
-                                if (item == null)
-                                    continue;
-                                ReportSalesOrderByStoreAndItem_ItemDTO = new ReportSalesOrderByStoreAndItem_ItemDTO
-                                {
-                                    Id = item.Id,
-                                    Code = item.Code,
-                                    Name = item.Name,
-                                    IndirectSalesOrderIds = new HashSet<long>(),
-                                };
-                                Store.Items.Add(ReportSalesOrderByStoreAndItem_ItemDTO);
-                            }
-                            ReportSalesOrderByStoreAndItem_ItemDTO.IndirectSalesOrderIds.Add(IndirectSalesOrderContentDAO.IndirectSalesOrderId);
-                            ReportSalesOrderByStoreAndItem_ItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
-                            ReportSalesOrderByStoreAndItem_ItemDTO.SalePriceAverage += (IndirectSalesOrderContentDAO.SalePrice * IndirectSalesOrderContentDAO.RequestedQuantity);
-                            ReportSalesOrderByStoreAndItem_ItemDTO.Revenue += (IndirectSalesOrderContentDAO.Amount - (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.TaxAmount ?? 0));
-                            ReportSalesOrderByStoreAndItem_ItemDTO.Discount += ((IndirectSalesOrderContentDAO.DiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0));
-                        }
-                    }
+            ReportSalesOrderByStoreAndItem_TotalDTO.TotalPromotionStock = IndirectSalesOrderPromotionQuery.Select(x => x.RequestedQuantity).Sum();
 
-                    foreach (var item in Store.Items)
-                    {
-                        item.SalePriceAverage = item.SalePriceAverage / item.SaleStock;
-                    }
+            ReportSalesOrderByStoreAndItem_TotalDTO.TotalRevenue = Math.Round(IndirectSalesOrderContentQuery.Select(x => x.Amount).Sum()
+                - IndirectSalesOrderContentQuery.Where(x => x.GeneralDiscountAmount.HasValue).Select(x => x.GeneralDiscountAmount.Value).Sum()
+                + IndirectSalesOrderContentQuery.Where(x => x.TaxAmount.HasValue).Select(x => x.TaxAmount.Value).Sum(), 0);
 
-                    foreach (IndirectSalesOrderPromotionDAO IndirectSalesOrderPromotionDAO in IndirectSalesOrderPromotionDAOs)
-                    {
-                        if (SalesOrderIds.Contains(IndirectSalesOrderPromotionDAO.IndirectSalesOrderId))
-                        {
-                            ReportSalesOrderByStoreAndItem_ItemDTO ReportSalesOrderByStoreAndItem_ItemDTO = Store.Items.Where(i => i.Id == IndirectSalesOrderPromotionDAO.ItemId).FirstOrDefault();
-                            if (ReportSalesOrderByStoreAndItem_ItemDTO == null)
-                            {
-                                var item = Items.Where(x => x.Id == IndirectSalesOrderPromotionDAO.ItemId).FirstOrDefault();
-                                if (item == null)
-                                    continue;
-                                ReportSalesOrderByStoreAndItem_ItemDTO = new ReportSalesOrderByStoreAndItem_ItemDTO
-                                {
-                                    Id = item.Id,
-                                    Code = item.Code,
-                                    Name = item.Name,
-                                    IndirectSalesOrderIds = new HashSet<long>(),
-                                };
-                                Store.Items.Add(ReportSalesOrderByStoreAndItem_ItemDTO);
-                            }
-                            ReportSalesOrderByStoreAndItem_ItemDTO.IndirectSalesOrderIds.Add(IndirectSalesOrderPromotionDAO.IndirectSalesOrderId);
-                            ReportSalesOrderByStoreAndItem_ItemDTO.PromotionStock += IndirectSalesOrderPromotionDAO.RequestedQuantity;
-                        }
-                    }
-                }
-            }
-
-
-            //làm tròn số
-            foreach (var ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO in ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs)
-            {
-                foreach (var Store in ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO.Stores)
-                {
-                    foreach (var item in Store.Items)
-                    {
-                        item.Revenue = Math.Round(item.Revenue, 0);
-                        item.Discount = Math.Round(item.Discount, 0);
-                        item.SalePriceAverage = Math.Round(item.SalePriceAverage, 0);
-                    }
-                }
-            }
-
-            ReportSalesOrderByStoreAndItem_TotalDTO.TotalDiscount = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs.SelectMany(x => x.Stores)
-                .SelectMany(x => x.Items).Sum(x => x.Discount);
-            ReportSalesOrderByStoreAndItem_TotalDTO.TotalRevenue = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs.SelectMany(x => x.Stores)
-                .SelectMany(x => x.Items).Sum(x => x.Revenue);
-            ReportSalesOrderByStoreAndItem_TotalDTO.TotalPromotionStock = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs.SelectMany(x => x.Stores)
-                .SelectMany(x => x.Items).Sum(x => x.PromotionStock);
-            ReportSalesOrderByStoreAndItem_TotalDTO.TotalSalesStock = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTOs.SelectMany(x => x.Stores)
-                .SelectMany(x => x.Items).Sum(x => x.SaleStock);
+            ReportSalesOrderByStoreAndItem_TotalDTO.TotalDiscount = Math.Round(IndirectSalesOrderContentQuery.Where(x => x.GeneralDiscountAmount.HasValue).Select(x => x.GeneralDiscountAmount.Value).Sum()
+                + IndirectSalesOrderContentQuery.Where(x => x.DiscountAmount.HasValue).Select(x => x.DiscountAmount.Value).Sum(), 0);
             return ReportSalesOrderByStoreAndItem_TotalDTO;
         }
 

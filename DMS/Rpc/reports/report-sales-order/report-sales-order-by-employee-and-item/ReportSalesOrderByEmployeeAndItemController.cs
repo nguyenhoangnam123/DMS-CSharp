@@ -453,126 +453,23 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
             }
 
             List<long> SaleEmployeeIds = AppUsers.Select(s => s.Id).ToList();
-            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
-                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && Start <= x.OrderDate && x.OrderDate <= End)
-                .ToListAsync();
-            List<long> IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
-            List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
-                .Where(x => SaleEmployeeIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
-                .Select(x => new IndirectSalesOrderContentDAO
-                {
-                    Id = x.Id,
-                    Amount = x.Amount,
-                    DiscountAmount = x.DiscountAmount,
-                    GeneralDiscountAmount = x.GeneralDiscountAmount,
-                    PrimaryPrice = x.PrimaryPrice,
-                    RequestedQuantity = x.RequestedQuantity,
-                    SalePrice = x.SalePrice,
-                    TaxAmount = x.TaxAmount,
-                    IndirectSalesOrderId = x.IndirectSalesOrderId,
-                    ItemId = x.ItemId,
-                })
-                .ToListAsync();
-            List<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotionDAOs = await DataContext.IndirectSalesOrderPromotion
-                .Where(x => SaleEmployeeIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
-                .Select(x => new IndirectSalesOrderPromotionDAO
-                {
-                    Id = x.Id,
-                    RequestedQuantity = x.RequestedQuantity,
-                    IndirectSalesOrderId = x.IndirectSalesOrderId,
-                    ItemId = x.ItemId,
-                })
-                .ToListAsync();
-            List<long> ItemIds = new List<long>();
-            ItemIds.AddRange(IndirectSalesOrderContentDAOs.Select(x => x.ItemId));
-            ItemIds.AddRange(IndirectSalesOrderPromotionDAOs.Select(x => x.ItemId));
-            ItemIds = ItemIds.Distinct().ToList();
 
-            List<Item> Items = await ItemService.List(new ItemFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Id = new IdFilter { In = ItemIds },
-                Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name | ItemSelect.SalePrice
-            });
+            var IndirectSalesOrderContentQuery = DataContext.IndirectSalesOrderContent
+                .Where(x => SaleEmployeeIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End);
+            var IndirectSalesOrderPromotionQuery = DataContext.IndirectSalesOrderPromotion
+                .Where(x => SaleEmployeeIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End);
 
-            // khởi tạo khung dữ liệu
-            foreach (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
-            {
-                foreach (var SaleEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
-                {
-                    var SalesOrderIds = IndirectSalesOrderDAOs.Where(x => x.SaleEmployeeId == SaleEmployee.SaleEmployeeId).Select(x => x.Id).ToList();
-                    SaleEmployee.Items = new List<ReportSalesOrderByEmployeeAndItem_ItemDTO>();
-                    foreach (IndirectSalesOrderContentDAO IndirectSalesOrderContentDAO in IndirectSalesOrderContentDAOs)
-                    {
-                        if (SalesOrderIds.Contains(IndirectSalesOrderContentDAO.IndirectSalesOrderId))
-                        {
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO ReportSalesOrderByEmployeeAndItem_ItemDTO = SaleEmployee.Items.Where(i => i.Id == IndirectSalesOrderContentDAO.ItemId).FirstOrDefault();
-                            if (ReportSalesOrderByEmployeeAndItem_ItemDTO == null)
-                            {
-                                var item = Items.Where(x => x.Id == IndirectSalesOrderContentDAO.ItemId).FirstOrDefault();
-                                if (item == null)
-                                    continue;
-                                ReportSalesOrderByEmployeeAndItem_ItemDTO = new ReportSalesOrderByEmployeeAndItem_ItemDTO
-                                {
-                                    Id = item.Id,
-                                    Code = item.Code,
-                                    Name = item.Name,
-                                };
-                                SaleEmployee.Items.Add(ReportSalesOrderByEmployeeAndItem_ItemDTO);
-                            }
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO.SaleStock += IndirectSalesOrderContentDAO.RequestedQuantity;
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO.Revenue += (IndirectSalesOrderContentDAO.Amount - (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.TaxAmount ?? 0));
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO.Discount += ((IndirectSalesOrderContentDAO.DiscountAmount ?? 0) + (IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0));
-                        }
-                    }
+            ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalSalesStock = IndirectSalesOrderContentQuery.Select(x => x.RequestedQuantity).Sum();
 
-                    foreach (IndirectSalesOrderPromotionDAO IndirectSalesOrderPromotionDAO in IndirectSalesOrderPromotionDAOs)
-                    {
-                        if (SalesOrderIds.Contains(IndirectSalesOrderPromotionDAO.IndirectSalesOrderId))
-                        {
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO ReportSalesOrderByEmployeeAndItem_ItemDTO = SaleEmployee.Items.Where(i => i.Id == IndirectSalesOrderPromotionDAO.ItemId).FirstOrDefault();
-                            if (ReportSalesOrderByEmployeeAndItem_ItemDTO == null)
-                            {
-                                var item = Items.Where(x => x.Id == IndirectSalesOrderPromotionDAO.ItemId).FirstOrDefault();
-                                if (item == null)
-                                    continue;
-                                ReportSalesOrderByEmployeeAndItem_ItemDTO = new ReportSalesOrderByEmployeeAndItem_ItemDTO
-                                {
-                                    Id = item.Id,
-                                    Code = item.Code,
-                                    Name = item.Name,
-                                };
-                                SaleEmployee.Items.Add(ReportSalesOrderByEmployeeAndItem_ItemDTO);
-                            }
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO.PromotionStock += IndirectSalesOrderPromotionDAO.RequestedQuantity;
-                        }
-                    }
-                }
-            }
+            ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalPromotionStock = IndirectSalesOrderPromotionQuery.Select(x => x.RequestedQuantity).Sum();
 
-            //làm tròn số
-            foreach (var ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
-            {
-                foreach (var SaleEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
-                {
-                    foreach (var item in SaleEmployee.Items)
-                    {
-                        item.Discount = Math.Round(item.Discount, 0);
-                        item.Revenue = Math.Round(item.Revenue, 0);
-                        item.SalePriceAverage = Math.Round(item.SalePriceAverage, 0);
-                    }
-                }
-            }
+            ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalRevenue = Math.Round(IndirectSalesOrderContentQuery.Select(x => x.Amount).Sum()
+                - IndirectSalesOrderContentQuery.Where(x => x.GeneralDiscountAmount.HasValue).Select(x => x.GeneralDiscountAmount.Value).Sum()
+                + IndirectSalesOrderContentQuery.Where(x => x.TaxAmount.HasValue).Select(x => x.TaxAmount.Value).Sum(), 0);
 
-            ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalDiscount = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.SelectMany(x => x.SaleEmployees)
-                .SelectMany(x => x.Items).Sum(x => x.Discount);
-            ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalRevenue = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.SelectMany(x => x.SaleEmployees)
-                .SelectMany(x => x.Items).Sum(x => x.Revenue);
-            ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalPromotionStock = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.SelectMany(x => x.SaleEmployees)
-                .SelectMany(x => x.Items).Sum(x => x.PromotionStock);
-            ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalSalesStock = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.SelectMany(x => x.SaleEmployees)
-                .SelectMany(x => x.Items).Sum(x => x.SaleStock);
+            ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalDiscount = Math.Round(IndirectSalesOrderContentQuery.Where(x => x.GeneralDiscountAmount.HasValue).Select(x => x.GeneralDiscountAmount.Value).Sum()
+                + IndirectSalesOrderContentQuery.Where(x => x.DiscountAmount.HasValue).Select(x => x.DiscountAmount.Value).Sum(), 0);
+
             return ReportSalesOrderByEmployeeAndItem_TotalDTO;
         }
 
@@ -605,7 +502,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_sales_order_by_employee_and_
                 }
             }
 
-            
+
             string path = "Templates/Report_Sales_Order_By_Employee_And_Item.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
