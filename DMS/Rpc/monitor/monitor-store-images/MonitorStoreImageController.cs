@@ -384,7 +384,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 var StoreIds = AlbumImageMappings.Select(x => x.StoreId).Distinct().ToList();
                 foreach (var storeId in StoreIds)
                 {
-                    var dates = AlbumImageMappings.Select(x => x.ShootingAt.Date).Distinct().ToList();
+                    var dates = AlbumImageMappings.OrderByDescending(x => x.ShootingAt).Select(x => x.ShootingAt.Date).Distinct().ToList();
                     foreach (var date in dates)
                     {
                         var row = MonitorStoreImage_SaleEmployeeDTO.StoreCheckings.Where(x => x.StoreId == storeId && x.Date == date.AddHours(CurrentContext.TimeZone).Date).FirstOrDefault();
