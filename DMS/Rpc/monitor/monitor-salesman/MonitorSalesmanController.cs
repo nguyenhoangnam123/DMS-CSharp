@@ -96,7 +96,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
             DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value;
 
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
@@ -133,7 +133,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
             DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value;
 
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;

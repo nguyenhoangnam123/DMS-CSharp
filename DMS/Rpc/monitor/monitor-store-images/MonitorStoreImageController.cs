@@ -183,7 +183,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -248,7 +248,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();

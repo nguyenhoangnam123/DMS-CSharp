@@ -320,7 +320,7 @@ namespace DMS.Rpc.kpi_general
                 if (long.TryParse(KpiYearValue, out long KpiYearId))
                     KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();
                 else
-                    return BadRequest(new { message = "Năm Kpi không hợp lệ" });
+                    return BadRequest(new { message = "Chưa chọn năm Kpi hoặc năm không hợp lệ" });
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
