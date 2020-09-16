@@ -1,5 +1,7 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
+using DMS.Handlers;
 using DMS.Repositories;
 using Helpers;
 using System;
@@ -102,9 +104,9 @@ namespace DMS.Services.MAlbum
                 await UOW.Begin();
                 await UOW.AlbumRepository.Create(Album);
                 await UOW.Commit();
-
+                Album = await UOW.AlbumRepository.Get(Album.Id);
                 await Logging.CreateAuditLog(Album, new { }, nameof(AlbumService));
-                return await UOW.AlbumRepository.Get(Album.Id);
+                return Album;
             }
             catch (Exception ex)
             {
@@ -134,9 +136,9 @@ namespace DMS.Services.MAlbum
                 await UOW.AlbumRepository.Update(Album);
                 await UOW.Commit();
 
-                var newData = await UOW.AlbumRepository.Get(Album.Id);
-                await Logging.CreateAuditLog(newData, oldData, nameof(AlbumService));
-                return newData;
+                Album = await UOW.AlbumRepository.Get(Album.Id);
+                await Logging.CreateAuditLog(Album, oldData, nameof(AlbumService));
+                return Album;
             }
             catch (Exception ex)
             {
@@ -291,6 +293,10 @@ namespace DMS.Services.MAlbum
                 }
             }
             return filter;
+        }
+
+        private void NotifyUsed(Album Album)
+        {
         }
     }
 }

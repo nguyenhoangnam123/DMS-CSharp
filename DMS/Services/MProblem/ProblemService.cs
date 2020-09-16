@@ -460,6 +460,18 @@ namespace DMS.Services.MProblem
                 };
                 RabbitManager.PublishSingle(ProblemTypeMessage, RoutingKeyEnum.ProblemTypeUsed);
             }
+
+            {
+                EventMessage<Store> StoreMessage = new EventMessage<Store>
+                {
+                    Content = new Store { Id = Problem.StoreId },
+                    EntityName = nameof(Store),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                RabbitManager.PublishSingle(StoreMessage, RoutingKeyEnum.StoreUsed);
+            }
         }
+       
     }
 }
