@@ -133,6 +133,7 @@ namespace DMS.Models
         public virtual DbSet<StoreScoutingDAO> StoreScouting { get; set; }
         public virtual DbSet<StoreScoutingImageMappingDAO> StoreScoutingImageMapping { get; set; }
         public virtual DbSet<StoreScoutingStatusDAO> StoreScoutingStatus { get; set; }
+        public virtual DbSet<StoreScoutingTypeDAO> StoreScoutingType { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<StoreUncheckingDAO> StoreUnchecking { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
@@ -3473,6 +3474,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreScouting_StoreScouting");
 
+                entity.HasOne(d => d.StoreScoutingType)
+                    .WithMany(p => p.StoreScoutings)
+                    .HasForeignKey(d => d.StoreScoutingTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreScouting_StoreScoutingType");
+
                 entity.HasOne(d => d.Ward)
                     .WithMany(p => p.StoreScoutings)
                     .HasForeignKey(d => d.WardId)
@@ -3509,6 +3516,27 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<StoreScoutingTypeDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.StoreScoutingTypes)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreScoutingType_Status");
             });
 
             modelBuilder.Entity<StoreTypeDAO>(entity =>

@@ -95,6 +95,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.CreatorId, filter.AppUserId);
             if (filter.StoreScoutingStatusId != null)
                 query = query.Where(q => q.StoreScoutingStatusId, filter.StoreScoutingStatusId);
+            if (filter.StoreScoutingTypeId != null)
+                query = query.Where(q => q.StoreScoutingTypeId, filter.StoreScoutingTypeId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -164,6 +166,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.CreatorId, StoreScoutingFilter.AppUserId);
                 if (StoreScoutingFilter.StoreScoutingStatusId != null)
                     queryable = queryable.Where(q => q.StoreScoutingStatusId, StoreScoutingFilter.StoreScoutingStatusId);
+                if (StoreScoutingFilter.StoreScoutingTypeId != null)
+                    queryable = queryable.Where(q => q.StoreScoutingTypeId, StoreScoutingFilter.StoreScoutingTypeId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -215,6 +219,9 @@ namespace DMS.Repositories
                         case StoreScoutingOrder.StoreScoutingStatus:
                             query = query.OrderBy(q => q.StoreScoutingStatusId);
                             break;
+                        case StoreScoutingOrder.StoreScoutingType:
+                            query = query.OrderBy(q => q.StoreScoutingTypeId);
+                            break;
                         case StoreScoutingOrder.CreatedAt:
                             query = query.OrderBy(q => q.CreatedAt);
                             break;
@@ -262,6 +269,9 @@ namespace DMS.Repositories
                         case StoreScoutingOrder.StoreScoutingStatus:
                             query = query.OrderByDescending(q => q.StoreScoutingStatusId);
                             break;
+                        case StoreScoutingOrder.StoreScoutingType:
+                            query = query.OrderByDescending(q => q.StoreScoutingTypeId);
+                            break;
                         case StoreScoutingOrder.CreatedAt:
                             query = query.OrderByDescending(q => q.CreatedAt);
                             break;
@@ -289,6 +299,7 @@ namespace DMS.Repositories
                 CreatorId = filter.Selects.Contains(StoreScoutingSelect.Creator) ? q.CreatorId : default(long),
                 OrganizationId = filter.Selects.Contains(StoreScoutingSelect.Organization) ? q.OrganizationId : default(long),
                 StoreScoutingStatusId = filter.Selects.Contains(StoreScoutingSelect.StoreScoutingStatus) ? q.StoreScoutingStatusId : default(long),
+                StoreScoutingTypeId = filter.Selects.Contains(StoreScoutingSelect.StoreScoutingType) ? q.StoreScoutingTypeId : default(long),
                 Creator = filter.Selects.Contains(StoreScoutingSelect.Creator) && q.Creator != null ? new AppUser
                 {
                     Id = q.Creator.Id,
@@ -348,6 +359,12 @@ namespace DMS.Repositories
                     Code = q.StoreScoutingStatus.Code,
                     Name = q.StoreScoutingStatus.Name,
                 } : null,
+                StoreScoutingType = filter.Selects.Contains(StoreScoutingSelect.StoreScoutingType) && q.StoreScoutingType != null ? new StoreScoutingType
+                {
+                    Id = q.StoreScoutingType.Id,
+                    Code = q.StoreScoutingType.Code,
+                    Name = q.StoreScoutingType.Name,
+                } : null,
                 Ward = filter.Selects.Contains(StoreScoutingSelect.Ward) && q.Ward != null ? new Ward
                 {
                     Id = q.Ward.Id,
@@ -401,6 +418,7 @@ namespace DMS.Repositories
                 CreatorId = x.CreatorId,
                 OrganizationId = x.OrganizationId,
                 StoreScoutingStatusId = x.StoreScoutingStatusId,
+                StoreScoutingTypeId = x.StoreScoutingTypeId,
                 RowId = x.RowId,
                 Creator = x.Creator == null ? null : new AppUser
                 {
@@ -454,6 +472,12 @@ namespace DMS.Repositories
                     Id = x.StoreScoutingStatus.Id,
                     Code = x.StoreScoutingStatus.Code,
                     Name = x.StoreScoutingStatus.Name,
+                },
+                StoreScoutingType = x.StoreScoutingType == null ? null : new StoreScoutingType
+                {
+                    Id = x.StoreScoutingType.Id,
+                    Code = x.StoreScoutingType.Code,
+                    Name = x.StoreScoutingType.Name,
                 },
                 Ward = x.Ward == null ? null : new Ward
                 {
@@ -534,6 +558,7 @@ namespace DMS.Repositories
             StoreScoutingDAO.CreatorId = StoreScouting.CreatorId;
             StoreScoutingDAO.OrganizationId = StoreScouting.OrganizationId;
             StoreScoutingDAO.StoreScoutingStatusId = StoreScouting.StoreScoutingStatusId;
+            StoreScoutingDAO.StoreScoutingTypeId = StoreScouting.StoreScoutingTypeId;
             StoreScoutingDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreScoutingDAO.UpdatedAt = StaticParams.DateTimeNow;
             StoreScoutingDAO.RowId = Guid.NewGuid();
@@ -562,6 +587,7 @@ namespace DMS.Repositories
             StoreScoutingDAO.CreatorId = StoreScouting.CreatorId;
             StoreScoutingDAO.OrganizationId = StoreScouting.OrganizationId;
             StoreScoutingDAO.StoreScoutingStatusId = StoreScouting.StoreScoutingStatusId;
+            StoreScoutingDAO.StoreScoutingTypeId = StoreScouting.StoreScoutingTypeId;
             StoreScoutingDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(StoreScouting);
@@ -593,6 +619,7 @@ namespace DMS.Repositories
                 StoreScoutingDAO.CreatorId = StoreScouting.CreatorId;
                 StoreScoutingDAO.OrganizationId = StoreScouting.OrganizationId;
                 StoreScoutingDAO.StoreScoutingStatusId = StoreScouting.StoreScoutingStatusId;
+                StoreScoutingDAO.StoreScoutingTypeId = StoreScouting.StoreScoutingTypeId;
                 StoreScoutingDAO.CreatedAt = StaticParams.DateTimeNow;
                 StoreScoutingDAO.UpdatedAt = StaticParams.DateTimeNow;
                 StoreScoutingDAOs.Add(StoreScoutingDAO);

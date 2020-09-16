@@ -99,6 +99,14 @@ namespace DMS.Repositories
                             select q;
                     query = query.Distinct();
                 }
+                if (filter.StoreId.NotEqual.HasValue)
+                {
+                    query = from q in query
+                            join ec in DataContext.ERouteContent on q.Id equals ec.ERouteId
+                            where ec.StoreId != filter.StoreId.Equal
+                            select q;
+                    query = query.Distinct();
+                }
             }
             query = OrFilter(query, filter);
             return query;

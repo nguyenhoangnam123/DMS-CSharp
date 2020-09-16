@@ -39,6 +39,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.SurveyId, filter.SurveyId);
             if (filter.StoreId != null)
                 query = query.Where(q => q.StoreId, filter.StoreId);
+            if (filter.OrganizationId != null)
+                query = query.Where(q => q.OrganizationId, filter.OrganizationId);
             if (filter.Time != null)
                 query = query.Where(q => q.Time, filter.Time);
             return query;

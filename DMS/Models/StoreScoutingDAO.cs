@@ -25,6 +25,7 @@ namespace DMS.Models
         public long CreatorId { get; set; }
         public long OrganizationId { get; set; }
         public long StoreScoutingStatusId { get; set; }
+        public long StoreScoutingTypeId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
@@ -35,6 +36,7 @@ namespace DMS.Models
         public virtual OrganizationDAO Organization { get; set; }
         public virtual ProvinceDAO Province { get; set; }
         public virtual StoreScoutingStatusDAO StoreScoutingStatus { get; set; }
+        public virtual StoreScoutingTypeDAO StoreScoutingType { get; set; }
         public virtual WardDAO Ward { get; set; }
         public virtual ICollection<StoreScoutingImageMappingDAO> StoreScoutingImageMappings { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }

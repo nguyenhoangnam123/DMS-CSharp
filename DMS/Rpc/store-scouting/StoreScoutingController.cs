@@ -262,6 +262,7 @@ namespace DMS.Rpc.store_scouting
             StoreScouting.CreatorId = StoreScouting_StoreScoutingDTO.CreatorId;
             StoreScouting.OrganizationId = StoreScouting_StoreScoutingDTO.OrganizationId;
             StoreScouting.StoreScoutingStatusId = StoreScouting_StoreScoutingDTO.StoreScoutingStatusId;
+            StoreScouting.StoreScoutingTypeId = StoreScouting_StoreScoutingDTO.StoreScoutingTypeId;
             StoreScouting.Link = StoreScouting_StoreScoutingDTO.Link;
             StoreScouting.RowId = StoreScouting_StoreScoutingDTO.RowId;
             StoreScouting.Creator = StoreScouting_StoreScoutingDTO.Creator == null ? null : new AppUser
@@ -317,6 +318,12 @@ namespace DMS.Rpc.store_scouting
                 Code = StoreScouting_StoreScoutingDTO.StoreScoutingStatus.Code,
                 Name = StoreScouting_StoreScoutingDTO.StoreScoutingStatus.Name,
             };
+            StoreScouting.StoreScoutingType = StoreScouting_StoreScoutingDTO.StoreScoutingType == null ? null : new StoreScoutingType
+            {
+                Id = StoreScouting_StoreScoutingDTO.StoreScoutingType.Id,
+                Code = StoreScouting_StoreScoutingDTO.StoreScoutingType.Code,
+                Name = StoreScouting_StoreScoutingDTO.StoreScoutingType.Name,
+            };
             StoreScouting.Ward = StoreScouting_StoreScoutingDTO.Ward == null ? null : new Ward
             {
                 Id = StoreScouting_StoreScoutingDTO.Ward.Id,
@@ -365,6 +372,7 @@ namespace DMS.Rpc.store_scouting
             StoreScoutingFilter.Longitude = StoreScouting_StoreScoutingFilterDTO.Longitude;
             StoreScoutingFilter.AppUserId = StoreScouting_StoreScoutingFilterDTO.AppUserId;
             StoreScoutingFilter.StoreScoutingStatusId = StoreScouting_StoreScoutingFilterDTO.StoreScoutingStatusId;
+            StoreScoutingFilter.StoreScoutingTypeId = StoreScouting_StoreScoutingFilterDTO.StoreScoutingTypeId;
             StoreScoutingFilter.CreatedAt = StoreScouting_StoreScoutingFilterDTO.CreatedAt;
             StoreScoutingFilter.UpdatedAt = StoreScouting_StoreScoutingFilterDTO.UpdatedAt;
             return StoreScoutingFilter;
