@@ -11,6 +11,7 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public string UnsignName { get; set; }
         public long? ParentStoreId { get; set; }
         public long OrganizationId { get; set; }
         public long StoreTypeId { get; set; }
@@ -21,6 +22,7 @@ namespace DMS.Entities
         public long? DistrictId { get; set; }
         public long? WardId { get; set; }
         public string Address { get; set; }
+        public string UnsignAddress { get; set; }
         public string DeliveryAddress { get; set; }
         public decimal Latitude { get; set; }
         public decimal Longitude { get; set; }
@@ -71,6 +73,7 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public StringFilter UnsignName { get; set; }
         public IdFilter ParentStoreId { get; set; }
         public IdFilter OrganizationId { get; set; }
         public IdFilter StoreTypeId { get; set; }
@@ -83,6 +86,7 @@ namespace DMS.Entities
         public IdFilter DistrictId { get; set; }
         public IdFilter WardId { get; set; }
         public StringFilter Address { get; set; }
+        public StringFilter UnsignAddress { get; set; }
         public StringFilter DeliveryAddress { get; set; }
         public DecimalFilter Latitude { get; set; }
         public DecimalFilter Longitude { get; set; }
@@ -124,7 +128,9 @@ namespace DMS.Entities
         OwnerPhone = 19,
         OwnerEmail = 20,
         Status = 21,
-        StoreScouting = 22
+        StoreScouting = 22,
+        UnsignName = 23,
+        UnsignAddress = 24
     }
 
     [Flags]
@@ -156,6 +162,8 @@ namespace DMS.Entities
         StoreImageMappings = E._23,
         TaxCode = E._24,
         LegalEntity = E._25,
-        StoreScouting = E._26
+        StoreScouting = E._26,
+        UnsignName = E._27,
+        UnsignAddress = E._28
     }
 }

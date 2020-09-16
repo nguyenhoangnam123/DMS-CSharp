@@ -160,6 +160,10 @@ namespace DMS.Services.MStore
             try
             {
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+
+                Store.UnsignName = Store.Name.ChangeToEnglishChar();
+                Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
+
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
                 List<UserNotification> UserNotifications = new List<UserNotification>();
@@ -248,6 +252,9 @@ namespace DMS.Services.MStore
             try
             {
                 var oldData = await UOW.StoreRepository.Get(Store.Id);
+
+                Store.UnsignName = Store.Name.ChangeToEnglishChar();
+                Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
 
                 await UOW.Begin();
                 await UOW.StoreRepository.Update(Store);
@@ -416,6 +423,10 @@ namespace DMS.Services.MStore
                 {
                     Store Store = dbStores.Where(p => p.Code == item.Code)
                                 .FirstOrDefault();
+
+                    Store.UnsignName = Store.Name.ChangeToEnglishChar();
+                    Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
+
                     if (Store != null)
                     {
                         item.Id = Store.Id;

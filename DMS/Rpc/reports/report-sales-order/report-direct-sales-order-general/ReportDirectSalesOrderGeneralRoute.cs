@@ -8,8 +8,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
 {
     public class ReportDirectSalesOrderGeneralRoute : Root
     {
-        public const string Parent = Module + "/sales-order-report";
-        public const string Master = Module + "/sales-order-report/direct-sales-order-general-report-master";
+        public const string Parent = Module + "/direct-sales-order-report";
+        public const string Master = Module + "/direct-sales-order-report/direct-sales-order-general-report-master";
 
         private const string Default = Rpc + Module + "/direct-sales-order-general-report";
         public const string Count = Default + "/count";
