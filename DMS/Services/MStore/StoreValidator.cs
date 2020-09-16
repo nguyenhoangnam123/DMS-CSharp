@@ -91,8 +91,7 @@ namespace DMS.Services.MStore
             }
             else
             {
-                var Code = Store.Code;
-                if (Store.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Store.Code))
+                if (Store.Code.Contains(" "))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
@@ -576,8 +575,7 @@ namespace DMS.Services.MStore
             })).Select(e => e.Code);
             foreach (var Store in Stores)
             {
-                var Code = Store.Code;
-                if (Store.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Store.Code))
+                if (Store.Code.Contains(" "))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
