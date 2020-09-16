@@ -68,26 +68,19 @@ namespace DMS.Services.MStoreScouting
 
         private async Task<bool> ValidateOwnerPhone(StoreScouting StoreScouting)
         {
-            if (string.IsNullOrWhiteSpace(StoreScouting.OwnerPhone))
-            {
-                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneEmpty);
-            }
+            if (!string.IsNullOrWhiteSpace(StoreScouting.OwnerPhone) && StoreScouting.OwnerPhone.Length > 255)
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneOverLength);
             else
             {
-                if (StoreScouting.OwnerPhone.Length > 255)
-                    StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneOverLength);
-                else
+                StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter
                 {
-                    StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter
-                    {
-                        OwnerPhone = new StringFilter { Equal = StoreScouting.OwnerPhone },
-                        Id = new IdFilter { NotEqual = StoreScouting.Id }
-                    };
+                    OwnerPhone = new StringFilter { Equal = StoreScouting.OwnerPhone },
+                    Id = new IdFilter { NotEqual = StoreScouting.Id }
+                };
 
-                    int count = await UOW.StoreScoutingRepository.Count(StoreScoutingFilter);
-                    if (count != 0)
-                        StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneInUsed);
-                }
+                int count = await UOW.StoreScoutingRepository.Count(StoreScoutingFilter);
+                if (count != 0)
+                    StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneInUsed);
             }
             return StoreScouting.IsValidated;
         }
